@@ -1,4 +1,4 @@
-# torch-text
+# [WIP] torch-text
 
 This repository will consist of:
 
@@ -16,18 +16,18 @@ The data module should provide the following:
 ```python
 pos = data.Dataset(
     path='data/pos/pos_wsj_train.tsv', format='tsv',
-    fields=[('text', data.Field(time_series=True),
-            ('labels', data.Field(time_series=True)])
+    fields=[('text', data.Field(time_series=True)),
+            ('labels', data.Field(time_series=True))])
 
 sentiment = data.Dataset(
     path='data/sentiment/train.json', format='json',
     fields=[{'sentence_tokenized': ('text', data.Field(time_series=True)),
-            ('sentiment_gold': ('labels', data.Field(time_series=False))])
+             'sentiment_gold': ('labels', data.Field(time_series=False))}])
 ```
 - Ability to define a preprocessing pipeline:
 ```python
-src = data.Field(time_series=True, preprocess=my_custom_tokenizer)
-trg = data.Field(time_series=True, preprocess=my_custom_tokenizer)
+src = data.Field(time_series=True, tokenize=my_custom_tokenizer)
+trg = data.Field(time_series=True, tokenize=my_custom_tokenizer)
 mt_train = data.ParallelCorpus(
     path='data/mt/wmt16-ende.train', exts=('.en', '.de'),
     fields=(('src', src), ('trg', trg))
