@@ -41,8 +41,6 @@ class Field:
     def preprocess(self, x):
         if self.time_series and isinstance(x, str):
             x = self.tokenize(x)
-            if x[-1] == '':
-                x = x[:-1]
         return x
 
     def pad(self, batch):
@@ -94,39 +92,66 @@ class Field:
         return Variable(arr, volatile=not train)
 
 
+class Example:
+
+    @classmethod
+    def fromJSON(cls, data, fields):
+        return cls.fromdict(json.loads(data), fields)
+
+    @classmethod
+    def fromdict(cls, data, fields):
+        ex = cls()
+        for key, val in data.items():
+            if key in fields:
+                name, field = fields[key]
+                if field is not None:
+                    setattr(ex, name, field.preprocess(val))
+        return ex
+
+    @classmethod
+    def fromTSV(cls, data, fields):
+        if data[-1] == '\n':
+            data = data[:-1]
+        return cls.fromlist(data.split('\t'), fields)
+
+    @classmethod
+    def fromCSV(cls, data, fields):
+        if data[-1] == '\n':
+            data = data[:-1]
+        return cls.fromlist(list(csv.reader([data]))[0])
+
+    @classmethod
+    def fromlist(cls, data, fields):
+        ex = cls()
+        for (name, field), val in zip(fields, data):
+            if field is not None:
+                setattr(ex, name, field.preprocess(val))
+        return ex
+
+
 class Dataset(torch.utils.data.Dataset):
 
     def __init__(self, path, format, fields):
 
-        class Example:
-
-            def __init__(self, data):
-                if format == 'json':
-                    data = json.loads(data)
-                if format in ('json', 'dict'):
-                    for key, val in data.items():
-                        if key in fields:
-                            name, field = fields[key]
-                            if field is not None:
-                                self.__dict__[name] = field.preprocess(val)
-                    return
-                if data[-1] == '\n':
-                    data = data[:-1]
-                if format == 'tsv':
-                    data = data.split('\t')
-                elif format == 'csv':
-                    data = list(csv.reader([data]))[0]
-                for (name, field), val in zip(fields, data):
-                    if field is not None:
-                        self.__dict__[name] = field.preprocess(val)
+        make_example = {
+            'json': Example.fromJSON, 'dict': Example.fromdict,
+            'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
 
         with open(os.path.expanduser(path)) as f:
-            self.examples = [Example(line) for line in f]
+            self.examples = [make_example(line, fields) for line in f]
 
         if isinstance(fields, dict):
             self.fields = dict(fields.values())
         else:
             self.fields = dict(fields)
+
+    @classmethod
+    def splits(cls, path, train=None, dev=None, test=None, **kwargs):
+        train_data = None if train is None else cls(path + train, **kwargs)
+        dev_data = None if dev is None else cls(path + dev, **kwargs)
+        test_data = None if test is None else cls(path + test, **kwargs)
+        return tuple(d for d in (train_data, dev_data, test_data)
+                     if d is not None)
 
     def __getitem__(self, i):
         return self.examples[i]
@@ -141,6 +166,7 @@ class Dataset(torch.utils.data.Dataset):
         if attr in self.fields:
             for x in self.examples:
                 yield getattr(x, attr)
+
 
 def batch(data, batch_size):
     minibatch = []
@@ -177,22 +203,40 @@ class Batch:
 
 class BucketIterator:
 
-    def __init__(self, dataset, batch_size, key, device=None, train=True,
-                 repeat=True):
+    def __init__(self, dataset, batch_size, sort_key=None, device=None,
+                 train=True, repeat=None):
         self.length = math.ceil(len(dataset) / batch_size)
         self.batch_size, self.train, self.data = batch_size, train, dataset
-        self.iterations, self.repeat, self.key = 0, repeat, key
+        self.iterations, self.repeat = 0, train if repeat is None else repeat
+        if sort_key is None:
+            try:
+                self.sort_key = dataset.sort_key
+            except AttributeError:
+                print('Must provide sort_key with constructor or dataset')
+        else:
+            self.sort_key = sort_key
         self.device = device
         if self.train:
             self.order = torch.randperm(len(self.data))
 
-    def init(self):
+    @classmethod
+    def splits(cls, datasets, batch_sizes=None, **kwargs):
+        if batch_sizes is None:
+            batch_sizes = [kwargs.pop('batch_size')] * len(datasets)
+        ret = []
+        for i in range(len(datasets)):
+            train = i == 0
+            ret.append(cls(
+                datasets[i], batch_size=batch_sizes[i], train=train, **kwargs))
+        return tuple(ret)
+
+    def init_epoch(self):
         if self.train:
             xs = [self.data[i] for i in self.order]
-            self.batches = pool(xs, self.batch_size, self.key)
+            self.batches = pool(xs, self.batch_size, self.sort_key)
         else:
             self.iterations = 0
-            self.batches = batch(sorted(self.data, key=self.key),
+            self.batches = batch(sorted(self.data, key=self.sort_key),
                                  self.batch_size)
 
     @property
@@ -201,7 +245,7 @@ class BucketIterator:
 
     def __iter__(self):
         while True:
-            self.init()
+            self.init_epoch()
             for i, minibatch in enumerate(self.batches):
                 if i == self.iterations % self.length:
                     self.iterations += 1

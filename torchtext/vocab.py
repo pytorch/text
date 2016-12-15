@@ -61,6 +61,7 @@ class Vocab:
         self.itos = ['<unk>'] + specials
 
         counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
+        max_size = None if max_size is None else max_size - len(self.itos)
 
         for k, v in counter.most_common(max_size):
             if v < min_freq:
