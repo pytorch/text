@@ -4,6 +4,7 @@ from torch.autograd import Variable
 from text.torchtext.vocab import Vocab
 
 from collections import Counter
+from collections import OrderedDict
 import csv
 import json
 import math
@@ -43,17 +44,17 @@ class Field:
             x = self.tokenize(x)
         return x
 
-    def pad(self, batch):
-        batch = list(batch)
+    def pad(self, minibatch):
+        minibatch = list(minibatch)
         if not self.time_series:
-            return batch
+            return minibatch
         if self.fix_length is None:
-            max_len = max(len(x) for x in batch)
+            max_len = max(len(x) for x in minibatch)
         else:
-            max_len = self.fix_length
-        max_len = max_len + (self.init_token, self.eos_token).count(None) - 2
+            max_len = self.fix_length + (
+                self.init_token, self.eos_token).count(None) - 2
         padded = []
-        for x in batch:
+        for x in minibatch:
             padded.append(
                 ([] if self.init_token is None else [self.init_token]) +
                 list(x[:max_len]) +
@@ -70,8 +71,8 @@ class Field:
                 if lower:
                     x = [token.lower() for token in x]
                 counter.update(x)
-        specials = ['<pad>', self.init_token, self.eos_token]
-        specials = [token for token in specials if token is not None]
+        specials = list(OrderedDict.fromkeys(tok for tok in [
+            '<pad>', self.init_token, self.eos_token] if tok is not None))
         self.vocab = Vocab(counter, specials=specials, lower=lower, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
@@ -84,11 +85,15 @@ class Field:
             arr = self.after_numericalizing(arr, self.vocab, train)
         else:
             arr = self.after_numericalizing(arr, train)
+        arr = self.tensor_type(arr)
+        if self.time_series:
+            arr.t_()
         if device == -1:
-            arr = self.tensor_type(arr)
+            if self.time_series:
+                arr = arr.clone()
         else:
             with torch.cuda.device(device):
-                arr = self.tensor_type(arr).cuda()
+                arr = arr.cuda()
         return Variable(arr, volatile=not train)
 
 

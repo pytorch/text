@@ -31,11 +31,3 @@ class TranslationDataset(data.Dataset):
                         data.Example.fromlist([src_line, trg_line], fields))
 
         self.fields = dict(fields)
-
-    @classmethod
-    def splits(cls, path, train=None, dev=None, test=None, **kwargs):
-        train_data = None if train is None else cls(path + train, **kwargs)
-        dev_data = None if dev is None else cls(path + dev, **kwargs)
-        test_data = None if test is None else cls(path + test, **kwargs)
-        return tuple(d for d in (train_data, dev_data, test_data)
-                     if d is not None)
