@@ -1,5 +1,5 @@
 import torch
-from text.torchtext import vocab
+from torchtext import vocab
 
 from collections import Counter
 c = Counter(['hello', 'world'])

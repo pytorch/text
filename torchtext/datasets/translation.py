@@ -1,6 +1,6 @@
 import os
 
-from text.torchtext import data
+from .. import data
 
 
 def interleave_keys(a, b):

@@ -1,5 +1,5 @@
 import torch
-from text.torchtext import data
+from torchtext import data
 
 
 TEXT = data.Field(time_series=True)

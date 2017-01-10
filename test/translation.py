@@ -1,5 +1,5 @@
-from text.torchtext import data
-from text.torchtext import datasets
+from torchtext import data
+from torchtext import datasets
 
 import re
 import spacy

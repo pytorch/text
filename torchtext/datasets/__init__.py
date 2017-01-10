@@ -1,1 +1,1 @@
-from text.torchtext.datasets.translation import TranslationDataset
+from .translation import TranslationDataset

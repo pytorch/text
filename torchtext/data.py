@@ -1,7 +1,7 @@
 import torch
 import torch.utils.data
 from torch.autograd import Variable
-from text.torchtext.vocab import Vocab
+from .vocab import Vocab
 
 from collections import Counter
 from collections import OrderedDict
@@ -162,7 +162,10 @@ class Dataset(torch.utils.data.Dataset):
         return self.examples[i]
 
     def __len__(self):
-        return len(self.examples)
+        try:
+            return len(self.examples)
+        except TypeError:
+            return 2**32
 
     def __iter__(self):
         yield from self.examples
@@ -183,14 +186,14 @@ def batch(data, batch_size):
     if minibatch:
         yield minibatch
 
-def shuffle(data):
+def shuffled(data):
     data = list(data)
     random.shuffle(data)
     return data
 
 def pool(data, batch_size, key):
     for p in batch(data, batch_size * 100):
-        yield from shuffle(batch(sorted(p, key=key), batch_size))
+        yield from shuffled(batch(sorted(p, key=key), batch_size))
 
 
 class Batch:
@@ -209,19 +212,19 @@ class Batch:
 class BucketIterator:
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
-                 train=True, repeat=None):
+                 train=True, repeat=None, shuffle=None, sort=None):
         self.length = math.ceil(len(dataset) / batch_size)
         self.batch_size, self.train, self.data = batch_size, train, dataset
-        self.iterations, self.repeat = 0, train if repeat is None else repeat
+        self.iterations = 0
+        self.repeat = train if repeat is None else repeat
+        self.shuffle = train if shuffle is None else shuffle
+        self.sort = not train if sort is None else sort
         if sort_key is None:
-            try:
-                self.sort_key = dataset.sort_key
-            except AttributeError:
-                print('Must provide sort_key with constructor or dataset')
+            self.sort_key = dataset.sort_key
         else:
             self.sort_key = sort_key
         self.device = device
-        if self.train:
+        if self.shuffle:
             self.order = torch.randperm(len(self.data))
 
     @classmethod
@@ -236,13 +239,18 @@ class BucketIterator:
         return tuple(ret)
 
     def init_epoch(self):
-        if self.train:
+        if self.shuffle:
             xs = [self.data[i] for i in self.order]
+        elif self.sort:
+            xs = sorted(self.data, key=self.sort_key)
+        else:
+            xs = self.data
+
+        if self.repeat:
             self.batches = pool(xs, self.batch_size, self.sort_key)
         else:
             self.iterations = 0
-            self.batches = batch(sorted(self.data, key=self.sort_key),
-                                 self.batch_size)
+            self.batches = batch(xs, self.batch_size)
 
     @property
     def epoch(self):
