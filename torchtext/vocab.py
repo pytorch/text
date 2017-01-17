@@ -8,11 +8,11 @@ import torch
 
 def load_word_vectors(path):
 
-    if os.path.exists(path + '.torch'):
-        print('loading word vectors from', path + '.torch')
-        return torch.load(path + '.torch')
+    if os.path.isfile(path + '.pt'):
+        print('loading word vectors from', path + '.pt')
+        return torch.load(path + '.pt')
 
-    if os.path.exists(path + '.txt'):
+    if os.path.isfile(path + '.txt'):
         print('loading word vectors from', path + '.txt')
         cm = open(path + '.txt', 'rb')
     else:
@@ -38,7 +38,7 @@ def load_word_vectors(path):
     wv_dict = {word: i for i, word in enumerate(wv_tokens)}
     wv_arr = torch.Tensor(wv_arr).view(-1, wv_size)
     ret = (wv_dict, wv_arr, wv_size)
-    torch.save(ret, path + '.torch')
+    torch.save(ret, path + '.pt')
     return ret
 
 
@@ -63,8 +63,12 @@ class Vocab:
         counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
         max_size = None if max_size is None else max_size - len(self.itos)
 
-        for k, v in counter.most_common(max_size):
-            if v < min_freq:
+        # sort by frequency, then alphabetically
+        words = sorted(counter.items(), key=lambda tup: tup[0])
+        words.sort(key=lambda tup: tup[1], reverse=True)
+
+        for k, v in words:
+            if v < min_freq or len(self.itos) == max_size:
                 break
             self.itos.append(k)
             self.stoi[k] = len(self.itos) - 1

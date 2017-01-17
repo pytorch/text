@@ -10,6 +10,8 @@ import json
 import math
 import os
 import random
+from six.moves import urllib
+import zipfile
 
 class Pipeline:
 
@@ -20,6 +22,26 @@ class Pipeline:
 
     def convert_token(self, token, *args):
         return token
+
+
+def get_tokenizer(tokenizer):
+    if not isinstance(tokenizer, str):
+        return tokenizer
+    if tokenizer == 'spacy':
+        try:
+            import spacy
+            spacy_en = spacy.load('en')
+            return lambda s: [tok.text for tok in spacy_en.tokenize(s)]
+        except ImportError:
+            print('''Please install SpaCy and the SpaCy English tokenizer:
+    $ conda install libgcc
+    $ pip install spacy
+    $ python -m spacy.en.download tokenizer''')
+            raise
+        except AttributeError:
+            print('''Please install the SpaCy English tokenizer:
+    $ python -m spacy.en.download tokenizer''')
+            raise
 
 
 class Field:
@@ -34,7 +56,7 @@ class Field:
         self.fix_length = fix_length
         self.init_token = init_token
         self.eos_token = eos_token
-        self.tokenize = tokenize
+        self.tokenize = get_tokenizer(tokenize)
         self.before_numericalizing = before_numericalizing
         self.after_numericalizing = after_numericalizing
         self.tensor_type = tensor_type
@@ -64,7 +86,14 @@ class Field:
 
     def build_vocab(self, *args, lower=False, **kwargs):
         counter = Counter()
-        for data in args:
+        sources = []
+        for arg in args:
+            if isinstance(arg, Dataset):
+                sources += [getattr(arg, name) for name, field in
+                            arg.fields.items() if field is self]
+            else:
+                sources.append(arg)
+        for data in sources:
             for x in data:
                 if not self.time_series:
                     x = [x]
@@ -136,19 +165,15 @@ class Example:
 
 class Dataset(torch.utils.data.Dataset):
 
-    def __init__(self, path, format, fields):
+    def __init__(self, examples, fields, filter_pred=None):
 
-        make_example = {
-            'json': Example.fromJSON, 'dict': Example.fromdict,
-            'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
-
-        with open(os.path.expanduser(path)) as f:
-            self.examples = [make_example(line, fields) for line in f]
+        if filter_pred is not None:
+            examples = list(filter(filter_pred, examples))
+        self.examples = examples
 
         if isinstance(fields, dict):
-            self.fields = dict(fields.values())
-        else:
-            self.fields = dict(fields)
+            fields = fields.values()
+        self.fields = dict(fields)
 
     @classmethod
     def splits(cls, path, train=None, dev=None, test=None, **kwargs):
@@ -174,6 +199,37 @@ class Dataset(torch.utils.data.Dataset):
         if attr in self.fields:
             for x in self.examples:
                 yield getattr(x, attr)
+
+
+class ZipDataset(Dataset):
+
+    @classmethod
+    def download_or_unzip(cls, root):
+        path = os.path.join(root, cls.dirname)
+        if not os.path.isdir(path):
+            zpath = os.path.join(root, cls.filename)
+            if not os.path.isfile(zpath):
+                print('downloading')
+                urllib.request.urlretrieve(cls.url, zpath)
+            with zipfile.ZipFile(zpath, 'r') as zfile:
+                print('extracting')
+                zfile.extractall(root)
+        return path
+
+
+
+class TabularDataset(Dataset):
+
+    def __init__(self, path, format, fields, **kwargs):
+
+        make_example = {
+            'json': Example.fromJSON, 'dict': Example.fromdict,
+            'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
+
+        with open(os.path.expanduser(path)) as f:
+            examples = [make_example(line, fields) for line in f]
+
+        super().__init__(examples, fields, **kwargs)
 
 
 def batch(data, batch_size):
@@ -266,3 +322,9 @@ class BucketIterator:
             if not self.repeat:
                 raise StopIteration
             self.order = torch.randperm(len(self.data))
+
+
+def interleave_keys(a, b):
+    def interleave(args):
+        return ''.join([x for t in zip(*args) for x in t])
+    return int(''.join(interleave(format(x, '016b') for x in (a, b))), base=2)
