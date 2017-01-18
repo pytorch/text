@@ -15,11 +15,12 @@ class SNLI(data.ZipDataset, data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, root='.', trees=False,
-               train='train.jsonl', dev='dev.jsonl', test='test.jsonl'):
+               train='train.jsonl', validation='dev.jsonl', test='test.jsonl'):
         if trees:
             raise NotImplementedError
         path = cls.download_or_unzip(root)
-        return super().splits(os.path.join(path, 'snli_1.0_'), train, dev, test,
+        return super().splits(os.path.join(path, 'snli_1.0_'),
+                              train, validation, test,
                               format='json', fields={
                                 'sentence1': ('premise', text_field),
                                 'sentence2': ('hypothesis', text_field),
@@ -28,13 +29,13 @@ class SNLI(data.ZipDataset, data.TabularDataset):
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.', wv_path=None, **kwargs):
-        TEXT = data.Field(time_series=True, tokenize='spacy')
-        LABEL = data.Field(time_series=False)
+        TEXT = data.Field(tokenize='spacy')
+        LABEL = data.Field(sequential=False)
 
-        train, dev, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
+        train, val, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
 
         TEXT.build_vocab(train, wv_path=wv_path)
         LABEL.build_vocab(train)
 
         return data.BucketIterator.splits(
-            (train, dev, test), batch_size=batch_size, device=device)
+            (train, val, test), batch_size=batch_size, device=device)

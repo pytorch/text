@@ -1,3 +1,4 @@
+from __future__ import print_function
 import torch
 import torch.utils.data
 from torch.autograd import Variable
@@ -13,7 +14,8 @@ import random
 from six.moves import urllib
 import zipfile
 
-class Pipeline:
+
+class Pipeline(object):
 
     def __call__(self, x, *args):
         if isinstance(x, list):
@@ -44,14 +46,52 @@ def get_tokenizer(tokenizer):
             raise
 
 
-class Field:
+class Field(object):
+
+    """Defines a datatype together with instructions for converting to Tensor
+
+    Every dataset consists of one or more types of data. For instance, a text
+    classification dataset contains sentences and their classes, while a
+    machine translation dataset contains paired examples of text in two
+    languages. Each of these types of data is represented by a Field object,
+    which holds a Vocab object that defines the set of possible values for
+    elements of the field and their corresponding numerical representations.
+    The Field object also holds other parameters relating to how a datatype
+    should be numericalized, such as a tokenization method and the kind of
+    Tensor that should be produced.
+
+    If a Field is shared between two columns in a dataset (e.g., question and
+    answer in a QA dataset), then they will have a shared vocabulary.
+
+    Attributes:
+        sequential: Whether the datatype represents sequential data. Default:
+            True.
+        use_vocab: Whether to use a Vocab object. If False, the data in this
+            field should already be numerical. Default: True.
+        init_token: A token that will be prepended to every example using this
+            field, or None for no initial token. Default: None.
+        eos_token: A token that will be appended to every example using this
+            field, or None for no end-of-sentence token. Default: None.
+        fix_length: A fixed length that all examples using this field will be
+            padded to, or None for flexible sequence lengths. Default: None.
+        tensor_type: The torch.Tensor class that represents a batch of examples
+            of this kind of data. Default: torch.LongTensor.
+        before_numericalizing: A Pipeline that will be applied to examples
+            using this field after padding but before numericalizing. Default:
+            the identity pipeline.
+        after_numericalizing: A Pipeline that will be applied to examples using
+            this field after numericalizing but before the numbers are turned
+            into a Tensor. Default: the identity pipeline.
+        tokenize: The function used to tokenize strings using this field into
+            sequential examples. Default: str.split.
+    """
 
     def __init__(
-            self, time_series=False, use_vocab=True, init_token=None,
+            self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             before_numericalizing=Pipeline(), after_numericalizing=Pipeline(),
             tokenize=(lambda s: s.split())):
-        self.time_series = time_series
+        self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
         self.init_token = init_token
@@ -62,13 +102,13 @@ class Field:
         self.tensor_type = tensor_type
 
     def preprocess(self, x):
-        if self.time_series and isinstance(x, str):
+        if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
         return x
 
     def pad(self, minibatch):
         minibatch = list(minibatch)
-        if not self.time_series:
+        if not self.sequential:
             return minibatch
         if self.fix_length is None:
             max_len = max(len(x) for x in minibatch)
@@ -95,7 +135,7 @@ class Field:
                 sources.append(arg)
         for data in sources:
             for x in data:
-                if not self.time_series:
+                if not self.sequential:
                     x = [x]
                 if lower:
                     x = [token.lower() for token in x]
@@ -107,7 +147,7 @@ class Field:
     def numericalize(self, arr, device=None, train=True):
         if self.use_vocab:
             arr = self.before_numericalizing(arr, self.vocab, train)
-            if self.time_series:
+            if self.sequential:
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
             else:
                 arr = [self.vocab.stoi[x] for x in arr]
@@ -115,10 +155,10 @@ class Field:
         else:
             arr = self.after_numericalizing(arr, train)
         arr = self.tensor_type(arr)
-        if self.time_series:
+        if self.sequential:
             arr.t_()
         if device == -1:
-            if self.time_series:
+            if self.sequential:
                 arr = arr.contiguous()
         else:
             with torch.cuda.device(device):
@@ -178,11 +218,12 @@ class Dataset(torch.utils.data.Dataset):
         self.fields = dict(fields)
 
     @classmethod
-    def splits(cls, path, train=None, dev=None, test=None, **kwargs):
+    def splits(cls, path, train=None, validation=None, test=None, **kwargs):
         train_data = None if train is None else cls(path + train, **kwargs)
-        dev_data = None if dev is None else cls(path + dev, **kwargs)
+        val_data = None if validation is None else cls(path + validation,
+                                                       **kwargs)
         test_data = None if test is None else cls(path + test, **kwargs)
-        return tuple(d for d in (train_data, dev_data, test_data)
+        return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
     def __getitem__(self, i):

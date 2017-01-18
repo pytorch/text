@@ -45,21 +45,21 @@ class WikiText2(LanguageModelingDataset, data.ZipDataset):
     dirname = 'wikitext-2'
 
     @classmethod
-    def splits(cls, field, root='.', train='train.tokens', dev='valid.tokens',
-               test='test.tokens'):
+    def splits(cls, field, root='.', train='train.tokens',
+               validation='valid.tokens', test='test.tokens'):
         path = cls.download_or_unzip(root)
-        return super().splits(os.path.join(path, 'wiki.'), train, dev, test,
-                              fields=field)
+        return super().splits(os.path.join(path, 'wiki.'), train, validation,
+                              test, fields=field)
 
     @classmethod
     def iters(cls, batch_size=32, bptt_len=35, device=0, root='.',
               wv_path=None, **kwargs):
-        TEXT = data.Field(time_series=True)
+        TEXT = data.Field()
 
-        train, dev, test = cls.splits(TEXT, root=root, **kwargs)
+        train, val, test = cls.splits(TEXT, root=root, **kwargs)
 
         TEXT.build_vocab(train, wv_path=wv_path)
 
         return data.BPTTIterator.splits(
-            (train, dev, test), batch_size=batch_size, bptt_len=bptt_len,
+            (train, val, test), batch_size=batch_size, bptt_len=bptt_len,
             device=device)
