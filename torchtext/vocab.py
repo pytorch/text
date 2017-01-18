@@ -72,7 +72,6 @@ class Vocab:
                 break
             self.itos.append(k)
             self.stoi[k] = len(self.itos) - 1
-        self.size = len(self.itos)
 
         class LowercaseDict(defaultdict):
 
@@ -89,8 +88,11 @@ class Vocab:
 
         if wv_path is not None:
             # this should be parametric (zeros or random)
-            self.vectors = torch.zeros(self.size, self.wv_size)
+            self.vectors = torch.zeros(len(self), self.wv_size)
             for i, token in enumerate(self.itos):
                 wv_index = wv_dict.get(token, None)
                 if wv_index is not None:
                     self.vectors[i] = wv_arr[wv_index]
+
+    def __len__(self):
+        return len(self.itos)

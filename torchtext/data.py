@@ -31,7 +31,7 @@ def get_tokenizer(tokenizer):
         try:
             import spacy
             spacy_en = spacy.load('en')
-            return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
+            return lambda s: [tok.text for tok in spacy_en.tokenize(s)]
         except ImportError:
             print('''Please install SpaCy and the SpaCy English tokenizer:
     $ conda install libgcc
@@ -50,7 +50,7 @@ class Field:
             self, time_series=False, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             before_numericalizing=Pipeline(), after_numericalizing=Pipeline(),
-            tokenize=(lambda x: x.split(' '))):
+            tokenize=(lambda s: s.split())):
         self.time_series = time_series
         self.use_vocab = use_vocab
         self.fix_length = fix_length
@@ -119,7 +119,7 @@ class Field:
             arr.t_()
         if device == -1:
             if self.time_series:
-                arr = arr.clone()
+                arr = arr.contiguous()
         else:
             with torch.cuda.device(device):
                 arr = arr.cuda()
@@ -164,6 +164,8 @@ class Example:
 
 
 class Dataset(torch.utils.data.Dataset):
+
+    sort_key = None
 
     def __init__(self, examples, fields, filter_pred=None):
 
@@ -254,23 +256,33 @@ def pool(data, batch_size, key):
 
 class Batch:
 
-    def __init__(self, dataset, data, device=None, train=True):
-        self.batch_size = len(data)
-        self.dataset = dataset
-        self.train = train
-        for (name, field) in dataset.fields.items():
-            if field is not None:
-                self.__dict__[name] = field.numericalize(
-                    field.pad(x.__dict__[name] for x in data),
-                    device=device, train=train)
+    def __init__(self, data=None, dataset=None, device=None, train=True):
+        if data is not None:
+            self.batch_size = len(data)
+            self.dataset = dataset
+            self.train = train
+            for (name, field) in dataset.fields.items():
+                if field is not None:
+                    setattr(self, name, field.numericalize(
+                        field.pad(x.__dict__[name] for x in data),
+                        device=device, train=train))
+
+    @classmethod
+    def fromvars(cls, dataset, batch_size, train=True, **kwargs):
+        batch = cls()
+        batch.batch_size = batch_size
+        batch.dataset = dataset
+        batch.train = train
+        for k, v in kwargs.items():
+            setattr(batch, k, v)
+        return batch
 
 
-class BucketIterator:
+class Iterator:
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
                  train=True, repeat=None, shuffle=None, sort=None):
-        self.length = math.ceil(len(dataset) / batch_size)
-        self.batch_size, self.train, self.data = batch_size, train, dataset
+        self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.iterations = 0
         self.repeat = train if repeat is None else repeat
         self.shuffle = train if shuffle is None else shuffle
@@ -280,8 +292,6 @@ class BucketIterator:
         else:
             self.sort_key = sort_key
         self.device = device
-        if self.shuffle:
-            self.order = torch.randperm(len(self.data))
 
     @classmethod
     def splits(cls, datasets, batch_sizes=None, **kwargs):
@@ -294,34 +304,77 @@ class BucketIterator:
                 datasets[i], batch_size=batch_sizes[i], train=train, **kwargs))
         return tuple(ret)
 
-    def init_epoch(self):
+    def data(self):
         if self.shuffle:
-            xs = [self.data[i] for i in self.order]
+            xs = [self.dataset[i] for i in torch.randperm(len(self.dataset))]
         elif self.sort:
-            xs = sorted(self.data, key=self.sort_key)
+            xs = sorted(self.dataset, key=self.sort_key)
         else:
-            xs = self.data
+            xs = self.dataset
+        return xs
 
-        if self.repeat:
-            self.batches = pool(xs, self.batch_size, self.sort_key)
-        else:
-            self.iterations = 0
-            self.batches = batch(xs, self.batch_size)
+    def init_epoch(self):
+        self.batches = batch(self.data(), self.batch_size)
 
     @property
     def epoch(self):
-        return self.iterations / self.length
+        return self.iterations / len(self)
+
+    def __len__(self):
+        return math.ceil(len(self.dataset) / self.batch_size)
 
     def __iter__(self):
         while True:
             self.init_epoch()
             for i, minibatch in enumerate(self.batches):
-                if i == self.iterations % self.length:
+                if i == self.iterations % len(self):
                     self.iterations += 1
-                    yield Batch(self.data, minibatch, self.device, self.train)
+                    yield Batch(minibatch, self.dataset, self.device,
+                                self.train)
             if not self.repeat:
                 raise StopIteration
-            self.order = torch.randperm(len(self.data))
+
+class BucketIterator(Iterator):
+
+    def init_epoch(self):
+        if self.repeat:
+            self.batches = pool(self.data(), self.batch_size,
+                                self.sort_key)
+        else:
+            self.iterations = 0
+            self.batches = batch(self.data(), self.batch_size)
+
+
+class BPTTIterator(Iterator):
+
+    def __init__(self, dataset, batch_size, bptt_len, **kwargs):
+        self.bptt_len = bptt_len
+        super().__init__(dataset, batch_size, **kwargs)
+
+    def __len__(self):
+        return math.ceil(len(self.dataset[0].text) /
+                         (self.batch_size * self.bptt_len))
+
+    def __iter__(self):
+        text = self.dataset[0].text
+        TEXT = self.dataset.fields['text']
+        TEXT.eos_token = None
+        text = text + ['<pad>'] * (math.ceil(len(text) / self.batch_size) *
+                                   self.batch_size - len(text))
+        data = TEXT.numericalize(
+            [text], device=self.device, train=self.train)
+        data = data.view(self.batch_size, -1).t().contiguous()
+        dataset = Dataset(examples=self.dataset.examples, fields=[
+            ('text', TEXT), ('target', TEXT)])
+        while True:
+            for i in range(0, len(self) * self.bptt_len, self.bptt_len):
+                seq_len = min(self.bptt_len, len(data) - 1 - i)
+                yield Batch.fromvars(
+                    dataset, self.batch_size, train=self.train,
+                    text=data[i:i + seq_len],
+                    target=data[i + 1:i + 1 + seq_len])
+            if not self.repeat:
+                raise StopIteration
 
 
 def interleave_keys(a, b):
