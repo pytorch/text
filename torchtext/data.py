@@ -31,7 +31,7 @@ def get_tokenizer(tokenizer):
         try:
             import spacy
             spacy_en = spacy.load('en')
-            return lambda s: [tok.text for tok in spacy_en.tokenize(s)]
+            return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
         except ImportError:
             print('''Please install SpaCy and the SpaCy English tokenizer:
     $ conda install libgcc
