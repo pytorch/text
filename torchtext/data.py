@@ -362,7 +362,7 @@ class TabularDataset(Dataset):
         if make_example in (Example.fromdict, Example.fromJSON):
             fields = fields.values()
 
-        super().__init__(examples, fields, **kwargs)
+        super(TabularDataset, self).__init__(examples, fields, **kwargs)
 
 
 def batch(data, batch_size):
@@ -562,7 +562,7 @@ class BPTTIterator(Iterator):
 
     def __init__(self, dataset, batch_size, bptt_len, **kwargs):
         self.bptt_len = bptt_len
-        super().__init__(dataset, batch_size, **kwargs)
+        super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
 
     def __len__(self):
         return math.ceil(len(self.dataset[0].text) /

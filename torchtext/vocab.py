@@ -111,7 +111,7 @@ class Vocab(object):
                 return 0
 
             def __getitem__(self, key):
-                return super().__getitem__(key.lower())
+                return super(LowercaseDict, self).__getitem__(key.lower())
 
         if lower:
             self.stoi = LowercaseDict(self.stoi)

@@ -30,7 +30,8 @@ class LanguageModelingDataset(data.Dataset):
                     text.append('<eos>')
 
         examples = [data.Example.fromlist([text], fields)]
-        super().__init__(examples, fields, **kwargs)
+        super(LanguageModelingDataset, self).__init__(
+            examples, fields, **kwargs)
 
 
 class WikiText2(LanguageModelingDataset, data.ZipDataset):
@@ -58,8 +59,9 @@ class WikiText2(LanguageModelingDataset, data.ZipDataset):
                 set. Default: 'test.tokens'.
         """
         path = cls.download_or_unzip(root)
-        return super().splits(os.path.join(path, ''), train, validation,
-                              test, text_field=text_field)
+        return super(WikiText2, cls).splits(
+            os.path.join(path, ''), train, validation, test,
+            text_field=text_field)
 
     @classmethod
     def iters(cls, batch_size=32, bptt_len=35, device=0, root='.',

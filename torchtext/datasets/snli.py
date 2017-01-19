@@ -39,13 +39,12 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             # TODO
             raise NotImplementedError
         path = cls.download_or_unzip(root)
-        return super().splits(os.path.join(path, 'snli_1.0_'),
-                              train, validation, test,
-                              format='json', fields={
-                                'sentence1': ('premise', text_field),
-                                'sentence2': ('hypothesis', text_field),
-                                'gold_label': ('label', label_field)},
-                              filter_pred=lambda ex: ex.label != '-')
+        return super(SNLI, cls).splits(
+            os.path.join(path, 'snli_1.0_'), train, validation, test,
+            format='json', fields={'sentence1': ('premise', text_field),
+                                   'sentence2': ('hypothesis', text_field),
+                                   'gold_label': ('label', label_field)},
+            filter_pred=lambda ex: ex.label != '-')
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.', wv_path=None, **kwargs):

@@ -34,4 +34,4 @@ class TranslationDataset(data.Dataset):
                     examples.append(data.Example.fromlist(
                         [src_line, trg_line], fields))
 
-        super().__init__(examples, fields, **kwargs)
+        super(TranslationDataset, self).__init__(examples, fields, **kwargs)
