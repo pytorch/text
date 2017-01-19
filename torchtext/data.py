@@ -300,7 +300,8 @@ class Dataset(torch.utils.data.Dataset):
             return 2**32
 
     def __iter__(self):
-        yield from self.examples
+        for x in self.examples:
+            yield x
 
     def __getattr__(self, attr):
         if attr in self.fields:
@@ -390,7 +391,8 @@ def pool(data, batch_size, key):
     batches.
     """
     for p in batch(data, batch_size * 100):
-        yield from shuffled(batch(sorted(p, key=key), batch_size))
+        for b in shuffled(batch(sorted(p, key=key), batch_size)):
+            yield b
 
 
 class Batch(object):
