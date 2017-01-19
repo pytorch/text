@@ -4,13 +4,23 @@ from .. import data
 
 
 class TranslationDataset(data.Dataset):
+    """Defines a dataset for machine translation."""
 
     @staticmethod
     def sort_key(ex):
         return data.interleave_keys(len(ex.src), len(ex.trg))
 
     def __init__(self, path, exts, fields, **kwargs):
+        """Create a TranslationDataset given paths and fields.
 
+        Arguments:
+            path: Common prefix of paths to the data files for both languages.
+            exts: A tuple containing the extension to path for each language.
+            fields: A tuple containing the fields that will be used for data
+                in each language.
+            Remaining keyword arguments: Passed to the constructor of
+                data.Dataset.
+        """
         if not isinstance(fields[0], (tuple, list)):
             fields = [('src', fields[0]), ('trg', fields[1])]
 
@@ -25,9 +35,3 @@ class TranslationDataset(data.Dataset):
                         [src_line, trg_line], fields))
 
         super().__init__(examples, fields, **kwargs)
-
-
-# class IWSLT16(TranslationDataset):
-
-#     @classmethod
-#     def splits(self, dev='')

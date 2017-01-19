@@ -1,3 +1,4 @@
+from __future__ import print_function
 import array
 from collections import Counter
 from collections import defaultdict
@@ -6,8 +7,9 @@ import zipfile
 
 import torch
 
-def load_word_vectors(path):
 
+def load_word_vectors(path):
+    """Load word vectors from a path, trying .pt, .txt, and .zip extensions."""
     if os.path.isfile(path + '.pt'):
         print('loading word vectors from', path + '.pt')
         return torch.load(path + '.pt')
@@ -42,11 +44,40 @@ def load_word_vectors(path):
     return ret
 
 
-class Vocab:
+class Vocab(object):
+    """Defines a vocabulary object that will be used to numericalize a field.
+
+    Attributes:
+        freqs: A collections.Counter object holding the frequencies of tokens
+            in the data used to build the Vocab.
+        stoi: A collections.defaultdict instance mapping token strings to
+            numerical identifiers.
+        itos: A list of token strings indexed by their numerical identifiers.
+        vectors: A Tensor containing word vectors for the tokens in the Vocab,
+            if a word vector file has been provided.
+    """
 
     def __init__(self, counter, max_size=None, min_freq=1, wv_path=None,
                  lower=False, specials=['<pad>'], fill_from_vectors=False):
-        # self.specials = specials
+        """Create a Vocab object from a collections.Counter.
+
+        Arguments:
+            counter: collections.Counter object holding the frequencies of
+                each value found in the data.
+            max_size: The maximum size of the vocabulary, or None for no
+                maximum. Default: None.
+            min_freq: The minimum frequency needed to include a token in the
+                vocabulary. Default: 1.
+            wv_path: The path to the word vector file that will be loaded into
+                self.vectors, or None for no word vector file.
+            lower: Whether to build a case-insensitive vocabulary.
+            specials: The list of special tokens (e.g., padding or eos) that
+                will be prepended to the vocabulary in addition to an <unk>
+                token.
+            fill_from_vectors: Whether to add to the vocabulary every token
+                for which a word vector is present in wv_path, even if the
+                token doesn't appear in the provided data.
+        """
         self.freqs = counter.copy()
         counter.update(['<unk>'] + specials)
 
@@ -87,7 +118,7 @@ class Vocab:
             self.freqs = LowercaseDict(self.freqs)
 
         if wv_path is not None:
-            # this should be parametric (zeros or random)
+            # TODO this should be parametric (zeros or random)
             self.vectors = torch.zeros(len(self), self.wv_size)
             for i, token in enumerate(self.itos):
                 wv_index = wv_dict.get(token, None)

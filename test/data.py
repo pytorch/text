@@ -5,7 +5,7 @@ from torchtext import data
 TEXT = data.Field()
 LABELS = data.Field()
 
-train, val, test = data.Dataset.splits(
+train, val, test = data.TabularDataset.splits(
     path='~/chainer-research/jmt-data/pos_wsj/pos_wsj', train='.train',
     validation='.dev', test='.test', format='tsv',
     fields=[('text', TEXT), ('labels', LABELS)])

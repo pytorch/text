@@ -8,33 +8,28 @@ from .. import data
 
 
 class LanguageModelingDataset(data.Dataset):
+    """Defines a dataset for language modeling."""
 
-    def __init__(self, path, fields, newline_eos=True, **kwargs):
+    def __init__(self, path, text_field, newline_eos=True, **kwargs):
+        """Create a LanguageModelingDataset given a path and a field.
 
-        if not isinstance(fields, (tuple, list)):
-            fields = [('text', fields)]
-
-        field = fields[0][1]
-
-        path = os.path.expanduser(path)
-
+        Arguments:
+            path: Path to the data file.
+            text_field: The field that will be used for text data.
+            newline_eos: Whether to add an <eos> token for every newline in the
+                data file. Default: True.
+            Remaining keyword arguments: Passed to the constructor of
+                data.Dataset.
+        """
+        fields = [('text', text_field)]
         text = []
         with open(path) as f:
             for line in f:
-                text += field.preprocess(line)
+                text += text_field.preprocess(line)
                 if newline_eos:
                     text.append('<eos>')
 
         examples = [data.Example.fromlist([text], fields)]
-
-        # chunks = itertools.zip_longest(*[iter(text)] * field.fix_length,
-        #                                fillvalue='<pad>')
-        # target_chunks = itertools.zip_longest(
-        #     *[iter(text[1:] + ['<pad>'])] * field.fix_length, fillvalue='<pad>')
-
-        # examples = [data.Example.fromlist([chunk, target_chunk], fields)
-        #             for chunk, target_chunk in zip(chunks, target_chunks)]
-
         super().__init__(examples, fields, **kwargs)
 
 
@@ -45,15 +40,48 @@ class WikiText2(LanguageModelingDataset, data.ZipDataset):
     dirname = 'wikitext-2'
 
     @classmethod
-    def splits(cls, field, root='.', train='train.tokens',
-               validation='valid.tokens', test='test.tokens'):
+    def splits(cls, text_field, root='.', train='wiki.train.tokens',
+               validation='wiki.valid.tokens', test='wiki.test.tokens'):
+        """Create dataset objects for splits of the WikiText-2 dataset.
+
+        This is the most flexible way to use the dataset.
+
+        Arguments:
+            text_field: The field that will be used for text data.
+            root: The root directory that the dataset's zip archive will be
+                expanded into; therefore the directory in whose wikitext-2
+                subdirectory the data files will be stored.
+            train: The filename of the train data. Default: 'train.tokens'.
+            validation: The filename of the validation data, or None to not
+                load the validation set. Default: 'valid.tokens'.
+            test: The filename of the test data, or None to not load the test
+                set. Default: 'test.tokens'.
+        """
         path = cls.download_or_unzip(root)
-        return super().splits(os.path.join(path, 'wiki.'), train, validation,
-                              test, fields=field)
+        return super().splits(os.path.join(path, ''), train, validation,
+                              test, text_field=text_field)
 
     @classmethod
     def iters(cls, batch_size=32, bptt_len=35, device=0, root='.',
               wv_path=None, **kwargs):
+        """Create iterator objects for splits of the WikiText-2 dataset.
+
+        This is the simplest way to use the dataset, and assumes common
+        defaults for field, vocabulary, and iterator parameters.
+
+        Arguments:
+            batch_size: Batch size.
+            bptt_len: Length of sequences for backpropagation through time.
+            device: Device to create batches on. Use -1 for CPU and None for
+                the currently active GPU device.
+            root: The root directory that the dataset's zip archive will be
+                expanded into; therefore the directory in whose wikitext-2
+                subdirectory the data files will be stored.
+            wv_path: The path to the word vector file that will be loaded into
+                the vectors attribute of the created vocabulary (accessible
+                as train.dataset.fields['text'].vocab.vectors).
+            Remaining keyword arguments: Passed to the splits method.
+        """
         TEXT = data.Field()
 
         train, val, test = cls.splits(TEXT, root=root, **kwargs)
