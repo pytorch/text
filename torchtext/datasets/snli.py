@@ -15,11 +15,32 @@ class SNLI(data.ZipDataset, data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, root='.', trees=False,
-               train='train.jsonl', dev='dev.jsonl', test='test.jsonl'):
+               train='train.jsonl', validation='dev.jsonl', test='test.jsonl'):
+        """Create dataset objects for splits of the SNLI dataset.
+
+        This is the most flexible way to use the dataset.
+
+        Arguments:
+            text_field: The field that will be used for premise and hypothesis
+                data.
+            label_field: The field that will be used for label data.
+            trees: Whether to include the parse trees provided with the SNLI
+                dataset (not implemented).
+            root: The root directory that the dataset's zip archive will be
+                expanded into; therefore the directory in whose snli_1.0
+                subdirectory the data files will be stored.
+            train: The filename of the train data. Default: 'train.jsonl'.
+            validation: The filename of the validation data, or None to not
+                load the validation set. Default: 'dev.jsonl'.
+            test: The filename of the test data, or None to not load the test
+                set. Default: 'test.jsonl'.
+        """
         if trees:
+            # TODO
             raise NotImplementedError
         path = cls.download_or_unzip(root)
-        return super().splits(os.path.join(path, 'snli_1.0_'), train, dev, test,
+        return super().splits(os.path.join(path, 'snli_1.0_'),
+                              train, validation, test,
                               format='json', fields={
                                 'sentence1': ('premise', text_field),
                                 'sentence2': ('hypothesis', text_field),
@@ -28,13 +49,30 @@ class SNLI(data.ZipDataset, data.TabularDataset):
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.', wv_path=None, **kwargs):
-        TEXT = data.Field(time_series=True, tokenize='spacy')
-        LABEL = data.Field(time_series=False)
+        """Create iterator objects for splits of the SNLI dataset.
 
-        train, dev, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
+        This is the simplest way to use the dataset, and assumes common
+        defaults for field, vocabulary, and iterator parameters.
+
+        Arguments:
+            batch_size: Batch size.
+            device: Device to create batches on. Use -1 for CPU and None for
+                the currently active GPU device.
+            root: The root directory that the dataset's zip archive will be
+                expanded into; therefore the directory in whose wikitext-2
+                subdirectory the data files will be stored.
+            wv_path: The path to the word vector file that will be loaded into
+                the vectors attribute of the created vocabulary (accessible
+                as train.dataset.fields['premise'].vocab.vectors).
+            Remaining keyword arguments: Passed to the splits method.
+        """
+        TEXT = data.Field(tokenize='spacy')
+        LABEL = data.Field(sequential=False)
+
+        train, val, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
 
         TEXT.build_vocab(train, wv_path=wv_path)
         LABEL.build_vocab(train)
 
         return data.BucketIterator.splits(
-            (train, dev, test), batch_size=batch_size, device=device)
+            (train, val, test), batch_size=batch_size, device=device)

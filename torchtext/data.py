@@ -1,3 +1,4 @@
+from __future__ import print_function
 import torch
 import torch.utils.data
 from torch.autograd import Variable
@@ -13,7 +14,9 @@ import random
 from six.moves import urllib
 import zipfile
 
-class Pipeline:
+
+class Pipeline(object):
+    """Defines a pipeline for transforming sequence data."""
 
     def __call__(self, x, *args):
         if isinstance(x, list):
@@ -31,7 +34,7 @@ def get_tokenizer(tokenizer):
         try:
             import spacy
             spacy_en = spacy.load('en')
-            return lambda s: [tok.text for tok in spacy_en.tokenize(s)]
+            return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
         except ImportError:
             print('''Please install SpaCy and the SpaCy English tokenizer:
     $ conda install libgcc
@@ -44,14 +47,51 @@ def get_tokenizer(tokenizer):
             raise
 
 
-class Field:
+class Field(object):
+    """Defines a datatype together with instructions for converting to Tensor.
+
+    Every dataset consists of one or more types of data. For instance, a text
+    classification dataset contains sentences and their classes, while a
+    machine translation dataset contains paired examples of text in two
+    languages. Each of these types of data is represented by a Field object,
+    which holds a Vocab object that defines the set of possible values for
+    elements of the field and their corresponding numerical representations.
+    The Field object also holds other parameters relating to how a datatype
+    should be numericalized, such as a tokenization method and the kind of
+    Tensor that should be produced.
+
+    If a Field is shared between two columns in a dataset (e.g., question and
+    answer in a QA dataset), then they will have a shared vocabulary.
+
+    Attributes:
+        sequential: Whether the datatype represents sequential data. Default:
+            True.
+        use_vocab: Whether to use a Vocab object. If False, the data in this
+            field should already be numerical. Default: True.
+        init_token: A token that will be prepended to every example using this
+            field, or None for no initial token. Default: None.
+        eos_token: A token that will be appended to every example using this
+            field, or None for no end-of-sentence token. Default: None.
+        fix_length: A fixed length that all examples using this field will be
+            padded to, or None for flexible sequence lengths. Default: None.
+        tensor_type: The torch.Tensor class that represents a batch of examples
+            of this kind of data. Default: torch.LongTensor.
+        before_numericalizing: A Pipeline that will be applied to examples
+            using this field after padding but before numericalizing. Default:
+            the identity pipeline.
+        after_numericalizing: A Pipeline that will be applied to examples using
+            this field after numericalizing but before the numbers are turned
+            into a Tensor. Default: the identity pipeline.
+        tokenize: The function used to tokenize strings using this field into
+            sequential examples. Default: str.split.
+    """
 
     def __init__(
-            self, time_series=False, use_vocab=True, init_token=None,
+            self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             before_numericalizing=Pipeline(), after_numericalizing=Pipeline(),
             tokenize=(lambda s: s.split())):
-        self.time_series = time_series
+        self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
         self.init_token = init_token
@@ -62,13 +102,20 @@ class Field:
         self.tensor_type = tensor_type
 
     def preprocess(self, x):
-        if self.time_series and isinstance(x, str):
+        """Load a single example using this field, tokenizing if necessary."""
+        if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
         return x
 
     def pad(self, minibatch):
+        """Pad a batch of examples using this field.
+
+        Pads to self.fix_length if provided, otherwise pads to the length of
+        the longest example in the batch. Prepends self.init_token and appends
+        self.eos_token if those attributes are not None.
+        """
         minibatch = list(minibatch)
-        if not self.time_series:
+        if not self.sequential:
             return minibatch
         if self.fix_length is None:
             max_len = max(len(x) for x in minibatch)
@@ -84,7 +131,20 @@ class Field:
                 ['<pad>'] * max(0, max_len - len(x)))
         return padded
 
-    def build_vocab(self, *args, lower=False, **kwargs):
+    def build_vocab(self, *args, **kwargs):
+        """Construct the Vocab object for this field from one or more datasets.
+
+        Arguments:
+            Positional arguments: Dataset objects or other iterable data
+                sources from which to construct the Vocab object that
+                represents the set of possible values for this field. If
+                a Dataset object is provided, all columns corresponding
+                to this field are used; individual columns can also be
+                provided directly.
+            lower: Whether to build a case-insensitive Vocab. Default: False.
+            Remaining keyword arguments: Passed to the constructor of Vocab.
+        """
+        lower = kwargs['lower'] if 'lower' in kwargs else False
         counter = Counter()
         sources = []
         for arg in args:
@@ -95,7 +155,7 @@ class Field:
                 sources.append(arg)
         for data in sources:
             for x in data:
-                if not self.time_series:
+                if not self.sequential:
                     x = [x]
                 if lower:
                     x = [token.lower() for token in x]
@@ -105,9 +165,19 @@ class Field:
         self.vocab = Vocab(counter, specials=specials, lower=lower, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
+        """Turn a batch of examples that use this field into a Variable.
+
+        Arguments:
+            arr: List of tokenized and padded examples.
+            device: Device to create the Variable's Tensor on. Use -1 for
+                CPU and None for the currently active GPU device. Default:
+                None.
+            train: Whether the batch is for a training set. If False, the
+                Variable will be created with volatile=True. Default: True.
+        """
         if self.use_vocab:
             arr = self.before_numericalizing(arr, self.vocab, train)
-            if self.time_series:
+            if self.sequential:
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
             else:
                 arr = [self.vocab.stoi[x] for x in arr]
@@ -115,10 +185,10 @@ class Field:
         else:
             arr = self.after_numericalizing(arr, train)
         arr = self.tensor_type(arr)
-        if self.time_series:
+        if self.sequential:
             arr.t_()
         if device == -1:
-            if self.time_series:
+            if self.sequential:
                 arr = arr.contiguous()
         else:
             with torch.cuda.device(device):
@@ -126,7 +196,11 @@ class Field:
         return Variable(arr, volatile=not train)
 
 
-class Example:
+class Example(object):
+    """Defines a single training or test example.
+
+    Stores each column of the example as an attribute.
+    """
 
     @classmethod
     def fromJSON(cls, data, fields):
@@ -164,25 +238,56 @@ class Example:
 
 
 class Dataset(torch.utils.data.Dataset):
+    """Defines a dataset composed of Examples along with its Fields.
+
+    Attributes:
+        sort_key: The key to use for sorting examples from this dataset in
+            order to batch together examples with similar lengths and minimize
+            padding.
+        examples: The list of Examples in the dataset.
+        fields: A dictionary containing the name of each column together with
+            its corresponding Field object. Two columns with the same Field
+            object will share a vocabulary.
+    """
 
     sort_key = None
 
     def __init__(self, examples, fields, filter_pred=None):
+        """Create a dataset from a list of examples and fields.
+
+        Arguments:
+            examples: List of Examples.
+            fields: List of tuples of (name, field).
+            filter_pred: Use only examples for which filter_pred(ex) is True,
+                or use all examples if None. Default: None.
+        """
 
         if filter_pred is not None:
             examples = list(filter(filter_pred, examples))
         self.examples = examples
 
-        if isinstance(fields, dict):
-            fields = fields.values()
         self.fields = dict(fields)
 
     @classmethod
-    def splits(cls, path, train=None, dev=None, test=None, **kwargs):
+    def splits(cls, path, train=None, validation=None, test=None, **kwargs):
+        """Create Dataset objects for multiple splits of a dataset.
+
+        Arguments:
+            path: Common prefix of the splits' file paths.
+            train: Suffix to add to path for the train set, or None for no
+                train set. Default: None.
+            validation: Suffix to add to path for the validation set, or None
+                for no validation set. Default: None.
+            test: Suffix to add to path for the test set, or None for no texst
+                set. Default: None.
+            Remaining keyword arguments: Passed to the constructor of the
+                dataset class being used.
+        """
         train_data = None if train is None else cls(path + train, **kwargs)
-        dev_data = None if dev is None else cls(path + dev, **kwargs)
+        val_data = None if validation is None else cls(path + validation,
+                                                       **kwargs)
         test_data = None if test is None else cls(path + test, **kwargs)
-        return tuple(d for d in (train_data, dev_data, test_data)
+        return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
     def __getitem__(self, i):
@@ -204,6 +309,14 @@ class Dataset(torch.utils.data.Dataset):
 
 
 class ZipDataset(Dataset):
+    """Defines a Dataset loaded from a downloadable zip archive.
+
+    Attributes:
+        url: URL where the zip archive can be downloaded.
+        filename: Filename of the downloaded zip archive.
+        dirname: Name of the top-level directory within the zip archive that
+            contains the data files.
+    """
 
     @classmethod
     def download_or_unzip(cls, root):
@@ -221,9 +334,23 @@ class ZipDataset(Dataset):
 
 
 class TabularDataset(Dataset):
+    """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
     def __init__(self, path, format, fields, **kwargs):
+        """Create a TabularDataset given a path, file format, and field list.
 
+        Arguments:
+            path: Path to the data file.
+            format: One of "CSV", "TSV", or "JSON" (case-insensitive).
+            fields: For CSV and TSV formats, list of tuples of (name, field).
+                The list should be in the same order as the columns in the CSV
+                or TSV file, while tuples of (name, None) represent columns
+                that will be ignored. For JSON format, dictionary whose keys
+                are the JSON keys and whose values are tuples of (name, field).
+                This allows the user to rename columns from their JSON key
+                names or select a subset of columns to load while ignoring
+                others not present in this dictionary.
+        """
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
             'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
@@ -231,10 +358,14 @@ class TabularDataset(Dataset):
         with open(os.path.expanduser(path)) as f:
             examples = [make_example(line, fields) for line in f]
 
+        if make_example in (Example.fromdict, Example.fromJSON):
+            fields = fields.values()
+
         super().__init__(examples, fields, **kwargs)
 
 
 def batch(data, batch_size):
+    """Yield elements from data in chunks of batch_size."""
     minibatch = []
     for ex in data:
         minibatch.append(ex)
@@ -244,19 +375,38 @@ def batch(data, batch_size):
     if minibatch:
         yield minibatch
 
+
 def shuffled(data):
     data = list(data)
     random.shuffle(data)
     return data
 
+
 def pool(data, batch_size, key):
+    """Sort within buckets, then batch, then shuffle batches.
+
+    Partitions data into chunks of size 100*batch_size, sorts examples within
+    each chunk using sort_key, then batch these examples and shuffle the
+    batches.
+    """
     for p in batch(data, batch_size * 100):
         yield from shuffled(batch(sorted(p, key=key), batch_size))
 
 
-class Batch:
+class Batch(object):
+    """Defines a batch of examples along with its Fields.
+
+    Attributes:
+        batch_size: Number of examples in the batch.
+        dataset: A reference to the dataset object the examples come from
+            (which itself contains the dataset's Field objects).
+        train: Whether the batch is from a training set.
+
+    Also stores the Variable for each column in the batch as an attribute.
+    """
 
     def __init__(self, data=None, dataset=None, device=None, train=True):
+        """Create a Batch from a list of examples."""
         if data is not None:
             self.batch_size = len(data)
             self.dataset = dataset
@@ -269,6 +419,7 @@ class Batch:
 
     @classmethod
     def fromvars(cls, dataset, batch_size, train=True, **kwargs):
+        """Create a Batch directly from a number of Variables."""
         batch = cls()
         batch.batch_size = batch_size
         batch.dataset = dataset
@@ -278,7 +429,25 @@ class Batch:
         return batch
 
 
-class Iterator:
+class Iterator(object):
+    """Defines an iterator that loads batches of data from a Dataset.
+
+    Attributes:
+        dataset: The Dataset object to load Examples from.
+        batch_size: Batch size.
+        sort_key: A key to use for sorting examples in order to batch together
+            examples with similar lengths and minimize padding. The sort_key
+            provided to the Iterator constructor overrides the sort_key
+            attribute of the Dataset, or defers to it if None.
+        train: Whether the iterator represents a train set.
+        repeat: Whether to repeat the iterator for multiple epochs.
+        shuffle: Whether to shuffle examples between epochs.
+        sort: Whether to sort examples according to self.sort_key.
+            Note that repeat, shuffle, and sort default to train, train, and
+            (not train).
+        device: Device to create batches on. Use -1 for CPU and None for the
+            currently active GPU device.
+    """
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
                  train=True, repeat=None, shuffle=None, sort=None):
@@ -295,6 +464,16 @@ class Iterator:
 
     @classmethod
     def splits(cls, datasets, batch_sizes=None, **kwargs):
+        """Create Iterator objects for multiple splits of a dataset.
+
+        Arguments:
+            datasets: Tuple of Dataset objects corresponding to the splits. The
+                first such object should be the train set.
+            batch_sizes: Tuple of batch sizes to use for the different splits,
+                or None to use the same batch_size for all splits.
+            Remaining keyword arguments: Passed to the constructor of the
+                iterator class being used.
+        """
         if batch_sizes is None:
             batch_sizes = [kwargs.pop('batch_size')] * len(datasets)
         ret = []
@@ -305,6 +484,7 @@ class Iterator:
         return tuple(ret)
 
     def data(self):
+        """Return the examples in the dataset in order, sorted, or shuffled."""
         if self.shuffle:
             xs = [self.dataset[i] for i in torch.randperm(len(self.dataset))]
         elif self.sort:
@@ -314,6 +494,7 @@ class Iterator:
         return xs
 
     def init_epoch(self):
+        """Set up the batch generator for a new epoch."""
         self.batches = batch(self.data(), self.batch_size)
 
     @property
@@ -326,15 +507,20 @@ class Iterator:
     def __iter__(self):
         while True:
             self.init_epoch()
-            for i, minibatch in enumerate(self.batches):
-                if i == self.iterations % len(self):
-                    self.iterations += 1
-                    yield Batch(minibatch, self.dataset, self.device,
-                                self.train)
+            for minibatch in self.batches:
+                self.iterations += 1
+                yield Batch(minibatch, self.dataset, self.device,
+                            self.train)
             if not self.repeat:
                 raise StopIteration
 
+
 class BucketIterator(Iterator):
+    """Defines an iterator that batches examples of similar lengths together.
+
+    Minimizes amount of padding needed while producing freshly shuffled
+    batches for each new epoch. See pool for the bucketing procedure used.
+    """
 
     def init_epoch(self):
         if self.repeat:
@@ -346,6 +532,31 @@ class BucketIterator(Iterator):
 
 
 class BPTTIterator(Iterator):
+    """Defines an iterator for language modeling tasks that use BPTT.
+
+    Provides contiguous streams of examples together with targets that are
+    one timestep further forward, for language modeling training with
+    backpropagation through time (BPTT). Expects a Dataset with a single
+    example and a single field called 'text' and produces Batches with text and
+    target attributes.
+
+    Attributes:
+        dataset: The Dataset object to load Examples from.
+        batch_size: Batch size.
+        bptt_len: Length of sequences for backpropagation through time.
+        sort_key: A key to use for sorting examples in order to batch together
+            examples with similar lengths and minimize padding. The sort_key
+            provided to the Iterator constructor overrides the sort_key
+            attribute of the Dataset, or defers to it if None.
+        train: Whether the iterator represents a train set.
+        repeat: Whether to repeat the iterator for multiple epochs.
+        shuffle: Whether to shuffle examples between epochs.
+        sort: Whether to sort examples according to self.sort_key.
+            Note that repeat, shuffle, and sort default to train, train, and
+            (not train).
+        device: Device to create batches on. Use -1 for CPU and None for the
+            currently active GPU device.
+    """
 
     def __init__(self, dataset, batch_size, bptt_len, **kwargs):
         self.bptt_len = bptt_len
@@ -378,6 +589,12 @@ class BPTTIterator(Iterator):
 
 
 def interleave_keys(a, b):
+    """Interleave bits from two sort keys to form a joint sort key.
+
+    Examples that are similar in both of the provided keys will have similar
+    values for the key defined by this function. Useful for tasks with two
+    text fields like machine translation or natural language inference.
+    """
     def interleave(args):
         return ''.join([x for t in zip(*args) for x in t])
     return int(''.join(interleave(format(x, '016b') for x in (a, b))), base=2)
