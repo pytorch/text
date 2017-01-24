@@ -126,9 +126,8 @@ class Vocab(object):
 
         class LowercaseDict(defaultdict):
 
-            @staticmethod
-            def default_factory():
-                return 0
+            def __init__(self, *args, **kwargs):
+                super(LowercaseDict, self).__init__(lambda: 0, *args, **kwargs)
 
             def __getitem__(self, key):
                 return super(LowercaseDict, self).__getitem__(key.lower())

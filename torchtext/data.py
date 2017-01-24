@@ -144,7 +144,7 @@ class Field(object):
             lower: Whether to build a case-insensitive Vocab. Default: False.
             Remaining keyword arguments: Passed to the constructor of Vocab.
         """
-        lower = kwargs['lower'] if 'lower' in kwargs else False
+        lower = kwargs.pop('lower') if 'lower' in kwargs else False
         counter = Counter()
         sources = []
         for arg in args:
