@@ -325,10 +325,10 @@ class ZipDataset(Dataset):
         if not os.path.isdir(path):
             zpath = os.path.join(root, cls.filename)
             if not os.path.isfile(zpath):
-                print('downloading')
+                print('downloading from {}'.format(cls.url))
                 urllib.request.urlretrieve(cls.url, zpath)
             with zipfile.ZipFile(zpath, 'r') as zfile:
-                print('extracting')
+                print('extracting from zip file')
                 zfile.extractall(root)
         return path
 
