@@ -76,9 +76,9 @@ class Vocab(object):
             if a word vector file has been provided.
     """
 
-    def __init__(self, counter, max_size=None, min_freq=1, vectors=None,
-                 unk_init='random', lower=False, specials=['<pad>'],
-                 fill_from_vectors=False):
+    def __init__(self, counter, max_size=None, min_freq=1, wv_dir=os.getcwd(),
+                 wv_type=None, wv_dim=300, unk_init='random',
+                 lower=False, specials=['<pad>'], fill_from_vectors=False):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -88,8 +88,10 @@ class Vocab(object):
                 maximum. Default: None.
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Default: 1.
-            vectors: tuple or list specifying (directory, type, dimension)
-                of word vectors; None to go without word vectors
+            wv_dir: directory containing word vector file and destination for
+                downloaded word vector files
+            wv_type: type of word vectors; None for no word vectors
+            wv_dim: dimension of word vectors
             lower: Whether to build a case-insensitive vocabulary.
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
@@ -97,14 +99,14 @@ class Vocab(object):
             fill_from_vectors: Whether to add to the vocabulary every token
                 for which a word vector specified by vectors is present
                 even if the token does not appear in the provided data.
-            unk_init: default to random initialization for unknown word vectors;
-                otherwise set to zero
+            unk_init: default to random initialization for word vectors not in the
+                pretrained word vector file; otherwise set to zero
         """
         self.freqs = counter.copy()
         counter.update(['<unk>'] + specials)
 
-        if vectors is not None:
-            wv_dict, wv_arr, self.wv_size = load_word_vectors(*vectors)
+        if wv_type is not None:
+            wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
 
             if fill_from_vectors:
                 counter.update(wv_dict.keys())
@@ -138,23 +140,26 @@ class Vocab(object):
             self.stoi = LowercaseDict(self.stoi)
             self.freqs = LowercaseDict(self.freqs)
 
-        if vectors is not None:
-            self.load_vectors(vectors, unk_init=unk_init)
+        if wv_type is not None:
+            self.load_vectors(wv_dir, wv_type, wv_dim, unk_init=unk_init)
 
     def __len__(self):
         return len(self.itos)
 
-    def load_vectors(self, vectors, unk_init='random'):
+    def load_vectors(self, wv_dir, wv_type, wv_dim, unk_init='random'):
         """Loads word vectors into the vocab
 
         Arguments:
-            vectors: tuple or list specifying (directory, type, dimension)
-                of word vectors; None to go without word vectors
+            wv_dir: directory containing word vector file and destination for
+                downloaded word vector files
+            wv_type: type of word vectors; None for no word vectors
+            wv_dim: dimension of word vectors
+
             unk_init: default to random initialization for unknown word vectors;
                 otherwise set to zero
         """
 
-        wv_dict, wv_arr, self.wv_size = load_word_vectors(*vectors)
+        wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
         self.vectors = torch.Tensor(len(self), self.wv_size)
         self.vectors.normal_(0, 1) if unk_init == 'random' else self.vectors.zero_()
         for i, token in enumerate(self.itos):
