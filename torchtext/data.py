@@ -144,7 +144,7 @@ class Field(object):
             lower: Whether to build a case-insensitive Vocab. Default: False.
             Remaining keyword arguments: Passed to the constructor of Vocab.
         """
-        lower = kwargs['lower'] if 'lower' in kwargs else False
+        lower = kwargs.pop('lower') if 'lower' in kwargs else False
         counter = Counter()
         sources = []
         for arg in args:
@@ -325,10 +325,10 @@ class ZipDataset(Dataset):
         if not os.path.isdir(path):
             zpath = os.path.join(root, cls.filename)
             if not os.path.isfile(zpath):
-                print('downloading')
+                print('downloading from {}'.format(cls.url))
                 urllib.request.urlretrieve(cls.url, zpath)
             with zipfile.ZipFile(zpath, 'r') as zfile:
-                print('extracting')
+                print('extracting from zip file')
                 zfile.extractall(root)
         return path
 
