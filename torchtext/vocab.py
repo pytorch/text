@@ -97,6 +97,8 @@ class Vocab(object):
             fill_from_vectors: Whether to add to the vocabulary every token
                 for which a word vector specified by vectors is present
                 even if the token does not appear in the provided data.
+            unk_init: default to random initialization for unknown word vectors;
+                otherwise set to zero
         """
         self.freqs = counter.copy()
         counter.update(['<unk>'] + specials)
@@ -137,12 +139,25 @@ class Vocab(object):
             self.freqs = LowercaseDict(self.freqs)
 
         if vectors is not None:
-            self.vectors = torch.Tensor(len(self), self.wv_size)
-            self.vectors.normal_(0, 1) if unk_init == 'random' else self.vectors.zero_()
-            for i, token in enumerate(self.itos):
-                wv_index = wv_dict.get(token, None)
-                if wv_index is not None:
-                    self.vectors[i] = wv_arr[wv_index]
+            self.load_vectors(vectors, unk_init=unk_init)
 
     def __len__(self):
         return len(self.itos)
+
+    def load_vectors(self, vectors, unk_init='random'):
+        """Loads word vectors into the vocab
+
+        Arguments:
+            vectors: tuple or list specifying (directory, type, dimension)
+                of word vectors; None to go without word vectors
+            unk_init: default to random initialization for unknown word vectors;
+                otherwise set to zero
+        """
+
+        wv_dict, wv_arr, self.wv_size = load_word_vectors(*vectors)
+        self.vectors = torch.Tensor(len(self), self.wv_size)
+        self.vectors.normal_(0, 1) if unk_init == 'random' else self.vectors.zero_()
+        for i, token in enumerate(self.itos):
+            wv_index = wv_dict.get(token, None)
+            if wv_index is not None:
+                self.vectors[i] = wv_arr[wv_index]
