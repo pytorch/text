@@ -60,7 +60,7 @@ class WikiText2(LanguageModelingDataset, data.ZipDataset):
         """
         path = cls.download_or_unzip(root)
         return super(WikiText2, cls).splits(
-            os.path.join(path, ''), train, validation, test,
+            path, train, validation, test,
             text_field=text_field)
 
     @classmethod
