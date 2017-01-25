@@ -18,13 +18,39 @@ import zipfile
 class Pipeline(object):
     """Defines a pipeline for transforming sequence data."""
 
+    def __init__(self, convert_token=None):
+        if convert_token is not None:
+            def new_convert_token(self, token, *args):
+                return convert_token(token, *args)
+            self.convert_token = new_convert_token
+
     def __call__(self, x, *args):
         if isinstance(x, list):
-            return [self.__call__(tok, *args) for tok in x]
+            return [self(tok, *args) for tok in x]
         return self.convert_token(x, *args)
 
     def convert_token(self, token, *args):
         return token
+
+    def add_before(self, pipeline):
+        """Add `pipeline` before this processing pipeline."""
+        if not isinstance(pipeline, Pipeline):
+            pipeline = Pipeline(pipeline)
+        old_call = self.__call__
+
+        def new_call(self, token, *args):
+            return old_call(pipeline(token, *args))
+        self.__call__ = new_call
+
+    def add_after(self, pipeline):
+        """Add `pipeline` after this processing pipeline."""
+        if not isinstance(pipeline, Pipeline):
+            pipeline = Pipeline(pipeline)
+        old_call = self.__call__
+
+        def new_call(self, token, *args):
+            return pipeline(old_call(token, *args))
+        self.__call__ = new_call
 
 
 def get_tokenizer(tokenizer):
@@ -96,6 +122,7 @@ class Field(object):
         self.fix_length = fix_length
         self.init_token = init_token
         self.eos_token = eos_token
+        self.pad_token = '<pad>' if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
         self.before_numericalizing = before_numericalizing
         self.after_numericalizing = after_numericalizing
@@ -105,7 +132,7 @@ class Field(object):
         """Load a single example using this field, tokenizing if necessary."""
         if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
-        return x
+        return self.before_numericalizing(x)
 
     def pad(self, minibatch):
         """Pad a batch of examples using this field.
@@ -160,8 +187,9 @@ class Field(object):
                 if lower:
                     x = [token.lower() for token in x]
                 counter.update(x)
-        specials = list(OrderedDict.fromkeys(tok for tok in [
-            '<pad>', self.init_token, self.eos_token] if tok is not None))
+        specials = list(OrderedDict.fromkeys(
+            tok for tok in [self.pad_token, self.init_token, self.eos_token]
+            if tok is not None))
         self.vocab = Vocab(counter, specials=specials, lower=lower, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
@@ -176,7 +204,6 @@ class Field(object):
                 Variable will be created with volatile=True. Default: True.
         """
         if self.use_vocab:
-            arr = self.before_numericalizing(arr, self.vocab, train)
             if self.sequential:
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
             else:
@@ -235,6 +262,20 @@ class Example(object):
             if field is not None:
                 setattr(ex, name, field.preprocess(val))
         return ex
+
+    @classmethod
+    def fromtree(cls, data, fields, subtrees=False):
+        try:
+            from nltk.tree import Tree
+        except ImportError:
+            print('''Please install NLTK:
+    $ pip install nltk''')
+            raise
+        tree = Tree.fromstring(data)
+        if subtrees:
+            return [cls.fromlist(
+                [t.leaves(), t.label()], fields) for t in tree.subtrees()]
+        return cls.fromlist([tree.leaves(), tree.label()], fields)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -330,7 +371,7 @@ class ZipDataset(Dataset):
             with zipfile.ZipFile(zpath, 'r') as zfile:
                 print('extracting')
                 zfile.extractall(root)
-        return path
+        return os.path.join(path, '')
 
 
 
