@@ -32,9 +32,7 @@ class SSTDataset(data.ZipDataset):
             pre = 'very ' if fine_grained else ''
             return {'0': pre + 'negative', '1': 'negative', '2': 'neutral',
                     '3': 'positive', '4': pre + 'positive', None: None}[label]
-        if not hasattr(label_field, 'patched'):
-            label_field.before_numericalizing.add_before(get_label_str)
-            label_field.patched = True
+        label_field.preprocessing = data.Pipeline(get_label_str)
         with open(os.path.expanduser(path)) as f:
             if subtrees:
                 examples = [ex for line in f for ex in

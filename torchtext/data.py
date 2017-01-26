@@ -12,7 +12,6 @@ import math
 import os
 import random
 from six.moves import urllib
-import types
 import zipfile
 
 
@@ -98,10 +97,11 @@ class Field(object):
             padded to, or None for flexible sequence lengths. Default: None.
         tensor_type: The torch.Tensor class that represents a batch of examples
             of this kind of data. Default: torch.LongTensor.
-        before_numericalizing: A Pipeline that will be applied to examples
-            using this field after padding but before numericalizing. Default:
-            the identity pipeline.
-        after_numericalizing: A Pipeline that will be applied to examples using
+        preprocessing: The Pipeline that will be applied to examples
+            using this field after tokenizing but before numericalizing. Many
+            Datasets replace this attribute with a custom preprocessor.
+            Default: the identity pipeline.
+        postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
             into a Tensor. Default: the identity pipeline.
         tokenize: The function used to tokenize strings using this field into
@@ -111,7 +111,7 @@ class Field(object):
     def __init__(
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
-            before_numericalizing=None, after_numericalizing=None,
+            preprocessing=None, after_numericalizing=None,
             tokenize=(lambda s: s.split())):
         self.sequential = sequential
         self.use_vocab = use_vocab
@@ -120,8 +120,8 @@ class Field(object):
         self.eos_token = eos_token
         self.pad_token = '<pad>' if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
-        self.before_numericalizing = (Pipeline() if before_numericalizing
-                                      is None else before_numericalizing)
+        self.preprocessing = (Pipeline() if preprocessing
+                              is None else preprocessing)
         self.after_numericalizing = (Pipeline() if after_numericalizing
                                      is None else after_numericalizing)
         self.tensor_type = tensor_type
@@ -130,7 +130,7 @@ class Field(object):
         """Load a single example using this field, tokenizing if necessary."""
         if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
-        return self.before_numericalizing(x)
+        return self.preprocessing(x)
 
     def pad(self, minibatch):
         """Pad a batch of examples using this field.
