@@ -8,7 +8,7 @@ LABEL = data.Field(sequential=False)
 
 # make splits for data
 train, val, test = datasets.SSTDataset.splits(
-    TEXT, LABEL, fine_grained=True,
+    TEXT, LABEL, fine_grained=True, train_subtrees=True,
     filter_pred=lambda ex: ex.label != 'neutral')
 
 # print information about the data

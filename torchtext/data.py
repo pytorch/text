@@ -12,6 +12,7 @@ import math
 import os
 import random
 from six.moves import urllib
+import types
 import zipfile
 
 
@@ -22,7 +23,8 @@ class Pipeline(object):
         if convert_token is not None:
             def new_convert_token(self, token, *args):
                 return convert_token(token, *args)
-            self.convert_token = new_convert_token
+            self.convert_token = types.MethodType(
+                new_convert_token, self)
 
     def __call__(self, x, *args):
         if isinstance(x, list):
@@ -40,7 +42,7 @@ class Pipeline(object):
 
         def new_call(self, token, *args):
             return old_call(pipeline(token, *args))
-        self.__call__ = new_call
+        self.__call__ = types.MethodType(new_call, self)
 
     def add_after(self, pipeline):
         """Add `pipeline` after this processing pipeline."""
@@ -50,7 +52,7 @@ class Pipeline(object):
 
         def new_call(self, token, *args):
             return pipeline(old_call(token, *args))
-        self.__call__ = new_call
+        self.__call__ = types.MethodType(new_call, self)
 
 
 def get_tokenizer(tokenizer):
@@ -302,7 +304,6 @@ class Dataset(torch.utils.data.Dataset):
             filter_pred: Use only examples for which filter_pred(ex) is True,
                 or use all examples if None. Default: None.
         """
-
         if filter_pred is not None:
             examples = list(filter(filter_pred, examples))
         self.examples = examples
