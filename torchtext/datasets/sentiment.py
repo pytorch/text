@@ -34,12 +34,17 @@ class SSTDataset(data.ZipDataset):
                     '3': 'positive', '4': pre + 'positive'}[label]
         fields[0][1].before_numericalizing.add_before(get_label_str)
         with open(os.path.expanduser(path)) as f:
-            examples = [data.Example.fromtree(line, fields) for line in f]
+            if subtrees:
+                examples = [ex for line in f for ex in
+                            data.Example.fromtree(line, fields, True)]
+            else:
+                examples = [data.Example.fromtree(line, fields) for line in f]
         super(SSTDataset, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def splits(cls, text_field, label_field, root='.', train='train.txt',
-               validation='dev.txt', test='test.txt', **kwargs):
+    def splits(cls, text_field, label_field, root='.',
+               train='train.txt', validation='dev.txt', test='test.txt',
+               train_subtrees=False, **kwargs):
         """Create dataset objects for splits of the SSTB dataset.
 
         Arguments:
@@ -53,13 +58,22 @@ class SSTDataset(data.ZipDataset):
                 load the validation set. Default: 'dev.txt'.
             test: The filename of the test data, or None to not load the test
                 set. Default: 'test.txt'.
+            train_subtrees: Whether to use all subtrees in the training set.
+                Default: False.
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
         path = cls.download_or_unzip(root)
-        return super(SSTDataset, cls).splits(
-            path, train, validation, test,
-            text_field=text_field, label_field=label_field, **kwargs)
+
+        train_data = None if train is None else cls(
+            path + train, text_field, label_field, subtrees=train_subtrees,
+            **kwargs)
+        val_data = None if validation is None else cls(
+            path + validation, text_field, label_field, **kwargs)
+        test_data = None if test is None else cls(
+            path + test, text_field, label_field, **kwargs)
+        return tuple(d for d in (train_data, val_data, test_data)
+                     if d is not None)
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.', wv_path=None, **kwargs):
