@@ -23,13 +23,13 @@ def load_word_vectors(root, wv_type, dim):
         dim = str(dim) + 'd'
     fname = os.path.join(root, wv_type + '.' +  dim)
     if os.path.isfile(fname + '.pt'):
-        fname += '.pt'
-        print('loading word vectors from', fname)
-        return torch.load(fname)
+        fname_pt = fname + '.pt'
+        print('loading word vectors from', fname_pt)
+        return torch.load(fname_pt)
     if os.path.isfile(fname + '.txt'):
-        fname += '.txt'
-        print('loading word vectors from', fname)
-        cm = open(fname, 'rb')
+        fname_txt = fname + '.txt'
+        print('loading word vectors from', fname_txt)
+        cm = open(fname_txt, 'rb')
     elif os.path.basename(wv_type) in URL:
         url = URL[wv_type]
         print('downloading word vectors from {}'.format(url))
