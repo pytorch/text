@@ -21,7 +21,7 @@ def load_word_vectors(root, wv_type, dim):
     """Load word vectors from a path, trying .pt, .txt, and .zip extensions."""
     if isinstance(dim, int):
         dim = str(dim) + 'd'
-    fname = os.path.join(root, wv_type + '.' +  dim)
+    fname = os.path.join(root, wv_type + '.' + dim)
     if os.path.isfile(fname + '.pt'):
         fname_pt = fname + '.pt'
         print('loading word vectors from', fname_pt)
