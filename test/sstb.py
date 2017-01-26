@@ -1,6 +1,7 @@
 from torchtext import data
 from torchtext import datasets
 
+
 # Approach 1:
 # set up fields
 TEXT = data.Field()

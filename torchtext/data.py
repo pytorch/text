@@ -21,38 +21,32 @@ class Pipeline(object):
 
     def __init__(self, convert_token=None):
         if convert_token is not None:
-            def new_convert_token(self, token, *args):
-                return convert_token(token, *args)
-            self.convert_token = types.MethodType(
-                new_convert_token, self)
+            self.convert_token = convert_token
+        else:
+            self.convert_token = lambda x: x
+        self.pipes = [self]
 
     def __call__(self, x, *args):
-        if isinstance(x, list):
-            return [self(tok, *args) for tok in x]
-        return self.convert_token(x, *args)
+        for pipe in self.pipes:
+            x = pipe.call(x)
+        return x
 
-    def convert_token(self, token, *args):
-        return token
+    def call(self, x, *args):
+        if isinstance(x, list):
+            x = [self(tok, *args) for tok in x]
+        return self.convert_token(x, *args)
 
     def add_before(self, pipeline):
         """Add `pipeline` before this processing pipeline."""
         if not isinstance(pipeline, Pipeline):
             pipeline = Pipeline(pipeline)
-        old_call = self.__call__
-
-        def new_call(self, token, *args):
-            return old_call(pipeline(token, *args))
-        self.__call__ = types.MethodType(new_call, self)
+        self.pipes = pipeline.pipes[:] + self.pipes[:]
 
     def add_after(self, pipeline):
         """Add `pipeline` after this processing pipeline."""
         if not isinstance(pipeline, Pipeline):
             pipeline = Pipeline(pipeline)
-        old_call = self.__call__
-
-        def new_call(self, token, *args):
-            return pipeline(old_call(token, *args))
-        self.__call__ = types.MethodType(new_call, self)
+        self.pipes = self.pipes[:] + pipeline.pipes[:]
 
 
 def get_tokenizer(tokenizer):
@@ -117,7 +111,7 @@ class Field(object):
     def __init__(
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
-            before_numericalizing=Pipeline(), after_numericalizing=Pipeline(),
+            before_numericalizing=None, after_numericalizing=None,
             tokenize=(lambda s: s.split())):
         self.sequential = sequential
         self.use_vocab = use_vocab
@@ -126,8 +120,10 @@ class Field(object):
         self.eos_token = eos_token
         self.pad_token = '<pad>' if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
-        self.before_numericalizing = before_numericalizing
-        self.after_numericalizing = after_numericalizing
+        self.before_numericalizing = (Pipeline() if before_numericalizing
+                                      is None else before_numericalizing)
+        self.after_numericalizing = (Pipeline() if after_numericalizing
+                                     is None else after_numericalizing)
         self.tensor_type = tensor_type
 
     def preprocess(self, x):
