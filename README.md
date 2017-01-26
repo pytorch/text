@@ -2,9 +2,9 @@
 
 This repository consists of:
 
-- [text.data](#data) : Generic data loaders, abstractions, and iterators for text
-- [text.datasets](#datasets) : Pre-built loaders for common NLP datasets
-- (maybe) text.models : Model definitions and pre-trained models for popular NLP examples
+- [torchtext.data](#data) : Generic data loaders, abstractions, and iterators for text
+- [torchtext.datasets](#datasets) : Pre-built loaders for common NLP datasets
+- (maybe) torchtext.models : Model definitions and pre-trained models for popular NLP examples
 (though the situation is not the same as vision, where people can download a pretrained ImageNet model and immediately
 make it useful for other tasks -- it might make more sense to leave NLP models in the torch/examples repo)
 
@@ -72,8 +72,10 @@ LABELS.build_vocab(train)
 Some datasets it would be useful to have built in:
 
 - bAbI and successors from FAIR
-- SST and IMDb sentiment
+- SST (done) and IMDb sentiment
 - SNLI (done)
 - Penn Treebank (for language modeling (done) and parsing)
 - WMT and/or IWSLT machine translation
 - SQuAD
+
+See the "test" directory for examples of dataset usage.

@@ -8,7 +8,7 @@ TEXT = data.Field()
 LABEL = data.Field(sequential=False)
 
 # make splits for data
-train, val, test = datasets.SSTDataset.splits(
+train, val, test = datasets.SST.splits(
     TEXT, LABEL, fine_grained=True, train_subtrees=True,
     filter_pred=lambda ex: ex.label != 'neutral')
 
@@ -36,7 +36,7 @@ print(batch.text)
 print(batch.label)
 
 # Approach 2:
-train_iter, val_iter, test_iter = datasets.SSTDataset.iters(batch_size=4)
+train_iter, val_iter, test_iter = datasets.SST.iters(batch_size=4)
 
 # print batch information
 batch = next(iter(train_iter))

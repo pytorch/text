@@ -47,7 +47,8 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             filter_pred=lambda ex: ex.label != '-')
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', wv_path=None, **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.', wv_dir='.',
+              wv_type=None, wv_dim='300d', **kwargs):
         """Create iterator objects for splits of the SNLI dataset.
 
         This is the simplest way to use the dataset, and assumes common
@@ -60,9 +61,9 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-2
                 subdirectory the data files will be stored.
-            wv_path: The path to the word vector file that will be loaded into
-                the vectors attribute of the created vocabulary (accessible
-                as train.dataset.fields['premise'].vocab.vectors).
+            wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
+                text field. The word vectors are accessible as
+                train.dataset.fields['text'].vocab.vectors.
             Remaining keyword arguments: Passed to the splits method.
         """
         TEXT = data.Field(tokenize='spacy')
@@ -70,7 +71,7 @@ class SNLI(data.ZipDataset, data.TabularDataset):
 
         train, val, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
 
-        TEXT.build_vocab(train, wv_path=wv_path)
+        TEXT.build_vocab(train, wv_dir=wv_dir, wv_type=wv_type, wv_dim=wv_dim)
         LABEL.build_vocab(train)
 
         return data.BucketIterator.splits(
