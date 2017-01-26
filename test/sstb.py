@@ -18,6 +18,7 @@ print('len(train)', len(train))
 print('vars(train[0])', vars(train[0]))
 
 # build the vocabulary
+
 TEXT.build_vocab(train, wv_type='glove.6B')
 LABEL.build_vocab(train)
 
