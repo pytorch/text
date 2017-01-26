@@ -21,15 +21,15 @@ def load_word_vectors(root, wv_type, dim):
     """Load word vectors from a path, trying .pt, .txt, and .zip extensions."""
     if isinstance(dim, int):
         dim = str(dim) + 'd'
-    fname = os.path.join(root, wv_type + '.' +  dim)
+    fname = os.path.join(root, wv_type + '.' + dim)
     if os.path.isfile(fname + '.pt'):
-        fname += '.pt'
-        print('loading word vectors from', fname)
-        return torch.load(fname)
+        fname_pt = fname + '.pt'
+        print('loading word vectors from', fname_pt)
+        return torch.load(fname_pt)
     if os.path.isfile(fname + '.txt'):
-        fname += '.txt'
-        print('loading word vectors from', fname)
-        cm = open(fname, 'rb')
+        fname_txt = fname + '.txt'
+        print('loading word vectors from', fname_txt)
+        cm = open(fname_txt, 'rb')
     elif os.path.basename(wv_type) in URL:
         url = URL[wv_type]
         print('downloading word vectors from {}'.format(url))
@@ -78,7 +78,7 @@ class Vocab(object):
 
     def __init__(self, counter, max_size=None, min_freq=1, wv_dir=os.getcwd(),
                  wv_type=None, wv_dim=300, unk_init='random',
-                 lower=False, specials=['<pad>'], fill_from_vectors=False):
+                 specials=['<pad>'], fill_from_vectors=False):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -92,7 +92,6 @@ class Vocab(object):
                 downloaded word vector files
             wv_type: type of word vectors; None for no word vectors
             wv_dim: dimension of word vectors
-            lower: Whether to build a case-insensitive vocabulary.
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token.
@@ -103,6 +102,7 @@ class Vocab(object):
                 pretrained word vector file; otherwise set to zero
         """
         self.freqs = counter.copy()
+        self.unk_init = unk_init
         counter.update(['<unk>'] + specials)
 
         if wv_type is not None:
@@ -128,25 +128,13 @@ class Vocab(object):
             self.itos.append(k)
             self.stoi[k] = len(self.itos) - 1
 
-        class LowercaseDict(defaultdict):
-
-            def __init__(self, *args, **kwargs):
-                super(LowercaseDict, self).__init__(lambda: 0, *args, **kwargs)
-
-            def __getitem__(self, key):
-                return super(LowercaseDict, self).__getitem__(key.lower())
-
-        if lower:
-            self.stoi = LowercaseDict(self.stoi)
-            self.freqs = LowercaseDict(self.freqs)
-
         if wv_type is not None:
-            self.load_vectors(wv_dir, wv_type, wv_dim, unk_init=unk_init)
+            self.set_vectors(wv_dict, wv_arr)
 
     def __len__(self):
         return len(self.itos)
 
-    def load_vectors(self, wv_dir, wv_type, wv_dim, unk_init='random'):
+    def load_vectors(self, wv_dir=os.getcwd(), wv_type=None, wv_dim=300, unk_init='random'):
         """Loads word vectors into the vocab
 
         Arguments:
@@ -158,10 +146,13 @@ class Vocab(object):
             unk_init: default to random initialization for unknown word vectors;
                 otherwise set to zero
         """
-
+        self.unk_init = unk_init
         wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
+        self.set_vectors(wv_dict, wv_arr)
+
+    def set_vectors(self, wv_dict, wv_arr):
         self.vectors = torch.Tensor(len(self), self.wv_size)
-        self.vectors.normal_(0, 1) if unk_init == 'random' else self.vectors.zero_()
+        self.vectors.normal_(0, 1) if self.unk_init == 'random' else self.vectors.zero_()
         for i, token in enumerate(self.itos):
             wv_index = wv_dict.get(token, None)
             if wv_index is not None:

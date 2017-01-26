@@ -104,6 +104,7 @@ class Field(object):
         postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
             into a Tensor. Default: the identity pipeline.
+        lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
             sequential examples. Default: str.split.
     """
@@ -111,7 +112,7 @@ class Field(object):
     def __init__(
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
-            preprocessing=None, after_numericalizing=None,
+            preprocessing=None, postprocessing=None, lower=False,
             tokenize=(lambda s: s.split())):
         self.sequential = sequential
         self.use_vocab = use_vocab
@@ -120,16 +121,19 @@ class Field(object):
         self.eos_token = eos_token
         self.pad_token = '<pad>' if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
+        self.lower = lower
         self.preprocessing = (Pipeline() if preprocessing
                               is None else preprocessing)
-        self.after_numericalizing = (Pipeline() if after_numericalizing
-                                     is None else after_numericalizing)
+        self.postprocessing = (Pipeline() if postprocessing
+                               is None else postprocessing)
         self.tensor_type = tensor_type
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary."""
         if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
+        if self.lower:
+            x = Pipeline(str.lower)(x)
         return self.preprocessing(x)
 
     def pad(self, minibatch):
@@ -166,10 +170,8 @@ class Field(object):
                 a Dataset object is provided, all columns corresponding
                 to this field are used; individual columns can also be
                 provided directly.
-            lower: Whether to build a case-insensitive Vocab. Default: False.
             Remaining keyword arguments: Passed to the constructor of Vocab.
         """
-        lower = kwargs.pop('lower') if 'lower' in kwargs else False
         counter = Counter()
         sources = []
         for arg in args:
@@ -182,13 +184,11 @@ class Field(object):
             for x in data:
                 if not self.sequential:
                     x = [x]
-                if lower:
-                    x = [token.lower() for token in x]
                 counter.update(x)
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.pad_token, self.init_token, self.eos_token]
             if tok is not None))
-        self.vocab = Vocab(counter, specials=specials, lower=lower, **kwargs)
+        self.vocab = Vocab(counter, specials=specials, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
         """Turn a batch of examples that use this field into a Variable.
@@ -206,9 +206,9 @@ class Field(object):
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
             else:
                 arr = [self.vocab.stoi[x] for x in arr]
-            arr = self.after_numericalizing(arr, self.vocab, train)
+            arr = self.postprocessing(arr, self.vocab, train)
         else:
-            arr = self.after_numericalizing(arr, train)
+            arr = self.postprocessing(arr, train)
         arr = self.tensor_type(arr)
         if self.sequential:
             arr.t_()
@@ -363,10 +363,10 @@ class ZipDataset(Dataset):
         if not os.path.isdir(path):
             zpath = os.path.join(root, cls.filename)
             if not os.path.isfile(zpath):
-                print('downloading from {}'.format(cls.url))
+                print('downloading')
                 urllib.request.urlretrieve(cls.url, zpath)
             with zipfile.ZipFile(zpath, 'r') as zfile:
-                print('extracting from zip file')
+                print('extracting')
                 zfile.extractall(root)
         return os.path.join(path, '')
 
