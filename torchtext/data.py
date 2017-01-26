@@ -18,13 +18,34 @@ import zipfile
 class Pipeline(object):
     """Defines a pipeline for transforming sequence data."""
 
+    def __init__(self, convert_token=None):
+        if convert_token is not None:
+            self.convert_token = convert_token
+        else:
+            self.convert_token = lambda x: x
+        self.pipes = [self]
+
     def __call__(self, x, *args):
+        for pipe in self.pipes:
+            x = pipe.call(x)
+        return x
+
+    def call(self, x, *args):
         if isinstance(x, list):
-            return [self.__call__(tok, *args) for tok in x]
+            x = [self(tok, *args) for tok in x]
         return self.convert_token(x, *args)
 
-    def convert_token(self, token, *args):
-        return token
+    def add_before(self, pipeline):
+        """Add `pipeline` before this processing pipeline."""
+        if not isinstance(pipeline, Pipeline):
+            pipeline = Pipeline(pipeline)
+        self.pipes = pipeline.pipes[:] + self.pipes[:]
+
+    def add_after(self, pipeline):
+        """Add `pipeline` after this processing pipeline."""
+        if not isinstance(pipeline, Pipeline):
+            pipeline = Pipeline(pipeline)
+        self.pipes = self.pipes[:] + pipeline.pipes[:]
 
 
 def get_tokenizer(tokenizer):
@@ -76,10 +97,11 @@ class Field(object):
             padded to, or None for flexible sequence lengths. Default: None.
         tensor_type: The torch.Tensor class that represents a batch of examples
             of this kind of data. Default: torch.LongTensor.
-        before_numericalizing: A Pipeline that will be applied to examples
-            using this field after padding but before numericalizing. Default:
-            the identity pipeline.
-        after_numericalizing: A Pipeline that will be applied to examples using
+        preprocessing: The Pipeline that will be applied to examples
+            using this field after tokenizing but before numericalizing. Many
+            Datasets replace this attribute with a custom preprocessor.
+            Default: the identity pipeline.
+        postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
             into a Tensor. Default: the identity pipeline.
         tokenize: The function used to tokenize strings using this field into
@@ -89,23 +111,26 @@ class Field(object):
     def __init__(
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
-            before_numericalizing=Pipeline(), after_numericalizing=Pipeline(),
+            preprocessing=None, after_numericalizing=None,
             tokenize=(lambda s: s.split())):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
         self.init_token = init_token
         self.eos_token = eos_token
+        self.pad_token = '<pad>' if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
-        self.before_numericalizing = before_numericalizing
-        self.after_numericalizing = after_numericalizing
+        self.preprocessing = (Pipeline() if preprocessing
+                              is None else preprocessing)
+        self.after_numericalizing = (Pipeline() if after_numericalizing
+                                     is None else after_numericalizing)
         self.tensor_type = tensor_type
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary."""
         if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
-        return x
+        return self.preprocessing(x)
 
     def pad(self, minibatch):
         """Pad a batch of examples using this field.
@@ -160,8 +185,9 @@ class Field(object):
                 if lower:
                     x = [token.lower() for token in x]
                 counter.update(x)
-        specials = list(OrderedDict.fromkeys(tok for tok in [
-            '<pad>', self.init_token, self.eos_token] if tok is not None))
+        specials = list(OrderedDict.fromkeys(
+            tok for tok in [self.pad_token, self.init_token, self.eos_token]
+            if tok is not None))
         self.vocab = Vocab(counter, specials=specials, lower=lower, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
@@ -176,7 +202,6 @@ class Field(object):
                 Variable will be created with volatile=True. Default: True.
         """
         if self.use_vocab:
-            arr = self.before_numericalizing(arr, self.vocab, train)
             if self.sequential:
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
             else:
@@ -236,6 +261,20 @@ class Example(object):
                 setattr(ex, name, field.preprocess(val))
         return ex
 
+    @classmethod
+    def fromtree(cls, data, fields, subtrees=False):
+        try:
+            from nltk.tree import Tree
+        except ImportError:
+            print('''Please install NLTK:
+    $ pip install nltk''')
+            raise
+        tree = Tree.fromstring(data)
+        if subtrees:
+            return [cls.fromlist(
+                [t.leaves(), t.label()], fields) for t in tree.subtrees()]
+        return cls.fromlist([tree.leaves(), tree.label()], fields)
+
 
 class Dataset(torch.utils.data.Dataset):
     """Defines a dataset composed of Examples along with its Fields.
@@ -261,7 +300,6 @@ class Dataset(torch.utils.data.Dataset):
             filter_pred: Use only examples for which filter_pred(ex) is True,
                 or use all examples if None. Default: None.
         """
-
         if filter_pred is not None:
             examples = list(filter(filter_pred, examples))
         self.examples = examples
@@ -330,7 +368,7 @@ class ZipDataset(Dataset):
             with zipfile.ZipFile(zpath, 'r') as zfile:
                 print('extracting from zip file')
                 zfile.extractall(root)
-        return path
+        return os.path.join(path, '')
 
 
 
