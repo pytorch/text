@@ -272,8 +272,8 @@ class Example(object):
         tree = Tree.fromstring(data)
         if subtrees:
             return [cls.fromlist(
-                [t.leaves(), t.label()], fields) for t in tree.subtrees()]
-        return cls.fromlist([tree.leaves(), tree.label()], fields)
+                [t.leaves(), t.label(), len(t.leaves())], fields) for t in tree.subtrees()]
+        return cls.fromlist([tree.leaves(), tree.label(), len(tree.leaves())], fields)
 
 
 class Dataset(torch.utils.data.Dataset):

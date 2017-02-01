@@ -14,19 +14,22 @@ class SST(data.ZipDataset):
     def sort_key(ex):
         return len(ex.text)
 
-    def __init__(self, path, text_field, label_field, subtrees=False,
+    def __init__(self, path, text_field, label_field, length_field, subtrees=False,
                  fine_grained=False, **kwargs):
         """Create an SST dataset instance given a path and fields.
 
         Arguments:
             path: Path to the data file.
             text_field: The field that will be used for text data.
+            label_field: The field that will be used for label data.
+            length_field: The field that will be used for length of the text
+                data.
             newline_eos: Whether to add an <eos> token for every newline in the
                 data file. Default: True.
             Remaining keyword arguments: Passed to the constructor of
                 data.Dataset.
         """
-        fields = [('text', text_field), ('label', label_field)]
+        fields = [('text', text_field), ('label', label_field), ('length', length_field)]
 
         def get_label_str(label):
             pre = 'very ' if fine_grained else ''
@@ -42,7 +45,7 @@ class SST(data.ZipDataset):
         super(SST, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def splits(cls, text_field, label_field, root='.',
+    def splits(cls, text_field, label_field, length_field, root='.',
                train='train.txt', validation='dev.txt', test='test.txt',
                train_subtrees=False, **kwargs):
         """Create dataset objects for splits of the SSTB dataset.
@@ -50,6 +53,8 @@ class SST(data.ZipDataset):
         Arguments:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
+            length_field: The field that will be used for length of the
+                sentence.
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose trees
                 subdirectory the data files will be stored.
@@ -66,12 +71,13 @@ class SST(data.ZipDataset):
         path = cls.download_or_unzip(root)
 
         train_data = None if train is None else cls(
-            path + train, text_field, label_field, subtrees=train_subtrees,
-            **kwargs)
+            path + train, text_field, label_field, length_field,
+            subtrees=train_subtrees, **kwargs)
         val_data = None if validation is None else cls(
-            path + validation, text_field, label_field, **kwargs)
+            path + validation, text_field, label_field, length_field,
+            **kwargs)
         test_data = None if test is None else cls(
-            path + test, text_field, label_field, **kwargs)
+            path + test, text_field, label_field, length_field, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
@@ -94,8 +100,9 @@ class SST(data.ZipDataset):
         """
         TEXT = data.Field()
         LABEL = data.Field(sequential=False)
+        LENGTH = data.Field(sequential=False, use_vocab=False)
 
-        train, val, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
+        train, val, test = cls.splits(TEXT, LABEL, LENGTH, root=root, **kwargs)
 
         TEXT.build_vocab(train, wv_dir=wv_dir, wv_type=wv_type, wv_dim=wv_dim)
         LABEL.build_vocab(train)
