@@ -1,1 +1,3 @@
+nltk
+requests
 spacy
