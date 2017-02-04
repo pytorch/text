@@ -316,7 +316,7 @@ class Dataset(torch.utils.data.Dataset):
                 train set. Default: None.
             validation: Suffix to add to path for the validation set, or None
                 for no validation set. Default: None.
-            test: Suffix to add to path for the test set, or None for no texst
+            test: Suffix to add to path for the test set, or None for no test
                 set. Default: None.
             Remaining keyword arguments: Passed to the constructor of the
                 dataset class being used.
