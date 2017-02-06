@@ -32,7 +32,7 @@ class Pipeline(object):
 
     def call(self, x, *args):
         if isinstance(x, list):
-            x = [self(tok, *args) for tok in x]
+            return [self(tok, *args) for tok in x]
         return self.convert_token(x, *args)
 
     def add_before(self, pipeline):
