@@ -234,11 +234,13 @@ class Example(object):
     @classmethod
     def fromdict(cls, data, fields):
         ex = cls()
-        for key, val in data.items():
-            if key in fields:
-                name, field = fields[key]
-                if field is not None:
-                    setattr(ex, name, field.preprocess(val))
+        for key, vals in fields.items():
+            if key in data and vals is not None:
+                if not isinstance(vals, list):
+                    vals = [vals]
+                for val in vals:
+                    name, field = val
+                    setattr(ex, name, field.preprocess(data[key]))
         return ex
 
     @classmethod
@@ -371,7 +373,6 @@ class ZipDataset(Dataset):
         return os.path.join(path, '')
 
 
-
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
@@ -398,7 +399,12 @@ class TabularDataset(Dataset):
             examples = [make_example(line, fields) for line in f]
 
         if make_example in (Example.fromdict, Example.fromJSON):
-            fields = fields.values()
+            fields, field_dict = [], fields
+            for field in field_dict.values():
+                if isinstance(field, list):
+                    fields.extend(field)
+                else:
+                    fields.append(field)
 
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
 
