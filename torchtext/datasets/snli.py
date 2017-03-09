@@ -3,34 +3,25 @@ import os
 from .. import data
 
 
-def transitions(parse):
-    return ['reduce' if t == ')' else 'shift' for t in parse if t != '(']
-
-
-def tokens(parse):
-    return [t for t in parse if t not in ('(', ')')]
-
-
 class ShiftReduceField(data.Field):
 
-    def __init__(self, init_token=None, eos_token=None, fix_length=None,
-                 lower=False):
+    def __init__(self):
 
-        super(ShiftReduceField, self).__init__(
-            init_token=init_token, eos_token=eos_token, fix_length=fix_length,
-            lower=lower, preprocessing=transitions)
+        super(ShiftReduceField, self).__init__(preprocessing=lambda parse: [
+            'reduce' if t == ')' else 'shift' for t in parse if t != '('])
 
-        self.build_vocab([['shift'], ['reduce']])
+        self.build_vocab([['reduce'], ['shift']])
 
 
 class ParsedTextField(data.Field):
 
-    def __init__(self, init_token=None, eos_token=None, fix_length=None,
-                 lower=False):
+    def __init__(self, eos_token='<pad>', lower=False):
 
         super(ParsedTextField, self).__init__(
-            init_token=init_token, eos_token=eos_token, fix_length=fix_length,
-            lower=lower, preprocessing=tokens)
+            eos_token=eos_token, lower=lower, preprocessing=lambda parse: [
+                t for t in parse if t not in ('(', ')')],
+            postprocessing=lambda parse, _, __: [
+                list(reversed(p)) for p in parse])
 
 
 class SNLI(data.ZipDataset, data.TabularDataset):

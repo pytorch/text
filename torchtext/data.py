@@ -1,4 +1,5 @@
 from __future__ import print_function
+import six
 import torch
 import torch.utils.data
 from torch.autograd import Variable
@@ -113,7 +114,7 @@ class Field(object):
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
-            tokenize=(lambda s: s.split())):
+            tokenize=(lambda s: s.split()), include_lengths=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
@@ -122,6 +123,7 @@ class Field(object):
         self.pad_token = '<pad>' if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
         self.lower = lower
+        self.include_lengths = include_lengths
         self.preprocessing = (Pipeline() if preprocessing
                               is None else preprocessing)
         self.postprocessing = (Pipeline() if postprocessing
@@ -133,7 +135,7 @@ class Field(object):
         if self.sequential and isinstance(x, str):
             x = self.tokenize(x)
         if self.lower:
-            x = Pipeline(str.lower)(x)
+            x = Pipeline(six.text_type.lower)(x)
         return self.preprocessing(x)
 
     def pad(self, minibatch):
@@ -141,7 +143,8 @@ class Field(object):
 
         Pads to self.fix_length if provided, otherwise pads to the length of
         the longest example in the batch. Prepends self.init_token and appends
-        self.eos_token if those attributes are not None.
+        self.eos_token if those attributes are not None. Returns a tuple of the
+        padded list and a list containing lengths of each example.
         """
         minibatch = list(minibatch)
         if not self.sequential:
@@ -151,13 +154,16 @@ class Field(object):
         else:
             max_len = self.fix_length + (
                 self.init_token, self.eos_token).count(None) - 2
-        padded = []
+        padded, lengths = [], []
         for x in minibatch:
             padded.append(
                 ([] if self.init_token is None else [self.init_token]) +
                 list(x[:max_len]) +
                 ([] if self.eos_token is None else [self.eos_token]) +
                 ['<pad>'] * max(0, max_len - len(x)))
+            lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
+        if self.include_lengths:
+            return (padded, lengths)
         return padded
 
     def build_vocab(self, *args, **kwargs):
@@ -193,14 +199,20 @@ class Field(object):
     def numericalize(self, arr, device=None, train=True):
         """Turn a batch of examples that use this field into a Variable.
 
+        If the field has include_lengths=True, a tensor of lengths will be
+        included in the return value.
+
         Arguments:
-            arr: List of tokenized and padded examples.
+            arr: List of tokenized and padded examples, or tuple of a padded
+                list and a list of lengths if self.include_lengths is True.
             device: Device to create the Variable's Tensor on. Use -1 for
                 CPU and None for the currently active GPU device. Default:
                 None.
             train: Whether the batch is for a training set. If False, the
                 Variable will be created with volatile=True. Default: True.
         """
+        if isinstance(arr, tuple):
+            arr, lengths = arr
         if self.use_vocab:
             if self.sequential:
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
@@ -210,6 +222,8 @@ class Field(object):
         else:
             arr = self.postprocessing(arr, train)
         arr = self.tensor_type(arr)
+        if self.include_lengths:
+            lengths = torch.LongTensor(lengths)
         if self.sequential:
             arr.t_()
         if device == -1:
@@ -218,6 +232,10 @@ class Field(object):
         else:
             with torch.cuda.device(device):
                 arr = arr.cuda()
+                if self.include_lengths:
+                    lengths = lengths.cuda()
+        if self.include_lengths:
+            return Variable(arr, volatile=not train), lengths
         return Variable(arr, volatile=not train)
 
 
@@ -542,6 +560,8 @@ class Iterator(object):
     def init_epoch(self):
         """Set up the batch generator for a new epoch."""
         self.batches = batch(self.data(), self.batch_size)
+        if not self.repeat:
+            self.iterations = 0
 
     @property
     def epoch(self):
@@ -569,12 +589,13 @@ class BucketIterator(Iterator):
     """
 
     def init_epoch(self):
-        if self.repeat:
+        if self.sort:
+            self.batches = batch(self.data(), self.batch_size)
+        else:
             self.batches = pool(self.data(), self.batch_size,
                                 self.sort_key)
-        else:
+        if not self.repeat:
             self.iterations = 0
-            self.batches = batch(self.data(), self.batch_size)
 
 
 class BPTTIterator(Iterator):
