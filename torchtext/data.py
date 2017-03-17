@@ -271,7 +271,7 @@ class Example(object):
     def fromCSV(cls, data, fields):
         if data[-1] == '\n':
             data = data[:-1]
-        return cls.fromlist(list(csv.reader([data]))[0])
+        return cls.fromlist(list(csv.reader([data]))[0], fields)
 
     @classmethod
     def fromlist(cls, data, fields):
