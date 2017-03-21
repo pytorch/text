@@ -10,7 +10,7 @@ class TranslationDataset(data.Dataset):
 
     @staticmethod
     def sort_key(ex):
-        return data.interleave_keys(len(ex.src), len(ex.trg))
+        return data.interleave_keys(len(ex.src), len(ex.tgt))
 
 
     def __init__(self, path, exts, fields, **kwargs):
@@ -25,16 +25,16 @@ class TranslationDataset(data.Dataset):
                 data.Dataset.
         """
         if not isinstance(fields[0], (tuple, list)):
-            fields = [('src', fields[0]), ('trg', fields[1])]
+            fields = [('src', fields[0]), ('tgt', fields[1])]
 
-        src_path, trg_path = tuple(os.path.expanduser(path + x) for x in exts)
+        src_path, tgt_path = tuple(os.path.expanduser(path + x) for x in exts)
 
         examples = []
-        with open(src_path) as src_file, open(trg_path) as trg_file:
-            for src_line, trg_line in zip(src_file, trg_file):
-                src_line, trg_line = src_line.strip(), trg_line.strip()
-                if src_line != '' and trg_line != '':
+        with open(src_path) as src_file, open(tgt_path) as tgt_file:
+            for src_line, tgt_line in zip(src_file, tgt_file):
+                src_line, tgt_line = src_line.strip(), tgt_line.strip()
+                if src_line != '' and tgt_line != '':
                     examples.append(data.Example.fromlist(
-                        [src_line, trg_line], fields))
+                        [src_line, tgt_line], fields))
 
         super(TranslationDataset, self).__init__(examples, fields, **kwargs)
