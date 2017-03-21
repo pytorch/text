@@ -43,7 +43,7 @@ trg.build_vocab(mt_train, max_size=40000)
 # mt_dev shares the fields, so it shares their vocab objects
 
 train_iter = data.BucketIterator(
-    batch_size=32, mt_train,
+    mt_train, batch_size=32,
     sort_key=lambda x: data.interleave_keys(len(x.src), len(x.trg)))
 # usage
 >>>next(train_iter)
