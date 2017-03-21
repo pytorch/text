@@ -16,6 +16,15 @@ from six.moves import urllib
 import zipfile
 
 
+def just_split(s):
+    return s.split()
+
+def identity(x):
+    return x
+
+def return_second(x):
+    return x[1]
+
 class Pipeline(object):
     """Defines a pipeline for transforming sequence data."""
 
@@ -23,7 +32,7 @@ class Pipeline(object):
         if convert_token is not None:
             self.convert_token = convert_token
         else:
-            self.convert_token = lambda x: x
+            self.convert_token = identity
         self.pipes = [self]
 
     def __call__(self, x, *args):
@@ -114,7 +123,7 @@ class Field(object):
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
-            tokenize=(lambda s: s.split()), include_lengths=False):
+            tokenize=just_split, include_lengths=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
@@ -163,7 +172,7 @@ class Field(object):
                 ['<pad>'] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
         if self.include_lengths:
-            return (padded, lengths)
+            return padded, lengths
         return padded
 
     def build_vocab(self, *args, **kwargs):
@@ -211,6 +220,8 @@ class Field(object):
             train: Whether the batch is for a training set. If False, the
                 Variable will be created with volatile=True. Default: True.
         """
+        if self.sequential and isinstance(arr[0], tuple):
+            arr = tuple(zip(*arr))
         if isinstance(arr, tuple):
             arr, lengths = arr
         if self.use_vocab:
@@ -222,8 +233,6 @@ class Field(object):
         else:
             arr = self.postprocessing(arr, train)
         arr = self.tensor_type(arr)
-        if self.include_lengths:
-            lengths = torch.LongTensor(lengths)
         if self.sequential:
             arr.t_()
         if device == -1:
@@ -232,8 +241,6 @@ class Field(object):
         else:
             with torch.cuda.device(device):
                 arr = arr.cuda()
-                if self.include_lengths:
-                    lengths = lengths.cuda()
         if self.include_lengths:
             return Variable(arr, volatile=not train), lengths
         return Variable(arr, volatile=not train)
@@ -366,6 +373,9 @@ class Dataset(torch.utils.data.Dataset):
             for x in self.examples:
                 yield getattr(x, attr)
 
+    def __getstate__(self): return self.__dict__
+    def __setstate__(self, d): self.__dict__.update(d)
+
 
 class ZipDataset(Dataset):
     """Defines a Dataset loaded from a downloadable zip archive.
@@ -469,9 +479,11 @@ class Batch(object):
     Also stores the Variable for each column in the batch as an attribute.
     """
 
-    def __init__(self, data=None, dataset=None, device=None, train=True):
+    def __init__(self, data=None, dataset=None, device=None, train=True, sort_field=None):
         """Create a Batch from a list of examples."""
         if data is not None:
+            if sort_field is not None:
+                data.sort(key=lambda ex: -len(getattr(ex, sort_field)))
             self.batch_size = len(data)
             self.dataset = dataset
             self.train = train
@@ -480,6 +492,7 @@ class Batch(object):
                     setattr(self, name, field.numericalize(
                         field.pad(x.__dict__[name] for x in data),
                         device=device, train=train))
+
 
     @classmethod
     def fromvars(cls, dataset, batch_size, train=True, **kwargs):
@@ -514,7 +527,7 @@ class Iterator(object):
     """
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
-                 train=True, repeat=None, shuffle=None, sort=None):
+                 train=True, repeat=None, shuffle=None, sort=None, sort_field=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.iterations = 0
         self.repeat = train if repeat is None else repeat
@@ -524,6 +537,10 @@ class Iterator(object):
             self.sort_key = dataset.sort_key
         else:
             self.sort_key = sort_key
+        if sort_field is None:
+            self.sort_field = dataset.sort_field
+        else:
+            self.sort_field = sort_field
         self.device = device
 
     @classmethod
@@ -576,7 +593,7 @@ class Iterator(object):
             for minibatch in self.batches:
                 self.iterations += 1
                 yield Batch(minibatch, self.dataset, self.device,
-                            self.train)
+                            self.train, sort_field=self.sort_field)
             if not self.repeat:
                 raise StopIteration
 

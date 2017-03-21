@@ -6,9 +6,12 @@ from .. import data
 class TranslationDataset(data.Dataset):
     """Defines a dataset for machine translation."""
 
+    sort_field = 'src'
+
     @staticmethod
     def sort_key(ex):
         return data.interleave_keys(len(ex.src), len(ex.trg))
+
 
     def __init__(self, path, exts, fields, **kwargs):
         """Create a TranslationDataset given paths and fields.

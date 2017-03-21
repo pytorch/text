@@ -16,11 +16,18 @@ URL = {
         'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
         }
 
+def return_zero():
+    return 0
 
-def load_word_vectors(root, wv_type, dim):
+def return_first(x):
+    return x[0]
+
+def return_second(x):
+    return x[1]
+
+def load_word_vectors(root, wv_type, wv_dim):
     """Load word vectors from a path, trying .pt, .txt, and .zip extensions."""
-    if isinstance(dim, int):
-        dim = str(dim) + 'd'
+    dim = str(wv_dim) + 'd'
     fname = os.path.join(root, wv_type + '.' + dim)
     if os.path.isfile(fname + '.pt'):
         fname_pt = fname + '.pt'
@@ -37,17 +44,15 @@ def load_word_vectors(root, wv_type, dim):
         with zipfile.ZipFile(six.BytesIO(r.content)) as zf:
             print('extracting word vectors into {}'.format(root))
             zf.extractall(root)
-        return load_word_vectors(root, wv_type, dim)
+        return load_word_vectors(root, wv_type, wv_dim)
     else:
         print('Unable to load word vectors.')
 
-    wv_tokens, wv_arr, wv_size = [], array.array('d'), None
+    wv_tokens, wv_arr = [], array.array('d')
     with cm as f:
         for line in f:
             entries = line.strip().split(b' ')
             word, entries = entries[0], entries[1:]
-            if wv_size is None:
-                wv_size = len(entries)
             try:
                 word = word.decode()
             except:
@@ -57,8 +62,8 @@ def load_word_vectors(root, wv_type, dim):
             wv_tokens.append(word)
 
     wv_dict = {word: i for i, word in enumerate(wv_tokens)}
-    wv_arr = torch.Tensor(wv_arr).view(-1, wv_size)
-    ret = (wv_dict, wv_arr, wv_size)
+    wv_arr = torch.Tensor(wv_arr).view(-1, wv_dim)
+    ret = (wv_dict, wv_arr)
     torch.save(ret, fname + '.pt')
     return ret
 
@@ -105,13 +110,14 @@ class Vocab(object):
         self.unk_init = unk_init
         counter.update(['<unk>'] + specials)
 
-        if wv_type is not None:
-            wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
+        if wv_type:
+            os.makedirs(wv_dir, exist_ok=True)
+            wv_dict, wv_arr = load_word_vectors(wv_dir, wv_type, wv_dim)
 
             if fill_from_vectors:
                 counter.update(wv_dict.keys())
 
-        self.stoi = defaultdict(lambda: 0)
+        self.stoi = defaultdict(return_zero)
         self.stoi.update({tok: i + 1 for i, tok in enumerate(specials)})
         self.itos = ['<unk>'] + specials
 
@@ -119,8 +125,8 @@ class Vocab(object):
         max_size = None if max_size is None else max_size - len(self.itos)
 
         # sort by frequency, then alphabetically
-        words = sorted(counter.items(), key=lambda tup: tup[0])
-        words.sort(key=lambda tup: tup[1], reverse=True)
+        words = sorted(counter.items(), key=return_first)
+        words.sort(key=return_second, reverse=True)
 
         for k, v in words:
             if v < min_freq or len(self.itos) == max_size:
@@ -128,8 +134,8 @@ class Vocab(object):
             self.itos.append(k)
             self.stoi[k] = len(self.itos) - 1
 
-        if wv_type is not None:
-            self.set_vectors(wv_dict, wv_arr)
+        if wv_type:
+            self.set_vectors(wv_dict, wv_arr, wv_dim)
 
     def __len__(self):
         return len(self.itos)
@@ -142,16 +148,15 @@ class Vocab(object):
                 downloaded word vector files
             wv_type: type of word vectors; None for no word vectors
             wv_dim: dimension of word vectors
-
             unk_init: default to random initialization for unknown word vectors;
                 otherwise set to zero
         """
         self.unk_init = unk_init
-        wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
-        self.set_vectors(wv_dict, wv_arr)
+        wv_dict, wv_arr = load_word_vectors(wv_dir, wv_type, wv_dim)
+        self.set_vectors(wv_dict, wv_arr, wv_dim)
 
-    def set_vectors(self, wv_dict, wv_arr):
-        self.vectors = torch.Tensor(len(self), self.wv_size)
+    def set_vectors(self, wv_dict, wv_arr, wv_dim):
+        self.vectors = torch.Tensor(len(self), wv_dim)
         self.vectors.normal_(0, 1) if self.unk_init == 'random' else self.vectors.zero_()
         for i, token in enumerate(self.itos):
             wv_index = wv_dict.get(token, None)
