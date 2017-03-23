@@ -455,14 +455,14 @@ def shuffled(data):
     return data
 
 
-def pool(data, batch_size, key):
+def pool(data, batch_size, key, scale=100):
     """Sort within buckets, then batch, then shuffle batches.
 
-    Partitions data into chunks of size 100*batch_size, sorts examples within
+    Partitions data into chunks of size scale*batch_size, sorts examples within
     each chunk using sort_key, then batch these examples and shuffle the
     batches.
     """
-    for p in batch(data, batch_size * 100):
+    for p in batch(data, scale*batch_size):
         for b in shuffled(batch(sorted(p, key=key), batch_size)):
             yield b
 
@@ -607,12 +607,16 @@ class BucketIterator(Iterator):
     batches for each new epoch. See pool for the bucketing procedure used.
     """
 
+    def __init__(self, dataset, batch_size, scale=100, **kwargs):
+        super(BucketIterator, self).__init__(dataset, batch_size, **kwargs)
+        self.scale = scale
+
     def init_epoch(self):
         if self.sort:
             self.batches = batch(self.data(), self.batch_size)
         else:
             self.batches = pool(self.data(), self.batch_size,
-                                self.sort_key)
+                                self.sort_key, self.scale)
         if not self.repeat:
             self.iterations = 0
 
