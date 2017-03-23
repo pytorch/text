@@ -211,6 +211,9 @@ class Field(object):
         If the field has include_lengths=True, a tensor of lengths will be
         included in the return value.
 
+        Assumes that the examples have already been preprocessed. 
+        Use preprocess() on each example in arr before numericalizing.
+
         Arguments:
             arr: List of tokenized and padded examples, or tuple of a padded
                 list and a list of lengths if self.include_lengths is True.
@@ -220,6 +223,7 @@ class Field(object):
             train: Whether the batch is for a training set. If False, the
                 Variable will be created with volatile=True. Default: True.
         """
+        lengths = None
         if self.sequential and isinstance(arr[0], tuple):
             arr = tuple(zip(*arr))
         if isinstance(arr, tuple):
@@ -241,7 +245,7 @@ class Field(object):
         else:
             with torch.cuda.device(device):
                 arr = arr.cuda()
-        if self.include_lengths:
+        if self.include_lengths and lengths is not None:
             return Variable(arr, volatile=not train), lengths
         return Variable(arr, volatile=not train)
 
