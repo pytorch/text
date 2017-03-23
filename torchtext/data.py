@@ -475,6 +475,7 @@ class Batch(object):
         dataset: A reference to the dataset object the examples come from
             (which itself contains the dataset's Field objects).
         train: Whether the batch is from a training set.
+        sort_field: Name of field to use for sorting examples within a batch
 
     Also stores the Variable for each column in the batch as an attribute.
     """
@@ -483,7 +484,7 @@ class Batch(object):
         """Create a Batch from a list of examples."""
         if data is not None:
             if sort_field is not None:
-                data.sort(key=lambda ex: -len(getattr(ex, sort_field)))
+                self.indices, data = zip(*sorted(enumerate(data), key=lambda x: -len(getattr(x[1], sort_field))))
             self.batch_size = len(data)
             self.dataset = dataset
             self.train = train
@@ -522,6 +523,7 @@ class Iterator(object):
         sort: Whether to sort examples according to self.sort_key.
             Note that repeat, shuffle, and sort default to train, train, and
             (not train).
+        sort_field: Name of field to use for sorting examples within a batch
         device: Device to create batches on. Use -1 for CPU and None for the
             currently active GPU device.
     """
