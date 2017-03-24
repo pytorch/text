@@ -50,7 +50,7 @@ class Pipeline(object):
 
 
 def get_tokenizer(tokenizer):
-    if not isinstance(tokenizer, str):
+    if not isinstance(tokenizer, six.string_types):
         return tokenizer
     if tokenizer == 'spacy':
         try:
@@ -132,7 +132,7 @@ class Field(object):
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary."""
-        if self.sequential and isinstance(x, str):
+        if self.sequential and isinstance(x, six.string_types):
             x = self.tokenize(x)
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
