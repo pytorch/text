@@ -135,7 +135,7 @@ class Field(object):
         if self.sequential and isinstance(x, six.string_types):
             x = self.tokenize(x)
         if self.lower:
-            x = Pipeline(six.text_type.lower)(x)
+            x = Pipeline(six.text_type.lower)(six.text_type(x))
         return self.preprocessing(x)
 
     def pad(self, minibatch):
