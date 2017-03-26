@@ -21,8 +21,8 @@ pos = data.TabularDataset(
 
 sentiment = data.TabularDataset(
     path='data/sentiment/train.json', format='json',
-    fields=[{'sentence_tokenized': ('text', data.Field(time_series=True)),
-             'sentiment_gold': ('labels', data.Field(time_series=False))}])
+    fields=[{'sentence_tokenized': ('text', data.Field(sequential=True)),
+             'sentiment_gold': ('labels', data.Field(sequential=False))}])
 ```
 - Ability to define a preprocessing pipeline:
 ```python
