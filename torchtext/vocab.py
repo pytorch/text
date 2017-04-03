@@ -5,8 +5,10 @@ import os
 import zipfile
 import requests
 import six
-
+from six.moves.urllib.request import urlretrieve
 import torch
+from .utils import reporthook
+from tqdm import tqdm
 
 
 URL = {
@@ -28,23 +30,27 @@ def load_word_vectors(root, wv_type, dim):
         return torch.load(fname_pt)
     if os.path.isfile(fname + '.txt'):
         fname_txt = fname + '.txt'
-        print('loading word vectors from', fname_txt)
         cm = open(fname_txt, 'rb')
+        cm = [line for line in cm]
     elif os.path.basename(wv_type) in URL:
         url = URL[wv_type]
         print('downloading word vectors from {}'.format(url))
-        r = requests.get(url, stream=True)
-        with zipfile.ZipFile(six.BytesIO(r.content)) as zf:
-            print('extracting word vectors into {}'.format(root))
-            zf.extractall(root)
+        filename = os.path.basename(fname)
+        if not os.path.exists(root):
+            os.makedirs(root)
+        with tqdm(unit='B', unit_scale=True, miniters=1, desc=filename) as t:
+            fname, _ = urlretrieve(url, fname, reporthook=reporthook(t))
+            with zipfile.ZipFile(fname, "r") as zf:
+                print('extracting word vectors into {}'.format(root))
+                zf.extractall(root)
         return load_word_vectors(root, wv_type, dim)
     else:
         print('Unable to load word vectors.')
 
     wv_tokens, wv_arr, wv_size = [], array.array('d'), None
-    with cm as f:
-        for line in f:
-            entries = line.strip().split(b' ')
+    if cm is not None:
+        for line in tqdm(range(len(cm)), desc="loading word vectors from {}".format(fname_txt)):
+            entries = cm[line].strip().split(b' ')
             word, entries = entries[0], entries[1:]
             if wv_size is None:
                 wv_size = len(entries)
