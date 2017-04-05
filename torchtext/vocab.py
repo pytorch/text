@@ -43,9 +43,11 @@ def load_word_vectors(root, wv_type, dim):
             with zipfile.ZipFile(fname, "r") as zf:
                 print('extracting word vectors into {}'.format(root))
                 zf.extractall(root)
+        if not os.path.isfile(fname + '.txt'):
+            raise RuntimeError('no word vectors of requested dimension found')
         return load_word_vectors(root, wv_type, dim)
     else:
-        print('Unable to load word vectors.')
+        raise RuntimeError('unable to load word vectors')
 
     wv_tokens, wv_arr, wv_size = [], array.array('d'), None
     if cm is not None:
