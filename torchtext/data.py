@@ -230,10 +230,9 @@ class Field(object):
             if self.sequential:
                 arr = arr.contiguous()
         else:
-            with torch.cuda.device(device):
-                arr = arr.cuda()
-                if self.include_lengths:
-                    lengths = lengths.cuda()
+            arr = arr.cuda(device)
+            if self.include_lengths:
+                lengths = lengths.cuda(device)
         if self.include_lengths:
             return Variable(arr, volatile=not train), lengths
         return Variable(arr, volatile=not train)
