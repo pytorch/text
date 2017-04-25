@@ -415,7 +415,9 @@ class TabularDataset(Dataset):
             'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
 
         with open(os.path.expanduser(path)) as f:
-            examples = [make_example(line.decode('utf-8'), fields) for line in f]
+            examples = [
+                make_example(line.decode('utf-8') if six.PY2 else line, fields)
+                for line in f]
 
         if make_example in (Example.fromdict, Example.fromJSON):
             fields, field_dict = [], fields
