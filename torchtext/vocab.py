@@ -9,7 +9,7 @@ from six.moves.urllib.request import urlretrieve
 import torch
 from .utils import reporthook
 from tqdm import tqdm
-
+import six
 
 URL = {
         'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
@@ -57,7 +57,7 @@ def load_word_vectors(root, wv_type, dim):
             if wv_size is None:
                 wv_size = len(entries)
             try:
-                if isinstance(word, str):
+                if isinstance(word, six.string_types):
                     word = word.decode('utf-8')
             except:
                 print('non-UTF8 token', repr(word), 'ignored')
