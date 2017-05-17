@@ -57,7 +57,8 @@ def load_word_vectors(root, wv_type, dim):
             if wv_size is None:
                 wv_size = len(entries)
             try:
-                word = word.decode()
+                if isinstance(word, str):
+                    word = word.decode('utf-8')
             except:
                 print('non-UTF8 token', repr(word), 'ignored')
                 continue
