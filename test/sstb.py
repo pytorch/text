@@ -6,10 +6,11 @@ from torchtext import datasets
 # set up fields
 TEXT = data.Field()
 LABEL = data.Field(sequential=False)
+LENGTH = data.Field(sequential=False, use_vocab=False)
 
 # make splits for data
 train, val, test = datasets.SST.splits(
-    TEXT, LABEL, fine_grained=True, train_subtrees=True,
+    TEXT, LABEL, LENGTH, fine_grained=True, train_subtrees=True,
     filter_pred=lambda ex: ex.label != 'neutral')
 
 # print information about the data
@@ -42,3 +43,4 @@ train_iter, val_iter, test_iter = datasets.SST.iters(batch_size=4)
 batch = next(iter(train_iter))
 print(batch.text)
 print(batch.label)
+print(batch.length)
