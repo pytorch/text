@@ -10,6 +10,7 @@ import zipfile
 import six
 from six.moves import urllib
 import torch
+import torch.utils.data
 from torch.autograd import Variable
 
 from .vocab import Vocab
