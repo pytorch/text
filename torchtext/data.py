@@ -1,6 +1,5 @@
 from __future__ import print_function
-from collections import Counter
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 import csv
 import json
 import math
