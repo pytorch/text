@@ -1,10 +1,4 @@
 from __future__ import print_function
-import six
-import torch
-import torch.utils.data
-from torch.autograd import Variable
-from .vocab import Vocab
-
 from collections import Counter
 from collections import OrderedDict
 import csv
@@ -12,8 +6,14 @@ import json
 import math
 import os
 import random
-from six.moves import urllib
 import zipfile
+
+import six
+from six.moves import urllib
+import torch
+from torch.autograd import Variable
+
+from .vocab import Vocab
 
 
 class Pipeline(object):
