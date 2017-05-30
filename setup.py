@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-import os
-import shutil
-import sys
 from setuptools import setup, find_packages
 
 VERSION = '0.1.1'
