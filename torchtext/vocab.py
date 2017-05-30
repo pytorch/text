@@ -3,13 +3,13 @@ import array
 from collections import defaultdict
 import os
 import zipfile
-import requests
+
 import six
 from six.moves.urllib.request import urlretrieve
 import torch
-from .utils import reporthook
 from tqdm import tqdm
-import six
+
+from .utils import reporthook
 
 URL = {
         'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
