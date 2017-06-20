@@ -86,8 +86,8 @@ class Field(object):
     answer in a QA dataset), then they will have a shared vocabulary.
 
     Attributes:
-        sequential: Whether the datatype represents sequential data. Default:
-            True.
+        sequential: Whether the datatype represents sequential data. If False,
+            no tokenization is applied. Default: True.
         use_vocab: Whether to use a Vocab object. If False, the data in this
             field should already be numerical. Default: True.
         init_token: A token that will be prepended to every example using this
@@ -108,6 +108,9 @@ class Field(object):
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
             sequential examples. Default: str.split.
+        include_lengths: Whether to return a tuple of a padded minibatch and
+            a list containing the lengths of each examples, or just a padded
+            minibatch.
     """
 
     def __init__(
@@ -146,7 +149,8 @@ class Field(object):
         Pads to self.fix_length if provided, otherwise pads to the length of
         the longest example in the batch. Prepends self.init_token and appends
         self.eos_token if those attributes are not None. Returns a tuple of the
-        padded list and a list containing lengths of each example.
+        padded list and a list containing lengths of each example if
+        `self.include_lengths` is `True`, else just returns the padded list.
         """
         minibatch = list(minibatch)
         if not self.sequential:
