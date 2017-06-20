@@ -58,14 +58,10 @@ def get_tokenizer(tokenizer):
             spacy_en = spacy.load('en')
             return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
         except ImportError:
-            print('''Please install SpaCy and the SpaCy English tokenizer:
-    $ conda install libgcc
-    $ pip install spacy
-    $ python -m spacy.en.download tokenizer''')
+            print('''Please install SpaCy and the SpaCy English tokenizer. See the docs at https://spacy.io''')
             raise
         except AttributeError:
-            print('''Please install the SpaCy English tokenizer:
-    $ python -m spacy.en.download tokenizer''')
+            print('''Please install the SpaCy English tokenizer. See the docs at https://spacy.io''')
             raise
 
 
