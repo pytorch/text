@@ -92,6 +92,8 @@ class Field(object):
             field, or None for no end-of-sentence token. Default: None.
         fix_length: A fixed length that all examples using this field will be
             padded to, or None for flexible sequence lengths. Default: None.
+        batch_first: Whether to produce tensors with batch dimension first.
+            Default: False.
         tensor_type: The torch.Tensor class that represents a batch of examples
             of this kind of data. Default: torch.LongTensor.
         preprocessing: The Pipeline that will be applied to examples
@@ -113,7 +115,8 @@ class Field(object):
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
-            tokenize=(lambda s: s.split()), include_lengths=False):
+            tokenize=(lambda s: s.split()), include_lengths=False,
+            batch_first=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
@@ -123,6 +126,7 @@ class Field(object):
         self.tokenize = get_tokenizer(tokenize)
         self.lower = lower
         self.include_lengths = include_lengths
+        self.batch_first = batch_first
         self.preprocessing = (Pipeline() if preprocessing
                               is None else preprocessing)
         self.postprocessing = (Pipeline() if postprocessing
@@ -226,7 +230,7 @@ class Field(object):
         arr = self.tensor_type(arr)
         if self.include_lengths:
             lengths = torch.LongTensor(lengths)
-        if self.sequential:
+        if self.sequential and not self.batch_first:
             arr.t_()
         if device == -1:
             if self.sequential:
@@ -430,14 +434,15 @@ class TabularDataset(Dataset):
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
 
 
-def batch(data, batch_size):
+def batch(data, batch_size, batch_size_fn=lambda: 1):
     """Yield elements from data in chunks of batch_size."""
-    minibatch = []
+    minibatch, size_so_far = [], 0
     for ex in data:
         minibatch.append(ex)
-        if len(minibatch) == batch_size:
+        size_so_far += batch_size_fn(ex)
+        if size_so_far >= batch_size:
             yield minibatch
-            minibatch = []
+            minibatch, size_so_far = [], 0
     if minibatch:
         yield minibatch
 
@@ -448,15 +453,15 @@ def shuffled(data):
     return data
 
 
-def pool(data, batch_size, key):
+def pool(data, batch_size, key, batch_size_fn=len):
     """Sort within buckets, then batch, then shuffle batches.
 
     Partitions data into chunks of size 100*batch_size, sorts examples within
     each chunk using sort_key, then batch these examples and shuffle the
     batches.
     """
-    for p in batch(data, batch_size * 100):
-        for b in shuffled(batch(sorted(p, key=key), batch_size)):
+    for p in batch(data, batch_size * 100, batch_size_fn):
+        for b in shuffled(batch(sorted(p, key=key), batch_size, batch_size_fn)):
             yield b
 
 
@@ -502,6 +507,10 @@ class Iterator(object):
     Attributes:
         dataset: The Dataset object to load Examples from.
         batch_size: Batch size.
+        batch_size_fn: Function that, when applied to a list of examples,
+            determines the effective batch size of that list. This is useful
+            for dynamic batching, where this function would return the total
+            number of tokens.
         sort_key: A key to use for sorting examples in order to batch together
             examples with similar lengths and minimize padding. The sort_key
             provided to the Iterator constructor overrides the sort_key
@@ -516,9 +525,10 @@ class Iterator(object):
             currently active GPU device.
     """
 
-    def __init__(self, dataset, batch_size, sort_key=None, device=None,
-                 train=True, repeat=None, shuffle=None, sort=None):
+    def __init__(self, dataset, batch_size, batch_size_fn=len, sort_key=None,
+                 device=None, train=True, repeat=None, shuffle=None, sort=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
+        self.batch_size_fn = batch_size_fn
         self.iterations = 0
         self.repeat = train if repeat is None else repeat
         self.shuffle = train if shuffle is None else shuffle
@@ -562,7 +572,7 @@ class Iterator(object):
 
     def init_epoch(self):
         """Set up the batch generator for a new epoch."""
-        self.batches = batch(self.data(), self.batch_size)
+        self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
         if not self.repeat:
             self.iterations = 0
 
@@ -593,10 +603,11 @@ class BucketIterator(Iterator):
 
     def init_epoch(self):
         if self.sort:
-            self.batches = batch(self.data(), self.batch_size)
+            self.batches = batch(self.data(), self.batch_size,
+                                 self.batch_size_fn)
         else:
             self.batches = pool(self.data(), self.batch_size,
-                                self.sort_key)
+                                self.sort_key, self.batch_size_fn)
         if not self.repeat:
             self.iterations = 0
 
