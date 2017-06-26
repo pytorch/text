@@ -507,10 +507,10 @@ class Iterator(object):
     Attributes:
         dataset: The Dataset object to load Examples from.
         batch_size: Batch size.
-        batch_size_fn: Function that, when applied to a list of examples,
-            determines the effective batch size of that list. This is useful
-            for dynamic batching, where this function would return the total
-            number of tokens.
+        batch_size_fn: Function that, when applied to a single example,
+            determines the effective batch size increase from adding that
+            example to a batch. This is useful for dynamic batching, where
+            this function would return the number of tokens.
         sort_key: A key to use for sorting examples in order to batch together
             examples with similar lengths and minimize padding. The sort_key
             provided to the Iterator constructor overrides the sort_key
@@ -525,8 +525,9 @@ class Iterator(object):
             currently active GPU device.
     """
 
-    def __init__(self, dataset, batch_size, batch_size_fn=len, sort_key=None,
-                 device=None, train=True, repeat=None, shuffle=None, sort=None):
+    def __init__(self, dataset, batch_size, batch_size_fn=lambda: 1,
+                 sort_key=None, device=None, train=True, repeat=None,
+                 shuffle=None, sort=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0
