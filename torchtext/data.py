@@ -116,13 +116,13 @@ class Field(object):
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
             tokenize=(lambda s: s.split()), include_lengths=False,
-            batch_first=False):
+            batch_first=False, pad_token="<pad>"):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.fix_length = fix_length
         self.init_token = init_token
         self.eos_token = eos_token
-        self.pad_token = '<pad>' if self.sequential else None
+        self.pad_token = pad_token if self.sequential else None
         self.tokenize = get_tokenizer(tokenize)
         self.lower = lower
         self.include_lengths = include_lengths
@@ -166,7 +166,7 @@ class Field(object):
                 ([] if self.init_token is None else [self.init_token]) +
                 list(x[:max_len]) +
                 ([] if self.eos_token is None else [self.eos_token]) +
-                ['<pad>'] * max(0, max_len - len(x)))
+                [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
         if self.include_lengths:
             return (padded, lengths)
@@ -652,7 +652,7 @@ class BPTTIterator(Iterator):
         text = self.dataset[0].text
         TEXT = self.dataset.fields['text']
         TEXT.eos_token = None
-        text = text + ['<pad>'] * (math.ceil(len(text) / self.batch_size) *
+        text = text + [TEXT.pad_token] * (math.ceil(len(text) / self.batch_size) *
                                    self.batch_size - len(text))
         data = TEXT.numericalize(
             [text], device=self.device, train=self.train)
