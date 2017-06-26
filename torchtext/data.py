@@ -434,7 +434,7 @@ class TabularDataset(Dataset):
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
 
 
-def batch(data, batch_size, batch_size_fn=lambda: 1):
+def batch(data, batch_size, batch_size_fn=lambda x: 1):
     """Yield elements from data in chunks of batch_size."""
     minibatch, size_so_far = [], 0
     for ex in data:
@@ -525,7 +525,7 @@ class Iterator(object):
             currently active GPU device.
     """
 
-    def __init__(self, dataset, batch_size, batch_size_fn=lambda: 1,
+    def __init__(self, dataset, batch_size, batch_size_fn=lambda x: 1,
                  sort_key=None, device=None, train=True, repeat=None,
                  shuffle=None, sort=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
