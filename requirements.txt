@@ -7,3 +7,6 @@ tqdm
 
 # Downloading data and other files
 requests
+
+# style-checking for PEP8
+flake8
