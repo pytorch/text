@@ -1,4 +1,9 @@
+# NLP tools
 nltk
-requests
 spacy
+
+# Progress bars on iterators
 tqdm
+
+# Downloading data and other files
+requests
