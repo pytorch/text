@@ -8,5 +8,11 @@ tqdm
 # Downloading data and other files
 requests
 
-# style-checking for PEP8
+# Style-checking for PEP8
 flake8
+
+# Run unit tests
+pytest
+
+# Lets pytest find our code by automatically modifying PYTHONPATH
+pytest-pythonpath
