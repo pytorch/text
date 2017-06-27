@@ -16,3 +16,7 @@ pytest
 
 # Lets pytest find our code by automatically modifying PYTHONPATH
 pytest-pythonpath
+
+# Coverage statistics
+pytest-cov
+codecov
