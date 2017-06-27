@@ -94,23 +94,24 @@ class Field(object):
             field, or None for no end-of-sentence token. Default: None.
         fix_length: A fixed length that all examples using this field will be
             padded to, or None for flexible sequence lengths. Default: None.
-        batch_first: Whether to produce tensors with batch dimension first.
-            Default: False.
         tensor_type: The torch.Tensor class that represents a batch of examples
             of this kind of data. Default: torch.LongTensor.
         preprocessing: The Pipeline that will be applied to examples
             using this field after tokenizing but before numericalizing. Many
             Datasets replace this attribute with a custom preprocessor.
-            Default: the identity pipeline.
+            Default: the identity Pipeline.
         postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
-            into a Tensor. Default: the identity pipeline.
+            into a Tensor. Default: the identity Pipeline.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
             sequential examples. Default: str.split.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
-            minibatch.
+            minibatch. Default: False.
+        batch_first: Whether to produce tensors with the batch dimension first.
+            Default: False.
+        pad_token: The string token used as padding. Default: "<pad>".
     """
 
     def __init__(
@@ -121,19 +122,19 @@ class Field(object):
             batch_first=False, pad_token="<pad>"):
         self.sequential = sequential
         self.use_vocab = use_vocab
-        self.fix_length = fix_length
         self.init_token = init_token
         self.eos_token = eos_token
-        self.pad_token = pad_token if self.sequential else None
-        self.tokenize = get_tokenizer(tokenize)
-        self.lower = lower
-        self.include_lengths = include_lengths
-        self.batch_first = batch_first
+        self.fix_length = fix_length
+        self.tensor_type = tensor_type
         self.preprocessing = (Pipeline() if preprocessing
                               is None else preprocessing)
         self.postprocessing = (Pipeline() if postprocessing
                                is None else postprocessing)
-        self.tensor_type = tensor_type
+        self.lower = lower
+        self.tokenize = get_tokenizer(tokenize)
+        self.include_lengths = include_lengths
+        self.batch_first = batch_first
+        self.pad_token = pad_token if self.sequential else None
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary."""
