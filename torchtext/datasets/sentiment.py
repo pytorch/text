@@ -1,4 +1,3 @@
-from nltk.tree import Tree
 import os
 
 from .. import data
