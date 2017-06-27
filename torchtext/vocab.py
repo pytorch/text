@@ -7,16 +7,16 @@ import zipfile
 import six
 from six.moves.urllib.request import urlretrieve
 import torch
-from tqdm import tqdm
+from tqdm import trange, tqdm
 
 from .utils import reporthook
 
 URL = {
-        'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-        'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-        'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
-        }
+    'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
+    'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
+    'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
+    'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
+}
 
 
 def load_word_vectors(root, wv_type, dim):
@@ -51,7 +51,8 @@ def load_word_vectors(root, wv_type, dim):
 
     wv_tokens, wv_arr, wv_size = [], array.array('d'), None
     if cm is not None:
-        for line in tqdm(range(len(cm)), desc="loading word vectors from {}".format(fname_txt)):
+        print("Loading word vectors from {}".format(fname_txt))
+        for line in trange(len(cm)):
             entries = cm[line].strip().split(b' ')
             word, entries = entries[0], entries[1:]
             if wv_size is None:
@@ -143,7 +144,8 @@ class Vocab(object):
     def __len__(self):
         return len(self.itos)
 
-    def load_vectors(self, wv_dir=os.getcwd(), wv_type=None, wv_dim=300, unk_init='random'):
+    def load_vectors(self, wv_dir=os.getcwd(), wv_type=None, wv_dim=300,
+                     unk_init='random'):
         """Loads word vectors into the vocab
 
         Arguments:
