@@ -12,10 +12,10 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - env: PYTHON_VERSION="2.7"
-    - env: PYTHON_VERSION="2.7.8"
-    - env: PYTHON_VERSION="3.5"
-    - env: PYTHON_VERSION="3.6"
+    - env: PYTHON_VERSION="2.7" COVERAGE="true"
+    - env: PYTHON_VERSION="2.7.8" COVERAGE="true"
+    - env: PYTHON_VERSION="3.5" COVERAGE="true"
+    - env: PYTHON_VERSION="3.6" COVERAGE="true"
     - env: PYTHON_VERSION="2.7" RUN_FLAKE8="true" SKIP_TESTS="true"
 
 notifications:
