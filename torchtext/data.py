@@ -58,10 +58,12 @@ def get_tokenizer(tokenizer):
             spacy_en = spacy.load('en')
             return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
         except ImportError:
-            print('''Please install SpaCy and the SpaCy English tokenizer. See the docs at https://spacy.io''')
+            print("Please install SpaCy and the SpaCy English tokenizer. "
+                  "See the docs at https://spacy.io for more information.")
             raise
         except AttributeError:
-            print('''Please install the SpaCy English tokenizer. See the docs at https://spacy.io''')
+            print("Please install SpaCy and the SpaCy English tokenizer. "
+                  "See the docs at https://spacy.io for more information.")
             raise
 
 
@@ -652,8 +654,8 @@ class BPTTIterator(Iterator):
         text = self.dataset[0].text
         TEXT = self.dataset.fields['text']
         TEXT.eos_token = None
-        text = text + [TEXT.pad_token] * (math.ceil(len(text) / self.batch_size) *
-                                   self.batch_size - len(text))
+        text = text + ([TEXT.pad_token] * (math.ceil(len(text) / self.batch_size) *
+                                           self.batch_size - len(text)))
         data = TEXT.numericalize(
             [text], device=self.device, train=self.train)
         data = data.view(self.batch_size, -1).t().contiguous()
