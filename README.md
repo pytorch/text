@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/pytorch/text.svg?branch=master)](https://travis-ci.org/pytorch/text)
+[![codecov](https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg)](https://codecov.io/gh/pytorch/text)
+
 # [WIP] torch-text
 
 This repository consists of:
