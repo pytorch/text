@@ -9,8 +9,10 @@ spacy_en = spacy.load('en')
 
 url = re.compile('(<url>.*</url>)')
 
+
 def tokenize_de(text):
     return [tok.text for tok in spacy_de.tokenizer(url.sub('@URL@', text))]
+
 
 def tokenize_en(text):
     return [tok.text for tok in spacy_en.tokenizer(url.sub('@URL@', text))]

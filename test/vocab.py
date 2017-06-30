@@ -1,4 +1,3 @@
-import torch
 from torchtext import vocab
 
 from collections import Counter
