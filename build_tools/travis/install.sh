@@ -50,7 +50,10 @@ source activate testenv
 # Install requirements via pip in our conda environment
 pip install -r requirements.txt
 
-# Install PyTorch if we are running tests
+# Install the following only if running tests
 if [[ "$SKIP_TESTS" != "true" ]]; then
+    # SpaCy English models
+    python -m spacy download en
+    # PyTorch
     conda install --yes pytorch torchvision -c soumith
 fi
