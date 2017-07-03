@@ -2,8 +2,8 @@ from unittest import TestCase
 import torchtext.data as data
 
 
-class TestData(TestCase):
-    def test_field_preprocess(self):
+class TestField(TestCase):
+    def test_preprocess(self):
         field = data.Field()
         assert field.preprocess("Test string.") == ["Test", "string."]
 
