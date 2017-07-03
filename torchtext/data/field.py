@@ -189,7 +189,7 @@ class Field(object):
 
 
 def get_tokenizer(tokenizer):
-    if not isinstance(tokenizer, six.string_types):
+    if callable(tokenizer):
         return tokenizer
     if tokenizer == 'spacy':
         try:
@@ -204,3 +204,7 @@ def get_tokenizer(tokenizer):
             print("Please install SpaCy and the SpaCy English tokenizer. "
                   "See the docs at https://spacy.io for more information.")
             raise
+    raise ValueError("Requested tokenizer {}, valid choices are a "
+                     "callable that takes a single string as input "
+                     "and \"spacy\" for the SpaCy English "
+                     "tokenizer.".format(tokenizer))
