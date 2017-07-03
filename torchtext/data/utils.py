@@ -1,3 +1,25 @@
+def get_tokenizer(tokenizer):
+    if callable(tokenizer):
+        return tokenizer
+    if tokenizer == 'spacy':
+        try:
+            import spacy
+            spacy_en = spacy.load('en')
+            return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
+        except ImportError:
+            print("Please install SpaCy and the SpaCy English tokenizer. "
+                  "See the docs at https://spacy.io for more information.")
+            raise
+        except AttributeError:
+            print("Please install SpaCy and the SpaCy English tokenizer. "
+                  "See the docs at https://spacy.io for more information.")
+            raise
+    raise ValueError("Requested tokenizer {}, valid choices are a "
+                     "callable that takes a single string as input "
+                     "and \"spacy\" for the SpaCy English "
+                     "tokenizer.".format(tokenizer))
+
+
 def interleave_keys(a, b):
     """Interleave bits from two sort keys to form a joint sort key.
 
