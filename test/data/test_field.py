@@ -1,4 +1,6 @@
 from unittest import TestCase
+
+import six
 import torchtext.data as data
 
 
@@ -94,7 +96,7 @@ class TestField(TestCase):
         assert data.get_tokenizer(str.split)(test_str) == str.split(test_str)
 
         # Test SpaCy option, and verify it properly handles punctuation.
-        assert data.get_tokenizer("spacy")(test_str) == [
+        assert data.get_tokenizer("spacy")(six.text_type(test_str)) == [
             "A", "string", ",", "particularly", "one", "with", "slightly",
             "complex", "punctuation", "."]
 
