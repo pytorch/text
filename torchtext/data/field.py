@@ -81,10 +81,9 @@ class Field(object):
         """Load a single example using this field, tokenizing if necessary."""
         if self.sequential and isinstance(x, six.string_types):
             x = self.tokenize(x)
+        x = Pipeline(six.text_type)(x)
         if self.lower:
-            pipeline = Pipeline(six.text_type)
-            pipeline.add_after(six.text_type.lower)
-            x = pipeline(x)
+            x = Pipeline(six.text_type.lower)(x)
         return self.preprocessing(x)
 
     def pad(self, minibatch):
