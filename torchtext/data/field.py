@@ -79,7 +79,7 @@ class Field(object):
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
-        
+
         If the input is a Python 2 `str`, it will be converted to Unicode
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
