@@ -84,8 +84,9 @@ class Field(object):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if self.sequential and isinstance(x, six.string_types):
+        if six.PY2 and isinstance(x, six.string_types):
             x = Pipeline(six.text_type)(x)
+        if self.sequential:
             x = self.tokenize(x)
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
