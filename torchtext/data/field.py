@@ -78,10 +78,15 @@ class Field(object):
         self.pad_token = pad_token if self.sequential else None
 
     def preprocess(self, x):
-        """Load a single example using this field, tokenizing if necessary."""
+        """Load a single example using this field, tokenizing if necessary.
+        
+        If the input is a Python 2 `str`, it will be converted to Unicode
+        first. If `sequential=True`, it will be tokenized. Then the input
+        will be optionally lowercased and passed to the user-provided
+        `preprocessing` Pipeline."""
         if self.sequential and isinstance(x, six.string_types):
+            x = Pipeline(six.text_type)(x)
             x = self.tokenize(x)
-        x = Pipeline(six.text_type)(x)
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
         return self.preprocessing(x)
