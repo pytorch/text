@@ -21,6 +21,8 @@ class Batch(object):
                     setattr(self, name, field.numericalize(
                         field.pad(x.__dict__[name] for x in data),
                         device=device, train=train))
+                else:
+                    setattr(self, name, [x.__dict__[name] for x in data])
 
     @classmethod
     def fromvars(cls, dataset, batch_size, train=True, **kwargs):

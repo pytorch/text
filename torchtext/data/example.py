@@ -21,7 +21,10 @@ class Example(object):
                     vals = [vals]
                 for val in vals:
                     name, field = val
-                    setattr(ex, name, field.preprocess(data[key]))
+                    if field is not None:
+                        setattr(ex, name, field.preprocess(data[key]))
+                    else:
+                        setattr(ex, name, data[key])
         return ex
 
     @classmethod
@@ -42,6 +45,8 @@ class Example(object):
         for (name, field), val in zip(fields, data):
             if field is not None:
                 setattr(ex, name, field.preprocess(val))
+            else:
+                setattr(ex, name, val)
         return ex
 
     @classmethod
