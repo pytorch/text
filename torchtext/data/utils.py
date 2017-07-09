@@ -1,7 +1,7 @@
 def get_tokenizer(tokenizer):
     if callable(tokenizer):
         return tokenizer
-    if tokenizer == 'spacy':
+    if tokenizer == "spacy":
         try:
             import spacy
             spacy_en = spacy.load('en')
@@ -14,10 +14,24 @@ def get_tokenizer(tokenizer):
             print("Please install SpaCy and the SpaCy English tokenizer. "
                   "See the docs at https://spacy.io for more information.")
             raise
+    elif tokenizer == "moses":
+        try:
+            from nltk.tokenize.moses import MosesTokenizer
+            moses_tokenizer = MosesTokenizer()
+            return moses_tokenizer.tokenize
+        except ImportError:
+            print("Please install NLTK. "
+                  "See the docs at http://nltk.org for more information.")
+            raise
+        except LookupError:
+            print("Please install the necessary NLTK corpora. "
+                  "See the docs at http://nltk.org for more information.")
+            raise
     raise ValueError("Requested tokenizer {}, valid choices are a "
-                     "callable that takes a single string as input "
-                     "and \"spacy\" for the SpaCy English "
-                     "tokenizer.".format(tokenizer))
+                     "callable that takes a single string as input, "
+                     "\"spacy\" for the SpaCy English tokenizer, or "
+                     "\"moses\" for the NLTK port of the Moses tokenization "
+                     "script.".format(tokenizer))
 
 
 def interleave_keys(a, b):
