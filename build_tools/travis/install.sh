@@ -54,6 +54,10 @@ pip install -r requirements.txt
 if [[ "$SKIP_TESTS" != "true" ]]; then
     # SpaCy English models
     python -m spacy download en
+
+    # NLTK data needed for Moses tokenizer
+    python -m nltk.downloader perluniprops nonbreaking_prefixes
+
     # PyTorch
     conda install --yes pytorch torchvision -c soumith
 fi
