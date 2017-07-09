@@ -49,8 +49,8 @@ class Example(object):
         try:
             from nltk.tree import Tree
         except ImportError:
-            print('''Please install NLTK:
-    $ pip install nltk''')
+            print("Please install NLTK. "
+                  "See the docs at http://nltk.org for more information.")
             raise
         tree = Tree.fromstring(data)
         if subtrees:
