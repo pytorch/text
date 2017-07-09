@@ -7,3 +7,4 @@ torchtext.egg-info/
 */**/*.pyc
 */**/*~
 *~
+.cache
