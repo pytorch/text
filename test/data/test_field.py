@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-import six
 import torchtext.data as data
 
 
@@ -88,20 +87,3 @@ class TestField(TestCase):
         field = data.Field(init_token="<bos>", eos_token="<eos>",
                            sequential=False, include_lengths=True)
         assert field.pad(minibatch) == minibatch
-
-    def test_get_tokenizer(self):
-        # Test the default case with str.split
-        assert data.get_tokenizer(str.split) == str.split
-        test_str = "A string, particularly one with slightly complex punctuation."
-        assert data.get_tokenizer(str.split)(test_str) == str.split(test_str)
-
-        # Test SpaCy option, and verify it properly handles punctuation.
-        assert data.get_tokenizer("spacy")(six.text_type(test_str)) == [
-            "A", "string", ",", "particularly", "one", "with", "slightly",
-            "complex", "punctuation", "."]
-
-        # Test that errors are raised for invalid input arguments.
-        with self.assertRaises(ValueError):
-            data.get_tokenizer(1)
-        with self.assertRaises(ValueError):
-            data.get_tokenizer("some other string")
