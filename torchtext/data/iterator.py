@@ -13,10 +13,11 @@ class Iterator(object):
     Attributes:
         dataset: The Dataset object to load Examples from.
         batch_size: Batch size.
-        batch_size_fn: Function that, when applied to a single example,
-            determines the effective batch size increase from adding that
-            example to a batch. This is useful for dynamic batching, where
-            this function would return the number of tokens.
+        batch_size_fn: Function of two arguments (new example to add and
+            current effective batch size) that returns the new effective batch
+            size resulting from adding that example to a batch. This is useful
+            for dynamic batching, where this function would add to the current
+            effective batch size the number of tokens in the new example.
         sort_key: A key to use for sorting examples in order to batch together
             examples with similar lengths and minimize padding. The sort_key
             provided to the Iterator constructor overrides the sort_key
@@ -31,9 +32,9 @@ class Iterator(object):
             currently active GPU device.
     """
 
-    def __init__(self, dataset, batch_size, batch_size_fn=lambda x: 1,
-                 sort_key=None, device=None, train=True, repeat=None,
-                 shuffle=None, sort=None):
+    def __init__(self, dataset, batch_size, sort_key=None, device=None,
+                 batch_size_fn=lambda new, sofar: sofar + 1, train=True,
+                 repeat=None, shuffle=None, sort=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0
@@ -176,12 +177,12 @@ class BucketIterator(Iterator):
             self.iterations = 0
 
 
-def batch(data, batch_size, batch_size_fn=lambda x: 1):
+def batch(data, batch_size, batch_size_fn=lambda new, sofar: sofar + 1):
     """Yield elements from data in chunks of batch_size."""
     minibatch, size_so_far = [], 0
     for ex in data:
         minibatch.append(ex)
-        size_so_far += batch_size_fn(ex)
+        size_so_far = batch_size_fn(ex, size_so_far)
         if size_so_far >= batch_size:
             yield minibatch
             minibatch, size_so_far = [], 0
@@ -195,7 +196,7 @@ def shuffled(data):
     return data
 
 
-def pool(data, batch_size, key, batch_size_fn=len):
+def pool(data, batch_size, key, batch_size_fn=lambda new, sofar: sofar + 1):
     """Sort within buckets, then batch, then shuffle batches.
 
     Partitions data into chunks of size 100*batch_size, sorts examples within
