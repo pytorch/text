@@ -1,11 +1,34 @@
 import math
 import random
+from contextlib import contextmanager
+from copy import deepcopy
 
 import torch
 
 from .batch import Batch
 from .dataset import Dataset
 
+class RandomShuffler(object):
+    """Use random functions while keeping track of the random state to make it
+    reproducible and deterministic."""
+
+    def __init__(self, random_state=None):
+        self.random_state = random_state
+        if self.random_state is None:
+            self.random_state = random.getstate()
+
+    @contextmanager
+    def use_internal_state(self):
+        """Use a specific RNG state."""
+        old_state = random.getstate()
+        random.setstate(self.random_state)
+        yield
+        self.random_state = random.getstate()
+        random.setstate(old_state)
+
+    def shuffle(self, data):
+        with self.use_internal_state():
+            random.shuffle(data)
 
 class Iterator(object):
     """Defines an iterator that loads batches of data from a Dataset.
@@ -48,6 +71,13 @@ class Iterator(object):
             self.sort_key = sort_key
         self.device = device
 
+        self.random_shuffler = RandomShuffler()
+
+        # For state loading/saving only
+        self._iterations_this_epoch = 0
+        self._random_state_this_epoch = None
+        self._restored_from_state = False
+
     @classmethod
     def splits(cls, datasets, batch_sizes=None, **kwargs):
         """Create Iterator objects for multiple splits of a dataset.
@@ -72,7 +102,9 @@ class Iterator(object):
     def data(self):
         """Return the examples in the dataset in order, sorted, or shuffled."""
         if self.shuffle:
-            xs = [self.dataset[i] for i in torch.randperm(len(self.dataset))]
+            randperm = list(range(len(self.dataset)))
+            self.random_shuffler.shuffle(randperm)
+            xs = [self.dataset[i] for i in randperm]
         elif self.sort:
             xs = sorted(self.dataset, key=self.sort_key)
         else:
@@ -81,7 +113,17 @@ class Iterator(object):
 
     def init_epoch(self):
         """Set up the batch generator for a new epoch."""
-        self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
+
+        if self._restored_from_state:
+            self.random_shuffler.random_state = self._random_state_this_epoch
+            self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
+            self._restored_from_state = False
+
+        else:
+            self._random_state_this_epoch = deepcopy(self.random_shuffler.random_state)
+            self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
+            self._iterations_this_epoch = 0
+
         if not self.repeat:
             self.iterations = 0
 
@@ -95,13 +137,30 @@ class Iterator(object):
     def __iter__(self):
         while True:
             self.init_epoch()
-            for minibatch in self.batches:
+            fast_forward = self._iterations_this_epoch
+            for idx, minibatch in enumerate(self.batches):
+
+                # fast-forward if loaded from state
+                if self._iterations_this_epoch > idx:
+                    continue
                 self.iterations += 1
+                self._iterations_this_epoch += 1
                 yield Batch(minibatch, self.dataset, self.device,
                             self.train)
             if not self.repeat:
                 raise StopIteration
 
+    def state_dict(self):
+        return {
+            "iterations": self.iterations,
+            "iterations_this_epoch": self._iterations_this_epoch,
+            "random_state_this_epoch": self._random_state_this_epoch}
+
+    def load_state_dict(self, state_dict):
+        self.iterations = state_dict["iterations"]
+        self._iterations_this_epoch = state_dict["iterations_this_epoch"]
+        self._random_state_this_epoch = state_dict["random_state_this_epoch"]
+        self._restored_from_state = True
 
 class BPTTIterator(Iterator):
     """Defines an iterator for language modeling tasks that use BPTT.
@@ -168,12 +227,24 @@ class BucketIterator(Iterator):
     """
 
     def init_epoch(self):
+        if self._restored_from_state:
+            self.random_shuffler.random_state = self._random_state_this_epoch
+        else:
+            self._random_state_this_epoch = deepcopy(self.random_shuffler.random_state)
+
         if self.sort:
             self.batches = batch(self.data(), self.batch_size,
                                  self.batch_size_fn)
         else:
             self.batches = pool(self.data(), self.batch_size,
-                                self.sort_key, self.batch_size_fn)
+                                self.sort_key, self.batch_size_fn,
+                                random_shuffler=self.random_shuffler)
+
+        if self._restored_from_state:
+            self._restored_from_state = False
+        else:
+            self._iterations_this_epoch = 0
+
         if not self.repeat:
             self.iterations = 0
 
@@ -194,19 +265,22 @@ def batch(data, batch_size, batch_size_fn=lambda new, count, sofar: count):
         yield minibatch
 
 
-def shuffled(data):
+def shuffled(data, random_shuffler):
     data = list(data)
-    random.shuffle(data)
+    random_shuffler.shuffle(data)
     return data
 
 
-def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count):
+def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
+         random_shuffler=None):
     """Sort within buckets, then batch, then shuffle batches.
 
     Partitions data into chunks of size 100*batch_size, sorts examples within
     each chunk using sort_key, then batch these examples and shuffle the
     batches.
     """
+    if random_shuffler is None:
+        random_shuffler = random
     for p in batch(data, batch_size * 100, batch_size_fn):
-        for b in shuffled(batch(sorted(p, key=key), batch_size, batch_size_fn)):
+        for b in shuffled(batch(sorted(p, key=key), batch_size, batch_size_fn), random_shuffler):
             yield b
