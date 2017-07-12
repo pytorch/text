@@ -11,18 +11,26 @@ class RandomShuffler(object):
     reproducible and deterministic."""
 
     def __init__(self, random_state=None):
-        self.random_state = random_state
-        if self.random_state is None:
-            self.random_state = random.getstate()
+        self._random_state = random_state
+        if self._random_state is None:
+            self._random_state = random.getstate()
 
     @contextmanager
     def use_internal_state(self):
         """Use a specific RNG state."""
         old_state = random.getstate()
-        random.setstate(self.random_state)
+        random.setstate(self._random_state)
         yield
-        self.random_state = random.getstate()
+        self._random_state = random.getstate()
         random.setstate(old_state)
+
+    @property
+    def random_state(self):
+        return deepcopy(self._random_state)
+
+    @random_state.setter
+    def random_state(self, s):
+        self._random_state = s
 
     def __call__(self, data):
         """Shuffle and return a new list."""
@@ -114,7 +122,7 @@ class Iterator(object):
         if self._restored_from_state:
             self.random_shuffler.random_state = self._random_state_this_epoch
         else:
-            self._random_state_this_epoch = deepcopy(self.random_shuffler.random_state)
+            self._random_state_this_epoch = self.random_shuffler.random_state
 
         self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
 
@@ -227,7 +235,7 @@ class BucketIterator(Iterator):
         if self._restored_from_state:
             self.random_shuffler.random_state = self._random_state_this_epoch
         else:
-            self._random_state_this_epoch = deepcopy(self.random_shuffler.random_state)
+            self._random_state_this_epoch = self.random_shuffler.random_state
 
         if self.sort:
             self.batches = batch(self.data(), self.batch_size,
