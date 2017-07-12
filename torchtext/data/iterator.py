@@ -27,8 +27,7 @@ class RandomShuffler(object):
     def __call__(self, data):
         """Shuffle and return a new list."""
         with self.use_internal_state():
-            list_data = list(data)
-            return random.sample(list_data, len(list_data))
+            return random.sample(data, len(data))
 
 class Iterator(object):
     """Defines an iterator that loads batches of data from a Dataset.
@@ -274,5 +273,5 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        for b in random_shuffler(batch(sorted(p, key=key), batch_size, batch_size_fn)):
+        for b in random_shuffler(list(batch(sorted(p, key=key), batch_size, batch_size_fn))):
             yield b
