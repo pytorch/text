@@ -87,7 +87,7 @@ class Field(object):
         `preprocessing` Pipeline."""
         if six.PY2 and isinstance(x, six.string_types):
             x = Pipeline(lambda s: unicode(s, encoding='utf-8'))(x)
-        if self.sequential:
+        if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x)
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
