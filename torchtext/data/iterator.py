@@ -135,9 +135,7 @@ class Iterator(object):
     def __iter__(self):
         while True:
             self.init_epoch()
-            fast_forward = self._iterations_this_epoch
             for idx, minibatch in enumerate(self.batches):
-
                 # fast-forward if loaded from state
                 if self._iterations_this_epoch > idx:
                     continue
