@@ -114,12 +114,14 @@ class Iterator(object):
 
         if self._restored_from_state:
             self.random_shuffler.random_state = self._random_state_this_epoch
-            self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
-            self._restored_from_state = False
-
         else:
             self._random_state_this_epoch = deepcopy(self.random_shuffler.random_state)
-            self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
+
+        self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
+
+        if self._restored_from_state:
+            self._restored_from_state = False
+        else:
             self._iterations_this_epoch = 0
 
         if not self.repeat:
