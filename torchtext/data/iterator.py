@@ -24,9 +24,11 @@ class RandomShuffler(object):
         self.random_state = random.getstate()
         random.setstate(old_state)
 
-    def shuffle(self, data):
+    def __call__(self, data):
+        """Shuffle and return a new list."""
         with self.use_internal_state():
-            random.shuffle(data)
+            list_data = list(data)
+            return random.sample(list_data, len(list_data))
 
 class Iterator(object):
     """Defines an iterator that loads batches of data from a Dataset.
@@ -100,9 +102,7 @@ class Iterator(object):
     def data(self):
         """Return the examples in the dataset in order, sorted, or shuffled."""
         if self.shuffle:
-            randperm = list(range(len(self.dataset)))
-            self.random_shuffler.shuffle(randperm)
-            xs = [self.dataset[i] for i in randperm]
+            xs = [self.dataset[i] for i in self.random_shuffler(range(len(self.dataset)))]
         elif self.sort:
             xs = sorted(self.dataset, key=self.sort_key)
         else:
@@ -261,12 +261,6 @@ def batch(data, batch_size, batch_size_fn=lambda new, count, sofar: count):
         yield minibatch
 
 
-def shuffled(data, random_shuffler):
-    data = list(data)
-    random_shuffler.shuffle(data)
-    return data
-
-
 def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
          random_shuffler=None):
     """Sort within buckets, then batch, then shuffle batches.
@@ -276,7 +270,7 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     batches.
     """
     if random_shuffler is None:
-        random_shuffler = random
+        random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        for b in shuffled(batch(sorted(p, key=key), batch_size, batch_size_fn), random_shuffler):
+        for b in random_shuffler(batch(sorted(p, key=key), batch_size, batch_size_fn)):
             yield b

@@ -3,7 +3,7 @@ from .dataset import Dataset, TabularDataset, ZipDataset
 from .example import Example
 from .field import Field
 from .iterator import (batch, BucketIterator, Iterator, BPTTIterator,
-                       pool, shuffled)
+                       pool)
 from .pipeline import Pipeline
 from .utils import get_tokenizer, interleave_keys
 
@@ -12,6 +12,6 @@ __all__ = ["Batch",
            "Example",
            "Field",
            "batch", "BucketIterator", "Iterator", "BPTTIterator",
-           "pool", "shuffled",
+           "pool",
            "Pipeline",
            "get_tokenizer", "interleave_keys"]
