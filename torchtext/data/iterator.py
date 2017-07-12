@@ -3,8 +3,6 @@ import random
 from contextlib import contextmanager
 from copy import deepcopy
 
-import torch
-
 from .batch import Batch
 from .dataset import Dataset
 
