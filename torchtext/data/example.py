@@ -21,10 +21,10 @@ class Example(object):
                     vals = [vals]
                 for val in vals:
                     name, field = val
-                    if field is not None:
-                        setattr(ex, name, field.preprocess(data[key]))
-                    else:
+                    if field is None:
                         setattr(ex, name, data[key])
+                    else:
+                        setattr(ex, name, field.preprocess(data[key]))
         return ex
 
     @classmethod
@@ -43,10 +43,10 @@ class Example(object):
     def fromlist(cls, data, fields):
         ex = cls()
         for (name, field), val in zip(fields, data):
-            if field is not None:
-                setattr(ex, name, field.preprocess(val))
-            else:
+            if field is None:
                 setattr(ex, name, val)
+            else:
+                setattr(ex, name, field.preprocess(val))
         return ex
 
     @classmethod
