@@ -124,7 +124,7 @@ class Iterator(object):
         else:
             self._random_state_this_epoch = self.random_shuffler.random_state
 
-        self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
+        self.create_batches()
 
         if self._restored_from_state:
             self._restored_from_state = False
@@ -133,6 +133,9 @@ class Iterator(object):
 
         if not self.repeat:
             self.iterations = 0
+
+    def create_batches(self):
+        self.batches = batch(self.data(), self.batch_size, self.batch_size_fn)
 
     @property
     def epoch(self):
@@ -231,12 +234,7 @@ class BucketIterator(Iterator):
     batches for each new epoch. See pool for the bucketing procedure used.
     """
 
-    def init_epoch(self):
-        if self._restored_from_state:
-            self.random_shuffler.random_state = self._random_state_this_epoch
-        else:
-            self._random_state_this_epoch = self.random_shuffler.random_state
-
+    def create_batches(self):
         if self.sort:
             self.batches = batch(self.data(), self.batch_size,
                                  self.batch_size_fn)
@@ -244,14 +242,6 @@ class BucketIterator(Iterator):
             self.batches = pool(self.data(), self.batch_size,
                                 self.sort_key, self.batch_size_fn,
                                 random_shuffler=self.random_shuffler)
-
-        if self._restored_from_state:
-            self._restored_from_state = False
-        else:
-            self._iterations_this_epoch = 0
-
-        if not self.repeat:
-            self.iterations = 0
 
 
 def batch(data, batch_size, batch_size_fn=lambda new, count, sofar: count):
