@@ -6,6 +6,7 @@ from copy import deepcopy
 from .batch import Batch
 from .dataset import Dataset
 
+
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""
@@ -36,6 +37,7 @@ class RandomShuffler(object):
         """Shuffle and return a new list."""
         with self.use_internal_state():
             return random.sample(data, len(data))
+
 
 class Iterator(object):
     """Defines an iterator that loads batches of data from a Dataset.
@@ -170,6 +172,7 @@ class Iterator(object):
         self._random_state_this_epoch = state_dict["random_state_this_epoch"]
         self._restored_from_state = True
 
+
 class BPTTIterator(Iterator):
     """Defines an iterator for language modeling tasks that use BPTT.
 
@@ -271,5 +274,7 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        for b in random_shuffler(list(batch(sorted(p, key=key), batch_size, batch_size_fn))):
+        shuffled = random_shuffler(list(batch(
+                sorted(p, key=key), batch_size, batch_size_fn)))
+        for b in shuffled:
             yield b
