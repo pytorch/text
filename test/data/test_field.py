@@ -24,6 +24,11 @@ class TestField(TestCase):
                                           preprocessing=preprocess_pipeline)
         assert field_not_sequential.preprocess("Test string.") == "test string.!"
 
+        # Non-regression test that we do not try to decode unicode strings to unicode
+        field_not_sequential = data.Field(sequential=False, lower=True,
+                                          preprocessing=preprocess_pipeline)
+        assert field_not_sequential.preprocess(u"Test string.") == "test string.!"
+
     def test_pad(self):
         # Default case.
         field = data.Field()
