@@ -41,10 +41,10 @@ class Field(object):
         preprocessing: The Pipeline that will be applied to examples
             using this field after tokenizing but before numericalizing. Many
             Datasets replace this attribute with a custom preprocessor.
-            Default: the identity Pipeline.
+            Default: None.
         postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
-            into a Tensor. Default: the identity Pipeline.
+            into a Tensor. Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
             sequential examples. Default: str.split.
@@ -68,10 +68,8 @@ class Field(object):
         self.eos_token = eos_token
         self.fix_length = fix_length
         self.tensor_type = tensor_type
-        self.preprocessing = (Pipeline() if preprocessing
-                              is None else preprocessing)
-        self.postprocessing = (Pipeline() if postprocessing
-                               is None else postprocessing)
+        self.preprocessing = preprocessing
+        self.postprocessing = postprocessing
         self.lower = lower
         self.tokenize = get_tokenizer(tokenize)
         self.include_lengths = include_lengths
@@ -91,7 +89,10 @@ class Field(object):
             x = self.tokenize(x)
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
-        return self.preprocessing(x)
+        if self.preprocessing is not None:
+            return self.preprocessing(x)
+        else:
+            return x
 
     def pad(self, minibatch):
         """Pad a batch of examples using this field.
@@ -174,8 +175,10 @@ class Field(object):
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
             else:
                 arr = [self.vocab.stoi[x] for x in arr]
-            arr = self.postprocessing(arr, self.vocab, train)
-        else:
+
+            if self.postprocessing is not None:
+                arr = self.postprocessing(arr, self.vocab, train)
+        elif self.postprocessing is not None:
             arr = self.postprocessing(arr, train)
         arr = self.tensor_type(arr)
         if self.include_lengths:
