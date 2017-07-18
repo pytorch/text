@@ -126,7 +126,7 @@ class Vocab(object):
         self.itos = ['<unk>'] + specials
 
         counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
-        max_size = None if max_size is None else max_size - len(self.itos)
+        max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
         words = sorted(counter.items(), key=lambda tup: tup[0])
