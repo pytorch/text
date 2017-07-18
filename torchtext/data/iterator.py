@@ -110,10 +110,10 @@ class Iterator(object):
 
     def data(self):
         """Return the examples in the dataset in order, sorted, or shuffled."""
-        if self.shuffle:
-            xs = [self.dataset[i] for i in self.random_shuffler(range(len(self.dataset)))]
-        elif self.sort:
+        if self.sort:
             xs = sorted(self.dataset, key=self.sort_key)
+        elif self.shuffle:
+            xs = [self.dataset[i] for i in self.random_shuffler(range(len(self.dataset)))]
         else:
             xs = self.dataset
         return xs
