@@ -258,7 +258,7 @@ def batch(data, batch_size, batch_size_fn=lambda new, count, sofar: count):
             minibatch, size_so_far = [], 0
         elif size_so_far > batch_size:
             yield minibatch[:-1]
-            minibatch, size_so_far = minibatch[:-1], batch_size_fn(ex, 1, 0)
+            minibatch, size_so_far = minibatch[-1:], batch_size_fn(ex, 1, 0)
     if minibatch:
         yield minibatch
 
