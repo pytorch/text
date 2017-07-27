@@ -113,6 +113,7 @@ class Vocab(object):
         """
         self.freqs = counter.copy()
         self.unk_init = unk_init
+        min_freq = max(min_freq, 1)
         counter.update(['<unk>'] + specials)
 
         if wv_type is not None:
