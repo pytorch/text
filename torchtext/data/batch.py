@@ -17,7 +17,9 @@ class Batch(object):
             self.dataset = dataset
             self.train = train
             for (name, field) in dataset.fields.items():
-                if field is not None:
+                if field is None:
+                    setattr(self, name, [x.__dict__[name] for x in data])
+                else:
                     setattr(self, name, field.numericalize(
                         field.pad(x.__dict__[name] for x in data),
                         device=device, train=train))
