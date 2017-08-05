@@ -106,7 +106,7 @@ class Vocab(object):
             start_dim = 0
             for v in vectors:
                 end_dim = start_dim + v.dim
-                self.vectors[i][start_dim:end_dim] = v[token]
+                self.vectors[i][start_dim:end_dim] = v[token.strip()]
                 start_dim = end_dim
             assert(start_dim == tot_dim)
 
@@ -133,6 +133,50 @@ class Vocab(object):
                 self.vectors[i] = vectors[wv_index]
             else:
                 self.vectors[i] = unk_init(self.vectors[i])
+
+
+class SubwordVocab(Vocab):
+
+    def segment(self, ex):
+        return [tok for word in ex for tok in self.segmenter(word)]
+
+    def __init__(self, counter, max_size=None, specials=['<pad>'],
+                 vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
+        """Create a revtok subword vocabulary from a collections.Counter.
+
+        Arguments:
+            counter: collections.Counter object holding the frequencies of
+                each word found in the data.
+            max_size: The maximum size of the subword vocabulary, or None for no
+                maximum. Default: None.
+            specials: The list of special tokens (e.g., padding or eos) that
+                will be prepended to the vocabulary in addition to an <unk>
+                token.
+        """
+        try:
+            import revtok
+        except ImportError:
+            print("Please install revtok.")
+            raise
+
+        self.stoi = defaultdict(lambda: 0)
+        self.stoi.update({tok: i + 1 for i, tok in enumerate(specials)})
+        self.itos = ['<unk>'] + specials
+
+        self.segmenter = revtok.SubwordSegmenter(counter, max_size)
+
+        max_size = None if max_size is None else max_size + len(self.itos)
+
+        # sort by frequency/entropy, then alphabetically
+        toks = sorted(self.segmenter.vocab.items(),
+                      key=lambda tup: (len(tup[0])!=1, -tup[1], tup[0]))
+
+        for tok, _ in toks:
+            self.itos.append(tok)
+            self.stoi[tok] = len(self.itos) - 1
+
+        if vectors is not None:
+            self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
 
 
 class Vectors(object):
@@ -293,7 +337,10 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
+<<<<<<< f0cc047f3b727b28ddd98534fa55c600fd5fd5d3
 
 
 def _default_unk_index():
     return 0
+=======
+>>>>>>> revtok integration
