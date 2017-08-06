@@ -77,6 +77,9 @@ class Dataset(torch.utils.data.Dataset):
         if attr in self.fields:
             for x in self.examples:
                 yield getattr(x, attr)
+                
+    def __hasattr__(self, attr):
+        return attr in self.fields
 
 
 class TabularDataset(Dataset):
