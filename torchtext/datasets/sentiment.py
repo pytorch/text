@@ -20,8 +20,11 @@ class SST(data.ZipDataset):
         Arguments:
             path: Path to the data file.
             text_field: The field that will be used for text data.
-            newline_eos: Whether to add an <eos> token for every newline in the
-                data file. Default: True.
+            label_field: The field that will be used for label data.
+            subtrees: Whether to include sentiment-tagged subphrases
+                in addition to complete examples. Default: False.
+            fine_grained: Whether to use 5-class instead of 3-class
+                labeling. Default: False.
             Remaining keyword arguments: Passed to the constructor of
                 data.Dataset.
         """
