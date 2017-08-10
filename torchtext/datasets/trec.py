@@ -13,8 +13,8 @@ class TREC(data.ZipDataset):
     dirname = 'trec'
 
     def __init__(self, path, text_field, label_field,
-                 fine_grained=False, **kwargs)
-        """Create an SST dataset instance given a path and fields.
+                 fine_grained=False, **kwargs):
+        """Create an TREC dataset instance given a path and fields.
 
         Arguments:
             path: Path to the data file.
