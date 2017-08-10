@@ -4,6 +4,7 @@ from .. import data
 from six.moves import urllib
 from bs4 import UnicodeDammit
 
+import chardet
 
 class TREC(data.ZipDataset):
 
@@ -33,8 +34,8 @@ class TREC(data.ZipDataset):
         label_field.preprocessing = data.Pipeline(get_label_str)
 
         for line in open(os.path.expanduser(path), 'rb'):
-            line = UnicodeDammit(line).unicode_markup.split()
-            label, text = line[0], ' '.join(line[1:])
+            # there is one non-ASCII byte: sisterBADBYTEcity; replaced with space
+            label, _, text = line.replace(b'\xf0', b' ').decode().partition(' ')
             examples.append(data.Example.fromlist([text, label], fields))
 
         super(TREC, self).__init__(examples, fields, **kwargs)
