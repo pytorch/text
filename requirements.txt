@@ -2,6 +2,9 @@
 nltk
 spacy
 
+# Data handling
+bs4
+
 # Progress bars on iterators
 tqdm
 
