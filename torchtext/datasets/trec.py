@@ -13,6 +13,10 @@ class TREC(data.ZipDataset):
     test_filename = 'TREC_10.label'
     dirname = 'trec'
 
+    @staticmethod
+    def sort_key(ex):
+        return len(ex.text)
+
     def __init__(self, path, text_field, label_field,
                  fine_grained=False, **kwargs):
         """Create an TREC dataset instance given a path and fields.
