@@ -2,9 +2,6 @@ import os
 
 from .. import data
 from six.moves import urllib
-from bs4 import UnicodeDammit
-
-import chardet
 
 class TREC(data.ZipDataset):
 
