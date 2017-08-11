@@ -3,6 +3,7 @@ import os
 from .. import data
 from six.moves import urllib
 
+
 class TREC(data.ZipDataset):
 
     url_base = 'http://cogcomp.org/Data/QA/QC/'
