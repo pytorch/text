@@ -4,7 +4,7 @@ from .. import data
 from six.moves import urllib
 
 
-class TREC(data.ZipDataset):
+class TREC(data.Dataset):
 
     url_base = 'http://cogcomp.org/Data/QA/QC/'
     train_filename = 'train_5500.label'
@@ -32,7 +32,7 @@ class TREC(data.ZipDataset):
         examples = []
 
         def get_label_str(label):
-                return label.split(':')[0] if not fine_grained else label
+            return label.split(':')[0] if not fine_grained else label
         label_field.preprocessing = data.Pipeline(get_label_str)
 
         for line in open(os.path.expanduser(path), 'rb'):
@@ -62,9 +62,7 @@ class TREC(data.ZipDataset):
         Arguments:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
-            root: The root directory that the dataset's zip archive will be
-                expanded into; therefore the directory in whose trees
-                subdirectory the data files will be stored.
+            root: The root directory that contains the trec dataset subdirectory
             train: The filename of the train data. Default: 'train_5500.label'.
             test: The filename of the test data, or None to not load the test
                 set. Default: 'TREC_10.label'.
@@ -89,9 +87,7 @@ class TREC(data.ZipDataset):
             batch_size: Batch_size
             device: Device to create batches on. Use - 1 for CPU and None for
                 the currently active GPU device.
-            root: The root directory that the dataset's zip archive will be
-                expanded into; therefore the directory in whose trees
-                subdirectory the data files will be stored.
+            root: The root directory that contains the trec dataset subdirectory
             wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
                 text field. The word vectors are accessible as
                 train.dataset.fields['text'].vocab.vectors.
