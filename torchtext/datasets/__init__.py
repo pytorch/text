@@ -11,5 +11,5 @@ __all__ = ['LanguageModelingDataset',
            'SST',
            'TranslationDataset',
            'WikiText2',
-           'TREC', 
+           'TREC',
            'IMDB']

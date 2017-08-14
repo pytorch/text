@@ -32,10 +32,7 @@ class IMDB(data.Dataset):
         for label in ['pos', 'neg']:
             for fname in glob.iglob(os.path.join(path, label, '*.txt')):
                 with open(fname, 'r') as f:
-                    try:
-                        text = f.readline()
-                    except:
-                        import pdb; pdb.set_trace()
+                    text = f.readline()
                 examples.append(data.Example.fromlist([text, label], fields))
 
         super(IMDB, self).__init__(examples, fields, **kwargs)
@@ -54,7 +51,6 @@ class IMDB(data.Dataset):
                 tar.extractall(path=root, members=dirs)
         return os.path.join(path, '')
 
-
     @classmethod
     def splits(cls, text_field, label_field, root='.',
                train='train', test='test', **kwargs):
@@ -64,7 +60,7 @@ class IMDB(data.Dataset):
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
             root: The root directory that contains the IMDB dataset subdirectory
-            train: The directory that contains the training examples 
+            train: The directory that contains the training examples
             test: The directory that contains the test examples
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
