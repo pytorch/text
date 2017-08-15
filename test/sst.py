@@ -19,7 +19,7 @@ print('vars(train[0])', vars(train[0]))
 
 # build the vocabulary
 
-TEXT.build_vocab(train, wv_type='glove.6B')
+TEXT.build_vocab(train, vectors='glove.6B.300d')
 LABEL.build_vocab(train)
 
 # print vocab information
@@ -36,6 +36,14 @@ print(batch.text)
 print(batch.label)
 
 # Approach 2:
+TEXT.build_vocab(train, vectors=['glove.840B.300d', 'charngram.100d'])
+LABEL.build_vocab(train)
+
+# print vocab information
+print('len(TEXT.vocab)', len(TEXT.vocab))
+print('TEXT.vocab.vectors.size()', TEXT.vocab.vectors.size())
+
+
 train_iter, val_iter, test_iter = datasets.SST.iters(batch_size=4)
 
 # print batch information

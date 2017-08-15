@@ -7,70 +7,10 @@ import zipfile
 import six
 from six.moves.urllib.request import urlretrieve
 import torch
-from tqdm import trange, tqdm
+from tqdm import tqdm
+import tarfile
 
 from .utils import reporthook
-
-URL = {
-    'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-    'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-    'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-    'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
-}
-
-
-def load_word_vectors(root, wv_type, dim):
-    """Load word vectors from a path, trying .pt, .txt, and .zip extensions."""
-    if isinstance(dim, int):
-        dim = str(dim) + 'd'
-    fname = os.path.join(root, wv_type + '.' + dim)
-    if os.path.isfile(fname + '.pt'):
-        fname_pt = fname + '.pt'
-        print('loading word vectors from', fname_pt)
-        return torch.load(fname_pt)
-    if os.path.isfile(fname + '.txt'):
-        fname_txt = fname + '.txt'
-        cm = open(fname_txt, 'rb')
-        cm = [line for line in cm]
-    elif os.path.basename(wv_type) in URL:
-        url = URL[wv_type]
-        print('downloading word vectors from {}'.format(url))
-        filename = os.path.basename(fname)
-        if not os.path.exists(root):
-            os.makedirs(root)
-        with tqdm(unit='B', unit_scale=True, miniters=1, desc=filename) as t:
-            fname, _ = urlretrieve(url, fname, reporthook=reporthook(t))
-            with zipfile.ZipFile(fname, "r") as zf:
-                print('extracting word vectors into {}'.format(root))
-                zf.extractall(root)
-        if not os.path.isfile(fname + '.txt'):
-            raise RuntimeError('no word vectors of requested dimension found')
-        return load_word_vectors(root, wv_type, dim)
-    else:
-        raise RuntimeError('unable to load word vectors')
-
-    wv_tokens, wv_arr, wv_size = [], array.array('d'), None
-    if cm is not None:
-        print("Loading word vectors from {}".format(fname_txt))
-        for line in trange(len(cm)):
-            entries = cm[line].strip().split(b' ')
-            word, entries = entries[0], entries[1:]
-            if wv_size is None:
-                wv_size = len(entries)
-            try:
-                if isinstance(word, six.binary_type):
-                    word = word.decode('utf-8')
-            except:
-                print('non-UTF8 token', repr(word), 'ignored')
-                continue
-            wv_arr.extend(float(x) for x in entries)
-            wv_tokens.append(word)
-
-    wv_dict = {word: i for i, word in enumerate(wv_tokens)}
-    wv_arr = torch.Tensor(wv_arr).view(-1, wv_size)
-    ret = (wv_dict, wv_arr, wv_size)
-    torch.save(ret, fname + '.pt')
-    return ret
 
 
 class Vocab(object):
@@ -82,13 +22,10 @@ class Vocab(object):
         stoi: A collections.defaultdict instance mapping token strings to
             numerical identifiers.
         itos: A list of token strings indexed by their numerical identifiers.
-        vectors: A Tensor containing word vectors for the tokens in the Vocab,
-            if a word vector file has been provided.
     """
 
-    def __init__(self, counter, max_size=None, min_freq=1, wv_dir=os.getcwd(),
-                 wv_type=None, wv_dim=300, unk_init='random',
-                 specials=['<pad>'], fill_from_vectors=False):
+    def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
+                 vectors=None, unk_init='zero', expand_vocab=False):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -98,29 +35,20 @@ class Vocab(object):
                 maximum. Default: None.
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Default: 1.
-            wv_dir: directory containing word vector file and destination for
-                downloaded word vector files
-            wv_type: type of word vectors; None for no word vectors
-            wv_dim: dimension of word vectors
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token.
-            fill_from_vectors: Whether to add to the vocabulary every token
-                for which a word vector specified by vectors is present
-                even if the token does not appear in the provided data.
-            unk_init: default to random initialization for word vectors not in the
-                pretrained word vector file; otherwise set to zero
+            vectors: one of the available pretrained vectors or a list with each
+                element one of the available pretrained vectors (see Vocab.load_vectors)
+            unk_init (string): 'zero' to initalize out-of-vocabulary word vectors
+                to zero vectors; 'random' to initialize by drawing from a standard
+                normal distribution
+            expand_vocab (bool): expand vocabulary to include all words for which
+                the specified pretrained word vectors are available
         """
         self.freqs = counter.copy()
-        self.unk_init = unk_init
         min_freq = max(min_freq, 1)
         counter.update(['<unk>'] + specials)
-
-        if wv_type is not None:
-            wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
-
-            if fill_from_vectors:
-                counter.update(wv_dict.keys())
 
         self.stoi = defaultdict(lambda: 0)
         self.stoi.update({tok: i + 1 for i, tok in enumerate(specials)})
@@ -139,33 +67,184 @@ class Vocab(object):
             self.itos.append(k)
             self.stoi[k] = len(self.itos) - 1
 
-        if wv_type is not None:
-            self.set_vectors(wv_dict, wv_arr)
+        if vectors is not None:
+            self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
 
     def __len__(self):
         return len(self.itos)
 
-    def load_vectors(self, wv_dir=os.getcwd(), wv_type=None, wv_dim=300,
-                     unk_init='random'):
-        """Loads word vectors into the vocab
-
-        Arguments:
-            wv_dir: directory containing word vector file and destination for
-                downloaded word vector files
-            wv_type: type of word vectors; None for no word vectors
-            wv_dim: dimension of word vectors
-
-            unk_init: default to random initialization for unknown word vectors;
-                otherwise set to zero
+    def load_vectors(self, vectors, unk_init='zero', expand_vocab=False):
+        """Arguments:
+              vectors: one of the available pretrained vectors or a list with each
+                  element one of the available pretrained vectors:
+                       glove.42B.300d
+                       glove.840B.300d
+                       glove.twitter.27B.25d
+                       glove.twitter.27B.50d
+                       glove.twitter.27B.100d
+                       glove.twitter.27B.200d
+                       glove.6B.50d
+                       glove.6B.100d
+                       glove.6B.200d
+                       glove.6B.300d
+                       charngram.100d
+              unk_init (string): 'zero' to initalize out-of-vocabulary word vectors
+                  to zero vectors; 'random' to initialize by drawing from a standard
+                  normal distribution
+              expand_vocab (bool): expand vocabulary to include all words for which
+                  the specified pretrained word vectors are available
         """
-        self.unk_init = unk_init
-        wv_dict, wv_arr, self.wv_size = load_word_vectors(wv_dir, wv_type, wv_dim)
-        self.set_vectors(wv_dict, wv_arr)
+        if not isinstance(vectors, list):
+            vectors = [vectors]
+        vecs = []
+        tot_dim = 0
+        for v in vectors:
+            wv_type = v.split('.')[0]
+            wv_dim = int(v.split('.')[-1][:-1])
+            if wv_type == 'glove':
+                wv_name = '.'.join(v.split('.')[1:-1])
+                vecs.append(GloVe(name=wv_name, dim=wv_dim, unk_init=unk_init))
+                if expand_vocab:
+                    for w in sorted(vecs[-1].stoi.keys()):
+                        self.itos.append(w)
+                        self.stoi[w] = len(self.itos) - 1
+            elif 'charngram' in v:
+                vecs.append(CharNGram(unk_init=unk_init))
+            tot_dim += wv_dim
 
-    def set_vectors(self, wv_dict, wv_arr):
-        self.vectors = torch.Tensor(len(self), self.wv_size)
-        self.vectors.normal_(0, 1) if self.unk_init == 'random' else self.vectors.zero_()
+        self.vectors = torch.Tensor(len(self), tot_dim)
+        start_dim = 0
         for i, token in enumerate(self.itos):
-            wv_index = wv_dict.get(token, None)
+            for i, v in enumerate(vectors):
+                end_dim = start_dim + vecs[i].dim
+                self.vectors[i][start_dim:end_dim] = vecs[i][token]
+                start_dim = end_dim
+            assert(start_dim == tot_dim)
+            start_dim = 0
+
+    def set_vectors(self, stoi, vectors, dim, unk_init='zero'):
+        self.vectors = torch.Tensor(len(self), dim)
+        self.vectors.normal_(0, 1) if unk_init == 'random' else self.vectors.zero_()
+        for i, token in enumerate(self.itos):
+            wv_index = stoi.get(token, None)
             if wv_index is not None:
-                self.vectors[i] = wv_arr[wv_index]
+                self.vectors[i] = vectors[wv_index]
+
+
+class Vectors(object):
+
+    def __init__(self, unk_init='zero'):
+        self.unk_init = unk_init
+
+    def __getitem__(self, token):
+        if token in self.stoi:
+            return self.vectors[self.stoi[token]]
+        else:
+            vector = torch.Tensor(1, self.dim).zero_()
+            if self.unk_init == 'random':
+                vector.normal_(0, 1)
+            return vector
+
+    def vector_cache(self, url, root, fname):
+        desc = fname
+        fname = os.path.join(root, fname)
+        fname_pt = fname + '.pt'
+        fname_txt = fname + '.txt'
+        desc = os.path.basename(fname)
+        dest = os.path.join(root, os.path.basename(url))
+
+        if not os.path.isfile(fname_pt):
+            if not os.path.isfile(fname_txt):
+                print('downloading vectors from {}'.format(url))
+                os.makedirs(root, exist_ok=True)
+                with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
+                    urlretrieve(url, dest, reporthook=reporthook(t))
+                print('extracting vectors into {}'.format(root))
+                ext = os.path.splitext(dest)[1][1:]
+                if ext == 'zip':
+                    with zipfile.ZipFile(dest, "r") as zf:
+                        zf.extractall(root)
+                elif ext == 'gz':
+                    with tarfile.open(dest, 'r:gz') as tar:
+                        tar.extractall(path=root)
+                else:
+                    raise RuntimeError('unsupported compression format')
+            if not os.path.isfile(fname_txt):
+                raise RuntimeError('no vectors found')
+
+            itos, vectors, dim = [], array.array('d'), None
+            with open(fname_txt, 'rb') as f:
+                lines = [line for line in f]
+            print("Loading vectors from {}".format(fname_txt))
+            for line in tqdm(lines, total=len(lines)):
+                entries = line.strip().split(b' ')
+                word, entries = entries[0], entries[1:]
+                if dim is None:
+                    dim = len(entries)
+                try:
+                    if isinstance(word, six.binary_type):
+                        word = word.decode('utf-8')
+                except:
+                    print('non-UTF8 token', repr(word), 'ignored')
+                    continue
+                vectors.extend(float(x) for x in entries)
+                itos.append(word)
+
+            self.stoi = {word: i for i, word in enumerate(itos)}
+            self.vectors = torch.Tensor(vectors).view(-1, dim)
+            self.dim = dim
+            print('saving vectors to', fname_pt)
+            torch.save((self.stoi, self.vectors, self.dim), fname_pt)
+        else:
+            print('loading vectors from', fname_pt)
+            self.stoi, self.vectors, self.dim = torch.load(fname_pt)
+
+    def get_line_number(self, file_path):
+        fp = open(file_path, "r+")
+        buf = mmap.mmap(fp.fileno(), 0)
+        lines = 0
+        while buf.readline():
+            lines += 1
+        return lines
+
+class GloVe(Vectors):
+
+    url = {
+       'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
+       'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
+       'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
+       'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
+    }
+
+    def __init__(self, root='.vector_cache', name='840B', dim=300, **kwargs):
+        super(GloVe, self).__init__(**kwargs)
+        dim = str(dim) + 'd'
+        name = '.'.join(['glove', name])
+        fname = name + '.' + dim
+        self.vector_cache(self.url[name], root, fname)
+
+
+class CharNGram(Vectors):
+
+    url = 'http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/jmt_pre-trained_embeddings.tar.gz'
+    filename = 'charNgram'
+
+    def __init__(self, root='.vector_cache', **kwargs):
+        super(CharNGram, self).__init__(**kwargs)
+        self.vector_cache(self.url, root, self.filename)
+
+    def __getitem__(self, token):
+        chars = ['#BEGIN#'] + list(token) + ['#END#']
+        vector = torch.Tensor(1, 100).zero_()
+        if self.unk_init == 'random':
+            vector.normal_(0, 1)
+        num_vectors = 0
+        for n in [2, 3, 4]:
+            grams = [chars[i:i+n] for i in range(len(chars)-n+1)]
+            for gram in grams:
+                gram_key = '{}gram-{}'.format(n, ''.join(gram))
+                if gram_key in self.stoi:
+                    vector += self.vectors[self.stoi[gram_key]]
+        if num_vectors > 0:
+            vector /= num_vectors
+        return vector
