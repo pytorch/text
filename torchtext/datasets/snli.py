@@ -77,7 +77,8 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             filter_pred=lambda ex: ex.label != '-')
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', vectors=None, trees=False, **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.',
+              vectors=None, trees=False, **kwargs):
         """Create iterator objects for splits of the SNLI dataset.
 
         This is the simplest way to use the dataset, and assumes common
@@ -90,7 +91,7 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-2
                 subdirectory the data files will be stored.
-            vectors: one of the available pretrained vectors or a list with each 
+            vectors: one of the available pretrained vectors or a list with each
                 element one of the available pretrained vectors (see Vocab.load_vectors)
             trees: Whether to include shift-reduce parser transitions.
                 Default: False.

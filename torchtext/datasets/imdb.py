@@ -75,8 +75,7 @@ class IMDB(data.Dataset):
                      if d is not None)
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', wv_dir='.',
-              wv_type=None, wv_dim='300d', **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.', vectors=None, **kwargs):
         """Creater iterator objects for splits of the IMDB dataset.
 
         Arguments:
@@ -84,9 +83,9 @@ class IMDB(data.Dataset):
             device: Device to create batches on. Use - 1 for CPU and None for
                 the currently active GPU device.
             root: The root directory that contains the imdb dataset subdirectory
-            wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
-                text field. The word vectors are accessible as
-                train.dataset.fields['text'].vocab.vectors.
+            vectors: one of the available pretrained vectors or a list with each
+                element one of the available pretrained vectors (see Vocab.load_vectors)
+
             Remaining keyword arguments: Passed to the splits method.
         """
         TEXT = data.Field()
@@ -94,7 +93,7 @@ class IMDB(data.Dataset):
 
         train, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
 
-        TEXT.build_vocab(train, wv_dir=wv_dir, wv_type=wv_type, wv_dim=wv_dim)
+        TEXT.build_vocab(train, vectors=vectors)
         LABEL.build_vocab(train)
 
         return data.BucketIterator.splits(
