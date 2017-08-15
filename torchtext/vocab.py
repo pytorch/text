@@ -99,10 +99,11 @@ class Vocab(object):
         vecs = []
         tot_dim = 0
         for v in vectors:
-            wv_type = v.split('.')[0]
-            wv_dim = int(v.split('.')[-1][:-1])
+            wv_type, _, rest = v.partition('.')
+            rest, _, wv_dim = rest.rpartition('.')
+            wv_dim = int(wv_dim[:-1])
             if wv_type == 'glove':
-                wv_name = '.'.join(v.split('.')[1:-1])
+                wv_name = rest
                 vecs.append(GloVe(name=wv_name, dim=wv_dim, unk_init=unk_init))
                 if expand_vocab:
                     for w in sorted(vecs[-1].stoi.keys()):
@@ -140,8 +141,10 @@ class Vectors(object):
         if token in self.stoi:
             return self.vectors[self.stoi[token]]
         else:
-            vector = torch.Tensor(1, self.dim).zero_()
-            if self.unk_init == 'random':
+            vector = torch.Tensor(1, self.dim)
+            if self.unk_init == 'zero':
+                vector.zero_()
+            else:
                 vector.normal_(0, 1)
             return vector
 
@@ -199,21 +202,14 @@ class Vectors(object):
             print('loading vectors from', fname_pt)
             self.stoi, self.vectors, self.dim = torch.load(fname_pt)
 
-    def get_line_number(self, file_path):
-        fp = open(file_path, "r+")
-        buf = mmap.mmap(fp.fileno(), 0)
-        lines = 0
-        while buf.readline():
-            lines += 1
-        return lines
 
 class GloVe(Vectors):
 
     url = {
-       'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-       'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-       'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-       'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
+        'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
+        'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
+        'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
+        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
     }
 
     def __init__(self, root='.vector_cache', name='840B', dim=300, **kwargs):
@@ -226,7 +222,8 @@ class GloVe(Vectors):
 
 class CharNGram(Vectors):
 
-    url = 'http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/jmt_pre-trained_embeddings.tar.gz'
+    url = ('http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/'
+           'jmt_pre-trained_embeddings.tar.gz')
     filename = 'charNgram'
 
     def __init__(self, root='.vector_cache', **kwargs):
@@ -235,12 +232,15 @@ class CharNGram(Vectors):
 
     def __getitem__(self, token):
         chars = ['#BEGIN#'] + list(token) + ['#END#']
-        vector = torch.Tensor(1, 100).zero_()
-        if self.unk_init == 'random':
+        vector = torch.Tensor(1, self.dim)
+        if self.unk_init == 'zero':
+            vector.zero_()
+        else:
             vector.normal_(0, 1)
         num_vectors = 0
         for n in [2, 3, 4]:
-            grams = [chars[i:i+n] for i in range(len(chars)-n+1)]
+            end = len(chars) - n + 1
+            grams = [chars[i:(i + n)] for i in range(end)]
             for gram in grams:
                 gram_key = '{}gram-{}'.format(n, ''.join(gram))
                 if gram_key in self.stoi:

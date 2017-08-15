@@ -47,7 +47,7 @@ class SST(data.ZipDataset):
     def splits(cls, text_field, label_field, root='.',
                train='train.txt', validation='dev.txt', test='test.txt',
                train_subtrees=False, **kwargs):
-        """Create dataset objects for splits of the SSTB dataset.
+        """Create dataset objects for splits of the SST dataset.
 
         Arguments:
             text_field: The field that will be used for the sentence.
@@ -79,7 +79,7 @@ class SST(data.ZipDataset):
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.', vectors=None, **kwargs):
-        """Creater iterator objects for splits of the SSTB dataset.
+        """Creater iterator objects for splits of the SST dataset.
 
         Arguments:
             batch_size: Batch_size
@@ -88,7 +88,7 @@ class SST(data.ZipDataset):
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose trees
                 subdirectory the data files will be stored.
-            vectors: one of the available pretrained vectors or a list with each 
+            vectors: one of the available pretrained vectors or a list with each
                 element one of the available pretrained vectors (see Vocab.load_vectors)
             Remaining keyword arguments: Passed to the splits method.
         """
@@ -97,7 +97,7 @@ class SST(data.ZipDataset):
 
         train, val, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
 
-        TEXT.build_vocab(train, vectors=None)
+        TEXT.build_vocab(train, vectors=vectors)
         LABEL.build_vocab(train)
 
         return data.BucketIterator.splits(

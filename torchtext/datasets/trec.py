@@ -87,7 +87,7 @@ class TREC(data.Dataset):
             device: Device to create batches on. Use - 1 for CPU and None for
                 the currently active GPU device.
             root: The root directory that contains the trec dataset subdirectory
-            vectors: one of the available pretrained vectors or a list with each 
+            vectors: one of the available pretrained vectors or a list with each
                 element one of the available pretrained vectors (see Vocab.load_vectors)
             Remaining keyword arguments: Passed to the splits method.
         """
