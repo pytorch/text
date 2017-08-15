@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 
-VERSION = '0.1.1'
+VERSION = '0.2.0a'
 
 long_description = '''torch-text provides text and NLP data utilities
 and datasets for torch'''
