@@ -86,10 +86,10 @@ class Field(object):
         if (six.PY2 and isinstance(x, six.string_types) and not
                 isinstance(x, unicode)):
             x = Pipeline(lambda s: unicode(s, encoding='utf-8'))(x)
-        if self.sequential and isinstance(x, six.text_type):
-            x = self.tokenize(x)
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
+        if self.sequential and isinstance(x, six.text_type):
+            x = self.tokenize(x)
         if self.preprocessing is not None:
             return self.preprocessing(x)
         else:
