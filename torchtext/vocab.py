@@ -25,7 +25,7 @@ class Vocab(object):
     """
 
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init='zero', expand_vocab=False):
+                 vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -40,9 +40,9 @@ class Vocab(object):
                 token.
             vectors: one of the available pretrained vectors or a list with each
                 element one of the available pretrained vectors (see Vocab.load_vectors)
-            unk_init (string): 'zero' to initalize out-of-vocabulary word vectors
-                to zero vectors; 'random' to initialize by drawing from a standard
-                normal distribution
+            unk_init (callback): by default, initalize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and
+                returns a Tensor of the same size
             expand_vocab (bool): expand vocabulary to include all words for which
                 the specified pretrained word vectors are available
         """
@@ -73,7 +73,7 @@ class Vocab(object):
     def __len__(self):
         return len(self.itos)
 
-    def load_vectors(self, vectors, unk_init='zero', expand_vocab=False):
+    def load_vectors(self, vectors, unk_init=torch.Tensor.zero_, expand_vocab=False):
         """Arguments:
               vectors: one of the available pretrained vectors or a list with each
                   element one of the available pretrained vectors:
@@ -88,9 +88,9 @@ class Vocab(object):
                        glove.6B.200d
                        glove.6B.300d
                        charngram.100d
-              unk_init (string): 'zero' to initalize out-of-vocabulary word vectors
-                  to zero vectors; 'random' to initialize by drawing from a standard
-                  normal distribution
+              unk_init (callback): by default, initalize out-of-vocabulary word vectors
+                  to zero vectors; can be any function that takes in a Tensor and
+                  returns a Tensor of the same size
               expand_vocab (bool): expand vocabulary to include all words for which
                   the specified pretrained word vectors are available
         """
@@ -123,30 +123,26 @@ class Vocab(object):
             assert(start_dim == tot_dim)
             start_dim = 0
 
-    def set_vectors(self, stoi, vectors, dim, unk_init='zero'):
+    def set_vectors(self, stoi, vectors, dim, unk_init=torch.Tensor.zero_):
         self.vectors = torch.Tensor(len(self), dim)
-        self.vectors.normal_(0, 1) if unk_init == 'random' else self.vectors.zero_()
         for i, token in enumerate(self.itos):
             wv_index = stoi.get(token, None)
             if wv_index is not None:
                 self.vectors[i] = vectors[wv_index]
+            else:
+                self.vectors[i] = unk_init(self.vectors[i])
 
 
 class Vectors(object):
 
-    def __init__(self, unk_init='zero'):
+    def __init__(self, unk_init=torch.Tensor.zero_):
         self.unk_init = unk_init
 
     def __getitem__(self, token):
         if token in self.stoi:
             return self.vectors[self.stoi[token]]
         else:
-            vector = torch.Tensor(1, self.dim)
-            if self.unk_init == 'zero':
-                vector.zero_()
-            else:
-                vector.normal_(0, 1)
-            return vector
+            return self.unk_init(torch.Tensor(1, self.dim))
 
     def vector_cache(self, url, root, fname):
         desc = fname
@@ -232,11 +228,7 @@ class CharNGram(Vectors):
 
     def __getitem__(self, token):
         chars = ['#BEGIN#'] + list(token) + ['#END#']
-        vector = torch.Tensor(1, self.dim)
-        if self.unk_init == 'zero':
-            vector.zero_()
-        else:
-            vector.normal_(0, 1)
+        vector = torch.Tensor(1, self.dim).zero_()
         num_vectors = 0
         for n in [2, 3, 4]:
             end = len(chars) - n + 1
@@ -247,4 +239,6 @@ class CharNGram(Vectors):
                     vector += self.vectors[self.stoi[gram_key]]
         if num_vectors > 0:
             vector /= num_vectors
+        else:
+            vector = self.unk_init(vector)
         return vector
