@@ -1,15 +1,12 @@
 [![Build Status](https://travis-ci.org/pytorch/text.svg?branch=master)](https://travis-ci.org/pytorch/text)
 [![codecov](https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg)](https://codecov.io/gh/pytorch/text)
 
-# [WIP] torch-text
+# torchtext
 
 This repository consists of:
 
-- [torchtext.data](#data) : Generic data loaders, abstractions, and iterators for text
+- [torchtext.data](#data) : Generic data loaders, abstractions, and iterators for text (including vocabulary and word vectors)
 - [torchtext.datasets](#datasets) : Pre-built loaders for common NLP datasets
-- (maybe) torchtext.models : Model definitions and pre-trained models for popular NLP examples
-(though the situation is not the same as vision, where people can download a pretrained ImageNet model and immediately
-make it useful for other tasks -- it might make more sense to leave NLP models in the torch/examples repo)
 
 # Data
 
@@ -72,13 +69,17 @@ LABELS.build_vocab(train)
 
 # Datasets
 
-Some datasets it would be useful to have built in:
+The datasets module currently contains:
 
-- bAbI and successors from FAIR
-- SST (done) and IMDb sentiment
-- SNLI (done)
-- Penn Treebank (for language modeling (done) and parsing)
-- WMT and/or IWSLT machine translation
-- SQuAD
+- Sentiment analysis: SST and IMDb
+- Question classification: TREC
+- Entailment: SNLI
+- Language modeling: Wikitext-2
+- Abstract/generic support for machine translation
+
+Others are planned or a work in progress:
+
+- Question answering: SQuAD
+- Machine translation: Multi30k, IWSLT, WMT
 
 See the "test" directory for examples of dataset usage.
