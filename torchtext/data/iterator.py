@@ -157,8 +157,10 @@ class Iterator(object):
                     continue
                 self.iterations += 1
                 self._iterations_this_epoch += 1
-                # NOTE: Find out more here for why we reverse: https://github.com/pytorch/text/pull/95
-                yield Batch(minibatch.reverse(), self.dataset, self.device,
+                # NOTE: `rnn.pack_padded_sequence` requires that a minibatch be sorted by decreasing order,
+                # which requires reversing relative to typical sort keys
+                minibatch.reverse()
+                yield Batch(minibatch, self.dataset, self.device,
                             self.train)
             if not self.repeat:
                 raise StopIteration
