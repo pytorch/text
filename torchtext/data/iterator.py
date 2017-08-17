@@ -157,8 +157,8 @@ class Iterator(object):
                     continue
                 self.iterations += 1
                 self._iterations_this_epoch += 1
-                # NOTE: `rnn.pack_padded_sequence` requires that a minibatch be sorted by decreasing order,
-                # which requires reversing relative to typical sort keys
+                # NOTE: `rnn.pack_padded_sequence` requires that a minibatch be sorted by
+                # decreasing order, which requires reversing relative to typical sort keys
                 minibatch.reverse()
                 yield Batch(minibatch, self.dataset, self.device,
                             self.train)
