@@ -157,8 +157,8 @@ class Iterator(object):
                     continue
                 self.iterations += 1
                 self._iterations_this_epoch += 1
-                minibatch_decreasing_size = sorted(minibatch, key=lambda x: -self.sort_key(x))
-                yield Batch(minibatch_decreasing_size, self.dataset, self.device,
+                # NOTE: Find out more here for why we reverse: https://github.com/pytorch/text/pull/95
+                yield Batch(minibatch.reverse(), self.dataset, self.device,
                             self.train)
             if not self.repeat:
                 raise StopIteration
