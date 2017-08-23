@@ -3,11 +3,12 @@ import numpy as np
 from torchtext import vocab
 from collections import Counter
 
+
 def test_vocab():
     c = Counter(['hello', 'world'])
     v = vocab.Vocab(c, vectors=['glove.twitter.27B.200d', 'charngram.100d'])
 
-    assert v.itos == ['<unk>', '<pad>', 'hello', 'world'] 
+    assert v.itos == ['<unk>', '<pad>', 'hello', 'world']
     vectors = v.vectors.numpy()
 
     # The first 5 entries in each vector.
@@ -22,4 +23,3 @@ def test_vocab():
         )
 
     assert np.allclose(vectors[v.stoi['<unk>'], :], np.zeros(300))
-
