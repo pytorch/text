@@ -17,4 +17,3 @@ if __name__ == '__main__':
                     np.array([float(ele) for ele in columns[1:]])
                 )
     torch.save((stoi, vectors, dim), 'glove.test_twitter.27B.200d.pt')
-
