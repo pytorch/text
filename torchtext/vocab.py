@@ -116,9 +116,9 @@ class Vocab(object):
         self.vectors = torch.Tensor(len(self), tot_dim)
         for i, token in enumerate(self.itos):
             start_dim = 0
-            for i, v in enumerate(vectors):
-                end_dim = start_dim + vecs[i].dim
-                self.vectors[i][start_dim:end_dim] = vecs[i][token]
+            for j, v in enumerate(vectors):
+                end_dim = start_dim + vecs[j].dim
+                self.vectors[i][start_dim:end_dim] = vecs[j][token]
                 start_dim = end_dim
             assert(start_dim == tot_dim)
 
