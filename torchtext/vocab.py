@@ -116,9 +116,9 @@ class Vocab(object):
         self.vectors = torch.Tensor(len(self), tot_dim)
         for i, token in enumerate(self.itos):
             start_dim = 0
-            for i, v in enumerate(vectors):
-                end_dim = start_dim + vecs[i].dim
-                self.vectors[i][start_dim:end_dim] = vecs[i][token]
+            for j, v in enumerate(vectors):
+                end_dim = start_dim + vecs[j].dim
+                self.vectors[i][start_dim:end_dim] = vecs[j][token]
                 start_dim = end_dim
             assert(start_dim == tot_dim)
 
@@ -149,12 +149,13 @@ class Vectors(object):
         fname_pt = fname + '.pt'
         fname_txt = fname + '.txt'
         desc = os.path.basename(fname)
-        dest = os.path.join(root, os.path.basename(url))
 
         if not os.path.isfile(fname_pt):
+            dest = os.path.join(root, os.path.basename(url))
             if not os.path.isfile(fname_txt):
                 print('downloading vectors from {}'.format(url))
-                os.makedirs(root, exist_ok=True)
+                if not os.path.exists(root):
+                    os.makedirs(root)
                 with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
                     urlretrieve(url, dest, reporthook=reporthook(t))
                 print('extracting vectors into {}'.format(root))
@@ -204,7 +205,8 @@ class GloVe(Vectors):
         'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
         'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
         'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
+        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
+        'glove.test_twitter.27B': None,
     }
 
     def __init__(self, root='.vector_cache', name='840B', dim=300, **kwargs):

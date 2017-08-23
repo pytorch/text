@@ -49,7 +49,8 @@ class TREC(data.Dataset):
             for fn in [cls.train_filename, cls.test_filename]:
                 fpath = os.path.join(path, fn)
                 if not os.path.isfile(fpath):
-                    os.makedirs(os.path.dirname(fpath), exist_ok=True)
+                    if not os.path.exists(os.path.dirname(fpath)):
+                        os.makedirs(os.path.dirname(fpath))
                     print('downloading {}'.format(fn))
                     urllib.request.urlretrieve(os.path.join(cls.url_base, fn), fpath)
         return os.path.join(path, '')

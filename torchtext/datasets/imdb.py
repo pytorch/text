@@ -43,7 +43,8 @@ class IMDB(data.Dataset):
         if not os.path.isdir(path):
             fpath = os.path.join(path, cls.filename)
             if not os.path.isfile(fpath):
-                os.makedirs(os.path.dirname(fpath), exist_ok=True)
+                if not os.path.exists(os.path.dirname(fpath)):
+                    os.makedirs(os.path.dirname(fpath))
                 print('downloading {}'.format(cls.filename))
                 urllib.request.urlretrieve(os.path.join(cls.url, cls.filename), fpath)
             with tarfile.open(fpath, 'r:gz') as tar:
