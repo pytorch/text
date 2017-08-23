@@ -8,7 +8,7 @@ from collections import Counter
 class TestVocab(unittest.TestCase):
     def test_vocab(self):
         c = Counter(['hello', 'world'])
-        v = vocab.Vocab(c, vectors=['glove.twitter.27B.200d', 'charngram.100d'])
+        v = vocab.Vocab(c, vectors='glove.test_twitter.27B.200d')
 
         self.assertEqual(v.itos, ['<unk>', '<pad>', 'hello', 'world'])
         vectors = v.vectors.numpy()
@@ -26,7 +26,7 @@ class TestVocab(unittest.TestCase):
                 )
             )
 
-        self.assertTrue(np.allclose(vectors[v.stoi['<unk>'], :], np.zeros(300)))
+        self.assertTrue(np.allclose(vectors[v.stoi['<unk>'], :], np.zeros(200)))
 
 
 if __name__ == '__main__':

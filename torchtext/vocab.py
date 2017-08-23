@@ -149,9 +149,9 @@ class Vectors(object):
         fname_pt = fname + '.pt'
         fname_txt = fname + '.txt'
         desc = os.path.basename(fname)
-        dest = os.path.join(root, os.path.basename(url))
 
         if not os.path.isfile(fname_pt):
+            dest = os.path.join(root, os.path.basename(url))
             if not os.path.isfile(fname_txt):
                 print('downloading vectors from {}'.format(url))
                 if not os.path.exists(root):
@@ -205,7 +205,8 @@ class GloVe(Vectors):
         'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
         'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
         'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip'
+        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
+        'glove.test_twitter.27B': None,
     }
 
     def __init__(self, root='.vector_cache', name='840B', dim=300, **kwargs):
