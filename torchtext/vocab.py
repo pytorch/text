@@ -154,7 +154,8 @@ class Vectors(object):
         if not os.path.isfile(fname_pt):
             if not os.path.isfile(fname_txt):
                 print('downloading vectors from {}'.format(url))
-                os.makedirs(root, exist_ok=True)
+                if not os.path.exists(root):
+                    os.makedirs(root)
                 with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
                     urlretrieve(url, dest, reporthook=reporthook(t))
                 print('extracting vectors into {}'.format(root))
