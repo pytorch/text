@@ -215,7 +215,6 @@ class GloVe(Vectors):
         'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
         'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
         'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
-        'glove.test_twitter.27B': None,
     }
 
     def __init__(self, root='.vector_cache', name='840B', dim=300, **kwargs):
