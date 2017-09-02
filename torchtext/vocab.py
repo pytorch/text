@@ -34,17 +34,19 @@ class Vocab(object):
             max_size: The maximum size of the vocabulary, or None for no
                 maximum. Default: None.
             min_freq: The minimum frequency needed to include a token in the
-                vocabulary. Default: 1.
+                vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
-                token.
+                token. Default: ['<pad>']
             vectors: one of the available pretrained vectors or a list with each
-                element one of the available pretrained vectors (see Vocab.load_vectors)
+                element one of the available pretrained vectors
+                (see Vocab.load_vectors). Default: None
             unk_init (callback): by default, initalize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size
-            expand_vocab (bool): expand vocabulary to include all words for which
-                the specified pretrained word vectors are available
+            expand_vocab (bool): If True, expand vocabulary to include all
+                words for which the specified pretrained word vectors are
+                available. Default: False
         """
         self.freqs = counter.copy()
         min_freq = max(min_freq, 1)
@@ -58,14 +60,14 @@ class Vocab(object):
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
-        words = sorted(counter.items(), key=lambda tup: tup[0])
-        words.sort(key=lambda tup: tup[1], reverse=True)
+        words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
+        words_and_frequencies.sort(key=lambda tup: tup[1], reverse=True)
 
-        for k, v in words:
-            if v < min_freq or len(self.itos) == max_size:
+        for word, freq in words_and_frequencies:
+            if freq < min_freq or len(self.itos) == max_size:
                 break
-            self.itos.append(k)
-            self.stoi[k] = len(self.itos) - 1
+            self.itos.append(word)
+            self.stoi[word] = len(self.itos) - 1
 
         if vectors is not None:
             self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
@@ -153,12 +155,12 @@ class Vectors(object):
         if not os.path.isfile(fname_pt):
             dest = os.path.join(root, os.path.basename(url))
             if not os.path.isfile(fname_txt):
-                print('downloading vectors from {}'.format(url))
+                print('Downloading vectors from {}'.format(url))
                 if not os.path.exists(root):
                     os.makedirs(root)
                 with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
                     urlretrieve(url, dest, reporthook=reporthook(t))
-                print('extracting vectors into {}'.format(root))
+                print('Extracting vectors into {}'.format(root))
                 ext = os.path.splitext(dest)[1][1:]
                 if ext == 'zip':
                     with zipfile.ZipFile(dest, "r") as zf:
@@ -180,6 +182,11 @@ class Vectors(object):
                 word, entries = entries[0], entries[1:]
                 if dim is None:
                     dim = len(entries)
+                elif dim != len(entries):
+                    raise RuntimeError(
+                        "Vector for token {} has {} dimensions, but previously "
+                        "read vectors have {} dimensions. All vectors must have "
+                        "the same number of dimensions".format(word, len(entries), dim))
                 try:
                     if isinstance(word, six.binary_type):
                         word = word.decode('utf-8')
