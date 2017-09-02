@@ -211,10 +211,10 @@ class Vectors(object):
             self.stoi = {word: i for i, word in enumerate(itos)}
             self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
-            logger.info('saving vectors to {}'.format(fname_pt))
+            logger.info('Saving vectors to {}'.format(fname_pt))
             torch.save((self.stoi, self.vectors, self.dim), fname_pt)
         else:
-            logger.info('loading vectors from {}'.format(fname_pt))
+            logger.info('Loading vectors from {}'.format(fname_pt))
             self.stoi, self.vectors, self.dim = torch.load(fname_pt)
 
 
