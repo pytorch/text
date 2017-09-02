@@ -1,6 +1,6 @@
-from __future__ import print_function
 import array
 from collections import defaultdict
+import logging
 import os
 import zipfile
 
@@ -11,6 +11,8 @@ from tqdm import tqdm
 import tarfile
 
 from .utils import reporthook
+
+logger = logging.getLogger(__name__)
 
 
 class Vocab(object):
@@ -155,12 +157,12 @@ class Vectors(object):
         if not os.path.isfile(fname_pt):
             dest = os.path.join(root, os.path.basename(url))
             if not os.path.isfile(fname_txt):
-                print('Downloading vectors from {}'.format(url))
+                logger.info('Downloading vectors from {}'.format(url))
                 if not os.path.exists(root):
                     os.makedirs(root)
                 with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
                     urlretrieve(url, dest, reporthook=reporthook(t))
-                print('Extracting vectors into {}'.format(root))
+                logger.info('Extracting vectors into {}'.format(root))
                 ext = os.path.splitext(dest)[1][1:]
                 if ext == 'zip':
                     with zipfile.ZipFile(dest, "r") as zf:
@@ -176,7 +178,7 @@ class Vectors(object):
             itos, vectors, dim = [], array.array('d'), None
             with open(fname_txt, 'rb') as f:
                 lines = [line for line in f]
-            print("Loading vectors from {}".format(fname_txt))
+            logger.info("Loading vectors from {}".format(fname_txt))
             for line in tqdm(lines, total=len(lines)):
                 entries = line.strip().split(b' ')
                 word, entries = entries[0], entries[1:]
@@ -191,7 +193,7 @@ class Vectors(object):
                     if isinstance(word, six.binary_type):
                         word = word.decode('utf-8')
                 except:
-                    print('non-UTF8 token', repr(word), 'ignored')
+                    logger.info('non-UTF8 token', repr(word), 'ignored')
                     continue
                 vectors.extend(float(x) for x in entries)
                 itos.append(word)
@@ -199,10 +201,10 @@ class Vectors(object):
             self.stoi = {word: i for i, word in enumerate(itos)}
             self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
-            print('saving vectors to', fname_pt)
+            logger.info('saving vectors to', fname_pt)
             torch.save((self.stoi, self.vectors, self.dim), fname_pt)
         else:
-            print('loading vectors from', fname_pt)
+            logger.info('loading vectors from', fname_pt)
             self.stoi, self.vectors, self.dim = torch.load(fname_pt)
 
 
