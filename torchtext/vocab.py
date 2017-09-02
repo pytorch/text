@@ -3,6 +3,7 @@ from collections import defaultdict
 import io
 import logging
 import os
+import shutil
 import zipfile
 
 from six.moves.urllib.request import urlretrieve
@@ -81,6 +82,9 @@ class Vocab(object):
         """Arguments:
               vectors: one of the available pretrained vectors or a list with each
                   element one of the available pretrained vectors:
+                       charngram.100d
+                       fasttext.en.300d
+                       fasttext.simple.300d
                        glove.42B.300d
                        glove.840B.300d
                        glove.twitter.27B.25d
@@ -91,7 +95,6 @@ class Vocab(object):
                        glove.6B.100d
                        glove.6B.200d
                        glove.6B.300d
-                       charngram.100d
               unk_init (callback): by default, initalize out-of-vocabulary word vectors
                   to zero vectors; can be any function that takes in a Tensor and
                   returns a Tensor of the same size
@@ -115,6 +118,9 @@ class Vocab(object):
                         self.stoi[w] = len(self.itos) - 1
             elif 'charngram' in v:
                 vecs.append(CharNGram(unk_init=unk_init))
+            elif 'fasttext' in v:
+                wv_language = rest
+                vecs.append(FastText(language=wv_language, unk_init=unk_init))
             tot_dim += wv_dim
 
         self.vectors = torch.Tensor(len(self), tot_dim)
@@ -170,8 +176,11 @@ class Vectors(object):
                 elif ext == 'gz':
                     with tarfile.open(dest, 'r:gz') as tar:
                         tar.extractall(path=root)
+                elif ext == 'vec' or ext == 'txt':
+                    if dest != fname_txt:
+                        shutil.copy(dest, fname_txt)
                 else:
-                    raise RuntimeError('unsupported compression format')
+                    raise RuntimeError('unsupported compression format {}'.format(ext))
             if not os.path.isfile(fname_txt):
                 raise RuntimeError('no vectors found')
 
@@ -180,15 +189,22 @@ class Vectors(object):
                 lines = [line for line in f]
             logger.info("Loading vectors from {}".format(fname_txt))
             for line in tqdm(lines, total=len(lines)):
-                entries = line.strip().split()
+                # Explicitly splitting on " " is important, so we don't
+                # get rid of Unicode non-breaking spaces in the vectors.
+                entries = line.rstrip().split(" ")
                 word, entries = entries[0], entries[1:]
-                if dim is None:
+                if dim is None and len(entries) > 1:
                     dim = len(entries)
+                elif len(entries) == 1:
+                    logger.warning("Skipping token {} with 1-dimensional "
+                                   "vector {}; likely a header".format(word, entries))
+                    continue
                 elif dim != len(entries):
                     raise RuntimeError(
                         "Vector for token {} has {} dimensions, but previously "
                         "read vectors have {} dimensions. All vectors must have "
-                        "the same number of dimensions".format(word, len(entries), dim))
+                        "the same number of dimensions.".format(word, len(entries), dim))
+
                 vectors.extend(float(x) for x in entries)
                 itos.append(word)
 
@@ -217,6 +233,20 @@ class GloVe(Vectors):
         name = '.'.join(['glove', name])
         fname = name + '.' + dim
         self.vector_cache(self.url[name], root, fname)
+
+
+class FastText(Vectors):
+    url = {
+        'fasttext.en.300d':
+        'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.vec',
+        'fasttext.simple.300d':
+        'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
+    }
+
+    def __init__(self, root='.vector_cache', language="en", **kwargs):
+        super(FastText, self).__init__(**kwargs)
+        name = "fasttext.{}.300d".format(language)
+        self.vector_cache(self.url[name], root, name)
 
 
 class CharNGram(Vectors):
