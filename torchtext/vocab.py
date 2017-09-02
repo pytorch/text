@@ -1,10 +1,10 @@
 import array
 from collections import defaultdict
+import io
 import logging
 import os
 import zipfile
 
-import six
 from six.moves.urllib.request import urlretrieve
 import torch
 from tqdm import tqdm
@@ -176,11 +176,11 @@ class Vectors(object):
                 raise RuntimeError('no vectors found')
 
             itos, vectors, dim = [], array.array('d'), None
-            with open(fname_txt, 'rb') as f:
+            with io.open(fname_txt, encoding="utf8") as f:
                 lines = [line for line in f]
             logger.info("Loading vectors from {}".format(fname_txt))
             for line in tqdm(lines, total=len(lines)):
-                entries = line.strip().split(b' ')
+                entries = line.strip().split()
                 word, entries = entries[0], entries[1:]
                 if dim is None:
                     dim = len(entries)
@@ -189,12 +189,6 @@ class Vectors(object):
                         "Vector for token {} has {} dimensions, but previously "
                         "read vectors have {} dimensions. All vectors must have "
                         "the same number of dimensions".format(word, len(entries), dim))
-                try:
-                    if isinstance(word, six.binary_type):
-                        word = word.decode('utf-8')
-                except:
-                    logger.info('non-UTF8 token', repr(word), 'ignored')
-                    continue
                 vectors.extend(float(x) for x in entries)
                 itos.append(word)
 
