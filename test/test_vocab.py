@@ -31,7 +31,3 @@ class TestVocab(unittest.TestCase):
             )
 
         self.assertTrue(np.allclose(vectors[v.stoi['<unk>'], :], np.zeros(200)))
-
-
-if __name__ == '__main__':
-    unittest.main()
