@@ -1,16 +1,20 @@
-import numpy as np
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from collections import Counter
 import unittest
 
+import numpy as np
 from torchtext import vocab
-from collections import Counter
 
 
 class TestVocab(unittest.TestCase):
     def test_vocab(self):
-        c = Counter(['hello', 'world'])
-        v = vocab.Vocab(c, vectors='glove.test_twitter.27B.200d')
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+                        vectors='glove.test_twitter.27B.200d')
 
-        self.assertEqual(v.itos, ['<unk>', '<pad>', 'hello', 'world'])
+        self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
+                                  'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
         vectors = v.vectors.numpy()
 
         # The first 5 entries in each vector.
