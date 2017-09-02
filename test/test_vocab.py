@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from collections import Counter
+import logging
 import unittest
 
 import numpy as np
 from numpy.testing import assert_allclose
 from torchtext import vocab
+
+
+logging.basicConfig(format="%(asctime)s - %(levelname)s "
+                    "- %(name)s - %(message)s",
+                    level=logging.INFO)
 
 
 class TestVocab(unittest.TestCase):
