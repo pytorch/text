@@ -8,3 +8,4 @@ torchtext.egg-info/
 */**/*~
 *~
 .cache
+.vector_cache
