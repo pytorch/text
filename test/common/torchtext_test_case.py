@@ -47,8 +47,8 @@ class TorchtextTestCase(TestCase):
                 if data_format == "json":
                     test_ppid_dataset_file.write(json.dumps(example) + "\n")
                 elif data_format == "csv" or data_format == "tsv":
-                    test_ppid_dataset_file.write("{}{}{}{}{}{}{}\n".format(
-                        example["id"], delim, example["question1"], delim,
-                        example["question2"], delim, example["label"]))
+                    test_ppid_dataset_file.write("{}\n".format(
+                        delim.join([example["id"], example["question1"],
+                                    example["question2"], example["label"]])))
                 else:
                     raise ValueError("Invalid format {}".format(data_format))
