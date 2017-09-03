@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import torchtext.data as data
 
 from ..common.torchtext_test_case import TorchtextTestCase
