@@ -260,8 +260,10 @@ class CharNGram(Vectors):
         self.vector_cache(self.url, root, self.filename)
 
     def __getitem__(self, token):
-        chars = ['#BEGIN#'] + list(token) + ['#END#']
         vector = torch.Tensor(1, self.dim).zero_()
+        if token == "<unk>":
+            return self.unk_init(vector)
+        chars = ['#BEGIN#'] + list(token) + ['#END#']
         num_vectors = 0
         for n in [2, 3, 4]:
             end = len(chars) - n + 1
@@ -270,6 +272,7 @@ class CharNGram(Vectors):
                 gram_key = '{}gram-{}'.format(n, ''.join(gram))
                 if gram_key in self.stoi:
                     vector += self.vectors[self.stoi[gram_key]]
+                    num_vectors += 1
         if num_vectors > 0:
             vector /= num_vectors
         else:
