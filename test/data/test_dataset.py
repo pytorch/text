@@ -1,6 +1,6 @@
-from ..common.torchtext_test_case import TorchtextTestCase
-
 import torchtext.data as data
+
+from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDataset(TorchtextTestCase):
