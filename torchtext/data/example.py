@@ -18,7 +18,10 @@ class Example(object):
     def fromdict(cls, data, fields):
         ex = cls()
         for key, vals in fields.items():
-            if key in data and vals is not None:
+            if key not in data:
+                raise ValueError("Specified key {} was not found in "
+                                 "the input data".format(key))
+            if vals is not None:
                 if not isinstance(vals, list):
                     vals = [vals]
                 for val in vals:
