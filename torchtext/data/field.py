@@ -84,8 +84,8 @@ class Field(object):
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
         if (six.PY2 and isinstance(x, six.string_types) and not
-                isinstance(x, unicode)):
-            x = Pipeline(lambda s: unicode(s, encoding='utf-8'))(x)
+                isinstance(x, six.text_type)):
+            x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x)
         if self.lower:
