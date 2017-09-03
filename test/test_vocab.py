@@ -34,12 +34,13 @@ class TestVocab(unittest.TestCase):
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
-            expected_glove_twitter = {
+            expected_fasttext_simple_en = {
                 'hello': [0.39567, 0.21454, -0.035389, -0.24299, -0.095645],
                 'world': [0.10444, -0.10858, 0.27212, 0.13299, -0.33165],
             }
 
-            for word in expected_glove_twitter:
-                assert_allclose(vectors[v.stoi[word], :5], expected_glove_twitter[word])
+            for word in expected_fasttext_simple_en:
+                assert_allclose(vectors[v.stoi[word], :5],
+                                expected_fasttext_simple_en[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
