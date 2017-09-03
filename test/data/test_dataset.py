@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import torchtext.data as data
 
 from ..common.torchtext_test_case import TorchtextTestCase
