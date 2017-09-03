@@ -11,14 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class TorchtextTestCase(TestCase):
-    # Directory where everything temporary and test-related is written
-    test_dir = tempfile.mkdtemp()
-    test_ppid_dataset_path = os.path.join(test_dir, "test_ppid_dataset")
-
     def setUp(self):
         logging.basicConfig(format=('%(asctime)s - %(levelname)s - '
                                     '%(name)s - %(message)s'),
                             level=logging.INFO)
+        # Directory where everything temporary and test-related is written
+        self.test_dir = tempfile.mkdtemp()
+        self.test_ppid_dataset_path = os.path.join(self.test_dir, "test_ppid_dataset")
 
     def tearDown(self):
         try:

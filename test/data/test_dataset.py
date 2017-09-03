@@ -53,3 +53,17 @@ class TestDataset(TorchtextTestCase):
                 self.assertEqual(example.q1, expected_examples[i][0])
                 self.assertEqual(example.q2, expected_examples[i][1])
                 self.assertEqual(example.label, expected_examples[i][2])
+
+    def test_errors(self):
+        # Ensure that trying to retrieve a key not in JSON data errors
+        self.write_test_ppid_dataset(data_format="json")
+
+        question_field = data.Field(sequential=True)
+        label_field = data.Field(sequential=False)
+        fields = {"qeustion1": ("q1", question_field),
+                  "question2": ("q2", question_field),
+                  "label": ("label", label_field)}
+
+        with self.assertRaises(ValueError):
+            data.TabularDataset(
+                path=self.test_ppid_dataset_path, format="json", fields=fields)
