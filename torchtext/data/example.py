@@ -28,14 +28,12 @@ class Example(object):
 
     @classmethod
     def fromTSV(cls, data, fields):
-        if data[-1] == '\n':
-            data = data[:-1]
+        data = data.rstrip("\n")
         return cls.fromlist(data.split('\t'), fields)
 
     @classmethod
     def fromCSV(cls, data, fields):
-        if data[-1] == '\n':
-            data = data[:-1]
+        data = data.rstrip("\n")
         # If Python 2, encode to utf-8 since CSV doesn't take unicode input
         if six.PY2:
             data = data.encode('utf-8')
