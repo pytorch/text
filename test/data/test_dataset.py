@@ -6,15 +6,24 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDataset(TorchtextTestCase):
-    def test_tabular_sv(self):
-        for data_format in ["csv", "tsv"]:
-            self.write_sv_dataset(data_format=data_format)
-            question_field = data.Field(sequential=True)
-            label_field = data.Field(sequential=False)
+    def test_tabular_simple_data(self):
+        for data_format in ["csv", "tsv", "json"]:
+            self.write_test_ppid_dataset(data_format=data_format)
+
+            if data_format == "json":
+                question_field = data.Field(sequential=True)
+                label_field = data.Field(sequential=False)
+                fields = {"question1": ("q1", question_field),
+                          "question2": ("q2", question_field),
+                          "label": ("label", label_field)}
+            else:
+                question_field = data.Field(sequential=True)
+                label_field = data.Field(sequential=False)
+                fields = [("id", None), ("q1", question_field),
+                          ("q2", question_field), ("label", label_field)]
+
             dataset = data.TabularDataset(
-                path=self.sv_dataset_path, format=data_format,
-                fields=[("id", None), ("q1", question_field),
-                        ("q2", question_field), ("label", label_field)])
+                path=self.test_ppid_dataset_path, format=data_format, fields=fields)
 
             assert len(dataset) == 3
 
