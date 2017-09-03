@@ -16,6 +16,8 @@ class TorchtextTestCase(TestCase):
                                     '%(name)s - %(message)s'),
                             level=logging.INFO)
         # Directory where everything temporary and test-related is written
+        self.project_root = os.path.abspath(os.path.realpath(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir)))
         self.test_dir = tempfile.mkdtemp()
         self.test_ppid_dataset_path = os.path.join(self.test_dir, "test_ppid_dataset")
 

@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from collections import Counter
-import logging
-import unittest
+import os
+
 
 import numpy as np
 from numpy.testing import assert_allclose
 from torchtext import vocab
 
 from .common.test_markers import slow
-
-logging.basicConfig(format="%(asctime)s - %(levelname)s "
-                    "- %(name)s - %(message)s",
-                    level=logging.INFO)
+from .common.torchtext_test_case import TorchtextTestCase
 
 
-class TestVocab(unittest.TestCase):
+class TestVocab(TorchtextTestCase):
     def test_vocab_basic(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
@@ -45,6 +42,10 @@ class TestVocab(unittest.TestCase):
                                 expected_fasttext_simple_en[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+        # Delete the vectors after we're done to save disk space on CI
+        if os.environ["TRAVIS"] == "true":
+            os.remove(os.path.join(self.project_root, ".vector_cache",
+                                   "wiki.simple.vec"))
 
     @slow
     def test_vocab_download_glove_vectors(self):
@@ -69,6 +70,15 @@ class TestVocab(unittest.TestCase):
                                 expected_twitter[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
+        # Delete the vectors after we're done to save disk space on CI
+        if os.environ["TRAVIS"] == "true":
+            os.remove(os.path.join(self.project_root, ".vector_cache",
+                                   "glove.twitter.27B.zip"))
+            for dim in ["25", "50", "100", "200"]:
+                os.remove(os.path.join(self.project_root, ".vector_cache",
+                                       "glove.twitter.27B.{}d.txt".format(dim)))
+            os.remove(os.path.join(self.project_root, ".vector_cache",
+                                   "glove.twitter.27B.25d.pt"))
 
     @slow
     def test_vocab_download_charngram_vectors(self):
@@ -94,3 +104,9 @@ class TestVocab(unittest.TestCase):
                                 expected_charngram[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
+        # Delete the vectors after we're done to save disk space on CI
+        if os.environ["TRAVIS"] == "true":
+            os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
+            os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.pt"))
+            os.remove(os.path.join(self.project_root, ".vector_cache",
+                                   "jmt_pre-trained_embeddings.tar.gz"))
