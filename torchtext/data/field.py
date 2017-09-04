@@ -47,7 +47,8 @@ class Field(object):
             into a Tensor. Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
-            sequential examples. Default: str.split.
+            sequential examples. If "spacy", the SpaCy English tokenizer is
+            used. Default: str.split.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
