@@ -60,8 +60,8 @@ class TestVocab(unittest.TestCase):
 
             # The first 5 entries in each vector.
             expected_twitter = {
-                'hello': [0.34683, -0.19612, -0.34923, -0.28158, -0.75627],
-                'world': [0.035771, 0.62946, 0.27443, -0.36455, 0.39189],
+                'hello': [-0.77069, 0.12827, 0.33137, 0.0050893, -0.47605],
+                'world': [0.10301, 0.095666, -0.14789, -0.22383, -0.14775],
             }
 
             for word in expected_twitter:
