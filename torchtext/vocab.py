@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import array
 from collections import defaultdict
 import io
