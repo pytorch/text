@@ -10,3 +10,5 @@ coverage:
         threshold: 1%
     changes: false
 comment: false
+ignore:
+  - "test/"
