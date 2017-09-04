@@ -286,13 +286,15 @@ class CharNGram(Vectors):
         vector = torch.Tensor(1, self.dim).zero_()
         if token == "<unk>":
             return self.unk_init(vector)
-        chars = ['#BEGIN#'] + list(token) + ['#END#']
+        # These literals need to be coerced to unicode for Python 2 compatibility
+        # when we try to join them with read ngrams from the files.
+        chars = [u'#BEGIN#'] + list(token) + [u'#END#']
         num_vectors = 0
         for n in [2, 3, 4]:
             end = len(chars) - n + 1
             grams = [chars[i:(i + n)] for i in range(end)]
             for gram in grams:
-                gram_key = '{}gram-{}'.format(n, ''.join(gram))
+                gram_key = '{}gram-{}'.format(n, u''.join(gram))
                 if gram_key in self.stoi:
                     vector += self.vectors[self.stoi[gram_key]]
                     num_vectors += 1
