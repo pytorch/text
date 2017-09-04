@@ -52,7 +52,7 @@ class TestVocab(unittest.TestCase):
         # Build a vocab and get vectors twice to test caching.
         for i in range(2):
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
-                            vectors='glove.twitter.27B.200d')
+                            vectors='glove.twitter.27B.25d')
 
             self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
                                       'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
