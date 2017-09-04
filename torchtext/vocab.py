@@ -6,6 +6,7 @@ import os
 import shutil
 import zipfile
 
+import six
 from six.moves.urllib.request import urlretrieve
 import torch
 from tqdm import tqdm
@@ -185,8 +186,22 @@ class Vectors(object):
                 raise RuntimeError('no vectors found')
 
             itos, vectors, dim = [], array.array('d'), None
-            with io.open(fname_txt, encoding="utf8") as f:
-                lines = [line for line in f]
+
+            # Try to read the whole file with utf-8 encoding.
+            binary_lines = False
+            try:
+                with io.open(fname_txt, encoding="utf8") as f:
+                    lines = [line for line in f]
+            # If there are malformed lines, read in binary mode
+            # and manually decode each word form utf-8
+            except:
+                logger.warning("Could not read {} as UTF8 file, "
+                               "reading file as bytes and skipping "
+                               "words with malformed UTF8.".format(fname_txt))
+                with open(fname_txt, 'rb') as f:
+                    lines = [line for line in f]
+                binary_lines = True
+
             logger.info("Loading vectors from {}".format(fname_txt))
             for line in tqdm(lines, total=len(lines)):
                 # Explicitly splitting on " " is important, so we don't
@@ -205,6 +220,13 @@ class Vectors(object):
                         "read vectors have {} dimensions. All vectors must have "
                         "the same number of dimensions.".format(word, len(entries), dim))
 
+                if binary_lines:
+                    try:
+                        if isinstance(word, six.binary_type):
+                            word = word.decode('utf-8')
+                    except:
+                        logger.info("Skipping non-UTF8 token {}".format(repr(word)))
+                        continue
                 vectors.extend(float(x) for x in entries)
                 itos.append(word)
 
