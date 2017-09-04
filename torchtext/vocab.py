@@ -186,7 +186,7 @@ class Vectors(object):
             if not os.path.isfile(fname_txt):
                 raise RuntimeError('no vectors found')
 
-            itos, vectors, dim = [], array.array('d'), None
+            itos, vectors, dim = [], array.array(b'd'), None
 
             # Try to read the whole file with utf-8 encoding.
             binary_lines = False
@@ -288,13 +288,13 @@ class CharNGram(Vectors):
             return self.unk_init(vector)
         # These literals need to be coerced to unicode for Python 2 compatibility
         # when we try to join them with read ngrams from the files.
-        chars = [u'#BEGIN#'] + list(token) + [u'#END#']
+        chars = ['#BEGIN#'] + list(token) + ['#END#']
         num_vectors = 0
         for n in [2, 3, 4]:
             end = len(chars) - n + 1
             grams = [chars[i:(i + n)] for i in range(end)]
             for gram in grams:
-                gram_key = '{}gram-{}'.format(n, u''.join(gram))
+                gram_key = '{}gram-{}'.format(n, ''.join(gram))
                 if gram_key in self.stoi:
                     vector += self.vectors[self.stoi[gram_key]]
                     num_vectors += 1
