@@ -186,7 +186,10 @@ class Vectors(object):
             if not os.path.isfile(fname_txt):
                 raise RuntimeError('no vectors found')
 
-            itos, vectors, dim = [], array.array(b'd'), None
+            # str call is necessary for Python 2/3 compatibility, since
+            # argument must be Python 2 str (Python 3 bytes) or
+            # Python 3 str (Python 2 unicode)
+            itos, vectors, dim = [], array.array(str('d')), None
 
             # Try to read the whole file with utf-8 encoding.
             binary_lines = False
