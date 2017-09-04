@@ -68,7 +68,7 @@ class TestVocab(unittest.TestCase):
                 assert_allclose(vectors[v.stoi[word], :5],
                                 expected_twitter[word])
 
-            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(200))
+            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
 
     @slow
     def test_vocab_download_charngram_vectors(self):
