@@ -139,10 +139,12 @@ class Vocab(object):
         Set the vectors for the Vocab instance from a collection of Tensors.
 
         Arguments:
-            stoi: A dictionary of string to unique indices.
+            stoi: A dictionary of string to the index of the associated vector
+                in the `vectors` input argument.
             vectors: An indexed iterable (or other structure supporting __getitem__) that
                 given an input index, returns a FloatTensor representing the vector
-                for the token associated with the index.
+                for the token associated with the index. For example,
+                vector[stoi["string"]] should return the vector for "string".
             dim: The dimensionality of the vectors.
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
