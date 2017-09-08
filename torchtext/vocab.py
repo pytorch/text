@@ -138,7 +138,7 @@ class Vocab(object):
         self.vectors = torch.Tensor(len(self), dim)
         for i, token in enumerate(self.itos):
             wv_index = stoi.get(token, None)
-            if wv_index is None:
+            if wv_index is not None:
                 self.vectors[i] = vectors[wv_index]
             else:
                 self.vectors[i] = unk_init(self.vectors[i])
