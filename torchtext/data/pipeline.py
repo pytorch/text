@@ -2,10 +2,13 @@ class Pipeline(object):
     """Defines a pipeline for transforming sequence data."""
 
     def __init__(self, convert_token=None):
-        if convert_token is not None:
+        if convert_token is None:
+            self.convert_token = lambda x: x
+        elif callable(convert_token):
             self.convert_token = convert_token
         else:
-            self.convert_token = lambda x: x
+            raise ValueError("Pipeline input convert_token {} is not None "
+                             "or callable".format(convert_token))
         self.pipes = [self]
 
     def __call__(self, x, *args):
