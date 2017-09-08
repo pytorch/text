@@ -9,7 +9,6 @@ class Pipeline(object):
         pipes: The Pipelines that will be applid to input sequence
             data in order.
     """
-
     def __init__(self, convert_token=None):
         """Create a pipeline.
 
@@ -18,7 +17,7 @@ class Pipeline(object):
                 If None, the identity function is used. Default: None
         """
         if convert_token is None:
-            self.convert_token = lambda x: x
+            self.convert_token = Pipeline.identity
         elif callable(convert_token):
             self.convert_token = convert_token
         else:
@@ -76,3 +75,11 @@ class Pipeline(object):
             pipeline = Pipeline(pipeline)
         self.pipes = self.pipes[:] + pipeline.pipes[:]
         return self
+
+    @staticmethod
+    def identity(x):
+        """Return a copy of the input.
+
+        This is here for serialization compatibility with pickle.
+        """
+        return x
