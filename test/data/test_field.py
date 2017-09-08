@@ -1,9 +1,9 @@
-from unittest import TestCase
-
 import torchtext.data as data
 
+from ..common.torchtext_test_case import TorchtextTestCase
 
-class TestField(TestCase):
+
+class TestField(TorchtextTestCase):
     def test_preprocess(self):
         # Default case.
         field = data.Field()
