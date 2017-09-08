@@ -46,9 +46,9 @@ class Vocab(object):
             vectors: one of the available pretrained vectors or a list with each
                 element one of the available pretrained vectors
                 (see Vocab.load_vectors). Default: None
-            unk_init (callback): by default, initalize out-of-vocabulary word vectors
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size
+                returns a Tensor of the same size. Default: torch.Tensor.zero_
             expand_vocab (bool): If True, expand vocabulary to include all
                 words for which the specified pretrained word vectors are
                 available. Default: False
@@ -97,9 +97,9 @@ class Vocab(object):
                        glove.6B.100d
                        glove.6B.200d
                        glove.6B.300d
-              unk_init (callback): by default, initalize out-of-vocabulary word vectors
+              unk_init (callback): by default, initialize out-of-vocabulary word vectors
                   to zero vectors; can be any function that takes in a Tensor and
-                  returns a Tensor of the same size
+                  returns a Tensor of the same size. Default: torch.Tensor.zero_
               expand_vocab (bool): expand vocabulary to include all words for which
                   the specified pretrained word vectors are available
         """
@@ -144,9 +144,9 @@ class Vocab(object):
                 given an input index, returns a FloatTensor representing the vector
                 for the token associated with the index.
             dim: The dimensionality of the vectors.
-            unk_init (callback): by default, initalize out-of-vocabulary word vectors
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size.
+                returns a Tensor of the same size. Default: torch.Tensor.zero_
         """
         self.vectors = torch.Tensor(len(self), dim)
         for i, token in enumerate(self.itos):
