@@ -23,9 +23,11 @@ class Pipeline(object):
         if not isinstance(pipeline, Pipeline):
             pipeline = Pipeline(pipeline)
         self.pipes = pipeline.pipes[:] + self.pipes[:]
+        return self
 
     def add_after(self, pipeline):
         """Add `pipeline` after this processing pipeline."""
         if not isinstance(pipeline, Pipeline):
             pipeline = Pipeline(pipeline)
         self.pipes = self.pipes[:] + pipeline.pipes[:]
+        return self
