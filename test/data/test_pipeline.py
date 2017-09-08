@@ -15,6 +15,11 @@ class TestPipeline(TorchtextTestCase):
         return x * n
 
     def test_pipeline(self):
+        id_pipeline = data.Pipeline()
+        assert id_pipeline("Test STring") == "Test STring"
+        assert id_pipeline("ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T") == "ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T"
+        assert id_pipeline(["1241", "Some String"]) == ["1241", "Some String"]
+
         pipeline = data.Pipeline(six.text_type.lower)
         assert pipeline("Test STring") == "test string"
         assert pipeline("ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T") == "ᑌᑎiᑕoᗪᕮ_tᕮ᙭t"
@@ -25,7 +30,10 @@ class TestPipeline(TorchtextTestCase):
         assert args_pipeline(["ele1", "ele2"], 2) == ["ele1ele1", "ele2ele2"]
 
     def test_composition(self):
+        id_pipeline = data.Pipeline()
         pipeline = data.Pipeline(TestPipeline.repeat_n)
+        pipeline.add_before(id_pipeline)
+        pipeline.add_after(id_pipeline)
         pipeline.add_before(six.text_type.lower)
         pipeline.add_after(six.text_type.capitalize)
 
