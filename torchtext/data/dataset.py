@@ -1,8 +1,8 @@
-import io
 import os
 import zipfile
 
 import torch.utils.data
+import six
 from six.moves import urllib
 
 from .example import Example
@@ -24,7 +24,7 @@ class Dataset(torch.utils.data.Dataset):
     sort_key = None
 
     def __init__(self, examples, fields, filter_pred=None):
-        """Create a dataset from a list of Examples and fields.
+        """Create a dataset from a list of examples and fields.
 
         Arguments:
             examples: List of Examples.
@@ -94,15 +94,17 @@ class TabularDataset(Dataset):
                 that will be ignored. For JSON format, dictionary whose keys
                 are the JSON keys and whose values are tuples of (name, field).
                 This allows the user to rename columns from their JSON key
-                names and also enables selecting a subset of columns to load
-                (since JSON keys not present in the input dictionary are ignored).
+                names or select a subset of columns to load while ignoring
+                others not present in this dictionary.
         """
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
             'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
 
-        with io.open(os.path.expanduser(path), encoding="utf8") as f:
-            examples = [make_example(line, fields) for line in f]
+        with open(os.path.expanduser(path)) as f:
+            examples = [
+                make_example(line.decode('utf-8') if six.PY2 else line, fields)
+                for line in f]
 
         if make_example in (Example.fromdict, Example.fromJSON):
             fields, field_dict = [], fields
