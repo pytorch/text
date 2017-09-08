@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import six
 import torchtext.data as data
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -14,7 +15,7 @@ class TestPipeline(TorchtextTestCase):
         return x * n
 
     def test_pipeline(self):
-        pipeline = data.Pipeline(str.lower)
+        pipeline = data.Pipeline(six.text_type.lower)
         assert pipeline("Test STring") == "test string"
         assert pipeline("ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T") == "ᑌᑎiᑕoᗪᕮ_tᕮ᙭t"
         assert pipeline(["1241", "Some String"]) == ["1241", "some string"]
@@ -25,10 +26,10 @@ class TestPipeline(TorchtextTestCase):
 
     def test_composition(self):
         pipeline = data.Pipeline(TestPipeline.repeat_n)
-        pipeline.add_before(str.lower)
-        pipeline.add_after(str.capitalize)
+        pipeline.add_before(six.text_type.lower)
+        pipeline.add_after(six.text_type.capitalize)
 
-        other_pipeline = data.Pipeline(str.swapcase)
+        other_pipeline = data.Pipeline(six.text_type.swapcase)
         other_pipeline.add_before(pipeline)
 
         # Assert pipeline gives proper results after composition
