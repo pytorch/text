@@ -1,10 +1,10 @@
+from unittest import TestCase
+
 import six
 import torchtext.data as data
 
-from ..common.torchtext_test_case import TorchtextTestCase
 
-
-class TestUtils(TorchtextTestCase):
+class TestUtils(TestCase):
     def test_get_tokenizer(self):
         # Test the default case with str.split
         assert data.get_tokenizer(str.split) == str.split
