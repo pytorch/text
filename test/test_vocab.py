@@ -43,7 +43,7 @@ class TestVocab(TorchtextTestCase):
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
         # Delete the vectors after we're done to save disk space on CI
-        if os.environ["TRAVIS"] == "true":
+        if os.environ.get("TRAVIS") == "true":
             os.remove(os.path.join(self.project_root, ".vector_cache",
                                    "wiki.simple.vec"))
 
@@ -71,7 +71,7 @@ class TestVocab(TorchtextTestCase):
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
         # Delete the vectors after we're done to save disk space on CI
-        if os.environ["TRAVIS"] == "true":
+        if os.environ.get("TRAVIS") == "true":
             os.remove(os.path.join(self.project_root, ".vector_cache",
                                    "glove.twitter.27B.zip"))
             for dim in ["25", "50", "100", "200"]:
@@ -105,7 +105,7 @@ class TestVocab(TorchtextTestCase):
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
         # Delete the vectors after we're done to save disk space on CI
-        if os.environ["TRAVIS"] == "true":
+        if os.environ.get("TRAVIS") == "true":
             os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
             os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.pt"))
             os.remove(os.path.join(self.project_root, ".vector_cache",
