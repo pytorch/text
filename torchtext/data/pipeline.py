@@ -13,7 +13,7 @@ class Pipeline(object):
 
     def __call__(self, x, *args):
         for pipe in self.pipes:
-            x = pipe.call(x)
+            x = pipe.call(x, *args)
         return x
 
     def call(self, x, *args):
