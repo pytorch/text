@@ -103,7 +103,8 @@ class Field(object):
         the longest example in the batch. Prepends self.init_token and appends
         self.eos_token if those attributes are not None. Returns a tuple of the
         padded list and a list containing lengths of each example if
-        `self.include_lengths` is `True`, else just returns the padded list.
+        `self.include_lengths` is `True` and `self.sequential` is `True`, else just
+        returns the padded list. If `self.sequential` is `False`, no padding is applied.
         """
         minibatch = list(minibatch)
         if not self.sequential:
