@@ -135,6 +135,19 @@ class Vocab(object):
             assert(start_dim == tot_dim)
 
     def set_vectors(self, stoi, vectors, dim, unk_init=torch.Tensor.zero_):
+        """
+        Set the vectors for the Vocab instance from a collection of Tensors.
+
+        Arguments:
+            stoi: A dictionary of string to unique indices.
+            vectors: An indexed iterable (or other structure supporting __getitem__) that
+                given an input index, returns a FloatTensor representing the vector
+                for the token associated with the index.
+            dim: The dimensionality of the vectors.
+            unk_init (callback): by default, initalize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and
+                returns a Tensor of the same size.
+        """
         self.vectors = torch.Tensor(len(self), dim)
         for i, token in enumerate(self.itos):
             wv_index = stoi.get(token, None)
