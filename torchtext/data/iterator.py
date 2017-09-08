@@ -217,8 +217,8 @@ class BPTTIterator(Iterator):
         text = self.dataset[0].text
         TEXT = self.dataset.fields['text']
         TEXT.eos_token = None
-        text = text + ([TEXT.pad_token] * (math.ceil(len(text) / self.batch_size) *
-                                           self.batch_size - len(text)))
+        text = text + ([TEXT.pad_token] * int(math.ceil(len(text) / self.batch_size) *
+                                              self.batch_size - len(text)))
         data = TEXT.numericalize(
             [text], device=self.device, train=self.train)
         data = data.view(self.batch_size, -1).t().contiguous()
