@@ -136,13 +136,17 @@ class Vocab(object):
 
 class Vectors(object):
 
-    def __init__(self, unk_init=torch.Tensor.zero_):
+    def __init__(self, name, cache='.vector_cache', url=None, unk_init=torch.Tensor.zero_):
        """Arguments:
+              name: name of the file that contains the vectors
+              cache: directory for cached vectors
+              url: url for download if vectors not found in cache
               unk_init (callback): by default, initalize out-of-vocabulary word vectors
                   to zero vectors; can be any function that takes in a Tensor and
                   returns a Tensor of the same size
         """
         self.unk_init = unk_init
+        self.cache(name, cache, url=url)
 
     def __getitem__(self, token):
         if token in self.stoi:
@@ -150,36 +154,30 @@ class Vectors(object):
         else:
             return self.unk_init(torch.Tensor(1, self.dim))
 
-    def vector_cache(self, fname, root='.vector_cache', url=None):
-        desc = fname
-        fname = os.path.join(root, fname)
-        fname_pt = fname + '.pt'
-        fname_txt = fname + '.txt'
-        desc = os.path.basename(fname)
+    def cache(self, name, cache, url=None):
+        path = os.join([cache, name]) 
+        path_pt = path + '.pt'
 
-        if not os.path.isfile(fname_pt):
-            if not os.path.isfile(fname_txt) and url:
+        if not os.path.isfile(path_pt):
+            if not os.path.isfile(path) and url:
                 logger.info('Downloading vectors from {}'.format(url))
-                if not os.path.exists(root):
-                    os.makedirs(root)
-                dest = os.path.join(root, os.path.basename(url))
+                if not os.path.exists(cache):
+                    os.makedirs(cache)
+                dest = os.path.join(cache, os.path.basename(url))
                 with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
                     urlretrieve(url, dest, reporthook=reporthook(t))
-                logger.info('Extracting vectors into {}'.format(root))
+                logger.info('Extracting vectors into {}'.format(cache))
                 ext = os.path.splitext(dest)[1][1:]
                 if ext == 'zip':
                     with zipfile.ZipFile(dest, "r") as zf:
-                        zf.extractall(root)
+                        zf.extractall(cache)
                 elif ext == 'gz':
                     with tarfile.open(dest, 'r:gz') as tar:
-                        tar.extractall(path=root)
-                elif ext == 'vec' or ext == 'txt':
-                    if dest != fname_txt:
-                        shutil.copy(dest, fname_txt)
-                else:
-                    raise RuntimeError('unsupported compression format {}'.format(ext))
-            if not os.path.isfile(fname_txt):
-                raise RuntimeError('no vectors found at {}'.format(fname_txt))
+                        tar.extractall(path=cache)
+                elif dest != path:
+                    shutil.copy(dest, path)
+            if not os.path.isfile(path):
+                raise RuntimeError('no vectors found at {}'.format(path))
 
             # str call is necessary for Python 2/3 compatibility, since
             # argument must be Python 2 str (Python 3 bytes) or
@@ -189,19 +187,19 @@ class Vectors(object):
             # Try to read the whole file with utf-8 encoding.
             binary_lines = False
             try:
-                with io.open(fname_txt, encoding="utf8") as f:
+                with io.open(path, encoding="utf8") as f:
                     lines = [line for line in f]
             # If there are malformed lines, read in binary mode
             # and manually decode each word from utf-8
             except:
                 logger.warning("Could not read {} as UTF8 file, "
                                "reading file as bytes and skipping "
-                               "words with malformed UTF8.".format(fname_txt))
-                with open(fname_txt, 'rb') as f:
+                               "words with malformed UTF8.".format(path))
+                with open(path, 'rb') as f:
                     lines = [line for line in f]
                 binary_lines = True
 
-            logger.info("Loading vectors from {}".format(fname_txt))
+            logger.info("Loading vectors from {}".format(path))
             for line in tqdm(lines, total=len(lines)):
                 # Explicitly splitting on " " is important, so we don't
                 # get rid of Unicode non-breaking spaces in the vectors.
@@ -232,15 +230,14 @@ class Vectors(object):
             self.stoi = {word: i for i, word in enumerate(itos)}
             self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
-            logger.info('Saving vectors to {}'.format(fname_pt))
-            torch.save((self.stoi, self.vectors, self.dim), fname_pt)
+            logger.info('Saving vectors to {}'.format(path_pt))
+            torch.save((self.stoi, self.vectors, self.dim), path_pt)
         else:
-            logger.info('Loading vectors from {}'.format(fname_pt))
-            self.stoi, self.vectors, self.dim = torch.load(fname_pt)
+            logger.info('Loading vectors from {}'.format(path_pt))
+            self.stoi, self.vectors, self.dim = torch.load(path_pt)
 
 
 class GloVe(Vectors):
-
     url = {
         'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
         'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
@@ -248,13 +245,12 @@ class GloVe(Vectors):
         'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
     }
 
-    def __init__(self, root='.vector_cache', name='840B', dim=300, **kwargs):
-        super(GloVe, self).__init__(**kwargs)
-        dim = str(dim) + 'd'
-        name = '.'.join(['glove', name])
-        fname = name + '.' + dim
-        self.vector_cache(self.url[name], root, fname)
-
+    def __init__(self, name='840B', dim=300, **kwargs):
+        name = 'glove.{}'.format(name)
+        url = self.url[name]
+        name = '{}.{}'.format(name, str(dim)+'d')
+        super(GloVe, self).__init__(name, url=url, **kwargs)
+       
 
 class FastText(Vectors):
     url = {
@@ -264,21 +260,19 @@ class FastText(Vectors):
         'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
     }
 
-    def __init__(self, root='.vector_cache', language="en", **kwargs):
-        super(FastText, self).__init__(**kwargs)
+    def __init__(self, language="en", **kwargs):
         name = "fasttext.{}.300d".format(language)
-        self.vector_cache(self.url[name], root, name)
+        super(FastText, self).__init__(url=self.url[name], **kwargs)
 
 
 class CharNGram(Vectors):
 
+    name = 'charNgram.jmt.100d'
     url = ('http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/'
            'jmt_pre-trained_embeddings.tar.gz')
-    filename = 'charNgram'
 
-    def __init__(self, root='.vector_cache', **kwargs):
-        super(CharNGram, self).__init__(**kwargs)
-        self.vector_cache(self.url, root, self.filename)
+    def __init__(self, **kwargs):
+        super(CharNGram, self).__init__(self.name, url=self.url, **kwargs)
 
     def __getitem__(self, token):
         vector = torch.Tensor(1, self.dim).zero_()
