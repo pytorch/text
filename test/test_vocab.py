@@ -165,7 +165,7 @@ class TestVocab(TorchtextTestCase):
                                    "glove.twitter.27B.zip"))
             for dim in ["25", "50", "100", "200"]:
                 os.remove(os.path.join(self.project_root, ".vector_cache",
-                                       "glove.twitter.27B.{}d".format(dim)))
+                                       "glove.twitter.27B.{}d.txt".format(dim)))
             os.remove(os.path.join(self.project_root, ".vector_cache",
                                    "glove.twitter.27B.25d.pt"))
 

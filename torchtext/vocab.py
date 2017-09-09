@@ -86,11 +86,12 @@ class Vocab(object):
     def __len__(self):
         return len(self.itos)
 
-    def extend(self, v, sort=True):
+    def extend(self, v, sort=False):
         words = sorted(v.itos) if sort else v.itos
         for w in words:
-            self.itos.append(w)
-            self.stoi[w] = len(self.itos) - 1
+            if w not in self.stoi:
+                self.itos.append(w)
+                self.stoi[w] = len(self.itos) - 1
 
     def load_vectors(self, vectors):
         """Arguments:
