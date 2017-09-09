@@ -100,12 +100,13 @@ class Vocab(object):
         if not isinstance(vectors, list):
             vectors = [vectors]
 
+        tot_dim = sum(v.dim for v in vectors)
         self.vectors = torch.Tensor(len(self), tot_dim)
         for i, token in enumerate(self.itos):
             start_dim = 0
-            for j, v in enumerate(vectors):
-                end_dim = start_dim + vecs[j].dim
-                self.vectors[i][start_dim:end_dim] = vecs[j][token]
+            for v in vectors:
+                end_dim = start_dim + v.dim
+                self.vectors[i][start_dim:end_dim] = v[token]
                 start_dim = end_dim
             assert(start_dim == tot_dim)
 
@@ -137,14 +138,14 @@ class Vocab(object):
 class Vectors(object):
 
     def __init__(self, name, cache='.vector_cache', url=None, unk_init=torch.Tensor.zero_):
-       """Arguments:
-              name: name of the file that contains the vectors
-              cache: directory for cached vectors
-              url: url for download if vectors not found in cache
-              unk_init (callback): by default, initalize out-of-vocabulary word vectors
-                  to zero vectors; can be any function that takes in a Tensor and
-                  returns a Tensor of the same size
-        """
+        """Arguments:
+               name: name of the file that contains the vectors
+               cache: directory for cached vectors
+               url: url for download if vectors not found in cache
+               unk_init (callback): by default, initalize out-of-vocabulary word vectors
+                   to zero vectors; can be any function that takes in a Tensor and
+                   returns a Tensor of the same size
+         """
         self.unk_init = unk_init
         self.cache(name, cache, url=url)
 
@@ -155,7 +156,7 @@ class Vectors(object):
             return self.unk_init(torch.Tensor(1, self.dim))
 
     def cache(self, name, cache, url=None):
-        path = os.join([cache, name]) 
+        path = os.path.join(cache, name)
         path_pt = path + '.pt'
 
         if not os.path.isfile(path_pt):
@@ -164,8 +165,9 @@ class Vectors(object):
                 if not os.path.exists(cache):
                     os.makedirs(cache)
                 dest = os.path.join(cache, os.path.basename(url))
-                with tqdm(unit='B', unit_scale=True, miniters=1, desc=desc) as t:
-                    urlretrieve(url, dest, reporthook=reporthook(t))
+                if not os.path.isfile(dest):
+                    with tqdm(unit='B', unit_scale=True, miniters=1, desc=dest) as t:
+                        urlretrieve(url, dest, reporthook=reporthook(t))
                 logger.info('Extracting vectors into {}'.format(cache))
                 ext = os.path.splitext(dest)[1][1:]
                 if ext == 'zip':
@@ -174,8 +176,6 @@ class Vectors(object):
                 elif ext == 'gz':
                     with tarfile.open(dest, 'r:gz') as tar:
                         tar.extractall(path=cache)
-                elif dest != path:
-                    shutil.copy(dest, path)
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
@@ -227,47 +227,44 @@ class Vectors(object):
                 vectors.extend(float(x) for x in entries)
                 itos.append(word)
 
+            self.itos = itos
             self.stoi = {word: i for i, word in enumerate(itos)}
             self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
             logger.info('Saving vectors to {}'.format(path_pt))
-            torch.save((self.stoi, self.vectors, self.dim), path_pt)
+            torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
         else:
             logger.info('Loading vectors from {}'.format(path_pt))
-            self.stoi, self.vectors, self.dim = torch.load(path_pt)
+            self.itos, self.stoi, self.vectors, self.dim = torch.load(path_pt)
 
 
 class GloVe(Vectors):
     url = {
-        'glove.42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-        'glove.840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-        'glove.twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        'glove.6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
+        '42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
+        '840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
+        'twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
+        '6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
     }
 
     def __init__(self, name='840B', dim=300, **kwargs):
-        name = 'glove.{}'.format(name)
         url = self.url[name]
-        name = '{}.{}'.format(name, str(dim)+'d')
+        name = 'glove.{}.{}d.txt'.format(name, str(dim))
         super(GloVe, self).__init__(name, url=url, **kwargs)
        
 
 class FastText(Vectors):
-    url = {
-        'fasttext.en.300d':
-        'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.vec',
-        'fasttext.simple.300d':
-        'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
-    }
+
+    url_base = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{}.vec'
 
     def __init__(self, language="en", **kwargs):
-        name = "fasttext.{}.300d".format(language)
-        super(FastText, self).__init__(url=self.url[name], **kwargs)
+        url = self.url_base.format(language)
+        name = os.path.basename(url)
+        super(FastText, self).__init__(name, url=url, **kwargs)
 
 
 class CharNGram(Vectors):
 
-    name = 'charNgram.jmt.100d'
+    name = 'charNgram.txt'
     url = ('http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/'
            'jmt_pre-trained_embeddings.tar.gz')
 

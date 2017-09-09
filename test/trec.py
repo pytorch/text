@@ -1,5 +1,6 @@
 from torchtext import data
 from torchtext import datasets
+from torchtext.vocab import GloVe, CharNGram
 
 
 # Approach 1:
@@ -17,8 +18,7 @@ print('len(train)', len(train))
 print('vars(train[0])', vars(train[0]))
 
 # build the vocabulary
-
-TEXT.build_vocab(train, vectors='glove.6B.300d')
+TEXT.build_vocab(train, vectors=GloVe(name='6B', dim=300))
 LABEL.build_vocab(train)
 
 # print vocab information
@@ -35,7 +35,7 @@ print(batch.text)
 print(batch.label)
 
 # Approach 2:
-TEXT.build_vocab(train, vectors=['glove.840B.300d', 'charngram.100d'])
+TEXT.build_vocab(train, vectors=[GloVe(name='840B', dim='300'), CharNGram()])
 LABEL.build_vocab(train)
 
 train_iter, test_iter = datasets.TREC.iters(batch_size=4)
