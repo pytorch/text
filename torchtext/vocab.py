@@ -4,7 +4,6 @@ from collections import defaultdict
 import io
 import logging
 import os
-import shutil
 import zipfile
 
 import six
@@ -138,7 +137,8 @@ class Vocab(object):
 
 class Vectors(object):
 
-    def __init__(self, name, cache='.vector_cache', url=None, unk_init=torch.Tensor.zero_):
+    def __init__(self, name, cache='.vector_cache',
+                 url=None, unk_init=torch.Tensor.zero_):
         """Arguments:
                name: name of the file that contains the vectors
                cache: directory for cached vectors
@@ -251,7 +251,7 @@ class GloVe(Vectors):
         url = self.url[name]
         name = 'glove.{}.{}d.txt'.format(name, str(dim))
         super(GloVe, self).__init__(name, url=url, **kwargs)
-       
+
 
 class FastText(Vectors):
 
