@@ -58,8 +58,10 @@ class TestVocab(TorchtextTestCase):
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "wiki.simple.vec"))
+            if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                   "wiki.simple.vec")):
+                os.remove(os.path.join(self.project_root, ".vector_cache",
+                                       "wiki.simple.vec"))
 
     @slow
     def test_vocab_download_glove_vectors(self):
@@ -86,13 +88,19 @@ class TestVocab(TorchtextTestCase):
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.twitter.27B.zip"))
-            for dim in ["25", "50", "100", "200"]:
+            if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                           "glove.twitter.27B.zip")):
                 os.remove(os.path.join(self.project_root, ".vector_cache",
-                                       "glove.twitter.27B.{}d.txt".format(dim)))
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.twitter.27B.25d.pt"))
+                                       "glove.twitter.27B.zip"))
+            for dim in ["25", "50", "100", "200"]:
+                if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                               "glove.twitter.27B.{}d.txt".format(dim))):
+                    os.remove(os.path.join(self.project_root, ".vector_cache",
+                                           "glove.twitter.27B.{}d.txt".format(dim)))
+            if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                           "glove.twitter.27B.25d.pt")):
+                os.remove(os.path.join(self.project_root, ".vector_cache",
+                                           "glove.twitter.27B.25d.pt"))
 
     @slow
     def test_vocab_download_charngram_vectors(self):
@@ -120,7 +128,13 @@ class TestVocab(TorchtextTestCase):
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
-            os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.pt"))
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "jmt_pre-trained_embeddings.tar.gz"))
+            if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                           "charNgram.txt")):
+                os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
+            if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                           "charNgram.pt")):
+                os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.pt"))
+            if os.path.exists(os.path.join(self.project_root, ".vector_cache",
+                                           "jmt_pre-trained_embeddings.tar.gz")):
+                os.remove(os.path.join(self.project_root, ".vector_cache",
+                                       "jmt_pre-trained_embeddings.tar.gz"))
