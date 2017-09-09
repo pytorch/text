@@ -1,6 +1,6 @@
 from torchtext import data
 from torchtext import datasets
-from torchtext.vocab import GloVe, CharNGram, Vectors
+from torchtext.vocab import GloVe
 
 
 # Approach 1:

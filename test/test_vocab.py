@@ -15,6 +15,11 @@ from .common.test_markers import slow
 from .common.torchtext_test_case import TorchtextTestCase
 
 
+def conditional_remove(f):
+    if os.path.isfile(f):
+        os.remove(f)
+
+
 class TestVocab(TorchtextTestCase):
 
     def test_vocab_basic(self):
@@ -68,8 +73,8 @@ class TestVocab(TorchtextTestCase):
             assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "wiki.simple.vec"))
+            vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
+            conditional_remove(vec_file)
 
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -79,11 +84,11 @@ class TestVocab(TorchtextTestCase):
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
                             vectors=f)
             n_vocab = len(v)
-            v.extend(f) # extend the vocab with the words contained in f.itos
+            v.extend(f)  # extend the vocab with the words contained in f.itos
             self.assertGreater(len(v), n_vocab)
 
             self.assertEqual(v.itos[:6], ['<unk>', '<pad>', '<bos>',
-                                      'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
@@ -98,16 +103,16 @@ class TestVocab(TorchtextTestCase):
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
         # Delete the vectors after we're done to save disk space on CI
-        if os.environ["TRAVIS"] == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "wiki.simple.vec"))
+        if os.environ.get("TRAVIS") == "true":
+            vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
+            conditional_remove(vec_file)
 
     def test_vocab_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for i in range(2):
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
-                            vectors=Vectors('wiki.simple.vec', 
+                            vectors=Vectors('wiki.simple.vec',
                                             url=FastText.url_base.format('simple')))
 
             self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
@@ -126,10 +131,9 @@ class TestVocab(TorchtextTestCase):
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
         # Delete the vectors after we're done to save disk space on CI
-        if os.environ["TRAVIS"] == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "wiki.simple.vec"))
-
+        if os.environ.get("TRAVIS") == "true":
+            vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
+            conditional_remove(vec_file)
 
     @slow
     def test_vocab_download_glove_vectors(self):
@@ -161,13 +165,12 @@ class TestVocab(TorchtextTestCase):
             assert_allclose(vectors[v.stoi['OOV token']], np.zeros(25))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.twitter.27B.zip"))
+            zip_file = os.path.join(self.project_root, ".vector_cache",
+                                    "glove.twitter.27B.zip")
+            conditional_remove(zip_file)
             for dim in ["25", "50", "100", "200"]:
-                os.remove(os.path.join(self.project_root, ".vector_cache",
-                                       "glove.twitter.27B.{}d.txt".format(dim)))
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.twitter.27B.25d.pt"))
+                conditional_remove(os.path.join(self.project_root, ".vector_cache",
+                                   "glove.twitter.27B.{}d.txt".format(dim)))
 
     @slow
     def test_vocab_download_charngram_vectors(self):
@@ -198,10 +201,11 @@ class TestVocab(TorchtextTestCase):
             assert_allclose(vectors[v.stoi['OOV token']], np.zeros(100))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
-            os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt.pt"))
-            os.remove(os.path.join(self.project_root, ".vector_cache",
-                                   "jmt_pre-trained_embeddings.tar.gz"))
+            conditional_remove(
+                os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
+            conditional_remove(
+                os.path.join(self.project_root, ".vector_cache",
+                             "jmt_pre-trained_embeddings.tar.gz"))
 
     def test_serialization(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
