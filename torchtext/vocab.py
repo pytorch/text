@@ -28,6 +28,9 @@ class Vocab(object):
             numerical identifiers.
         itos: A list of token strings indexed by their numerical identifiers.
     """
+    @staticmethod
+    def _default_unk_index():
+        return 0
 
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
                  vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
@@ -57,7 +60,7 @@ class Vocab(object):
         min_freq = max(min_freq, 1)
         counter.update(['<unk>'] + specials)
 
-        self.stoi = defaultdict(lambda: 0)
+        self.stoi = defaultdict(Vocab._default_unk_index)
         self.stoi.update({tok: i for i, tok in
                           enumerate(['<unk>'] + specials)})
         self.itos = ['<unk>'] + specials
