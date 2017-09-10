@@ -82,6 +82,17 @@ class Vocab(object):
         if vectors is not None:
             self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
 
+    def __eq__(self, other):
+        if self.freqs != other.freqs:
+            return False
+        if self.stoi != other.stoi:
+            return False
+        if self.itos != other.itos:
+            return False
+        if self.vectors != other.vectors:
+            return False
+        return True
+
     def __len__(self):
         return len(self.itos)
 
