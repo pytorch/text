@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from collections import Counter
+
 import torchtext.data as data
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -94,3 +96,101 @@ class TestField(TorchtextTestCase):
         field = data.Field(init_token="<bos>", eos_token="<eos>",
                            sequential=False, include_lengths=True)
         assert field.pad(minibatch) == minibatch
+
+    def test_build_vocab(self):
+        # Set up fields
+        question_field = data.Field(sequential=True)
+        label_field = data.Field(sequential=False)
+
+        # Write TSV dataset and construct a Dataset
+        self.write_test_ppid_dataset(data_format="tsv")
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", label_field)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+
+        # Write JSON dataset and construct a Dataset
+        self.write_test_ppid_dataset(data_format="json")
+        json_fields = {"question1": ("q1", question_field),
+                       "question2": ("q2", question_field),
+                       "label": ("label", label_field)}
+        json_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="json",
+            fields=json_fields)
+
+        # Test build_vocab default
+        question_field.build_vocab(tsv_dataset, json_dataset)
+        assert question_field.vocab.freqs == Counter(
+            {'When': 4, 'do': 4, 'you': 4, 'use': 4, 'instead': 4,
+             'of': 4, 'was': 4, 'Lincoln': 4, 'born?': 4, 'シ': 2,
+             'し?': 2, 'Where': 2, 'What': 2, 'is': 2, '2+2': 2,
+             '"&"': 2, '"and"?': 2, 'Which': 2, 'location': 2,
+             'Abraham': 2, '2+2=?': 2})
+        expected_stoi = {'<unk>': 0, '<pad>': 1, 'Lincoln': 2, 'When': 3,
+                         'born?': 4, 'do': 5, 'instead': 6, 'of': 7,
+                         'use': 8, 'was': 9, 'you': 10, '"&"': 11,
+                         '"and"?': 12, '2+2': 13, '2+2=?': 14, 'Abraham': 15,
+                         'What': 16, 'Where': 17, 'Which': 18, 'is': 19,
+                         'location': 20, 'し?': 21, 'シ': 22}
+        assert dict(question_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert question_field.vocab.itos == expected_itos
+
+        label_field.build_vocab(tsv_dataset, json_dataset)
+        assert label_field.vocab.freqs == Counter({'1': 4, '0': 2})
+        expected_stoi = {'1': 1, '0': 2, '<unk>': 0}
+        assert dict(label_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert label_field.vocab.itos == expected_itos
+
+        # Test build_vocab default
+        question_field.build_vocab(tsv_dataset, json_dataset)
+        assert question_field.vocab.freqs == Counter(
+            {'When': 4, 'do': 4, 'you': 4, 'use': 4, 'instead': 4,
+             'of': 4, 'was': 4, 'Lincoln': 4, 'born?': 4, 'シ': 2,
+             'し?': 2, 'Where': 2, 'What': 2, 'is': 2, '2+2': 2,
+             '"&"': 2, '"and"?': 2, 'Which': 2, 'location': 2,
+             'Abraham': 2, '2+2=?': 2})
+        expected_stoi = {'<unk>': 0, '<pad>': 1, 'Lincoln': 2, 'When': 3,
+                         'born?': 4, 'do': 5, 'instead': 6, 'of': 7,
+                         'use': 8, 'was': 9, 'you': 10, '"&"': 11,
+                         '"and"?': 12, '2+2': 13, '2+2=?': 14, 'Abraham': 15,
+                         'What': 16, 'Where': 17, 'Which': 18, 'is': 19,
+                         'location': 20, 'し?': 21, 'シ': 22}
+        assert dict(question_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert question_field.vocab.itos == expected_itos
+
+        label_field.build_vocab(tsv_dataset, json_dataset)
+        assert label_field.vocab.freqs == Counter({'1': 4, '0': 2})
+        expected_stoi = {'1': 1, '0': 2, '<unk>': 0}
+        assert dict(label_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert label_field.vocab.itos == expected_itos
+
+        # Test build_vocab with extra kwargs passed to Vocab
+        question_field.build_vocab(tsv_dataset, json_dataset, max_size=8,
+                                   min_freq=3)
+        assert question_field.vocab.freqs == Counter(
+            {'When': 4, 'do': 4, 'you': 4, 'use': 4, 'instead': 4,
+             'of': 4, 'was': 4, 'Lincoln': 4, 'born?': 4, 'シ': 2,
+             'し?': 2, 'Where': 2, 'What': 2, 'is': 2, '2+2': 2,
+             '"&"': 2, '"and"?': 2, 'Which': 2, 'location': 2,
+             'Abraham': 2, '2+2=?': 2})
+        expected_stoi = {'<unk>': 0, '<pad>': 1, 'Lincoln': 2, 'When': 3,
+                         'born?': 4, 'do': 5, 'instead': 6, 'of': 7,
+                         'use': 8, 'was': 9}
+        assert dict(question_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert question_field.vocab.itos == expected_itos
