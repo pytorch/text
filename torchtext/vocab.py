@@ -58,7 +58,8 @@ class Vocab(object):
         counter.update(['<unk>'] + specials)
 
         self.stoi = defaultdict(lambda: 0)
-        self.stoi.update({tok: i + 1 for i, tok in enumerate(specials)})
+        self.stoi.update({tok: i for i, tok in
+                          enumerate(['<unk>'] + specials)})
         self.itos = ['<unk>'] + specials
 
         counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
