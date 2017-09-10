@@ -29,7 +29,7 @@ class TestField(TorchtextTestCase):
         # Non-regression test that we do not try to decode unicode strings to unicode
         field_not_sequential = data.Field(sequential=False, lower=True,
                                           preprocessing=preprocess_pipeline)
-        assert field_not_sequential.preprocess("ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T") == "ᑌᑎiᑕoᗪᕮ_tᕮ᙭t"
+        assert field_not_sequential.preprocess("ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T") == "ᑌᑎiᑕoᗪᕮ_tᕮ᙭t!"
 
     def test_pad(self):
         # Default case.
