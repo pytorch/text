@@ -78,6 +78,7 @@ class Vocab(object):
             self.itos.append(word)
             self.stoi[word] = len(self.itos) - 1
 
+        self.vectors = None
         if vectors is not None:
             self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
 
