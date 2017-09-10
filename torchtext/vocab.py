@@ -334,6 +334,6 @@ class CharNGram(Vectors):
             vector = self.unk_init(vector)
         return vector
 
+
 def _default_unk_index():
     return 0
-
