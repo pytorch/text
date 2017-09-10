@@ -18,8 +18,11 @@ class TestVocab(TorchtextTestCase):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
 
-        self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
-                                  'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+        expected_itos = ['<unk>', '<pad>', '<bos>',
+                         'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.itos, expected_itos)
+        self.assertEqual(dict(v.stoi), expected_stoi)
 
     def test_vocab_set_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5,
@@ -41,8 +44,11 @@ class TestVocab(TorchtextTestCase):
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
                             vectors='fasttext.simple.300d')
 
-            self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
-                                      'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+            expected_itos = ['<unk>', '<pad>', '<bos>',
+                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.itos, expected_itos)
+            self.assertEqual(dict(v.stoi), expected_stoi)
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
@@ -56,6 +62,7 @@ class TestVocab(TorchtextTestCase):
                                 expected_fasttext_simple_en[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
             os.remove(os.path.join(self.project_root, ".vector_cache",
@@ -69,8 +76,12 @@ class TestVocab(TorchtextTestCase):
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
                             vectors='glove.twitter.27B.25d')
 
-            self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
-                                      'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+            expected_itos = ['<unk>', '<pad>', '<bos>',
+                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.itos, expected_itos)
+            self.assertEqual(dict(v.stoi), expected_stoi)
+
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
@@ -84,6 +95,7 @@ class TestVocab(TorchtextTestCase):
                                 expected_twitter[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
+            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(25))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
             os.remove(os.path.join(self.project_root, ".vector_cache",
@@ -101,9 +113,11 @@ class TestVocab(TorchtextTestCase):
         for i in range(2):
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
                             vectors='charngram.100d')
-
-            self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
-                                      'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+            expected_itos = ['<unk>', '<pad>', '<bos>',
+                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.itos, expected_itos)
+            self.assertEqual(dict(v.stoi), expected_stoi)
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
@@ -118,6 +132,7 @@ class TestVocab(TorchtextTestCase):
                                 expected_charngram[word])
 
             assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
+            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(100))
         # Delete the vectors after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
             os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
