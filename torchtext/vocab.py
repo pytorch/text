@@ -28,10 +28,6 @@ class Vocab(object):
             numerical identifiers.
         itos: A list of token strings indexed by their numerical identifiers.
     """
-    @staticmethod
-    def _default_unk_index():
-        return 0
-
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
                  vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
         """Create a Vocab object from a collections.Counter.
@@ -60,7 +56,7 @@ class Vocab(object):
         min_freq = max(min_freq, 1)
         counter.update(['<unk>'] + specials)
 
-        self.stoi = defaultdict(Vocab._default_unk_index)
+        self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i for i, tok in
                           enumerate(['<unk>'] + specials)})
         self.itos = ['<unk>'] + specials
@@ -337,3 +333,7 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
+
+def _default_unk_index():
+    return 0
+
