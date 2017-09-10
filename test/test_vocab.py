@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from collections import Counter
 import os
+import pickle
 
 
 import numpy as np
@@ -14,6 +15,7 @@ from .common.torchtext_test_case import TorchtextTestCase
 
 
 class TestVocab(TorchtextTestCase):
+
     def test_vocab_basic(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
@@ -139,3 +141,11 @@ class TestVocab(TorchtextTestCase):
             os.remove(os.path.join(self.project_root, ".vector_cache", "charNgram.pt"))
             os.remove(os.path.join(self.project_root, ".vector_cache",
                                    "jmt_pre-trained_embeddings.tar.gz"))
+
+    def test_serialization(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
+        pickle_path = os.path.join(self.test_dir, "vocab.pkl")
+        pickle.dump(v, open(pickle_path, "wb"))
+        v_loaded = pickle.load(open(pickle_path, "rb"))
+        assert v == v_loaded
