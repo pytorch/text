@@ -1,6 +1,7 @@
 import io
 import os
 import zipfile
+import tarfile
 
 import torch.utils.data
 from six.moves import urllib
@@ -116,24 +117,28 @@ class TabularDataset(Dataset):
 
 
 class ZipDataset(Dataset):
-    """Defines a Dataset loaded from a downloadable zip archive.
+    """Defines a Dataset loaded from a downloadable archive.
 
     Attributes:
-        url: URL where the zip archive can be downloaded.
-        filename: Filename of the downloaded zip archive.
-        dirname: Name of the top-level directory within the zip archive that
-            contains the data files.
+        root: destination for decompressed archive
     """
 
     @classmethod
     def download_or_unzip(cls, root):
         path = os.path.join(root, cls.dirname)
+        filename = os.path.basename(cls.url)
         if not os.path.isdir(path):
-            zpath = os.path.join(root, cls.filename)
+            zpath = os.path.join(root, filename)
             if not os.path.isfile(zpath):
-                print('downloading')
+                print('downloading {}'.format(filename))
                 urllib.request.urlretrieve(cls.url, zpath)
-            with zipfile.ZipFile(zpath, 'r') as zfile:
-                print('extracting')
-                zfile.extractall(root)
+            ext = os.path.splitext(filename)[-1]
+            if ext == '.zip':
+                with zipfile.ZipFile(zpath, 'r') as zfile:
+                    print('extracting')
+                    zfile.extractall(root)
+            elif ext == '.gz':
+                with tarfile.open(zpath, 'r:gz') as tar:
+                    dirs = [member for member in tar.getmembers()]
+                    tar.extractall(path=root, members=dirs)
         return os.path.join(path, '')

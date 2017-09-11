@@ -40,7 +40,7 @@ class TranslationDataset(data.Dataset):
         super(TranslationDataset, self).__init__(examples, fields, **kwargs)
 
 
-class Multi30k(TranslationDataset):
+class Multi30k(TranslationDataset, data.ZipDataset):
     """Defines a dataset for the multi-modal WMT 2017 task"""
 
     train_url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz'
@@ -49,19 +49,10 @@ class Multi30k(TranslationDataset):
     dirname = 'multi30k'
 
     @classmethod
-    def download(cls, root):
-        path = os.path.join(root, cls.dirname)
-        if not os.path.isdir(path):
-            os.makedirs(path)
+    def download_or_unzip(cls, root):
         for url in [cls.train_url, cls.val_url, cls.test_url]:
-            gz_name = os.path.basename(url)
-            fpath = os.path.join(path, gz_name)
-            if not os.path.isfile(fpath):
-                print('downloading {}'.format(gz_name))
-                urllib.request.urlretrieve(url, fpath)
-            with tarfile.open(fpath, 'r:gz') as tar:
-                dirs = [member for member in tar.getmembers()]
-                tar.extractall(path=path, members=dirs)
+            cls.url = url
+            path = super(Multi30k, cls).download_or_unzip(root)
         return os.path.join(path, '')
 
     @classmethod
@@ -81,7 +72,7 @@ class Multi30k(TranslationDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download(root)
+        path = cls.download_or_unzip(root)
 
         train_data = None if train is None else cls(
             os.path.join(path, train), exts, fields, **kwargs)

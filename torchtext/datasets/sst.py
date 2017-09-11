@@ -6,7 +6,6 @@ from .. import data
 class SST(data.ZipDataset):
 
     url = 'http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip'
-    filename = 'trainDevTestTrees_PTB.zip'
     dirname = 'trees'
 
     @staticmethod
@@ -18,7 +17,7 @@ class SST(data.ZipDataset):
         """Create an SST dataset instance given a path and fields.
 
         Arguments:
-            path: Path to the data file.
+            path: Path to the data file
             text_field: The field that will be used for text data.
             label_field: The field that will be used for label data.
             subtrees: Whether to include sentiment-tagged subphrases
@@ -68,12 +67,12 @@ class SST(data.ZipDataset):
         path = cls.download_or_unzip(root)
 
         train_data = None if train is None else cls(
-            path + train, text_field, label_field, subtrees=train_subtrees,
+            os.path.join(path, train), text_field, label_field, subtrees=train_subtrees,
             **kwargs)
         val_data = None if validation is None else cls(
-            path + validation, text_field, label_field, **kwargs)
+            os.path.join(path, validation), text_field, label_field, **kwargs)
         test_data = None if test is None else cls(
-            path + test, text_field, label_field, **kwargs)
+            os.path.join(path, test), text_field, label_field, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
