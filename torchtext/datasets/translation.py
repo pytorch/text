@@ -1,7 +1,4 @@
 import os
-import tarfile
-from six.moves import urllib
-
 
 from .. import data
 
@@ -40,23 +37,17 @@ class TranslationDataset(data.Dataset):
         super(TranslationDataset, self).__init__(examples, fields, **kwargs)
 
 
-class Multi30k(TranslationDataset, data.ZipDataset):
+class Multi30k(TranslationDataset, data.Dataset):
     """Defines a dataset for the multi-modal WMT 2017 task"""
 
-    train_url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz'
-    val_url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
-    test_url = 'https://staff.fnwi.uva.nl/d.elliott/wmt16/mmt16_task1_test.tgz'
-    dirname = 'multi30k'
+    urls = ['http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
+            'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
+            'https://staff.fnwi.uva.nl/d.elliott/wmt16/mmt16_task1_test.tgz']
+    name = 'multi30k'
+    dirname = ''
 
     @classmethod
-    def download_or_unzip(cls, root):
-        for url in [cls.train_url, cls.val_url, cls.test_url]:
-            cls.url = url
-            path = super(Multi30k, cls).download_or_unzip(root)
-        return os.path.join(path, '')
-
-    @classmethod
-    def splits(cls, exts, fields, root='.',
+    def splits(cls, exts, fields, root='.data',
                train='train', val='val', test='test', **kwargs):
         """Create dataset objects for splits of the Multi30k dataset.
 
@@ -72,7 +63,7 @@ class Multi30k(TranslationDataset, data.ZipDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download_or_unzip(root)
+        path = cls.download(root)
 
         train_data = None if train is None else cls(
             os.path.join(path, train), exts, fields, **kwargs)

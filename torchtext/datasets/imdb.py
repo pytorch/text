@@ -1,14 +1,13 @@
 import os
-import tarfile
-from six.moves import urllib
 import glob
 
 from .. import data
 
 
-class IMDB(data.ZipDataset):
+class IMDB(data.Dataset):
 
-    url = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
+    urls = ['http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz']
+    name = 'imdb'
     dirname = 'aclImdb'
 
     @staticmethod
@@ -37,7 +36,7 @@ class IMDB(data.ZipDataset):
         super(IMDB, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def splits(cls, text_field, label_field, root='.',
+    def splits(cls, text_field, label_field, root='.data',
                train='train', test='test', **kwargs):
         """Create dataset objects for splits of the IMDB dataset.
 
@@ -50,7 +49,7 @@ class IMDB(data.ZipDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download_or_unzip(root)
+        path = cls.download(root)
 
         train_data = None if train is None else cls(
             os.path.join(path, train), text_field, label_field, **kwargs)
@@ -60,7 +59,7 @@ class IMDB(data.ZipDataset):
                      if d is not None)
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', vectors=None, **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
         """Creater iterator objects for splits of the IMDB dataset.
 
         Arguments:

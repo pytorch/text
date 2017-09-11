@@ -3,10 +3,11 @@ import os
 from .. import data
 
 
-class SST(data.ZipDataset):
+class SST(data.Dataset):
 
-    url = 'http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip'
+    urls = ['http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip']
     dirname = 'trees'
+    name = 'sst'
 
     @staticmethod
     def sort_key(ex):
@@ -43,7 +44,7 @@ class SST(data.ZipDataset):
         super(SST, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def splits(cls, text_field, label_field, root='.',
+    def splits(cls, text_field, label_field, root='.data',
                train='train.txt', validation='dev.txt', test='test.txt',
                train_subtrees=False, **kwargs):
         """Create dataset objects for splits of the SST dataset.
@@ -64,7 +65,7 @@ class SST(data.ZipDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download_or_unzip(root)
+        path = cls.download(root)
 
         train_data = None if train is None else cls(
             os.path.join(path, train), text_field, label_field, subtrees=train_subtrees,
@@ -77,7 +78,7 @@ class SST(data.ZipDataset):
                      if d is not None)
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', vectors=None, **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
         """Creater iterator objects for splits of the SST dataset.
 
         Arguments:

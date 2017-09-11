@@ -79,6 +79,29 @@ class Dataset(torch.utils.data.Dataset):
             for x in self.examples:
                 yield getattr(x, attr)
 
+    @classmethod
+    def download(cls, root):
+        path = os.path.join(root, cls.name)
+        if not os.path.isdir(path):
+            for url in cls.urls:
+                filename = os.path.basename(url)
+                zpath = os.path.join(path, filename)
+                if not os.path.isfile(zpath):
+                    if not os.path.exists(os.path.dirname(zpath)):
+                        os.makedirs(os.path.dirname(zpath))
+                    print('downloading {}'.format(filename))
+                    urllib.request.urlretrieve(url, zpath)
+                ext = os.path.splitext(filename)[-1]
+                if ext == '.zip':
+                    with zipfile.ZipFile(zpath, 'r') as zfile:
+                        print('extracting')
+                        zfile.extractall(path)
+                elif ext in ['.gz', '.tgz']:
+                    with tarfile.open(zpath, 'r:gz') as tar:
+                        dirs = [member for member in tar.getmembers()]
+                        tar.extractall(path=path, members=dirs)
+        return os.path.join(path, cls.dirname)
+
 
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
@@ -114,31 +137,3 @@ class TabularDataset(Dataset):
                     fields.append(field)
 
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
-
-
-class ZipDataset(Dataset):
-    """Defines a Dataset loaded from a downloadable archive.
-
-    Attributes:
-        root: destination for decompressed archive
-    """
-
-    @classmethod
-    def download_or_unzip(cls, root):
-        path = os.path.join(root, cls.dirname)
-        filename = os.path.basename(cls.url)
-        if not os.path.isdir(path):
-            zpath = os.path.join(root, filename)
-            if not os.path.isfile(zpath):
-                print('downloading {}'.format(filename))
-                urllib.request.urlretrieve(cls.url, zpath)
-            ext = os.path.splitext(filename)[-1]
-            if ext == '.zip':
-                with zipfile.ZipFile(zpath, 'r') as zfile:
-                    print('extracting')
-                    zfile.extractall(root)
-            elif ext == '.gz':
-                with tarfile.open(zpath, 'r:gz') as tar:
-                    dirs = [member for member in tar.getmembers()]
-                    tar.extractall(path=root, members=dirs)
-        return os.path.join(path, '')
