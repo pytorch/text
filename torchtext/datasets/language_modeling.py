@@ -31,7 +31,6 @@ class LanguageModelingDataset(data.Dataset):
 class WikiText2(LanguageModelingDataset, data.ZipDataset):
 
     url = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip'
-    filename = 'wikitext-2-v1.zip'
     dirname = 'wikitext-2'
 
     @classmethod

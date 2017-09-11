@@ -27,7 +27,6 @@ class ParsedTextField(data.Field):
 class SNLI(data.ZipDataset, data.TabularDataset):
 
     url = 'http://nlp.stanford.edu/projects/snli/snli_1.0.zip'
-    filename = 'snli_1.0.zip'
     dirname = 'snli_1.0'
 
     @staticmethod
