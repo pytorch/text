@@ -26,12 +26,11 @@ class Example(object):
                     vals = [vals]
                 for val in vals:
                     name, field = val
-                    setattr(ex, name, field.preprocess(data[key]))
+                    setattr(ex, name.strip(), field.preprocess(data[key].strip()))
         return ex
 
     @classmethod
     def fromTSV(cls, data, fields):
-        data = data.rstrip("\n")
         return cls.fromlist(data.split('\t'), fields)
 
     @classmethod
@@ -57,7 +56,7 @@ class Example(object):
         ex = cls()
         for (name, field), val in zip(fields, data):
             if field is not None:
-                setattr(ex, name, field.preprocess(val))
+                setattr(ex, name.strip(), field.preprocess(val.strip()))
         return ex
 
     @classmethod
