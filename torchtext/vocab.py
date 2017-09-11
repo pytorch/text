@@ -159,7 +159,7 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
-        self.stoi = defaultdict(lambda: 0)
+        self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i + 1 for i, tok in enumerate(specials)})
         self.itos = ['<unk>'] + specials
 
