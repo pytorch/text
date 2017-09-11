@@ -232,7 +232,7 @@ class SubwordField(ReversibleField):
         kwargs['tokenize'] = 'subword'
         super(ReversibleField, self).__init__(**kwargs)
 
-    def segment(self,  *args):
+    def segment(self, *args):
         """Segment one or more datasets with this subword field.
 
         Arguments:

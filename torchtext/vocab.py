@@ -169,7 +169,7 @@ class SubwordVocab(Vocab):
 
         # sort by frequency/entropy, then alphabetically
         toks = sorted(self.segmenter.vocab.items(),
-                      key=lambda tup: (len(tup[0])!=1, -tup[1], tup[0]))
+                      key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
 
         for tok, _ in toks:
             self.itos.append(tok)
@@ -337,10 +337,7 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
-<<<<<<< f0cc047f3b727b28ddd98534fa55c600fd5fd5d3
 
 
 def _default_unk_index():
     return 0
-=======
->>>>>>> revtok integration
