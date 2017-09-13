@@ -211,19 +211,16 @@ class TestField(TorchtextTestCase):
                               "<pad>", "<pad>", "<pad>"],
                              ["Here", "is", "a", "sentence", "with",
                               "some", "oovs", "<pad>"]]
-        test_example_lengths = [8, 3, 7]
 
         # Test default
         default_numericalized = question_field.numericalize(
             test_example_data, device=-1)
         verify_numericalized_example(question_field, test_example_data,
-                                     test_example_lengths,
                                      default_numericalized)
         # Test with train=False
         volatile_numericalized = question_field.numericalize(
             test_example_data, device=-1, train=False)
         verify_numericalized_example(question_field, test_example_data,
-                                     test_example_lengths,
                                      volatile_numericalized, train=False)
 
     def test_numericalize_include_lengths(self):
@@ -249,8 +246,8 @@ class TestField(TorchtextTestCase):
             (test_example_data, test_example_lengths), device=-1)
         verify_numericalized_example(question_field,
                                      test_example_data,
-                                     test_example_lengths,
-                                     include_lengths_numericalized)
+                                     include_lengths_numericalized,
+                                     test_example_lengths)
 
     def test_numericalize_batch_first(self):
         self.write_test_ppid_dataset(data_format="tsv")
@@ -268,21 +265,19 @@ class TestField(TorchtextTestCase):
                               "<pad>", "<pad>", "<pad>"],
                              ["Here", "is", "a", "sentence", "with",
                               "some", "oovs", "<pad>"]]
-        test_example_lengths = [8, 3, 7]
 
         # Test with batch_first
         include_lengths_numericalized = question_field.numericalize(
-            (test_example_data, test_example_lengths), device=-1)
+            test_example_data, device=-1)
         verify_numericalized_example(question_field,
                                      test_example_data,
-                                     test_example_lengths,
                                      include_lengths_numericalized,
                                      batch_first=True)
 
 
 def verify_numericalized_example(field, test_example_data,
-                                 test_example_lengths,
                                  test_example_numericalized,
+                                 test_example_lengths=None,
                                  batch_first=False, train=True):
     """
     Function to verify that numericalized example is correct
