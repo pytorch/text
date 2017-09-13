@@ -305,6 +305,27 @@ class TestField(TorchtextTestCase):
                                      reversed_test_example_data,
                                      postprocessed_numericalized)
 
+    def test_errors(self):
+        # Test that passing a non-tuple (of data and length) to numericalize
+        # with Field.include_lengths = True raises an error.
+        with self.assertRaises(ValueError):
+            self.write_test_ppid_dataset(data_format="tsv")
+            question_field = data.Field(sequential=True, include_lengths=True)
+            tsv_fields = [("id", None), ("q1", question_field),
+                          ("q2", question_field), ("label", None)]
+            tsv_dataset = data.TabularDataset(
+                path=self.test_ppid_dataset_path, format="tsv",
+                fields=tsv_fields)
+            question_field.build_vocab(tsv_dataset)
+            test_example_data = [["When", "do", "you", "use", "シ",
+                                  "instead", "of", "し?"],
+                                 ["What", "is", "2+2", "<pad>", "<pad>",
+                                  "<pad>", "<pad>", "<pad>"],
+                                 ["Here", "is", "a", "sentence", "with",
+                                  "some", "oovs", "<pad>"]]
+            question_field.numericalize(
+                test_example_data, device=-1)
+
 
 def verify_numericalized_example(field, test_example_data,
                                  test_example_numericalized,
