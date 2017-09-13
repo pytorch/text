@@ -274,6 +274,37 @@ class TestField(TorchtextTestCase):
                                      include_lengths_numericalized,
                                      batch_first=True)
 
+    def test_numericalize_postprocessing(self):
+        self.write_test_ppid_dataset(data_format="tsv")
+
+        def reverse_postprocess(arr, vocab, train):
+            return [list(reversed(sentence)) for sentence in arr]
+
+        question_field = data.Field(sequential=True,
+                                    postprocessing=reverse_postprocess)
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+        question_field.build_vocab(tsv_dataset)
+
+        test_example_data = [["When", "do", "you", "use", "シ",
+                              "instead", "of", "し?"],
+                             ["What", "is", "2+2", "<pad>", "<pad>",
+                              "<pad>", "<pad>", "<pad>"],
+                             ["Here", "is", "a", "sentence", "with",
+                              "some", "oovs", "<pad>"]]
+        reversed_test_example_data = [list(reversed(sentence)) for sentence in
+                                      test_example_data]
+
+        postprocessed_numericalized = question_field.numericalize(
+            (test_example_data), device=-1)
+        verify_numericalized_example(question_field,
+                                     reversed_test_example_data,
+                                     postprocessed_numericalized)
+
 
 def verify_numericalized_example(field, test_example_data,
                                  test_example_numericalized,
