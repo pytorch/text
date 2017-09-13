@@ -163,16 +163,25 @@ class Field(object):
         included in the return value.
 
         Arguments:
-            arr: List of tokenized and padded examples, or tuple of a padded
-                list and a list of lengths if self.include_lengths is True.
-            device: Device to create the Variable's Tensor on. Use -1 for
-                CPU and None for the currently active GPU device. Default:
-                None.
-            train: Whether the batch is for a training set. If False, the
-                Variable will be created with volatile=True. Default: True.
+            arr (List[List[str]], or tuple of (List[List[str]], List[int])):
+                List of tokenized and padded examples, or tuple of List of
+                tokenized and padded examples and List of lengths of each
+                example if self.include_lengths is True.
+            device (-1 or None): Device to create the Variable's Tensor on.
+                Use -1 for CPU and None for the currently active GPU device.
+                Default: None.
+            train (boolean): Whether the batch is for a training set.
+                If False, the Variable will be created with volatile=True.
+                Default: True.
         """
+        if self.include_lengths and not isinstance(arr, tuple):
+            raise ValueError("Field has include_lengths set to True, but "
+                             "input data is not a tuple of "
+                             "(data batch, batch lengths).")
         if isinstance(arr, tuple):
             arr, lengths = arr
+            lengths = torch.LongTensor(lengths)
+
         if self.use_vocab:
             if self.sequential:
                 arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
@@ -181,11 +190,14 @@ class Field(object):
 
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, self.vocab, train)
-        elif self.postprocessing is not None:
-            arr = self.postprocessing(arr, train)
+        else:
+            # TODO (Nelson): Since we aren't using a Vocab, the input data
+            # is expected to be numerical. However, it's still a str here.
+            # We convert it to a number (e.g. see #78).
+            if self.postprocessing is not None:
+                arr = self.postprocessing(arr, train)
+
         arr = self.tensor_type(arr)
-        if self.include_lengths:
-            lengths = torch.LongTensor(lengths)
         if self.sequential and not self.batch_first:
             arr.t_()
         if device == -1:
