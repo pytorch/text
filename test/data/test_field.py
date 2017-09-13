@@ -194,3 +194,121 @@ class TestField(TorchtextTestCase):
         expected_itos = [x[0] for x in sorted(expected_stoi.items(),
                                               key=lambda tup: tup[1])]
         assert question_field.vocab.itos == expected_itos
+
+    def test_numericalize_basic(self):
+        self.write_test_ppid_dataset(data_format="tsv")
+        question_field = data.Field(sequential=True)
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+        question_field.build_vocab(tsv_dataset)
+
+        test_example_data = [["When", "do", "you", "use", "シ",
+                              "instead", "of", "し?"],
+                             ["What", "is", "2+2", "<pad>", "<pad>",
+                              "<pad>", "<pad>", "<pad>"],
+                             ["Here", "is", "a", "sentence", "with",
+                              "some", "oovs", "<pad>"]]
+        test_example_lengths = [8, 3, 7]
+
+        # Test default
+        default_numericalized = question_field.numericalize(
+            test_example_data, device=-1)
+        verify_numericalized_example(question_field, test_example_data,
+                                     test_example_lengths,
+                                     default_numericalized)
+        # Test with train=False
+        volatile_numericalized = question_field.numericalize(
+            test_example_data, device=-1, train=False)
+        verify_numericalized_example(question_field, test_example_data,
+                                     test_example_lengths,
+                                     volatile_numericalized, train=False)
+
+    def test_numericalize_include_lengths(self):
+        self.write_test_ppid_dataset(data_format="tsv")
+        question_field = data.Field(sequential=True, include_lengths=True)
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+        question_field.build_vocab(tsv_dataset)
+
+        test_example_data = [["When", "do", "you", "use", "シ",
+                              "instead", "of", "し?"],
+                             ["What", "is", "2+2", "<pad>", "<pad>",
+                              "<pad>", "<pad>", "<pad>"],
+                             ["Here", "is", "a", "sentence", "with",
+                              "some", "oovs", "<pad>"]]
+        test_example_lengths = [8, 3, 7]
+
+        # Test with include_lengths
+        include_lengths_numericalized = question_field.numericalize(
+            (test_example_data, test_example_lengths), device=-1)
+        verify_numericalized_example(question_field,
+                                     test_example_data,
+                                     test_example_lengths,
+                                     include_lengths_numericalized)
+
+    def test_numericalize_batch_first(self):
+        self.write_test_ppid_dataset(data_format="tsv")
+        question_field = data.Field(sequential=True, batch_first=True)
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+        question_field.build_vocab(tsv_dataset)
+
+        test_example_data = [["When", "do", "you", "use", "シ",
+                              "instead", "of", "し?"],
+                             ["What", "is", "2+2", "<pad>", "<pad>",
+                              "<pad>", "<pad>", "<pad>"],
+                             ["Here", "is", "a", "sentence", "with",
+                              "some", "oovs", "<pad>"]]
+        test_example_lengths = [8, 3, 7]
+
+        # Test with batch_first
+        include_lengths_numericalized = question_field.numericalize(
+            (test_example_data, test_example_lengths), device=-1)
+        verify_numericalized_example(question_field,
+                                     test_example_data,
+                                     test_example_lengths,
+                                     include_lengths_numericalized,
+                                     batch_first=True)
+
+
+def verify_numericalized_example(field, test_example_data,
+                                 test_example_lengths,
+                                 test_example_numericalized,
+                                 batch_first=False, train=True):
+    """
+    Function to verify that numericalized example is correct
+    with respect to the Field's Vocab.
+    """
+    if isinstance(test_example_numericalized, tuple):
+        test_example_numericalized, lengths = test_example_numericalized
+        assert test_example_lengths == lengths.tolist()
+    if batch_first:
+        test_example_numericalized.data.t_()
+    # Transpose numericalized example so we can compare over batches
+    for example_idx, numericalized_single_example in enumerate(
+            test_example_numericalized.t()):
+        assert len(test_example_data[example_idx]) == len(numericalized_single_example)
+        assert numericalized_single_example.volatile is not train
+        for token_idx, numericalized_token in enumerate(
+                numericalized_single_example):
+            # Convert from Variable to int
+            numericalized_token = numericalized_token.data[0]
+            test_example_token = test_example_data[example_idx][token_idx]
+            # Check if the numericalized example is correct, taking into
+            # account unknown tokens.
+            if field.vocab.stoi[test_example_token] != 0:
+                # token is in-vocabulary
+                assert (field.vocab.itos[numericalized_token] ==
+                        test_example_token)
+            else:
+                # token is OOV and <unk> always has an index of 0
+                assert numericalized_token == 0
