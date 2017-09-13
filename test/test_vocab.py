@@ -47,10 +47,16 @@ class TestVocab(TorchtextTestCase):
 
     def test_vocab_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+        # Build a vocab and get vectors twice to test caching, then once more
+        # to test string aliases.
+        for i in range(3):
+            if i == 2:
+                vectors = "fasttext.simple.300d"
+            else:
+                vectors = FastText(language='simple')
+
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
-                            vectors=FastText(language='simple'))
+                            vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
                              'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
@@ -138,10 +144,16 @@ class TestVocab(TorchtextTestCase):
     @slow
     def test_vocab_download_glove_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+
+        # Build a vocab and get vectors twice to test caching, then once more
+        # to test string aliases.
+        for i in range(3):
+            if i == 2:
+                vectors = "glove.twitter.27B.25d"
+            else:
+                vectors = GloVe(name='twitter.27B', dim='25')
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
-                            vectors=GloVe(name='twitter.27B', dim='25'))
+                            vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
                              'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
@@ -175,10 +187,15 @@ class TestVocab(TorchtextTestCase):
     @slow
     def test_vocab_download_charngram_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+        # Build a vocab and get vectors twice to test caching, then once more
+        # to test string aliases.
+        for i in range(3):
+            if i == 2:
+                vectors = "charngram.100d"
+            else:
+                vectors = CharNGram()
             v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
-                            vectors=CharNGram())
+                            vectors=vectors)
             expected_itos = ['<unk>', '<pad>', '<bos>',
                              'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
             expected_stoi = {x: index for index, x in enumerate(expected_itos)}
@@ -206,6 +223,20 @@ class TestVocab(TorchtextTestCase):
             conditional_remove(
                 os.path.join(self.project_root, ".vector_cache",
                              "jmt_pre-trained_embeddings.tar.gz"))
+
+    def test_errors(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        with self.assertRaises(ValueError):
+            # Test proper error raised when using unknown string alias
+            vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+                        vectors=["fasttext.english.300d"])
+            vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+                        vectors="fasttext.english.300d")
+        with self.assertRaises(ValueError):
+            # Test proper error is raised when vectors argument is
+            # non-string or non-Vectors
+            vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+                        vectors={"word": [1, 2, 3]})
 
     def test_serialization(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
