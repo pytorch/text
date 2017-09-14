@@ -28,14 +28,14 @@ class LanguageModelingDataset(data.Dataset):
             examples, fields, **kwargs)
 
 
-class WikiText2(LanguageModelingDataset, data.ZipDataset):
+class WikiText2(LanguageModelingDataset):
 
-    url = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip'
-    filename = 'wikitext-2-v1.zip'
-    dirname = 'wikitext-2'
+    urls = ['https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip']
+    name = 'wikitext-2'
+    dirname = ''
 
     @classmethod
-    def splits(cls, text_field, root='.', train='wiki.train.tokens',
+    def splits(cls, text_field, root='.data', train='wiki.train.tokens',
                validation='wiki.valid.tokens', test='wiki.test.tokens'):
         """Create dataset objects for splits of the WikiText-2 dataset.
 
@@ -52,13 +52,13 @@ class WikiText2(LanguageModelingDataset, data.ZipDataset):
             test: The filename of the test data, or None to not load the test
                 set. Default: 'test.tokens'.
         """
-        path = cls.download_or_unzip(root)
+        path = cls.download(root)
         return super(WikiText2, cls).splits(
             path, train, validation, test,
             text_field=text_field)
 
     @classmethod
-    def iters(cls, batch_size=32, bptt_len=35, device=0, root='.', wv_dir='.',
+    def iters(cls, batch_size=32, bptt_len=35, device=0, root='.data', wv_dir='.',
               wv_type=None, wv_dim='300d', **kwargs):
         """Create iterator objects for splits of the WikiText-2 dataset.
 

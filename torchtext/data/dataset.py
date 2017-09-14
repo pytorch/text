@@ -1,6 +1,7 @@
 import io
 import os
 import zipfile
+import tarfile
 
 import torch.utils.data
 from six.moves import urllib
@@ -78,6 +79,29 @@ class Dataset(torch.utils.data.Dataset):
             for x in self.examples:
                 yield getattr(x, attr)
 
+    @classmethod
+    def download(cls, root):
+        path = os.path.join(root, cls.name)
+        if not os.path.isdir(path):
+            for url in cls.urls:
+                filename = os.path.basename(url)
+                zpath = os.path.join(path, filename)
+                if not os.path.isfile(zpath):
+                    if not os.path.exists(os.path.dirname(zpath)):
+                        os.makedirs(os.path.dirname(zpath))
+                    print('downloading {}'.format(filename))
+                    urllib.request.urlretrieve(url, zpath)
+                ext = os.path.splitext(filename)[-1]
+                if ext == '.zip':
+                    with zipfile.ZipFile(zpath, 'r') as zfile:
+                        print('extracting')
+                        zfile.extractall(path)
+                elif ext in ['.gz', '.tgz']:
+                    with tarfile.open(zpath, 'r:gz') as tar:
+                        dirs = [member for member in tar.getmembers()]
+                        tar.extractall(path=path, members=dirs)
+        return os.path.join(path, cls.dirname)
+
 
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
@@ -113,27 +137,3 @@ class TabularDataset(Dataset):
                     fields.append(field)
 
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
-
-
-class ZipDataset(Dataset):
-    """Defines a Dataset loaded from a downloadable zip archive.
-
-    Attributes:
-        url: URL where the zip archive can be downloaded.
-        filename: Filename of the downloaded zip archive.
-        dirname: Name of the top-level directory within the zip archive that
-            contains the data files.
-    """
-
-    @classmethod
-    def download_or_unzip(cls, root):
-        path = os.path.join(root, cls.dirname)
-        if not os.path.isdir(path):
-            zpath = os.path.join(root, cls.filename)
-            if not os.path.isfile(zpath):
-                print('downloading')
-                urllib.request.urlretrieve(cls.url, zpath)
-            with zipfile.ZipFile(zpath, 'r') as zfile:
-                print('extracting')
-                zfile.extractall(root)
-        return os.path.join(path, '')

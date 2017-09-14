@@ -110,12 +110,41 @@ class Vocab(object):
                 self.stoi[w] = len(self.itos) - 1
 
     def load_vectors(self, vectors):
-        """Arguments:
-              vectors: one of or a list containing instantiations of the
-                  GloVe, CharNGram, or Vectors classes
+        """
+        Arguments:
+            vectors: one of or a list containing instantiations of the
+                GloVe, CharNGram, or Vectors classes. Alternatively, one
+                of or a list of available pretrained vectors:
+                    charngram.100d
+                    fasttext.en.300d
+                    fasttext.simple.300d
+                    glove.42B.300d
+                    glove.840B.300d
+                    glove.twitter.27B.25d
+                    glove.twitter.27B.50d
+                    glove.twitter.27B.100d
+                    glove.twitter.27B.200d
+                    glove.6B.50d
+                    glove.6B.100d
+                    glove.6B.200d
+                    glove.6B.300d
         """
         if not isinstance(vectors, list):
             vectors = [vectors]
+        for idx, vector in enumerate(vectors):
+            if isinstance(vector, six.text_type):
+                # Convert the string pretrained vector identifier
+                # to a Vectors object
+                if vector not in pretrained_aliases:
+                    raise ValueError(
+                        "Got string input vector {}, but allowed pretrained "
+                        "vectors are {}".format(
+                            vector, list(pretrained_aliases.keys())))
+                vectors[idx] = pretrained_aliases[vector]()
+            elif not isinstance(vector, Vectors):
+                raise ValueError(
+                    "Got input vectors of type {}, expected str or "
+                    "Vectors object".format(type(vector)))
 
         tot_dim = sum(v.dim for v in vectors)
         self.vectors = torch.Tensor(len(self), tot_dim)
@@ -314,3 +343,20 @@ class CharNGram(Vectors):
 
 def _default_unk_index():
     return 0
+
+
+pretrained_aliases = {
+    "charngram.100d": lambda: CharNGram(),
+    "fasttext.en.300d": lambda: FastText(language="en"),
+    "fasttext.simple.300d": lambda: FastText(language="simple"),
+    "glove.42B.300d": lambda: GloVe(name="42B", dim="300"),
+    "glove.840B.300d": lambda: GloVe(name="840B", dim="300"),
+    "glove.twitter.27B.25d": lambda: GloVe(name="twitter.27B", dim="25"),
+    "glove.twitter.27B.50d": lambda: GloVe(name="twitter.27B", dim="50"),
+    "glove.twitter.27B.100d": lambda: GloVe(name="twitter.27B", dim="100"),
+    "glove.twitter.27B.200d": lambda: GloVe(name="twitter.27B", dim="300"),
+    "glove.6B.50d": lambda: GloVe(name="6B", dim="50"),
+    "glove.6B.100d": lambda: GloVe(name="6B", dim="100"),
+    "glove.6B.200d": lambda: GloVe(name="6B", dim="200"),
+    "glove.6B.300d": lambda: GloVe(name="6B", dim="300")
+}
