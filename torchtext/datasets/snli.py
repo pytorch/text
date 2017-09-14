@@ -24,11 +24,11 @@ class ParsedTextField(data.Field):
                 list(reversed(p)) for p in parse])
 
 
-class SNLI(data.ZipDataset, data.TabularDataset):
+class SNLI(data.TabularDataset):
 
-    url = 'http://nlp.stanford.edu/projects/snli/snli_1.0.zip'
-    filename = 'snli_1.0.zip'
+    urls = ['http://nlp.stanford.edu/projects/snli/snli_1.0.zip']
     dirname = 'snli_1.0'
+    name = 'snli'
 
     @staticmethod
     def sort_key(ex):
@@ -36,7 +36,7 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             len(ex.premise), len(ex.hypothesis))
 
     @classmethod
-    def splits(cls, text_field, label_field, parse_field=None, root='.',
+    def splits(cls, text_field, label_field, parse_field=None, root='.data',
                train='train.jsonl', validation='dev.jsonl', test='test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
@@ -57,7 +57,8 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             test: The filename of the test data, or None to not load the test
                 set. Default: 'test.jsonl'.
         """
-        path = cls.download_or_unzip(root)
+        path = cls.download(root)
+
         if parse_field is None:
             return super(SNLI, cls).splits(
                 os.path.join(path, 'snli_1.0_'), train, validation, test,
@@ -77,7 +78,7 @@ class SNLI(data.ZipDataset, data.TabularDataset):
             filter_pred=lambda ex: ex.label != '-')
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.',
+    def iters(cls, batch_size=32, device=0, root='.data',
               vectors=None, trees=False, **kwargs):
         """Create iterator objects for splits of the SNLI dataset.
 

@@ -1,6 +1,4 @@
 import os
-import tarfile
-from six.moves import urllib
 import glob
 
 from .. import data
@@ -8,8 +6,8 @@ from .. import data
 
 class IMDB(data.Dataset):
 
-    url = 'http://ai.stanford.edu/~amaas/data/sentiment/'
-    filename = 'aclImdb_v1.tar.gz'
+    urls = ['http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz']
+    name = 'imdb'
     dirname = 'aclImdb'
 
     @staticmethod
@@ -20,7 +18,7 @@ class IMDB(data.Dataset):
         """Create an IMDB dataset instance given a path and fields.
 
         Arguments:
-            path: Path to the datasets highest level directory
+            path: Path to the dataset's highest level directory
             text_field: The field that will be used for text data.
             label_field: The field that will be used for label data.
             Remaining keyword arguments: Passed to the constructor of
@@ -38,22 +36,7 @@ class IMDB(data.Dataset):
         super(IMDB, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def download(cls, root):
-        path = os.path.join(root, cls.dirname)
-        if not os.path.isdir(path):
-            fpath = os.path.join(path, cls.filename)
-            if not os.path.isfile(fpath):
-                if not os.path.exists(os.path.dirname(fpath)):
-                    os.makedirs(os.path.dirname(fpath))
-                print('downloading {}'.format(cls.filename))
-                urllib.request.urlretrieve(os.path.join(cls.url, cls.filename), fpath)
-            with tarfile.open(fpath, 'r:gz') as tar:
-                dirs = [member for member in tar.getmembers()]
-                tar.extractall(path=root, members=dirs)
-        return os.path.join(path, '')
-
-    @classmethod
-    def splits(cls, text_field, label_field, root='.',
+    def splits(cls, text_field, label_field, root='.data',
                train='train', test='test', **kwargs):
         """Create dataset objects for splits of the IMDB dataset.
 
@@ -69,14 +52,14 @@ class IMDB(data.Dataset):
         path = cls.download(root)
 
         train_data = None if train is None else cls(
-            path + train, text_field, label_field, **kwargs)
+            os.path.join(path, train), text_field, label_field, **kwargs)
         test_data = None if test is None else cls(
-            path + test, text_field, label_field, **kwargs)
+            os.path.join(path, test), text_field, label_field, **kwargs)
         return tuple(d for d in (train_data, test_data)
                      if d is not None)
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', vectors=None, **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
         """Creater iterator objects for splits of the IMDB dataset.
 
         Arguments:
