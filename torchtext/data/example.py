@@ -71,5 +71,5 @@ class Example(object):
         tree = Tree.fromstring(data)
         if subtrees:
             return [cls.fromlist(
-                [t.leaves(), t.label()], fields) for t in tree.subtrees()]
-        return cls.fromlist([tree.leaves(), tree.label()], fields)
+                [' '.join(t.leaves()), t.label()], fields) for t in tree.subtrees()]
+        return cls.fromlist([' '.join(tree.leaves()), tree.label()], fields)

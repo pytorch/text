@@ -1,5 +1,5 @@
 from .batch import Batch
-from .dataset import Dataset, TabularDataset, ZipDataset
+from .dataset import Dataset, TabularDataset
 from .example import Example
 from .field import Field
 from .iterator import (batch, BucketIterator, Iterator, BPTTIterator,
