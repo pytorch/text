@@ -22,7 +22,7 @@ pos = data.TabularDataset(
 sentiment = data.TabularDataset(
     path='data/sentiment/train.json', format='json',
     fields=[{'sentence_tokenized': ('text', data.Field(sequential=True)),
-             'sentiment_gold': ('labels', data.Field(sequential=False))}])
+             'sentiment_gold': ('labels', data.Field(sequential=False, is_label=True))}])
 ```
 - Ability to define a preprocessing pipeline:
 ```python
@@ -52,7 +52,7 @@ train_iter = data.BucketIterator(
 - Wrapper for dataset splits (train, validation, test):
 ```python
 TEXT = data.Field()
-LABELS = data.Field()
+LABELS = data.Field(is_label=True)
 
 train, val, test = data.TabularDataset.splits(
     path='/data/pos_wsj/pos_wsj', train='_train.tsv',
