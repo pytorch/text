@@ -79,7 +79,6 @@ class Field(object):
         torch.cuda.LongTensor: int
     }
 
-
     def __init__(
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
