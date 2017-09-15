@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 from collections import Counter
 
+from numpy.testing import assert_allclose
+import torch
 import torchtext.data as data
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -304,6 +306,46 @@ class TestField(TorchtextTestCase):
         verify_numericalized_example(question_field,
                                      reversed_test_example_data,
                                      postprocessed_numericalized)
+
+    def test_numerical_features_no_vocab(self):
+        self.write_test_numerical_features_dataset()
+        # Test basic usage
+        int_field = data.Field(sequential=False, use_vocab=False)
+        float_field = data.Field(sequential=False, use_vocab=False,
+                                 tensor_type=torch.FloatTensor)
+        tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_numerical_features_dataset_path, format="tsv",
+            fields=tsv_fields)
+        int_field.build_vocab(tsv_dataset)
+        float_field.build_vocab(tsv_dataset)
+        test_int_data = ["1", "0", "1", "3", "19"]
+        test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
+
+        numericalized_int = int_field.numericalize(test_int_data, device=-1)
+        assert_allclose(numericalized_int.data.numpy(), [1, 0, 1, 3, 19])
+        numericalized_float = float_field.numericalize(test_float_data, device=-1)
+        assert_allclose(numericalized_float.data.numpy(), [1.1, 0.1, 3.91, 0.2, 10.2])
+
+        # Test with postprocessing applied
+        int_field = data.Field(sequential=False, use_vocab=False,
+                               postprocessing=lambda arr, _: [x + 1 for x in arr])
+        float_field = data.Field(sequential=False, use_vocab=False,
+                                 tensor_type=torch.FloatTensor,
+                                 postprocessing=lambda arr, _: [x * 0.5 for x in arr])
+        tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_numerical_features_dataset_path, format="tsv",
+            fields=tsv_fields)
+        int_field.build_vocab(tsv_dataset)
+        float_field.build_vocab(tsv_dataset)
+        test_int_data = ["1", "0", "1", "3", "19"]
+        test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
+
+        numericalized_int = int_field.numericalize(test_int_data, device=-1)
+        assert_allclose(numericalized_int.data.numpy(), [2, 1, 2, 4, 20])
+        numericalized_float = float_field.numericalize(test_float_data, device=-1)
+        assert_allclose(numericalized_float.data.numpy(), [0.55, 0.05, 1.955, 0.1, 5.1])
 
     def test_errors(self):
         # Test that passing a non-tuple (of data and length) to numericalize

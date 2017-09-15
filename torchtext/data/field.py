@@ -57,6 +57,29 @@ class Field(object):
         pad_token: The string token used as padding. Default: "<pad>".
     """
 
+    # Dictionary mapping PyTorch tensor types to the appropriate Python
+    # numeric type.
+    tensor_types = {
+        torch.FloatTensor: float,
+        torch.cuda.FloatTensor: float,
+        torch.DoubleTensor: float,
+        torch.cuda.DoubleTensor: float,
+        torch.HalfTensor: float,
+        torch.cuda.HalfTensor: float,
+
+        torch.ByteTensor: int,
+        torch.cuda.ByteTensor: int,
+        torch.CharTensor: int,
+        torch.cuda.CharTensor: int,
+        torch.ShortTensor: int,
+        torch.cuda.ShortTensor: int,
+        torch.IntTensor: int,
+        torch.cuda.IntTensor: int,
+        torch.LongTensor: int,
+        torch.cuda.LongTensor: int
+    }
+
+
     def __init__(
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
@@ -191,9 +214,18 @@ class Field(object):
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, self.vocab, train)
         else:
-            # TODO (Nelson): Since we aren't using a Vocab, the input data
-            # is expected to be numerical. However, it's still a str here.
-            # We convert it to a number (e.g. see #78).
+            if self.tensor_type not in self.tensor_types:
+                raise ValueError(
+                    "Specified Field tensor_type {} can not be used with "
+                    "use_vocab=False because we do not know how to numericalize it. "
+                    "Please raise an issue at "
+                    "https://github.com/pytorch/text/issues".format(self.tensor_type))
+            numericalization_func = self.tensor_types[self.tensor_type]
+            # It doesn't make sense to explictly coerce to a numeric type if
+            # the data is sequential, since it's unclear how to coerce padding tokens
+            # to a numeric type.
+            if not self.sequential:
+                arr = [numericalization_func(x) for x in arr]
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, train)
 
