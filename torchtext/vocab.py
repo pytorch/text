@@ -59,18 +59,10 @@ class Vocab(object):
             self.itos = ['<unk>'] + specials
 
             counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
-        
         else:
-            counter.update(specials)
-
             self.stoi = defaultdict(list)
-
-            self.stoi.update({tok: i for i, tok in
-                          enumerate(specials)})
-            self.itos = specials
-
-            counter.subtract({tok: counter[tok] for tok in specials})
-
+            
+            self.itos = []            
         
         max_size = None if max_size is None else max_size + len(self.itos)
 
