@@ -6,7 +6,7 @@ from torchtext.vocab import Vectors, GloVe, CharNGram, FastText
 # Approach 1:
 # set up fields
 TEXT = data.Field()
-LABEL = data.Field(sequential=False)
+LABEL = data.Field(sequential=False, is_label=True)
 
 # make splits for data
 train, val, test = datasets.SST.splits(
@@ -26,6 +26,10 @@ LABEL.build_vocab(train)
 # print vocab information
 print('len(TEXT.vocab)', len(TEXT.vocab))
 print('TEXT.vocab.vectors.size()', TEXT.vocab.vectors.size())
+
+# print label information
+print('LABEL.vocab.itos', LABEL.vocab.itos)
+print('len(LABEL.vocab.itos)', len(LABEL.vocab.itos))
 
 # make iterator for splits
 train_iter, val_iter, test_iter = data.BucketIterator.splits(
