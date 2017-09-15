@@ -41,7 +41,7 @@ class Vocab(object):
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token. Default: ['<pad>'].
-            is_label: remove from the list the <unk> token not needed for 
+            is_label: remove from the list the <unk> token not needed for
                 the label list
             vectors: one of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
@@ -55,14 +55,14 @@ class Vocab(object):
             self.stoi = defaultdict(_default_unk_index)
 
             self.stoi.update({tok: i for i, tok in
-                                enumerate(['<unk>'] + specials)})
+                            enumerate(['<unk>'] + specials)})
             self.itos = ['<unk>'] + specials
 
             counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
         else:
             self.stoi = defaultdict(list)
 
-            self.itos = []            
+            self.itos = []
 
         max_size = None if max_size is None else max_size + len(self.itos)
 
