@@ -20,6 +20,8 @@ class TorchtextTestCase(TestCase):
             os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir)))
         self.test_dir = tempfile.mkdtemp()
         self.test_ppid_dataset_path = os.path.join(self.test_dir, "test_ppid_dataset")
+        self.test_numerical_features_dataset_path = os.path.join(
+            self.test_dir, "test_numerical_features_dataset")
 
     def tearDown(self):
         try:
@@ -54,3 +56,12 @@ class TorchtextTestCase(TestCase):
                                     example["question2"], example["label"]])))
                 else:
                     raise ValueError("Invalid format {}".format(data_format))
+
+    def write_test_numerical_features_dataset(self):
+        with open(self.test_numerical_features_dataset_path,
+                  "w") as test_numerical_features_dataset_file:
+            test_numerical_features_dataset_file.write("0.1\t1\tteststring1\n")
+            test_numerical_features_dataset_file.write("0.5\t12\tteststring2\n")
+            test_numerical_features_dataset_file.write("0.2\t0\tteststring3\n")
+            test_numerical_features_dataset_file.write("0.4\t12\tteststring4\n")
+            test_numerical_features_dataset_file.write("0.9\t9\tteststring5\n")
