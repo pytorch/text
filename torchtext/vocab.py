@@ -49,21 +49,21 @@ class Vocab(object):
         """
         self.freqs = counter.copy()
         min_freq = max(min_freq, 1)
-        if is_label==False:
+        if is_label is False:
             counter.update(['<unk>'] + specials)
 
             self.stoi = defaultdict(_default_unk_index)
-        
+
             self.stoi.update({tok: i for i, tok in
-                          enumerate(['<unk>'] + specials)})
+                                enumerate(['<unk>'] + specials)})
             self.itos = ['<unk>'] + specials
 
             counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
         else:
             self.stoi = defaultdict(list)
-            
+
             self.itos = []            
-        
+
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
