@@ -33,7 +33,8 @@ class Dataset(torch.utils.data.Dataset):
             fields (List(tuple(str, Field))): The Fields to use in this tuple. The
                 string is a field name, and the Field is the associated field.
             filter_pred (callable or None): Use only examples for which
-                filter_pred(example) is True, or use all examples if None. Default is None.
+                filter_pred(example) is True, or use all examples if None.
+                Default is None.
         """
         if filter_pred is not None:
             examples = list(filter(filter_pred, examples))
@@ -56,8 +57,8 @@ class Dataset(torch.utils.data.Dataset):
                 Dataset (sub)class being used.
 
         Returns:
-            split_datasets (tuple(Dataset)): Datasets for train, validation, and test splits
-                in that order, if provided.
+            split_datasets (tuple(Dataset)): Datasets for train, validation, and
+                test splits in that order, if provided.
         """
         train_data = None if train is None else cls(path + train, **kwargs)
         val_data = None if validation is None else cls(path + validation,
