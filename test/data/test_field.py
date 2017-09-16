@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 import torch
 import torchtext.data as data
 
-from ..common.torchtext_test_case import TorchtextTestCase
+from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
 
 
 class TestField(TorchtextTestCase):
@@ -367,37 +367,3 @@ class TestField(TorchtextTestCase):
                                   "some", "oovs", "<pad>"]]
             question_field.numericalize(
                 test_example_data, device=-1)
-
-
-def verify_numericalized_example(field, test_example_data,
-                                 test_example_numericalized,
-                                 test_example_lengths=None,
-                                 batch_first=False, train=True):
-    """
-    Function to verify that numericalized example is correct
-    with respect to the Field's Vocab.
-    """
-    if isinstance(test_example_numericalized, tuple):
-        test_example_numericalized, lengths = test_example_numericalized
-        assert test_example_lengths == lengths.tolist()
-    if batch_first:
-        test_example_numericalized.data.t_()
-    # Transpose numericalized example so we can compare over batches
-    for example_idx, numericalized_single_example in enumerate(
-            test_example_numericalized.t()):
-        assert len(test_example_data[example_idx]) == len(numericalized_single_example)
-        assert numericalized_single_example.volatile is not train
-        for token_idx, numericalized_token in enumerate(
-                numericalized_single_example):
-            # Convert from Variable to int
-            numericalized_token = numericalized_token.data[0]
-            test_example_token = test_example_data[example_idx][token_idx]
-            # Check if the numericalized example is correct, taking into
-            # account unknown tokens.
-            if field.vocab.stoi[test_example_token] != 0:
-                # token is in-vocabulary
-                assert (field.vocab.itos[numericalized_token] ==
-                        test_example_token)
-            else:
-                # token is OOV and <unk> always has an index of 0
-                assert numericalized_token == 0
