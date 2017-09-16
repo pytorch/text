@@ -35,3 +35,41 @@ class TranslationDataset(data.Dataset):
                         [src_line, trg_line], fields))
 
         super(TranslationDataset, self).__init__(examples, fields, **kwargs)
+
+
+class Multi30k(TranslationDataset, data.Dataset):
+    """Defines a dataset for the multi-modal WMT 2017 task"""
+
+    urls = ['http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
+            'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
+            'https://staff.fnwi.uva.nl/d.elliott/wmt16/mmt16_task1_test.tgz']
+    name = 'multi30k'
+    dirname = ''
+
+    @classmethod
+    def splits(cls, exts, fields, root='.data',
+               train='train', val='val', test='test', **kwargs):
+        """Create dataset objects for splits of the Multi30k dataset.
+
+        Arguments:
+
+            root: directory containing Multi30k data
+            exts: A tuple containing the extension to path for each language.
+            fields: A tuple containing the fields that will be used for data
+                in each language.
+            train: The prefix of the train data. Default: 'train'.
+            validation: The prefix of the validation data. Default: 'val'.
+            test: The prefix of the test data. Default: 'test'.
+            Remaining keyword arguments: Passed to the splits method of
+                Dataset.
+        """
+        path = cls.download(root)
+
+        train_data = None if train is None else cls(
+            os.path.join(path, train), exts, fields, **kwargs)
+        val_data = None if val is None else cls(
+            os.path.join(path, val), exts, fields, **kwargs)
+        test_data = None if test is None else cls(
+            os.path.join(path, test), exts, fields, **kwargs)
+        return tuple(d for d in (train_data, val_data, test_data)
+                     if d is not None)

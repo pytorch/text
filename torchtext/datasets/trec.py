@@ -1,15 +1,14 @@
 import os
 
 from .. import data
-from six.moves import urllib
 
 
 class TREC(data.Dataset):
 
-    url_base = 'http://cogcomp.org/Data/QA/QC/'
-    train_filename = 'train_5500.label'
-    test_filename = 'TREC_10.label'
-    dirname = 'trec'
+    urls = ['http://cogcomp.org/Data/QA/QC/train_5500.label',
+            'http://cogcomp.org/Data/QA/QC/TREC_10.label']
+    name = 'trec'
+    dirname = ''
 
     @staticmethod
     def sort_key(ex):
@@ -43,21 +42,8 @@ class TREC(data.Dataset):
         super(TREC, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def download(cls, root):
-        path = os.path.join(root, cls.dirname)
-        if not os.path.isdir(path):
-            for fn in [cls.train_filename, cls.test_filename]:
-                fpath = os.path.join(path, fn)
-                if not os.path.isfile(fpath):
-                    if not os.path.exists(os.path.dirname(fpath)):
-                        os.makedirs(os.path.dirname(fpath))
-                    print('downloading {}'.format(fn))
-                    urllib.request.urlretrieve(os.path.join(cls.url_base, fn), fpath)
-        return os.path.join(path, '')
-
-    @classmethod
-    def splits(cls, text_field, label_field, root='.',
-               train=train_filename, test=test_filename, **kwargs):
+    def splits(cls, text_field, label_field, root='.data',
+               train='train_5500.label', test='TREC_10.label', **kwargs):
         """Create dataset objects for splits of the TREC dataset.
 
         Arguments:
@@ -73,14 +59,14 @@ class TREC(data.Dataset):
         path = cls.download(root)
 
         train_data = None if train is None else cls(
-            path + train, text_field, label_field, **kwargs)
+            os.path.join(path, test), text_field, label_field, **kwargs)
         test_data = None if test is None else cls(
-            path + test, text_field, label_field, **kwargs)
+            os.path.join(path, test), text_field, label_field, **kwargs)
         return tuple(d for d in (train_data, test_data)
                      if d is not None)
 
     @classmethod
-    def iters(cls, batch_size=32, device=0, root='.', vectors=None, **kwargs):
+    def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
         """Creater iterator objects for splits of the TREC dataset.
 
         Arguments:
