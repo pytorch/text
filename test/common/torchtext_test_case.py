@@ -66,6 +66,7 @@ class TorchtextTestCase(TestCase):
             test_numerical_features_dataset_file.write("0.4\t12\tteststring4\n")
             test_numerical_features_dataset_file.write("0.9\t9\tteststring5\n")
 
+
 def verify_numericalized_example(field, test_example_data,
                                  test_example_numericalized,
                                  test_example_lengths=None,
