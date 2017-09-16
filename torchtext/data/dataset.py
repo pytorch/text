@@ -13,30 +13,31 @@ class Dataset(torch.utils.data.Dataset):
     """Defines a dataset composed of Examples along with its Fields.
 
     Attributes:
-        sort_key: The key to use for sorting examples from this dataset in
-            order to batch together examples with similar lengths and minimize
-            padding.
-        examples: The list of Examples in the dataset.
-        fields: A dictionary containing the name of each column together with
+        sort_key (callable): A key to use for sorting dataset examples for batching
+            together examples with similar lengths to minimize padding.
+        examples (list(Example)): The examples in this dataset.
+            fields: A dictionary containing the name of each column together with
             its corresponding Field object. Two columns with the same Field
             object will share a vocabulary.
+        fields (dict[str, Field]): Contains the name of each column or field, together
+            with the corresponding Field object. Two fields with the same Field object
+            will have a shared vocabulary.
     """
-
     sort_key = None
 
     def __init__(self, examples, fields, filter_pred=None):
-        """Create a dataset from a list of Examples and fields.
+        """Create a dataset from a list of Examples and Fields.
 
         Arguments:
             examples: List of Examples.
-            fields: List of tuples of (name, field).
-            filter_pred: Use only examples for which filter_pred(ex) is True,
-                or use all examples if None. Default: None.
+            fields (List(tuple(str, Field))): The Fields to use in this tuple. The
+                string is a field name, and the Field is the associated field.
+            filter_pred (callable or None): Use only examples for which
+                filter_pred(example) is True, or use all examples if None. Default is None.
         """
         if filter_pred is not None:
             examples = list(filter(filter_pred, examples))
         self.examples = examples
-
         self.fields = dict(fields)
 
     @classmethod
@@ -44,15 +45,19 @@ class Dataset(torch.utils.data.Dataset):
         """Create Dataset objects for multiple splits of a dataset.
 
         Arguments:
-            path: Common prefix of the splits' file paths.
-            train: Suffix to add to path for the train set, or None for no
-                train set. Default: None.
-            validation: Suffix to add to path for the validation set, or None
-                for no validation set. Default: None.
-            test: Suffix to add to path for the test set, or None for no test
-                set. Default: None.
+            path (str): Common prefix of the splits' file paths.
+            train (str): Suffix to add to path for the train set, or None for no
+                train set. Default is None.
+            validation (str): Suffix to add to path for the validation set, or None
+                for no validation set. Default is None.
+            test (str): Suffix to add to path for the test set, or None for no test
+                set. Default is None.
             Remaining keyword arguments: Passed to the constructor of the
-                dataset class being used.
+                Dataset (sub)class being used.
+
+        Returns:
+            split_datasets (tuple(Dataset)): Datasets for train, validation, and test splits
+                in that order, if provided.
         """
         train_data = None if train is None else cls(path + train, **kwargs)
         val_data = None if validation is None else cls(path + validation,
@@ -81,6 +86,14 @@ class Dataset(torch.utils.data.Dataset):
 
     @classmethod
     def download(cls, root):
+        """Download and unzip an online archive (.zip, .gz, or .tgz).
+
+        Arguments:
+            root (str): Folder to download data to.
+
+        Returns:
+            dataset_path (str): Path to extracted dataset.
+        """
         path = os.path.join(root, cls.name)
         if not os.path.isdir(path):
             for url in cls.urls:
@@ -110,14 +123,15 @@ class TabularDataset(Dataset):
         """Create a TabularDataset given a path, file format, and field list.
 
         Arguments:
-            path: Path to the data file.
-            format: One of "CSV", "TSV", or "JSON" (case-insensitive).
-            fields: For CSV and TSV formats, list of tuples of (name, field).
-                The list should be in the same order as the columns in the CSV
-                or TSV file, while tuples of (name, None) represent columns
-                that will be ignored. For JSON format, dictionary whose keys
-                are the JSON keys and whose values are tuples of (name, field).
-                This allows the user to rename columns from their JSON key
+            path (str): Path to the data file.
+            format (str): The format of the data file. One of "CSV", "TSV", or
+                "JSON" (case-insensitive).
+            fields (list(tuple(str, Field)) or dict[str, (name, Field)]: For CSV and
+                TSV formats, list of tuples of (name, field). The list should be in
+                the same order as the columns in the CSV or TSV file, while tuples of
+                (name, None) represent columns that will be ignored. For JSON format,
+                dictionary whose keys are the JSON keys and whose values are tuples of
+                (name, field). This allows the user to rename columns from their JSON key
                 names and also enables selecting a subset of columns to load
                 (since JSON keys not present in the input dictionary are ignored).
         """
