@@ -60,7 +60,7 @@ class Vocab(object):
 
             counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
         else:
-            self.stoi = defaultdict(_default_unk_index) #list)
+            self.stoi = defaultdict(_default_unk_index)
 
             self.itos = []
 
