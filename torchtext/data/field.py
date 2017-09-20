@@ -209,6 +209,14 @@ class ReversibleField(Field):
             kwargs['tokenize'] = 'revtok'
         super(ReversibleField, self).__init__(**kwargs)
 
+    def _trim(self, s, t):
+        sentence = []
+        for w in s:
+            if w == t:
+                break
+            sentence.append(w)
+        return sentence
+
     def reverse(self, batch):
         try:
             import revtok
@@ -218,9 +226,11 @@ class ReversibleField(Field):
         if not self.batch_first:
             batch.t_()
         batch = batch.tolist()
-        batch = [[self.vocab.itos[ind] for ind in ex] for ex in batch]
-        batch = [filter(lambda tok: tok not in (
-            self.init_token, self.eos_token, self.pad_token), ex) for ex in batch]
+        batch = [[self.vocab.itos[ind] for ind in ex] for ex in batch] # denumericalize
+        batch = [trim(ex, self.eos_token) for ex in batch] # trim past frst eos
+        def filter_special(tok):
+            return tok: tok not in (self.init_token, self.pad_token)
+        batch = [filter(filter_special, ex) for ex in batch]
         return [revtok.detokenize(ex) for ex in batch]
 
 
