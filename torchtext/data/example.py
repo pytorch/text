@@ -26,7 +26,7 @@ class Example(object):
                     vals = [vals]
                 for val in vals:
                     name, field = val
-                    setattr(ex, name.strip(), field.preprocess(data[key].strip()))
+                    setattr(ex, name, field.preprocess(data[key].rstrip('\n')))
         return ex
 
     @classmethod
@@ -56,7 +56,7 @@ class Example(object):
         ex = cls()
         for (name, field), val in zip(fields, data):
             if field is not None:
-                setattr(ex, name.strip(), field.preprocess(val.strip()))
+                setattr(ex, name, field.preprocess(val.rstrip('\n')))
         return ex
 
     @classmethod
