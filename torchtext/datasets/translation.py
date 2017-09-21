@@ -1,4 +1,6 @@
 import os
+import xml.etree.ElementTree as ET
+import glob
 
 from .. import data
 
@@ -84,8 +86,9 @@ class IWSLT(TranslationDataset, data.Dataset):
 
     @classmethod
     def splits(cls, exts, fields, root='.data',
-               train='train.', val='IWSLT16.TED.tst2013', test='IWSLT16.TED.tst2014', **kwargs):
-        """Create dataset objects for splits of the Multi30k dataset.
+               train='train', val='IWSLT16.TED.tst2013',
+               test='IWSLT16.TED.tst2014', **kwargs):
+        """Create dataset objects for splits of the IWSLT dataset.
 
         Arguments:
 
@@ -103,6 +106,13 @@ class IWSLT(TranslationDataset, data.Dataset):
         cls.urls[0] = cls.urls[0].format(exts[0][1:], exts[1][1:], cls.dirname)
         path = cls.download(root)
 
+        train = '.'.join([train, cls.dirname])
+        val = '.'.join([val, cls.dirname])
+        test = '.'.join([test, cls.dirname])
+
+        if not os.path.exists(os.path.join(path, train) + exts[0]):
+            cls.clean(path)
+
         train_data = None if train is None else cls(
             os.path.join(path, train), exts, fields, **kwargs)
         val_data = None if val is None else cls(
@@ -111,3 +121,24 @@ class IWSLT(TranslationDataset, data.Dataset):
             os.path.join(path, test), exts, fields, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
+
+    @staticmethod
+    def clean(path):
+        for f_xml in glob.iglob(os.path.join(path, '*.xml')):
+            print(f_xml)
+            f_txt = os.path.splitext(f_xml)[0]
+            with open(f_txt, 'w') as fd_txt:
+                root = ET.parse(f_xml).getroot()[0]
+                for doc in root.findall('doc'):
+                    for e in doc.findall('seg'):
+                        fd_txt.write(e.text.strip() + '\n')
+
+        xml_tags = ['<url', '<keywords', '<talkid', '<description',
+                    '<reviewer', '<translator', '<title', '<speaker']
+        for f_orig in glob.iglob(os.path.join(path, 'train.tags*')):
+            print(f_orig)
+            f_txt = f_orig.replace('.tags', '')
+            with open(f_txt, 'w') as fd_txt, open(f_orig) as fd_orig:
+                for l in fd_orig:
+                    if not any(tag in l for tag in xml_tags):
+                        fd_txt.write(l.strip() + '\n')

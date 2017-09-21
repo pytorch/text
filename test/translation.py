@@ -17,6 +17,7 @@ def tokenize_de(text):
 def tokenize_en(text):
     return [tok.text for tok in spacy_en.tokenizer(url.sub('@URL@', text))]
 
+
 # Testing IWSLT
 DE = data.Field(tokenize=tokenize_de)
 EN = data.Field(tokenize=tokenize_en)
