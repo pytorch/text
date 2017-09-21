@@ -78,7 +78,7 @@ class Multi30k(TranslationDataset, data.Dataset):
 
 
 class IWSLT(TranslationDataset, data.Dataset):
-    """Defines a dataset for the multi-modal IWSLT 2016 task"""
+    """Defines a dataset for the IWSLT 2016 task"""
 
     urls = ['https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz']
     name = 'iwslt'
