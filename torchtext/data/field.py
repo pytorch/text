@@ -156,7 +156,9 @@ class Field(object):
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.pad_token, self.init_token, self.eos_token]
             if tok is not None))
-        self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
+        revtok_unk = isinstance(self, ReversibleField)
+        self.vocab = self.vocab_cls(counter, specials=specials,
+                                    revtok_unk=revtok_unk, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
         """Turn a batch of examples that use this field into a Variable.
@@ -209,14 +211,6 @@ class ReversibleField(Field):
             kwargs['tokenize'] = 'revtok'
         super(ReversibleField, self).__init__(**kwargs)
 
-    def _trim(self, s, t):
-        sentence = []
-        for w in s:
-            if w == t:
-                break
-            sentence.append(w)
-        return sentence
-
     def reverse(self, batch):
         try:
             import revtok
@@ -226,10 +220,21 @@ class ReversibleField(Field):
         if not self.batch_first:
             batch.t_()
         batch = batch.tolist()
-        batch = [[self.vocab.itos[ind] for ind in ex] for ex in batch] # denumericalize
-        batch = [self._trim(ex, self.eos_token) for ex in batch] # trim past frst eos
+        batch = [[self.vocab.itos[ind] for ind in ex] for ex in batch]  # denumericalize
+
+        def trim(s, t):
+            sentence = []
+            for w in s:
+                if w == t:
+                    break
+                sentence.append(w)
+            return sentence
+
+        batch = [trim(ex, self.eos_token) for ex in batch]  # trim past frst eos
+
         def filter_special(tok):
             return tok not in (self.init_token, self.pad_token)
+
         batch = [filter(filter_special, ex) for ex in batch]
         return [revtok.detokenize(ex) for ex in batch]
 
