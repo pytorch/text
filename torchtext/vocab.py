@@ -28,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None):
+                 is_label=False, vectors=None):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -40,21 +40,30 @@ class Vocab(object):
                 vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
-                token. Default: ['<pad>']
+                token. Default: ['<pad>'].
+            is_label: remove from the list the <unk> token not needed for
+                the label list
             vectors: one of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
         """
         self.freqs = counter.copy()
         min_freq = max(min_freq, 1)
-        counter.update(['<unk>'] + specials)
+        if is_label is False:
+            counter.update(['<unk>'] + specials)
 
-        self.stoi = defaultdict(_default_unk_index)
-        self.stoi.update({tok: i for i, tok in
-                          enumerate(['<unk>'] + specials)})
-        self.itos = ['<unk>'] + specials
+            self.stoi = defaultdict(_default_unk_index)
 
-        counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
+            self.stoi.update({tok: i for i, tok in
+                              enumerate(['<unk>'] + specials)})
+            self.itos = ['<unk>'] + specials
+
+            counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
+        else:
+            self.stoi = defaultdict(_default_unk_index)
+
+            self.itos = []
+
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically

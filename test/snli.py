@@ -2,7 +2,7 @@ from torchtext import data
 from torchtext import datasets
 
 TEXT = data.Field()
-LABEL = data.Field(sequential=False)
+LABEL = data.Field(sequential=False, is_label=False)
 
 train, val, test = datasets.SNLI.splits(TEXT, LABEL)
 
@@ -12,6 +12,7 @@ print(vars(train[0]))
 
 TEXT.build_vocab(train)
 LABEL.build_vocab(train)
+print(LABEL.vocab.itos)
 
 train_iter, val_iter, test_iter = data.BucketIterator.splits(
     (train, val, test), batch_size=3, device=0)

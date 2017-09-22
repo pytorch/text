@@ -6,7 +6,7 @@ from torchtext.vocab import GloVe
 # Approach 1:
 # set up fields
 TEXT = data.Field(lower=True, include_lengths=True, batch_first=True)
-LABEL = data.Field(sequential=False)
+LABEL = data.Field(sequential=False, is_label=True)
 
 
 # make splits for data
@@ -24,6 +24,10 @@ LABEL.build_vocab(train)
 # print vocab information
 print('len(TEXT.vocab)', len(TEXT.vocab))
 print('TEXT.vocab.vectors.size()', TEXT.vocab.vectors.size())
+
+# print label information
+print('LABEL.vocab.itos', LABEL.vocab.itos)
+print('len(LABEL.vocab.itos)', len(LABEL.vocab.itos))
 
 # make iterator for splits
 train_iter, test_iter = data.BucketIterator.splits(

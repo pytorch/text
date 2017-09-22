@@ -46,6 +46,8 @@ class Field(object):
             this field after numericalizing but before the numbers are turned
             into a Tensor. Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
+        is_label: Remove from the Vocab the default <unk> token when it is not
+            needed for the label list
         tokenize: The function used to tokenize strings using this field into
             sequential examples. If "spacy", the SpaCy English tokenizer is
             used. Default: str.split.
@@ -61,6 +63,7 @@ class Field(object):
             self, sequential=True, use_vocab=True, init_token=None,
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
+            is_label=False,
             tokenize=(lambda s: s.split()), include_lengths=False,
             batch_first=False, pad_token="<pad>"):
         self.sequential = sequential
@@ -72,6 +75,7 @@ class Field(object):
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
         self.lower = lower
+        self.is_label = is_label
         self.tokenize = get_tokenizer(tokenize)
         self.include_lengths = include_lengths
         self.batch_first = batch_first
@@ -153,7 +157,7 @@ class Field(object):
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.pad_token, self.init_token, self.eos_token]
             if tok is not None))
-        self.vocab = Vocab(counter, specials=specials, **kwargs)
+        self.vocab = Vocab(counter, specials=specials, is_label=self.is_label, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
         """Turn a batch of examples that use this field into a Variable.
