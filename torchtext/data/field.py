@@ -56,6 +56,7 @@ class Field(object):
         batch_first: Whether to produce tensors with the batch dimension first.
             Default: False.
         pad_token: The string token used as padding. Default: "<pad>".
+        unk_token: The string token used to represent OOV words. Default: "<unk>".
     """
 
     vocab_cls = Vocab
@@ -65,11 +66,12 @@ class Field(object):
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
             tokenize=(lambda s: s.split()), include_lengths=False,
-            batch_first=False, pad_token="<pad>"):
+            batch_first=False, pad_token="<pad>", unk_token="<unk>"):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
         self.eos_token = eos_token
+        self.unk_token = unk_token
         self.fix_length = fix_length
         self.tensor_type = tensor_type
         self.preprocessing = preprocessing
@@ -154,11 +156,10 @@ class Field(object):
                     x = [x]
                 counter.update(x)
         specials = list(OrderedDict.fromkeys(
-            tok for tok in [self.pad_token, self.init_token, self.eos_token]
+            tok for tok in [self.unk_token, self.pad_token, self.init_token,
+                            self.eos_token]
             if tok is not None))
-        revtok_unk = isinstance(self, ReversibleField)
-        self.vocab = self.vocab_cls(counter, specials=specials,
-                                    revtok_unk=revtok_unk, **kwargs)
+        self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
 
     def numericalize(self, arr, device=None, train=True):
         """Turn a batch of examples that use this field into a Variable.
@@ -209,6 +210,9 @@ class ReversibleField(Field):
     def __init__(self, **kwargs):
         if kwargs.get('tokenize') not in ('revtok', 'subword'):
             kwargs['tokenize'] = 'revtok'
+        unk_token = kwargs.get('unk_token')
+        if unk_token is None:
+            kwargs['unk_token'] = ' UNK '
         super(ReversibleField, self).__init__(**kwargs)
 
     def reverse(self, batch):
@@ -219,7 +223,8 @@ class ReversibleField(Field):
             raise
         if not self.batch_first:
             batch.t_()
-        batch = batch.tolist()
+        with torch.cuda.device_of(batch):
+            batch = batch.tolist()
         batch = [[self.vocab.itos[ind] for ind in ex] for ex in batch]  # denumericalize
 
         def trim(s, t):

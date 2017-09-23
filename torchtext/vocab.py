@@ -28,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, revtok_unk=False):
+                 vectors=None):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -44,20 +44,16 @@ class Vocab(object):
             vectors: One of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
-            revtok_unk: Whether to use ' UNK ' rather than '<unk>' for
-                better compatibility with the revtok detokenizer
         """
         self.freqs = counter.copy()
         min_freq = max(min_freq, 1)
-        unk_token = ' UNK ' if revtok_unk else '<unk>'
-        counter.update([unk_token] + specials)
+        counter.update(specials)
 
         self.stoi = defaultdict(_default_unk_index)
-        self.stoi.update({tok: i for i, tok in
-                          enumerate([unk_token] + specials)})
-        self.itos = [unk_token] + specials
+        self.stoi.update({tok: i for i, tok in enumerate(specials)})
+        self.itos = specials
 
-        counter.subtract({tok: counter[tok] for tok in [unk_token] + specials})
+        counter.subtract({tok: counter[tok] for tok in specials})
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
@@ -172,7 +168,7 @@ class SubwordVocab(Vocab):
     def segment(self, ex):
         return [tok for word in ex for tok in self.segmenter(word)]
 
-    def __init__(self, counter, max_size=None, specials=['<pad>'], revtok_unk=None,
+    def __init__(self, counter, max_size=None, specials=['<pad>'],
                  vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
         """Create a revtok subword vocabulary from a collections.Counter.
 
@@ -192,8 +188,8 @@ class SubwordVocab(Vocab):
             raise
 
         self.stoi = defaultdict(_default_unk_index)
-        self.stoi.update({tok: i + 1 for i, tok in enumerate(specials)})
-        self.itos = [' UNK '] + specials
+        self.stoi.update({tok: i for i, tok in enumerate(specials)})
+        self.itos = specials
 
         self.segmenter = revtok.SubwordSegmenter(counter, max_size)
 
