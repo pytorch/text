@@ -210,8 +210,7 @@ class ReversibleField(Field):
     def __init__(self, **kwargs):
         if kwargs.get('tokenize') not in ('revtok', 'subword'):
             kwargs['tokenize'] = 'revtok'
-        unk_token = kwargs.get('unk_token')
-        if unk_token is None:
+        if 'unk_token' not in kwargs:
             kwargs['unk_token'] = ' UNK '
         super(ReversibleField, self).__init__(**kwargs)
 
@@ -250,6 +249,8 @@ class SubwordField(ReversibleField):
 
     def __init__(self, **kwargs):
         kwargs['tokenize'] = 'subword'
+        if 'unk_token' not in kwargs:
+            kwargs['unk_token'] = '�'
         super(ReversibleField, self).__init__(**kwargs)
 
     def segment(self, *args):
