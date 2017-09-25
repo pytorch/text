@@ -165,9 +165,6 @@ class Vocab(object):
 
 class SubwordVocab(Vocab):
 
-    def segment(self, ex):
-        return [tok for word in ex for tok in self.segmenter(word)]
-
     def __init__(self, counter, max_size=None, specials=['<pad>'],
                  vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
         """Create a revtok subword vocabulary from a collections.Counter.
@@ -191,12 +188,12 @@ class SubwordVocab(Vocab):
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
         self.itos = specials
 
-        self.segmenter = revtok.SubwordSegmenter(counter, max_size)
+        self.segment = revtok.SubwordSegmenter(counter, max_size)
 
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency/entropy, then alphabetically
-        toks = sorted(self.segmenter.vocab.items(),
+        toks = sorted(self.segment.vocab.items(),
                       key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
 
         for tok, _ in toks:
