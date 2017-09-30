@@ -208,18 +208,23 @@ class Field(object):
 class ReversibleField(Field):
 
     def __init__(self, **kwargs):
-        if kwargs.get('tokenize') not in ('revtok', 'subword'):
+        if kwargs.get('tokenize') is list:
+            self.use_revtok = False
+        else:
+            self.use_revtok = True
+        if kwargs.get('tokenize') not in ('revtok', 'subword', list):
             kwargs['tokenize'] = 'revtok'
         if 'unk_token' not in kwargs:
             kwargs['unk_token'] = ' UNK '
         super(ReversibleField, self).__init__(**kwargs)
 
     def reverse(self, batch):
-        try:
-            import revtok
-        except ImportError:
-            print("Please install revtok.")
-            raise
+        if self.use_revtok:
+            try:
+                import revtok
+            except ImportError:
+                print("Please install revtok.")
+                raise
         if not self.batch_first:
             batch.t_()
         with torch.cuda.device_of(batch):
@@ -240,7 +245,9 @@ class ReversibleField(Field):
             return tok not in (self.init_token, self.pad_token)
 
         batch = [filter(filter_special, ex) for ex in batch]
-        return [revtok.detokenize(ex) for ex in batch]
+        if self.use_revtok:
+            return [revtok.detokenize(ex) for ex in batch]
+        return [''.join(ex) for ex in batch]
 
 
 class SubwordField(ReversibleField):
