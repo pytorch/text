@@ -93,7 +93,7 @@ class Field(object):
                 isinstance(x, six.text_type)):
             x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
-            x = self.tokenize(x)
+            x = self.tokenize(x.rstrip('\n'))
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
         if self.preprocessing is not None:

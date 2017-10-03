@@ -26,7 +26,7 @@ class Example(object):
                     vals = [vals]
                 for val in vals:
                     name, field = val
-                    setattr(ex, name, field.preprocess(data[key].rstrip('\n')))
+                    setattr(ex, name, field.preprocess(data[key]))
         return ex
 
     @classmethod
