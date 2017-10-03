@@ -86,17 +86,21 @@ class Dataset(torch.utils.data.Dataset):
                 yield getattr(x, attr)
 
     @classmethod
-    def download(cls, root):
+    def download(cls, root, check=None):
         """Download and unzip an online archive (.zip, .gz, or .tgz).
 
         Arguments:
             root (str): Folder to download data to.
+            check (str or None): Folder whose existence indicates
+                that the dataset has already been downloaded, or
+                None to check the existence of root.
 
         Returns:
             dataset_path (str): Path to extracted dataset.
         """
         path = os.path.join(root, cls.name)
-        if not os.path.isdir(path):
+        check = path if check is None else check
+        if not os.path.isdir(check):
             for url in cls.urls:
                 filename = os.path.basename(url)
                 zpath = os.path.join(path, filename)
