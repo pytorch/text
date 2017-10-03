@@ -80,9 +80,10 @@ class Dataset(torch.utils.data.Dataset):
                 yield getattr(x, attr)
 
     @classmethod
-    def download(cls, root):
+    def download(cls, root, check=None):
         path = os.path.join(root, cls.name)
-        if not os.path.isdir(path):
+        check = path if check is None else check
+        if not os.path.isdir(check):
             for url in cls.urls:
                 filename = os.path.basename(url)
                 zpath = os.path.join(path, filename)

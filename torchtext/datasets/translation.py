@@ -80,9 +80,9 @@ class Multi30k(TranslationDataset, data.Dataset):
 class IWSLT(TranslationDataset, data.Dataset):
     """Defines a dataset for the IWSLT 2016 task"""
 
-    urls = ['https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz']
+    base_url = 'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
     name = 'iwslt'
-    dirname = None
+    base_dirname = '{}-{}'
 
     @classmethod
     def splits(cls, exts, fields, root='.data',
@@ -102,13 +102,15 @@ class IWSLT(TranslationDataset, data.Dataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        cls.dirname = '{}-{}'.format(exts[0][1:], exts[1][1:])
-        cls.urls[0] = cls.urls[0].format(exts[0][1:], exts[1][1:], cls.dirname)
-        path = cls.download(root)
+        cls.dirname = cls.base_dirname.format(exts[0][1:], exts[1][1:])
+        cls.urls = [cls.base_url.format(exts[0][1:], exts[1][1:], cls.dirname)]
+        check = os.path.join(root, cls.name, cls.dirname)
+        path = cls.download(root, check=check)
 
         train = '.'.join([train, cls.dirname])
         val = '.'.join([val, cls.dirname])
-        test = '.'.join([test, cls.dirname])
+        if test is not None:
+            test = '.'.join([test, cls.dirname])
 
         if not os.path.exists(os.path.join(path, train) + exts[0]):
             cls.clean(path)
