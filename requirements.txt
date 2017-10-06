@@ -1,6 +1,7 @@
 # NLP tools
 nltk
 spacy
+git+git://github.com/jekbradbury/revtok.git
 
 # Progress bars on iterators
 tqdm
