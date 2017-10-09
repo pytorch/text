@@ -67,6 +67,7 @@ class TranslationDataset(data.Dataset):
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
+
 class Multi30k(TranslationDataset):
     """The small-dataset WMT 2016 multimodal task, also known as Flickr30k"""
 
@@ -173,8 +174,8 @@ class WMT14(TranslationDataset):
     Though this download contains test sets from 2015 and 2016, the train set
     differs slightly from WMT 2015 and 2016 and significantly from WMT 2017."""
 
-    urls = [('https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
-             'wmt16_en_de.tar.gz')]
+    urls = [('https://drive.google.com/uc?export=download&'
+             'id=0B_bZck-ksdkpM25jRUN2X2UxMm8', 'wmt16_en_de.tar.gz')]
     name = 'wmt14'
     dirname = ''
 
