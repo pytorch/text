@@ -302,7 +302,7 @@ class SubwordField(ReversibleField):
         kwargs['tokenize'] = 'subword'
         if 'unk_token' not in kwargs:
             kwargs['unk_token'] = '�'
-        super(ReversibleField, self).__init__(**kwargs)
+        super(SubwordField, self).__init__(**kwargs)
 
     def segment(self, *args):
         """Segment one or more datasets with this subword field.
