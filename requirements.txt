@@ -1,12 +1,14 @@
-# NLP tools
-nltk
-spacy
-
 # Progress bars on iterators
 tqdm
 
 # Downloading data and other files
 requests
+
+# Optional NLP tools
+nltk
+spacy
+
+# Required for tests only:
 
 # Style-checking for PEP8
 flake8
