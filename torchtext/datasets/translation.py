@@ -39,24 +39,14 @@ class TranslationDataset(data.Dataset):
 
         super(TranslationDataset, self).__init__(examples, fields, **kwargs)
 
-
-class Multi30k(TranslationDataset, data.Dataset):
-    """Defines a dataset for the multi-modal WMT 2016 task"""
-
-    urls = ['http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
-            'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
-            'https://staff.fnwi.uva.nl/d.elliott/wmt16/mmt16_task1_test.tgz']
-    name = 'multi30k'
-    dirname = ''
-
     @classmethod
     def splits(cls, exts, fields, root='.data',
-               train='train', val='val', test='test', **kwargs):
-        """Create dataset objects for splits of the Multi30k dataset.
+               train='train', validation='val', test='test', **kwargs):
+        """Create dataset objects for splits of a TranslationDataset.
 
         Arguments:
 
-            root: directory containing Multi30k data
+            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -70,16 +60,45 @@ class Multi30k(TranslationDataset, data.Dataset):
 
         train_data = None if train is None else cls(
             os.path.join(path, train), exts, fields, **kwargs)
-        val_data = None if val is None else cls(
-            os.path.join(path, val), exts, fields, **kwargs)
+        val_data = None if validation is None else cls(
+            os.path.join(path, validation), exts, fields, **kwargs)
         test_data = None if test is None else cls(
             os.path.join(path, test), exts, fields, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
+class Multi30k(TranslationDataset):
+    """The small-dataset WMT 2016 multimodal task, also known as Flickr30k"""
 
-class IWSLT(TranslationDataset, data.Dataset):
-    """Defines a dataset for the IWSLT 2016 task"""
+    urls = ['http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
+            'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
+            'https://staff.fnwi.uva.nl/d.elliott/wmt16/mmt16_task1_test.tgz']
+    name = 'multi30k'
+    dirname = ''
+
+    @classmethod
+    def splits(cls, exts, fields, root='.data',
+               train='train', validation='val', test='test', **kwargs):
+        """Create dataset objects for splits of the Multi30k dataset.
+
+        Arguments:
+
+            root: Root dataset storage directory. Default is '.data'.
+            exts: A tuple containing the extension to path for each language.
+            fields: A tuple containing the fields that will be used for data
+                in each language.
+            train: The prefix of the train data. Default: 'train'.
+            validation: The prefix of the validation data. Default: 'val'.
+            test: The prefix of the test data. Default: 'test'.
+            Remaining keyword arguments: Passed to the splits method of
+                Dataset.
+        """
+        return super(Multi30k, cls).splits(
+            exts, fields, root, train, validation, test, **kwargs)
+
+
+class IWSLT(TranslationDataset):
+    """The IWSLT 2016 TED talk translation task"""
 
     base_url = 'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
     name = 'iwslt'
@@ -87,13 +106,13 @@ class IWSLT(TranslationDataset, data.Dataset):
 
     @classmethod
     def splits(cls, exts, fields, root='.data',
-               train='train', val='IWSLT16.TED.tst2013',
+               train='train', validation='IWSLT16.TED.tst2013',
                test='IWSLT16.TED.tst2014', **kwargs):
         """Create dataset objects for splits of the IWSLT dataset.
 
         Arguments:
 
-            root: directory containing Multi30k data
+            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -109,7 +128,7 @@ class IWSLT(TranslationDataset, data.Dataset):
         path = cls.download(root, check=check)
 
         train = '.'.join([train, cls.dirname])
-        val = '.'.join([val, cls.dirname])
+        validation = '.'.join([validation, cls.dirname])
         if test is not None:
             test = '.'.join([test, cls.dirname])
 
@@ -118,8 +137,8 @@ class IWSLT(TranslationDataset, data.Dataset):
 
         train_data = None if train is None else cls(
             os.path.join(path, train), exts, fields, **kwargs)
-        val_data = None if val is None else cls(
-            os.path.join(path, val), exts, fields, **kwargs)
+        val_data = None if validation is None else cls(
+            os.path.join(path, validation), exts, fields, **kwargs)
         test_data = None if test is None else cls(
             os.path.join(path, test), exts, fields, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
@@ -146,3 +165,41 @@ class IWSLT(TranslationDataset, data.Dataset):
                 for l in fd_orig:
                     if not any(tag in l for tag in xml_tags):
                         fd_txt.write(l.strip() + '\n')
+
+
+class WMT14(TranslationDataset):
+    """The WMT 2014 English-German dataset, as preprocessed by Google Brain.
+
+    Though this download contains test sets from 2015 and 2016, the train set
+    differs slightly from WMT 2015 and 2016 and significantly from WMT 2017."""
+
+    urls = [('https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
+             'wmt16_en_de.tar.gz')]
+    name = 'wmt14'
+    dirname = ''
+
+    @classmethod
+    def splits(cls, exts, fields, root='.data',
+               train='train.tok.clean.bpe.32000',
+               validation='newstest2013.tok.bpe.32000',
+               test='newstest2014.tok.bpe.32000', **kwargs):
+        """Create dataset objects for splits of the WMT 2014 dataset.
+
+        Arguments:
+
+            root: Root dataset storage directory. Default is '.data'.
+            exts: A tuple containing the extensions for each language. Must be
+                either ('.en', '.de') or the reverse.
+            fields: A tuple containing the fields that will be used for data
+                in each language.
+            train: The prefix of the train data. Default:
+                'train.tok.clean.bpe.32000'.
+            validation: The prefix of the validation data. Default:
+                'newstest2013.tok.bpe.32000'.
+            test: The prefix of the test data. Default:
+                'newstest2014.tok.bpe.32000'.
+            Remaining keyword arguments: Passed to the splits method of
+                Dataset.
+        """
+        return super(WMT14, cls).splits(
+            exts, fields, root, train, validation, test, **kwargs)
