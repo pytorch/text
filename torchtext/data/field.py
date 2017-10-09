@@ -1,3 +1,4 @@
+# coding: utf8
 from collections import Counter, OrderedDict
 import six
 import torch
