@@ -27,8 +27,24 @@ def get_tokenizer(tokenizer):
             print("Please install the necessary NLTK corpora. "
                   "See the docs at http://nltk.org for more information.")
             raise
+    elif tokenizer == 'revtok':
+        try:
+            import revtok
+            return revtok.tokenize
+        except ImportError:
+            print("Please install revtok.")
+            raise
+    elif tokenizer == 'subword':
+        try:
+            import revtok
+            return lambda x: revtok.tokenize(x, decap=True)
+        except ImportError:
+            print("Please install revtok.")
+            raise
     raise ValueError("Requested tokenizer {}, valid choices are a "
                      "callable that takes a single string as input, "
+                     "\"revtok\" for the revtok reversible tokenizer, "
+                     "\"subword\" for the revtok caps-aware tokenizer, "
                      "\"spacy\" for the SpaCy English tokenizer, or "
                      "\"moses\" for the NLTK port of the Moses tokenization "
                      "script.".format(tokenizer))

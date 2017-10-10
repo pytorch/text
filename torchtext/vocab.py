@@ -41,20 +41,19 @@ class Vocab(object):
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token. Default: ['<pad>']
-            vectors: one of either the available pretrained vectors
+            vectors: One of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
         """
         self.freqs = counter.copy()
         min_freq = max(min_freq, 1)
-        counter.update(['<unk>'] + specials)
+        counter.update(specials)
 
         self.stoi = defaultdict(_default_unk_index)
-        self.stoi.update({tok: i for i, tok in
-                          enumerate(['<unk>'] + specials)})
-        self.itos = ['<unk>'] + specials
+        self.stoi.update({tok: i for i, tok in enumerate(specials)})
+        self.itos = specials
 
-        counter.subtract({tok: counter[tok] for tok in ['<unk>'] + specials})
+        counter.subtract({tok: counter[tok] for tok in specials})
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
@@ -135,7 +134,7 @@ class Vocab(object):
             start_dim = 0
             for v in vectors:
                 end_dim = start_dim + v.dim
-                self.vectors[i][start_dim:end_dim] = v[token]
+                self.vectors[i][start_dim:end_dim] = v[token.strip()]
                 start_dim = end_dim
             assert(start_dim == tot_dim)
 
@@ -162,6 +161,47 @@ class Vocab(object):
                 self.vectors[i] = vectors[wv_index]
             else:
                 self.vectors[i] = unk_init(self.vectors[i])
+
+
+class SubwordVocab(Vocab):
+
+    def __init__(self, counter, max_size=None, specials=['<pad>'],
+                 vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
+        """Create a revtok subword vocabulary from a collections.Counter.
+
+        Arguments:
+            counter: collections.Counter object holding the frequencies of
+                each word found in the data.
+            max_size: The maximum size of the subword vocabulary, or None for no
+                maximum. Default: None.
+            specials: The list of special tokens (e.g., padding or eos) that
+                will be prepended to the vocabulary in addition to an <unk>
+                token.
+        """
+        try:
+            import revtok
+        except ImportError:
+            print("Please install revtok.")
+            raise
+
+        self.stoi = defaultdict(_default_unk_index)
+        self.stoi.update({tok: i for i, tok in enumerate(specials)})
+        self.itos = specials
+
+        self.segment = revtok.SubwordSegmenter(counter, max_size)
+
+        max_size = None if max_size is None else max_size + len(self.itos)
+
+        # sort by frequency/entropy, then alphabetically
+        toks = sorted(self.segment.vocab.items(),
+                      key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
+
+        for tok, _ in toks:
+            self.itos.append(tok)
+            self.stoi[tok] = len(self.itos) - 1
+
+        if vectors is not None:
+            self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
 
 
 class Vectors(object):
