@@ -63,19 +63,28 @@ class Iterator(object):
         sort: Whether to sort examples according to self.sort_key.
             Note that repeat, shuffle, and sort default to train, train, and
             (not train).
+        sort_within_batch: Whether to sort (in descending order according to
+            self.sort_key) within each batch. If None, defaults to self.sort.
+            If self.sort is True and this is False, the batch is left in the
+            original (ascending) sorted order.
         device: Device to create batches on. Use -1 for CPU and None for the
             currently active GPU device.
     """
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
                  batch_size_fn=lambda new, count, sofar: count, train=True,
-                 repeat=None, shuffle=None, sort=None):
+                 repeat=None, shuffle=None, sort=None,
+                 sort_within_batch=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0
         self.repeat = train if repeat is None else repeat
         self.shuffle = train if shuffle is None else shuffle
         self.sort = not train if sort is None else sort
+        if sort_within_batch is None:
+            self.sort_within_batch = self.sort
+        else:
+            self.sort_within_batch = sort_within_batch
         if sort_key is None:
             self.sort_key = dataset.sort_key
         else:
@@ -157,9 +166,13 @@ class Iterator(object):
                     continue
                 self.iterations += 1
                 self._iterations_this_epoch += 1
-                # NOTE: `rnn.pack_padded_sequence` requires that a minibatch be sorted by
-                # decreasing order, which requires reversing relative to typical sort keys
-                minibatch.reverse()
+                if self.sort_within_batch:
+                    # NOTE: `rnn.pack_padded_sequence` requires that a minibatch be sorted by
+                    # decreasing order, which requires reversing relative to typical sort keys
+                    if self.sort:
+                        minibatch.reverse()
+                    else:
+                        minibatch.sort(key=self.sort_key, reverse=True)
                 yield Batch(minibatch, self.dataset, self.device,
                             self.train)
             if not self.repeat:
