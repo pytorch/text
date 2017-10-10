@@ -24,7 +24,7 @@ class TestVocab(TorchtextTestCase):
 
     def test_vocab_basic(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
+        v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'])
 
         expected_itos = ['<unk>', '<pad>', '<bos>',
                          'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
@@ -35,7 +35,7 @@ class TestVocab(TorchtextTestCase):
     def test_vocab_set_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5,
                      'ｔｅｓｔ': 4, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
+        v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'])
         stoi = {"hello": 0, "world": 1, "ｔｅｓｔ": 2}
         vectors = torch.FloatTensor([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]])
         dim = 2
@@ -55,7 +55,7 @@ class TestVocab(TorchtextTestCase):
             else:
                 vectors = FastText(language='simple')
 
-            v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
@@ -87,7 +87,7 @@ class TestVocab(TorchtextTestCase):
         # Build a vocab and get vectors twice to test caching.
         for i in range(2):
             f = FastText(language='simple')
-            v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=f)
             n_vocab = len(v)
             v.extend(f)  # extend the vocab with the words contained in f.itos
@@ -117,7 +117,7 @@ class TestVocab(TorchtextTestCase):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for i in range(2):
-            v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=Vectors('wiki.simple.vec',
                                             url=FastText.url_base.format('simple')))
 
@@ -152,7 +152,7 @@ class TestVocab(TorchtextTestCase):
                 vectors = "glove.twitter.27B.25d"
             else:
                 vectors = GloVe(name='twitter.27B', dim='25')
-            v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
@@ -194,7 +194,7 @@ class TestVocab(TorchtextTestCase):
                 vectors = "charngram.100d"
             else:
                 vectors = CharNGram()
-            v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=vectors)
             expected_itos = ['<unk>', '<pad>', '<bos>',
                              'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
@@ -228,19 +228,19 @@ class TestVocab(TorchtextTestCase):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         with self.assertRaises(ValueError):
             # Test proper error raised when using unknown string alias
-            vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                         vectors=["fasttext.english.300d"])
-            vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                         vectors="fasttext.english.300d")
         with self.assertRaises(ValueError):
             # Test proper error is raised when vectors argument is
             # non-string or non-Vectors
-            vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'],
+            vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                         vectors={"word": [1, 2, 3]})
 
     def test_serialization(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
+        v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'])
         pickle_path = os.path.join(self.test_dir, "vocab.pkl")
         pickle.dump(v, open(pickle_path, "wb"))
         v_loaded = pickle.load(open(pickle_path, "rb"))
