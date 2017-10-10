@@ -167,8 +167,9 @@ class Iterator(object):
                 self.iterations += 1
                 self._iterations_this_epoch += 1
                 if self.sort_within_batch:
-                    # NOTE: `rnn.pack_padded_sequence` requires that a minibatch be sorted by
-                    # decreasing order, which requires reversing relative to typical sort keys
+                    # NOTE: `rnn.pack_padded_sequence` requires that a minibatch
+                    # be sorted by decreasing order, which requires reversing
+                    # relative to typical sort keys
                     if self.sort:
                         minibatch.reverse()
                     else:
