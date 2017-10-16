@@ -5,11 +5,35 @@ from collections import Counter
 from numpy.testing import assert_allclose
 import torch
 import torchtext.data as data
+import pytest
 
 from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
 
 
 class TestField(TorchtextTestCase):
+    def test_process(self):
+        raw_field = data.RawField()
+        field = data.Field(sequential=True, use_vocab=False, batch_first=True)
+
+        # Test tensor-like batch data which is accepted by both RawField and Field
+        batch = [[1,2,3], [2,3,4]]
+        batch_tensor = torch.LongTensor(batch)
+
+        raw_field_processed = raw_field.process(batch)
+        field_processed = field.process(batch, device=-1, train=False)
+
+        assert raw_field_processed == batch
+        assert field_processed.data.equal(batch_tensor)
+
+        # Test non-tensor data which is only accepted by RawField
+        any_obj = [object() for _ in range(5)]
+
+        raw_field_processed = raw_field.process(any_obj)
+        assert any_obj == raw_field_processed
+
+        with pytest.raises(TypeError):
+            field.process(any_obj)
+
     def test_preprocess(self):
         # Default case.
         field = data.Field()
@@ -329,10 +353,10 @@ class TestField(TorchtextTestCase):
 
         # Test with postprocessing applied
         int_field = data.Field(sequential=False, use_vocab=False,
-                               postprocessing=lambda arr, _: [x + 1 for x in arr])
+                               postprocessing=lambda arr, _, __: [x + 1 for x in arr])
         float_field = data.Field(sequential=False, use_vocab=False,
                                  tensor_type=torch.FloatTensor,
-                                 postprocessing=lambda arr, _: [x * 0.5 for x in arr])
+                                 postprocessing=lambda arr, _, __: [x * 0.5 for x in arr])
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
             path=self.test_numerical_features_dataset_path, format="tsv",
