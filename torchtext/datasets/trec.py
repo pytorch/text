@@ -49,21 +49,16 @@ class TREC(data.Dataset):
         Arguments:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
-            root: The root directory that contains the trec dataset subdirectory
+            root: Root dataset storage directory. Default is '.data'.
             train: The filename of the train data. Default: 'train_5500.label'.
             test: The filename of the test data, or None to not load the test
                 set. Default: 'TREC_10.label'.
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download(root)
-
-        train_data = None if train is None else cls(
-            os.path.join(path, test), text_field, label_field, **kwargs)
-        test_data = None if test is None else cls(
-            os.path.join(path, test), text_field, label_field, **kwargs)
-        return tuple(d for d in (train_data, test_data)
-                     if d is not None)
+        return super(TREC, cls).splits(
+            root=root, text_field=text_field, label_field=label_field,
+            train=train, validation=None, test=test, **kwargs)
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):

@@ -43,20 +43,15 @@ class IMDB(data.Dataset):
         Arguments:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
-            root: The root directory that contains the IMDB dataset subdirectory
+            root: Root dataset storage directory. Default is '.data'.
             train: The directory that contains the training examples
             test: The directory that contains the test examples
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download(root)
-
-        train_data = None if train is None else cls(
-            os.path.join(path, train), text_field, label_field, **kwargs)
-        test_data = None if test is None else cls(
-            os.path.join(path, test), text_field, label_field, **kwargs)
-        return tuple(d for d in (train_data, test_data)
-                     if d is not None)
+        return super(IMDB, cls).splits(
+            root=root, text_field=text_field, label_field=label_field,
+            train=train, validation=None, test=test, **kwargs)
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):

@@ -17,6 +17,10 @@ setup_info = dict(
     long_description=long_description,
     license='BSD',
 
+    install_requires=[
+        'tqdm', 'requests'
+    ],
+
     # Package info
     packages=find_packages(exclude=('test',)),
 
