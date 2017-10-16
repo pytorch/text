@@ -10,6 +10,7 @@ from .pipeline import Pipeline
 from .utils import get_tokenizer
 from ..vocab import Vocab, SubwordVocab
 
+
 class RawField(object):
     """ Defines a general datatype.
 
@@ -55,6 +56,7 @@ class RawField(object):
         if self.postprocessing is not None:
             batch = self.postprocessing(batch)
         return batch
+
 
 class Field(RawField):
     """Defines a datatype together with instructions for converting to Tensor.

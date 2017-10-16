@@ -16,7 +16,7 @@ class TestField(TorchtextTestCase):
         field = data.Field(sequential=True, use_vocab=False, batch_first=True)
 
         # Test tensor-like batch data which is accepted by both RawField and Field
-        batch = [[1,2,3], [2,3,4]]
+        batch = [[1, 2, 3], [2, 3, 4]]
         batch_tensor = torch.LongTensor(batch)
 
         raw_field_processed = raw_field.process(batch)
