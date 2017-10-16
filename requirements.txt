@@ -1,13 +1,15 @@
-# NLP tools
-nltk
-spacy
-git+git://github.com/jekbradbury/revtok.git
-
 # Progress bars on iterators
 tqdm
 
 # Downloading data and other files
 requests
+
+# Optional NLP tools
+nltk
+spacy
+git+git://github.com/jekbradbury/revtok.git
+
+# Required for tests only:
 
 # Style-checking for PEP8
 flake8

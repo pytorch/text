@@ -4,9 +4,9 @@ import zipfile
 import tarfile
 
 import torch.utils.data
-from six.moves import urllib
 
 from .example import Example
+from ..utils import download_from_url
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -42,11 +42,14 @@ class Dataset(torch.utils.data.Dataset):
         self.fields = dict(fields)
 
     @classmethod
-    def splits(cls, path, train=None, validation=None, test=None, **kwargs):
+    def splits(cls, path=None, root='.data', train=None, validation=None,
+               test=None, **kwargs):
         """Create Dataset objects for multiple splits of a dataset.
 
         Arguments:
-            path (str): Common prefix of the splits' file paths.
+            path (str): Common prefix of the splits' file paths, or None to use
+                the result of cls.download(root).
+            root (str): Root dataset storage directory. Default is '.data'.
             train (str): Suffix to add to path for the train set, or None for no
                 train set. Default is None.
             validation (str): Suffix to add to path for the validation set, or None
@@ -60,10 +63,14 @@ class Dataset(torch.utils.data.Dataset):
             split_datasets (tuple(Dataset)): Datasets for train, validation, and
                 test splits in that order, if provided.
         """
-        train_data = None if train is None else cls(path + train, **kwargs)
-        val_data = None if validation is None else cls(path + validation,
-                                                       **kwargs)
-        test_data = None if test is None else cls(path + test, **kwargs)
+        if path is None:
+            path = cls.download(root)
+        train_data = None if train is None else cls(
+            os.path.join(path, train), **kwargs)
+        val_data = None if validation is None else cls(
+            os.path.join(path, validation), **kwargs)
+        test_data = None if test is None else cls(
+            os.path.join(path, test), **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
 
@@ -93,7 +100,7 @@ class Dataset(torch.utils.data.Dataset):
             root (str): Folder to download data to.
             check (str or None): Folder whose existence indicates
                 that the dataset has already been downloaded, or
-                None to check the existence of root.
+                None to check the existence of root/{cls.name}.
 
         Returns:
             dataset_path (str): Path to extracted dataset.
@@ -102,13 +109,16 @@ class Dataset(torch.utils.data.Dataset):
         check = path if check is None else check
         if not os.path.isdir(check):
             for url in cls.urls:
-                filename = os.path.basename(url)
+                if isinstance(url, tuple):
+                    url, filename = url
+                else:
+                    filename = os.path.basename(url)
                 zpath = os.path.join(path, filename)
                 if not os.path.isfile(zpath):
                     if not os.path.exists(os.path.dirname(zpath)):
                         os.makedirs(os.path.dirname(zpath))
                     print('downloading {}'.format(filename))
-                    urllib.request.urlretrieve(url, zpath)
+                    download_from_url(url, zpath)
                 ext = os.path.splitext(filename)[-1]
                 if ext == '.zip':
                     with zipfile.ZipFile(zpath, 'r') as zfile:
