@@ -18,9 +18,8 @@ class Batch(object):
             self.train = train
             for (name, field) in dataset.fields.items():
                 if field is not None:
-                    setattr(self, name, field.numericalize(
-                        field.pad(x.__dict__[name] for x in data),
-                        device=device, train=train))
+                    batch = [x.__dict__[name] for x in data]
+                    setattr(self, name, field.process(batch, device=device, train=train))
 
     @classmethod
     def fromvars(cls, dataset, batch_size, train=True, **kwargs):

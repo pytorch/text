@@ -32,7 +32,7 @@ class WikiText2(LanguageModelingDataset):
 
     urls = ['https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip']
     name = 'wikitext-2'
-    dirname = ''
+    dirname = 'wikitext-2'
 
     @classmethod
     def splits(cls, text_field, root='.data', train='wiki.train.tokens',
@@ -46,15 +46,14 @@ class WikiText2(LanguageModelingDataset):
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-2
                 subdirectory the data files will be stored.
-            train: The filename of the train data. Default: 'train.tokens'.
+            train: The filename of the train data. Default: 'wiki.train.tokens'.
             validation: The filename of the validation data, or None to not
-                load the validation set. Default: 'valid.tokens'.
+                load the validation set. Default: 'wiki.valid.tokens'.
             test: The filename of the test data, or None to not load the test
-                set. Default: 'test.tokens'.
+                set. Default: 'wiki.test.tokens'.
         """
-        path = cls.download(root)
         return super(WikiText2, cls).splits(
-            path, train, validation, test,
+            root=root, train=train, validation=validation, test=test,
             text_field=text_field)
 
     @classmethod
