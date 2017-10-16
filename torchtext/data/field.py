@@ -90,8 +90,8 @@ class Field(RawField):
             Default: None.
         postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
-            into a Tensor.
-            Function signature: (batch(list), vocab(Vocabulary), train(bool)) -> Tensor-able
+            into a Tensor. The pipeline function takes the batch as a list,
+            the field's Vocab, and train (a bool).
             Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
