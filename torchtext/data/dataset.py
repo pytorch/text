@@ -124,14 +124,14 @@ class Dataset(torch.utils.data.Dataset):
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
-    def __init__(self, path, format, fields, **kwargs):
+    def __init__(self, path, format, fields, skip_header=False, **kwargs):
         """Create a TabularDataset given a path, file format, and field list.
 
         Arguments:
             path (str): Path to the data file.
             format (str): The format of the data file. One of "CSV", "TSV", or
                 "JSON" (case-insensitive).
-            fields (list(tuple(str, Field)) or dict[str, (name, Field)]: For CSV and
+            fields (list(tuple(str, Field)) or dict[str: tuple(str, Field)]: For CSV and
                 TSV formats, list of tuples of (name, field). The list should be in
                 the same order as the columns in the CSV or TSV file, while tuples of
                 (name, None) represent columns that will be ignored. For JSON format,
@@ -139,12 +139,15 @@ class TabularDataset(Dataset):
                 (name, field). This allows the user to rename columns from their JSON key
                 names and also enables selecting a subset of columns to load
                 (since JSON keys not present in the input dictionary are ignored).
+            skip_header (bool): Whether to skip the first line of the input file.
         """
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
             'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
+            if skip_header:
+                next(f)
             examples = [make_example(line, fields) for line in f]
 
         if make_example in (Example.fromdict, Example.fromJSON):
