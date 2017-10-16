@@ -162,7 +162,7 @@ class IWSLT(TranslationDataset):
             print(f_orig)
             f_txt = f_orig.replace('.tags', '')
             with io.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
-                    io.open(f_orig, mode='w', encoding='utf-8') as fd_orig:
+                    io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
                 for l in fd_orig:
                     if not any(tag in l for tag in xml_tags):
                         fd_txt.write(l.strip() + '\n')
