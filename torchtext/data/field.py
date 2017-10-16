@@ -11,15 +11,59 @@ from .utils import get_tokenizer
 from ..vocab import Vocab, SubwordVocab
 
 
-class Field(object):
-    """Defines a datatype together with instructions for converting to Tensor.
+class RawField(object):
+    """ Defines a general datatype.
 
     Every dataset consists of one or more types of data. For instance, a text
     classification dataset contains sentences and their classes, while a
     machine translation dataset contains paired examples of text in two
-    languages. Each of these types of data is represented by a Field object,
-    which holds a Vocab object that defines the set of possible values for
-    elements of the field and their corresponding numerical representations.
+    languages. Each of these types of data is represented by an RawField object.
+    An RawField object does not assume any property of the data type and
+    it holds parameters relating to how a datatype should be processed.
+
+    Attributes:
+        preprocessing: The Pipeline that will be applied to examples
+            using this field before creating an example.
+            Default: None.
+        postprocessing: A Pipeline that will be applied to a list of examples
+            using this field before assigning to a batch.
+            Function signature: (batch(list)) -> object
+            Default: None.
+    """
+
+    def __init__(self, preprocessing=None, postprocessing=None):
+        self.preprocessing = preprocessing
+        self.postprocessing = postprocessing
+
+    def preprocess(self, x):
+        """ Preprocess an example if the `preprocessing` Pipeline is provided. """
+        if self.preprocessing is not None:
+            return self.preprocessing(x)
+        else:
+            return x
+
+    def process(self, batch, *args, **kargs):
+        """ Process a list of examples to create a batch.
+
+        Postprocess the batch with user-provided Pipeline.
+
+        Args:
+            batch (list(object)): A list of object from a batch of examples.
+        Returns:
+            data (object): Processed object given the input and custom
+                postprocessing Pipeline.
+        """
+        if self.postprocessing is not None:
+            batch = self.postprocessing(batch)
+        return batch
+
+
+class Field(RawField):
+    """Defines a datatype together with instructions for converting to Tensor.
+
+    Field class models common text processing datatypes that can be represented
+    by tensors.  It holds a Vocab object that defines the set of possible values
+    for elements of the field and their corresponding numerical representations.
     The Field object also holds other parameters relating to how a datatype
     should be numericalized, such as a tokenization method and the kind of
     Tensor that should be produced.
@@ -46,7 +90,9 @@ class Field(object):
             Default: None.
         postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
-            into a Tensor. Default: None.
+            into a Tensor. The pipeline function takes the batch as a list,
+            the field's Vocab, and train (a bool).
+            Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
             sequential examples. If "spacy", the SpaCy English tokenizer is
@@ -122,6 +168,21 @@ class Field(object):
             return self.preprocessing(x)
         else:
             return x
+
+    def process(self, batch, device, train):
+        """ Process a list of examples to create a torch.Tensor.
+
+        Pad, numericalize, and postprocess a batch and create a tensor.
+
+        Args:
+            batch (list(object)): A list of object from a batch of examples.
+        Returns:
+            data (torch.autograd.Varaible): Processed object given the input
+                and custom postprocessing Pipeline.
+        """
+        padded = self.pad(batch)
+        tensor = self.numericalize(padded, device=device, train=train)
+        return tensor
 
     def pad(self, minibatch):
         """Pad a batch of examples using this field.
@@ -232,7 +293,7 @@ class Field(object):
             if not self.sequential:
                 arr = [numericalization_func(x) for x in arr]
             if self.postprocessing is not None:
-                arr = self.postprocessing(arr, train)
+                arr = self.postprocessing(arr, None, train)
 
         arr = self.tensor_type(arr)
         if self.sequential and not self.batch_first:
