@@ -73,7 +73,8 @@ class Multi30k(TranslationDataset):
 
     urls = ['http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
             'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
-            'https://staff.fnwi.uva.nl/d.elliott/wmt16/mmt16_task1_test.tgz']
+            'http://www.quest.dcs.shef.ac.uk/'
+            'wmt17_files_mmt/mmt_task1_test2016.tar.gz']
     name = 'multi30k'
     dirname = ''
 
