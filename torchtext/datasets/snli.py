@@ -37,7 +37,8 @@ class SNLI(data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, parse_field=None, root='.data',
-               train='snli_1.0_train.jsonl', validation='snli_1.0_dev.jsonl', test='snli_1.0_test.jsonl'):
+               train='snli_1.0_train.jsonl', validation='snli_1.0_dev.jsonl',
+               test='snli_1.0_test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
         This is the most flexible way to use the dataset.
