@@ -224,7 +224,7 @@ class BPTTIterator(Iterator):
         super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
 
     def __len__(self):
-        return math.ceil(len(self.dataset[0].text) /
+        return math.ceil((len(self.dataset[0].text) - 1) /
                          (self.batch_size * self.bptt_len))
 
     def __iter__(self):
@@ -240,7 +240,7 @@ class BPTTIterator(Iterator):
             ('text', TEXT), ('target', TEXT)])
         while True:
             for i in range(0, len(self) * self.bptt_len, self.bptt_len):
-                seq_len = min(self.bptt_len, len(data) - 1 - i)
+                seq_len = min(self.bptt_len, len(data) - i - 1)
                 yield Batch.fromvars(
                     dataset, self.batch_size, train=self.train,
                     text=data[i:i + seq_len],
