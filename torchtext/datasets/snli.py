@@ -37,7 +37,7 @@ class SNLI(data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, parse_field=None, root='.data',
-               train='train.jsonl', validation='dev.jsonl', test='test.jsonl'):
+               train='snli_1.0_train.jsonl', validation='snli_1.0_dev.jsonl', test='snli_1.0_test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
         This is the most flexible way to use the dataset.
@@ -61,13 +61,13 @@ class SNLI(data.TabularDataset):
 
         if parse_field is None:
             return super(SNLI, cls).splits(
-                os.path.join(path, 'snli_1.0_'), train, validation, test,
+                path, root, train, validation, test,
                 format='json', fields={'sentence1': ('premise', text_field),
                                        'sentence2': ('hypothesis', text_field),
                                        'gold_label': ('label', label_field)},
                 filter_pred=lambda ex: ex.label != '-')
         return super(SNLI, cls).splits(
-            os.path.join(path, 'snli_1.0_'), train, validation, test,
+            path, root, train, validation, test,
             format='json', fields={'sentence1_binary_parse':
                                    [('premise', text_field),
                                     ('premise_transitions', parse_field)],
