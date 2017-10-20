@@ -114,7 +114,9 @@ class Vocab(object):
         if not isinstance(vectors, list):
             vectors = [vectors]
         for idx, vector in enumerate(vectors):
-            if isinstance(vector, six.text_type):
+            if six.PY2 and isinstance(vector, str):
+                vector = six.text_type(vector)
+            if isinstance(vector, six.string_types):
                 # Convert the string pretrained vector identifier
                 # to a Vectors object
                 if vector not in pretrained_aliases:

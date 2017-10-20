@@ -51,7 +51,7 @@ class TestVocab(TorchtextTestCase):
         # to test string aliases.
         for i in range(3):
             if i == 2:
-                vectors = "fasttext.simple.300d"
+                vectors = str("fasttext.simple.300d")  # must handle str on Py2
             else:
                 vectors = FastText(language='simple')
 
