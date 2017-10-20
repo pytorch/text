@@ -74,12 +74,11 @@ The datasets module currently contains:
 - Sentiment analysis: SST and IMDb
 - Question classification: TREC
 - Entailment: SNLI
-- Language modeling: Wikitext-2
-- Abstract/generic support for machine translation
+- Language modeling: WikiText-2
+- Machine translation: Multi30k, IWSLT, WMT14
 
 Others are planned or a work in progress:
 
 - Question answering: SQuAD
-- Machine translation: Multi30k, IWSLT, WMT
 
 See the "test" directory for examples of dataset usage.
