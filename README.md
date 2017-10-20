@@ -75,7 +75,7 @@ The datasets module currently contains:
 - Question classification: TREC
 - Entailment: SNLI
 - Language modeling: WikiText-2
-- Machine Translation: Multi30k, IWSLT, WMT14
+- Machine translation: Multi30k, IWSLT, WMT14
 
 Others are planned or a work in progress:
 
