@@ -331,7 +331,7 @@ class ReversibleField(Field):
                 print("Please install revtok.")
                 raise
         if not self.batch_first:
-            batch.t_()
+            batch = batch.t()
         with torch.cuda.device_of(batch):
             batch = batch.tolist()
         batch = [[self.vocab.itos[ind] for ind in ex] for ex in batch]  # denumericalize
