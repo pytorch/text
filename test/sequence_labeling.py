@@ -1,11 +1,11 @@
 from torchtext import data
 from torchtext import datasets
 
-# Just reading two of the columns
+# Define the fields associated with the sequences.
 WORD = data.Field(init_token="<bos>", eos_token="<eos>")
 UD_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 
-# Download and load default data.
+# Download and the load default data.
 train, val, test = datasets.SequenceLabelingDataset.load_default_dataset(
     fields=(('word', WORD), ('udtag', UD_TAG), (None, None)))
 
@@ -13,7 +13,7 @@ print(train.fields)
 print(len(train))
 print(vars(train[0]))
 
-# Reading 3 columns
+# We can also define more than two columns.
 WORD = data.Field(init_token="<bos>", eos_token="<eos>")
 UD_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
@@ -22,7 +22,8 @@ PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 train, val, test = datasets.SequenceLabelingDataset.splits(
     fields=(('word', WORD), ('udtag', UD_TAG), ('ptbtag', PTB_TAG)),
     path=".data/sequence-labeling/en-ud-v2",
-    train="en-ud-tag.v2.train.txt", validation="en-ud-tag.v2.dev.txt",
+    train="en-ud-tag.v2.train.txt",
+    validation="en-ud-tag.v2.dev.txt",
     test="en-ud-tag.v2.test.txt")
 
 print(train.fields)

@@ -4,6 +4,15 @@ from .. import data
 
 
 class SequenceLabelingDataset(data.Dataset):
+    """Defines a dataset for sequence labeling. Examples in this dataset
+    contain paired lists -- paired list of words and tags.
+
+    For example, in the case of part-of-speech tagging, an example is of the
+    form
+    [I, love, PyTorch, .] paired with [PRON, VERB, PROPN, PUNCT]
+
+    See torchtext/test/sequence_labeling.py on how to use this class.
+    """
 
     # Universal Dependencies English Web Treebank.
     # Download original at http://universaldependencies.org/
@@ -45,6 +54,10 @@ class SequenceLabelingDataset(data.Dataset):
 
     @classmethod
     def load_default_dataset(cls, fields, path=".data"):
+        """Downloads and loads the Universal Dependencies Version 2 POS Tagged
+        data.
+        """
+
         path = cls.download(path) #.data/sequence-tagging/en-ud-v2
         return cls.splits(fields, path, train="en-ud-tag.v2.train.txt",
                           validation="en-ud-tag.v2.dev.txt",
@@ -53,6 +66,19 @@ class SequenceLabelingDataset(data.Dataset):
     @classmethod
     def splits(cls, fields, path, train=None, validation=None, test=None,
                **kwargs):
+        """Creates dataset objects from corresponding files.
+
+        Arguments:
+
+            path: The directory which contains the files.
+            train: File containing the training data in the specified 'path'.
+            validation: File containing the validation data in the specified
+                'path'.
+            test: File containing the test data in the specified 'path'.
+            Remaining keyword arguments: Passed to the splits method of
+                Dataset.
+        """
+
         train_data = None if train is None else cls(
             os.path.join(path, train), fields, **kwargs)
         val_data = None if validation is None else cls(
