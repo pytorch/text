@@ -24,8 +24,8 @@ class SequenceLabelingDataset(data.Dataset):
     @staticmethod
     def sort_key(example):
         for attr in dir(example):
-             if not callable(getattr(example, attr)) and \
-                     not attr.startswith("__"):
+            if not callable(getattr(example, attr)) and \
+                    not attr.startswith("__"):
                 return len(getattr(example, attr))
         return 0
 
@@ -51,14 +51,13 @@ class SequenceLabelingDataset(data.Dataset):
         super(SequenceLabelingDataset, self).__init__(examples, fields,
                                                       **kwargs)
 
-
     @classmethod
     def load_default_dataset(cls, fields, path=".data"):
         """Downloads and loads the Universal Dependencies Version 2 POS Tagged
         data.
         """
 
-        path = cls.download(path) #.data/sequence-tagging/en-ud-v2
+        path = cls.download(path)  #.data/sequence-tagging/en-ud-v2
         return cls.splits(fields, path, train="en-ud-tag.v2.train.txt",
                           validation="en-ud-tag.v2.dev.txt",
                           test="en-ud-tag.v2.test.txt")
@@ -87,3 +86,4 @@ class SequenceLabelingDataset(data.Dataset):
             os.path.join(path, test), fields, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
+
