@@ -76,6 +76,7 @@ The datasets module currently contains:
 - Entailment: SNLI
 - Language modeling: WikiText-2
 - Machine translation: Multi30k, IWSLT, WMT14
+- Sequence Labeling (e.g., Part of Speech Tagging, NER, Chunking)
 
 Others are planned or a work in progress:
 
