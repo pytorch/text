@@ -58,32 +58,7 @@ class SequenceLabelingDataset(data.Dataset):
         """
 
         path = cls.download(root)  # .data/sequence-tagging/en-ud-v2
-        return cls.splits(fields, path,
+        return cls.splits(fields=fields, path=path,
                           train="en-ud-tag.v2.train.txt",
                           validation="en-ud-tag.v2.dev.txt",
                           test="en-ud-tag.v2.test.txt")
-
-    @classmethod
-    def splits(cls, fields, path, root="", train=None, validation=None,
-               test=None, **kwargs):
-        """Creates dataset objects from corresponding files.
-
-        Arguments:
-
-            path: The directory which contains the files.
-            train: File containing the training data in the specified 'path'.
-            validation: File containing the validation data in the specified
-                'path'.
-            test: File containing the test data in the specified 'path'.
-            Remaining keyword arguments: Passed to the splits method of
-                Dataset.
-        """
-
-        train_data = None if train is None else cls(
-            os.path.join(root, path, train), fields, **kwargs)
-        val_data = None if validation is None else cls(
-            os.path.join(root, path, validation), fields, **kwargs)
-        test_data = None if test is None else cls(
-            os.path.join(root, path, test), fields, **kwargs)
-        return tuple(d for d in (train_data, val_data, test_data)
-                     if d is not None)
