@@ -52,19 +52,20 @@ class SequenceLabelingDataset(data.Dataset):
                                                       **kwargs)
 
     @classmethod
-    def load_default_dataset(cls, fields, path=".data"):
+    def load_default_dataset(cls, fields, root=".data"):
         """Downloads and loads the Universal Dependencies Version 2 POS Tagged
         data.
         """
 
-        path = cls.download(path)  #.data/sequence-tagging/en-ud-v2
-        return cls.splits(fields, path, train="en-ud-tag.v2.train.txt",
+        path = cls.download(root)  # .data/sequence-tagging/en-ud-v2
+        return cls.splits(fields, path,
+                          train="en-ud-tag.v2.train.txt",
                           validation="en-ud-tag.v2.dev.txt",
                           test="en-ud-tag.v2.test.txt")
 
     @classmethod
-    def splits(cls, fields, path, train=None, validation=None, test=None,
-               **kwargs):
+    def splits(cls, fields, path, root=".", train=None, validation=None,
+               test=None, **kwargs):
         """Creates dataset objects from corresponding files.
 
         Arguments:
@@ -79,11 +80,10 @@ class SequenceLabelingDataset(data.Dataset):
         """
 
         train_data = None if train is None else cls(
-            os.path.join(path, train), fields, **kwargs)
+            os.path.join(root, path, train), fields, **kwargs)
         val_data = None if validation is None else cls(
-            os.path.join(path, validation), fields, **kwargs)
+            os.path.join(root, path, validation), fields, **kwargs)
         test_data = None if test is None else cls(
-            os.path.join(path, test), fields, **kwargs)
+            os.path.join(root, path, test), fields, **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
-
