@@ -64,7 +64,7 @@ class SequenceLabelingDataset(data.Dataset):
                           test="en-ud-tag.v2.test.txt")
 
     @classmethod
-    def splits(cls, fields, path, root=".", train=None, validation=None,
+    def splits(cls, fields, path, root="", train=None, validation=None,
                test=None, **kwargs):
         """Creates dataset objects from corresponding files.
 
