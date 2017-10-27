@@ -104,6 +104,7 @@ class Field(RawField):
             Default: False.
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
+        pad_first: Do the padding of the sequence at the beginning. Default: False.
     """
 
     vocab_cls = Vocab
@@ -135,7 +136,7 @@ class Field(RawField):
             preprocessing=None, postprocessing=None, lower=False,
             tokenize=(lambda s: s.split()), include_lengths=False,
             batch_first=False, pad_token="<pad>", unk_token="<unk>",
-            pad_first=True):
+            pad_first=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
