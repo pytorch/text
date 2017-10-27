@@ -134,7 +134,8 @@ class Field(RawField):
             eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
             preprocessing=None, postprocessing=None, lower=False,
             tokenize=(lambda s: s.split()), include_lengths=False,
-            batch_first=False, pad_token="<pad>", unk_token="<unk>"):
+            batch_first=False, pad_token="<pad>", unk_token="<unk>",
+            pad_first=True):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -149,6 +150,7 @@ class Field(RawField):
         self.include_lengths = include_lengths
         self.batch_first = batch_first
         self.pad_token = pad_token if self.sequential else None
+        self.pad_first = pad_first
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -204,11 +206,18 @@ class Field(RawField):
                 self.init_token, self.eos_token).count(None) - 2
         padded, lengths = [], []
         for x in minibatch:
-            padded.append(
-                ([] if self.init_token is None else [self.init_token]) +
-                list(x[:max_len]) +
-                ([] if self.eos_token is None else [self.eos_token]) +
-                [self.pad_token] * max(0, max_len - len(x)))
+            if self.pad_first:
+                padded.append(
+                    [self.pad_token] * max(0, max_len - len(x)) +
+                    ([] if self.init_token is None else [self.init_token]) +
+                    list(x[:max_len]) +
+                    ([] if self.eos_token is None else [self.eos_token]))
+            else:
+                padded.append(
+                    ([] if self.init_token is None else [self.init_token]) +
+                    list(x[:max_len]) +
+                    ([] if self.eos_token is None else [self.eos_token]) +
+                    [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
         if self.include_lengths:
             return (padded, lengths)
