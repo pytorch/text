@@ -228,12 +228,12 @@ class Vectors(object):
             return self.unk_init(torch.Tensor(1, self.dim))
 
     def cache(self, name, cache, url=None):
-	if os.path.isfile(name):
+        if os.path.isfile(name):
             path = name
             path_pt = os.path.join(cache, os.path.basename(name)) + '.pt'
         else:
             path = os.path.join(cache, name)
-            path_pt = path + '.pt' 
+            path_pt = path + '.pt'
 
         if not os.path.isfile(path_pt):
             if not os.path.isfile(path) and url:
@@ -280,7 +280,7 @@ class Vectors(object):
                 # Explicitly splitting on " " is important, so we don't
                 # get rid of Unicode non-breaking spaces in the vectors.
                 entries = line.rstrip().split(b" " if binary_lines else " ")
- 
+
                 word, entries = entries[0], entries[1:]
                 if dim is None and len(entries) > 1:
                     dim = len(entries)
