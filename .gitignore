@@ -9,3 +9,6 @@ torchtext.egg-info/
 *~
 .cache
 .vector_cache
+
+# Download folder
+.data
