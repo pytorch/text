@@ -2,8 +2,6 @@
 import os
 import io
 import re
-import shutil
-import sys
 from setuptools import setup, find_packages
 
 
@@ -13,6 +11,7 @@ def read(*names, **kwargs):
         encoding=kwargs.get("encoding", "utf8")
     ) as fp:
         return fp.read()
+
 
 def find_version(*file_paths):
     version_file = read(*file_paths)
