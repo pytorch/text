@@ -327,7 +327,7 @@ class ReversibleField(Field):
             self.use_revtok = False
         else:
             self.use_revtok = True
-        if kwargs.get('tokenize') not in ('revtok', 'subword', list):
+        if kwargs.get('tokenize') is None:
             kwargs['tokenize'] = 'revtok'
         if 'unk_token' not in kwargs:
             kwargs['unk_token'] = ' UNK '
