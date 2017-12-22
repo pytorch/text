@@ -76,7 +76,7 @@ The datasets module currently contains:
 - Entailment: SNLI
 - Language modeling: abstract class + WikiText-2
 - Machine translation: abstract class + Multi30k, IWSLT, WMT14
-- Sequence tagging (e.g. POS/NER): abstract class
+- Sequence tagging (e.g. POS/NER): abstract class + UDPOS
 
 Others are planned or a work in progress:
 
