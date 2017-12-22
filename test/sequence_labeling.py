@@ -6,7 +6,7 @@ WORD = data.Field(init_token="<bos>", eos_token="<eos>")
 UD_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 
 # Download and the load default data.
-train, val, test = datasets.SequenceLabelingDataset.load_default_dataset(
+train, val, test = datasets.SequenceTaggingDataset.load_default_dataset(
     fields=(('word', WORD), ('udtag', UD_TAG), (None, None)))
 
 print(train.fields)
@@ -19,7 +19,7 @@ UD_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 
 # Load the specified data.
-train, val, test = datasets.SequenceLabelingDataset.splits(
+train, val, test = datasets.SequenceTaggingDataset.splits(
     fields=(('word', WORD), ('udtag', UD_TAG), ('ptbtag', PTB_TAG)),
     path=".data/sequence-labeling/en-ud-v2",
     train="en-ud-tag.v2.train.txt",
