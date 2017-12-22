@@ -45,7 +45,8 @@ class Vocab(object):
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
         """
-        self.freqs = counter.copy()
+        self.freqs = counter
+        counter = counter.copy()
         min_freq = max(min_freq, 1)
         counter.update(specials)
 
