@@ -51,7 +51,7 @@ class Vocab(object):
 
         self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
-        self.itos = specials
+        self.itos = list(specials)
 
         counter.subtract({tok: counter[tok] for tok in specials})
         max_size = None if max_size is None else max_size + len(self.itos)
