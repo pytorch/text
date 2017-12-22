@@ -385,7 +385,7 @@ pretrained_aliases = {
     "glove.twitter.27B.25d": lambda: GloVe(name="twitter.27B", dim="25"),
     "glove.twitter.27B.50d": lambda: GloVe(name="twitter.27B", dim="50"),
     "glove.twitter.27B.100d": lambda: GloVe(name="twitter.27B", dim="100"),
-    "glove.twitter.27B.200d": lambda: GloVe(name="twitter.27B", dim="300"),
+    "glove.twitter.27B.200d": lambda: GloVe(name="twitter.27B", dim="200"),
     "glove.6B.50d": lambda: GloVe(name="6B", dim="50"),
     "glove.6B.100d": lambda: GloVe(name="6B", dim="100"),
     "glove.6B.200d": lambda: GloVe(name="6B", dim="200"),
