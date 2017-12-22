@@ -37,7 +37,10 @@ class Dataset(torch.utils.data.Dataset):
                 Default is None.
         """
         if filter_pred is not None:
-            examples = list(filter(filter_pred, examples))
+            make_list = isinstance(examples, list)
+            examples = filter(filter_pred, examples)
+            if make_list:
+                examples = list(examples)
         self.examples = examples
         self.fields = dict(fields)
 
