@@ -72,7 +72,7 @@ class Iterator(object):
     """
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
-                 batch_size_fn=lambda new, count, sofar: count, train=True,
+                 batch_size_fn=None, train=True,
                  repeat=None, shuffle=None, sort=None,
                  sort_within_batch=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
@@ -155,6 +155,8 @@ class Iterator(object):
         return self.iterations / len(self)
 
     def __len__(self):
+        if self.batch_size_fn is not None:
+            raise NotImplementedError
         return math.ceil(len(self.dataset) / self.batch_size)
 
     def __iter__(self):
