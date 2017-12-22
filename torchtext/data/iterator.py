@@ -271,7 +271,8 @@ class BucketIterator(Iterator):
 def batch(data, batch_size, batch_size_fn=None):
     """Yield elements from data in chunks of batch_size."""
     if batch_size_fn is None:
-        batch_size_fn = lambda new, count, sofar: count
+        def batch_size_fn(new, count, sofar):
+            return count
     minibatch, size_so_far = [], 0
     for ex in data:
         minibatch.append(ex)
