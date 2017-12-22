@@ -45,13 +45,14 @@ class Vocab(object):
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
         """
-        self.freqs = counter.copy()
+        self.freqs = counter
+        counter = counter.copy()
         min_freq = max(min_freq, 1)
         counter.update(specials)
 
         self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
-        self.itos = specials
+        self.itos = list(specials)
 
         counter.subtract({tok: counter[tok] for tok in specials})
         max_size = None if max_size is None else max_size + len(self.itos)
