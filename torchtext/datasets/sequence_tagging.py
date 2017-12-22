@@ -32,7 +32,8 @@ class SequenceTaggingDataset(data.Dataset):
             if columns:
                 examples.append(data.Example.fromlist(columns, fields))
         super(SequenceTaggingDataset, self).__init__(examples, fields,
-                                                      **kwargs)
+                                                     **kwargs)
+
 
 class UDPOS(SequenceTaggingDataset):
 
@@ -50,7 +51,7 @@ class UDPOS(SequenceTaggingDataset):
                     not attr.startswith("__"):
                 return len(getattr(example, attr))
         return 0
-    
+
     @classmethod
     def splits(cls, fields, root=".data", train="en-ud-tag.v2.train.txt",
                validation="en-ud-tag.v2.dev.txt",
