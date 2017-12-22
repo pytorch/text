@@ -301,7 +301,8 @@ class Field(RawField):
             # the data is sequential, since it's unclear how to coerce padding tokens
             # to a numeric type.
             if not self.sequential:
-                arr = [numericalization_func(x) for x in arr]
+                arr = [numericalization_func(x) if isinstance(x, six.string_types)
+                       else x for x in arr]
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, None, train)
 
