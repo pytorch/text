@@ -228,8 +228,12 @@ class Vectors(object):
             return self.unk_init(torch.Tensor(1, self.dim))
 
     def cache(self, name, cache, url=None):
-        path = os.path.join(cache, name)
-        path_pt = path + '.pt'
+        if os.path.isfile(name):
+            path = name
+            path_pt = os.path.join(cache, os.path.basename(name)) + '.pt'
+        else:
+            path = os.path.join(cache, name)
+            path_pt = path + '.pt'
 
         if not os.path.isfile(path_pt):
             if not os.path.isfile(path) and url:
@@ -275,7 +279,8 @@ class Vectors(object):
             for line in tqdm(lines, total=len(lines)):
                 # Explicitly splitting on " " is important, so we don't
                 # get rid of Unicode non-breaking spaces in the vectors.
-                entries = line.rstrip().split(" ")
+                entries = line.rstrip().split(b" " if binary_lines else " ")
+
                 word, entries = entries[0], entries[1:]
                 if dim is None and len(entries) > 1:
                     dim = len(entries)
@@ -379,7 +384,7 @@ pretrained_aliases = {
     "glove.twitter.27B.25d": lambda: GloVe(name="twitter.27B", dim="25"),
     "glove.twitter.27B.50d": lambda: GloVe(name="twitter.27B", dim="50"),
     "glove.twitter.27B.100d": lambda: GloVe(name="twitter.27B", dim="100"),
-    "glove.twitter.27B.200d": lambda: GloVe(name="twitter.27B", dim="300"),
+    "glove.twitter.27B.200d": lambda: GloVe(name="twitter.27B", dim="200"),
     "glove.6B.50d": lambda: GloVe(name="6B", dim="50"),
     "glove.6B.100d": lambda: GloVe(name="6B", dim="100"),
     "glove.6B.200d": lambda: GloVe(name="6B", dim="200"),

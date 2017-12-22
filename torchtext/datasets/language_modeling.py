@@ -57,8 +57,8 @@ class WikiText2(LanguageModelingDataset):
             text_field=text_field)
 
     @classmethod
-    def iters(cls, batch_size=32, bptt_len=35, device=0, root='.data', wv_dir='.',
-              wv_type=None, wv_dim='300d', **kwargs):
+    def iters(cls, batch_size=32, bptt_len=35, device=0, root='.data',
+              vectors=None, **kwargs):
         """Create iterator objects for splits of the WikiText-2 dataset.
 
         This is the simplest way to use the dataset, and assumes common
@@ -81,7 +81,7 @@ class WikiText2(LanguageModelingDataset):
 
         train, val, test = cls.splits(TEXT, root=root, **kwargs)
 
-        TEXT.build_vocab(train, wv_dir=wv_dir, wv_type=wv_type, wv_dim=wv_dim)
+        TEXT.build_vocab(train, vectors=vectors)
 
         return data.BPTTIterator.splits(
             (train, val, test), batch_size=batch_size, bptt_len=bptt_len,
