@@ -6,7 +6,7 @@ WORD = data.Field(init_token="<bos>", eos_token="<eos>")
 UD_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 
 # Download and the load default data.
-train, val, test = datasets.UDPOS(
+train, val, test = datasets.UDPOS.splits(
     fields=(('word', WORD), ('udtag', UD_TAG), (None, None)))
 
 print(train.fields)
