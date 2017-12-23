@@ -11,7 +11,7 @@ class SequenceTaggingDataset(data.Dataset):
 
     See torchtext/test/sequence_tagging.py on how to use this class.
     """
-    
+
     @staticmethod
     def sort_key(example):
         for attr in dir(example):
