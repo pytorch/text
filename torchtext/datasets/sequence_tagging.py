@@ -50,7 +50,7 @@ class UDPOS(SequenceTaggingDataset):
     # License: http://creativecommons.org/licenses/by-sa/4.0/
     urls = ['https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip']
     dirname = 'en-ud-v2'
-    name = 'sequence-labeling'
+    name = 'udpos'
 
     @classmethod
     def splits(cls, fields, root=".data", train="en-ud-tag.v2.train.txt",
