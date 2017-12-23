@@ -11,6 +11,14 @@ class SequenceTaggingDataset(data.Dataset):
 
     See torchtext/test/sequence_tagging.py on how to use this class.
     """
+    
+    @staticmethod
+    def sort_key(example):
+        for attr in dir(example):
+            if not callable(getattr(example, attr)) and \
+                    not attr.startswith("__"):
+                return len(getattr(example, attr))
+        return 0
 
     def __init__(self, path, fields, **kwargs):
         examples = []
@@ -43,14 +51,6 @@ class UDPOS(SequenceTaggingDataset):
     urls = ['https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip']
     dirname = 'en-ud-v2'
     name = 'sequence-labeling'
-
-    @staticmethod
-    def sort_key(example):
-        for attr in dir(example):
-            if not callable(getattr(example, attr)) and \
-                    not attr.startswith("__"):
-                return len(getattr(example, attr))
-        return 0
 
     @classmethod
     def splits(cls, fields, root=".data", train="en-ud-tag.v2.train.txt",
