@@ -15,3 +15,7 @@ docs/build
 
 # Download folder
 .data
+
+# Coverage reports
+.coverage
+htmlcov/

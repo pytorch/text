@@ -35,6 +35,8 @@ Field
 
 .. autoclass:: Field
 
+.. autoclass:: NestedField
+
 Iterator
 ~~~~~~~~
 

@@ -8,11 +8,36 @@ This repository consists of:
 - [torchtext.data](#data) : Generic data loaders, abstractions, and iterators for text (including vocabulary and word vectors)
 - [torchtext.datasets](#datasets) : Pre-built loaders for common NLP datasets
 
-# Data
+## Installation
+
+Make sure you have Python 2.7 or 3.5+ and PyTorch 0.2.0 or newer. You can then install torchtext using pip:
+
+```
+pip install torchtext
+```
+
+### Optional requirements
+
+If you want to use English tokenizer from [SpaCy](http://spacy.io/), you need to install SpaCy and download its English model:
+
+```
+pip install spacy
+python -m spacy download en
+```
+
+Alternatively, you might want to use Moses tokenizer from [NLTK](http://nltk.org/). You have to install NLTK and download the data needed:
+
+```
+pip install nltk
+python -m nltk.downloader perluniprops nonbreaking_prefixes
+```
+
+## Data
 
 The data module provides the following:
 
 - Ability to describe declaratively how to load a custom NLP dataset that's in a "normal" format:
+
 ```python
 pos = data.TabularDataset(
     path='data/pos/pos_wsj_train.tsv', format='tsv',
@@ -24,7 +49,9 @@ sentiment = data.TabularDataset(
     fields={'sentence_tokenized': ('text', data.Field(sequential=True)),
              'sentiment_gold': ('labels', data.Field(sequential=False))})
 ```
+
 - Ability to define a preprocessing pipeline:
+
 ```python
 src = data.Field(tokenize=my_custom_tokenizer)
 trg = data.Field(tokenize=my_custom_tokenizer)
@@ -33,6 +60,7 @@ mt_train = datasets.TranslationDataset(
     fields=(src, trg))
 ```
 - Batching, padding, and numericalizing (including building a vocabulary object):
+
 ```python
 # continuing from above
 mt_dev = data.TranslationDataset(
@@ -43,13 +71,15 @@ trg.build_vocab(mt_train, max_size=40000)
 # mt_dev shares the fields, so it shares their vocab objects
 
 train_iter = data.BucketIterator(
-    dataset=mt_train, batch_size=32, 
+    dataset=mt_train, batch_size=32,
     sort_key=lambda x: data.interleave_keys(len(x.src), len(x.trg)))
 # usage
 >>>next(iter(train_iter))
 <data.Batch(batch_size=32, src=[LongTensor (32, 25)], trg=[LongTensor (32, 28)])>
 ```
+
 - Wrapper for dataset splits (train, validation, test):
+
 ```python
 TEXT = data.Field()
 LABELS = data.Field()
@@ -67,7 +97,7 @@ TEXT.build_vocab(train)
 LABELS.build_vocab(train)
 ```
 
-# Datasets
+## Datasets
 
 The datasets module currently contains:
 
