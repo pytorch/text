@@ -72,7 +72,7 @@ class Iterator(object):
     """
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
-                 batch_size_fn=lambda new, count, sofar: count, train=True,
+                 batch_size_fn=None, train=True,
                  repeat=None, shuffle=None, sort=None,
                  sort_within_batch=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
@@ -155,6 +155,8 @@ class Iterator(object):
         return self.iterations / len(self)
 
     def __len__(self):
+        if self.batch_size_fn is not None:
+            raise NotImplementedError
         return math.ceil(len(self.dataset) / self.batch_size)
 
     def __iter__(self):
@@ -224,8 +226,8 @@ class BPTTIterator(Iterator):
         super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
 
     def __len__(self):
-        return math.ceil((len(self.dataset[0].text) - 1) /
-                         (self.batch_size * self.bptt_len))
+        return math.ceil((len(self.dataset[0].text) / self.batch_size - 1) /
+                         self.bptt_len)
 
     def __iter__(self):
         text = self.dataset[0].text
@@ -266,8 +268,11 @@ class BucketIterator(Iterator):
                                 random_shuffler=self.random_shuffler)
 
 
-def batch(data, batch_size, batch_size_fn=lambda new, count, sofar: count):
+def batch(data, batch_size, batch_size_fn=None):
     """Yield elements from data in chunks of batch_size."""
+    if batch_size_fn is None:
+        def batch_size_fn(new, count, sofar):
+            return count
     minibatch, size_so_far = [], 0
     for ex in data:
         minibatch.append(ex)
