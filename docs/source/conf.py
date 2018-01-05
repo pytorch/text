@@ -116,11 +116,14 @@ html_logo = '_static/img/pytorch-logo-dark.svg'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_context = {
-    'css_files': [
-        'https://fonts.googleapis.com/css?family=Lato',
-        '_static/css/pytorch_theme.css'
-    ],
+def setup(app):
+    app.add_stylesheet('css/pytorch_theme.css')
+    app.add_stylesheet('https://fonts.googleapis.com/css/family=Lato')
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'torch': ('http://pytorch.org/docs/0.3.0/', None)
 }
 
 
@@ -180,12 +183,6 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-}
 
 # -- A patch that prevents Sphinx from cross-referencing ivar tags -------
 # See http://stackoverflow.com/a/41184353/3343043
