@@ -441,6 +441,8 @@ class NestedField(Field):
                  fix_length=None, tensor_type=torch.LongTensor, preprocessing=None,
                  postprocessing=None, tokenize=lambda s: s.split(), pad_token='<pad>',
                  pad_first=False):
+        if isinstance(nesting_field, NestedField):
+            raise ValueError('nesting field must not be another NestedField')
         if nesting_field.include_lengths:
             raise ValueError('nesting field cannot have include_lengths=True')
 

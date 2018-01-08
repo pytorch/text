@@ -429,6 +429,13 @@ class TestNestedField(TorchtextTestCase):
             data.NestedField(nesting_field)
         assert "nesting field cannot have include_lengths=True" in str(excinfo.value)
 
+    def test_init_with_nested_field_as_nesting_field(self):
+        nesting_field = data.NestedField(data.Field())
+
+        with pytest.raises(ValueError) as excinfo:
+            data.NestedField(nesting_field)
+        assert "nesting field must not be another NestedField" in str(excinfo.value)
+
     def test_init_full(self):
         nesting_field = data.Field()
         field = data.NestedField(
