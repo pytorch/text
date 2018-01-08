@@ -11,8 +11,6 @@ The data module provides the following:
 - Wrapper for dataset splits (train, validation, test)
 - Loader a custom NLP dataset
 
-torchtext.data
-===========================
 
 .. automodule:: torchtext.data
 .. currentmodule:: torchtext.data
