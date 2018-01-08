@@ -134,7 +134,6 @@ class Field(RawField):
                  tensor_type=torch.LongTensor, preprocessing=None, postprocessing=None, lower=False,
                  tokenize=(lambda s: s.split()), include_lengths=False, batch_first=False, pad_token="<pad>",
                  unk_token="<unk>", pad_first=False):
-        super(self, Field).__init__(preprocessing, postprocessing)
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
