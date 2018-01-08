@@ -80,6 +80,13 @@ Fields
     :members:
     :special-members: __init__
 
+:hidden:`NestedField`
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: NestedField
+    :members:
+    :special-members: __init__
+
 Iterators
 --------------------
 
