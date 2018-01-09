@@ -4,6 +4,9 @@
 .. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
 
+.. image:: https://readthedocs.org/projects/torchtext/badge/?version=latest
+    :target: http://torchtext.readthedocs.io/en/latest/?badge=latest
+
 torchtext
 +++++++++
 

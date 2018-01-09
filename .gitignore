@@ -2,6 +2,7 @@
 *.zip
 *~
 .vector_cache
+.idea/
 
 # Documentation
 docs/build
