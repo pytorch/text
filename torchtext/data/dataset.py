@@ -63,7 +63,7 @@ class Dataset(torch.utils.data.Dataset):
                 Dataset (sub)class being used.
 
         Returns:
-            split_datasets (tuple(Dataset)): Datasets for train, validation, and
+            Tuple[Dataset]: Datasets for train, validation, and
                 test splits in that order, if provided.
         """
         if path is None:
@@ -106,7 +106,7 @@ class Dataset(torch.utils.data.Dataset):
                 None to check the existence of root/{cls.name}.
 
         Returns:
-            dataset_path (str): Path to extracted dataset.
+            str: Path to extracted dataset.
         """
         path = os.path.join(root, cls.name)
         check = path if check is None else check
