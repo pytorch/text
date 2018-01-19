@@ -48,13 +48,14 @@ class Vocab(object):
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
-        counter.update(specials)
 
-        self.stoi = defaultdict(_default_unk_index)
-        self.stoi.update({tok: i for i, tok in enumerate(specials)})
+
         self.itos = list(specials)
+        # frequencies of special tokens are not counted when building vocabulary
+        # in frequency order
+        for tok in specials:
+            del counter[tok]
 
-        counter.subtract({tok: counter[tok] for tok in specials})
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
@@ -65,7 +66,10 @@ class Vocab(object):
             if freq < min_freq or len(self.itos) == max_size:
                 break
             self.itos.append(word)
-            self.stoi[word] = len(self.itos) - 1
+
+        self.stoi = defaultdict(_default_unk_index)        
+        # stoi is simply a reverse dict for itos
+        self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
 
         self.vectors = None
         if vectors is not None:
