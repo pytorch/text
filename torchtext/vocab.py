@@ -49,7 +49,6 @@ class Vocab(object):
         counter = counter.copy()
         min_freq = max(min_freq, 1)
 
-
         self.itos = list(specials)
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
@@ -67,7 +66,7 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        self.stoi = defaultdict(_default_unk_index)        
+        self.stoi = defaultdict(_default_unk_index)
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
 
