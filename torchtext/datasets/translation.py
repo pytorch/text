@@ -40,12 +40,13 @@ class TranslationDataset(data.Dataset):
         super(TranslationDataset, self).__init__(examples, fields, **kwargs)
 
     @classmethod
-    def splits(cls, exts, fields, root='.data',
+    def splits(cls, exts, fields, path=None, root='.data',
                train='train', validation='val', test='test', **kwargs):
         """Create dataset objects for splits of a TranslationDataset.
 
         Arguments:
-
+            path (str): Common prefix of the splits' file paths, or None to use
+                the result of cls.download(root).
             root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
@@ -56,7 +57,8 @@ class TranslationDataset(data.Dataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        path = cls.download(root)
+        if path is None:
+            path = cls.download(root)
 
         train_data = None if train is None else cls(
             os.path.join(path, train), exts, fields, **kwargs)
