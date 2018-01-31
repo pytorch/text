@@ -1,6 +1,7 @@
 from torch import typename
 from torch.tensor import _TensorBase
 
+
 class Batch(object):
     """Defines a batch of examples along with its Fields.
 
@@ -19,7 +20,7 @@ class Batch(object):
             self.batch_size = len(data)
             self.dataset = dataset
             self.train = train
-            self.fields = dataset.fields.keys() # copy field names
+            self.fields = dataset.fields.keys()  # copy field names
 
             for (name, field) in dataset.fields.items():
                 if field is not None:
@@ -44,23 +45,24 @@ class Batch(object):
         if not self.__dict__:
             return 'Empty {} instance'.format(typename(self))
 
-        var_strs = '\n'.join(['\t[.'+ name + ']' + ":" + _short_str(getattr(self, name)) 
-                                for name in self.fields])
+        var_strs = '\n'.join(['\t[.' + name + ']' + ":" + _short_str(getattr(self, name))
+                              for name in self.fields])
 
-        data_str = ' from {}'.format(self.dataset.name.upper()) \
-                    if hasattr(self.dataset, 'name') else ''
+        data_str = (' from {}'.format(self.dataset.name.upper())
+                    if hasattr(self.dataset, 'name') else '')
 
-        strt = '[{} of size {}{}]\n{}'.format(typename(self), 
-                                self.batch_size, data_str, var_strs)
+        strt = '[{} of size {}{}]\n{}'.format(typename(self),
+                                              self.batch_size, data_str, var_strs)
         return '\n' + strt
+
 
 def _short_str(tensor):
     # unwrap variable to tensor
     if hasattr(tensor, 'data'):
         tensor = tensor.data
-    
+
     # fallback in case of wrong argument type
-    if issubclass(type(tensor), _TensorBase) == False:
+    if issubclass(type(tensor), _TensorBase) is False:
         return str(tensor)
 
     # copied from torch _tensor_str
@@ -68,5 +70,5 @@ def _short_str(tensor):
     device_str = '' if not tensor.is_cuda else \
         ' (GPU {})'.format(tensor.get_device())
     strt = '[{} of size {}{}]'.format(typename(tensor),
-                                       size_str, device_str)
+                                      size_str, device_str)
     return strt
