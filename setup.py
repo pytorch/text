@@ -23,9 +23,7 @@ def find_version(*file_paths):
 
 
 VERSION = find_version('torchtext', '__init__.py')
-
-long_description = '''torch-text provides text and NLP data utilities
-and datasets for torch'''
+long_description = read('README.rst')
 
 setup_info = dict(
     # Metadata
@@ -34,7 +32,7 @@ setup_info = dict(
     author='PyTorch core devs and James Bradbury',
     author_email='jekbradbury@gmail.com',
     url='https://github.com/pytorch/text',
-    description='text utilities and datasets for torch deep learning',
+    description='Text utilities and datasets for PyTorch',
     long_description=long_description,
     license='BSD',
 

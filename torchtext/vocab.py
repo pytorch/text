@@ -98,19 +98,19 @@ class Vocab(object):
             vectors: one of or a list containing instantiations of the
                 GloVe, CharNGram, or Vectors classes. Alternatively, one
                 of or a list of available pretrained vectors:
-                    charngram.100d
-                    fasttext.en.300d
-                    fasttext.simple.300d
-                    glove.42B.300d
-                    glove.840B.300d
-                    glove.twitter.27B.25d
-                    glove.twitter.27B.50d
-                    glove.twitter.27B.100d
-                    glove.twitter.27B.200d
-                    glove.6B.50d
-                    glove.6B.100d
-                    glove.6B.200d
-                    glove.6B.300d
+                charngram.100d
+                fasttext.en.300d
+                fasttext.simple.300d
+                glove.42B.300d
+                glove.840B.300d
+                glove.twitter.27B.25d
+                glove.twitter.27B.50d
+                glove.twitter.27B.100d
+                glove.twitter.27B.200d
+                glove.6B.50d
+                glove.6B.100d
+                glove.6B.200d
+                glove.6B.300d
         """
         if not isinstance(vectors, list):
             vectors = [vectors]
@@ -211,13 +211,14 @@ class Vectors(object):
 
     def __init__(self, name, cache='.vector_cache',
                  url=None, unk_init=torch.Tensor.zero_):
-        """Arguments:
-               name: name of the file that contains the vectors
-               cache: directory for cached vectors
-               url: url for download if vectors not found in cache
-               unk_init (callback): by default, initalize out-of-vocabulary word vectors
-                   to zero vectors; can be any function that takes in a Tensor and
-                   returns a Tensor of the same size
+        """
+        Arguments:
+           name: name of the file that contains the vectors
+           cache: directory for cached vectors
+           url: url for download if vectors not found in cache
+           unk_init (callback): by default, initalize out-of-vocabulary word vectors
+               to zero vectors; can be any function that takes in a Tensor and
+               returns a Tensor of the same size
          """
         self.unk_init = unk_init
         self.cache(name, cache, url=url)
@@ -391,3 +392,4 @@ pretrained_aliases = {
     "glove.6B.200d": lambda: GloVe(name="6B", dim="200"),
     "glove.6B.300d": lambda: GloVe(name="6B", dim="300")
 }
+"""Mapping from string name to factory function"""

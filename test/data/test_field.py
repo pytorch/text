@@ -391,3 +391,283 @@ class TestField(TorchtextTestCase):
                                   "some", "oovs", "<pad>"]]
             question_field.numericalize(
                 test_example_data, device=-1)
+
+
+class TestNestedField(TorchtextTestCase):
+    def test_init_minimal(self):
+        nesting_field = data.Field()
+        field = data.NestedField(nesting_field)
+
+        assert isinstance(field, data.Field)
+        assert field.nesting_field is nesting_field
+        assert field.sequential
+        assert field.use_vocab
+        assert field.init_token is None
+        assert field.eos_token is None
+        assert field.unk_token == nesting_field.unk_token
+        assert field.fix_length is None
+        assert field.tensor_type is torch.LongTensor
+        assert field.preprocessing is None
+        assert field.postprocessing is None
+        assert field.lower == nesting_field.lower
+        assert field.tokenize("a b c") == "a b c".split()
+        assert not field.include_lengths
+        assert field.batch_first
+        assert field.pad_token == nesting_field.pad_token
+        assert not field.pad_first
+
+    def test_init_when_nesting_field_is_not_sequential(self):
+        nesting_field = data.Field(sequential=False)
+        field = data.NestedField(nesting_field)
+
+        assert field.pad_token == "<pad>"
+
+    def test_init_when_nesting_field_has_include_lengths_equal_true(self):
+        nesting_field = data.Field(include_lengths=True)
+
+        with pytest.raises(ValueError) as excinfo:
+            data.NestedField(nesting_field)
+        assert "nesting field cannot have include_lengths=True" in str(excinfo.value)
+
+    def test_init_with_nested_field_as_nesting_field(self):
+        nesting_field = data.NestedField(data.Field())
+
+        with pytest.raises(ValueError) as excinfo:
+            data.NestedField(nesting_field)
+        assert "nesting field must not be another NestedField" in str(excinfo.value)
+
+    def test_init_full(self):
+        nesting_field = data.Field()
+        field = data.NestedField(
+            nesting_field,
+            use_vocab=False,
+            init_token="<s>",
+            eos_token="</s>",
+            fix_length=10,
+            tensor_type=torch.FloatTensor,
+            preprocessing=lambda xs: list(reversed(xs)),
+            postprocessing=lambda xs: [x.upper() for x in xs],
+            tokenize=list,
+            pad_first=True,
+        )
+
+        assert not field.use_vocab
+        assert field.init_token == "<s>"
+        assert field.eos_token == "</s>"
+        assert field.fix_length == 10
+        assert field.tensor_type is torch.FloatTensor
+        assert field.preprocessing("a b c".split()) == "c b a".split()
+        assert field.postprocessing("a b c".split()) == "A B C".split()
+        assert field.tokenize("abc") == ["a", "b", "c"]
+        assert field.pad_first
+
+    def test_preprocess(self):
+        nesting_field = data.Field(
+            tokenize=list, preprocessing=lambda xs: [x.upper() for x in xs])
+        field = data.NestedField(nesting_field, preprocessing=lambda xs: reversed(xs))
+        preprocessed = field.preprocess("john loves mary")
+
+        assert preprocessed == [list("MARY"), list("LOVES"), list("JOHN")]
+
+    def test_build_vocab_from_dataset(self):
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>")
+        ex1 = data.Example.fromlist(["aaa bbb c"], [("chars", CHARS)])
+        ex2 = data.Example.fromlist(["bbb aaa"], [("chars", CHARS)])
+        dataset = data.Dataset([ex1, ex2], [("chars", CHARS)])
+
+        CHARS.build_vocab(dataset, min_freq=2)
+
+        expected = "a b <w> </w> <s> </s> <cunk> <cpad>".split()
+        assert len(CHARS.vocab) == len(expected)
+        for c in expected:
+            assert c in CHARS.vocab.stoi
+
+    def test_build_vocab_from_iterable(self):
+        nesting_field = data.Field(unk_token="<cunk>", pad_token="<cpad>")
+        CHARS = data.NestedField(nesting_field)
+        CHARS.build_vocab(
+            [[list("aaa"), list("bbb"), ["c"]], [list("bbb"), list("aaa")]],
+            [[list("ccc"), list("bbb")], [list("bbb")]],
+        )
+
+        expected = "a b c <cunk> <cpad>".split()
+        assert len(CHARS.vocab) == len(expected)
+        for c in expected:
+            assert c in CHARS.vocab.stoi
+
+    def test_pad(self):
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>")
+        minibatch = [
+            [list("john"), list("loves"), list("mary")],
+            [list("mary"), list("cries")],
+        ]
+        expected = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+                ["<cpad>"] * 7,
+            ]
+        ]
+
+        assert CHARS.pad(minibatch) == expected
+
+    def test_pad_when_nesting_field_is_not_sequential(self):
+        nesting_field = data.Field(sequential=False, unk_token="<cunk>",
+                                   pad_token="<cpad>", init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>")
+        minibatch = [
+            ["john", "loves", "mary"],
+            ["mary", "cries"]
+        ]
+        expected = [
+            ["<s>", "john", "loves", "mary", "</s>"],
+            ["<s>", "mary", "cries", "</s>", "<pad>"],
+        ]
+
+        assert CHARS.pad(minibatch) == expected
+
+    def test_pad_when_nesting_field_has_fix_length(self):
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>", fix_length=5)
+        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>")
+        minibatch = [
+            ["john", "loves", "mary"],
+            ["mary", "cries"]
+        ]
+        expected = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 2,
+                ["<w>"] + list("joh") + ["</w>"],
+                ["<w>"] + list("lov") + ["</w>"],
+                ["<w>"] + list("mar") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 2,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 2,
+                ["<w>"] + list("mar") + ["</w>"],
+                ["<w>"] + list("cri") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 2,
+                ["<cpad>"] * 5,
+            ]
+        ]
+
+        assert CHARS.pad(minibatch) == expected
+
+    def test_pad_when_fix_length_is_not_none(self):
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(
+            nesting_field, init_token="<s>", eos_token="</s>", fix_length=3)
+        minibatch = [
+            ["john", "loves", "mary"],
+            ["mary", "cries"]
+        ]
+        expected = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ]
+        ]
+
+        assert CHARS.pad(minibatch) == expected
+
+    def test_pad_when_no_init_and_eos_tokens(self):
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field)
+        minibatch = [
+            ["john", "loves", "mary"],
+            ["mary", "cries"]
+        ]
+        expected = [
+            [
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+            ],
+            [
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<cpad>"] * 7,
+            ]
+        ]
+
+        assert CHARS.pad(minibatch) == expected
+
+    def test_pad_when_pad_first_is_true(self):
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>",
+                                 pad_first=True)
+        minibatch = [
+            [list("john"), list("loves"), list("mary")],
+            [list("mary"), list("cries")],
+        ]
+        expected = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<cpad>"] * 7,
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ]
+        ]
+
+        assert CHARS.pad(minibatch) == expected
+
+    def test_numericalize(self):
+        nesting_field = data.Field(batch_first=True)
+        field = data.NestedField(nesting_field)
+        ex1 = data.Example.fromlist(["john loves mary"], [("words", field)])
+        ex2 = data.Example.fromlist(["mary cries"], [("words", field)])
+        dataset = data.Dataset([ex1, ex2], [("words", field)])
+        field.build_vocab(dataset)
+        examples_data = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+                ["<cpad>"] * 7,
+            ]
+        ]
+        numericalized = field.numericalize(examples_data, device=-1)
+
+        assert numericalized.dim() == 3
+        assert numericalized.size(0) == len(examples_data)
+        for example, numericalized_example in zip(examples_data, numericalized):
+            verify_numericalized_example(
+                field, example, numericalized_example, batch_first=True)
