@@ -1,5 +1,7 @@
+import six
 from six.moves import urllib
 import requests
+import csv
 
 
 def reporthook(t):
@@ -43,3 +45,23 @@ def download_from_url(url, path):
         for chunk in response.iter_content(chunk_size):
             if chunk:
                 f.write(chunk)
+
+
+def unicode_csv_reader(unicode_csv_data, **kwargs):
+    """Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
+    Borrwed and slightly modified from the Python docs:
+    https://docs.python.org/2/library/csv.html#csv-examples"""
+    if six.PY2:
+        # csv.py doesn't do Unicode; encode temporarily as UTF-8:
+        csv_reader = csv.reader(utf_8_encoder(unicode_csv_data), **kwargs)
+        for row in csv_reader:
+            # decode UTF-8 back to Unicode, cell by cell:
+            yield [cell.decode('utf-8') for cell in row]
+    else:
+        for line in csv.reader(unicode_csv_data, **kwargs):
+            yield line
+
+
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')

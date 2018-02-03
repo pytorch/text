@@ -1,4 +1,3 @@
-import csv
 import json
 
 import six
@@ -31,25 +30,11 @@ class Example(object):
 
     @classmethod
     def fromTSV(cls, data, fields):
-        return cls.fromlist(data.split('\t'), fields)
+        return cls.fromlist(data, fields)
 
     @classmethod
     def fromCSV(cls, data, fields):
-        data = data.rstrip("\n")
-        # If Python 2, encode to utf-8 since CSV doesn't take unicode input
-        if six.PY2:
-            data = data.encode('utf-8')
-        # Use Python CSV module to parse the CSV line
-        parsed_csv_lines = csv.reader([data])
-
-        # If Python 2, decode back to unicode (the original input format).
-        if six.PY2:
-            for line in parsed_csv_lines:
-                parsed_csv_line = [six.text_type(col, 'utf-8') for col in line]
-                break
-        else:
-            parsed_csv_line = list(parsed_csv_lines)[0]
-        return cls.fromlist(parsed_csv_line, fields)
+        return cls.fromlist(data, fields)
 
     @classmethod
     def fromlist(cls, data, fields):
