@@ -101,3 +101,24 @@ class TestDataset(TorchtextTestCase):
         with self.assertRaises(ValueError):
             data.TabularDataset(
                 path=self.test_ppid_dataset_path, format="json", fields=fields)
+
+    def test_input_with_newlines_in_text(self):
+        # Smoke test for ensuring that TabularDataset works with files with newlines
+        example_with_newlines = [("\"hello \n world\"", "1"),
+                                 ("\"there is a \n newline\"", "0"),
+                                 ("\"there is no newline\"", "1")]
+        fields = [("text", data.Field(lower=True)),
+                  ("label", data.Field(sequential=False))]
+
+        for delim in [",", "\t"]:
+            with open(self.test_newline_dataset_path, "wt") as f:
+                for line in example_with_newlines:
+                    f.write("{}\n".format(delim.join(line)))
+
+            format_ = "csv" if delim == "," else "tsv"
+            dataset = data.TabularDataset(
+                path=self.test_newline_dataset_path, format=format_, fields=fields)
+            # if the newline is not parsed correctly, this should raise an error
+            for example in dataset:
+                self.assert_(hasattr(example, "text"))
+                self.assert_(hasattr(example, "label"))

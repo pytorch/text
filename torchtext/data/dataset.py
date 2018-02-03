@@ -6,7 +6,7 @@ import tarfile
 import torch.utils.data
 
 from .example import Example
-from ..utils import download_from_url
+from ..utils import download_from_url, unicode_csv_reader
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -156,9 +156,16 @@ class TabularDataset(Dataset):
             'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
+            if format == 'csv':
+                reader = unicode_csv_reader(f)
+            elif format == 'tsv':
+                reader = unicode_csv_reader(f, delimiter='\t')
+            else:
+                reader = f
+
             if skip_header:
-                next(f)
-            examples = [make_example(line, fields) for line in f]
+                next(reader)
+            examples = [make_example(line, fields) for line in reader]
 
         if make_example in (Example.fromdict, Example.fromJSON):
             fields, field_dict = [], fields

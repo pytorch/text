@@ -22,6 +22,8 @@ class TorchtextTestCase(TestCase):
         self.test_ppid_dataset_path = os.path.join(self.test_dir, "test_ppid_dataset")
         self.test_numerical_features_dataset_path = os.path.join(
             self.test_dir, "test_numerical_features_dataset")
+        self.test_newline_dataset_path = os.path.join(self.test_dir,
+                                                      "test_newline_dataset")
 
     def tearDown(self):
         try:
