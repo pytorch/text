@@ -227,18 +227,23 @@ class Field(RawField):
         """Construct the Vocab object for this field from one or more datasets.
 
         Arguments:
-            Positional arguments: Dataset objects or other iterable data
-                sources from which to construct the Vocab object that
-                represents the set of possible values for this field. If
-                a Dataset object is provided, all columns corresponding
-                to this field are used; individual columns can also be
-                provided directly.
+            Positional arguments: Dataset objects, Counter objects,
+                or other iterable data sources from which to construct
+                the Vocab object that represents the set of possible values
+                for this field. If a Dataset object is provided, all columns
+                corresponding to this field are used; individual columns can
+                also be provided directly. If a Counter object is provided,
+                it will be used to initialize the vocabulary frequency counts.
+
             Remaining keyword arguments: Passed to the constructor of Vocab.
         """
         counter = Counter()
+
         sources = []
         for arg in args:
-            if isinstance(arg, Dataset):
+            if isinstance(arg, Counter):
+                counter = counter + arg
+            elif isinstance(arg, Dataset):
                 sources += [getattr(arg, name) for name, field in
                             arg.fields.items() if field is self]
             else:
@@ -253,6 +258,7 @@ class Field(RawField):
                             self.eos_token]
             if tok is not None))
         self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
+
 
     def numericalize(self, arr, device=None, train=True):
         """Turn a batch of examples that use this field into a Variable.
