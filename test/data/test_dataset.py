@@ -135,6 +135,10 @@ class TestDataset(TorchtextTestCase):
             "text": ("text", TEXT)
         }
         TEXT.build_vocab()
+        fields = {
+            "label": ("label", data.Field(sequential=False)),
+            "text": ("text", data.Field(lower=True, tokenize=lambda x: x))
+        }
 
         for format_, delim in zip(["csv", "tsv"], [",", "\t"]):
             with open(self.test_has_header_dataset_path, "wt") as f:
