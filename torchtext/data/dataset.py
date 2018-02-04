@@ -157,7 +157,7 @@ class TabularDataset(Dataset):
         """
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
-            'tsv': Example.fromTSV, 'csv': Example.fromCSV}[format.lower()]
+            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':

@@ -29,15 +29,6 @@ class Example(object):
         return ex
 
     @classmethod
-    def fromTSV(cls, data, fields, field_to_index=None):
-        if field_to_index is None:
-            return cls.fromlist(data, fields)
-        else:
-            assert(isinstance(fields, dict))
-            data_dict = {f: data[idx] for f, idx in field_to_index.items()}
-            return cls.fromdict(data_dict, fields)
-
-    @classmethod
     def fromCSV(cls, data, fields, field_to_index=None):
         if field_to_index is None:
             return cls.fromlist(data, fields)
