@@ -128,10 +128,13 @@ class TestDataset(TorchtextTestCase):
                                ("HELLO WORLD", "0"),
                                ("goodbye world", "1")]
 
+        TEXT = data.Field(lower=True, tokenize=lambda x: x)
         fields = {
-            "label": ("label", data.Field(sequential=False)),
-            "text": ("text", data.Field(lower=True, tokenize=lambda x: x))
+            "label": ("label", data.Field(use_vocab=False,
+                                          sequential=False)),
+            "text": ("text", TEXT)
         }
+        TEXT.build_vocab()
 
         for format_, delim in zip(["csv", "tsv"], [",", "\t"]):
             with open(self.test_has_header_dataset_path, "wt") as f:
@@ -151,3 +154,7 @@ class TestDataset(TorchtextTestCase):
             for i, example in enumerate(dataset):
                 self.assertEqual(example.text, example_with_header[i + 1][0].lower())
                 self.assertEqual(example.label, example_with_header[i + 1][1])
+
+            data_iter = data.Iterator(dataset, device=-1, batch_size=1,
+                                      sort_within_batch=False, repeat=False)
+            next(data_iter.__iter__())
