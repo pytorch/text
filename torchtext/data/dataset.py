@@ -41,6 +41,11 @@ class Dataset(torch.utils.data.Dataset):
                 examples = list(examples)
         self.examples = examples
         self.fields = dict(fields)
+        # Unpack field tuples
+        for n, f in list(self.fields.items()):
+            if isinstance(n, tuple):
+                self.fields.update(zip(n, f))
+                del self.fields[n]
 
     @classmethod
     def splits(cls, path=None, root='.data', train=None, validation=None,

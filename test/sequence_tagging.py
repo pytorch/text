@@ -1,5 +1,6 @@
 from torchtext import data
 from torchtext import datasets
+from torchtext.vocab import GloVe
 
 # Define the fields associated with the sequences.
 WORD = data.Field(init_token="<bos>", eos_token="<eos>")
@@ -44,4 +45,33 @@ batch = next(iter(train_iter))
 
 print("words", batch.word)
 print("udtags", batch.udtag)
+print("ptbtags", batch.ptbtag)
+
+# Now lets try both word and character embeddings
+WORD = data.Field(init_token="<bos>", eos_token="<eos>")
+PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
+
+# We'll use NestedField to tokenize each word into list of chars
+CHAR_NESTING = data.Field(tokenize=list, init_token="<bos>", eos_token="<eos>")
+CHAR = data.NestedField(CHAR_NESTING, init_token="<bos>", eos_token="<eos>")
+
+fields = [(('word', 'char'),(WORD, CHAR)), (None, None), ('ptbtag', PTB_TAG)]
+train, val, test = datasets.UDPOS.splits(fields=fields)
+
+print(train.fields)
+print(len(train))
+print(vars(train[0]))
+
+WORD.build_vocab(train.word, val.word, test.word, vectors=[GloVe(name='6B', dim='300')])
+CHAR.build_vocab(train.char, val.char, test.char)
+PTB_TAG.build_vocab(train.ptbtag)
+
+print(CHAR.vocab.freqs)
+train_iter, val_iter = data.BucketIterator.splits(
+    (train, val), batch_size=3, device=-1)
+
+batch = next(iter(train_iter))
+
+print("words", batch.word)
+print("chars", batch.char)
 print("ptbtags", batch.ptbtag)
