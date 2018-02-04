@@ -122,3 +122,32 @@ class TestDataset(TorchtextTestCase):
             for example in dataset:
                 self.assert_(hasattr(example, "text"))
                 self.assert_(hasattr(example, "label"))
+
+    def test_csv_file_with_header(self):
+        example_with_header = [("text", "label"),
+                               ("HELLO WORLD", "0"),
+                               ("goodbye world", "1")]
+
+        fields = {
+            "label": ("label", data.Field(sequential=False)),
+            "text": ("text", data.Field(lower=True, tokenize=lambda x: x))
+        }
+
+        for format_, delim in zip(["csv", "tsv"], [",", "\t"]):
+            with open(self.test_has_header_dataset_path, "wt") as f:
+                for line in example_with_header:
+                    f.write("{}\n".format(delim.join(line)))
+
+            # check that an error is raised here if a non-existent field is specified
+            with self.assertRaises(ValueError):
+                data.TabularDataset(
+                    path=self.test_has_header_dataset_path, format=format_,
+                    fields={"non_existent": ("label", data.Field())})
+
+            dataset = data.TabularDataset(
+                path=self.test_has_header_dataset_path, format=format_,
+                skip_header=False, fields=fields)
+
+            for i, example in enumerate(dataset):
+                self.assertEqual(example.text, example_with_header[i + 1][0].lower())
+                self.assertEqual(example.label, example_with_header[i + 1][1])
