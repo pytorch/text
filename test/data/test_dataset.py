@@ -159,7 +159,7 @@ class TestDataset(TorchtextTestCase):
         spacy_tok_question_field = data.Field(sequential=True, tokenize="spacy")
         label_field = data.Field(sequential=False)
         # Field name/value as nested tuples
-        fields = [("ids", None), #Ignore id
+        fields = [("ids", None),
                   (("q1", "q1_spacy"), (question_field, spacy_tok_question_field)),
                   (("q2", "q2_spacy"), (question_field, spacy_tok_question_field)),
                   ("label", label_field)]
@@ -186,4 +186,5 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(example.q2_spacy, expected_examples[i][3])
             self.assertEqual(example.label, expected_examples[i][4])
 
-        assert len(dataset.fields) == 6 #Including None for ids
+        # 6 Fields including None for ids
+        assert len(dataset.fields) == 6

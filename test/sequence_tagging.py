@@ -55,7 +55,7 @@ PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 CHAR_NESTING = data.Field(tokenize=list, init_token="<bos>", eos_token="<eos>")
 CHAR = data.NestedField(CHAR_NESTING, init_token="<bos>", eos_token="<eos>")
 
-fields = [(('word', 'char'),(WORD, CHAR)), (None, None), ('ptbtag', PTB_TAG)]
+fields = [(('word', 'char'), (WORD, CHAR)), (None, None), ('ptbtag', PTB_TAG)]
 train, val, test = datasets.UDPOS.splits(fields=fields)
 
 print(train.fields)
