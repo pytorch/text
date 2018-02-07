@@ -153,7 +153,8 @@ class TestDataset(TorchtextTestCase):
             TEXT.build_vocab(dataset)
 
             for i, example in enumerate(dataset):
-                self.assertEqual(example.text, example_with_header[i + 1][0].lower().split())
+                self.assertEqual(example.text,
+                                 example_with_header[i + 1][0].lower().split())
                 self.assertEqual(example.label, example_with_header[i + 1][1])
 
             # check that the vocabulary is built correctly (#225)
