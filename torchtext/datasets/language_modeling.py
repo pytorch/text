@@ -4,7 +4,8 @@ from .. import data
 class LanguageModelingDataset(data.Dataset):
     """Defines a dataset for language modeling."""
 
-    def __init__(self, path, text_field, newline_eos=True, **kwargs):
+    def __init__(self, path, text_field, newline_eos=True,
+                 encoding='utf-8', **kwargs):
         """Create a LanguageModelingDataset given a path and a field.
 
         Arguments:
@@ -17,7 +18,7 @@ class LanguageModelingDataset(data.Dataset):
         """
         fields = [('text', text_field)]
         text = []
-        with open(path) as f:
+        with open(path, encoding=encoding) as f:
             for line in f:
                 text += text_field.preprocess(line)
                 if newline_eos:
