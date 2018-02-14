@@ -26,6 +26,8 @@ class TorchtextTestCase(TestCase):
                                                       "test_newline_dataset")
         self.test_has_header_dataset_path = os.path.join(self.test_dir,
                                                          "test_has_header_dataset")
+        self.test_missing_field_dataset_path = os.path.join(self.test_dir,
+                                                            "test_msg_field_dst")
 
     def tearDown(self):
         try:
