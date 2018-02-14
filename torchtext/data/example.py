@@ -44,7 +44,12 @@ class Example(object):
             if field is not None:
                 if isinstance(val, six.string_types):
                     val = val.rstrip('\n')
-                setattr(ex, name, field.preprocess(val))
+                # Handle field tuples
+                if isinstance(name, tuple):
+                    for n, f in zip(name, field):
+                        setattr(ex, n, f.preprocess(val))
+                else:
+                    setattr(ex, name, field.preprocess(val))
         return ex
 
     @classmethod
