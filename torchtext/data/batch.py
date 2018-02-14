@@ -46,10 +46,11 @@ class Batch(object):
             return 'Empty {} instance'.format(typename(self))
 
         var_strs = '\n'.join(['\t[.' + name + ']' + ":" + _short_str(getattr(self, name))
-                              for name in self.fields])
+                              for name in self.fields if hasattr(self, name)])
 
         data_str = (' from {}'.format(self.dataset.name.upper())
-                    if hasattr(self.dataset, 'name') else '')
+                    if hasattr(self.dataset, 'name') and
+                    isinstance(self.dataset.name, str) else '')
 
         strt = '[{} of size {}{}]\n{}'.format(typename(self),
                                               self.batch_size, data_str, var_strs)

@@ -128,9 +128,11 @@ class TestDataset(TorchtextTestCase):
                                ("HELLO WORLD", "0"),
                                ("goodbye world", "1")]
 
+        TEXT = data.Field(lower=True, tokenize=lambda x: x.split())
         fields = {
-            "label": ("label", data.Field(sequential=False)),
-            "text": ("text", data.Field(lower=True, tokenize=lambda x: x))
+            "label": ("label", data.Field(use_vocab=False,
+                                          sequential=False)),
+            "text": ("text", TEXT)
         }
 
         for format_, delim in zip(["csv", "tsv"], [",", "\t"]):
@@ -148,9 +150,21 @@ class TestDataset(TorchtextTestCase):
                 path=self.test_has_header_dataset_path, format=format_,
                 skip_header=False, fields=fields)
 
+            TEXT.build_vocab(dataset)
+
             for i, example in enumerate(dataset):
-                self.assertEqual(example.text, example_with_header[i + 1][0].lower())
+                self.assertEqual(example.text,
+                                 example_with_header[i + 1][0].lower().split())
                 self.assertEqual(example.label, example_with_header[i + 1][1])
+
+            # check that the vocabulary is built correctly (#225)
+            expected_freqs = {"hello": 1, "world": 2, "goodbye": 1, "text": 0}
+            for k, v in expected_freqs.items():
+                self.assertEqual(TEXT.vocab.freqs[k], v)
+
+            data_iter = data.Iterator(dataset, device=-1, batch_size=1,
+                                      sort_within_batch=False, repeat=False)
+            next(data_iter.__iter__())
 
     def test_csv_file_no_header_one_col_multiple_fields(self):
         self.write_test_ppid_dataset(data_format="csv")

@@ -186,7 +186,7 @@ class TabularDataset(Dataset):
 
             examples = [make_example(line, fields) for line in reader]
 
-        if make_example in (Example.fromdict, Example.fromJSON):
+        if isinstance(fields, dict):
             fields, field_dict = [], fields
             for field in field_dict.values():
                 if isinstance(field, list):
