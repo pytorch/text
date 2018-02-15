@@ -1,4 +1,5 @@
 from .. import data
+import io
 
 
 class LanguageModelingDataset(data.Dataset):
@@ -18,11 +19,11 @@ class LanguageModelingDataset(data.Dataset):
         """
         fields = [('text', text_field)]
         text = []
-        with open(path, encoding=encoding) as f:
+        with io.open(path, encoding=encoding) as f:
             for line in f:
                 text += text_field.preprocess(line)
                 if newline_eos:
-                    text.append('<eos>')
+                    text.append(u'<eos>')
 
         examples = [data.Example.fromlist([text], fields)]
         super(LanguageModelingDataset, self).__init__(
