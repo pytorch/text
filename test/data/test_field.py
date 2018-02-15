@@ -671,3 +671,40 @@ class TestNestedField(TorchtextTestCase):
         for example, numericalized_example in zip(examples_data, numericalized):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
+
+
+class TestLabelField(TorchtextTestCase):
+    def test_init(self):
+        # basic init
+        label_field = data.LabelField()
+        assert label_field.sequential is False
+        assert label_field.unk_token is None
+
+        # init with preset fields
+        label_field = data.LabelField(sequential=True, unk_token="<unk>")
+        assert label_field.sequential is False
+        assert label_field.unk_token is None
+
+    def test_vocab_size(self):
+        # Set up fields
+        question_field = data.Field(sequential=True)
+        label_field = data.LabelField()
+
+        # Copied from test_build_vocab with minor changes
+        # Write TSV dataset and construct a Dataset
+        self.write_test_ppid_dataset(data_format="tsv")
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", label_field)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+
+        # Skipping json dataset as we can rely on the original build vocab test
+        label_field.build_vocab(tsv_dataset)
+        assert label_field.vocab.freqs == Counter({'1': 2, '0': 1})
+        expected_stoi = {'1': 0, '0': 1}  # No <unk>
+        assert dict(label_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert label_field.vocab.itos == expected_itos
