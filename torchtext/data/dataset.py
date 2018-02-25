@@ -6,6 +6,7 @@ from functools import partial
 
 import torch.utils.data
 
+from .utils import RandomShuffler
 from .example import Example
 from ..utils import download_from_url, unicode_csv_reader
 
@@ -79,6 +80,53 @@ class Dataset(torch.utils.data.Dataset):
             os.path.join(path, test), **kwargs)
         return tuple(d for d in (train_data, val_data, test_data)
                      if d is not None)
+
+    def split(self, split_ratio=0.7, stratified=False, strata_field='label',
+              random_state=None):
+        """Create train-test(-valid?) splits from the instance's examples.
+
+        Arguments:
+            split_ratio (float or List of floats): a number [0, 1] denoting the amount
+                of data to be used for the training split (rest is used for validation),
+                or a list of numbers denoting the relative sizes of train, test and valid
+                splits respectively. If the relative size for valid is missing, only the
+                train-test split is returned. Default is 0.7 (for th train set).
+            stratified (bool): whether the sampling should be stratified.
+                Default is False.
+            strata_field (str): name of the examples Field stratified over.
+                Default is 'label' for the conventional label field.
+            random_state (int): the random seed used for shuffling.
+
+        Returns:
+            Tuple[Dataset]: Datasets for train, validation, and
+                test splits in that order, if the splits are provided.
+        """
+        train_ratio, test_ratio, val_ratio = check_split_ratio(split_ratio)
+
+        # For the permutations
+        rnd = RandomShuffler(random_state)
+        if not stratified:
+            train_data, test_data, val_data = rationed_split(self.examples, train_ratio,
+                                                             test_ratio, val_ratio, rnd)
+            return tuple(Dataset(d, self.fields)
+                         for d in (train_data, val_data, test_data) if d)
+        else:
+            if strata_field not in self.fields:
+                raise ValueError("Invalid field name for strata_field {}"
+                                .format(strata_field))
+            strata = stratify(self.examples, strata_field)
+            train_data, test_data, val_data = [], [], []
+            for group in strata:
+                # Stratify each group and add together the indices.
+                group_train, group_test, group_val = rationed_split(group, train_ratio,
+                                                                    test_ratio, val_ratio,
+                                                                    rnd)
+                train_data += group_train
+                test_data += group_test
+                val_data += group_val
+
+            return tuple(Dataset(d, self.fields)
+                         for d in (train_data, val_data, test_data) if d)
 
     def __getitem__(self, i):
         return self.examples[i]
@@ -195,3 +243,67 @@ class TabularDataset(Dataset):
                     fields.append(field)
 
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
+
+
+def check_split_ratio(split_ratio):
+    """Check that the split ratio argument is not malformed"""
+    valid_ratio = 0.
+    if isinstance(split_ratio, float):
+        # Only the train set relative ratio is provided
+        # Assert in bounds, validation size is zero
+        assert split_ratio > 0. and split_ratio < 1., (
+            "Split ratio {} not between 0 and 1".format(split_ratio))
+
+        test_ratio = 1. - split_ratio
+        return (split_ratio, test_ratio, valid_ratio)
+    elif isinstance(split_ratio, list):
+        # A list of relative ratios is provided
+        length = len(split_ratio)
+        assert length == 2 or length == 3, (
+            "Length of split ratio list should be 2 or 3, got {}".format(split_ratio))
+
+        # Normalize if necessary
+        ratio_sum = sum(split_ratio)
+        if not ratio_sum == 1.:
+            split_ratio = [ratio / ratio_sum for ratio in split_ratio]
+
+        if length == 2:
+            return tuple(split_ratio + [valid_ratio])
+        return tuple(split_ratio)
+    else:
+        raise ValueError('Split ratio must be float or a list, got {}'
+                         .format(type(split_ratio)))
+
+
+def stratify(examples, strata_field):
+    # The field has to be hashable otherwise this doesn't work
+    # There's two iterations over the whole dataset here, which can be
+    # reduced to just one if a dedicated method for stratified splitting is used
+    unique_strata = set(getattr(example, strata_field) for example in examples)
+    strata_maps = {s: [] for s in unique_strata}
+    for example in examples:
+        strata_maps[getattr(example, strata_field)].append(example)
+    return list(strata_maps.values())
+
+
+def rationed_split(examples, train_ratio, test_ratio, val_ratio, rnd):
+    # Create a random permutation of examples, then split them
+    # by ratio x length slices for each of the train/test/dev? splits
+    N = len(examples)
+    randperm = rnd(range(N))
+    train_len = int(round(train_ratio * N))
+
+    # Due to possible rounding problems
+    if not val_ratio:
+        test_len = N - train_len
+    else:
+        test_len = int(round(test_ratio * N))
+
+    indices = (randperm[:train_len],  # Train
+               randperm[train_len:train_len + test_len],  # Test
+               randperm[train_len + test_len:])  # Validation
+
+    # There's a possibly empty list for the validation set
+    data = tuple([examples[i] for i in index] for index in indices)
+
+    return data
