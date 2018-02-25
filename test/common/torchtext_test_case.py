@@ -28,7 +28,7 @@ class TorchtextTestCase(TestCase):
                                                          "test_has_header_dataset")
         self.test_missing_field_dataset_path = os.path.join(self.test_dir,
                                                             "test_msg_field_dst")
-        self.test_dataset_splitting_path = os.path.join(self.test_dir, 
+        self.test_dataset_splitting_path = os.path.join(self.test_dir,
                                                         "test_dataset_split")
 
     def tearDown(self):
@@ -75,14 +75,14 @@ class TorchtextTestCase(TestCase):
             test_numerical_features_dataset_file.write("0.9\t9\tteststring5\n")
 
     def make_mock_dataset(self, num_examples=30, num_labels=3):
-        num_repetitions = round(num_examples / num_labels) + 1
+        num_repetitions = int(round(num_examples / num_labels)) + 1
 
         texts = [str(i) for i in range(num_examples)]
-        labels = list(range(num_labels))*num_repetitions
+        labels = list(range(num_labels)) * num_repetitions
         labels = [str(l) for l in labels[:num_examples]]
 
         dict_dataset = [
-            {'text':t, 'label':l} for t, l in zip(texts, labels)
+            {'text': t, 'label': l} for t, l in zip(texts, labels)
         ]
         return dict_dataset
 

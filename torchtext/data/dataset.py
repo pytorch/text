@@ -113,7 +113,7 @@ class Dataset(torch.utils.data.Dataset):
         else:
             if strata_field not in self.fields:
                 raise ValueError("Invalid field name for strata_field {}"
-                                .format(strata_field))
+                                 .format(strata_field))
             strata = stratify(self.examples, strata_field)
             train_data, test_data, val_data = [], [], []
             for group in strata:
@@ -265,7 +265,7 @@ def check_split_ratio(split_ratio):
         # Normalize if necessary
         ratio_sum = sum(split_ratio)
         if not ratio_sum == 1.:
-            split_ratio = [ratio / ratio_sum for ratio in split_ratio]
+            split_ratio = [float(ratio) / ratio_sum for ratio in split_ratio]
 
         if length == 2:
             return tuple(split_ratio + [valid_ratio])
