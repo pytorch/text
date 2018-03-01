@@ -56,6 +56,8 @@ class Batch(object):
                                               self.batch_size, data_str, var_strs)
         return '\n' + strt
 
+    def __len__(self):
+        return self.batch_size
 
 def _short_str(tensor):
     # unwrap variable to tensor
