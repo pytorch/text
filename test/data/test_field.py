@@ -86,6 +86,14 @@ class TestField(TorchtextTestCase):
         field = data.Field(fix_length=3, include_lengths=True)
         assert field.pad(minibatch) == (expected_padded_minibatch, expected_lengths)
 
+        field = data.Field(fix_length=3, truncate_first=True)
+        expected_padded_minibatch = [["of", "data", "."],
+                                     ["yet", "another", "<pad>"],
+                                     ["one", "last", "sent"]]
+        assert field.pad(minibatch) == expected_padded_minibatch
+
+
+
         # Test init_token is properly handled.
         field = data.Field(fix_length=4, init_token="<bos>")
         minibatch = [["a", "sentence", "of", "data", "."],
