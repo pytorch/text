@@ -212,12 +212,12 @@ class Field(RawField):
                 padded.append(
                     [self.pad_token] * max(0, max_len - len(x)) +
                     ([] if self.init_token is None else [self.init_token]) +
-                    list(x[:max_len] if self.truncate_first else x[-max_len:]) +
+                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
                     ([] if self.eos_token is None else [self.eos_token]))
             else:
                 padded.append(
                     ([] if self.init_token is None else [self.init_token]) +
-                    list(x[:max_len] if self.truncate_first else x[-max_len:]) +
+                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
                     ([] if self.eos_token is None else [self.eos_token]) +
                     [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
