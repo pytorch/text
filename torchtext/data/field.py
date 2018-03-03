@@ -105,6 +105,7 @@ class Field(RawField):
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
+        truncate_first: Do the truncating of the sequence at the beginning. Defaulf: False
     """
 
     vocab_cls = Vocab
@@ -135,7 +136,7 @@ class Field(RawField):
                  preprocessing=None, postprocessing=None, lower=False,
                  tokenize=(lambda s: s.split()), include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
-                 pad_first=False):
+                 pad_first=False, truncate_first=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -151,6 +152,7 @@ class Field(RawField):
         self.batch_first = batch_first
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
+        self.truncate_first = truncate_first
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -210,12 +212,12 @@ class Field(RawField):
                 padded.append(
                     [self.pad_token] * max(0, max_len - len(x)) +
                     ([] if self.init_token is None else [self.init_token]) +
-                    list(x[:max_len]) +
+                    list(x[:max_len] if self.truncate_first else x[-max_len:]) +
                     ([] if self.eos_token is None else [self.eos_token]))
             else:
                 padded.append(
                     ([] if self.init_token is None else [self.init_token]) +
-                    list(x[:max_len]) +
+                    list(x[:max_len] if self.truncate_first else x[-max_len:]) +
                     ([] if self.eos_token is None else [self.eos_token]) +
                     [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
