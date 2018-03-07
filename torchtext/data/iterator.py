@@ -4,6 +4,7 @@ import math
 import random
 from contextlib import contextmanager
 from copy import deepcopy
+import torch
 
 from .batch import Batch
 from .dataset import Dataset
@@ -90,6 +91,8 @@ class Iterator(object):
         else:
             self.sort_key = sort_key
         self.device = device
+        if not torch.cuda.is_available() and self.device is None:
+            self.device = -1
 
         self.random_shuffler = RandomShuffler()
 
