@@ -3,6 +3,8 @@ from __future__ import division
 import math
 import random
 
+import torch
+
 from .utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
@@ -57,6 +59,8 @@ class Iterator(object):
         else:
             self.sort_key = sort_key
         self.device = device
+        if not torch.cuda.is_available() and self.device is None:
+            self.device = -1
 
         self.random_shuffler = RandomShuffler()
 
