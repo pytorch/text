@@ -59,6 +59,7 @@ class Batch(object):
     def __len__(self):
         return self.batch_size
 
+
 def _short_str(tensor):
     # unwrap variable to tensor
     if hasattr(tensor, 'data'):
