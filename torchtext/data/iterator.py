@@ -182,7 +182,7 @@ class Iterator(object):
                 yield Batch(minibatch, self.dataset, self.device,
                             self.train)
             if not self.repeat:
-                raise StopIteration
+                return
 
     def state_dict(self):
         return {
