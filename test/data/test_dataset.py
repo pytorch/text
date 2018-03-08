@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 import torchtext.data as data
 
+import pytest
+
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -202,3 +204,139 @@ class TestDataset(TorchtextTestCase):
 
         # 6 Fields including None for ids
         assert len(dataset.fields) == 6
+
+    def test_dataset_split_arguments(self):
+        num_examples, num_labels = 30, 3
+        self.write_test_splitting_dataset(num_examples=num_examples,
+                                          num_labels=num_labels)
+        text_field = data.Field()
+        label_field = data.LabelField()
+        fields = [('text', text_field), ('label', label_field)]
+
+        dataset = data.TabularDataset(
+            path=self.test_dataset_splitting_path, format="csv", fields=fields)
+
+        # Test default split ratio (0.7)
+        expected_train_size = 21
+        expected_test_size = 9
+
+        train, test = dataset.split()
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        # Test array arguments with same ratio
+        split_ratio = [0.7, 0.3]
+        train, test = dataset.split(split_ratio=split_ratio)
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        # Add validation set
+        split_ratio = [0.6, 0.3, 0.1]
+        expected_train_size = 18
+        expected_valid_size = 3
+        expected_test_size = 9
+
+        train, valid, test = dataset.split(split_ratio=split_ratio)
+        assert len(train) == expected_train_size
+        assert len(valid) == expected_valid_size
+        assert len(test) == expected_test_size
+
+        # Test ratio normalization
+        split_ratio = [6, 3, 1]
+        train, valid, test = dataset.split(split_ratio=split_ratio)
+        assert len(train) == expected_train_size
+        assert len(valid) == expected_valid_size
+        assert len(test) == expected_test_size
+
+        # Test only two splits returned for too small valid split size
+        split_ratio = [0.66, 0.33, 0.01]
+        expected_length = 2
+        splits = dataset.split(split_ratio=split_ratio)
+        assert len(splits) == expected_length
+
+        # Test invalid arguments
+        split_ratio = 1.1
+        with pytest.raises(AssertionError):
+            dataset.split(split_ratio=split_ratio)
+
+        split_ratio = -1.
+        with pytest.raises(AssertionError):
+            dataset.split(split_ratio=split_ratio)
+
+        split_ratio = [0.7]
+        with pytest.raises(AssertionError):
+            dataset.split(split_ratio=split_ratio)
+
+        split_ratio = [1, 2, 3, 4]
+        with pytest.raises(AssertionError):
+            dataset.split(split_ratio=split_ratio)
+
+        split_ratio = "string"
+        with pytest.raises(ValueError):
+            dataset.split(split_ratio=split_ratio)
+
+    def test_stratified_dataset_split(self):
+        num_examples, num_labels = 30, 3
+        self.write_test_splitting_dataset(num_examples=num_examples,
+                                          num_labels=num_labels)
+        text_field = data.Field()
+        label_field = data.LabelField()
+        fields = [('text', text_field), ('label', label_field)]
+
+        dataset = data.TabularDataset(
+            path=self.test_dataset_splitting_path, format="csv", fields=fields)
+
+        # Default split ratio
+        expected_train_size = 21
+        expected_test_size = 9
+
+        train, test = dataset.split(stratified=True)
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        # Test array arguments with same ratio
+        split_ratio = [0.7, 0.3]
+        train, test = dataset.split(split_ratio=split_ratio, stratified=True)
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        # Test strata_field argument
+        train, test = dataset.split(split_ratio=split_ratio, stratified=True,
+                                    strata_field='label')
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        # Test invalid field name
+        strata_field = 'dummy'
+        with pytest.raises(ValueError):
+            dataset.split(split_ratio=split_ratio, stratified=True,
+                          strata_field=strata_field)
+
+        # Test uneven stratify sizes
+        num_examples, num_labels = 28, 3
+        self.write_test_splitting_dataset(num_examples=num_examples,
+                                          num_labels=num_labels)
+        # 10 examples for class 1 and 9 examples for classes 2,3
+        dataset = data.TabularDataset(
+            path=self.test_dataset_splitting_path, format="csv", fields=fields)
+
+        expected_train_size = 7 + 6 + 6
+        expected_test_size = 3 + 3 + 3
+        train, test = dataset.split(split_ratio=split_ratio, stratified=True)
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        split_ratio = [0.7, 0.3]
+        train, test = dataset.split(split_ratio=split_ratio, stratified=True)
+        assert len(train) == expected_train_size
+        assert len(test) == expected_test_size
+
+        # Add validation set
+        split_ratio = [0.6, 0.3, 0.1]
+        expected_train_size = 6 + 5 + 5
+        expected_valid_size = 1 + 1 + 1
+        expected_test_size = 3 + 3 + 3
+        train, valid, test = dataset.split(split_ratio=split_ratio, stratified=True)
+        assert len(train) == expected_train_size
+        assert len(valid) == expected_valid_size
+        assert len(test) == expected_test_size
