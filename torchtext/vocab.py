@@ -29,8 +29,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=torch.Tensor.zero_,
-                 vectors_cache='.vector_cache'):
+                 vectors=None, unk_init=None, vectors_cache=None):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
