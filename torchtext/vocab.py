@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import array
 from collections import defaultdict
+from functools import partial
 import io
 import logging
 import os
@@ -28,7 +29,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None):
+                 vectors=None, unk_init=torch.Tensor.zero_, vectors_cache=None):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -44,6 +45,10 @@ class Vocab(object):
             vectors: One of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and
+                returns a Tensor of the same size. Default: torch.Tensor.zero_
+            vectors_cache: directory for cached vectors
         """
         self.freqs = counter
         counter = counter.copy()
@@ -72,7 +77,9 @@ class Vocab(object):
 
         self.vectors = None
         if vectors is not None:
-            self.load_vectors(vectors)
+            self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
+        else:
+            assert unk_init is None and vectors_cache is None
 
     def __eq__(self, other):
         if self.freqs != other.freqs:
@@ -95,7 +102,7 @@ class Vocab(object):
                 self.itos.append(w)
                 self.stoi[w] = len(self.itos) - 1
 
-    def load_vectors(self, vectors):
+    def load_vectors(self, vectors, **kwargs):
         """
         Arguments:
             vectors: one of or a list containing instantiations of the
@@ -114,6 +121,7 @@ class Vocab(object):
                 glove.6B.100d
                 glove.6B.200d
                 glove.6B.300d
+            Remaining keyword arguments: Passed to the constructor of Vectors classes.
         """
         if not isinstance(vectors, list):
             vectors = [vectors]
@@ -128,7 +136,7 @@ class Vocab(object):
                         "Got string input vector {}, but allowed pretrained "
                         "vectors are {}".format(
                             vector, list(pretrained_aliases.keys())))
-                vectors[idx] = pretrained_aliases[vector]()
+                vectors[idx] = pretrained_aliases[vector](**kwargs)
             elif not isinstance(vector, Vectors):
                 raise ValueError(
                     "Got input vectors of type {}, expected str or "
@@ -172,7 +180,7 @@ class Vocab(object):
 class SubwordVocab(Vocab):
 
     def __init__(self, counter, max_size=None, specials=['<pad>'],
-                 vectors=None, unk_init=torch.Tensor.zero_, expand_vocab=False):
+                 vectors=None, unk_init=torch.Tensor.zero_):
         """Create a revtok subword vocabulary from a collections.Counter.
 
         Arguments:
@@ -207,7 +215,7 @@ class SubwordVocab(Vocab):
             self.stoi[tok] = len(self.itos) - 1
 
         if vectors is not None:
-            self.load_vectors(vectors, unk_init=unk_init, expand_vocab=expand_vocab)
+            self.load_vectors(vectors, unk_init=unk_init)
 
 
 class Vectors(object):
@@ -381,18 +389,18 @@ def _default_unk_index():
 
 
 pretrained_aliases = {
-    "charngram.100d": lambda: CharNGram(),
-    "fasttext.en.300d": lambda: FastText(language="en"),
-    "fasttext.simple.300d": lambda: FastText(language="simple"),
-    "glove.42B.300d": lambda: GloVe(name="42B", dim="300"),
-    "glove.840B.300d": lambda: GloVe(name="840B", dim="300"),
-    "glove.twitter.27B.25d": lambda: GloVe(name="twitter.27B", dim="25"),
-    "glove.twitter.27B.50d": lambda: GloVe(name="twitter.27B", dim="50"),
-    "glove.twitter.27B.100d": lambda: GloVe(name="twitter.27B", dim="100"),
-    "glove.twitter.27B.200d": lambda: GloVe(name="twitter.27B", dim="200"),
-    "glove.6B.50d": lambda: GloVe(name="6B", dim="50"),
-    "glove.6B.100d": lambda: GloVe(name="6B", dim="100"),
-    "glove.6B.200d": lambda: GloVe(name="6B", dim="200"),
-    "glove.6B.300d": lambda: GloVe(name="6B", dim="300")
+    "charngram.100d": partial(CharNGram),
+    "fasttext.en.300d": partial(FastText, language="en"),
+    "fasttext.simple.300d": partial(FastText, language="simple"),
+    "glove.42B.300d": partial(GloVe, name="42B", dim="300"),
+    "glove.840B.300d": partial(GloVe, name="840B", dim="300"),
+    "glove.twitter.27B.25d": partial(GloVe, name="twitter.27B", dim="25"),
+    "glove.twitter.27B.50d": partial(GloVe, name="twitter.27B", dim="50"),
+    "glove.twitter.27B.100d": partial(GloVe, name="twitter.27B", dim="100"),
+    "glove.twitter.27B.200d": partial(GloVe, name="twitter.27B", dim="200"),
+    "glove.6B.50d": partial(GloVe, name="6B", dim="50"),
+    "glove.6B.100d": partial(GloVe, name="6B", dim="100"),
+    "glove.6B.200d": partial(GloVe, name="6B", dim="200"),
+    "glove.6B.300d": partial(GloVe, name="6B", dim="300")
 }
 """Mapping from string name to factory function"""
