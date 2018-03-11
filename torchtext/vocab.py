@@ -29,7 +29,8 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=torch.Tensor.zero_, vectors_cache=None):
+                 vectors=None, unk_init=torch.Tensor.zero_,
+                 vectors_cache='.vector_cache'):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -48,7 +49,7 @@ class Vocab(object):
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
-            vectors_cache: directory for cached vectors
+            vectors_cache: directory for cached vectors. Default: '.vector_cache'
         """
         self.freqs = counter
         counter = counter.copy()
