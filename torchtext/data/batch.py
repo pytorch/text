@@ -60,7 +60,6 @@ class Batch(object):
 
 
 def _short_str(tensor):
-    # unwrap variable to tensor
     if not torch.is_tensor(tensor):
         # (1) unpack variable
         if hasattr(tensor, 'data'):

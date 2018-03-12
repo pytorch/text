@@ -134,7 +134,7 @@ class Field(RawField):
     def __init__(self, sequential=True, use_vocab=True, init_token=None,
                  eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
                  preprocessing=None, postprocessing=None, lower=False,
-                 tokenize=(lambda s: s.split()), include_lengths=False,
+                 tokenize=None, include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
                  pad_first=False, truncate_first=False):
         self.sequential = sequential
@@ -440,7 +440,7 @@ class NestedField(Field):
     """
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, tensor_type=torch.LongTensor, preprocessing=None,
-                 postprocessing=None, tokenize=lambda s: s.split(), pad_token='<pad>',
+                 postprocessing=None, tokenize=None, pad_token='<pad>',
                  pad_first=False):
         if isinstance(nesting_field, NestedField):
             raise ValueError('nesting field must not be another NestedField')
