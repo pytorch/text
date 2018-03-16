@@ -247,10 +247,11 @@ class TabularDataset(Dataset):
 
 class StreamingDataset(Dataset):
 
-    def __init__(path, format, fields, skip_header=False, **kwargs):
+    def __init__(self, path, format, fields, skip_header=False, **kwargs):
         make_example = {
             'json': ShallowExample.fromJSON, 'dict': ShallowExample.fromdict,
-            'tsv': ShallowExample.fromCSV, 'csv': ShallowExample.fromCSV}[format.lower()]
+            'tsv': ShallowExample.fromCSV, 'csv': ShallowExample.fromCSV, 
+            'tree': ShallowExample.fromtree}[format.lower()]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
@@ -272,8 +273,10 @@ class StreamingDataset(Dataset):
             if skip_header:
                 next(reader)
 
-            for line in reader:
+            for idx, line in enumerate(reader):
+                # Build vocabularies online
                 make_example(line, fields)
+            # Batching is done online, path needs to be saved
 
         if isinstance(fields, dict):
             fields, field_dict = [], fields
@@ -283,7 +286,12 @@ class StreamingDataset(Dataset):
                 else:
                     fields.append(field)
 
-
+        self.fields = dict(fields)
+        # Unpack field tuples
+        for n, f in list(self.fields.items()):
+            if isinstance(n, tuple):
+                self.fields.update(zip(n, f))
+                del self.fields[n]
 
 def check_split_ratio(split_ratio):
     """Check that the split ratio argument is not malformed"""

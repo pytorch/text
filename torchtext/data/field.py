@@ -337,17 +337,8 @@ class StreamingField(Field):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types) and not
-                isinstance(x, six.text_type)):
-            x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
-        if self.sequential and isinstance(x, six.text_type):
-            x = self.tokenize(x.rstrip('\n'))
-        if self.lower:
-            x = Pipeline(six.text_type.lower)(x)
-        if self.preprocessing is not None:
-            x = self.preprocessing(x)
-        # Update vocabulary online if not built
-        if not vocab_built:
+        x = super(StreamingField, self).preprocess(x)
+        if not self.vocab_built:
             self.vocab_counter.update(x)
         return x
 

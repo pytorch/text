@@ -228,8 +228,9 @@ class StreamingIterator(Iterator):
     Minimizes the memory overhead while iterating over a dataset at the 
     cost of sorting batches.
     """
-
-    
+    # TOOD: preload, presort, decide how to batch
+    # if there is no shuffling, just output padded batches of examples
+    pass
 
 class BucketIterator(Iterator):
     """Defines an iterator that batches examples of similar lengths together.
