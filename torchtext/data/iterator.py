@@ -219,8 +219,17 @@ class BPTTIterator(Iterator):
                     text=data[i:i + seq_len],
                     target=data[i + 1:i + 1 + seq_len])
             if not self.repeat:
-                raise StopIteration
+                return
 
+
+class StreamingIterator(Iterator):
+    """Defines an iterator over a lazy dataset
+
+    Minimizes the memory overhead while iterating over a dataset at the 
+    cost of sorting batches.
+    """
+
+    
 
 class BucketIterator(Iterator):
     """Defines an iterator that batches examples of similar lengths together.

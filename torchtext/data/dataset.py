@@ -7,7 +7,7 @@ from functools import partial
 import torch.utils.data
 
 from .utils import RandomShuffler
-from .example import Example
+from .example import Example, ShallowExample
 from ..utils import download_from_url, unicode_csv_reader
 
 
@@ -243,6 +243,46 @@ class TabularDataset(Dataset):
                     fields.append(field)
 
         super(TabularDataset, self).__init__(examples, fields, **kwargs)
+
+
+class StreamingDataset(Dataset):
+
+    def __init__(path, format, fields, skip_header=False, **kwargs):
+        make_example = {
+            'json': ShallowExample.fromJSON, 'dict': ShallowExample.fromdict,
+            'tsv': ShallowExample.fromCSV, 'csv': ShallowExample.fromCSV}[format.lower()]
+
+        with io.open(os.path.expanduser(path), encoding="utf8") as f:
+            if format == 'csv':
+                reader = unicode_csv_reader(f)
+            elif format == 'tsv':
+                reader = unicode_csv_reader(f, delimiter='\t')
+            else:
+                reader = f
+
+            if format in ['csv', 'tsv'] and isinstance(fields, dict):
+                if skip_header:
+                    raise ValueError('When using a dict to specify fields with a {} file,'
+                                     'skip_header must be False and'
+                                     'the file must have a header.'.format(format))
+                header = next(reader)
+                field_to_index = {f: header.index(f) for f in fields.keys()}
+                make_example = partial(make_example, field_to_index=field_to_index)
+
+            if skip_header:
+                next(reader)
+
+            for line in reader:
+                make_example(line, fields)
+
+        if isinstance(fields, dict):
+            fields, field_dict = [], fields
+            for field in field_dict.values():
+                if isinstance(field, list):
+                    fields.extend(field)
+                else:
+                    fields.append(field)
+
 
 
 def check_split_ratio(split_ratio):

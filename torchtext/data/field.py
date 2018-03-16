@@ -322,6 +322,50 @@ class Field(RawField):
         return Variable(arr, volatile=not train)
 
 
+class StreamingField(Field):
+
+    def __init__(self, **kwargs):
+        # The vocabularies will be constructed online
+        self.vocab_counter = Counter()
+        self.vocab_built = False
+        super(StreamingField, self).__init__(**kwargs)
+
+    def preprocess(self, x):
+        """Load a single example using this field, tokenizing if necessary.
+
+        If the input is a Python 2 `str`, it will be converted to Unicode
+        first. If `sequential=True`, it will be tokenized. Then the input
+        will be optionally lowercased and passed to the user-provided
+        `preprocessing` Pipeline."""
+        if (six.PY2 and isinstance(x, six.string_types) and not
+                isinstance(x, six.text_type)):
+            x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
+        if self.sequential and isinstance(x, six.text_type):
+            x = self.tokenize(x.rstrip('\n'))
+        if self.lower:
+            x = Pipeline(six.text_type.lower)(x)
+        if self.preprocessing is not None:
+            x = self.preprocessing(x)
+        # Update vocabulary online if not built
+        if not vocab_built:
+            self.vocab_counter.update(x)
+        return x
+
+    def build_vocab(self, *args, **kwargs):
+        """Construct the Vocab object for this field from one or more datasets.
+
+        Arguments:
+            Positional arguments: Unused, overrides superclass build_vocab
+            Remaining keyword arguments: Passed to the constructor of Vocab.
+        """
+        specials = list(OrderedDict.fromkeys(
+            tok for tok in [self.unk_token, self.pad_token, self.init_token,
+                            self.eos_token]
+            if tok is not None))
+        self.vocab = self.vocab_cls(self.vocab_counter, specials=specials, **kwargs)
+        self.vocab_built = True
+
+
 class ReversibleField(Field):
 
     def __init__(self, **kwargs):

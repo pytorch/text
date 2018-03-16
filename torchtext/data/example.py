@@ -65,3 +65,9 @@ class Example(object):
             return [cls.fromlist(
                 [' '.join(t.leaves()), t.label()], fields) for t in tree.subtrees()]
         return cls.fromlist([' '.join(tree.leaves()), tree.label()], fields)
+
+
+class ShallowExample(Example):
+    def __setattr__(self, name, value):
+        # Don't actually remember anything
+        pass
