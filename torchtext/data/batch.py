@@ -33,6 +33,7 @@ class Batch(object):
         batch.batch_size = batch_size
         batch.dataset = dataset
         batch.train = train
+        batch.fields = dataset.fields.keys()
         for k, v in kwargs.items():
             setattr(batch, k, v)
         return batch
