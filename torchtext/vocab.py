@@ -221,7 +221,7 @@ class SubwordVocab(Vocab):
 class Vectors(object):
 
     def __init__(self, name, cache=None,
-                 url=None, unk_init=torch.Tensor.zero_):
+                 url=None, unk_init=None):
         """
         Arguments:
            name: name of the file that contains the vectors
@@ -232,7 +232,7 @@ class Vectors(object):
                returns a Tensor of the same size
          """
         cache = '.vector_cache' if cache is None else cache
-        self.unk_init = unk_init
+        self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
         self.cache(name, cache, url=url)
 
     def __getitem__(self, token):
