@@ -24,7 +24,7 @@ class Batch(object):
 
             for (name, field) in dataset.fields.items():
                 if field is not None:
-                    batch = [x.__dict__[name] for x in data]
+                    batch = [getattr(x, name) for x in data]
                     setattr(self, name, field.process(batch, device=device, train=train))
 
     @classmethod
