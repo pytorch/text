@@ -220,7 +220,7 @@ class SubwordVocab(Vocab):
 
 class Vectors(object):
 
-    def __init__(self, name, cache='.vector_cache',
+    def __init__(self, name, cache=None,
                  url=None, unk_init=torch.Tensor.zero_):
         """
         Arguments:
@@ -231,6 +231,7 @@ class Vectors(object):
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
          """
+        cache = '.vector_cache' if cache is None else cache
         self.unk_init = unk_init
         self.cache(name, cache, url=url)
 
