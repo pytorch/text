@@ -213,13 +213,14 @@ class BPTTIterator(Iterator):
             ('text', TEXT), ('target', TEXT)])
         while True:
             for i in range(0, len(self) * self.bptt_len, self.bptt_len):
+                self.iterations += 1
                 seq_len = min(self.bptt_len, len(data) - i - 1)
                 yield Batch.fromvars(
                     dataset, self.batch_size, train=self.train,
                     text=data[i:i + seq_len],
                     target=data[i + 1:i + 1 + seq_len])
             if not self.repeat:
-                raise StopIteration
+                return
 
 
 class BucketIterator(Iterator):
