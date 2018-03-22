@@ -123,7 +123,7 @@ class Iterator(object):
 
     @property
     def epoch(self):
-        return self.iterations / len(self)
+        return math.floor(self.iterations / len(self))
 
     def __len__(self):
         if self.batch_size_fn is not None:
