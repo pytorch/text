@@ -272,7 +272,8 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn) if sort_within_batch \
+        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn) \
+            if sort_within_batch \
             else batch(p, batch_size, batch_size_fn)
         if shuffle:
             for b in random_shuffler(list(p_batch)):
