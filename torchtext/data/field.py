@@ -472,6 +472,8 @@ class NestedField(Field):
             include_lengths=include_lengths
         )
         self.nesting_field = nesting_field
+        # in case the user forget to do that
+        self.nesting_field.batch_first = True
 
     def preprocess(self, xs):
         """Preprocess a single example.

@@ -532,7 +532,8 @@ class TestNestedField(TorchtextTestCase):
         # test include_length
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
                                    init_token="<w>", eos_token="</w>")
-        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>", include_lengths=True)
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True)
         arr, seq_len, words_len = CHARS.pad(minibatch)
         assert arr == expected
         assert seq_len == [5, 4]
@@ -583,12 +584,12 @@ class TestNestedField(TorchtextTestCase):
         # test include length
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
                                    init_token="<w>", eos_token="</w>", fix_length=5)
-        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>", include_lengths=True)
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True)
         arr, seq_len, words_len = CHARS.pad(minibatch)
         assert arr == expected
         assert seq_len == [5, 4]
         assert words_len == [[3, 5, 5, 5, 3], [3, 5, 5, 3, 0]]
-
 
     def test_pad_when_fix_length_is_not_none(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
@@ -617,7 +618,8 @@ class TestNestedField(TorchtextTestCase):
         # test include length
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
                                    init_token="<w>", eos_token="</w>")
-        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>", include_lengths=True, fix_length=3)
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True, fix_length=3)
         arr, seq_len, words_len = CHARS.pad(minibatch)
         assert arr == expected
         assert seq_len == [3, 3]
@@ -677,7 +679,8 @@ class TestNestedField(TorchtextTestCase):
         # test include_length
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
                                    init_token="<w>", eos_token="</w>")
-        CHARS = data.NestedField(nesting_field, init_token="<s>", eos_token="</s>", include_lengths=True,
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True,
                                  pad_first=True)
         arr, seq_len, words_len = CHARS.pad(minibatch)
         assert arr == expected
