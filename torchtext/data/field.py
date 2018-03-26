@@ -161,8 +161,8 @@ class Field(RawField):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types) and not
-        isinstance(x, six.text_type)):
+        if (six.PY2 and isinstance(x, six.string_types) and
+                not isinstance(x, six.text_type)):
             x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x.rstrip('\n'))
@@ -566,11 +566,15 @@ class NestedField(Field):
                 lens = lens
                 pad = pad
             elif self.pad_first:
-                lens[:(max_sen_len - sentence_len)] = [0] * (max_sen_len - sentence_len)
-                pad[:(max_sen_len - sentence_len)] = [self.pad_token] * (max_sen_len - sentence_len)
+                lens[:(max_sen_len - sentence_len)] = (
+                    [0] * (max_sen_len - sentence_len))
+                pad[:(max_sen_len - sentence_len)] = (
+                    [self.pad_token] * (max_sen_len - sentence_len))
             else:
-                lens[-(max_sen_len - sentence_len):] = [0] * (max_sen_len - sentence_len)
-                pad[-(max_sen_len - sentence_len):] = [self.pad_token] * (max_sen_len - sentence_len)
+                lens[-(max_sen_len - sentence_len):] = (
+                    [0] * (max_sen_len - sentence_len))
+                pad[-(max_sen_len - sentence_len):] = (
+                    [self.pad_token] * (max_sen_len - sentence_len))
             word_lengths.append(lens)
             final_padded.append(pad)
         padded = final_padded
@@ -641,8 +645,9 @@ class NestedField(Field):
         padded_batch = torch.stack(numericalized)
         if old_include_lengths:
             self.include_lengths = True
-            return padded_batch, torch.LongTensor(sentence_lengths).cuda(device), torch.LongTensor(word_lengths).cuda(
-                device)
+            return (padded_batch,
+                    torch.LongTensor(sentence_lengths).cuda(device),
+                    torch.LongTensor(word_lengths).cuda(device))
         return padded_batch
 
 
