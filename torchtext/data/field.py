@@ -161,8 +161,8 @@ class Field(RawField):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types) and
-                not isinstance(x, six.text_type)):
+        if (six.PY2 and isinstance(x, six.string_types) and not
+        isinstance(x, six.text_type)):
             x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x.rstrip('\n'))
@@ -444,8 +444,7 @@ class NestedField(Field):
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, tensor_type=torch.LongTensor, preprocessing=None,
-                 postprocessing=None, tokenize=lambda s: s.split(),
-                 include_lengths=False, pad_token='<pad>',
+                 postprocessing=None, tokenize=lambda s: s.split(), include_lengths=False, pad_token='<pad>',
                  pad_first=False):
         if isinstance(nesting_field, NestedField):
             raise ValueError('nesting field must not be another NestedField')
@@ -554,34 +553,34 @@ class NestedField(Field):
             # self.eos_token = self.nesting_field.pad([[self.eos_token]])[0]
             self.eos_token = [self.eos_token]
         # Do padding
-        if self.include_lengths:
-            padded, sentence_lengths = super(NestedField, self).pad(minibatch)
-            self.nesting_field.include_lengths = True
-            padded_with_lengths = [self.nesting_field.pad(ex) for ex in padded]
-            word_lengths = []
-            final_padded = []
-            max_sen_len = len(padded[0])
-            for (pad, lens), sentence_len in zip(padded_with_lengths, sentence_lengths):
-                if sentence_len == max_sen_len:
-                    lens = lens
-                elif self.pad_first:
-                    lens[:(max_sen_len - sentence_len)] = (
-                        [0] * (max_sen_len - sentence_len))
-                else:
-                    lens[-(max_sen_len - sentence_len):] = (
-                        [0] * (max_sen_len - sentence_len))
-                word_lengths.append(lens)
-                final_padded.append(pad)
-            padded = final_padded
-        else:
-            padded = super(NestedField, self).pad(minibatch)
-            padded = [self.nesting_field.pad(ex) for ex in padded]
+        old_include_lengths = self.include_lengths
+        self.include_lengths = True
+        self.nesting_field.include_lengths = True
+        padded, sentence_lengths = super(NestedField, self).pad(minibatch)
+        padded_with_lengths = [self.nesting_field.pad(ex) for ex in padded]
+        word_lengths = []
+        final_padded = []
+        max_sen_len = len(padded[0])
+        for (pad, lens), sentence_len in zip(padded_with_lengths, sentence_lengths):
+            if sentence_len == max_sen_len:
+                lens = lens
+                pad = pad
+            elif self.pad_first:
+                lens[:(max_sen_len - sentence_len)] = [0] * (max_sen_len - sentence_len)
+                pad[:(max_sen_len - sentence_len)] = [self.pad_token] * (max_sen_len - sentence_len)
+            else:
+                lens[-(max_sen_len - sentence_len):] = [0] * (max_sen_len - sentence_len)
+                pad[-(max_sen_len - sentence_len):] = [self.pad_token] * (max_sen_len - sentence_len)
+            word_lengths.append(lens)
+            final_padded.append(pad)
+        padded = final_padded
 
         # Restore monkeypatched attributes
         self.nesting_field.fix_length = old_fix_len
         self.pad_token = old_pad_token
         self.init_token = old_init_token
         self.eos_token = old_eos_token
+        self.include_lengths = old_include_lengths
         if self.include_lengths:
             return padded, sentence_lengths, word_lengths
         return padded
@@ -642,9 +641,8 @@ class NestedField(Field):
         padded_batch = torch.stack(numericalized)
         if old_include_lengths:
             self.include_lengths = True
-            return (padded_batch,
-                    torch.LongTensor(sentence_lengths).cuda(device),
-                    torch.LongTensor(word_lengths).cuda(device))
+            return padded_batch, torch.LongTensor(sentence_lengths).cuda(device), torch.LongTensor(word_lengths).cuda(
+                device)
         return padded_batch
 
 
