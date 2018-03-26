@@ -565,9 +565,11 @@ class NestedField(Field):
                 if sentence_len == max_sen_len:
                     lens = lens
                 elif self.pad_first:
-                    lens[:(max_sen_len - sentence_len)] = [0] * (max_sen_len - sentence_len)
+                    lens[:(max_sen_len - sentence_len)] = (
+                        [0] * (max_sen_len - sentence_len))
                 else:
-                    lens[-(max_sen_len - sentence_len):] = [0] * (max_sen_len - sentence_len)
+                    lens[-(max_sen_len - sentence_len):] = (
+                        [0] * (max_sen_len - sentence_len))
                 word_lengths.append(lens)
                 final_padded.append(pad)
             padded = final_padded
@@ -640,8 +642,9 @@ class NestedField(Field):
         padded_batch = torch.stack(numericalized)
         if old_include_lengths:
             self.include_lengths = True
-            return padded_batch, torch.LongTensor(sentence_lengths).cuda(device), torch.LongTensor(word_lengths).cuda(
-                device)
+            return (padded_batch,
+                    torch.LongTensor(sentence_lengths).cuda(device),
+                    torch.LongTensor(word_lengths).cuda(device))
         return padded_batch
 
 
