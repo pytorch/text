@@ -532,7 +532,7 @@ class NestedField(Field):
                 otherwise.
 
         Returns:
-            list: The padded minibatch.
+            list: The padded minibatch. or (padded, sentence_lens, word_lengths)
         """
         minibatch = list(minibatch)
         if not self.nesting_field.sequential:
@@ -638,20 +638,24 @@ class NestedField(Field):
                 will be created with volatile=True. Default: True.
         """
         numericalized = []
-        old_include_lengths = self.include_lengths
+        self.nesting_field.include_lengths = False
         if self.include_lengths:
             arrs, sentence_lengths, word_lengths = arrs
-            self.include_lengths = False
+
         for arr in arrs:
             numericalized_ex = self.nesting_field.numericalize(
                 arr, device=device, train=train)
             numericalized.append(numericalized_ex)
         padded_batch = torch.stack(numericalized)
-        if old_include_lengths:
-            self.include_lengths = True
-            return (padded_batch,
-                    torch.LongTensor(sentence_lengths).cuda(device),
-                    torch.LongTensor(word_lengths).cuda(device))
+        self.nesting_field.include_lengths = True
+        if self.include_lengths:
+            sentence_lengths = torch.LongTensor(sentence_lengths)
+            word_lengths = torch.LongTensor(word_lengths)
+            if device == -1:
+                return (padded_batch, sentence_lengths, word_lengths)
+            else:
+                return (padded_batch,
+                        sentence_lengths.cuda(device), word_lengths.cuda(device))
         return padded_batch
 
 
