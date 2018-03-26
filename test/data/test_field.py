@@ -741,11 +741,15 @@ class TestNestedField(TorchtextTestCase):
                 ["<cpad>"] * 7,
             ]
         ]
-        numericalized, seq_len, word_len = field.numericalize(field.pad(examples_data), device=-1)
+
+        numericalized, seq_len, word_len = field.numericalize(
+            (examples_data, [5, 4], [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]),
+            device=-1)
 
         assert numericalized.dim() == 3
         assert len(seq_len) == 2
         assert len(word_len) == 2
+
         assert numericalized.size(0) == len(examples_data)
         for example, numericalized_example in zip(examples_data, numericalized):
             verify_numericalized_example(
