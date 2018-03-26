@@ -718,6 +718,39 @@ class TestNestedField(TorchtextTestCase):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
 
+        # test include_lengths
+        nesting_field = data.Field(batch_first=True)
+        field = data.NestedField(nesting_field, include_lengths=True)
+        ex1 = data.Example.fromlist(["john loves mary"], [("words", field)])
+        ex2 = data.Example.fromlist(["mary cries"], [("words", field)])
+        dataset = data.Dataset([ex1, ex2], [("words", field)])
+        field.build_vocab(dataset)
+        examples_data = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+                ["<cpad>"] * 7,
+            ]
+        ]
+        numericalized, seq_len, word_len = field.numericalize(examples_data, device=-1)
+
+        assert numericalized.dim() == 3
+        assert len(seq_len) == 2
+        assert len(word_len) == 2
+        assert numericalized.size(0) == len(examples_data)
+        for example, numericalized_example in zip(examples_data, numericalized):
+            verify_numericalized_example(
+                field, example, numericalized_example, batch_first=True)
+
 
 class TestLabelField(TorchtextTestCase):
     def test_init(self):

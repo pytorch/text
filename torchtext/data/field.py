@@ -647,6 +647,7 @@ class NestedField(Field):
                 arr, device=device, train=train)
             numericalized.append(numericalized_ex)
         padded_batch = torch.stack(numericalized)
+
         self.nesting_field.include_lengths = True
         if self.include_lengths:
             sentence_lengths = torch.LongTensor(sentence_lengths)
