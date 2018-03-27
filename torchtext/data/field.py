@@ -635,7 +635,8 @@ class NestedField(Field):
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
         if old_vectors is not None:
-            self.vocab.load_vectors(old_vectors, unk_init=old_unk_init, cache=old_vectors_cache)
+            self.vocab.load_vectors(old_vectors,
+                                    unk_init=old_unk_init, cache=old_vectors_cache)
 
         self.nesting_field.vocab = self.vocab
 
