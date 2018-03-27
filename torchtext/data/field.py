@@ -618,9 +618,25 @@ class NestedField(Field):
         flattened = []
         for source in sources:
             flattened.extend(source)
+        old_vectors = None
+        old_unk_init = None
+        old_vectors_cache = None
+        if "vectors" in kwargs.keys():
+            old_vectors = kwargs["vectors"]
+            kwargs["vectors"] = None
+        if "unk_init" in kwargs.keys():
+            old_unk_init = kwargs["unk_init"]
+            kwargs["unk_init"] = None
+        if "vectors_cache" in kwargs.keys():
+            old_vectors_cache = kwargs["vectors_cache"]
+            kwargs["vectors_cache"] = None
+        # just build vocab and does not load vector
         self.nesting_field.build_vocab(*flattened, **kwargs)
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
+        if old_vectors is not None:
+            self.vocab.load_vectors(old_vectors, unk_init=old_unk_init, cache=old_vectors_cache)
+
         self.nesting_field.vocab = self.vocab
 
     def numericalize(self, arrs, device=None, train=True):
