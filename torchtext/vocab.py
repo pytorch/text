@@ -257,7 +257,11 @@ class Vectors(object):
                 dest = os.path.join(cache, os.path.basename(url))
                 if not os.path.isfile(dest):
                     with tqdm(unit='B', unit_scale=True, miniters=1, desc=dest) as t:
-                        urlretrieve(url, dest, reporthook=reporthook(t))
+                        try:
+                            urlretrieve(url, dest, reporthook=reporthook(t))
+                        except KeyboardInterrupt as e:  # remove the partial zip file
+                            os.remove(dest)
+                            raise e
                 logger.info('Extracting vectors into {}'.format(cache))
                 ext = os.path.splitext(dest)[1][1:]
                 if ext == 'zip':
