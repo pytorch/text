@@ -27,6 +27,9 @@ def reporthook(t):
 def download_from_url(url, path):
     """Download file, with logic (from tensor2tensor) for Google Drive"""
     if 'drive.google.com' not in url:
+        opener = urllib.request.build_opener()
+        opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+        urllib.request.install_opener(opener)
         return urllib.request.urlretrieve(url, path)
     print('downloading from Google Drive; may take a few minutes')
     confirm_token = None
