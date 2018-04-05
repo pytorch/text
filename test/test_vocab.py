@@ -216,7 +216,6 @@ class TestVocab(TorchtextTestCase):
                 conditional_remove(os.path.join(self.project_root, ".vector_cache",
                                    "glove.twitter.27B.{}d.txt".format(dim)))
 
-
     @slow
     def test_vocab_download_charngram_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
