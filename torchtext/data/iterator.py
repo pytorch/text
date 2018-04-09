@@ -239,7 +239,7 @@ class BucketIterator(Iterator):
                                 self.sort_key, self.batch_size_fn,
                                 random_shuffler=self.random_shuffler,
                                 shuffle=self.shuffle,
-                                sort=self.sort_within_batch)
+                                sort_within_batch=self.sort_within_batch)
 
 
 def batch(data, batch_size, batch_size_fn=None):
