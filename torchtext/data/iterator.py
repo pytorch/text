@@ -237,7 +237,9 @@ class BucketIterator(Iterator):
         else:
             self.batches = pool(self.data(), self.batch_size,
                                 self.sort_key, self.batch_size_fn,
-                                random_shuffler=self.random_shuffler)
+                                random_shuffler=self.random_shuffler,
+                                shuffle=self.shuffle,
+                                sort=self.sort_within_batch)
 
 
 def batch(data, batch_size, batch_size_fn=None):
@@ -260,7 +262,7 @@ def batch(data, batch_size, batch_size_fn=None):
 
 
 def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
-         random_shuffler=None):
+         random_shuffler=None, shuffle=False, sort_within_batch=False):
     """Sort within buckets, then batch, then shuffle batches.
 
     Partitions data into chunks of size 100*batch_size, sorts examples within
@@ -270,6 +272,12 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
-        for b in random_shuffler(list(p_batch)):
-            yield b
+        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn) \
+            if sort_within_batch \
+            else batch(p, batch_size, batch_size_fn)
+        if shuffle:
+            for b in random_shuffler(list(p_batch)):
+                yield b
+        else:
+            for b in list(p_batch):
+                yield b
