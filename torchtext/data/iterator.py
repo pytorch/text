@@ -282,7 +282,7 @@ class StreamingIterator(Iterator):
             # Outer loop: epoch
             self.init_epoch()
             while self._iterations_this_epoch < len(self):
-                print(self.batches)
+                #print(self.batches)
                 for idx, minibatch in enumerate(self.batches):
                     # Inner loop: minibatches in buffer
                     # fast-forward if loaded from state

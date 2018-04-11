@@ -292,7 +292,7 @@ class StreamingDataset(Dataset):
         # try to create a workaround
 
         self.fields = dict(fields)
-        print(self.original_fields, '\n', self.fields)
+        #print(self.original_fields, '\n', self.fields)
         # Unpack field tuples
         for n, f in list(self.fields.items()):
             if isinstance(n, tuple):
