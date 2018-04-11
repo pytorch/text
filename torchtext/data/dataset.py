@@ -108,8 +108,14 @@ class Dataset(torch.utils.data.Dataset):
         if not stratified:
             train_data, test_data, val_data = rationed_split(self.examples, train_ratio,
                                                              test_ratio, val_ratio, rnd)
-            return tuple(Dataset(d, self.fields)
+            splits = tuple(Dataset(d, self.fields)
                          for d in (train_data, val_data, test_data) if d)
+
+            # In case the parent sort key isn't none
+            if self.sort_key:
+                for subset in splits:
+                    subset.sort_key = self.sort_key
+            return splits
         else:
             if strata_field not in self.fields:
                 raise ValueError("Invalid field name for strata_field {}"
@@ -125,8 +131,15 @@ class Dataset(torch.utils.data.Dataset):
                 test_data += group_test
                 val_data += group_val
 
-            return tuple(Dataset(d, self.fields)
+            splits = tuple(Dataset(d, self.fields)
                          for d in (train_data, val_data, test_data) if d)
+
+            # In case the parent sort key isn't none
+            if self.sort_key:
+                for subset in splits:
+                    subset.sort_key = self.ort_key
+            return splits
+
 
     def __getitem__(self, i):
         return self.examples[i]
