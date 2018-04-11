@@ -354,7 +354,7 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        print(p) # breaks here
+        # breaks here
         p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
         for b in random_shuffler(list(p_batch)):
             yield b
