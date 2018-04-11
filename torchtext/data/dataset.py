@@ -137,7 +137,7 @@ class Dataset(torch.utils.data.Dataset):
             # In case the parent sort key isn't none
             if self.sort_key:
                 for subset in splits:
-                    subset.sort_key = self.ort_key
+                    subset.sort_key = self.sort_key
             return splits
 
 
