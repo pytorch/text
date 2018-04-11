@@ -109,7 +109,7 @@ class Dataset(torch.utils.data.Dataset):
             train_data, test_data, val_data = rationed_split(self.examples, train_ratio,
                                                              test_ratio, val_ratio, rnd)
             splits = tuple(Dataset(d, self.fields)
-                         for d in (train_data, val_data, test_data) if d)
+                           for d in (train_data, val_data, test_data) if d)
 
             # In case the parent sort key isn't none
             if self.sort_key:
@@ -132,14 +132,13 @@ class Dataset(torch.utils.data.Dataset):
                 val_data += group_val
 
             splits = tuple(Dataset(d, self.fields)
-                         for d in (train_data, val_data, test_data) if d)
+                           for d in (train_data, val_data, test_data) if d)
 
             # In case the parent sort key isn't none
             if self.sort_key:
                 for subset in splits:
                     subset.sort_key = self.sort_key
             return splits
-
 
     def __getitem__(self, i):
         return self.examples[i]
