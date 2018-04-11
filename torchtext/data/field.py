@@ -339,6 +339,7 @@ class StreamingField(Field):
         `preprocessing` Pipeline."""
         x = super(StreamingField, self).preprocess(x)
         if not self.vocab_built:
+            # Does not trigger on second pass
             self.vocab_counter.update(x)
         return x
 

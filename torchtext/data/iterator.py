@@ -228,9 +228,84 @@ class StreamingIterator(Iterator):
     Minimizes the memory overhead while iterating over a dataset at the 
     cost of sorting batches.
     """
-    # TOOD: preload, presort, decide how to batch
+    # preload = number of batches to preload
+    # TODO: preload, presort, decide how to batch
     # if there is no shuffling, just output padded batches of examples
-    pass
+    def __init__(self, dataset, batch_size, sort_key=None,
+                 device=None, batch_size_fn=None, train=True,
+                 repeat=None, shuffle=None, sort=None,
+                 sort_within_batch=None, preload=100):
+        self.preload = preload
+        self.data_buffer = []  # Buffer list for data 
+        self.buffer_capacity = preload * batch_size
+        super(StreamingIterator, self).__init__(dataset, batch_size, sort_key,
+                 device, batch_size_fn, train, repeat, shuffle, sort, sort_within_batch)
+
+    def data(self):
+        # The whole dataset is never loaded.
+        raise NotImplementedError
+
+    def fill_buffer(self):
+        while len(self.data_buffer) < self.buffer_capacity:
+            self.data_buffer.append(next(iter(self.dataset)))
+
+    def create_batches(self):
+        self.fill_buffer()
+        if self.sort:
+            self.batches = batch(self.data_buffer, self.batch_size,
+                                 self.batch_size_fn)
+        else:
+            self.batches = pool(self.data_buffer, self.batch_size,
+                                self.sort_key, self.batch_size_fn,
+                                random_shuffler=self.random_shuffler)
+
+    def init_epoch(self):
+        """Set up the batch generator for a new epoch."""
+
+        if self._restored_from_state:
+            self.random_shuffler.random_state = self._random_state_this_epoch
+        else:
+            self._random_state_this_epoch = self.random_shuffler.random_state
+
+        self.create_batches()
+
+        if self._restored_from_state:
+            self._restored_from_state = False
+        else:
+            self._iterations_this_epoch = 0
+
+        if not self.repeat:
+            self.iterations = 0
+
+    def __iter__(self):
+        while True:
+            # Outer loop: epoch
+            self.init_epoch()
+            while self._iterations_this_epoch < len(self):
+                print(self.batches)
+                for idx, minibatch in enumerate(self.batches):
+                    # Inner loop: minibatches in buffer
+                    # fast-forward if loaded from state
+                    if self._iterations_this_epoch > idx:
+                        continue
+                    self.iterations += 1
+                    self._iterations_this_epoch += 1
+                    if self.sort_within_batch:
+                        # NOTE: `rnn.pack_padded_sequence` requires that a minibatch
+                        # be sorted by decreasing order, which requires reversing
+                        # relative to typical sort keys
+                        if self.sort:
+                            minibatch.reverse()
+                        else:
+                            minibatch.sort(key=self.sort_key, reverse=True)
+                    yield Batch(minibatch, self.dataset, self.device,
+                                self.train)
+                # Refill buffer and create new batches
+                self.create_batches()
+
+            if not self.repeat:
+                return
+
 
 class BucketIterator(Iterator):
     """Defines an iterator that batches examples of similar lengths together.
@@ -279,6 +354,7 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
+        print(p) # breaks here
         p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
         for b in random_shuffler(list(p_batch)):
             yield b

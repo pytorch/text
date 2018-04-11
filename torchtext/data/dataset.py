@@ -246,13 +246,13 @@ class TabularDataset(Dataset):
 
 
 class StreamingDataset(Dataset):
-
     def __init__(self, path, format, fields, skip_header=False, **kwargs):
-        make_example = {
-            'json': ShallowExample.fromJSON, 'dict': ShallowExample.fromdict,
-            'tsv': ShallowExample.fromCSV, 'csv': ShallowExample.fromCSV, 
-            'tree': ShallowExample.fromtree}[format.lower()]
+        self.make_example = {
+            'json': Example.fromJSON, 'dict': Example.fromdict,
+            'tsv': Example.fromCSV, 'csv': Example.fromCSV, 
+            'tree': Example.fromtree}[format.lower()]
 
+        # First pass : build vocabularies
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
                 reader = unicode_csv_reader(f)
@@ -267,16 +267,16 @@ class StreamingDataset(Dataset):
                                      'skip_header must be False and'
                                      'the file must have a header.'.format(format))
                 header = next(reader)
-                field_to_index = {f: header.index(f) for f in fields.keys()}
-                make_example = partial(make_example, field_to_index=field_to_index)
+                self.field_to_index = {f: header.index(f) for f in fields.keys()}
+                self.make_example = partial(make_example, field_to_index=self.field_to_index)
 
             if skip_header:
                 next(reader)
 
             for idx, line in enumerate(reader):
-                # Build vocabularies online
-                make_example(line, fields)
-            # Batching is done online, path needs to be saved
+                # Build vocabulary data online
+                self.make_example(line, fields)
+            self.length = idx + 1
 
         if isinstance(fields, dict):
             fields, field_dict = [], fields
@@ -286,12 +286,50 @@ class StreamingDataset(Dataset):
                 else:
                     fields.append(field)
 
+        self.original_fields = fields
+        # TODO: this has to be implemented more efficiently.
+        # Check what are the transformed tuple fields used for later on and 
+        # try to create a workaround
+
         self.fields = dict(fields)
+        print(self.original_fields, '\n', self.fields)
         # Unpack field tuples
         for n, f in list(self.fields.items()):
             if isinstance(n, tuple):
                 self.fields.update(zip(n, f))
                 del self.fields[n]
+
+        # Save arguments for serialization
+        self.path = path
+        self.format = format
+        self.skip_header = skip_header
+        self.__initialized = True
+        self.reader = None
+
+    def __getitem__(self, i):
+        # Maybe this can be supported somehow?
+        raise NotImplementedError("__getitem__ is not implemented for StreamingDataset")
+
+    def __len__(self):
+        # Static and precomputed, error-prone
+        return self.length
+
+    def __iter__(self):
+        if not self.reader:
+            f = io.open(os.path.expanduser(self.path), encoding="utf8")
+            if self.format == 'csv':
+                self.reader = unicode_csv_reader(f)
+            elif self.format == 'tsv':
+                self.reader = unicode_csv_reader(f, delimiter='\t')
+            else:
+                self.reader = f
+
+        for idx, line in enumerate(self.reader):
+            yield self.make_example(line, self.original_fields)
+        else:
+            # Reset to start of file when end of dataset is reached
+            self.reader.seek(0)
+
 
 def check_split_ratio(split_ratio):
     """Check that the split ratio argument is not malformed"""

@@ -69,4 +69,6 @@ class Example(object):
 class ShallowExample(Example):
     def __setattr__(self, name, value):
         # Don't actually remember anything
+        # NB: This isn't actually used right now, but I don't want to remove it
+        # until I see how the GC behaves
         pass
