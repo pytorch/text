@@ -20,6 +20,10 @@ class Batch(object):
             self.dataset = dataset
             self.train = train
             self.fields = dataset.fields.keys()  # copy field names
+            self.input_fields = [k for k, v in dataset.fields.items() if
+                                 v is not None and not v.is_target]
+            self.target_fields = [k for k, v in dataset.fields.items() if
+                                  v is not None and v.is_target]
 
             for (name, field) in dataset.fields.items():
                 if field is not None:
@@ -58,6 +62,20 @@ class Batch(object):
 
     def __len__(self):
         return self.batch_size
+
+    def _get_vars(self, target):
+        fields = self.target_fields if target else self.input_fields
+        vars = tuple(getattr(self, f) for f in fields)
+        if len(vars) == 0:
+            return None
+        elif len(vars) == 1:
+            return vars[0]
+        else:
+            return vars
+
+    def __iter__(self):
+        yield self._get_vars(False)
+        yield self._get_vars(True)
 
 
 def _short_str(tensor):
