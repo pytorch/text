@@ -75,3 +75,12 @@ batch = next(iter(train_iter))
 print("words", batch.word)
 print("chars", batch.char)
 print("ptbtags", batch.ptbtag)
+
+# Using the CoNLL 2000 Chunking dataset:
+INPUTS = data.Field(init_token="<bos>", eos_token="<eos>")
+CHUNK_TAGS = data.Field(init_token="<bos>", eos_token="<eos>")
+
+train, val, test = datasets.CoNLL2000Chunking.splits(
+    fields=(('inputs', INPUTS), (None, None), ('tags', CHUNK_TAGS))
+)
+print(len(train), len(val), len(test))

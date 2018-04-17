@@ -2,7 +2,7 @@ from .language_modeling import LanguageModelingDataset, WikiText2, PennTreebank 
 from .snli import SNLI
 from .sst import SST
 from .translation import TranslationDataset, Multi30k, IWSLT, WMT14  # NOQA
-from .sequence_tagging import SequenceTaggingDataset, UDPOS # NOQA
+from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking # NOQA
 from .trec import TREC
 from .imdb import IMDB
 
@@ -19,4 +19,5 @@ __all__ = ['LanguageModelingDataset',
            'TREC',
            'IMDB',
            'SequenceTaggingDataset',
-           'UDPOS']
+           'UDPOS',
+           'CoNLL2000Chunking']
