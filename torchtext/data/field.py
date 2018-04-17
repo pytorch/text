@@ -105,6 +105,7 @@ class Field(RawField):
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
+        truncate_first: Do the truncating of the sequence at the beginning. Defaulf: False
     """
 
     vocab_cls = Vocab
@@ -135,7 +136,7 @@ class Field(RawField):
                  preprocessing=None, postprocessing=None, lower=False,
                  tokenize=(lambda s: s.split()), include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
-                 pad_first=False):
+                 pad_first=False, truncate_first=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -151,6 +152,7 @@ class Field(RawField):
         self.batch_first = batch_first
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
+        self.truncate_first = truncate_first
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -159,8 +161,8 @@ class Field(RawField):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types) and not
-                isinstance(x, six.text_type)):
+        if (six.PY2 and isinstance(x, six.string_types) and
+                not isinstance(x, six.text_type)):
             x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x.rstrip('\n'))
@@ -210,12 +212,12 @@ class Field(RawField):
                 padded.append(
                     [self.pad_token] * max(0, max_len - len(x)) +
                     ([] if self.init_token is None else [self.init_token]) +
-                    list(x[:max_len]) +
+                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
                     ([] if self.eos_token is None else [self.eos_token]))
             else:
                 padded.append(
                     ([] if self.init_token is None else [self.init_token]) +
-                    list(x[:max_len]) +
+                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
                     ([] if self.eos_token is None else [self.eos_token]) +
                     [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
@@ -321,7 +323,6 @@ class Field(RawField):
 
 
 class ReversibleField(Field):
-
     def __init__(self, **kwargs):
         if kwargs.get('tokenize') is list:
             self.use_revtok = False
@@ -366,7 +367,6 @@ class ReversibleField(Field):
 
 
 class SubwordField(ReversibleField):
-
     vocab_cls = SubwordVocab
 
     def __init__(self, **kwargs):
@@ -404,7 +404,9 @@ class NestedField(Field):
     by the nesting field. Every token will be preprocessed, padded, etc. in the manner
     specified by the nesting field. Note that this means a nested field always has
     ``sequential=True``. The two fields' vocabularies will be shared. Their
-    numericalization results will be stacked into a single tensor. This field is
+    numericalization results will be stacked into a single tensor. And NestedField will
+    share the same include_lengths with nesting_field, so one shouldn't specify the
+    include_lengths in the nesting_field. This field is
     primarily used to implement character embeddings. See ``tests/data/test_field.py``
     for examples on how to use this field.
 
@@ -428,6 +430,9 @@ class NestedField(Field):
             this field after numericalizing but before the numbers are turned
             into a Tensor. The pipeline function takes the batch as a list,
             the field's Vocab, and train (a bool). Default: ``None``.
+        include_lengths: Whether to return a tuple of a padded minibatch and
+            a list containing the lengths of each examples, or just a padded
+            minibatch. Default: False.
         tokenize (callable or str): The function used to tokenize strings using this
             field into sequential examples. If "spacy", the SpaCy English tokenizer is
             used. Default: ``lambda s: s.split()``
@@ -436,10 +441,12 @@ class NestedField(Field):
         pad_first (bool): Do the padding of the sequence at the beginning. Default:
             ``False``.
     """
+
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, tensor_type=torch.LongTensor, preprocessing=None,
-                 postprocessing=None, tokenize=lambda s: s.split(), pad_token='<pad>',
-                 pad_first=False):
+                 postprocessing=None, tokenize=lambda s: s.split(),
+                 include_lengths=False, pad_token='<pad>',
+                 pad_first=False, truncate_first=False):
         if isinstance(nesting_field, NestedField):
             raise ValueError('nesting field must not be another NestedField')
         if nesting_field.include_lengths:
@@ -461,8 +468,12 @@ class NestedField(Field):
             pad_token=pad_token,
             unk_token=nesting_field.unk_token,
             pad_first=pad_first,
+            truncate_first=truncate_first,
+            include_lengths=include_lengths
         )
         self.nesting_field = nesting_field
+        # in case the user forget to do that
+        self.nesting_field.batch_first = True
 
     def preprocess(self, xs):
         """Preprocess a single example.
@@ -521,7 +532,7 @@ class NestedField(Field):
                 otherwise.
 
         Returns:
-            list: The padded minibatch.
+            list: The padded minibatch. or (padded, sentence_lens, word_lengths)
         """
         minibatch = list(minibatch)
         if not self.nesting_field.sequential:
@@ -540,18 +551,46 @@ class NestedField(Field):
             self.nesting_field.fix_length = fix_len
         self.pad_token = [self.pad_token] * self.nesting_field.fix_length
         if self.init_token is not None:
-            self.init_token = self.nesting_field.pad([[self.init_token]])[0]
+            # self.init_token = self.nesting_field.pad([[self.init_token]])[0]
+            self.init_token = [self.init_token]
         if self.eos_token is not None:
-            self.eos_token = self.nesting_field.pad([[self.eos_token]])[0]
+            # self.eos_token = self.nesting_field.pad([[self.eos_token]])[0]
+            self.eos_token = [self.eos_token]
         # Do padding
-        padded = [self.nesting_field.pad(ex) for ex in minibatch]
-        padded = super(NestedField, self).pad(padded)
+        old_include_lengths = self.include_lengths
+        self.include_lengths = True
+        self.nesting_field.include_lengths = True
+        padded, sentence_lengths = super(NestedField, self).pad(minibatch)
+        padded_with_lengths = [self.nesting_field.pad(ex) for ex in padded]
+        word_lengths = []
+        final_padded = []
+        max_sen_len = len(padded[0])
+        for (pad, lens), sentence_len in zip(padded_with_lengths, sentence_lengths):
+            if sentence_len == max_sen_len:
+                lens = lens
+                pad = pad
+            elif self.pad_first:
+                lens[:(max_sen_len - sentence_len)] = (
+                    [0] * (max_sen_len - sentence_len))
+                pad[:(max_sen_len - sentence_len)] = (
+                    [self.pad_token] * (max_sen_len - sentence_len))
+            else:
+                lens[-(max_sen_len - sentence_len):] = (
+                    [0] * (max_sen_len - sentence_len))
+                pad[-(max_sen_len - sentence_len):] = (
+                    [self.pad_token] * (max_sen_len - sentence_len))
+            word_lengths.append(lens)
+            final_padded.append(pad)
+        padded = final_padded
+
         # Restore monkeypatched attributes
         self.nesting_field.fix_length = old_fix_len
         self.pad_token = old_pad_token
         self.init_token = old_init_token
         self.eos_token = old_eos_token
-
+        self.include_lengths = old_include_lengths
+        if self.include_lengths:
+            return padded, sentence_lengths, word_lengths
         return padded
 
     def build_vocab(self, *args, **kwargs):
@@ -579,9 +618,26 @@ class NestedField(Field):
         flattened = []
         for source in sources:
             flattened.extend(source)
+        old_vectors = None
+        old_unk_init = None
+        old_vectors_cache = None
+        if "vectors" in kwargs.keys():
+            old_vectors = kwargs["vectors"]
+            kwargs["vectors"] = None
+        if "unk_init" in kwargs.keys():
+            old_unk_init = kwargs["unk_init"]
+            kwargs["unk_init"] = None
+        if "vectors_cache" in kwargs.keys():
+            old_vectors_cache = kwargs["vectors_cache"]
+            kwargs["vectors_cache"] = None
+        # just build vocab and does not load vector
         self.nesting_field.build_vocab(*flattened, **kwargs)
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
+        if old_vectors is not None:
+            self.vocab.load_vectors(old_vectors,
+                                    unk_init=old_unk_init, cache=old_vectors_cache)
+
         self.nesting_field.vocab = self.vocab
 
     def numericalize(self, arrs, device=None, train=True):
@@ -599,8 +655,39 @@ class NestedField(Field):
                 will be created with volatile=True. Default: True.
         """
         numericalized = []
+        self.nesting_field.include_lengths = False
+        if self.include_lengths:
+            arrs, sentence_lengths, word_lengths = arrs
+
         for arr in arrs:
             numericalized_ex = self.nesting_field.numericalize(
                 arr, device=device, train=train)
             numericalized.append(numericalized_ex)
-        return torch.stack(numericalized)
+        padded_batch = torch.stack(numericalized)
+
+        self.nesting_field.include_lengths = True
+        if self.include_lengths:
+            sentence_lengths = torch.LongTensor(sentence_lengths)
+            word_lengths = torch.LongTensor(word_lengths)
+            if device == -1:
+                return (padded_batch, sentence_lengths, word_lengths)
+            else:
+                return (padded_batch,
+                        sentence_lengths.cuda(device), word_lengths.cuda(device))
+        return padded_batch
+
+
+class LabelField(Field):
+    """A Label field.
+
+    A label field is a shallow wrapper around a standard field designed to hold labels
+    for a classification task. Its only use is to set the unk_token and sequential to
+    `None` by default.
+    """
+
+    def __init__(self, **kwargs):
+        # whichever value is set for sequential and unk_token will be overwritten
+        kwargs['sequential'] = False
+        kwargs['unk_token'] = None
+
+        super(LabelField, self).__init__(**kwargs)

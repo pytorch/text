@@ -2,43 +2,12 @@ from __future__ import division
 
 import math
 import random
-from contextlib import contextmanager
-from copy import deepcopy
 
+import torch
+
+from .utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
-
-
-class RandomShuffler(object):
-    """Use random functions while keeping track of the random state to make it
-    reproducible and deterministic."""
-
-    def __init__(self, random_state=None):
-        self._random_state = random_state
-        if self._random_state is None:
-            self._random_state = random.getstate()
-
-    @contextmanager
-    def use_internal_state(self):
-        """Use a specific RNG state."""
-        old_state = random.getstate()
-        random.setstate(self._random_state)
-        yield
-        self._random_state = random.getstate()
-        random.setstate(old_state)
-
-    @property
-    def random_state(self):
-        return deepcopy(self._random_state)
-
-    @random_state.setter
-    def random_state(self, s):
-        self._random_state = s
-
-    def __call__(self, data):
-        """Shuffle and return a new list."""
-        with self.use_internal_state():
-            return random.sample(data, len(data))
 
 
 class Iterator(object):
@@ -90,6 +59,8 @@ class Iterator(object):
         else:
             self.sort_key = sort_key
         self.device = device
+        if not torch.cuda.is_available() and self.device is None:
+            self.device = -1
 
         self.random_shuffler = RandomShuffler()
 
@@ -152,7 +123,7 @@ class Iterator(object):
 
     @property
     def epoch(self):
-        return self.iterations / len(self)
+        return math.floor(self.iterations / len(self))
 
     def __len__(self):
         if self.batch_size_fn is not None:
@@ -179,7 +150,7 @@ class Iterator(object):
                 yield Batch(minibatch, self.dataset, self.device,
                             self.train)
             if not self.repeat:
-                raise StopIteration
+                return
 
     def state_dict(self):
         return {
@@ -242,13 +213,14 @@ class BPTTIterator(Iterator):
             ('text', TEXT), ('target', TEXT)])
         while True:
             for i in range(0, len(self) * self.bptt_len, self.bptt_len):
+                self.iterations += 1
                 seq_len = min(self.bptt_len, len(data) - i - 1)
                 yield Batch.fromvars(
                     dataset, self.batch_size, train=self.train,
                     text=data[i:i + seq_len],
                     target=data[i + 1:i + 1 + seq_len])
             if not self.repeat:
-                raise StopIteration
+                return
 
 
 class BucketIterator(Iterator):
@@ -265,7 +237,9 @@ class BucketIterator(Iterator):
         else:
             self.batches = pool(self.data(), self.batch_size,
                                 self.sort_key, self.batch_size_fn,
-                                random_shuffler=self.random_shuffler)
+                                random_shuffler=self.random_shuffler,
+                                shuffle=self.shuffle,
+                                sort_within_batch=self.sort_within_batch)
 
 
 def batch(data, batch_size, batch_size_fn=None):
@@ -288,7 +262,7 @@ def batch(data, batch_size, batch_size_fn=None):
 
 
 def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
-         random_shuffler=None):
+         random_shuffler=None, shuffle=False, sort_within_batch=False):
     """Sort within buckets, then batch, then shuffle batches.
 
     Partitions data into chunks of size 100*batch_size, sorts examples within
@@ -298,6 +272,12 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * 100, batch_size_fn):
-        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
-        for b in random_shuffler(list(p_batch)):
-            yield b
+        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn) \
+            if sort_within_batch \
+            else batch(p, batch_size, batch_size_fn)
+        if shuffle:
+            for b in random_shuffler(list(p_batch)):
+                yield b
+        else:
+            for b in list(p_batch):
+                yield b

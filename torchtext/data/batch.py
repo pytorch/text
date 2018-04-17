@@ -1,5 +1,4 @@
-from torch import typename
-from torch.tensor import _TensorBase
+import torch
 
 
 class Batch(object):
@@ -24,7 +23,7 @@ class Batch(object):
 
             for (name, field) in dataset.fields.items():
                 if field is not None:
-                    batch = [x.__dict__[name] for x in data]
+                    batch = [getattr(x, name) for x in data]
                     setattr(self, name, field.process(batch, device=device, train=train))
 
     @classmethod
@@ -34,6 +33,7 @@ class Batch(object):
         batch.batch_size = batch_size
         batch.dataset = dataset
         batch.train = train
+        batch.fields = dataset.fields.keys()
         for k, v in kwargs.items():
             setattr(batch, k, v)
         return batch
@@ -43,7 +43,7 @@ class Batch(object):
 
     def __str__(self):
         if not self.__dict__:
-            return 'Empty {} instance'.format(typename(self))
+            return 'Empty {} instance'.format(torch.typename(self))
 
         var_strs = '\n'.join(['\t[.' + name + ']' + ":" + _short_str(getattr(self, name))
                               for name in self.fields if hasattr(self, name)])
@@ -52,24 +52,31 @@ class Batch(object):
                     if hasattr(self.dataset, 'name') and
                     isinstance(self.dataset.name, str) else '')
 
-        strt = '[{} of size {}{}]\n{}'.format(typename(self),
+        strt = '[{} of size {}{}]\n{}'.format(torch.typename(self),
                                               self.batch_size, data_str, var_strs)
         return '\n' + strt
+
+    def __len__(self):
+        return self.batch_size
 
 
 def _short_str(tensor):
     # unwrap variable to tensor
-    if hasattr(tensor, 'data'):
-        tensor = tensor.data
-
-    # fallback in case of wrong argument type
-    if issubclass(type(tensor), _TensorBase) is False:
-        return str(tensor)
+    if not torch.is_tensor(tensor):
+        # (1) unpack variable
+        if hasattr(tensor, 'data'):
+            tensor = getattr(tensor, 'data')
+        # (2) handle include_lengths
+        elif isinstance(tensor, tuple):
+            return str(tuple(_short_str(t) for t in tensor))
+        # (3) fallback to default str
+        else:
+            return str(tensor)
 
     # copied from torch _tensor_str
     size_str = 'x'.join(str(size) for size in tensor.size())
     device_str = '' if not tensor.is_cuda else \
         ' (GPU {})'.format(tensor.get_device())
-    strt = '[{} of size {}{}]'.format(typename(tensor),
+    strt = '[{} of size {}{}]'.format(torch.typename(tensor),
                                       size_str, device_str)
     return strt

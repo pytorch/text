@@ -6,6 +6,7 @@ from numpy.testing import assert_allclose
 import torch
 import torchtext.data as data
 import pytest
+from torch.nn import init
 
 from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
 
@@ -85,6 +86,11 @@ class TestField(TorchtextTestCase):
         assert field.pad(minibatch) == expected_padded_minibatch
         field = data.Field(fix_length=3, include_lengths=True)
         assert field.pad(minibatch) == (expected_padded_minibatch, expected_lengths)
+        field = data.Field(fix_length=3, truncate_first=True)
+        expected_padded_minibatch = [["of", "data", "."],
+                                     ["yet", "another", "<pad>"],
+                                     ["one", "last", "sent"]]
+        assert field.pad(minibatch) == expected_padded_minibatch
 
         # Test init_token is properly handled.
         field = data.Field(fix_length=4, init_token="<bos>")
@@ -524,6 +530,16 @@ class TestNestedField(TorchtextTestCase):
 
         assert CHARS.pad(minibatch) == expected
 
+        # test include_length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [5, 4]
+        assert words_len == [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]
+
     def test_pad_when_nesting_field_is_not_sequential(self):
         nesting_field = data.Field(sequential=False, unk_token="<cunk>",
                                    pad_token="<cpad>", init_token="<w>", eos_token="</w>")
@@ -566,6 +582,16 @@ class TestNestedField(TorchtextTestCase):
 
         assert CHARS.pad(minibatch) == expected
 
+        # test include length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>", fix_length=5)
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [5, 4]
+        assert words_len == [[3, 5, 5, 5, 3], [3, 5, 5, 3, 0]]
+
     def test_pad_when_fix_length_is_not_none(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
                                    init_token="<w>", eos_token="</w>")
@@ -589,6 +615,16 @@ class TestNestedField(TorchtextTestCase):
         ]
 
         assert CHARS.pad(minibatch) == expected
+
+        # test include length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True, fix_length=3)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [3, 3]
+        assert words_len == [[3, 6, 3], [3, 6, 3]]
 
     def test_pad_when_no_init_and_eos_tokens(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
@@ -641,6 +677,17 @@ class TestNestedField(TorchtextTestCase):
 
         assert CHARS.pad(minibatch) == expected
 
+        # test include_length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True,
+                                 pad_first=True)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [5, 4]
+        assert words_len == [[3, 6, 7, 6, 3], [0, 3, 6, 7, 3]]
+
     def test_numericalize(self):
         nesting_field = data.Field(batch_first=True)
         field = data.NestedField(nesting_field)
@@ -671,3 +718,93 @@ class TestNestedField(TorchtextTestCase):
         for example, numericalized_example in zip(examples_data, numericalized):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
+
+        # test include_lengths
+        nesting_field = data.Field(batch_first=True)
+        field = data.NestedField(nesting_field, include_lengths=True)
+        ex1 = data.Example.fromlist(["john loves mary"], [("words", field)])
+        ex2 = data.Example.fromlist(["mary cries"], [("words", field)])
+        dataset = data.Dataset([ex1, ex2], [("words", field)])
+        field.build_vocab(dataset)
+        examples_data = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+                ["<cpad>"] * 7,
+            ]
+        ]
+
+        numericalized, seq_len, word_len = field.numericalize(
+            (examples_data, [5, 4], [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]),
+            device=-1)
+
+        assert numericalized.dim() == 3
+        assert len(seq_len) == 2
+        assert len(word_len) == 2
+
+        assert numericalized.size(0) == len(examples_data)
+        for example, numericalized_example in zip(examples_data, numericalized):
+            verify_numericalized_example(
+                field, example, numericalized_example, batch_first=True)
+
+    def test_build_vocab(self):
+        nesting_field = data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
+
+        field = data.NestedField(nesting_field, init_token='<s>', eos_token='</s>',
+                                 include_lengths=True,
+                                 pad_first=True)
+
+        sources = [[['a'], ['s', 'e', 'n', 't', 'e', 'n', 'c', 'e'], ['o', 'f'],
+                    ['d', 'a', 't', 'a'], ['.']],
+                   [['y', 'e', 't'], ['a', 'n', 'o', 't', 'h', 'e', 'r']],
+                   [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
+
+        field.build_vocab(sources, vectors='glove.6B.50d',
+                          unk_init=init.xavier_normal,
+                          vectors_cache=".vector_cache")
+
+
+class TestLabelField(TorchtextTestCase):
+    def test_init(self):
+        # basic init
+        label_field = data.LabelField()
+        assert label_field.sequential is False
+        assert label_field.unk_token is None
+
+        # init with preset fields
+        label_field = data.LabelField(sequential=True, unk_token="<unk>")
+        assert label_field.sequential is False
+        assert label_field.unk_token is None
+
+    def test_vocab_size(self):
+        # Set up fields
+        question_field = data.Field(sequential=True)
+        label_field = data.LabelField()
+
+        # Copied from test_build_vocab with minor changes
+        # Write TSV dataset and construct a Dataset
+        self.write_test_ppid_dataset(data_format="tsv")
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", label_field)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+
+        # Skipping json dataset as we can rely on the original build vocab test
+        label_field.build_vocab(tsv_dataset)
+        assert label_field.vocab.freqs == Counter({'1': 2, '0': 1})
+        expected_stoi = {'1': 0, '0': 1}  # No <unk>
+        assert dict(label_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert label_field.vocab.itos == expected_itos
