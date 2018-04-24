@@ -88,7 +88,7 @@ class Vocab(object):
                 keep_vectors = set(self.itos)  # for O(1) query
             else:
                 logger.warning("Choosing to keep all pretrained vectors will" +
-                                " greatly increase memory usage.")
+                               " greatly increase memory usage.")
                 keep_vectors = None  # keep all vectors (discouraged)
             self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache,
                               filter_vocab=keep_vectors)
