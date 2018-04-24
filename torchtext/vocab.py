@@ -87,9 +87,11 @@ class Vocab(object):
             elif discard_unused:
                 keep_vectors = set(self.itos)  # for O(1) query
             else:
-                logger.warning("Choosing to keep all pretrained vectors will greatly increase memory usage.")
+                logger.warning("Choosing to keep all pretrained vectors will" +
+                                " greatly increase memory usage.")
                 keep_vectors = None  # keep all vectors (discouraged)
-            self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache, filter_vocab=keep_vectors)
+            self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache,
+                              filter_vocab=keep_vectors)
         else:
             assert unk_init is None and vectors_cache is None
 
@@ -309,7 +311,6 @@ class Vectors(object):
                 binary_lines = True
                 num_lines = _linecount(f)
 
-
             logger.info("Loading vectors from {}".format(path))
             # Move this to an argument check:
             # the filter_vocab must be a set or an iterable forced into a set
@@ -323,9 +324,9 @@ class Vectors(object):
                 word, entries = entries[0], entries[1:]
 
                 if filter_vocab:  # Vocab filtering is ON
-                    if not word in filter_vocab:
+                    if word not in filter_vocab:
                         # Skip entry
-                        continue 
+                        continue
 
                 if dim is None and len(entries) > 1:
                     dim = len(entries)
@@ -419,6 +420,7 @@ class CharNGram(Vectors):
 def _default_unk_index():
     return 0
 
+
 def _linecount(f):
     # assumes that f is already an open stream
     num_lines = 0
@@ -426,6 +428,7 @@ def _linecount(f):
         num_lines += 1
     f.seek(0)
     return num_lines
+
 
 pretrained_aliases = {
     "charngram.100d": partial(CharNGram),
