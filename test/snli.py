@@ -14,7 +14,7 @@ TEXT.build_vocab(train)
 LABEL.build_vocab(train)
 
 train_iter, val_iter, test_iter = data.BucketIterator.splits(
-    (train, val, test), batch_size=3, device=0)
+    (train, val, test), batch_size=3)
 
 batch = next(iter(train_iter))
 print(batch.premise)

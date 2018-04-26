@@ -22,7 +22,7 @@ print('len(TEXT.vocab)', len(TEXT.vocab))
 
 # make iterator for splits
 train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-    (train, valid, test), batch_size=3, bptt_len=30, device=0)
+    (train, valid, test), batch_size=3, bptt_len=30, device="cuda:0")
 
 # print batch information
 batch = next(iter(train_iter))

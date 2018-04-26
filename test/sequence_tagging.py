@@ -39,7 +39,7 @@ print(UD_TAG.vocab.freqs)
 print(PTB_TAG.vocab.freqs)
 
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=0)
+    (train, val), batch_size=3, device="cuda:0")
 
 batch = next(iter(train_iter))
 
@@ -68,7 +68,7 @@ PTB_TAG.build_vocab(train.ptbtag)
 
 print(CHAR.vocab.freqs)
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=-1)
+    (train, val), batch_size=3)
 
 batch = next(iter(train_iter))
 

@@ -14,7 +14,7 @@ print(len(train))
 print(vars(train[0]))
 
 train_iter, val_iter, test_iter = data.BucketIterator.splits(
-    (train, val, test), batch_size=3, sort_key=lambda x: len(x.text), device=0)
+    (train, val, test), batch_size=3, sort_key=lambda x: len(x.text), device="cuda:0")
 
 LABELS.build_vocab(train.labels)
 TEXT.build_vocab(train.text)
