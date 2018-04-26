@@ -64,9 +64,9 @@ class Iterator(object):
             self.sort_key = sort_key
 
         if type(device) == int:
-            logger.warning("The `device` argument should be set by using `torch.device`",
-                           "or passing a string as an argument. This behavior will be",
-                           "deprecated soon and currently defaults to cpu.")
+            logger.warning("The `device` argument should be set by using `torch.device`" +
+                           " or passing a string as an argument. This behavior will be" +
+                           " deprecated soon and currently defaults to cpu.")
             device = None
         self.device = device
         self.random_shuffler = RandomShuffler()
