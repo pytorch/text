@@ -2,6 +2,8 @@ import io
 import os
 import zipfile
 import tarfile
+import gzip
+import shutil
 from functools import partial
 
 import torch.utils.data
@@ -177,15 +179,22 @@ class Dataset(torch.utils.data.Dataset):
                         os.makedirs(os.path.dirname(zpath))
                     print('downloading {}'.format(filename))
                     download_from_url(url, zpath)
-                ext = os.path.splitext(filename)[-1]
+                zroot, ext = os.path.splitext(zpath)
+                _, ext_inner = os.path.splitext(zroot)
                 if ext == '.zip':
                     with zipfile.ZipFile(zpath, 'r') as zfile:
                         print('extracting')
                         zfile.extractall(path)
-                elif ext in ['.gz', '.tgz']:
+                # tarfile cannot handle bare .gz files
+                elif ext == '.tgz' or ext == '.gz' and ext_inner == '.tar':
                     with tarfile.open(zpath, 'r:gz') as tar:
                         dirs = [member for member in tar.getmembers()]
                         tar.extractall(path=path, members=dirs)
+                elif ext == '.gz':
+                    with gzip.open(zpath, 'rb') as gz:
+                        with open(zroot, 'wb') as uncompressed:
+                            shutil.copyfileobj(gz, uncompressed)
+
         return os.path.join(path, cls.dirname)
 
 
