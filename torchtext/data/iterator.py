@@ -248,7 +248,6 @@ class StreamingIterator(Iterator):
         raise NotImplementedError
 
     def fill_buffer(self):
-        print("Filling buffer, buffer size = {}".format(len(self.data_buffer)))
         for example in self.dataset:
             self.data_buffer.append(example)
             if len(self.data_buffer) >= self.buffer_capacity:
@@ -257,7 +256,6 @@ class StreamingIterator(Iterator):
 
     def create_batches(self):
         self.fill_buffer()
-        print("Buffer size after fill = {}".format(len(self.data_buffer)))
         if self.sort:
             self.batches = batch(self.data_buffer, self.batch_size,
                                  self.batch_size_fn)
@@ -290,9 +288,7 @@ class StreamingIterator(Iterator):
             # Outer loop: epoch
             self.init_epoch()
             while self.iterations < len(self):
-                print("In while")
                 for idx, minibatch in enumerate(self.batches):
-                    print("Index in minibatch:", idx)
                     # Inner loop: minibatches in buffer
                     # fast-forward if loaded from state
                     #if self._iterations_this_epoch > idx:
@@ -364,7 +360,6 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * lookahead, batch_size_fn):
-        # breaks here
         p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
         for b in random_shuffler(list(p_batch)):
             yield b

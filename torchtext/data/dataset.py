@@ -305,6 +305,30 @@ class StreamingDataset(Dataset):
         self.skip_header = skip_header
         self.__initialized = True
         self.reader = None
+        self.curline = 0
+
+    def initialize_reader(self):
+        f = io.open(os.path.expanduser(self.path), encoding="utf8")
+        if self.format == 'csv':
+            reader = unicode_csv_reader(f)
+        elif self.format == 'tsv':
+            reader = unicode_csv_reader(f, delimiter='\t')
+        else:
+            reader = f
+        return reader
+
+    def __getstate__(self):
+        if self.reader:
+            self.reader.close()  # kill for serialization
+            self.reader = None
+        return self.__dict__
+
+    def __setstate__(self, state):
+        self.__dict__ = state
+        self.reader = self.initialize_reader()
+        if self.curline:
+            for _ in range(self.curline):
+                self.reader.readline()
 
     def __getitem__(self, i):
         # Maybe this can be supported somehow?
@@ -315,23 +339,17 @@ class StreamingDataset(Dataset):
         return self.length
 
     def __iter__(self):
-        print("Starting iteration")
         if not self.reader:
-            f = io.open(os.path.expanduser(self.path), encoding="utf8")
-            if self.format == 'csv':
-                self.reader = unicode_csv_reader(f)
-            elif self.format == 'tsv':
-                self.reader = unicode_csv_reader(f, delimiter='\t')
-            else:
-                self.reader = f
+            self.reader = self.initialize_reader()
+            self.curline = 0
 
         for idx, line in enumerate(self.reader):
+            self.curline += 1
             yield self.make_example(line, self.original_fields)
         else:
             # Reset to start of file when end of dataset is reached
-            print("Finished iteration, reseting to start of file")
             self.reader.seek(0)
-        print("Finished with iteration")
+            self.curline = 0
 
 
 def check_split_ratio(split_ratio):
