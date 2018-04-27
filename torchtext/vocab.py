@@ -327,6 +327,8 @@ class Vectors(object):
             self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
             logger.info('Saving vectors to {}'.format(path_pt))
+            if not os.path.exists(cache):
+                os.makedirs(cache)
             torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
         else:
             logger.info('Loading vectors from {}'.format(path_pt))

@@ -1,5 +1,6 @@
 # coding: utf8
 from collections import Counter, OrderedDict
+from itertools import chain
 import six
 import torch
 from tqdm import tqdm
@@ -248,7 +249,10 @@ class Field(RawField):
             for x in data:
                 if not self.sequential:
                     x = [x]
-                counter.update(x)
+                try:
+                    counter.update(x)
+                except TypeError:
+                    counter.update(chain.from_iterable(x))
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.unk_token, self.pad_token, self.init_token,
                             self.eos_token]
