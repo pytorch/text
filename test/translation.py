@@ -33,7 +33,7 @@ DE.build_vocab(train.src, min_freq=3)
 EN.build_vocab(train.trg, max_size=50000)
 
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=0)
+    (train, val), batch_size=3)
 
 print(DE.vocab.freqs.most_common(10))
 print(len(DE.vocab))
@@ -60,7 +60,7 @@ DE.build_vocab(train.src, min_freq=3)
 EN.build_vocab(train.trg, max_size=50000)
 
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=0)
+    (train, val), batch_size=3)
 
 print(DE.vocab.freqs.most_common(10))
 print(len(DE.vocab))
@@ -90,7 +90,7 @@ DE.build_vocab(train.src, min_freq=3)
 EN.build_vocab(train.trg, max_size=50000)
 
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=0)
+    (train, val), batch_size=3)
 
 print(DE.vocab.freqs.most_common(10))
 print(len(DE.vocab))

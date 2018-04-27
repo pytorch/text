@@ -165,7 +165,7 @@ class TestDataset(TorchtextTestCase):
             for k, v in expected_freqs.items():
                 self.assertEqual(TEXT.vocab.freqs[k], v)
 
-            data_iter = data.Iterator(dataset, device=-1, batch_size=1,
+            data_iter = data.Iterator(dataset, batch_size=1,
                                       sort_within_batch=False, repeat=False)
             next(data_iter.__iter__())
 

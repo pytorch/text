@@ -3,7 +3,6 @@ from collections import Counter, OrderedDict
 from itertools import chain
 import six
 import torch
-from torch.autograd import Variable
 from tqdm import tqdm
 
 from .dataset import Dataset
@@ -43,7 +42,7 @@ class RawField(object):
         else:
             return x
 
-    def process(self, batch, *args, **kargs):
+    def process(self, batch, *args, **kwargs):
         """ Process a list of examples to create a batch.
 
         Postprocess the batch with user-provided Pipeline.
@@ -91,8 +90,8 @@ class Field(RawField):
             Default: None.
         postprocessing: A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
-            into a Tensor. The pipeline function takes the batch as a list,
-            the field's Vocab, and train (a bool).
+            into a Tensor. The pipeline function takes the batch as a list, and
+            the field's Vocab.
             Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
@@ -174,7 +173,7 @@ class Field(RawField):
         else:
             return x
 
-    def process(self, batch, device, train):
+    def process(self, batch, device=None):
         """ Process a list of examples to create a torch.Tensor.
 
         Pad, numericalize, and postprocess a batch and create a tensor.
@@ -186,7 +185,7 @@ class Field(RawField):
                 and custom postprocessing Pipeline.
         """
         padded = self.pad(batch)
-        tensor = self.numericalize(padded, device=device, train=train)
+        tensor = self.numericalize(padded, device=device)
         return tensor
 
     def pad(self, minibatch):
@@ -260,7 +259,7 @@ class Field(RawField):
             if tok is not None))
         self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
 
-    def numericalize(self, arr, device=None, train=True):
+    def numericalize(self, arr, device=None):
         """Turn a batch of examples that use this field into a Variable.
 
         If the field has include_lengths=True, a tensor of lengths will be
@@ -271,12 +270,9 @@ class Field(RawField):
                 List of tokenized and padded examples, or tuple of List of
                 tokenized and padded examples and List of lengths of each
                 example if self.include_lengths is True.
-            device (-1 or None): Device to create the Variable's Tensor on.
-                Use -1 for CPU and None for the currently active GPU device.
-                Default: None.
-            train (boolean): Whether the batch is for a training set.
-                If False, the Variable will be created with volatile=True.
-                Default: True.
+            device (str or torch.device): A string or instance of `torch.device`
+                specifying which device the Variables are going to be created on.
+                If left as default, the tensors will be created on cpu. Default: None.
         """
         if self.include_lengths and not isinstance(arr, tuple):
             raise ValueError("Field has include_lengths set to True, but "
@@ -284,7 +280,7 @@ class Field(RawField):
                              "(data batch, batch lengths).")
         if isinstance(arr, tuple):
             arr, lengths = arr
-            lengths = torch.LongTensor(lengths)
+            lengths = torch.LongTensor(lengths, device=device)
 
         if self.use_vocab:
             if self.sequential:
@@ -293,7 +289,7 @@ class Field(RawField):
                 arr = [self.vocab.stoi[x] for x in arr]
 
             if self.postprocessing is not None:
-                arr = self.postprocessing(arr, self.vocab, train)
+                arr = self.postprocessing(arr, self.vocab)
         else:
             if self.tensor_type not in self.tensor_types:
                 raise ValueError(
@@ -309,21 +305,18 @@ class Field(RawField):
                 arr = [numericalization_func(x) if isinstance(x, six.string_types)
                        else x for x in arr]
             if self.postprocessing is not None:
-                arr = self.postprocessing(arr, None, train)
+                arr = self.postprocessing(arr, None)
 
-        arr = self.tensor_type(arr)
+        var = self.tensor_type(arr, device=device)
+
         if self.sequential and not self.batch_first:
-            arr.t_()
-        if device == -1:
-            if self.sequential:
-                arr = arr.contiguous()
-        else:
-            arr = arr.cuda(device)
-            if self.include_lengths:
-                lengths = lengths.cuda(device)
+            var.t_()
+        if self.sequential:
+            var = var.contiguous()
+
         if self.include_lengths:
-            return Variable(arr, volatile=not train), lengths
-        return Variable(arr, volatile=not train)
+            return var, lengths
+        return var
 
 
 class ReversibleField(Field):
@@ -432,8 +425,8 @@ class NestedField(Field):
             Default: ``None``.
         postprocessing (Pipeline): A Pipeline that will be applied to examples using
             this field after numericalizing but before the numbers are turned
-            into a Tensor. The pipeline function takes the batch as a list,
-            the field's Vocab, and train (a bool). Default: ``None``.
+            into a Tensor. The pipeline function takes the batch as a list, and
+            the field's Vocab. Default: ``None``.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
@@ -644,7 +637,7 @@ class NestedField(Field):
 
         self.nesting_field.vocab = self.vocab
 
-    def numericalize(self, arrs, device=None, train=True):
+    def numericalize(self, arrs, device=None):
         """Convert a padded minibatch into a variable tensor.
 
         Each item in the minibatch will be numericalized independently and the resulting
@@ -652,11 +645,9 @@ class NestedField(Field):
 
         Arguments:
             arr (List[List[str]]): List of tokenized and padded examples.
-            device (int): Device to create the Variable's Tensor on.
-                Use -1 for CPU and None for the currently active GPU device.
-                Default: None.
-            train (bool): Whether the batch is for a training set. If False, the Variable
-                will be created with volatile=True. Default: True.
+            device (str or torch.device): A string or instance of `torch.device`
+                specifying which device the Variables are going to be created on.
+                If left as default, the tensors will be created on cpu. Default: None.
         """
         numericalized = []
         self.nesting_field.include_lengths = False
@@ -665,19 +656,15 @@ class NestedField(Field):
 
         for arr in arrs:
             numericalized_ex = self.nesting_field.numericalize(
-                arr, device=device, train=train)
+                arr, device=device)
             numericalized.append(numericalized_ex)
         padded_batch = torch.stack(numericalized)
 
         self.nesting_field.include_lengths = True
         if self.include_lengths:
-            sentence_lengths = torch.LongTensor(sentence_lengths)
-            word_lengths = torch.LongTensor(word_lengths)
-            if device == -1:
-                return (padded_batch, sentence_lengths, word_lengths)
-            else:
-                return (padded_batch,
-                        sentence_lengths.cuda(device), word_lengths.cuda(device))
+            sentence_lengths = torch.LongTensor(sentence_lengths, device=device)
+            word_lengths = torch.LongTensor(word_lengths, device=device)
+            return (padded_batch, sentence_lengths, word_lengths)
         return padded_batch
 
 
