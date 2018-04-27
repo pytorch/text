@@ -315,6 +315,7 @@ class StreamingDataset(Dataset):
         return self.length
 
     def __iter__(self):
+        print("Starting iteration")
         if not self.reader:
             f = io.open(os.path.expanduser(self.path), encoding="utf8")
             if self.format == 'csv':
@@ -328,7 +329,9 @@ class StreamingDataset(Dataset):
             yield self.make_example(line, self.original_fields)
         else:
             # Reset to start of file when end of dataset is reached
+            print("Finished iteration, reseting to start of file")
             self.reader.seek(0)
+        print("Finished with iteration")
 
 
 def check_split_ratio(split_ratio):

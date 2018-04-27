@@ -234,10 +234,12 @@ class StreamingIterator(Iterator):
     def __init__(self, dataset, batch_size, sort_key=None,
                  device=None, batch_size_fn=None, train=True,
                  repeat=None, shuffle=None, sort=None,
-                 sort_within_batch=None, preload=100):
-        self.preload = preload
+                 sort_within_batch=None, lookahead=100,
+                 max_buffer_size=100):
+        self.max_buffer_size = max_buffer_size
         self.data_buffer = []  # Buffer list for data 
-        self.buffer_capacity = preload * batch_size
+        self.buffer_capacity = max_buffer_size * batch_size
+        self.lookahead = lookahead
         super(StreamingIterator, self).__init__(dataset, batch_size, sort_key,
                  device, batch_size_fn, train, repeat, shuffle, sort, sort_within_batch)
 
@@ -246,18 +248,24 @@ class StreamingIterator(Iterator):
         raise NotImplementedError
 
     def fill_buffer(self):
-        while len(self.data_buffer) < self.buffer_capacity:
-            self.data_buffer.append(next(iter(self.dataset)))
+        print("Filling buffer, buffer size = {}".format(len(self.data_buffer)))
+        for example in self.dataset:
+            self.data_buffer.append(example)
+            if len(self.data_buffer) >= self.buffer_capacity:
+                return
+
 
     def create_batches(self):
         self.fill_buffer()
+        print("Buffer size after fill = {}".format(len(self.data_buffer)))
         if self.sort:
             self.batches = batch(self.data_buffer, self.batch_size,
                                  self.batch_size_fn)
         else:
             self.batches = pool(self.data_buffer, self.batch_size,
                                 self.sort_key, self.batch_size_fn,
-                                random_shuffler=self.random_shuffler)
+                                random_shuffler=self.random_shuffler,
+                                lookahead=self.lookahead)
 
     def init_epoch(self):
         """Set up the batch generator for a new epoch."""
@@ -281,13 +289,14 @@ class StreamingIterator(Iterator):
         while True:
             # Outer loop: epoch
             self.init_epoch()
-            while self._iterations_this_epoch < len(self):
-                #print(self.batches)
+            while self.iterations < len(self):
+                print("In while")
                 for idx, minibatch in enumerate(self.batches):
+                    print("Index in minibatch:", idx)
                     # Inner loop: minibatches in buffer
                     # fast-forward if loaded from state
-                    if self._iterations_this_epoch > idx:
-                        continue
+                    #if self._iterations_this_epoch > idx:
+                    #    continue
                     self.iterations += 1
                     self._iterations_this_epoch += 1
                     if self.sort_within_batch:
@@ -301,6 +310,7 @@ class StreamingIterator(Iterator):
                     yield Batch(minibatch, self.dataset, self.device,
                                 self.train)
                 # Refill buffer and create new batches
+                self.data_buffer = []
                 self.create_batches()
 
             if not self.repeat:
@@ -344,16 +354,16 @@ def batch(data, batch_size, batch_size_fn=None):
 
 
 def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
-         random_shuffler=None):
+         random_shuffler=None, lookahead=100):
     """Sort within buckets, then batch, then shuffle batches.
 
-    Partitions data into chunks of size 100*batch_size, sorts examples within
+    Partitions data into chunks of size lookahead*batch_size, sorts examples within
     each chunk using sort_key, then batch these examples and shuffle the
     batches.
     """
     if random_shuffler is None:
         random_shuffler = random.shuffle
-    for p in batch(data, batch_size * 100, batch_size_fn):
+    for p in batch(data, batch_size * lookahead, batch_size_fn):
         # breaks here
         p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
         for b in random_shuffler(list(p_batch)):
