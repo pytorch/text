@@ -253,7 +253,6 @@ class StreamingIterator(Iterator):
             if len(self.data_buffer) >= self.buffer_capacity:
                 return
 
-
     def create_batches(self):
         self.fill_buffer()
         if self.sort:
