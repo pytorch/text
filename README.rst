@@ -69,7 +69,7 @@ The data module provides the following:
   .. code-block:: python
 
       >>> # continuing from above
-      >>> mt_dev = data.TranslationDataset(
+      >>> mt_dev = datasets.TranslationDataset(
       ...     path='data/mt/newstest2014', exts=('.en', '.de'),
       ...     fields=(src, trg))
       >>> src.build_vocab(mt_train, max_size=80000)
