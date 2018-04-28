@@ -336,7 +336,7 @@ class TestField(TorchtextTestCase):
         # Test basic usage
         int_field = data.Field(sequential=False, use_vocab=False)
         float_field = data.Field(sequential=False, use_vocab=False,
-                                 tensor_type=torch.FloatTensor)
+                                 dtype=torch.float)
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
             path=self.test_numerical_features_dataset_path, format="tsv",
@@ -355,7 +355,7 @@ class TestField(TorchtextTestCase):
         int_field = data.Field(sequential=False, use_vocab=False,
                                postprocessing=lambda arr, _: [x + 1 for x in arr])
         float_field = data.Field(sequential=False, use_vocab=False,
-                                 tensor_type=torch.FloatTensor,
+                                 dtype=torch.float,
                                  postprocessing=lambda arr, _: [x * 0.5 for x in arr])
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
@@ -406,7 +406,7 @@ class TestNestedField(TorchtextTestCase):
         assert field.eos_token is None
         assert field.unk_token == nesting_field.unk_token
         assert field.fix_length is None
-        assert field.tensor_type is torch.LongTensor
+        assert field.dtype is torch.long
         assert field.preprocessing is None
         assert field.postprocessing is None
         assert field.lower == nesting_field.lower
@@ -444,7 +444,7 @@ class TestNestedField(TorchtextTestCase):
             init_token="<s>",
             eos_token="</s>",
             fix_length=10,
-            tensor_type=torch.FloatTensor,
+            dtype=torch.float,
             preprocessing=lambda xs: list(reversed(xs)),
             postprocessing=lambda xs: [x.upper() for x in xs],
             tokenize=list,
@@ -455,7 +455,7 @@ class TestNestedField(TorchtextTestCase):
         assert field.init_token == "<s>"
         assert field.eos_token == "</s>"
         assert field.fix_length == 10
-        assert field.tensor_type is torch.FloatTensor
+        assert field.dtype is torch.float
         assert field.preprocessing("a b c".split()) == "c b a".split()
         assert field.postprocessing("a b c".split()) == "A B C".split()
         assert field.tokenize("abc") == ["a", "b", "c"]
