@@ -2,7 +2,6 @@ import os
 from io import open
 
 import torch
-from torch.autograd import Variable
 
 from ..data import Dataset, Field, Example, Iterator
 
@@ -36,21 +35,18 @@ class BABI20Field(Field):
         else:
             return super(BABI20Field, self).pad(minibatch)
 
-    def numericalize(self, arr, device=None, train=True):
+    def numericalize(self, arr, device=None):
         if isinstance(arr[0][0], list):
             tmp = [
-                super(BABI20Field, self).numericalize(x, device=device, train=train).data
+                super(BABI20Field, self).numericalize(x, device=device).data
                 for x in arr
             ]
             arr = torch.stack(tmp)
-            if device == -1:
-                if self.sequential:
-                    arr = arr.contiguous()
-            else:
-                arr = arr.cuda(device)
-            return Variable(arr, volatile=not train)
+            if self.sequential:
+                arr = arr.contiguous()
+            return arr
         else:
-            return super(BABI20Field, self).numericalize(arr, device=device, train=train)
+            return super(BABI20Field, self).numericalize(arr, device=device)
 
 
 class BABI20(Dataset):

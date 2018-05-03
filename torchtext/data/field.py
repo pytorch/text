@@ -82,8 +82,8 @@ class Field(RawField):
             field, or None for no end-of-sentence token. Default: None.
         fix_length: A fixed length that all examples using this field will be
             padded to, or None for flexible sequence lengths. Default: None.
-        tensor_type: The torch.Tensor class that represents a batch of examples
-            of this kind of data. Default: torch.LongTensor.
+        dtype: The torch.dtype class that represents a batch of examples
+            of this kind of data. Default: torch.long.
         preprocessing: The Pipeline that will be applied to examples
             using this field after tokenizing but before numericalizing. Many
             Datasets replace this attribute with a custom preprocessor.
@@ -109,30 +109,28 @@ class Field(RawField):
     """
 
     vocab_cls = Vocab
-    # Dictionary mapping PyTorch tensor types to the appropriate Python
+    # Dictionary mapping PyTorch tensor dtypes to the appropriate Python
     # numeric type.
-    tensor_types = {
-        torch.FloatTensor: float,
-        torch.cuda.FloatTensor: float,
-        torch.DoubleTensor: float,
-        torch.cuda.DoubleTensor: float,
-        torch.HalfTensor: float,
-        torch.cuda.HalfTensor: float,
+    dtypes = {
+        torch.float32: float,
+        torch.float: float,
+        torch.float64: float,
+        torch.double: float,
+        torch.float16: float,
+        torch.half: float,
 
-        torch.ByteTensor: int,
-        torch.cuda.ByteTensor: int,
-        torch.CharTensor: int,
-        torch.cuda.CharTensor: int,
-        torch.ShortTensor: int,
-        torch.cuda.ShortTensor: int,
-        torch.IntTensor: int,
-        torch.cuda.IntTensor: int,
-        torch.LongTensor: int,
-        torch.cuda.LongTensor: int
+        torch.uint8: int,
+        torch.int8: int,
+        torch.int16: int,
+        torch.short: int,
+        torch.int32: int,
+        torch.int: int,
+        torch.int64: int,
+        torch.long: int,
     }
 
     def __init__(self, sequential=True, use_vocab=True, init_token=None,
-                 eos_token=None, fix_length=None, tensor_type=torch.LongTensor,
+                 eos_token=None, fix_length=None, dtype=torch.long,
                  preprocessing=None, postprocessing=None, lower=False,
                  tokenize=(lambda s: s.split()), include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
@@ -143,7 +141,7 @@ class Field(RawField):
         self.eos_token = eos_token
         self.unk_token = unk_token
         self.fix_length = fix_length
-        self.tensor_type = tensor_type
+        self.dtype = dtype
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
         self.lower = lower
@@ -280,7 +278,7 @@ class Field(RawField):
                              "(data batch, batch lengths).")
         if isinstance(arr, tuple):
             arr, lengths = arr
-            lengths = torch.LongTensor(lengths, device=device)
+            lengths = torch.tensor(lengths, dtype=self.dtype, device=device)
 
         if self.use_vocab:
             if self.sequential:
@@ -291,13 +289,13 @@ class Field(RawField):
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, self.vocab)
         else:
-            if self.tensor_type not in self.tensor_types:
+            if self.dtype not in self.dtypes:
                 raise ValueError(
-                    "Specified Field tensor_type {} can not be used with "
+                    "Specified Field dtype {} can not be used with "
                     "use_vocab=False because we do not know how to numericalize it. "
                     "Please raise an issue at "
-                    "https://github.com/pytorch/text/issues".format(self.tensor_type))
-            numericalization_func = self.tensor_types[self.tensor_type]
+                    "https://github.com/pytorch/text/issues".format(self.dtype))
+            numericalization_func = self.dtypes[self.dtype]
             # It doesn't make sense to explictly coerce to a numeric type if
             # the data is sequential, since it's unclear how to coerce padding tokens
             # to a numeric type.
@@ -307,7 +305,7 @@ class Field(RawField):
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, None)
 
-        var = self.tensor_type(arr, device=device)
+        var = torch.tensor(arr, dtype=self.dtype, device=device)
 
         if self.sequential and not self.batch_first:
             var.t_()
@@ -417,8 +415,8 @@ class NestedField(Field):
             field, or None for no end-of-sentence token. Default: ``None``.
         fix_length (int): A fixed length that all examples using this field will be
             padded to, or ``None`` for flexible sequence lengths. Default: ``None``.
-        tensor_type: The torch.Tensor class that represents a batch of examples
-            of this kind of data. Default: ``torch.LongTensor``.
+        dtype: The torch.dtype class that represents a batch of examples
+            of this kind of data. Default: ``torch.long``.
         preprocessing (Pipeline): The Pipeline that will be applied to examples
             using this field after tokenizing but before numericalizing. Many
             Datasets replace this attribute with a custom preprocessor.
@@ -440,7 +438,7 @@ class NestedField(Field):
     """
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
-                 fix_length=None, tensor_type=torch.LongTensor, preprocessing=None,
+                 fix_length=None, dtype=torch.long, preprocessing=None,
                  postprocessing=None, tokenize=lambda s: s.split(),
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
@@ -456,7 +454,7 @@ class NestedField(Field):
             init_token=init_token,
             eos_token=eos_token,
             fix_length=fix_length,
-            tensor_type=tensor_type,
+            dtype=dtype,
             preprocessing=preprocessing,
             postprocessing=postprocessing,
             lower=nesting_field.lower,
