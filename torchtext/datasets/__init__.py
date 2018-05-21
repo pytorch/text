@@ -1,5 +1,5 @@
 from .language_modeling import LanguageModelingDataset, WikiText2, PennTreebank  # NOQA
-from .snli import SNLI
+from .nli import SNLI, MultiNLI
 from .sst import SST
 from .translation import TranslationDataset, Multi30k, IWSLT, WMT14  # NOQA
 from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking # NOQA
@@ -10,11 +10,12 @@ from .babi import BABI20
 
 __all__ = ['LanguageModelingDataset',
            'SNLI',
+           'MultiNLI',
            'SST',
            'TranslationDataset',
            'Multi30k',
            'IWSLT',
-           'WMT14'
+           'WMT14',
            'WikiText2',
            'PennTreeBank',
            'TREC',

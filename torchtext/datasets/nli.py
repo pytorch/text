@@ -22,11 +22,11 @@ class ParsedTextField(data.Field):
                 list(reversed(p)) for p in parse])
 
 
-class SNLI(data.TabularDataset):
+class NLIDataset(data.TabularDataset):
 
-    urls = ['http://nlp.stanford.edu/projects/snli/snli_1.0.zip']
-    dirname = 'snli_1.0'
-    name = 'snli'
+    urls = []
+    dirname = ''
+    name = 'nli'
 
     @staticmethod
     def sort_key(ex):
@@ -35,8 +35,7 @@ class SNLI(data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, parse_field=None, root='.data',
-               train='snli_1.0_train.jsonl', validation='snli_1.0_dev.jsonl',
-               test='snli_1.0_test.jsonl'):
+               train='train.jsonl', validation='val.jsonl', test='test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
         This is the most flexible way to use the dataset.
@@ -48,8 +47,7 @@ class SNLI(data.TabularDataset):
             parse_field: The field that will be used for shift-reduce parser
                 transitions, or None to not include them.
             root: The root directory that the dataset's zip archive will be
-                expanded into; therefore the directory in whose snli_1.0
-                subdirectory the data files will be stored.
+                expanded into.
             train: The filename of the train data. Default: 'train.jsonl'.
             validation: The filename of the validation data, or None to not
                 load the validation set. Default: 'dev.jsonl'.
@@ -59,13 +57,13 @@ class SNLI(data.TabularDataset):
         path = cls.download(root)
 
         if parse_field is None:
-            return super(SNLI, cls).splits(
+            return super(NLIDataset, cls).splits(
                 path, root, train, validation, test,
                 format='json', fields={'sentence1': ('premise', text_field),
                                        'sentence2': ('hypothesis', text_field),
                                        'gold_label': ('label', label_field)},
                 filter_pred=lambda ex: ex.label != '-')
-        return super(SNLI, cls).splits(
+        return super(NLIDataset, cls).splits(
             path, root, train, validation, test,
             format='json', fields={'sentence1_binary_parse':
                                    [('premise', text_field),
@@ -113,3 +111,30 @@ class SNLI(data.TabularDataset):
 
         return data.BucketIterator.splits(
             (train, val, test), batch_size=batch_size, device=device)
+
+
+class SNLI(NLIDataset):
+    urls = ['http://nlp.stanford.edu/projects/snli/snli_1.0.zip']
+    dirname = 'snli_1.0'
+    name = 'snli'
+
+    @classmethod
+    def splits(cls, text_field, label_field, parse_field=None, root='.data',
+               train='snli_1.0_train.jsonl', validation='snli_1.0_dev.jsonl',
+               test='snli_1.0_test.jsonl'):
+        return super(SNLI, cls).splits(text_field, label_field, parse_field,
+                                       root, train, validation, test)
+
+
+class MultiNLI(NLIDataset):
+    urls = ['http://www.nyu.edu/projects/bowman/multinli/multinli_1.0.zip']
+    dirname = 'multinli_1.0'
+    name = 'multinli'
+
+    @classmethod
+    def splits(cls, text_field, label_field, parse_field=None, root='.data',
+               train='multinli_1.0_train.jsonl',
+               validation='multinli_1.0_dev_matched.jsonl',
+               test='multinli_1.0_dev_mismatched.jsonl'):
+        return super(MultiNLI, cls).splits(text_field, label_field, parse_field,
+                                           root, train, validation, test)
