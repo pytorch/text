@@ -8,31 +8,30 @@ class Batch(object):
         batch_size: Number of examples in the batch.
         dataset: A reference to the dataset object the examples come from
             (which itself contains the dataset's Field objects).
-        train: Whether the batch is from a training set.
+        train: Deprecated: this attribute is left for backwards compatibility,
+            however it is UNUSED as of the merger with pytorch 0.4.
 
     Also stores the Variable for each column in the batch as an attribute.
     """
 
-    def __init__(self, data=None, dataset=None, device=None, train=True):
+    def __init__(self, data=None, dataset=None, device=None):
         """Create a Batch from a list of examples."""
         if data is not None:
             self.batch_size = len(data)
             self.dataset = dataset
-            self.train = train
             self.fields = dataset.fields.keys()  # copy field names
 
             for (name, field) in dataset.fields.items():
                 if field is not None:
                     batch = [getattr(x, name) for x in data]
-                    setattr(self, name, field.process(batch, device=device, train=train))
+                    setattr(self, name, field.process(batch, device=device))
 
     @classmethod
-    def fromvars(cls, dataset, batch_size, train=True, **kwargs):
+    def fromvars(cls, dataset, batch_size, train=None, **kwargs):
         """Create a Batch directly from a number of Variables."""
         batch = cls()
         batch.batch_size = batch_size
         batch.dataset = dataset
-        batch.train = train
         batch.fields = dataset.fields.keys()
         for k, v in kwargs.items():
             setattr(batch, k, v)

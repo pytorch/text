@@ -20,10 +20,10 @@ class TestDataset(TorchtextTestCase):
         train, valid, test = ds.splits(TEXT)
         TEXT.build_vocab(train)
         train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-            (train, valid, test), batch_size=3, bptt_len=30, device=-1)
+            (train, valid, test), batch_size=3, bptt_len=30)
 
         train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-                                                     bptt_len=30, device=-1)
+                                                     bptt_len=30)
 
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
@@ -38,10 +38,10 @@ class TestDataset(TorchtextTestCase):
         train, valid, test = ds.splits(TEXT)
         TEXT.build_vocab(train)
         train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-            (train, valid, test), batch_size=3, bptt_len=30, device=-1)
+            (train, valid, test), batch_size=3, bptt_len=30)
 
         train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-                                                     bptt_len=30, device=-1)
+                                                     bptt_len=30)
 
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":

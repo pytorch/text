@@ -118,7 +118,7 @@ def verify_numericalized_example(field, test_example_data,
         for token_idx, numericalized_token in enumerate(
                 numericalized_single_example):
             # Convert from Variable to int
-            numericalized_token = numericalized_token.data[0]
+            numericalized_token = numericalized_token.item()  # Pytorch v4 compatibility
             test_example_token = test_example_data[example_idx][token_idx]
             # Check if the numericalized example is correct, taking into
             # account unknown tokens.

@@ -67,6 +67,14 @@ def interleave_keys(a, b):
     return int(''.join(interleave(format(x, '016b') for x in (a, b))), base=2)
 
 
+def get_torch_version():
+    import torch
+    v = torch.__version__
+    version_substrings = v.split('.')
+    major, minor = version_substrings[0], version_substrings[1]
+    return int(major), int(minor)
+
+
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""
