@@ -7,6 +7,8 @@ import logging
 import os
 import zipfile
 
+import numpy as np
+
 import six
 from six.moves.urllib.request import urlretrieve
 import torch
@@ -290,10 +292,7 @@ class Vectors(object):
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
-            # str call is necessary for Python 2/3 compatibility, since
-            # argument must be Python 2 str (Python 3 bytes) or
-            # Python 3 str (Python 2 unicode)
-            itos, vectors, dim = [], array.array(str('d')), None
+
 
             # Try to read the whole file with utf-8 encoding.
             binary_lines = False
@@ -315,10 +314,13 @@ class Vectors(object):
                 num_lines = _linecount(f)
 
             logger.info("Loading vectors from {}".format(path))
-            # Move this to an argument check:
-            # the filter_vocab must be a set or an iterable forced into a set
-            # if filter_vocab is None, force it into an empty set
 
+            # str call is necessary for Python 2/3 compatibility, since
+            # argument must be Python 2 str (Python 3 bytes) or
+            # Python 3 str (Python 2 unicode)
+            dim = _vecdim(f, binary_lines)
+            itos, vectors, skipped = [], np.zeros((num_lines, dim)), 0
+            idx = 0
             for line in tqdm(f, total=num_lines):
                 # Explicitly splitting on " " is important, so we don't
                 # get rid of Unicode non-breaking spaces in the vectors.
@@ -331,11 +333,10 @@ class Vectors(object):
                         # Skip entry
                         continue
 
-                if dim is None and len(entries) > 1:
-                    dim = len(entries)
-                elif len(entries) == 1:
+                if len(entries) == 1:
                     logger.warning("Skipping token {} with 1-dimensional "
                                    "vector {}; likely a header".format(word, entries))
+                    skipped += 1
                     continue
                 elif dim != len(entries):
                     raise RuntimeError(
@@ -350,14 +351,22 @@ class Vectors(object):
                     except:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
                         continue
-                vectors.extend(float(x) for x in entries)
+                vectors[idx] = np.array([float(x) for x in entries])
+                idx+=1
                 itos.append(word)
 
+            skip_indices = range(num_lines - skipped, skipped+1)
+            vectors = np.delete(vectors, skip_indices, axis=0)
             self.itos = itos
             self.stoi = {word: i for i, word in enumerate(itos)}
-            self.vectors = torch.Tensor(vectors).view(-1, dim)
+
+            print(vectors.size)
+            self.vectors = torch.as_tensor(vectors)
+            #self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
             logger.info('Saving vectors to {}'.format(path_pt))
+            if not os.path.exists(cache):
+                os.makedirs(cache)
             torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
         else:
             logger.info('Loading vectors from {}'.format(path_pt))
@@ -431,6 +440,17 @@ def _linecount(f):
         num_lines += 1
     f.seek(0)
     return num_lines
+
+
+def _vecdim(f, binary_lines):
+    for line in f:
+        entries = line.rstrip().split(b" " if binary_lines else " ")
+
+        word, entries = entries[0], entries[1:]
+        dim = len(entries)
+        if dim != 1:
+            f.seek(0)
+            return dim
 
 
 pretrained_aliases = {

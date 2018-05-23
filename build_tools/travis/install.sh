@@ -59,5 +59,5 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     python -m nltk.downloader perluniprops nonbreaking_prefixes
 
     # PyTorch
-    conda install --yes pytorch torchvision -c soumith
+    conda install --yes pytorch torchvision -c pytorch
 fi
