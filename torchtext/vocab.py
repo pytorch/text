@@ -6,8 +6,6 @@ import logging
 import os
 import zipfile
 
-import numpy as np
-
 import six
 from six.moves.urllib.request import urlretrieve
 import torch
