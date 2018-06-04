@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-import array
 from collections import defaultdict
 from functools import partial
 import io
@@ -31,8 +30,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None, discard_unused=True,
-                 custom_vocab=None):
+                 vectors=None, unk_init=None, vectors_cache=None):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -52,10 +50,6 @@ class Vocab(object):
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
             vectors_cache: Directory for cached vectors. Default: '.vector_cache'
-            discard_unused: A boolean flag indicating whether the keep only the vectors
-                which are present in the Field's vocabulary. Defaults to True.
-            custom_vocab: A set of strings for which the vectors will be kept. Overrides
-                the behavior set by `discard_unused` if not `None`.
         """
         self.freqs = counter
         counter = counter.copy()
@@ -84,16 +78,7 @@ class Vocab(object):
 
         self.vectors = None
         if vectors is not None:
-            if custom_vocab:
-                keep_vectors = custom_vocab  # should check if this is a set
-            elif discard_unused:
-                keep_vectors = set(self.itos)  # for O(1) query
-            else:
-                logger.warning("Choosing to keep all pretrained vectors will" +
-                               " greatly increase memory usage.")
-                keep_vectors = None  # keep all vectors (discouraged)
-            self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache,
-                              filter_vocab=keep_vectors)
+            self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
         else:
             assert unk_init is None and vectors_cache is None
 
@@ -237,7 +222,7 @@ class SubwordVocab(Vocab):
 class Vectors(object):
 
     def __init__(self, name, cache=None,
-                 url=None, unk_init=None, filter_vocab=None):
+                 url=None, unk_init=None):
         """
         Arguments:
            name: name of the file that contains the vectors
@@ -246,13 +231,10 @@ class Vectors(object):
            unk_init (callback): by default, initalize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
-            filter_vocab: the set of words for which the vectors should be retained.
-                If set to `None`, all of the vectors are loaded (this can be memory)
-                intensive.
          """
         cache = '.vector_cache' if cache is None else cache
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
-        self.cache(name, cache, url=url, filter_vocab=filter_vocab)
+        self.cache(name, cache, url=url)
 
     def __getitem__(self, token):
         if token in self.stoi:
@@ -260,7 +242,7 @@ class Vectors(object):
         else:
             return self.unk_init(torch.Tensor(1, self.dim))
 
-    def cache(self, name, cache, url=None, filter_vocab=None):
+    def cache(self, name, cache, url=None):
         if os.path.isfile(name):
             path = name
             path_pt = os.path.join(cache, os.path.basename(name)) + '.pt'
@@ -292,17 +274,14 @@ class Vectors(object):
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
-
-
             # Try to read the whole file with utf-8 encoding.
             binary_lines = False
             num_lines = 0
             try:
-                # f = io.open(path, encoding="utf8")
                 f = io.open(path, encoding="utf8")
                 # Try iterating over the whole dataset to see
                 # if there are any malformed lines
-                num_lines = _linecount(f)
+                num_lines, dim = _infer_shape(f, binary_lines)
             # If there are malformed lines, read in binary mode
             # and manually decode each word from utf-8
             except:
@@ -311,15 +290,15 @@ class Vectors(object):
                                "words with malformed UTF8.".format(path))
                 f = open(path, 'rb')
                 binary_lines = True
-                num_lines = _linecount(f)
+                num_lines, dim = _infer_shape(f, binary_lines)
 
             logger.info("Loading vectors from {}".format(path))
 
             # str call is necessary for Python 2/3 compatibility, since
             # argument must be Python 2 str (Python 3 bytes) or
             # Python 3 str (Python 2 unicode)
-            dim = _vecdim(f, binary_lines)
-            itos, vectors, skipped = [], np.zeros((num_lines, dim)), 0
+
+            itos, self.vectors, skipped = [], torch.zeros((num_lines, dim)), 0
             idx = 0
             for line in tqdm(f, total=num_lines):
                 # Explicitly splitting on " " is important, so we don't
@@ -327,11 +306,6 @@ class Vectors(object):
                 entries = line.rstrip().split(b" " if binary_lines else " ")
 
                 word, entries = entries[0], entries[1:]
-
-                if filter_vocab:  # Vocab filtering is ON
-                    if word not in filter_vocab:
-                        # Skip entry
-                        continue
 
                 if len(entries) == 1:
                     logger.warning("Skipping token {} with 1-dimensional "
@@ -351,18 +325,13 @@ class Vectors(object):
                     except:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
                         continue
-                vectors[idx] = np.array([float(x) for x in entries])
-                idx+=1
+                self.vectors[idx] = torch.tensor([float(x) for x in entries])
+                idx += 1
                 itos.append(word)
 
-            skip_indices = range(num_lines - skipped, skipped+1)
-            vectors = np.delete(vectors, skip_indices, axis=0)
             self.itos = itos
             self.stoi = {word: i for i, word in enumerate(itos)}
 
-            print(vectors.size)
-            self.vectors = torch.as_tensor(vectors)
-            #self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
             logger.info('Saving vectors to {}'.format(path_pt))
             if not os.path.exists(cache):
@@ -433,24 +402,21 @@ def _default_unk_index():
     return 0
 
 
-def _linecount(f):
-    # assumes that f is already an open stream
-    num_lines = 0
+def _infer_shape(f, binary_lines=False):
+    num_lines, vector_dim = 0, None
     for line in f:
-        num_lines += 1
+        if vector_dim is None:
+            row = line.rstrip().split(b" " if binary_lines else " ")
+            _, vector = row[0], row[1:]
+            # Assuming word, [vector] format
+            if len(vector) > 2:
+                # The header present in some (w2v) formats contains two elements.
+                vector_dim = len(vector)
+                num_lines += 1  # First element read
+        else:
+            num_lines += 1
     f.seek(0)
-    return num_lines
-
-
-def _vecdim(f, binary_lines):
-    for line in f:
-        entries = line.rstrip().split(b" " if binary_lines else " ")
-
-        word, entries = entries[0], entries[1:]
-        dim = len(entries)
-        if dim != 1:
-            f.seek(0)
-            return dim
+    return num_lines, vector_dim
 
 
 pretrained_aliases = {
