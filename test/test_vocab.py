@@ -141,6 +141,38 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    def test_vocab_vectors_custom_cache(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        vector_cache = os.path.join('/tmp', 'vector_cache')
+        # Build a vocab and get vectors twice to test caching.
+        for i in range(2):
+            if i == 1:
+                self.assertTrue(os.path.exists(vector_cache))
+
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
+                            vectors=Vectors('wiki.simple.vec', cache=vector_cache,
+                                            url=FastText.url_base.format('simple')))
+
+            self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
+                                      'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+            vectors = v.vectors.numpy()
+
+            # The first 5 entries in each vector.
+            expected_fasttext_simple_en = {
+                'hello': [0.39567, 0.21454, -0.035389, -0.24299, -0.095645],
+                'world': [0.10444, -0.10858, 0.27212, 0.13299, -0.33165],
+            }
+
+            for word in expected_fasttext_simple_en:
+                assert_allclose(vectors[v.stoi[word], :5],
+                                expected_fasttext_simple_en[word])
+
+            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+        # Delete the vectors after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            vec_file = os.path.join(vector_cache, "wiki.simple.vec")
+            conditional_remove(vec_file)
+
     @slow
     def test_vocab_download_glove_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})

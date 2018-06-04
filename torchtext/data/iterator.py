@@ -3,11 +3,13 @@ from __future__ import division
 import math
 import random
 
-import torch
+import logging
 
 from .utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
+
+logger = logging.getLogger(__name__)
 
 
 class Iterator(object):
@@ -36,8 +38,9 @@ class Iterator(object):
             self.sort_key) within each batch. If None, defaults to self.sort.
             If self.sort is True and this is False, the batch is left in the
             original (ascending) sorted order.
-        device: Device to create batches on. Use -1 for CPU and None for the
-            currently active GPU device.
+        device (str or `torch.device`): A string or instance of `torch.device`
+            specifying which device the Variables are going to be created on.
+            If left as default, the tensors will be created on cpu. Default: None.
     """
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
@@ -50,6 +53,7 @@ class Iterator(object):
         self.repeat = train if repeat is None else repeat
         self.shuffle = train if shuffle is None else shuffle
         self.sort = not train if sort is None else sort
+
         if sort_within_batch is None:
             self.sort_within_batch = self.sort
         else:
@@ -58,10 +62,13 @@ class Iterator(object):
             self.sort_key = dataset.sort_key
         else:
             self.sort_key = sort_key
-        self.device = device
-        if not torch.cuda.is_available() and self.device is None:
-            self.device = -1
 
+        if type(device) == int:
+            logger.warning("The `device` argument should be set by using `torch.device`" +
+                           " or passing a string as an argument. This behavior will be" +
+                           " deprecated soon and currently defaults to cpu.")
+            device = None
+        self.device = device
         self.random_shuffler = RandomShuffler()
 
         # For state loading/saving only
@@ -123,7 +130,7 @@ class Iterator(object):
 
     @property
     def epoch(self):
-        return self.iterations / len(self)
+        return math.floor(self.iterations / len(self))
 
     def __len__(self):
         if self.batch_size_fn is not None:
@@ -147,8 +154,7 @@ class Iterator(object):
                         minibatch.reverse()
                     else:
                         minibatch.sort(key=self.sort_key, reverse=True)
-                yield Batch(minibatch, self.dataset, self.device,
-                            self.train)
+                yield Batch(minibatch, self.dataset, self.device)
             if not self.repeat:
                 return
 
@@ -188,8 +194,9 @@ class BPTTIterator(Iterator):
         sort: Whether to sort examples according to self.sort_key.
             Note that repeat, shuffle, and sort default to train, train, and
             (not train).
-        device: Device to create batches on. Use -1 for CPU and None for the
-            currently active GPU device.
+        device (str or torch.device): A string or instance of `torch.device`
+            specifying which device the Variables are going to be created on.
+            If left as default, the tensors will be created on cpu. Default: None.
     """
 
     def __init__(self, dataset, batch_size, bptt_len, **kwargs):
@@ -207,15 +214,16 @@ class BPTTIterator(Iterator):
         text = text + ([TEXT.pad_token] * int(math.ceil(len(text) / self.batch_size) *
                                               self.batch_size - len(text)))
         data = TEXT.numericalize(
-            [text], device=self.device, train=self.train)
+            [text], device=self.device)
         data = data.view(self.batch_size, -1).t().contiguous()
         dataset = Dataset(examples=self.dataset.examples, fields=[
             ('text', TEXT), ('target', TEXT)])
         while True:
             for i in range(0, len(self) * self.bptt_len, self.bptt_len):
+                self.iterations += 1
                 seq_len = min(self.bptt_len, len(data) - i - 1)
                 yield Batch.fromvars(
-                    dataset, self.batch_size, train=self.train,
+                    dataset, self.batch_size,
                     text=data[i:i + seq_len],
                     target=data[i + 1:i + 1 + seq_len])
             if not self.repeat:
@@ -326,7 +334,9 @@ class BucketIterator(Iterator):
         else:
             self.batches = pool(self.data(), self.batch_size,
                                 self.sort_key, self.batch_size_fn,
-                                random_shuffler=self.random_shuffler)
+                                random_shuffler=self.random_shuffler,
+                                shuffle=self.shuffle,
+                                sort_within_batch=self.sort_within_batch)
 
 
 def batch(data, batch_size, batch_size_fn=None):
@@ -349,7 +359,7 @@ def batch(data, batch_size, batch_size_fn=None):
 
 
 def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
-         random_shuffler=None, lookahead=100):
+         random_shuffler=None, shuffle=False, sort_within_batch=False, lookahead=100):
     """Sort within buckets, then batch, then shuffle batches.
 
     Partitions data into chunks of size lookahead*batch_size, sorts examples within
@@ -359,6 +369,12 @@ def pool(data, batch_size, key, batch_size_fn=lambda new, count, sofar: count,
     if random_shuffler is None:
         random_shuffler = random.shuffle
     for p in batch(data, batch_size * lookahead, batch_size_fn):
-        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn)
-        for b in random_shuffler(list(p_batch)):
-            yield b
+        p_batch = batch(sorted(p, key=key), batch_size, batch_size_fn) \
+            if sort_within_batch \
+            else batch(p, batch_size, batch_size_fn)
+        if shuffle:
+            for b in random_shuffler(list(p_batch)):
+                yield b
+        else:
+            for b in list(p_batch):
+                yield b

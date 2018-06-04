@@ -39,7 +39,7 @@ print(UD_TAG.vocab.freqs)
 print(PTB_TAG.vocab.freqs)
 
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=0)
+    (train, val), batch_size=3, device="cuda:0")
 
 batch = next(iter(train_iter))
 
@@ -68,10 +68,19 @@ PTB_TAG.build_vocab(train.ptbtag)
 
 print(CHAR.vocab.freqs)
 train_iter, val_iter = data.BucketIterator.splits(
-    (train, val), batch_size=3, device=-1)
+    (train, val), batch_size=3)
 
 batch = next(iter(train_iter))
 
 print("words", batch.word)
 print("chars", batch.char)
 print("ptbtags", batch.ptbtag)
+
+# Using the CoNLL 2000 Chunking dataset:
+INPUTS = data.Field(init_token="<bos>", eos_token="<eos>")
+CHUNK_TAGS = data.Field(init_token="<bos>", eos_token="<eos>")
+
+train, val, test = datasets.CoNLL2000Chunking.splits(
+    fields=(('inputs', INPUTS), (None, None), ('tags', CHUNK_TAGS))
+)
+print(len(train), len(val), len(test))

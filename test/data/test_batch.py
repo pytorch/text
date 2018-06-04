@@ -15,5 +15,5 @@ class TestDataset(TorchtextTestCase):
                                   fields=[("text", data.Field(use_vocab=False,
                                                               sequential=False)),
                                           ("label", None)])
-        itr = data.Iterator(dst, batch_size=64, device=-1)
+        itr = data.Iterator(dst, batch_size=64)
         str(next(itr.__iter__()))

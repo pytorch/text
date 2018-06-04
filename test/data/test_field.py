@@ -6,6 +6,7 @@ from numpy.testing import assert_allclose
 import torch
 import torchtext.data as data
 import pytest
+from torch.nn import init
 
 from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
 
@@ -20,7 +21,7 @@ class TestField(TorchtextTestCase):
         batch_tensor = torch.LongTensor(batch)
 
         raw_field_processed = raw_field.process(batch)
-        field_processed = field.process(batch, device=-1, train=False)
+        field_processed = field.process(batch)
 
         assert raw_field_processed == batch
         assert field_processed.data.equal(batch_tensor)
@@ -244,15 +245,9 @@ class TestField(TorchtextTestCase):
                               "some", "oovs", "<pad>"]]
 
         # Test default
-        default_numericalized = question_field.numericalize(
-            test_example_data, device=-1)
+        default_numericalized = question_field.numericalize(test_example_data)
         verify_numericalized_example(question_field, test_example_data,
                                      default_numericalized)
-        # Test with train=False
-        volatile_numericalized = question_field.numericalize(
-            test_example_data, device=-1, train=False)
-        verify_numericalized_example(question_field, test_example_data,
-                                     volatile_numericalized, train=False)
 
     def test_numericalize_include_lengths(self):
         self.write_test_ppid_dataset(data_format="tsv")
@@ -274,7 +269,7 @@ class TestField(TorchtextTestCase):
 
         # Test with include_lengths
         include_lengths_numericalized = question_field.numericalize(
-            (test_example_data, test_example_lengths), device=-1)
+            (test_example_data, test_example_lengths))
         verify_numericalized_example(question_field,
                                      test_example_data,
                                      include_lengths_numericalized,
@@ -299,7 +294,7 @@ class TestField(TorchtextTestCase):
 
         # Test with batch_first
         include_lengths_numericalized = question_field.numericalize(
-            test_example_data, device=-1)
+            test_example_data)
         verify_numericalized_example(question_field,
                                      test_example_data,
                                      include_lengths_numericalized,
@@ -308,7 +303,7 @@ class TestField(TorchtextTestCase):
     def test_numericalize_postprocessing(self):
         self.write_test_ppid_dataset(data_format="tsv")
 
-        def reverse_postprocess(arr, vocab, train):
+        def reverse_postprocess(arr, vocab):
             return [list(reversed(sentence)) for sentence in arr]
 
         question_field = data.Field(sequential=True,
@@ -331,7 +326,7 @@ class TestField(TorchtextTestCase):
                                       test_example_data]
 
         postprocessed_numericalized = question_field.numericalize(
-            (test_example_data), device=-1)
+            (test_example_data))
         verify_numericalized_example(question_field,
                                      reversed_test_example_data,
                                      postprocessed_numericalized)
@@ -341,7 +336,7 @@ class TestField(TorchtextTestCase):
         # Test basic usage
         int_field = data.Field(sequential=False, use_vocab=False)
         float_field = data.Field(sequential=False, use_vocab=False,
-                                 tensor_type=torch.FloatTensor)
+                                 dtype=torch.float)
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
             path=self.test_numerical_features_dataset_path, format="tsv",
@@ -351,17 +346,17 @@ class TestField(TorchtextTestCase):
         test_int_data = ["1", "0", "1", "3", "19"]
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
-        numericalized_int = int_field.numericalize(test_int_data, device=-1)
+        numericalized_int = int_field.numericalize(test_int_data)
         assert_allclose(numericalized_int.data.numpy(), [1, 0, 1, 3, 19])
-        numericalized_float = float_field.numericalize(test_float_data, device=-1)
+        numericalized_float = float_field.numericalize(test_float_data)
         assert_allclose(numericalized_float.data.numpy(), [1.1, 0.1, 3.91, 0.2, 10.2])
 
         # Test with postprocessing applied
         int_field = data.Field(sequential=False, use_vocab=False,
-                               postprocessing=lambda arr, _, __: [x + 1 for x in arr])
+                               postprocessing=lambda arr, _: [x + 1 for x in arr])
         float_field = data.Field(sequential=False, use_vocab=False,
-                                 tensor_type=torch.FloatTensor,
-                                 postprocessing=lambda arr, _, __: [x * 0.5 for x in arr])
+                                 dtype=torch.float,
+                                 postprocessing=lambda arr, _: [x * 0.5 for x in arr])
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
             path=self.test_numerical_features_dataset_path, format="tsv",
@@ -371,9 +366,9 @@ class TestField(TorchtextTestCase):
         test_int_data = ["1", "0", "1", "3", "19"]
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
-        numericalized_int = int_field.numericalize(test_int_data, device=-1)
+        numericalized_int = int_field.numericalize(test_int_data)
         assert_allclose(numericalized_int.data.numpy(), [2, 1, 2, 4, 20])
-        numericalized_float = float_field.numericalize(test_float_data, device=-1)
+        numericalized_float = float_field.numericalize(test_float_data)
         assert_allclose(numericalized_float.data.numpy(), [0.55, 0.05, 1.955, 0.1, 5.1])
 
     def test_errors(self):
@@ -395,7 +390,7 @@ class TestField(TorchtextTestCase):
                                  ["Here", "is", "a", "sentence", "with",
                                   "some", "oovs", "<pad>"]]
             question_field.numericalize(
-                test_example_data, device=-1)
+                test_example_data)
 
 
 class TestNestedField(TorchtextTestCase):
@@ -411,7 +406,7 @@ class TestNestedField(TorchtextTestCase):
         assert field.eos_token is None
         assert field.unk_token == nesting_field.unk_token
         assert field.fix_length is None
-        assert field.tensor_type is torch.LongTensor
+        assert field.dtype is torch.long
         assert field.preprocessing is None
         assert field.postprocessing is None
         assert field.lower == nesting_field.lower
@@ -449,7 +444,7 @@ class TestNestedField(TorchtextTestCase):
             init_token="<s>",
             eos_token="</s>",
             fix_length=10,
-            tensor_type=torch.FloatTensor,
+            dtype=torch.float,
             preprocessing=lambda xs: list(reversed(xs)),
             postprocessing=lambda xs: [x.upper() for x in xs],
             tokenize=list,
@@ -460,7 +455,7 @@ class TestNestedField(TorchtextTestCase):
         assert field.init_token == "<s>"
         assert field.eos_token == "</s>"
         assert field.fix_length == 10
-        assert field.tensor_type is torch.FloatTensor
+        assert field.dtype is torch.float
         assert field.preprocessing("a b c".split()) == "c b a".split()
         assert field.postprocessing("a b c".split()) == "A B C".split()
         assert field.tokenize("abc") == ["a", "b", "c"]
@@ -529,6 +524,16 @@ class TestNestedField(TorchtextTestCase):
 
         assert CHARS.pad(minibatch) == expected
 
+        # test include_length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [5, 4]
+        assert words_len == [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]
+
     def test_pad_when_nesting_field_is_not_sequential(self):
         nesting_field = data.Field(sequential=False, unk_token="<cunk>",
                                    pad_token="<cpad>", init_token="<w>", eos_token="</w>")
@@ -571,6 +576,16 @@ class TestNestedField(TorchtextTestCase):
 
         assert CHARS.pad(minibatch) == expected
 
+        # test include length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>", fix_length=5)
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [5, 4]
+        assert words_len == [[3, 5, 5, 5, 3], [3, 5, 5, 3, 0]]
+
     def test_pad_when_fix_length_is_not_none(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
                                    init_token="<w>", eos_token="</w>")
@@ -594,6 +609,16 @@ class TestNestedField(TorchtextTestCase):
         ]
 
         assert CHARS.pad(minibatch) == expected
+
+        # test include length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True, fix_length=3)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [3, 3]
+        assert words_len == [[3, 6, 3], [3, 6, 3]]
 
     def test_pad_when_no_init_and_eos_tokens(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
@@ -646,6 +671,17 @@ class TestNestedField(TorchtextTestCase):
 
         assert CHARS.pad(minibatch) == expected
 
+        # test include_length
+        nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
+                                   init_token="<w>", eos_token="</w>")
+        CHARS = data.NestedField(nesting_field, init_token="<s>",
+                                 eos_token="</s>", include_lengths=True,
+                                 pad_first=True)
+        arr, seq_len, words_len = CHARS.pad(minibatch)
+        assert arr == expected
+        assert seq_len == [5, 4]
+        assert words_len == [[3, 6, 7, 6, 3], [0, 3, 6, 7, 3]]
+
     def test_numericalize(self):
         nesting_field = data.Field(batch_first=True)
         field = data.NestedField(nesting_field)
@@ -669,13 +705,65 @@ class TestNestedField(TorchtextTestCase):
                 ["<cpad>"] * 7,
             ]
         ]
-        numericalized = field.numericalize(examples_data, device=-1)
+        numericalized = field.numericalize(examples_data)
 
         assert numericalized.dim() == 3
         assert numericalized.size(0) == len(examples_data)
         for example, numericalized_example in zip(examples_data, numericalized):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
+
+        # test include_lengths
+        nesting_field = data.Field(batch_first=True)
+        field = data.NestedField(nesting_field, include_lengths=True)
+        ex1 = data.Example.fromlist(["john loves mary"], [("words", field)])
+        ex2 = data.Example.fromlist(["mary cries"], [("words", field)])
+        dataset = data.Dataset([ex1, ex2], [("words", field)])
+        field.build_vocab(dataset)
+        examples_data = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+                ["<cpad>"] * 7,
+            ]
+        ]
+
+        numericalized, seq_len, word_len = field.numericalize(
+            (examples_data, [5, 4], [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]))
+
+        assert numericalized.dim() == 3
+        assert len(seq_len) == 2
+        assert len(word_len) == 2
+
+        assert numericalized.size(0) == len(examples_data)
+        for example, numericalized_example in zip(examples_data, numericalized):
+            verify_numericalized_example(
+                field, example, numericalized_example, batch_first=True)
+
+    def test_build_vocab(self):
+        nesting_field = data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
+
+        field = data.NestedField(nesting_field, init_token='<s>', eos_token='</s>',
+                                 include_lengths=True,
+                                 pad_first=True)
+
+        sources = [[['a'], ['s', 'e', 'n', 't', 'e', 'n', 'c', 'e'], ['o', 'f'],
+                    ['d', 'a', 't', 'a'], ['.']],
+                   [['y', 'e', 't'], ['a', 'n', 'o', 't', 'h', 'e', 'r']],
+                   [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
+
+        field.build_vocab(sources, vectors='glove.6B.50d',
+                          unk_init=init.xavier_normal,
+                          vectors_cache=".vector_cache")
 
 
 class TestLabelField(TorchtextTestCase):

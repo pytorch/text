@@ -29,7 +29,7 @@ print('TEXT.vocab.vectors.size()', TEXT.vocab.vectors.size())
 
 # make iterator for splits
 train_iter, val_iter, test_iter = data.BucketIterator.splits(
-    (train, val, test), batch_size=3, device=0)
+    (train, val, test), batch_size=3)
 
 # print batch information
 batch = next(iter(train_iter))
