@@ -296,7 +296,7 @@ class Vectors(object):
             # argument must be Python 2 str (Python 3 bytes) or
             # Python 3 str (Python 2 unicode)
 
-            itos, self.vectors, skipped = [], torch.zeros((num_lines, dim)), 0
+            itos, self.vectors = [], torch.zeros((num_lines, dim))
             idx = 0
             for line in tqdm(f, total=num_lines):
                 # Explicitly splitting on " " is important, so we don't
@@ -404,7 +404,7 @@ def _infer_shape(f, binary_lines=False):
     for line in f:
         if vector_dim is None:
             row = line.rstrip().split(b" " if binary_lines else " ")
-            _, vector = row[0], row[1:]
+            vector = row[1:]
             # Assuming word, [vector] format
             if len(vector) > 2:
                 # The header present in some (w2v) formats contains two elements.
