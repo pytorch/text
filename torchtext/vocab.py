@@ -308,7 +308,6 @@ class Vectors(object):
                 if len(entries) == 1:
                     logger.warning("Skipping token {} with 1-dimensional "
                                    "vector {}; likely a header".format(word, entries))
-                    skipped += 1
                     continue
                 elif dim != len(entries):
                     raise RuntimeError(
