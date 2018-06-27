@@ -105,7 +105,7 @@ class Field(RawField):
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
-        truncate_first: Do the truncating of the sequence at the beginning. Defaulf: False
+        truncate_first: Do the truncating of the sequence at the beginning. Default: False
     """
 
     vocab_cls = Vocab
