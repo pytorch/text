@@ -1,7 +1,4 @@
 import os
-import xml.etree.ElementTree as ET
-import glob
-import io
 
 from .. import data
 
