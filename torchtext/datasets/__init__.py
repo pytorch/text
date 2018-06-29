@@ -6,6 +6,7 @@ from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking #
 from .trec import TREC
 from .imdb import IMDB
 from .babi import BABI20
+from .qe import QualityEstimationDataset
 
 
 __all__ = ['LanguageModelingDataset',
@@ -22,4 +23,5 @@ __all__ = ['LanguageModelingDataset',
            'SequenceTaggingDataset',
            'UDPOS',
            'CoNLL2000Chunking',
-           'BABI20']
+           'BABI20',
+           'QualityEstimationDataset']
