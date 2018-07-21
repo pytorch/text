@@ -6,6 +6,7 @@ import io
 import logging
 import os
 import zipfile
+import gzip
 
 import six
 from six.moves.urllib.request import urlretrieve
@@ -221,7 +222,7 @@ class SubwordVocab(Vocab):
 class Vectors(object):
 
     def __init__(self, name, cache=None,
-                 url=None, unk_init=None):
+                 url=None, unk_init=None, max_vectors=None):
         """
         Arguments:
            name: name of the file that contains the vectors
@@ -233,7 +234,7 @@ class Vectors(object):
          """
         cache = '.vector_cache' if cache is None else cache
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
-        self.cache(name, cache, url=url)
+        self.cache(name, cache, url=url, max_vectors=max_vectors)
 
     def __getitem__(self, token):
         if token in self.stoi:
@@ -241,7 +242,7 @@ class Vectors(object):
         else:
             return self.unk_init(torch.Tensor(1, self.dim))
 
-    def cache(self, name, cache, url=None):
+    def cache(self, name, cache, url=None, max_vectors=None):
         if os.path.isfile(name):
             path = name
             path_pt = os.path.join(cache, os.path.basename(name)) + '.pt'
@@ -268,8 +269,9 @@ class Vectors(object):
                     with zipfile.ZipFile(dest, "r") as zf:
                         zf.extractall(cache)
                 elif ext == 'gz':
-                    with tarfile.open(dest, 'r:gz') as tar:
-                        tar.extractall(path=cache)
+                    if dest.endswith('.tar.gz'):
+                        with tarfile.open(dest, 'r:gz') as tar:
+                            tar.extractall(path=cache)
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
@@ -278,49 +280,44 @@ class Vectors(object):
             # Python 3 str (Python 2 unicode)
             itos, vectors, dim = [], array.array(str('d')), None
 
-            # Try to read the whole file with utf-8 encoding.
-            binary_lines = False
-            try:
-                with io.open(path, encoding="utf8") as f:
-                    lines = [line for line in f]
-            # If there are malformed lines, read in binary mode
-            # and manually decode each word from utf-8
-            except:
-                logger.warning("Could not read {} as UTF8 file, "
-                               "reading file as bytes and skipping "
-                               "words with malformed UTF8.".format(path))
-                with open(path, 'rb') as f:
-                    lines = [line for line in f]
-                binary_lines = True
-
             logger.info("Loading vectors from {}".format(path))
-            for line in tqdm(lines, total=len(lines)):
-                # Explicitly splitting on " " is important, so we don't
-                # get rid of Unicode non-breaking spaces in the vectors.
-                entries = line.rstrip().split(b" " if binary_lines else " ")
+            ext = os.path.splitext(path)[1][1:]
+            if ext == 'gz':
+                open_file = gzip.open
+            else:
+                open_file = open
 
-                word, entries = entries[0], entries[1:]
-                if dim is None and len(entries) > 1:
-                    dim = len(entries)
-                elif len(entries) == 1:
-                    logger.warning("Skipping token {} with 1-dimensional "
-                                   "vector {}; likely a header".format(word, entries))
-                    continue
-                elif dim != len(entries):
-                    raise RuntimeError(
-                        "Vector for token {} has {} dimensions, but previously "
-                        "read vectors have {} dimensions. All vectors must have "
-                        "the same number of dimensions.".format(word, len(entries), dim))
+            vectors_loaded = 0
+            with open_file(path, 'rb') as f:
+                for line in tqdm(f):
+                    # Explicitly splitting on " " is important, so we don't
+                    # get rid of Unicode non-breaking spaces in the vectors.
+                    entries = line.rstrip().split(b" ")
 
-                if binary_lines:
+                    word, entries = entries[0], entries[1:]
+                    if dim is None and len(entries) > 1:
+                        dim = len(entries)
+                    elif len(entries) == 1:
+                        logger.warning("Skipping token {} with 1-dimensional "
+                                       "vector {}; likely a header".format(word, entries))
+                        continue
+                    elif dim != len(entries):
+                        raise RuntimeError(
+                            "Vector for token {} has {} dimensions, but previously "
+                            "read vectors have {} dimensions. All vectors must have "
+                            "the same number of dimensions.".format(word, len(entries), dim))
+
                     try:
                         if isinstance(word, six.binary_type):
                             word = word.decode('utf-8')
-                    except:
+                    except UnicodeDecodeError:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
                         continue
-                vectors.extend(float(x) for x in entries)
-                itos.append(word)
+                    vectors.extend(float(x) for x in entries)
+                    itos.append(word)
+                    vectors_loaded += 1
+                    if vectors_loaded == max_vectors:
+                        break
 
             self.itos = itos
             self.stoi = {word: i for i, word in enumerate(itos)}
