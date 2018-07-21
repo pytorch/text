@@ -252,6 +252,10 @@ class Vectors(object):
         cache = '.vector_cache' if cache is None else cache
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
         self.cache(name, cache, url=url, max_vectors=max_vectors)
+        self.itos = None
+        self.stoi = None
+        self.vectors = None
+        self.dim = None
 
     def __getitem__(self, token):
         if token in self.stoi:
