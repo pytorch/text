@@ -300,10 +300,6 @@ class Vectors(object):
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
-            # str call is necessary for Python 2/3 compatibility, since
-            # argument must be Python 2 str (Python 3 bytes) or
-            # Python 3 str (Python 2 unicode)
-
             logger.info("Loading vectors from {}".format(path))
             ext = os.path.splitext(path)[1][1:]
             if ext == 'gz':
