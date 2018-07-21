@@ -248,6 +248,10 @@ class Vectors(object):
            unk_init (callback): by default, initalize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
+            max_vectors (int): this can be used to limit the number of pre-trained vectors loaded.
+                Most pre-trained vector sets are sorted in the descending order of word frequency.
+                Thus, in situations where the entire set doesn't fit in memory, or is not needed
+                for another reason, passing max_vectors can limit the size of the loaded set.
          """
         cache = '.vector_cache' if cache is None else cache
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
