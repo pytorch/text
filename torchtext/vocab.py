@@ -262,10 +262,18 @@ class Vectors(object):
     def cache(self, name, cache, url=None, max_vectors=None):
         if os.path.isfile(name):
             path = name
-            path_pt = os.path.join(cache, os.path.basename(name)) + '.pt'
+            if max_vectors:
+                file_suffix = '_{}.pt'.format(max_vectors)
+            else:
+                file_suffix = '.pt'
+            path_pt = os.path.join(cache, os.path.basename(name)) + file_suffix
         else:
             path = os.path.join(cache, name)
-            path_pt = path + '.pt'
+            if max_vectors:
+                file_suffix = '_{}.pt'.format(max_vectors)
+            else:
+                file_suffix = '.pt'
+            path_pt = path + file_suffix
 
         if not os.path.isfile(path_pt):
             if not os.path.isfile(path) and url:
