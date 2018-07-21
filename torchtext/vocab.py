@@ -254,12 +254,12 @@ class Vectors(object):
                 for another reason, passing max_vectors can limit the size of the loaded set.
          """
         cache = '.vector_cache' if cache is None else cache
-        self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
-        self.cache(name, cache, url=url, max_vectors=max_vectors)
         self.itos = None
         self.stoi = None
         self.vectors = None
         self.dim = None
+        self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
+        self.cache(name, cache, url=url, max_vectors=max_vectors)
 
     def __getitem__(self, token):
         if token in self.stoi:
