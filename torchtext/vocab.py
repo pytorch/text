@@ -219,6 +219,23 @@ class SubwordVocab(Vocab):
             self.load_vectors(vectors, unk_init=unk_init)
 
 
+def _infer_shape(f):
+    num_lines, vector_dim = 0, None
+    for line in f:
+        if vector_dim is None:
+            row = line.rstrip().split(b" ")
+            vector = row[1:]
+            # Assuming word, [vector] format
+            if len(vector) > 2:
+                # The header present in some (w2v) formats contains two elements.
+                vector_dim = len(vector)
+                num_lines += 1  # First element read
+        else:
+            num_lines += 1
+    f.seek(0)
+    return num_lines, vector_dim
+
+
 class Vectors(object):
 
     def __init__(self, name, cache=None,
@@ -278,7 +295,6 @@ class Vectors(object):
             # str call is necessary for Python 2/3 compatibility, since
             # argument must be Python 2 str (Python 3 bytes) or
             # Python 3 str (Python 2 unicode)
-            itos, vectors, dim = [], array.array(str('d')), None
 
             logger.info("Loading vectors from {}".format(path))
             ext = os.path.splitext(path)[1][1:]
@@ -289,7 +305,13 @@ class Vectors(object):
 
             vectors_loaded = 0
             with open_file(path, 'rb') as f:
-                for line in tqdm(f):
+                num_lines, dim = _infer_shape(f)
+                if not max_vectors or max_vectors > num_lines:
+                    max_vectors = num_lines
+
+                itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
+
+                for line in tqdm(f, total=num_lines):
                     # Explicitly splitting on " " is important, so we don't
                     # get rid of Unicode non-breaking spaces in the vectors.
                     entries = line.rstrip().split(b" ")
@@ -313,9 +335,11 @@ class Vectors(object):
                     except UnicodeDecodeError:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
                         continue
-                    vectors.extend(float(x) for x in entries)
-                    itos.append(word)
+
+                    vectors[vectors_loaded] = torch.tensor([float(x) for x in entries])
                     vectors_loaded += 1
+                    itos.append(word)
+
                     if vectors_loaded == max_vectors:
                         break
 
