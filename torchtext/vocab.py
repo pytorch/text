@@ -29,7 +29,8 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None):
+                 vectors=None, unk_init=None, vectors_cache=None, 
+                 intersect_vectors_vocab=True):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -49,6 +50,9 @@ class Vocab(object):
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
+            intersect_vectors_vocab: if True and a vectors object is passed, then
+                it will add words that appears less than min_freq but are in vectors
+                vocabulary. Default: True.
         """
         self.freqs = counter
         counter = counter.copy()
@@ -66,10 +70,18 @@ class Vocab(object):
         words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
         words_and_frequencies.sort(key=lambda tup: tup[1], reverse=True)
 
+        # add words that appears less than min_freq but are in embeddings vocabulary
         for word, freq in words_and_frequencies:
-            if freq < min_freq or len(self.itos) == max_size:
+            if freq < min_freq:
+                if vectors is not None and intersect_vectors_vocab:
+                    if word in vectors.stoi:
+                        self.itos.append(word)
+                else:
+                    break
+            elif len(self.itos) == max_size:
                 break
-            self.itos.append(word)
+            else:
+                self.itos.append(word)
 
         self.stoi = defaultdict(_default_unk_index)
         # stoi is simply a reverse dict for itos
