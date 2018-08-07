@@ -7,7 +7,7 @@ from torchtext.datasets import TREC
 
 
 class TestSubword(unittest.TestCase):
-    @pytest.mark.skipif(sys.version_info < (3,0),
+    @pytest.mark.skipif(sys.version_info < (3, 0),
                         reason="revtok currently breaks for python 2.7")
     def test_subword_trec(self):
         TEXT = data.SubwordField()
