@@ -16,7 +16,7 @@ class TestUtils(TorchtextTestCase):
             "A", "string", ",", "particularly", "one", "with", "slightly",
             "complex", "punctuation", "."]
 
-        # Test Moses option. Test strings taken from NLTK doctests.
+        # Test Moses option.
         # Note that internally, MosesTokenizer converts to unicode if applicable
         moses_tokenizer = data.get_tokenizer("moses")
         assert moses_tokenizer(test_str) == [
@@ -25,6 +25,13 @@ class TestUtils(TorchtextTestCase):
 
         # Nonbreaking prefixes should tokenize the final period.
         assert moses_tokenizer(six.text_type("abc def.")) == ["abc", "def", "."]
+
+        # Test Toktok option. Test strings taken from NLTK doctests.
+        # Note that internally, MosesTokenizer converts to unicode if applicable
+        toktok_tokenizer = data.get_tokenizer("toktok")
+        assert toktok_tokenizer(test_str) == [
+            "A", "string", ",", "particularly", "one", "with", "slightly",
+            "complex", "punctuation", "."]
 
         # Test that errors are raised for invalid input arguments.
         with self.assertRaises(ValueError):
