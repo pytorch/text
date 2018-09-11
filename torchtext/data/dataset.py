@@ -92,7 +92,7 @@ class Dataset(torch.utils.data.Dataset):
                 of data to be used for the training split (rest is used for validation),
                 or a list of numbers denoting the relative sizes of train, test and valid
                 splits respectively. If the relative size for valid is missing, only the
-                train-test split is returned. Default is 0.7 (for th train set).
+                train-test split is returned. Default is 0.7 (for the train set).
             stratified (bool): whether the sampling should be stratified.
                 Default is False.
             strata_field (str): name of the examples Field stratified over.
