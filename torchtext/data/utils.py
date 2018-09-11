@@ -21,16 +21,22 @@ def get_tokenizer(tokenizer):
             raise
     elif tokenizer == "moses":
         try:
-            from nltk.tokenize.moses import MosesTokenizer
+            from sacremoses import MosesTokenizer
             moses_tokenizer = MosesTokenizer()
             return moses_tokenizer.tokenize
         except ImportError:
-            print("Please install NLTK. "
-                  "See the docs at http://nltk.org for more information.")
+            print("Please install SacreMoses. "
+                  "See the docs at https://github.com/alvations/sacremoses "
+                  "for more information.")
             raise
-        except LookupError:
-            print("Please install the necessary NLTK corpora. "
-                  "See the docs at http://nltk.org for more information.")
+    elif tokenizer == "toktok":
+        try:
+            from nltk.tokenize.toktok import ToktokTokenizer
+            toktok = ToktokTokenizer()
+            return toktok.tokenize
+        except ImportError:
+            print("Please install NLTK. "
+                  "See the docs at https://nltk.org  for more information.")
             raise
     elif tokenizer == 'revtok':
         try:
@@ -65,6 +71,14 @@ def interleave_keys(a, b):
     def interleave(args):
         return ''.join([x for t in zip(*args) for x in t])
     return int(''.join(interleave(format(x, '016b') for x in (a, b))), base=2)
+
+
+def get_torch_version():
+    import torch
+    v = torch.__version__
+    version_substrings = v.split('.')
+    major, minor = version_substrings[0], version_substrings[1]
+    return int(major), int(minor)
 
 
 class RandomShuffler(object):

@@ -1,4 +1,5 @@
 from .. import data
+import random
 
 
 class SequenceTaggingDataset(data.Dataset):
@@ -20,7 +21,7 @@ class SequenceTaggingDataset(data.Dataset):
                 return len(getattr(example, attr))
         return 0
 
-    def __init__(self, path, fields, **kwargs):
+    def __init__(self, path, fields, separator="\t", **kwargs):
         examples = []
         columns = []
 
@@ -32,7 +33,7 @@ class SequenceTaggingDataset(data.Dataset):
                         examples.append(data.Example.fromlist(columns, fields))
                     columns = []
                 else:
-                    for i, column in enumerate(line.split("\t")):
+                    for i, column in enumerate(line.split(separator)):
                         if len(columns) < i + 1:
                             columns.append([])
                         columns[i].append(column)
@@ -63,3 +64,40 @@ class UDPOS(SequenceTaggingDataset):
         return super(UDPOS, cls).splits(
             fields=fields, root=root, train=train, validation=validation,
             test=test, **kwargs)
+
+
+class CoNLL2000Chunking(SequenceTaggingDataset):
+    # CoNLL 2000 Chunking Dataset
+    # https://www.clips.uantwerpen.be/conll2000/chunking/
+    urls = ['https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz',
+            'https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz']
+    dirname = ''
+    name = 'conll2000'
+
+    @classmethod
+    def splits(cls, fields, root=".data", train="train.txt",
+               test="test.txt", validation_frac=0.1, **kwargs):
+        """Downloads and loads the CoNLL 2000 Chunking dataset.
+        NOTE: There is only a train and test dataset so we use
+              10% of the train set as validation
+        """
+
+        train, test = super(CoNLL2000Chunking, cls).splits(
+            fields=fields, root=root, train=train,
+            test=test, separator=' ', **kwargs)
+
+        # HACK: Saving the sort key function as the split() call removes it
+        sort_key = train.sort_key
+
+        # Now split the train set
+        # Force a random seed to make the split deterministic
+        random.seed(0)
+        train, val = train.split(1 - validation_frac, random_state=random.getstate())
+        # Reset the seed
+        random.seed()
+
+        # HACK: Set the sort key
+        train.sort_key = sort_key
+        val.sort_key = sort_key
+
+        return train, val, test

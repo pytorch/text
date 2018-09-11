@@ -239,7 +239,7 @@ class Vectors(object):
         if token in self.stoi:
             return self.vectors[self.stoi[token]]
         else:
-            return self.unk_init(torch.Tensor(1, self.dim))
+            return self.unk_init(torch.Tensor(self.dim))
 
     def cache(self, name, cache, url=None):
         if os.path.isfile(name):
@@ -327,6 +327,8 @@ class Vectors(object):
             self.vectors = torch.Tensor(vectors).view(-1, dim)
             self.dim = dim
             logger.info('Saving vectors to {}'.format(path_pt))
+            if not os.path.exists(cache):
+                os.makedirs(cache)
             torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
         else:
             logger.info('Loading vectors from {}'.format(path_pt))

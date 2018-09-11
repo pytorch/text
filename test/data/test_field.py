@@ -21,7 +21,7 @@ class TestField(TorchtextTestCase):
         batch_tensor = torch.LongTensor(batch)
 
         raw_field_processed = raw_field.process(batch)
-        field_processed = field.process(batch, device=-1, train=False)
+        field_processed = field.process(batch)
 
         assert raw_field_processed == batch
         assert field_processed.data.equal(batch_tensor)
@@ -245,15 +245,9 @@ class TestField(TorchtextTestCase):
                               "some", "oovs", "<pad>"]]
 
         # Test default
-        default_numericalized = question_field.numericalize(
-            test_example_data, device=-1)
+        default_numericalized = question_field.numericalize(test_example_data)
         verify_numericalized_example(question_field, test_example_data,
                                      default_numericalized)
-        # Test with train=False
-        volatile_numericalized = question_field.numericalize(
-            test_example_data, device=-1, train=False)
-        verify_numericalized_example(question_field, test_example_data,
-                                     volatile_numericalized, train=False)
 
     def test_numericalize_include_lengths(self):
         self.write_test_ppid_dataset(data_format="tsv")
@@ -275,7 +269,7 @@ class TestField(TorchtextTestCase):
 
         # Test with include_lengths
         include_lengths_numericalized = question_field.numericalize(
-            (test_example_data, test_example_lengths), device=-1)
+            (test_example_data, test_example_lengths))
         verify_numericalized_example(question_field,
                                      test_example_data,
                                      include_lengths_numericalized,
@@ -300,7 +294,7 @@ class TestField(TorchtextTestCase):
 
         # Test with batch_first
         include_lengths_numericalized = question_field.numericalize(
-            test_example_data, device=-1)
+            test_example_data)
         verify_numericalized_example(question_field,
                                      test_example_data,
                                      include_lengths_numericalized,
@@ -309,7 +303,7 @@ class TestField(TorchtextTestCase):
     def test_numericalize_postprocessing(self):
         self.write_test_ppid_dataset(data_format="tsv")
 
-        def reverse_postprocess(arr, vocab, train):
+        def reverse_postprocess(arr, vocab):
             return [list(reversed(sentence)) for sentence in arr]
 
         question_field = data.Field(sequential=True,
@@ -332,7 +326,7 @@ class TestField(TorchtextTestCase):
                                       test_example_data]
 
         postprocessed_numericalized = question_field.numericalize(
-            (test_example_data), device=-1)
+            (test_example_data))
         verify_numericalized_example(question_field,
                                      reversed_test_example_data,
                                      postprocessed_numericalized)
@@ -342,7 +336,7 @@ class TestField(TorchtextTestCase):
         # Test basic usage
         int_field = data.Field(sequential=False, use_vocab=False)
         float_field = data.Field(sequential=False, use_vocab=False,
-                                 tensor_type=torch.FloatTensor)
+                                 dtype=torch.float)
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
             path=self.test_numerical_features_dataset_path, format="tsv",
@@ -352,17 +346,17 @@ class TestField(TorchtextTestCase):
         test_int_data = ["1", "0", "1", "3", "19"]
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
-        numericalized_int = int_field.numericalize(test_int_data, device=-1)
+        numericalized_int = int_field.numericalize(test_int_data)
         assert_allclose(numericalized_int.data.numpy(), [1, 0, 1, 3, 19])
-        numericalized_float = float_field.numericalize(test_float_data, device=-1)
+        numericalized_float = float_field.numericalize(test_float_data)
         assert_allclose(numericalized_float.data.numpy(), [1.1, 0.1, 3.91, 0.2, 10.2])
 
         # Test with postprocessing applied
         int_field = data.Field(sequential=False, use_vocab=False,
-                               postprocessing=lambda arr, _, __: [x + 1 for x in arr])
+                               postprocessing=lambda arr, _: [x + 1 for x in arr])
         float_field = data.Field(sequential=False, use_vocab=False,
-                                 tensor_type=torch.FloatTensor,
-                                 postprocessing=lambda arr, _, __: [x * 0.5 for x in arr])
+                                 dtype=torch.float,
+                                 postprocessing=lambda arr, _: [x * 0.5 for x in arr])
         tsv_fields = [("int", int_field), ("float", float_field), ("string", None)]
         tsv_dataset = data.TabularDataset(
             path=self.test_numerical_features_dataset_path, format="tsv",
@@ -372,9 +366,9 @@ class TestField(TorchtextTestCase):
         test_int_data = ["1", "0", "1", "3", "19"]
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
-        numericalized_int = int_field.numericalize(test_int_data, device=-1)
+        numericalized_int = int_field.numericalize(test_int_data)
         assert_allclose(numericalized_int.data.numpy(), [2, 1, 2, 4, 20])
-        numericalized_float = float_field.numericalize(test_float_data, device=-1)
+        numericalized_float = float_field.numericalize(test_float_data)
         assert_allclose(numericalized_float.data.numpy(), [0.55, 0.05, 1.955, 0.1, 5.1])
 
     def test_errors(self):
@@ -396,7 +390,7 @@ class TestField(TorchtextTestCase):
                                  ["Here", "is", "a", "sentence", "with",
                                   "some", "oovs", "<pad>"]]
             question_field.numericalize(
-                test_example_data, device=-1)
+                test_example_data)
 
 
 class TestNestedField(TorchtextTestCase):
@@ -412,7 +406,7 @@ class TestNestedField(TorchtextTestCase):
         assert field.eos_token is None
         assert field.unk_token == nesting_field.unk_token
         assert field.fix_length is None
-        assert field.tensor_type is torch.LongTensor
+        assert field.dtype is torch.long
         assert field.preprocessing is None
         assert field.postprocessing is None
         assert field.lower == nesting_field.lower
@@ -450,7 +444,7 @@ class TestNestedField(TorchtextTestCase):
             init_token="<s>",
             eos_token="</s>",
             fix_length=10,
-            tensor_type=torch.FloatTensor,
+            dtype=torch.float,
             preprocessing=lambda xs: list(reversed(xs)),
             postprocessing=lambda xs: [x.upper() for x in xs],
             tokenize=list,
@@ -461,7 +455,7 @@ class TestNestedField(TorchtextTestCase):
         assert field.init_token == "<s>"
         assert field.eos_token == "</s>"
         assert field.fix_length == 10
-        assert field.tensor_type is torch.FloatTensor
+        assert field.dtype is torch.float
         assert field.preprocessing("a b c".split()) == "c b a".split()
         assert field.postprocessing("a b c".split()) == "A B C".split()
         assert field.tokenize("abc") == ["a", "b", "c"]
@@ -711,7 +705,7 @@ class TestNestedField(TorchtextTestCase):
                 ["<cpad>"] * 7,
             ]
         ]
-        numericalized = field.numericalize(examples_data, device=-1)
+        numericalized = field.numericalize(examples_data)
 
         assert numericalized.dim() == 3
         assert numericalized.size(0) == len(examples_data)
@@ -744,8 +738,7 @@ class TestNestedField(TorchtextTestCase):
         ]
 
         numericalized, seq_len, word_len = field.numericalize(
-            (examples_data, [5, 4], [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]),
-            device=-1)
+            (examples_data, [5, 4], [[3, 6, 7, 6, 3], [3, 6, 7, 3, 0]]))
 
         assert numericalized.dim() == 3
         assert len(seq_len) == 2
@@ -769,7 +762,7 @@ class TestNestedField(TorchtextTestCase):
                    [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
 
         field.build_vocab(sources, vectors='glove.6B.50d',
-                          unk_init=init.xavier_normal,
+                          unk_init=init.normal_,
                           vectors_cache=".vector_cache")
 
 

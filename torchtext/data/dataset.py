@@ -2,6 +2,8 @@ import io
 import os
 import zipfile
 import tarfile
+import gzip
+import shutil
 from functools import partial
 
 import torch.utils.data
@@ -90,7 +92,7 @@ class Dataset(torch.utils.data.Dataset):
                 of data to be used for the training split (rest is used for validation),
                 or a list of numbers denoting the relative sizes of train, test and valid
                 splits respectively. If the relative size for valid is missing, only the
-                train-test split is returned. Default is 0.7 (for th train set).
+                train-test split is returned. Default is 0.7 (for the train set).
             stratified (bool): whether the sampling should be stratified.
                 Default is False.
             strata_field (str): name of the examples Field stratified over.
@@ -108,8 +110,6 @@ class Dataset(torch.utils.data.Dataset):
         if not stratified:
             train_data, test_data, val_data = rationed_split(self.examples, train_ratio,
                                                              test_ratio, val_ratio, rnd)
-            return tuple(Dataset(d, self.fields)
-                         for d in (train_data, val_data, test_data) if d)
         else:
             if strata_field not in self.fields:
                 raise ValueError("Invalid field name for strata_field {}"
@@ -125,8 +125,14 @@ class Dataset(torch.utils.data.Dataset):
                 test_data += group_test
                 val_data += group_val
 
-            return tuple(Dataset(d, self.fields)
-                         for d in (train_data, val_data, test_data) if d)
+        splits = tuple(Dataset(d, self.fields)
+                       for d in (train_data, val_data, test_data) if d)
+
+        # In case the parent sort key isn't none
+        if self.sort_key:
+            for subset in splits:
+                subset.sort_key = self.sort_key
+        return splits
 
     def __getitem__(self, i):
         return self.examples[i]
@@ -173,15 +179,22 @@ class Dataset(torch.utils.data.Dataset):
                         os.makedirs(os.path.dirname(zpath))
                     print('downloading {}'.format(filename))
                     download_from_url(url, zpath)
-                ext = os.path.splitext(filename)[-1]
+                zroot, ext = os.path.splitext(zpath)
+                _, ext_inner = os.path.splitext(zroot)
                 if ext == '.zip':
                     with zipfile.ZipFile(zpath, 'r') as zfile:
                         print('extracting')
                         zfile.extractall(path)
-                elif ext in ['.gz', '.tgz']:
+                # tarfile cannot handle bare .gz files
+                elif ext == '.tgz' or ext == '.gz' and ext_inner == '.tar':
                     with tarfile.open(zpath, 'r:gz') as tar:
                         dirs = [member for member in tar.getmembers()]
                         tar.extractall(path=path, members=dirs)
+                elif ext == '.gz':
+                    with gzip.open(zpath, 'rb') as gz:
+                        with open(zroot, 'wb') as uncompressed:
+                            shutil.copyfileobj(gz, uncompressed)
+
         return os.path.join(path, cls.dirname)
 
 
