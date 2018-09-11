@@ -17,8 +17,8 @@ class RawField(object):
     Every dataset consists of one or more types of data. For instance, a text
     classification dataset contains sentences and their classes, while a
     machine translation dataset contains paired examples of text in two
-    languages. Each of these types of data is represented by an RawField object.
-    An RawField object does not assume any property of the data type and
+    languages. Each of these types of data is represented by a RawField object.
+    A RawField object does not assume any property of the data type and
     it holds parameters relating to how a datatype should be processed.
 
     Attributes:

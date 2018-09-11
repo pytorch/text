@@ -762,7 +762,7 @@ class TestNestedField(TorchtextTestCase):
                    [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
 
         field.build_vocab(sources, vectors='glove.6B.50d',
-                          unk_init=init.xavier_normal,
+                          unk_init=init.normal_,
                           vectors_cache=".vector_cache")
 
 
