@@ -17,8 +17,8 @@ class RawField(object):
     Every dataset consists of one or more types of data. For instance, a text
     classification dataset contains sentences and their classes, while a
     machine translation dataset contains paired examples of text in two
-    languages. Each of these types of data is represented by an RawField object.
-    An RawField object does not assume any property of the data type and
+    languages. Each of these types of data is represented by a RawField object.
+    A RawField object does not assume any property of the data type and
     it holds parameters relating to how a datatype should be processed.
 
     Attributes:
@@ -105,7 +105,7 @@ class Field(RawField):
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
-        truncate_first: Do the truncating of the sequence at the beginning. Defaulf: False
+        truncate_first: Do the truncating of the sequence at the beginning. Default: False
     """
 
     vocab_cls = Vocab
