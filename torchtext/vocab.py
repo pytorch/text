@@ -239,7 +239,7 @@ class Vectors(object):
         if token in self.stoi:
             return self.vectors[self.stoi[token]]
         else:
-            return self.unk_init(torch.Tensor(1, self.dim))
+            return self.unk_init(torch.Tensor(self.dim))
 
     def cache(self, name, cache, url=None):
         if os.path.isfile(name):
