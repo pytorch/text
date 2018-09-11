@@ -6,7 +6,7 @@ class Pipeline(object):
 
     Attributes:
         convert_token: The function to apply to input sequence data.
-        pipes: The Pipelines that will be applid to input sequence
+        pipes: The Pipelines that will be applied to input sequence
             data in order.
     """
     def __init__(self, convert_token=None):

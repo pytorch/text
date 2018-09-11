@@ -21,16 +21,22 @@ def get_tokenizer(tokenizer):
             raise
     elif tokenizer == "moses":
         try:
-            from nltk.tokenize.moses import MosesTokenizer
+            from sacremoses import MosesTokenizer
             moses_tokenizer = MosesTokenizer()
             return moses_tokenizer.tokenize
         except ImportError:
-            print("Please install NLTK. "
-                  "See the docs at http://nltk.org for more information.")
+            print("Please install SacreMoses. "
+                  "See the docs at https://github.com/alvations/sacremoses "
+                  "for more information.")
             raise
-        except LookupError:
-            print("Please install the necessary NLTK corpora. "
-                  "See the docs at http://nltk.org for more information.")
+    elif tokenizer == "toktok":
+        try:
+            from nltk.tokenize.toktok import ToktokTokenizer
+            toktok = ToktokTokenizer()
+            return toktok.tokenize
+        except ImportError:
+            print("Please install NLTK. "
+                  "See the docs at https://nltk.org  for more information.")
             raise
     elif tokenizer == 'revtok':
         try:
