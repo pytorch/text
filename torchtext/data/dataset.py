@@ -221,9 +221,10 @@ class TabularDataset(Dataset):
                 and also enables selecting a subset of columns to load.
             skip_header (bool): Whether to skip the first line of the input file.
         """
+        format = format.lower()
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
-            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
+            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
