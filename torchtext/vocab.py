@@ -1,8 +1,6 @@
 from __future__ import unicode_literals
-import array
 from collections import defaultdict
 from functools import partial
-import io
 import logging
 import os
 import zipfile
@@ -248,10 +246,13 @@ class Vectors(object):
            unk_init (callback): by default, initalize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
-            max_vectors (int): this can be used to limit the number of pre-trained vectors loaded.
-                Most pre-trained vector sets are sorted in the descending order of word frequency.
-                Thus, in situations where the entire set doesn't fit in memory, or is not needed
-                for another reason, passing max_vectors can limit the size of the loaded set.
+            max_vectors (int): this can be used to limit the number of
+                pre-trained vectors loaded.
+                Most pre-trained vector sets are sorted
+                in the descending order of word frequency.
+                Thus, in situations where the entire set doesn't fit in memory,
+                or is not needed for another reason, passing `max_vectors`
+                can limit the size of the loaded set.
          """
         cache = '.vector_cache' if cache is None else cache
         self.itos = None
@@ -339,7 +340,8 @@ class Vectors(object):
                         raise RuntimeError(
                             "Vector for token {} has {} dimensions, but previously "
                             "read vectors have {} dimensions. All vectors must have "
-                            "the same number of dimensions.".format(word, len(entries), dim))
+                            "the same number of dimensions.".format(word, len(entries),
+                                                                    dim))
 
                     try:
                         if isinstance(word, six.binary_type):
