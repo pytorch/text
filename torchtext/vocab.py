@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-import array
 from collections import defaultdict
 from functools import partial
 import io
@@ -45,10 +44,10 @@ class Vocab(object):
             vectors: One of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
-            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+            unk_init (callback): By default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
-            vectors_cache: directory for cached vectors. Default: '.vector_cache'
+            vectors_cache: Directory for cached vectors. Default: '.vector_cache'
         """
         self.freqs = counter
         counter = counter.copy()
@@ -273,36 +272,40 @@ class Vectors(object):
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
-            # str call is necessary for Python 2/3 compatibility, since
-            # argument must be Python 2 str (Python 3 bytes) or
-            # Python 3 str (Python 2 unicode)
-            itos, vectors, dim = [], array.array(str('d')), None
-
             # Try to read the whole file with utf-8 encoding.
             binary_lines = False
+            num_lines = 0
             try:
-                with io.open(path, encoding="utf8") as f:
-                    lines = [line for line in f]
+                f = io.open(path, encoding="utf8")
+                # Try iterating over the whole dataset to see
+                # if there are any malformed lines
+                num_lines, dim = _infer_shape(f, binary_lines)
             # If there are malformed lines, read in binary mode
             # and manually decode each word from utf-8
             except:
                 logger.warning("Could not read {} as UTF8 file, "
                                "reading file as bytes and skipping "
                                "words with malformed UTF8.".format(path))
-                with open(path, 'rb') as f:
-                    lines = [line for line in f]
+                f = open(path, 'rb')
                 binary_lines = True
+                num_lines, dim = _infer_shape(f, binary_lines)
 
             logger.info("Loading vectors from {}".format(path))
-            for line in tqdm(lines, total=len(lines)):
+
+            # str call is necessary for Python 2/3 compatibility, since
+            # argument must be Python 2 str (Python 3 bytes) or
+            # Python 3 str (Python 2 unicode)
+
+            itos, self.vectors = [], torch.zeros((num_lines, dim))
+            idx = 0
+            for line in tqdm(f, total=num_lines):
                 # Explicitly splitting on " " is important, so we don't
                 # get rid of Unicode non-breaking spaces in the vectors.
                 entries = line.rstrip().split(b" " if binary_lines else " ")
 
                 word, entries = entries[0], entries[1:]
-                if dim is None and len(entries) > 1:
-                    dim = len(entries)
-                elif len(entries) == 1:
+
+                if len(entries) == 1:
                     logger.warning("Skipping token {} with 1-dimensional "
                                    "vector {}; likely a header".format(word, entries))
                     continue
@@ -319,12 +322,13 @@ class Vectors(object):
                     except:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
                         continue
-                vectors.extend(float(x) for x in entries)
+                self.vectors[idx] = torch.tensor([float(x) for x in entries])
+                idx += 1
                 itos.append(word)
 
             self.itos = itos
             self.stoi = {word: i for i, word in enumerate(itos)}
-            self.vectors = torch.Tensor(vectors).view(-1, dim)
+
             self.dim = dim
             logger.info('Saving vectors to {}'.format(path_pt))
             if not os.path.exists(cache):
@@ -393,6 +397,23 @@ class CharNGram(Vectors):
 
 def _default_unk_index():
     return 0
+
+
+def _infer_shape(f, binary_lines=False):
+    num_lines, vector_dim = 0, None
+    for line in f:
+        if vector_dim is None:
+            row = line.rstrip().split(b" " if binary_lines else " ")
+            vector = row[1:]
+            # Assuming word, [vector] format
+            if len(vector) > 2:
+                # The header present in some (w2v) formats contains two elements.
+                vector_dim = len(vector)
+                num_lines += 1  # First element read
+        else:
+            num_lines += 1
+    f.seek(0)
+    return num_lines, vector_dim
 
 
 pretrained_aliases = {
