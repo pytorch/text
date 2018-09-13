@@ -38,6 +38,11 @@ Alternatively, you might want to use Moses tokenizer from `NLTK <http://nltk.org
     pip install nltk
     python -m nltk.downloader perluniprops nonbreaking_prefixes
 
+Documentation
+=============
+
+Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`.
+
 Data
 ====
 
