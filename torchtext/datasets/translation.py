@@ -97,8 +97,9 @@ class Multi30k(TranslationDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
+        path = os.path.join('data', cls.name)
         return super(Multi30k, cls).splits(
-            exts, fields, root, train, validation, test, **kwargs)
+            exts, fields, path, root, train, validation, test, **kwargs)
 
 
 class IWSLT(TranslationDataset):
@@ -205,5 +206,6 @@ class WMT14(TranslationDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
+        path = os.path.join('data', cls.name)
         return super(WMT14, cls).splits(
-            exts, fields, root, train, validation, test, **kwargs)
+            exts, fields, path, root, train, validation, test, **kwargs)
