@@ -97,7 +97,8 @@ class Dataset(torch.utils.data.Dataset):
                 Default is False.
             strata_field (str): name of the examples Field stratified over.
                 Default is 'label' for the conventional label field.
-            random_state (tuple): the random seed used for shuffling. A return value of `random.getstate()`.
+            random_state (tuple): the random seed used for shuffling.
+                A return value of `random.getstate()`.
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
