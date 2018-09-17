@@ -12,14 +12,21 @@ class ShiftReduceField(data.Field):
 
 
 class ParsedTextField(data.Field):
-
-    def __init__(self, eos_token='<pad>', lower=False):
-
+    """
+        Field for parsed sentences data in NLI datasets.
+        Expensive tokenization could be omitted from the pipeline as
+        the parse tree annotations are already in tokenized form.
+    """
+    def __init__(self, eos_token='<pad>', lower=False, reverse=False):
+        """ remove parentheses to recover the original sentences """
+        preprocessing = lambda parse: [t for t in parse if t not in ('(', ')')]
+        if reverse:
+            postprocessing = lambda parse, _: [list(reversed(p)) for p in parse]
+        else:
+            postprocessing = None
         super(ParsedTextField, self).__init__(
-            eos_token=eos_token, lower=lower, preprocessing=lambda parse: [
-                t for t in parse if t not in ('(', ')')],
-            postprocessing=lambda parse, _, __: [
-                list(reversed(p)) for p in parse])
+            eos_token=eos_token, lower=lower, preprocessing=preprocessing,
+            postprocessing=postprocessing, include_lengths=True)
 
 
 class NLIDataset(data.TabularDataset):
@@ -34,7 +41,7 @@ class NLIDataset(data.TabularDataset):
             len(ex.premise), len(ex.hypothesis))
 
     @classmethod
-    def splits(cls, text_field, label_field, parse_field=None, root='.data',
+    def splits(cls, text_field, label_field, parse_field=None, extra_fields={}, root='.data',
                train='train.jsonl', validation='val.jsonl', test='test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
@@ -46,6 +53,7 @@ class NLIDataset(data.TabularDataset):
             label_field: The field that will be used for label data.
             parse_field: The field that will be used for shift-reduce parser
                 transitions, or None to not include them.
+            extra_field: A dict[json_key: Tuple(field_name, Field)]
             root: The root directory that the dataset's zip archive will be
                 expanded into.
             train: The filename of the train data. Default: 'train.jsonl'.
@@ -57,21 +65,21 @@ class NLIDataset(data.TabularDataset):
         path = cls.download(root)
 
         if parse_field is None:
-            return super(NLIDataset, cls).splits(
-                path, root, train, validation, test,
-                format='json', fields={'sentence1': ('premise', text_field),
-                                       'sentence2': ('hypothesis', text_field),
-                                       'gold_label': ('label', label_field)},
-                filter_pred=lambda ex: ex.label != '-')
+            fields = {'sentence1': ('premise', text_field),
+                      'sentence2': ('hypothesis', text_field),
+                      'gold_label': ('label', label_field)}
+        else:
+            fields = {'sentence1_binary_parse': [('premise', text_field), ('premise_transitions', parse_field)],
+                      'sentence2_binary_parse': [('hypothesis', text_field), ('hypothesis_transitions', parse_field)],
+                      'gold_label': ('label', label_field)}
+
+        for key in extra_fields:
+            if key not in fields.keys():
+                fields[key] = extra_fields[key]
+
         return super(NLIDataset, cls).splits(
             path, root, train, validation, test,
-            format='json', fields={'sentence1_binary_parse':
-                                   [('premise', text_field),
-                                    ('premise_transitions', parse_field)],
-                                   'sentence2_binary_parse':
-                                   [('hypothesis', text_field),
-                                    ('hypothesis_transitions', parse_field)],
-                                   'gold_label': ('label', label_field)},
+            format='json', fields=fields,
             filter_pred=lambda ex: ex.label != '-')
 
     @classmethod
@@ -122,8 +130,8 @@ class SNLI(NLIDataset):
     def splits(cls, text_field, label_field, parse_field=None, root='.data',
                train='snli_1.0_train.jsonl', validation='snli_1.0_dev.jsonl',
                test='snli_1.0_test.jsonl'):
-        return super(SNLI, cls).splits(text_field, label_field, parse_field,
-                                       root, train, validation, test)
+        return super(SNLI, cls).splits(text_field, label_field, parse_field=parse_field,
+                                       root=root, train=train, validation=validation, test=test)
 
 
 class MultiNLI(NLIDataset):
@@ -132,9 +140,13 @@ class MultiNLI(NLIDataset):
     name = 'multinli'
 
     @classmethod
-    def splits(cls, text_field, label_field, parse_field=None, root='.data',
+    def splits(cls, text_field, label_field, parse_field=None, genre_field=None, root='.data',
                train='multinli_1.0_train.jsonl',
                validation='multinli_1.0_dev_matched.jsonl',
                test='multinli_1.0_dev_mismatched.jsonl'):
-        return super(MultiNLI, cls).splits(text_field, label_field, parse_field,
-                                           root, train, validation, test)
+        extra_fields = {}
+        if genre_field is not None:
+            extra_fields["genre"] = ("genre", genre_field)
+
+        return super(MultiNLI, cls).splits(text_field, label_field, parse_field=parse_field, extra_fields=extra_fields,
+                                           root=root, train=train, validation=validation, test=test)
