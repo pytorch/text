@@ -18,15 +18,17 @@ class ParsedTextField(data.Field):
         the parse tree annotations are already in tokenized form.
     """
     def __init__(self, eos_token='<pad>', lower=False, reverse=False):
-        """ remove parentheses to recover the original sentences """
-        preprocessing = lambda parse: [t for t in parse if t not in ('(', ')')]
         if reverse:
-            postprocessing = lambda parse, _: [list(reversed(p)) for p in parse]
+            super(ParsedTextField, self).__init__(
+                eos_token=eos_token, lower=lower,
+                preprocessing=lambda parse: [t for t in parse if t not in ('(', ')')],
+                postprocessing=lambda parse, _: [list(reversed(p)) for p in parse],
+                include_lengths=True)
         else:
-            postprocessing = None
-        super(ParsedTextField, self).__init__(
-            eos_token=eos_token, lower=lower, preprocessing=preprocessing,
-            postprocessing=postprocessing, include_lengths=True)
+            super(ParsedTextField, self).__init__(
+                eos_token=eos_token, lower=lower,
+                preprocessing=lambda parse: [t for t in parse if t not in ('(', ')')],
+                include_lengths=True)
 
 
 class NLIDataset(data.TabularDataset):
