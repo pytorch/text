@@ -78,7 +78,7 @@ EN = data.Field(tokenize=tokenize_en)
 
 train, val = datasets.TranslationDataset.splits(
     path='.data/multi30k/', train='train',
-    validation='val', exts=('.de', '.en'),
+    validation='val', test=None, exts=('.de', '.en'),
     fields=(DE, EN))
 
 print(train.fields)
