@@ -106,6 +106,7 @@ class Field(RawField):
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
         truncate_first: Do the truncating of the sequence at the beginning. Default: False
+        stop_words: Tokens to discard during the preprocessing step. Default: None
     """
 
     vocab_cls = Vocab
@@ -134,7 +135,7 @@ class Field(RawField):
                  preprocessing=None, postprocessing=None, lower=False,
                  tokenize=(lambda s: s.split()), include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
-                 pad_first=False, truncate_first=False):
+                 pad_first=False, truncate_first=False, stop_words=None):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -151,6 +152,7 @@ class Field(RawField):
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
         self.truncate_first = truncate_first
+        self.stop_words = stop_words
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -166,6 +168,8 @@ class Field(RawField):
             x = self.tokenize(x.rstrip('\n'))
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
+        if self.sequential and self.use_vocab and self.stop_words is not None:
+            x = [w for w in x if w not in self.stop_words]
         if self.preprocessing is not None:
             return self.preprocessing(x)
         else:
