@@ -345,15 +345,14 @@ class TestField(TorchtextTestCase):
         question_field.build_vocab(tsv_dataset)
 
         test_example_data = question_field.pad(
-                               [question_field.preprocess(x) for x in
-                                    [["When", "do", "you", "use", "シ",
-                                     "instead", "of", "し?"],
-                                    ["What", "is", "2+2", "<pad>", "<pad>",
-                                     "<pad>", "<pad>", "<pad>"],
-                                    ["Here", "is", "a", "sentence", "with",
-                                     "some", "oovs", "<pad>"]]
-                                ]
-                            )
+            [question_field.preprocess(x) for x in
+             [["When", "do", "you", "use", "シ",
+              "instead", "of", "し?"],
+              ["What", "is", "2+2", "<pad>", "<pad>",
+              "<pad>", "<pad>", "<pad>"],
+              ["Here", "is", "a", "sentence", "with",
+               "some", "oovs", "<pad>"]]]
+        )
 
         # Test with batch_first
         stopwords_removed_numericalized = question_field.numericalize(test_example_data)
