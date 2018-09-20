@@ -429,6 +429,7 @@ class CharNGram(Vectors):
 def _default_unk_index():
     return 0
 
+
 # Mapping from string name to factory function
 pretrained_aliases = {
     "charngram.100d": partial(CharNGram),
