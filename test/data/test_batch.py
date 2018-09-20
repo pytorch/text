@@ -22,7 +22,7 @@ class TestDataset(TorchtextTestCase):
     def test_batch_iter(self):
         self.write_test_numerical_features_dataset()
         FLOAT = data.Field(use_vocab=False, sequential=False,
-                           tensor_type=torch.FloatTensor)
+                           dtype=torch.float)
         INT = data.Field(use_vocab=False, sequential=False, is_target=True)
         TEXT = data.Field(sequential=False)
 
