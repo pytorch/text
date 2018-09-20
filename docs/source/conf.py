@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'torchtext'
-copyright = '2018, Torch Contributors'
+copyright = '2017, Torch Contributors'
 author = 'Torch Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -124,7 +124,8 @@ def setup(app):
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None)
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'torch': ('http://pytorch.org/docs/0.3.0/', None)
 }
 
 
