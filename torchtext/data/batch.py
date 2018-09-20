@@ -11,7 +11,8 @@ class Batch(object):
         train: Deprecated: this attribute is left for backwards compatibility,
             however it is UNUSED as of the merger with pytorch 0.4.
         input_fields: The names of the fields that are used as input for the model
-        target_fields: The names of the fields that are used as targets during model training
+        target_fields: The names of the fields that are used as targets during
+                       model training
 
     Also stores the Variable for each column in the batch as an attribute.
     """
