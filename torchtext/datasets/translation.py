@@ -97,8 +97,17 @@ class Multi30k(TranslationDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        expected_folder = os.path.join(root, cls.name)
-        path = expected_folder if os.path.exists(expected_folder) else None
+
+        # TODO: This is a _HORRIBLE_ patch related to #208
+        # 'path' can be passed as a kwarg to the translation dataset constructor
+        # or has to be set (so the download wouldn't be duplicated). A good idea
+        # seems to rename the existence check variable from path to something else
+        if 'path' not in kwargs:
+            expected_folder = os.path.join(root, cls.name)
+            path = expected_folder if os.path.exists(expected_folder) else None
+        else:
+            path = kwargs['path']
+            del kwargs['path']
 
         return super(Multi30k, cls).splits(
             exts, fields, path, root, train, validation, test, **kwargs)
@@ -208,8 +217,16 @@ class WMT14(TranslationDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        expected_folder = os.path.join(root, cls.name)
-        path = expected_folder if os.path.exists(expected_folder) else None
+        # TODO: This is a _HORRIBLE_ patch related to #208
+        # 'path' can be passed as a kwarg to the translation dataset constructor
+        # or has to be set (so the download wouldn't be duplicated). A good idea
+        # seems to rename the existence check variable from path to something else
+        if 'path' not in kwargs:
+            expected_folder = os.path.join(root, cls.name)
+            path = expected_folder if os.path.exists(expected_folder) else None
+        else:
+            path = kwargs['path']
+            del kwargs['path']
 
         return super(WMT14, cls).splits(
             exts, fields, path, root, train, validation, test, **kwargs)
