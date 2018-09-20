@@ -46,7 +46,7 @@ class Vocab(object):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: torch.Tensor.zero\_
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
         """
         self.freqs = counter
@@ -165,7 +165,7 @@ class Vocab(object):
             dim: The dimensionality of the vectors.
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: torch.Tensor.zero\_
         """
         self.vectors = torch.Tensor(len(self), dim)
         for i, token in enumerate(self.itos):
@@ -430,6 +430,7 @@ def _default_unk_index():
     return 0
 
 
+# Mapping from string name to factory function
 pretrained_aliases = {
     "charngram.100d": partial(CharNGram),
     "fasttext.en.300d": partial(FastText, language="en"),
@@ -445,4 +446,3 @@ pretrained_aliases = {
     "glove.6B.200d": partial(GloVe, name="6B", dim="200"),
     "glove.6B.300d": partial(GloVe, name="6B", dim="300")
 }
-"""Mapping from string name to factory function"""

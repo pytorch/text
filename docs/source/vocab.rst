@@ -59,8 +59,3 @@ Misc.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: _default_unk_index
-
-:hidden:`pretrained_aliases`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autodata:: pretrained_aliases
