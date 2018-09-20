@@ -9,6 +9,7 @@ import pytest
 from torch.nn import init
 
 from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
+from ..common.test_markers import slow
 
 
 class TestField(TorchtextTestCase):
@@ -749,6 +750,7 @@ class TestNestedField(TorchtextTestCase):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
 
+    @slow
     def test_build_vocab(self):
         nesting_field = data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
 
@@ -761,7 +763,8 @@ class TestNestedField(TorchtextTestCase):
                    [['y', 'e', 't'], ['a', 'n', 'o', 't', 'h', 'e', 'r']],
                    [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
 
-        field.build_vocab(sources, unk_init=init.normal_,
+        field.build_vocab(sources, vectors='glove.6B.50d',
+                          unk_init=init.normal_,
                           vectors_cache=".vector_cache")
 
 
