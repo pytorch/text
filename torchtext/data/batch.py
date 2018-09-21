@@ -10,6 +10,9 @@ class Batch(object):
             (which itself contains the dataset's Field objects).
         train: Deprecated: this attribute is left for backwards compatibility,
             however it is UNUSED as of the merger with pytorch 0.4.
+        input_fields: The names of the fields that are used as input for the model
+        target_fields: The names of the fields that are used as targets during
+                       model training
 
     Also stores the Variable for each column in the batch as an attribute.
     """
@@ -20,6 +23,10 @@ class Batch(object):
             self.batch_size = len(data)
             self.dataset = dataset
             self.fields = dataset.fields.keys()  # copy field names
+            self.input_fields = [k for k, v in dataset.fields.items() if
+                                 v is not None and not v.is_target]
+            self.target_fields = [k for k, v in dataset.fields.items() if
+                                  v is not None and v.is_target]
 
             for (name, field) in dataset.fields.items():
                 if field is not None:
@@ -58,6 +65,18 @@ class Batch(object):
 
     def __len__(self):
         return self.batch_size
+
+    def _get_field_values(self, fields):
+        if len(fields) == 0:
+            return None
+        elif len(fields) == 1:
+            return getattr(self, fields[0])
+        else:
+            return tuple(getattr(self, f) for f in fields)
+
+    def __iter__(self):
+        yield self._get_field_values(self.input_fields)
+        yield self._get_field_values(self.target_fields)
 
 
 def _short_str(tensor):
