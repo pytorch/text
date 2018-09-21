@@ -199,7 +199,7 @@ class SubwordVocab(Vocab):
 
         self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
-        self.itos = specials
+        self.itos = specials.copy()
 
         self.segment = revtok.SubwordSegmenter(counter, max_size)
 
@@ -210,6 +210,8 @@ class SubwordVocab(Vocab):
                       key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
 
         for tok, _ in toks:
+            if len(self.itos) == max_size:
+                break
             self.itos.append(tok)
             self.stoi[tok] = len(self.itos) - 1
 
