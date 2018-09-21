@@ -311,7 +311,7 @@ class Field(RawField):
                     "Please raise an issue at "
                     "https://github.com/pytorch/text/issues".format(self.dtype))
             numericalization_func = self.dtypes[self.dtype]
-            # It doesn't make sense to explictly coerce to a numeric type if
+            # It doesn't make sense to explicitly coerce to a numeric type if
             # the data is sequential, since it's unclear how to coerce padding tokens
             # to a numeric type.
             if not self.sequential:
