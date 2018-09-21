@@ -644,6 +644,7 @@ class NestedField(Field):
         self.nesting_field.build_vocab(*flattened, **kwargs)
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
+        self.vocab.freqs = self.nesting_field.vocab.freqs.copy()
         if old_vectors is not None:
             self.vocab.load_vectors(old_vectors,
                                     unk_init=old_unk_init, cache=old_vectors_cache)
