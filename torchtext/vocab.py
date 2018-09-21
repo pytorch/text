@@ -28,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None):
+                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -48,12 +48,18 @@ class Vocab(object):
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero\_
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
+            specials_first: Whether to add special tokens into the vocabulary at first.
+                If it is False, they are added into the vocabulary at last.
+                Default: True.
         """
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
 
-        self.itos = list(specials)
+        self.itos = list()
+        if specials_first:
+            self.itos = list(specials)
+
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
@@ -69,6 +75,9 @@ class Vocab(object):
             if freq < min_freq or len(self.itos) == max_size:
                 break
             self.itos.append(word)
+
+        if not specials_first:
+            self.itos.extend(list(specials))
 
         self.stoi = defaultdict(_default_unk_index)
         # stoi is simply a reverse dict for itos
