@@ -32,6 +32,23 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.itos, expected_itos)
         self.assertEqual(dict(v.stoi), expected_stoi)
 
+    def test_vocab_specials_first(self):
+        c = Counter("a a b b c c".split())
+
+        # add specials into vocabulary at first
+        v = vocab.Vocab(c, max_size=2, specials=['<pad>', '<eos>'])
+        expected_itos = ['<pad>', '<eos>', 'a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.itos, expected_itos)
+        self.assertEqual(dict(v.stoi), expected_stoi)
+
+        # add specials into vocabulary at last
+        v = vocab.Vocab(c, max_size=2, specials=['<pad>', '<eos>'], specials_first=False)
+        expected_itos = ['a', 'b', '<pad>', '<eos>']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.itos, expected_itos)
+        self.assertEqual(dict(v.stoi), expected_stoi)
+
     def test_vocab_set_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5,
                      'ｔｅｓｔ': 4, 'freq_too_low': 2})
