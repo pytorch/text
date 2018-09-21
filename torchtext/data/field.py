@@ -106,7 +106,8 @@ class Field(RawField):
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
         truncate_first: Do the truncating of the sequence at the beginning. Default: False
-        stop_words: Tokens to discard during the preprocessing step. Default: None
+        stop_words: Tokens to discard during the preprocessing step.
+            Must be an iterable. Default: None
     """
 
     vocab_cls = Vocab
@@ -152,7 +153,13 @@ class Field(RawField):
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
         self.truncate_first = truncate_first
-        self.stop_words = stop_words
+        if stop_words is not None:
+            try:
+                self.stop_words = set(stop_words)
+            except:
+                raise ValueError("Stop words must be convertible to a set")
+        else:
+            self.stop_words = stop_words
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
