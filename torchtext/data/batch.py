@@ -51,8 +51,9 @@ class Batch(object):
         if not self.__dict__:
             return 'Empty {} instance'.format(torch.typename(self))
 
+        fields_to_index = filter(lambda field: field is not None, self.fields)
         var_strs = '\n'.join(['\t[.' + name + ']' + ":" + _short_str(getattr(self, name))
-                              for name in self.fields if hasattr(self, name)])
+                              for name in fields_to_index if hasattr(self, name)])
 
         data_str = (' from {}'.format(self.dataset.name.upper())
                     if hasattr(self.dataset, 'name') and

@@ -38,6 +38,11 @@ Alternatively, you might want to use Moses tokenizer from `NLTK <http://nltk.org
     pip install nltk
     python -m nltk.downloader perluniprops nonbreaking_prefixes
 
+Documentation
+=============
+
+Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`.
+
 Data
 ====
 
@@ -112,7 +117,7 @@ The datasets module currently contains:
 
 * Sentiment analysis: SST and IMDb
 * Question classification: TREC
-* Entailment: SNLI
+* Entailment: SNLI, MultiNLI
 * Language modeling: abstract class + WikiText-2
 * Machine translation: abstract class + Multi30k, IWSLT, WMT14
 * Sequence tagging (e.g. POS/NER): abstract class + UDPOS

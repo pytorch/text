@@ -97,7 +97,8 @@ class Dataset(torch.utils.data.Dataset):
                 Default is False.
             strata_field (str): name of the examples Field stratified over.
                 Default is 'label' for the conventional label field.
-            random_state (int): the random seed used for shuffling.
+            random_state (tuple): the random seed used for shuffling.
+                A return value of `random.getstate()`.
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
@@ -221,9 +222,10 @@ class TabularDataset(Dataset):
                 and also enables selecting a subset of columns to load.
             skip_header (bool): Whether to skip the first line of the input file.
         """
+        format = format.lower()
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
-            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
+            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
