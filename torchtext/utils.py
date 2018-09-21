@@ -9,7 +9,7 @@ def reporthook(t):
 
     def inner(b=1, bsize=1, tsize=None):
         """
-        b: int, optionala
+        b: int, optional
         Number of blocks just transferred [default: 1].
         bsize: int, optional
         Size of each block (in tqdm units) [default: 1].
