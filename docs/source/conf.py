@@ -20,7 +20,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import torchtext
+# import torchtext
 import sphinx_rtd_theme
 
 # -- General configuration ------------------------------------------------
