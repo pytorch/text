@@ -45,12 +45,12 @@ class TranslationDataset(data.Dataset):
         """Create dataset objects for splits of a TranslationDataset.
 
         Arguments:
-            path (str): Common prefix of the splits' file paths, or None to use
-                the result of cls.download(root).
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            path (str): Common prefix of the splits' file paths, or None to use
+                the result of cls.download(root).
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -86,11 +86,10 @@ class Multi30k(TranslationDataset):
         """Create dataset objects for splits of the Multi30k dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -127,11 +126,10 @@ class IWSLT(TranslationDataset):
         """Create dataset objects for splits of the IWSLT dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -202,12 +200,11 @@ class WMT14(TranslationDataset):
         """Create dataset objects for splits of the WMT 2014 dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extensions for each language. Must be
                 either ('.en', '.de') or the reverse.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default:
                 'train.tok.clean.bpe.32000'.
             validation: The prefix of the validation data. Default:
