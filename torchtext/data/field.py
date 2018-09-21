@@ -158,7 +158,7 @@ class Field(RawField):
         if stop_words is not None:
             try:
                 self.stop_words = set(stop_words)
-            except:
+            except TypeError:
                 raise ValueError("Stop words must be convertible to a set")
         else:
             self.stop_words = stop_words
