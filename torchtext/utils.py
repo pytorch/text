@@ -51,7 +51,7 @@ def download_from_url(url, path):
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
     """Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
-    Borrwed and slightly modified from the Python docs:
+    Borrowed and slightly modified from the Python docs:
     https://docs.python.org/2/library/csv.html#csv-examples"""
     if six.PY2:
         # csv.py doesn't do Unicode; encode temporarily as UTF-8:
