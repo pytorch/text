@@ -254,7 +254,7 @@ class Vectors(object):
            name: name of the file that contains the vectors
            cache: directory for cached vectors
            url: url for download if vectors not found in cache
-           unk_init (callback): by default, initalize out-of-vocabulary word vectors
+           unk_init (callback): by default, initialize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
             max_vectors (int): this can be used to limit the number of
