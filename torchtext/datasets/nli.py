@@ -56,7 +56,7 @@ class NLIDataset(data.TabularDataset):
             label_field: The field that will be used for label data.
             parse_field: The field that will be used for shift-reduce parser
                 transitions, or None to not include them.
-            extra_field: A dict[json_key: Tuple(field_name, Field)]
+            extra_fields: A dict[json_key: Tuple(field_name, Field)]
             root: The root directory that the dataset's zip archive will be
                 expanded into.
             train: The filename of the train data. Default: 'train.jsonl'.

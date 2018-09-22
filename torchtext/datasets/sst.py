@@ -79,7 +79,7 @@ class SST(data.Dataset):
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
-        """Creater iterator objects for splits of the SST dataset.
+        """Create iterator objects for splits of the SST dataset.
 
         Arguments:
             batch_size: Batch_size
