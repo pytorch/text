@@ -41,7 +41,7 @@ Alternatively, you might want to use Moses tokenizer from `NLTK <http://nltk.org
 Documentation
 =============
 
-Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`.
+Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`_.
 
 Data
 ====
