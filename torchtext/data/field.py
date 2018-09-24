@@ -675,8 +675,9 @@ class NestedField(Field):
 
         self.nesting_field.include_lengths = True
         if self.include_lengths:
-            sentence_lengths = torch.LongTensor(sentence_lengths, device=device)
-            word_lengths = torch.LongTensor(word_lengths, device=device)
+            sentence_lengths = \
+                torch.tensor(sentence_lengths, dtype=self.dtype, device=device)
+            word_lengths = torch.tensor(word_lengths, dtype=self.dtype, device=device)
             return (padded_batch, sentence_lengths, word_lengths)
         return padded_batch
 
