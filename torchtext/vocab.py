@@ -199,6 +199,12 @@ class SubwordVocab(Vocab):
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token.
+            vectors: One of either the available pretrained vectors
+                or custom pretrained vectors (see Vocab.load_vectors);
+                or a list of aforementioned vectors
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and
+                returns a Tensor of the same size. Default: torch.Tensor.zero\_
         """
         try:
             import revtok
@@ -257,13 +263,13 @@ class Vectors(object):
            unk_init (callback): by default, initialize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
-            max_vectors (int): this can be used to limit the number of
-                pre-trained vectors loaded.
-                Most pre-trained vector sets are sorted
-                in the descending order of word frequency.
-                Thus, in situations where the entire set doesn't fit in memory,
-                or is not needed for another reason, passing `max_vectors`
-                can limit the size of the loaded set.
+           max_vectors (int): this can be used to limit the number of
+               pre-trained vectors loaded.
+               Most pre-trained vector sets are sorted
+               in the descending order of word frequency.
+               Thus, in situations where the entire set doesn't fit in memory,
+               or is not needed for another reason, passing `max_vectors`
+               can limit the size of the loaded set.
          """
         cache = '.vector_cache' if cache is None else cache
         self.itos = None
