@@ -51,7 +51,7 @@ class RawField(object):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             object: Processed object given the input and custom
-                postprocessing Pipeline.
+            postprocessing Pipeline.
         """
         if self.postprocessing is not None:
             batch = self.postprocessing(batch)
@@ -195,7 +195,7 @@ class Field(RawField):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             torch.autograd.Variable: Processed object given the input
-                and custom postprocessing Pipeline.
+            and custom postprocessing Pipeline.
         """
         padded = self.pad(batch)
         tensor = self.numericalize(padded, device=device)
