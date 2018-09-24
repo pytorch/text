@@ -68,7 +68,7 @@ author = 'Torch Contributors'
 # built documents.
 #
 # The short X.Y version.
-version = '0.3.0' # torchtext.__version__
+version = '0.3.0' #  torchtext.__version__
 # The full version, including alpha/beta/rc tags.
 release = 'master (0.3.0)'
 
