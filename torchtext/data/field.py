@@ -51,7 +51,7 @@ class RawField(object):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             object: Processed object given the input and custom
-                postprocessing Pipeline.
+            postprocessing Pipeline.
         """
         if self.postprocessing is not None:
             batch = self.postprocessing(batch)
@@ -195,7 +195,7 @@ class Field(RawField):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             torch.autograd.Variable: Processed object given the input
-                and custom postprocessing Pipeline.
+            and custom postprocessing Pipeline.
         """
         padded = self.pad(batch)
         tensor = self.numericalize(padded, device=device)
@@ -644,6 +644,7 @@ class NestedField(Field):
         self.nesting_field.build_vocab(*flattened, **kwargs)
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
+        self.vocab.freqs = self.nesting_field.vocab.freqs.copy()
         if old_vectors is not None:
             self.vocab.load_vectors(old_vectors,
                                     unk_init=old_unk_init, cache=old_vectors_cache)
@@ -675,8 +676,9 @@ class NestedField(Field):
 
         self.nesting_field.include_lengths = True
         if self.include_lengths:
-            sentence_lengths = torch.LongTensor(sentence_lengths, device=device)
-            word_lengths = torch.LongTensor(word_lengths, device=device)
+            sentence_lengths = \
+                torch.tensor(sentence_lengths, dtype=self.dtype, device=device)
+            word_lengths = torch.tensor(word_lengths, dtype=self.dtype, device=device)
             return (padded_batch, sentence_lengths, word_lengths)
         return padded_batch
 

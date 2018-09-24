@@ -73,6 +73,12 @@ SNLI
   :members: splits, iters
 
 
+MultiNLI
+~~~~~~~~
+
+.. autoclass:: MultiNLI
+  :members: splits, iters
+
 
 Language Modeling
 ^^^^^^^^^^^^^^^^^
@@ -89,6 +95,19 @@ WikiText-2
 .. autoclass:: WikiText2
   :members: splits, iters
 
+
+WikiText103
+~~~~~~~~~~~
+
+.. autoclass:: WikiText103
+  :members: splits, iters
+
+
+PennTreebank
+~~~~~~~~~~~~
+
+.. autoclass:: PennTreebank
+  :members: splits, iters
 
 
 Machine Translation
@@ -117,3 +136,34 @@ WMT14
 
 .. autoclass:: WMT14
   :members: splits
+
+
+Sequence Tagging
+^^^^^^^^^^^^^^^^
+
+Sequence tagging datasets are subclasses of ``SequenceTaggingDataset`` class.
+
+.. autoclass:: SequenceTaggingDataset
+  :members: __init__
+
+
+UDPOS
+~~~~~
+
+.. autoclass:: UDPOS
+  :members: splits
+
+CoNLL2000Chunking
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: CoNLL2000Chunking
+  :members: splits
+
+Question Answering
+^^^^^^^^^^^^^^^^^^
+
+BABI20
+~~~~~~
+
+.. autoclass:: BABI20
+  :members: __init__, splits, iters

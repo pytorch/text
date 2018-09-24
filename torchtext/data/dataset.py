@@ -70,7 +70,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
-                test splits in that order, if provided.
+            test splits in that order, if provided.
         """
         if path is None:
             path = cls.download(root)
@@ -102,7 +102,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
-                test splits in that order, if the splits are provided.
+            test splits in that order, if the splits are provided.
         """
         train_ratio, test_ratio, val_ratio = check_split_ratio(split_ratio)
 
