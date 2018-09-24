@@ -514,6 +514,8 @@ class TestNestedField(TorchtextTestCase):
         for c in expected:
             assert c in CHARS.vocab.stoi
 
+        assert CHARS.vocab.freqs == CHARS.nesting_field.vocab.freqs == Counter({"a": 6, "b": 6, "c": 1})
+
     def test_build_vocab_from_iterable(self):
         nesting_field = data.Field(unk_token="<cunk>", pad_token="<cpad>")
         CHARS = data.NestedField(nesting_field)
@@ -526,6 +528,8 @@ class TestNestedField(TorchtextTestCase):
         assert len(CHARS.vocab) == len(expected)
         for c in expected:
             assert c in CHARS.vocab.stoi
+
+        assert CHARS.vocab.freqs == CHARS.nesting_field.vocab.freqs == Counter({"a": 6, "b": 12, "c": 4})
 
     def test_pad(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
