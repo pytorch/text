@@ -138,7 +138,7 @@ WMT14
   :members: splits
 
 
-Sequence tagging
+Sequence Tagging
 ^^^^^^^^^^^^^^^^
 
 Sequence tagging datasets are subclasses of ``SequenceTaggingDataset`` class.
@@ -159,7 +159,7 @@ CoNLL2000Chunking
 .. autoclass:: CoNLL2000Chunking
   :members: splits
 
-Question answering
+Question Answering
 ^^^^^^^^^^^^^^^^^^
 
 BABI20
