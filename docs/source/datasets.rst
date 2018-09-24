@@ -159,8 +159,8 @@ CoNLL2000Chunking
 .. autoclass:: CoNLL2000Chunking
   :members: splits
 
-Question ansering
-^^^^^^^^^^^^^^^^^
+Question answering
+^^^^^^^^^^^^^^^^^^
 
 BABI20
 ~~~~~~
