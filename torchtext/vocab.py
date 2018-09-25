@@ -28,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None):
+                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -48,12 +48,18 @@ class Vocab(object):
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
+            specials_first: Whether to add special tokens into the vocabulary at first.
+                If it is False, they are added into the vocabulary at last.
+                Default: True.
         """
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
 
-        self.itos = list(specials)
+        self.itos = list()
+        if specials_first:
+            self.itos = list(specials)
+
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
@@ -69,6 +75,9 @@ class Vocab(object):
             if freq < min_freq or len(self.itos) == max_size:
                 break
             self.itos.append(word)
+
+        if not specials_first:
+            self.itos.extend(list(specials))
 
         self.stoi = defaultdict(_default_unk_index)
         # stoi is simply a reverse dict for itos
@@ -190,6 +199,12 @@ class SubwordVocab(Vocab):
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token.
+            vectors: One of either the available pretrained vectors
+                or custom pretrained vectors (see Vocab.load_vectors);
+                or a list of aforementioned vectors
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and
+                returns a Tensor of the same size. Default: torch.Tensor.zero\_
         """
         try:
             import revtok
@@ -199,7 +214,7 @@ class SubwordVocab(Vocab):
 
         self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
-        self.itos = specials
+        self.itos = specials.copy()
 
         self.segment = revtok.SubwordSegmenter(counter, max_size)
 
@@ -210,6 +225,8 @@ class SubwordVocab(Vocab):
                       key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
 
         for tok, _ in toks:
+            if len(self.itos) == max_size:
+                break
             self.itos.append(tok)
             self.stoi[tok] = len(self.itos) - 1
 
@@ -243,16 +260,16 @@ class Vectors(object):
            name: name of the file that contains the vectors
            cache: directory for cached vectors
            url: url for download if vectors not found in cache
-           unk_init (callback): by default, initalize out-of-vocabulary word vectors
+           unk_init (callback): by default, initialize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
-            max_vectors (int): this can be used to limit the number of
-                pre-trained vectors loaded.
-                Most pre-trained vector sets are sorted
-                in the descending order of word frequency.
-                Thus, in situations where the entire set doesn't fit in memory,
-                or is not needed for another reason, passing `max_vectors`
-                can limit the size of the loaded set.
+           max_vectors (int): this can be used to limit the number of
+               pre-trained vectors loaded.
+               Most pre-trained vector sets are sorted
+               in the descending order of word frequency.
+               Thus, in situations where the entire set doesn't fit in memory,
+               or is not needed for another reason, passing `max_vectors`
+               can limit the size of the loaded set.
          """
         cache = '.vector_cache' if cache is None else cache
         self.itos = None

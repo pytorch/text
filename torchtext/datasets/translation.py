@@ -2,6 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 import glob
 import io
+import codecs
 
 from .. import data
 
@@ -45,12 +46,12 @@ class TranslationDataset(data.Dataset):
         """Create dataset objects for splits of a TranslationDataset.
 
         Arguments:
-            path (str): Common prefix of the splits' file paths, or None to use
-                the result of cls.download(root).
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            path (str): Common prefix of the splits' file paths, or None to use
+                the result of cls.download(root).
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -86,11 +87,10 @@ class Multi30k(TranslationDataset):
         """Create dataset objects for splits of the Multi30k dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -127,11 +127,10 @@ class IWSLT(TranslationDataset):
         """Create dataset objects for splits of the IWSLT dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -165,7 +164,7 @@ class IWSLT(TranslationDataset):
         for f_xml in glob.iglob(os.path.join(path, '*.xml')):
             print(f_xml)
             f_txt = os.path.splitext(f_xml)[0]
-            with io.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+            with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
                 root = ET.parse(f_xml).getroot()[0]
                 for doc in root.findall('doc'):
                     for e in doc.findall('seg'):
@@ -176,7 +175,7 @@ class IWSLT(TranslationDataset):
         for f_orig in glob.iglob(os.path.join(path, 'train.tags*')):
             print(f_orig)
             f_txt = f_orig.replace('.tags', '')
-            with io.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
+            with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
                     io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
                 for l in fd_orig:
                     if not any(tag in l for tag in xml_tags):
@@ -202,12 +201,11 @@ class WMT14(TranslationDataset):
         """Create dataset objects for splits of the WMT 2014 dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extensions for each language. Must be
                 either ('.en', '.de') or the reverse.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default:
                 'train.tok.clean.bpe.32000'.
             validation: The prefix of the validation data. Default:

@@ -70,7 +70,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
-                test splits in that order, if provided.
+            test splits in that order, if provided.
         """
         if path is None:
             path = cls.download(root)
@@ -102,7 +102,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
-                test splits in that order, if the splits are provided.
+            test splits in that order, if the splits are provided.
         """
         train_ratio, test_ratio, val_ratio = check_split_ratio(split_ratio)
 
@@ -266,7 +266,7 @@ def check_split_ratio(split_ratio):
     if isinstance(split_ratio, float):
         # Only the train set relative ratio is provided
         # Assert in bounds, validation size is zero
-        assert split_ratio > 0. and split_ratio < 1., (
+        assert 0. < split_ratio < 1., (
             "Split ratio {} not between 0 and 1".format(split_ratio))
 
         test_ratio = 1. - split_ratio

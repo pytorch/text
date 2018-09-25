@@ -41,7 +41,7 @@ Alternatively, you might want to use Moses tokenizer from `NLTK <http://nltk.org
 Documentation
 =============
 
-Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`.
+Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`_.
 
 Data
 ====
@@ -118,9 +118,10 @@ The datasets module currently contains:
 * Sentiment analysis: SST and IMDb
 * Question classification: TREC
 * Entailment: SNLI, MultiNLI
-* Language modeling: abstract class + WikiText-2
+* Language modeling: abstract class + WikiText-2, WikiText103, PennTreebank
 * Machine translation: abstract class + Multi30k, IWSLT, WMT14
-* Sequence tagging (e.g. POS/NER): abstract class + UDPOS
+* Sequence tagging (e.g. POS/NER): abstract class + UDPOS, CoNLL2000Chunking
+* Question answering: 20 QA bAbI tasks
 
 Others are planned or a work in progress:
 
