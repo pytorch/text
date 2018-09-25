@@ -411,7 +411,8 @@ class GloVe(Vectors):
 
 class Word2Vec(Vectors):
     urls = {
-        'googlenews': 'https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz'
+        'googlenews': 'https://s3.amazonaws.com/'
+                      'dl4j-distribution/GoogleNews-vectors-negative300.bin.gz'
     }
 
     def __init__(self, name='googlenews', **kwargs):
