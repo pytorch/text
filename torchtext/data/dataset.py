@@ -207,7 +207,7 @@ class Dataset(torch.utils.data.Dataset):
         """
         for i, example in enumerate(self.examples):
             for field_name in field_names:
-                vocab = self.fields[field_name].vocab.stoi
+                vocab = set(self.fields[field_name].vocab.stoi)
                 text = getattr(example, field_name)
                 example_part = [word for word in text if word in vocab]
                 setattr(example, field_name, example_part)
