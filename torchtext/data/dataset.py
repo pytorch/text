@@ -197,6 +197,19 @@ class Dataset(torch.utils.data.Dataset):
                             shutil.copyfileobj(gz, uncompressed)
 
         return os.path.join(path, cls.dirname)
+ 
+
+    def filter_examples(self, field_names):
+        """Remove unknown words from dataset examples with respect to given field.
+
+        Arguments:
+            field_names (list(str)): Within example only the parts with field names in
+                field_names will have their unknown words deleted.
+        """
+        for i, example in enumerate(self.examples):
+            example_part = [word for word in getattr(example,field_name) if word in self.fields[field_name].vocab.stoi]
+            setattr(example, field_name, example_part)
+            self.examples[i] = example 
 
 
 class TabularDataset(Dataset):
