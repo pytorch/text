@@ -207,7 +207,7 @@ class Dataset(torch.utils.data.Dataset):
                 field_names will have their unknown words deleted.
         """
         for i, example in enumerate(self.examples):
-            example_part = [word for word in getattr(example,field_name) if word in self.fields[field_name].vocab.stoi]
+            example_part = [word for word in getattr(example, field_name) if word in self.fields[field_name].vocab.stoi]
             setattr(example, field_name, example_part)
             self.examples[i] = example 
 
