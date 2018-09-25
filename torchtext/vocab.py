@@ -236,16 +236,24 @@ class SubwordVocab(Vocab):
 
 def _infer_shape(f):
     num_lines, vector_dim = 0, None
-    for line in f:
-        if vector_dim is None:
-            row = line.rstrip().split(b" ")
-            vector = row[1:]
-            # Assuming word, [vector] format
-            if len(vector) > 2:
-                # The header present in some (w2v) formats contains two elements.
-                vector_dim = len(vector)
-                num_lines += 1  # First element read
-        else:
+
+    # Assuming word, [vector] format
+
+    # Read header
+    line = f.readline()
+    if isinstance(line, six.binary_type):
+        line = line.decode('utf-8')
+    row = line.rstrip().split(" ")
+
+    if len(row) == 2:
+        num_lines, vector_dim = list(map(int, row))
+    else:
+        vector = row[1:]
+        # The header present in some (w2v) formats contains two elements.
+        vector_dim = len(vector)
+        num_lines += 1  # First element read
+
+        for _ in f:
             num_lines += 1
     f.seek(0)
     return num_lines, vector_dim
