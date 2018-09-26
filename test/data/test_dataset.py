@@ -409,7 +409,7 @@ class TestDataset(TorchtextTestCase):
         # Test filter remove all words in example
         dataset, text_field = self.filter_init(
             example1_values,
-            example2_values, 
+            example2_values,
             example3_values
         )
 
