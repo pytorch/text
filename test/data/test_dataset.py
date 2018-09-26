@@ -342,12 +342,12 @@ class TestDataset(TorchtextTestCase):
         assert len(valid) == expected_valid_size
         assert len(test) == expected_test_size
 
-    def test_filter(self): 
+    def test_filter(self):
         # Create test examples
         sentence11 = [["who", "is", "there"]]
         sentence12 = [["bernardo", "is", "there"]]
         label1 = [1]
-        sentence21 = [["nay","answer","me"]]
+        sentence21 = [["nay", "answer", "me"]]
         sentence22 = [["stand", "unfold", "yourself"]]
         label2 = [0]
         sentence31 = [["is", "Horatio", "there"]]
@@ -359,8 +359,11 @@ class TestDataset(TorchtextTestCase):
         example3_values = sentence31 + sentence32 + label3
 
         # Test filter remove words from single field only
-        dataset, text_field = self.filter_init(example1_values,
-            example2_values, example3_values)
+        dataset, text_field = self.filter_init(
+            example1_values,
+            example2_values,
+            example3_values
+        )
 
         text_field.vocab.stoi.pop("there")
         text_field.vocab.stoi.pop("bernardo")
@@ -379,14 +382,17 @@ class TestDataset(TorchtextTestCase):
         assert dataset[2].text2 == ["a", "piece", "of", "him"]
         assert dataset[2].label == 0
 
-        # Test filter remove words from multiple fields        
-        dataset, text_field = self.filter_init(example1_values,
-            example2_values, example3_values)
+        # Test filter remove words from multiple fields
+        dataset, text_field = self.filter_init(
+            example1_values,
+            example2_values,
+            example3_values
+        )
 
         text_field.vocab.stoi.pop("there")
         text_field.vocab.stoi.pop("bernardo")
 
-        dataset.filter_examples(["text1","text2"])
+        dataset.filter_examples(["text1", "text2"])
 
         assert dataset[0].text1 == ["who", "is"]
         assert dataset[0].text2 == ["is"]
@@ -395,14 +401,17 @@ class TestDataset(TorchtextTestCase):
         assert dataset[1].text1 == ["nay", "answer", "me"]
         assert dataset[1].text2 == ["stand", "unfold", "yourself"]
         assert dataset[1].label == 0
- 
+
         assert dataset[2].text1 == ["is", "Horatio"]
         assert dataset[2].text2 == ["a", "piece", "of", "him"]
         assert dataset[2].label == 0
 
         # Test filter remove all words in example
-        dataset, text_field = self.filter_init(example1_values,
-            example2_values, example3_values)
+        dataset, text_field = self.filter_init(
+            example1_values,
+            example2_values, 
+            example3_values
+        )
 
         text_field.vocab.stoi.pop("who")
         text_field.vocab.stoi.pop("is")
@@ -425,8 +434,8 @@ class TestDataset(TorchtextTestCase):
     def filter_init(self, ex_val1, ex_val2, ex_val3):
         text_field = data.Field(sequential=True)
         label_field = data.Field(sequential=False)
-        fields = [("text1", text_field), ("text2", text_field), 
-                  ("label", label_field)] 
+        fields = [("text1", text_field), ("text2", text_field),
+                  ("label", label_field)]
 
         example1 = data.Example.fromlist(ex_val1, fields)
         example2 = data.Example.fromlist(ex_val2, fields)
