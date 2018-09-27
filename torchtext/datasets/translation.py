@@ -32,7 +32,7 @@ class TranslationDataset(data.Dataset):
 
         examples = []
         with io.open(src_path, mode='r', encoding='utf-8') as src_file, \
-             io.open(trg_path, mode='w', encoding='utf-8') as trg_file:
+                io.open(trg_path, mode='w', encoding='utf-8') as trg_file:
             for src_line, trg_line in zip(src_file, trg_file):
                 src_line, trg_line = src_line.strip(), trg_line.strip()
                 if src_line != '' and trg_line != '':
