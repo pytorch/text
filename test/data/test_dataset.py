@@ -359,7 +359,7 @@ class TestDataset(TorchtextTestCase):
         example3_values = sentence31 + sentence32 + label3
 
         # Test filter remove words from single field only
-        dataset, text_field = self.filter_init(
+        dataset, text_field = filter_init(
             example1_values,
             example2_values,
             example3_values
@@ -383,7 +383,7 @@ class TestDataset(TorchtextTestCase):
         assert dataset[2].label == 0
 
         # Test filter remove words from multiple fields
-        dataset, text_field = self.filter_init(
+        dataset, text_field = filter_init(
             example1_values,
             example2_values,
             example3_values
@@ -407,7 +407,7 @@ class TestDataset(TorchtextTestCase):
         assert dataset[2].label == 0
 
         # Test filter remove all words in example
-        dataset, text_field = self.filter_init(
+        dataset, text_field = filter_init(
             example1_values,
             example2_values,
             example3_values
@@ -430,22 +430,6 @@ class TestDataset(TorchtextTestCase):
         assert dataset[2].text1 == ["Horatio"]
         assert dataset[2].text2 == ["a", "piece", "of", "him"]
         assert dataset[2].label == 0
-
-    def filter_init(self, ex_val1, ex_val2, ex_val3):
-        text_field = data.Field(sequential=True)
-        label_field = data.Field(sequential=False)
-        fields = [("text1", text_field), ("text2", text_field),
-                  ("label", label_field)]
-
-        example1 = data.Example.fromlist(ex_val1, fields)
-        example2 = data.Example.fromlist(ex_val2, fields)
-        example3 = data.Example.fromlist(ex_val3, fields)
-        examples = [example1, example2, example3]
-
-        dataset = data.Dataset(examples, fields)
-        text_field.build_vocab(dataset)
-
-        return dataset, text_field
 
     def test_gz_extraction(self):
         # tar.gz file contains train.txt and test.txt
@@ -481,3 +465,20 @@ class TestDataset(TorchtextTestCase):
         assert os.path.isfile(os.path.join(self.test_dir, 'dummy.txt'))
         assert os.path.isfile(os.path.join(self.test_dir, 'train.txt'))
         assert os.path.isfile(os.path.join(self.test_dir, 'test.txt'))
+
+
+def filter_init(ex_val1, ex_val2, ex_val3):
+    text_field = data.Field(sequential=True)
+    label_field = data.Field(sequential=False)
+    fields = [("text1", text_field), ("text2", text_field),
+              ("label", label_field)]
+
+    example1 = data.Example.fromlist(ex_val1, fields)
+    example2 = data.Example.fromlist(ex_val2, fields)
+    example3 = data.Example.fromlist(ex_val3, fields)
+    examples = [example1, example2, example3]
+
+    dataset = data.Dataset(examples, fields)
+    text_field.build_vocab(dataset)
+
+    return dataset, text_field
