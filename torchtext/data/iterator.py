@@ -29,7 +29,7 @@ class Iterator(object):
             provided to the Iterator constructor overrides the sort_key
             attribute of the Dataset, or defers to it if None.
         train: Whether the iterator represents a train set.
-        repeat: Whether to repeat the iterator for multiple epochs.
+        repeat: Whether to repeat the iterator for multiple epochs. Default: False.
         shuffle: Whether to shuffle examples between epochs.
         sort: Whether to sort examples according to self.sort_key.
             Note that repeat, shuffle, and sort default to train, train, and
@@ -45,12 +45,12 @@ class Iterator(object):
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
                  batch_size_fn=None, train=True,
-                 repeat=None, shuffle=None, sort=None,
+                 repeat=False, shuffle=None, sort=None,
                  sort_within_batch=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0
-        self.repeat = train if repeat is None else repeat
+        self.repeat = repeat
         self.shuffle = train if shuffle is None else shuffle
         self.sort = not train if sort is None else sort
 
@@ -189,7 +189,7 @@ class BPTTIterator(Iterator):
             provided to the Iterator constructor overrides the sort_key
             attribute of the Dataset, or defers to it if None.
         train: Whether the iterator represents a train set.
-        repeat: Whether to repeat the iterator for multiple epochs.
+        repeat: Whether to repeat the iterator for multiple epochs. Default: False.
         shuffle: Whether to shuffle examples between epochs.
         sort: Whether to sort examples according to self.sort_key.
             Note that repeat, shuffle, and sort default to train, train, and
