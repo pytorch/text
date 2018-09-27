@@ -237,21 +237,20 @@ class SubwordVocab(Vocab):
 def _infer_shape(f):
     num_lines, vector_dim = 0, None
 
-    # Assuming word, [vector] format
-
-    # Read header
+    # Read the first line (it may be a header of word2vec/fasttext format)
     line = f.readline()
-    if isinstance(line, six.binary_type):
-        line = line.decode('utf-8')
-    row = line.rstrip().split(" ")
+    row = line.rstrip().split(b" ")
 
+    # Assuming word, [vector] format
     if len(row) == 2:
-        num_lines, vector_dim = list(map(int, row))
-    else:
-        vector = row[1:]
         # The header present in some (w2v) formats contains two elements.
+        num_lines, vector_dim = list(map(int, row))
+        num_lines += 1
+    else:
+        # glove format: no header line
+        vector = row[1:]
         vector_dim = len(vector)
-        num_lines += 1  # First element read
+        num_lines += 1
 
         for _ in f:
             num_lines += 1
