@@ -198,6 +198,21 @@ class Dataset(torch.utils.data.Dataset):
 
         return os.path.join(path, cls.dirname)
 
+    def filter_examples(self, field_names):
+        """Remove unknown words from dataset examples with respect to given field.
+
+        Arguments:
+            field_names (list(str)): Within example only the parts with field names in
+                field_names will have their unknown words deleted.
+        """
+        for i, example in enumerate(self.examples):
+            for field_name in field_names:
+                vocab = set(self.fields[field_name].vocab.stoi)
+                text = getattr(example, field_name)
+                example_part = [word for word in text if word in vocab]
+                setattr(example, field_name, example_part)
+            self.examples[i] = example
+
 
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
