@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import torchtext.data as data
+import tempfile
+import six
 
 import pytest
 
@@ -205,6 +207,40 @@ class TestDataset(TorchtextTestCase):
 
         # 6 Fields including None for ids
         assert len(dataset.fields) == 6
+
+    def test_csv_dataset_quotechar(self):
+        # Based on issue #349
+        example_data = [("text", "label"),
+                        ('" hello world', "0"),
+                        ('goodbye " world', "1"),
+                        ('this is a pen " ', "0")]
+
+        with tempfile.NamedTemporaryFile(dir=self.test_dir) as f:
+            for example in example_data:
+                f.write(six.b("{}\n".format(",".join(example))))
+
+            TEXT = data.Field(lower=True, tokenize=lambda x: x.split())
+            fields = {
+                "label": ("label", data.Field(use_vocab=False,
+                                              sequential=False)),
+                "text": ("text", TEXT)
+            }
+
+            f.seek(0)
+
+            dataset = data.TabularDataset(
+                path=f.name, format="csv",
+                skip_header=False, fields=fields,
+                csv_reader_params={"quotechar": None})
+
+            TEXT.build_vocab(dataset)
+
+            self.assertEqual(len(dataset), len(example_data) - 1)
+
+            for i, example in enumerate(dataset):
+                self.assertEqual(example.text,
+                                 example_data[i + 1][0].lower().split())
+                self.assertEqual(example.label, example_data[i + 1][1])
 
     def test_dataset_split_arguments(self):
         num_examples, num_labels = 30, 3

@@ -217,7 +217,8 @@ class Dataset(torch.utils.data.Dataset):
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
-    def __init__(self, path, format, fields, skip_header=False, **kwargs):
+    def __init__(self, path, format, fields, skip_header=False,
+                 csv_reader_params={}, **kwargs):
         """Create a TabularDataset given a path, file format, and field list.
 
         Arguments:
@@ -236,6 +237,11 @@ class TabularDataset(Dataset):
                 This allows the user to rename columns from their JSON/CSV/TSV key names
                 and also enables selecting a subset of columns to load.
             skip_header (bool): Whether to skip the first line of the input file.
+            csv_reader_params(dict): Parameters to pass to the csv reader.
+                Only relevant when format is csv or tsv.
+                See
+                https://docs.python.org/3/library/csv.html#csv.reader
+                for more details.
         """
         format = format.lower()
         make_example = {
@@ -244,9 +250,9 @@ class TabularDataset(Dataset):
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
-                reader = unicode_csv_reader(f)
+                reader = unicode_csv_reader(f, **csv_reader_params)
             elif format == 'tsv':
-                reader = unicode_csv_reader(f, delimiter='\t')
+                reader = unicode_csv_reader(f, delimiter='\t', **csv_reader_params)
             else:
                 reader = f
 
