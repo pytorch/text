@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import torchtext.data as data
 import tempfile
+import six
 
 import pytest
 
@@ -216,7 +217,7 @@ class TestDataset(TorchtextTestCase):
 
         with tempfile.NamedTemporaryFile(dir=self.test_dir) as f:
             for example in example_data:
-                f.write(bytes("{}\n".format(",".join(example)), "utf-8"))
+                f.write(six.b("{}\n".format(",".join(example))))
 
             TEXT = data.Field(lower=True, tokenize=lambda x: x.split())
             fields = {
