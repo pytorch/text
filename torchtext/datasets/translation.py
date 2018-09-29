@@ -31,7 +31,8 @@ class TranslationDataset(data.Dataset):
         src_path, trg_path = tuple(os.path.expanduser(path + x) for x in exts)
 
         examples = []
-        with open(src_path) as src_file, open(trg_path) as trg_file:
+        with io.open(src_path, mode='r', encoding='utf-8') as src_file, \
+                io.open(trg_path, mode='r', encoding='utf-8') as trg_file:
             for src_line, trg_line in zip(src_file, trg_file):
                 src_line, trg_line = src_line.strip(), trg_line.strip()
                 if src_line != '' and trg_line != '':
