@@ -692,7 +692,8 @@ class LabelField(Field):
     """
 
     def __init__(self, **kwargs):
-        # whichever value is set for sequential, unk_token, and is_target will be overwritten
+        # whichever value is set for sequential, unk_token, and is_target
+        # will be overwritten
         kwargs['sequential'] = False
         kwargs['unk_token'] = None
         kwargs['is_target'] = True
