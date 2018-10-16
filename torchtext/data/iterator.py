@@ -32,8 +32,7 @@ class Iterator(object):
         repeat: Whether to repeat the iterator for multiple epochs. Default: False.
         shuffle: Whether to shuffle examples between epochs.
         sort: Whether to sort examples according to self.sort_key.
-            Note that repeat, shuffle, and sort default to train, train, and
-            (not train).
+            Note that shuffle and sort default to train and (not train).
         sort_within_batch: Whether to sort (in descending order according to
             self.sort_key) within each batch. If None, defaults to self.sort.
             If self.sort is True and this is False, the batch is left in the
@@ -192,8 +191,7 @@ class BPTTIterator(Iterator):
         repeat: Whether to repeat the iterator for multiple epochs. Default: False.
         shuffle: Whether to shuffle examples between epochs.
         sort: Whether to sort examples according to self.sort_key.
-            Note that repeat, shuffle, and sort default to train, train, and
-            (not train).
+            Note that shuffle and sort default to train and (not train).
         device (str or torch.device): A string or instance of `torch.device`
             specifying which device the Variables are going to be created on.
             If left as default, the tensors will be created on cpu. Default: None.
