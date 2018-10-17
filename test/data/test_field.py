@@ -9,6 +9,7 @@ import pytest
 from torch.nn import init
 
 from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
+from ..common.test_markers import slow
 
 
 class TestField(TorchtextTestCase):
@@ -331,6 +332,35 @@ class TestField(TorchtextTestCase):
                                      reversed_test_example_data,
                                      postprocessed_numericalized)
 
+    def test_numericalize_stop_words(self):
+        # Based on request from #354
+        self.write_test_ppid_dataset(data_format="tsv")
+        question_field = data.Field(sequential=True, batch_first=True,
+                                    stop_words=set(["do", "you"]))
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+        question_field.build_vocab(tsv_dataset)
+
+        test_example_data = question_field.pad(
+            [question_field.preprocess(x) for x in
+             [["When", "do", "you", "use", "シ",
+              "instead", "of", "し?"],
+              ["What", "is", "2+2", "<pad>", "<pad>",
+              "<pad>", "<pad>", "<pad>"],
+              ["Here", "is", "a", "sentence", "with",
+               "some", "oovs", "<pad>"]]]
+        )
+
+        # Test with batch_first
+        stopwords_removed_numericalized = question_field.numericalize(test_example_data)
+        verify_numericalized_example(question_field,
+                                     test_example_data,
+                                     stopwords_removed_numericalized,
+                                     batch_first=True)
+
     def test_numerical_features_no_vocab(self):
         self.write_test_numerical_features_dataset()
         # Test basic usage
@@ -484,6 +514,9 @@ class TestNestedField(TorchtextTestCase):
         for c in expected:
             assert c in CHARS.vocab.stoi
 
+        expected_freqs = Counter({"a": 6, "b": 6, "c": 1})
+        assert CHARS.vocab.freqs == CHARS.nesting_field.vocab.freqs == expected_freqs
+
     def test_build_vocab_from_iterable(self):
         nesting_field = data.Field(unk_token="<cunk>", pad_token="<cpad>")
         CHARS = data.NestedField(nesting_field)
@@ -496,6 +529,9 @@ class TestNestedField(TorchtextTestCase):
         assert len(CHARS.vocab) == len(expected)
         for c in expected:
             assert c in CHARS.vocab.stoi
+
+        expected_freqs = Counter({"a": 6, "b": 12, "c": 4})
+        assert CHARS.vocab.freqs == CHARS.nesting_field.vocab.freqs == expected_freqs
 
     def test_pad(self):
         nesting_field = data.Field(tokenize=list, unk_token="<cunk>", pad_token="<cpad>",
@@ -749,6 +785,7 @@ class TestNestedField(TorchtextTestCase):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
 
+    @slow
     def test_build_vocab(self):
         nesting_field = data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
 
@@ -762,7 +799,7 @@ class TestNestedField(TorchtextTestCase):
                    [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
 
         field.build_vocab(sources, vectors='glove.6B.50d',
-                          unk_init=init.xavier_normal,
+                          unk_init=init.normal_,
                           vectors_cache=".vector_cache")
 
 

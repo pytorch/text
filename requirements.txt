@@ -4,9 +4,13 @@ tqdm
 # Downloading data and other files
 requests
 
+# Legacy
+six
+
 # Optional NLP tools
 nltk
 spacy
+sacremoses
 git+git://github.com/jekbradbury/revtok.git
 
 # Documentation

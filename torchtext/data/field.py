@@ -17,8 +17,8 @@ class RawField(object):
     Every dataset consists of one or more types of data. For instance, a text
     classification dataset contains sentences and their classes, while a
     machine translation dataset contains paired examples of text in two
-    languages. Each of these types of data is represented by an RawField object.
-    An RawField object does not assume any property of the data type and
+    languages. Each of these types of data is represented by a RawField object.
+    A RawField object does not assume any property of the data type and
     it holds parameters relating to how a datatype should be processed.
 
     Attributes:
@@ -51,7 +51,7 @@ class RawField(object):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             object: Processed object given the input and custom
-                postprocessing Pipeline.
+            postprocessing Pipeline.
         """
         if self.postprocessing is not None:
             batch = self.postprocessing(batch)
@@ -105,7 +105,10 @@ class Field(RawField):
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
-        truncate_first: Do the truncating of the sequence at the beginning. Defaulf: False
+        truncate_first: Do the truncating of the sequence at the beginning. Default: False
+        stop_words: Tokens to discard during the preprocessing step. Default: None
+        is_target: Whether this field is a target variable.
+            Affects iteration over batches. Default: False
     """
 
     vocab_cls = Vocab
@@ -134,7 +137,8 @@ class Field(RawField):
                  preprocessing=None, postprocessing=None, lower=False,
                  tokenize=None, include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
-                 pad_first=False, truncate_first=False):
+                 pad_first=False, truncate_first=False, stop_words=None,
+                 is_target=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -151,6 +155,15 @@ class Field(RawField):
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
         self.truncate_first = truncate_first
+        if stop_words is not None:
+            try:
+                self.stop_words = set(stop_words)
+            except TypeError:
+                raise ValueError("Stop words must be convertible to a set")
+        else:
+            self.stop_words = stop_words
+        self.stop_words = stop_words
+        self.is_target = is_target
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -166,6 +179,8 @@ class Field(RawField):
             x = self.tokenize(x.rstrip('\n'))
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
+        if self.sequential and self.use_vocab and self.stop_words is not None:
+            x = [w for w in x if w not in self.stop_words]
         if self.preprocessing is not None:
             return self.preprocessing(x)
         else:
@@ -180,7 +195,7 @@ class Field(RawField):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             torch.autograd.Variable: Processed object given the input
-                and custom postprocessing Pipeline.
+            and custom postprocessing Pipeline.
         """
         padded = self.pad(batch)
         tensor = self.numericalize(padded, device=device)
@@ -296,7 +311,7 @@ class Field(RawField):
                     "Please raise an issue at "
                     "https://github.com/pytorch/text/issues".format(self.dtype))
             numericalization_func = self.dtypes[self.dtype]
-            # It doesn't make sense to explictly coerce to a numeric type if
+            # It doesn't make sense to explicitly coerce to a numeric type if
             # the data is sequential, since it's unclear how to coerce padding tokens
             # to a numeric type.
             if not self.sequential:
@@ -665,6 +680,7 @@ class NestedField(Field):
         self.nesting_field.build_vocab(*flattened, **kwargs)
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
+        self.vocab.freqs = self.nesting_field.vocab.freqs.copy()
         if old_vectors is not None:
             self.vocab.load_vectors(old_vectors,
                                     unk_init=old_unk_init, cache=old_vectors_cache)
@@ -696,8 +712,9 @@ class NestedField(Field):
 
         self.nesting_field.include_lengths = True
         if self.include_lengths:
-            sentence_lengths = torch.LongTensor(sentence_lengths, device=device)
-            word_lengths = torch.LongTensor(word_lengths, device=device)
+            sentence_lengths = \
+                torch.tensor(sentence_lengths, dtype=self.dtype, device=device)
+            word_lengths = torch.tensor(word_lengths, dtype=self.dtype, device=device)
             return (padded_batch, sentence_lengths, word_lengths)
         return padded_batch
 
@@ -711,8 +728,10 @@ class LabelField(Field):
     """
 
     def __init__(self, **kwargs):
-        # whichever value is set for sequential and unk_token will be overwritten
+        # whichever value is set for sequential, unk_token, and is_target
+        # will be overwritten
         kwargs['sequential'] = False
         kwargs['unk_token'] = None
+        kwargs['is_target'] = True
 
         super(LabelField, self).__init__(**kwargs)

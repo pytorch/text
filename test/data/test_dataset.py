@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import torchtext.data as data
+import tempfile
+import six
 
 import pytest
 
@@ -206,6 +208,40 @@ class TestDataset(TorchtextTestCase):
         # 6 Fields including None for ids
         assert len(dataset.fields) == 6
 
+    def test_csv_dataset_quotechar(self):
+        # Based on issue #349
+        example_data = [("text", "label"),
+                        ('" hello world', "0"),
+                        ('goodbye " world', "1"),
+                        ('this is a pen " ', "0")]
+
+        with tempfile.NamedTemporaryFile(dir=self.test_dir) as f:
+            for example in example_data:
+                f.write(six.b("{}\n".format(",".join(example))))
+
+            TEXT = data.Field(lower=True, tokenize=lambda x: x.split())
+            fields = {
+                "label": ("label", data.Field(use_vocab=False,
+                                              sequential=False)),
+                "text": ("text", TEXT)
+            }
+
+            f.seek(0)
+
+            dataset = data.TabularDataset(
+                path=f.name, format="csv",
+                skip_header=False, fields=fields,
+                csv_reader_params={"quotechar": None})
+
+            TEXT.build_vocab(dataset)
+
+            self.assertEqual(len(dataset), len(example_data) - 1)
+
+            for i, example in enumerate(dataset):
+                self.assertEqual(example.text,
+                                 example_data[i + 1][0].lower().split())
+                self.assertEqual(example.label, example_data[i + 1][1])
+
     def test_dataset_split_arguments(self):
         num_examples, num_labels = 30, 3
         self.write_test_splitting_dataset(num_examples=num_examples,
@@ -342,6 +378,95 @@ class TestDataset(TorchtextTestCase):
         assert len(valid) == expected_valid_size
         assert len(test) == expected_test_size
 
+    def test_filter(self):
+        # Create test examples
+        sentence11 = [["who", "is", "there"]]
+        sentence12 = [["bernardo", "is", "there"]]
+        label1 = [1]
+        sentence21 = [["nay", "answer", "me"]]
+        sentence22 = [["stand", "unfold", "yourself"]]
+        label2 = [0]
+        sentence31 = [["is", "Horatio", "there"]]
+        sentence32 = [["a", "piece", "of", "him"]]
+        label3 = [0]
+
+        example1_values = sentence11 + sentence12 + label1
+        example2_values = sentence21 + sentence22 + label2
+        example3_values = sentence31 + sentence32 + label3
+
+        # Test filter remove words from single field only
+        dataset, text_field = filter_init(
+            example1_values,
+            example2_values,
+            example3_values
+        )
+
+        text_field.vocab.stoi.pop("there")
+        text_field.vocab.stoi.pop("bernardo")
+
+        dataset.filter_examples(["text1"])
+
+        assert dataset[0].text1 == ["who", "is"]
+        assert dataset[0].text2 == ["bernardo", "is", "there"]
+        assert dataset[0].label == 1
+
+        assert dataset[1].text1 == ["nay", "answer", "me"]
+        assert dataset[1].text2 == ["stand", "unfold", "yourself"]
+        assert dataset[1].label == 0
+
+        assert dataset[2].text1 == ["is", "Horatio"]
+        assert dataset[2].text2 == ["a", "piece", "of", "him"]
+        assert dataset[2].label == 0
+
+        # Test filter remove words from multiple fields
+        dataset, text_field = filter_init(
+            example1_values,
+            example2_values,
+            example3_values
+        )
+
+        text_field.vocab.stoi.pop("there")
+        text_field.vocab.stoi.pop("bernardo")
+
+        dataset.filter_examples(["text1", "text2"])
+
+        assert dataset[0].text1 == ["who", "is"]
+        assert dataset[0].text2 == ["is"]
+        assert dataset[0].label == 1
+
+        assert dataset[1].text1 == ["nay", "answer", "me"]
+        assert dataset[1].text2 == ["stand", "unfold", "yourself"]
+        assert dataset[1].label == 0
+
+        assert dataset[2].text1 == ["is", "Horatio"]
+        assert dataset[2].text2 == ["a", "piece", "of", "him"]
+        assert dataset[2].label == 0
+
+        # Test filter remove all words in example
+        dataset, text_field = filter_init(
+            example1_values,
+            example2_values,
+            example3_values
+        )
+
+        text_field.vocab.stoi.pop("who")
+        text_field.vocab.stoi.pop("is")
+        text_field.vocab.stoi.pop("there")
+
+        dataset.filter_examples(["text1", "text2"])
+
+        assert dataset[0].text1 == []
+        assert dataset[0].text2 == ["bernardo"]
+        assert dataset[0].label == 1
+
+        assert dataset[1].text1 == ["nay", "answer", "me"]
+        assert dataset[1].text2 == ["stand", "unfold", "yourself"]
+        assert dataset[1].label == 0
+
+        assert dataset[2].text1 == ["Horatio"]
+        assert dataset[2].text2 == ["a", "piece", "of", "him"]
+        assert dataset[2].label == 0
+
     def test_gz_extraction(self):
         # tar.gz file contains train.txt and test.txt
         tgz = (b'\x1f\x8b\x08\x00\x1e\xcc\xd5Z\x00\x03\xed\xd1;\n\x800\x10E'
@@ -376,3 +501,20 @@ class TestDataset(TorchtextTestCase):
         assert os.path.isfile(os.path.join(self.test_dir, 'dummy.txt'))
         assert os.path.isfile(os.path.join(self.test_dir, 'train.txt'))
         assert os.path.isfile(os.path.join(self.test_dir, 'test.txt'))
+
+
+def filter_init(ex_val1, ex_val2, ex_val3):
+    text_field = data.Field(sequential=True)
+    label_field = data.Field(sequential=False)
+    fields = [("text1", text_field), ("text2", text_field),
+              ("label", label_field)]
+
+    example1 = data.Example.fromlist(ex_val1, fields)
+    example2 = data.Example.fromlist(ex_val2, fields)
+    example3 = data.Example.fromlist(ex_val3, fields)
+    examples = [example1, example2, example3]
+
+    dataset = data.Dataset(examples, fields)
+    text_field.build_vocab(dataset)
+
+    return dataset, text_field

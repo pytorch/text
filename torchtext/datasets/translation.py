@@ -2,6 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 import glob
 import io
+import codecs
 
 from .. import data
 
@@ -30,7 +31,8 @@ class TranslationDataset(data.Dataset):
         src_path, trg_path = tuple(os.path.expanduser(path + x) for x in exts)
 
         examples = []
-        with open(src_path) as src_file, open(trg_path) as trg_file:
+        with io.open(src_path, mode='r', encoding='utf-8') as src_file, \
+                io.open(trg_path, mode='r', encoding='utf-8') as trg_file:
             for src_line, trg_line in zip(src_file, trg_file):
                 src_line, trg_line = src_line.strip(), trg_line.strip()
                 if src_line != '' and trg_line != '':
@@ -45,12 +47,12 @@ class TranslationDataset(data.Dataset):
         """Create dataset objects for splits of a TranslationDataset.
 
         Arguments:
-            path (str): Common prefix of the splits' file paths, or None to use
-                the result of cls.download(root).
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            path (str): Common prefix of the splits' file paths, or None to use
+                the result of cls.download(root).
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -86,19 +88,30 @@ class Multi30k(TranslationDataset):
         """Create dataset objects for splits of the Multi30k dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
+
+        # TODO: This is a _HORRIBLE_ patch related to #208
+        # 'path' can be passed as a kwarg to the translation dataset constructor
+        # or has to be set (so the download wouldn't be duplicated). A good idea
+        # seems to rename the existence check variable from path to something else
+        if 'path' not in kwargs:
+            expected_folder = os.path.join(root, cls.name)
+            path = expected_folder if os.path.exists(expected_folder) else None
+        else:
+            path = kwargs['path']
+            del kwargs['path']
+
         return super(Multi30k, cls).splits(
-            exts, fields, root, train, validation, test, **kwargs)
+            exts, fields, path, root, train, validation, test, **kwargs)
 
 
 class IWSLT(TranslationDataset):
@@ -115,11 +128,10 @@ class IWSLT(TranslationDataset):
         """Create dataset objects for splits of the IWSLT dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default: 'train'.
             validation: The prefix of the validation data. Default: 'val'.
             test: The prefix of the test data. Default: 'test'.
@@ -153,7 +165,7 @@ class IWSLT(TranslationDataset):
         for f_xml in glob.iglob(os.path.join(path, '*.xml')):
             print(f_xml)
             f_txt = os.path.splitext(f_xml)[0]
-            with io.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+            with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
                 root = ET.parse(f_xml).getroot()[0]
                 for doc in root.findall('doc'):
                     for e in doc.findall('seg'):
@@ -164,7 +176,7 @@ class IWSLT(TranslationDataset):
         for f_orig in glob.iglob(os.path.join(path, 'train.tags*')):
             print(f_orig)
             f_txt = f_orig.replace('.tags', '')
-            with io.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
+            with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
                     io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
                 for l in fd_orig:
                     if not any(tag in l for tag in xml_tags):
@@ -190,12 +202,11 @@ class WMT14(TranslationDataset):
         """Create dataset objects for splits of the WMT 2014 dataset.
 
         Arguments:
-
-            root: Root dataset storage directory. Default is '.data'.
             exts: A tuple containing the extensions for each language. Must be
                 either ('.en', '.de') or the reverse.
             fields: A tuple containing the fields that will be used for data
                 in each language.
+            root: Root dataset storage directory. Default is '.data'.
             train: The prefix of the train data. Default:
                 'train.tok.clean.bpe.32000'.
             validation: The prefix of the validation data. Default:
@@ -205,5 +216,16 @@ class WMT14(TranslationDataset):
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
+        # TODO: This is a _HORRIBLE_ patch related to #208
+        # 'path' can be passed as a kwarg to the translation dataset constructor
+        # or has to be set (so the download wouldn't be duplicated). A good idea
+        # seems to rename the existence check variable from path to something else
+        if 'path' not in kwargs:
+            expected_folder = os.path.join(root, cls.name)
+            path = expected_folder if os.path.exists(expected_folder) else None
+        else:
+            path = kwargs['path']
+            del kwargs['path']
+
         return super(WMT14, cls).splits(
-            exts, fields, root, train, validation, test, **kwargs)
+            exts, fields, path, root, train, validation, test, **kwargs)

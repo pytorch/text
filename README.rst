@@ -4,7 +4,7 @@
 .. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
 
-.. image:: https://readthedocs.org/projects/torchtext/badge/?version=latest
+.. image:: http://readthedocs.org/projects/torchtext/badge/?version=latest
     :target: http://torchtext.readthedocs.io/en/latest/?badge=latest
 
 torchtext
@@ -37,6 +37,11 @@ Alternatively, you might want to use Moses tokenizer from `NLTK <http://nltk.org
 
     pip install nltk
     python -m nltk.downloader perluniprops nonbreaking_prefixes
+
+Documentation
+=============
+
+Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`_.
 
 Data
 ====
@@ -112,10 +117,11 @@ The datasets module currently contains:
 
 * Sentiment analysis: SST and IMDb
 * Question classification: TREC
-* Entailment: SNLI
-* Language modeling: abstract class + WikiText-2
+* Entailment: SNLI, MultiNLI
+* Language modeling: abstract class + WikiText-2, WikiText103, PennTreebank
 * Machine translation: abstract class + Multi30k, IWSLT, WMT14
-* Sequence tagging (e.g. POS/NER): abstract class + UDPOS
+* Sequence tagging (e.g. POS/NER): abstract class + UDPOS, CoNLL2000Chunking
+* Question answering: 20 QA bAbI tasks
 
 Others are planned or a work in progress:
 
