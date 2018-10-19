@@ -8,6 +8,7 @@ from functools import partial
 def _split_tokenizer(x):
     return x.split()
 
+
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 

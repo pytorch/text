@@ -3,7 +3,6 @@ from collections import Counter, OrderedDict
 from itertools import chain
 import six
 import torch
-import string
 from tqdm import tqdm
 
 from .dataset import Dataset
