@@ -5,11 +5,18 @@ from copy import deepcopy
 from functools import partial
 
 
+def _split_tokenizer(x):
+    return x.split()
+
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
 
 def get_tokenizer(tokenizer, language='en'):
+    # default tokenizer is string.split(), added as a module function for serialization
+    if tokenizer is None:
+        return _split_tokenizer
+
     # simply return if a function is passed
     if callable(tokenizer):
         return tokenizer
