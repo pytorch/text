@@ -95,8 +95,11 @@ class Field(RawField):
             Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
-            sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: string.split.
+            sequential examples. If "spacy", the SpaCy tokenizer is
+            used. If a non-serializable function is passed as an argument,
+            the field will not be able to be serialized. Default: string.split.
+        tokenizer_language: The language of the tokenizer to be constructed. 
+            Various languages currently supported only in SpaCy.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
@@ -477,9 +480,12 @@ class NestedField(Field):
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
-        tokenize (callable or str): The function used to tokenize strings using this
-            field into sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: ``lambda s: s.split()``
+        tokenize: The function used to tokenize strings using this field into
+            sequential examples. If "spacy", the SpaCy tokenizer is
+            used. If a non-serializable function is passed as an argument,
+            the field will not be able to be serialized. Default: string.split.
+        tokenizer_language: The language of the tokenizer to be constructed. 
+            Various languages currently supported only in SpaCy.
         pad_token (str): The string token used as padding. If ``nesting_field`` is
             sequential, this will be set to its ``pad_token``. Default: ``"<pad>"``.
         pad_first (bool): Do the padding of the sequence at the beginning. Default:
@@ -488,7 +494,7 @@ class NestedField(Field):
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, dtype=torch.long, preprocessing=None,
-                 postprocessing=None, tokenize=None,
+                 postprocessing=None, tokenize=None, tokenizer_language='en',
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
         if isinstance(nesting_field, NestedField):
@@ -508,6 +514,7 @@ class NestedField(Field):
             postprocessing=postprocessing,
             lower=nesting_field.lower,
             tokenize=tokenize,
+            tokenizer_language=tokenizer_language,
             batch_first=True,
             pad_token=pad_token,
             unk_token=nesting_field.unk_token,
