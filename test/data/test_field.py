@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from collections import Counter
+import os
 
 from numpy.testing import assert_allclose
 import torch
@@ -422,6 +423,55 @@ class TestField(TorchtextTestCase):
             question_field.numericalize(
                 test_example_data)
 
+    def test_serialization_pre_build(self):
+        self.write_test_ppid_dataset(data_format="tsv")
+        question_field = data.Field(sequential=True)
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+
+        question_pickle_filename = "question.pl"
+        question_pickle_path = os.path.join(self.test_dir, question_pickle_filename)
+        torch.save(question_field, question_pickle_path)
+
+        loaded_question_field = torch.load(question_pickle_path)
+
+        assert loaded_question_field == question_field
+
+    def test_serialization_built_vocab(self):
+        self.write_test_ppid_dataset(data_format="tsv")
+        question_field = data.Field(sequential=True)
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", None)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+
+        question_field.build_vocab(tsv_dataset)
+
+        question_pickle_filename = "question.pl"
+        question_pickle_path = os.path.join(self.test_dir, question_pickle_filename)
+        torch.save(question_field, question_pickle_path)
+
+        loaded_question_field = torch.load(question_pickle_path)
+
+        assert loaded_question_field == question_field
+
+        test_example_data = [["When", "do", "you", "use", "シ",
+                              "instead", "of", "し?"],
+                             ["What", "is", "2+2", "<pad>", "<pad>",
+                              "<pad>", "<pad>", "<pad>"],
+                             ["Here", "is", "a", "sentence", "with",
+                              "some", "oovs", "<pad>"]]
+
+        # Test results of numericalization
+        original_numericalization = question_field.numericalize(test_example_data)
+        pickled_numericalization = loaded_question_field.numericalize(test_example_data)
+
+        assert torch.all(torch.eq(original_numericalization, pickled_numericalization))
+
 
 class TestNestedField(TorchtextTestCase):
     def test_init_minimal(self):
@@ -784,6 +834,44 @@ class TestNestedField(TorchtextTestCase):
         for example, numericalized_example in zip(examples_data, numericalized):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
+
+
+    def test_serialization(self):
+        nesting_field = data.Field(batch_first=True)
+        field = data.NestedField(nesting_field)
+        ex1 = data.Example.fromlist(["john loves mary"], [("words", field)])
+        ex2 = data.Example.fromlist(["mary cries"], [("words", field)])
+        dataset = data.Dataset([ex1, ex2], [("words", field)])
+        field.build_vocab(dataset)
+        examples_data = [
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("john") + ["</w>", "<cpad>"],
+                ["<w>"] + list("loves") + ["</w>"],
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+            ],
+            [
+                ["<w>", "<s>", "</w>"] + ["<cpad>"] * 4,
+                ["<w>"] + list("mary") + ["</w>", "<cpad>"],
+                ["<w>"] + list("cries") + ["</w>"],
+                ["<w>", "</s>", "</w>"] + ["<cpad>"] * 4,
+                ["<cpad>"] * 7,
+            ]
+        ]
+
+        field_pickle_filename = "char_field.pl"
+        field_pickle_path = os.path.join(self.test_dir, field_pickle_filename)
+        torch.save(field, field_pickle_path)
+
+        loaded_field = torch.load(field_pickle_path)
+        assert loaded_field == field
+
+        original_numericalization = field.numericalize(examples_data)
+        pickled_numericalization = loaded_field.numericalize(examples_data)
+
+        assert torch.all(torch.eq(original_numericalization, pickled_numericalization))
+
 
     @slow
     def test_build_vocab(self):

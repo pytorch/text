@@ -2,22 +2,29 @@ import random
 from contextlib import contextmanager
 from copy import deepcopy
 
+from functools import partial
 
-def get_tokenizer(tokenizer):
+def _spacy_tokenize(x, spacy):
+    return [tok.text for tok in spacy.tokenizer(x)]
+
+def get_tokenizer(tokenizer, language='en'):
+    # simply return if a function is passed
     if callable(tokenizer):
         return tokenizer
+
     if tokenizer == "spacy":
         try:
             import spacy
-            spacy_en = spacy.load('en')
-            return lambda s: [tok.text for tok in spacy_en.tokenizer(s)]
+            spacy = spacy.load(language)
+            return partial(_spacy_tokenize, spacy=spacy)
         except ImportError:
-            print("Please install SpaCy and the SpaCy English tokenizer. "
+            print("Please install SpaCy. "
                   "See the docs at https://spacy.io for more information.")
             raise
         except AttributeError:
-            print("Please install SpaCy and the SpaCy English tokenizer. "
-                  "See the docs at https://spacy.io for more information.")
+            print("Please install SpaCy and the SpaCy {} tokenizer. "
+                  "See the docs at https://spacy.io for more "
+                  "information.".format(language))
             raise
     elif tokenizer == "moses":
         try:
@@ -48,7 +55,7 @@ def get_tokenizer(tokenizer):
     elif tokenizer == 'subword':
         try:
             import revtok
-            return lambda x: revtok.tokenize(x, decap=True)
+            return partial(revtok.tokenize, decap=True)
         except ImportError:
             print("Please install revtok.")
             raise
@@ -59,6 +66,14 @@ def get_tokenizer(tokenizer):
                      "\"spacy\" for the SpaCy English tokenizer, or "
                      "\"moses\" for the NLTK port of the Moses tokenization "
                      "script.".format(tokenizer))
+
+
+def is_tokenizer_serializable(tokenizer, language):
+    """Extend with other tokenizers which are found to not be serializable
+    """
+    if tokenizer == 'spacy':
+        return False
+    return True
 
 
 def interleave_keys(a, b):
@@ -79,6 +94,14 @@ def get_torch_version():
     version_substrings = v.split('.')
     major, minor = version_substrings[0], version_substrings[1]
     return int(major), int(minor)
+
+
+def dtype_to_attr(dtype):
+    # convert torch.dtype to dtype string id
+    # e.g. torch.int32 -> "int32"
+    # used for serialization
+    _, dtype = str(dtype).split('.')
+    return dtype
 
 
 class RandomShuffler(object):
