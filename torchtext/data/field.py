@@ -98,7 +98,7 @@ class Field(RawField):
             sequential examples. If "spacy", the SpaCy tokenizer is
             used. If a non-serializable function is passed as an argument,
             the field will not be able to be serialized. Default: string.split.
-        tokenizer_language: The language of the tokenizer to be constructed. 
+        tokenizer_language: The language of the tokenizer to be constructed.
             Various languages currently supported only in SpaCy.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
@@ -484,7 +484,7 @@ class NestedField(Field):
             sequential examples. If "spacy", the SpaCy tokenizer is
             used. If a non-serializable function is passed as an argument,
             the field will not be able to be serialized. Default: string.split.
-        tokenizer_language: The language of the tokenizer to be constructed. 
+        tokenizer_language: The language of the tokenizer to be constructed.
             Various languages currently supported only in SpaCy.
         pad_token (str): The string token used as padding. If ``nesting_field`` is
             sequential, this will be set to its ``pad_token``. Default: ``"<pad>"``.
