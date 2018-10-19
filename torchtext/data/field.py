@@ -190,7 +190,7 @@ class Field(RawField):
         state['dtype'] = getattr(torch, state['dtype'])
         if not state['tokenize']:
             state['tokenize'] = get_tokenizer(*state['tokenizer_args'])
-        self.__dict__ = state
+        self.__dict__.update(state)
 
     def __hash__(self):
         # we don't expect this to be called often
