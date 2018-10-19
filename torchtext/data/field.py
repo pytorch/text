@@ -3,6 +3,7 @@ from collections import Counter, OrderedDict
 from itertools import chain
 import six
 import torch
+import string
 from tqdm import tqdm
 
 from .dataset import Dataset
@@ -96,7 +97,7 @@ class Field(RawField):
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
             sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: str.split.
+            used. Default: string.split.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
@@ -137,7 +138,7 @@ class Field(RawField):
     def __init__(self, sequential=True, use_vocab=True, init_token=None,
                  eos_token=None, fix_length=None, dtype=torch.long,
                  preprocessing=None, postprocessing=None, lower=False,
-                 tokenize=str.split, tokenizer_language='en', include_lengths=False,
+                 tokenize=string.split, tokenizer_language='en', include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
                  pad_first=False, truncate_first=False, stop_words=None,
                  is_target=False):
@@ -488,7 +489,7 @@ class NestedField(Field):
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, dtype=torch.long, preprocessing=None,
-                 postprocessing=None, tokenize=str.split,
+                 postprocessing=None, tokenize=string.split,
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
         if isinstance(nesting_field, NestedField):
