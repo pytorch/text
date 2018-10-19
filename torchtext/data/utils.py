@@ -4,8 +4,10 @@ from copy import deepcopy
 
 from functools import partial
 
+
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
+
 
 def get_tokenizer(tokenizer, language='en'):
     # simply return if a function is passed

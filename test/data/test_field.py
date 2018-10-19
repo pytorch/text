@@ -426,11 +426,6 @@ class TestField(TorchtextTestCase):
     def test_serialization_pre_build(self):
         self.write_test_ppid_dataset(data_format="tsv")
         question_field = data.Field(sequential=True)
-        tsv_fields = [("id", None), ("q1", question_field),
-                      ("q2", question_field), ("label", None)]
-        tsv_dataset = data.TabularDataset(
-            path=self.test_ppid_dataset_path, format="tsv",
-            fields=tsv_fields)
 
         question_pickle_filename = "question.pl"
         question_pickle_path = os.path.join(self.test_dir, question_pickle_filename)
@@ -835,7 +830,6 @@ class TestNestedField(TorchtextTestCase):
             verify_numericalized_example(
                 field, example, numericalized_example, batch_first=True)
 
-
     def test_serialization(self):
         nesting_field = data.Field(batch_first=True)
         field = data.NestedField(nesting_field)
@@ -871,7 +865,6 @@ class TestNestedField(TorchtextTestCase):
         pickled_numericalization = loaded_field.numericalize(examples_data)
 
         assert torch.all(torch.eq(original_numericalization, pickled_numericalization))
-
 
     @slow
     def test_build_vocab(self):

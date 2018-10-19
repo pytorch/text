@@ -170,7 +170,6 @@ class Field(RawField):
         self.stop_words = stop_words
         self.is_target = is_target
 
-
     def __getstate__(self):
         str_type = dtype_to_attr(self.dtype)
         if is_tokenizer_serializable(*self.tokenizer_args):
@@ -178,7 +177,7 @@ class Field(RawField):
         else:
             # signal to restore in `__setstate__`
             tokenize = None
-        attrs = {k:v for k, v in self.__dict__.items() if k not in self.ignore}
+        attrs = {k: v for k, v in self.__dict__.items() if k not in self.ignore}
         attrs['dtype'] = str_type
         attrs['tokenize'] = tokenize
 
@@ -190,18 +189,15 @@ class Field(RawField):
             state['tokenize'] = get_tokenizer(*state['tokenizer_args'])
         self.__dict__ = state
 
-
     def __hash__(self):
         # we don't expect this to be called often
         return 42
-
 
     def __eq__(self, other):
         if not isinstance(other, RawField):
             return False
 
         return self.__dict__ == other.__dict__
-
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
