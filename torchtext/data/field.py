@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from .dataset import Dataset
 from .pipeline import Pipeline
-from .utils import get_tokenizer
+from .utils import get_tokenizer, dtype_to_attr, is_tokenizer_serializable
 from ..vocab import Vocab, SubwordVocab
 
 
@@ -95,8 +95,11 @@ class Field(RawField):
             Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
-            sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: str.split.
+            sequential examples. If "spacy", the SpaCy tokenizer is
+            used. If a non-serializable function is passed as an argument,
+            the field will not be able to be serialized. Default: string.split.
+        tokenizer_language: The language of the tokenizer to be constructed.
+            Various languages currently supported only in SpaCy.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
@@ -132,10 +135,12 @@ class Field(RawField):
         torch.long: int,
     }
 
+    ignore = ['dtype', 'tokenize']
+
     def __init__(self, sequential=True, use_vocab=True, init_token=None,
                  eos_token=None, fix_length=None, dtype=torch.long,
                  preprocessing=None, postprocessing=None, lower=False,
-                 tokenize=(lambda s: s.split()), include_lengths=False,
+                 tokenize=None, tokenizer_language='en', include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
                  pad_first=False, truncate_first=False, stop_words=None,
                  is_target=False):
@@ -149,7 +154,10 @@ class Field(RawField):
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
         self.lower = lower
-        self.tokenize = get_tokenizer(tokenize)
+        # store params to construct tokenizer for serialization
+        # in case the tokenizer isn't picklable (e.g. spacy)
+        self.tokenizer_args = (tokenize, tokenizer_language)
+        self.tokenize = get_tokenizer(tokenize, tokenizer_language)
         self.include_lengths = include_lengths
         self.batch_first = batch_first
         self.pad_token = pad_token if self.sequential else None
@@ -164,6 +172,35 @@ class Field(RawField):
             self.stop_words = stop_words
         self.stop_words = stop_words
         self.is_target = is_target
+
+    def __getstate__(self):
+        str_type = dtype_to_attr(self.dtype)
+        if is_tokenizer_serializable(*self.tokenizer_args):
+            tokenize = self.tokenize
+        else:
+            # signal to restore in `__setstate__`
+            tokenize = None
+        attrs = {k: v for k, v in self.__dict__.items() if k not in self.ignore}
+        attrs['dtype'] = str_type
+        attrs['tokenize'] = tokenize
+
+        return attrs
+
+    def __setstate__(self, state):
+        state['dtype'] = getattr(torch, state['dtype'])
+        if not state['tokenize']:
+            state['tokenize'] = get_tokenizer(*state['tokenizer_args'])
+        self.__dict__.update(state)
+
+    def __hash__(self):
+        # we don't expect this to be called often
+        return 42
+
+    def __eq__(self, other):
+        if not isinstance(other, RawField):
+            return False
+
+        return self.__dict__ == other.__dict__
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -443,9 +480,12 @@ class NestedField(Field):
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
-        tokenize (callable or str): The function used to tokenize strings using this
-            field into sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: ``lambda s: s.split()``
+        tokenize: The function used to tokenize strings using this field into
+            sequential examples. If "spacy", the SpaCy tokenizer is
+            used. If a non-serializable function is passed as an argument,
+            the field will not be able to be serialized. Default: string.split.
+        tokenizer_language: The language of the tokenizer to be constructed.
+            Various languages currently supported only in SpaCy.
         pad_token (str): The string token used as padding. If ``nesting_field`` is
             sequential, this will be set to its ``pad_token``. Default: ``"<pad>"``.
         pad_first (bool): Do the padding of the sequence at the beginning. Default:
@@ -454,7 +494,7 @@ class NestedField(Field):
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, dtype=torch.long, preprocessing=None,
-                 postprocessing=None, tokenize=lambda s: s.split(),
+                 postprocessing=None, tokenize=None, tokenizer_language='en',
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
         if isinstance(nesting_field, NestedField):
@@ -474,6 +514,7 @@ class NestedField(Field):
             postprocessing=postprocessing,
             lower=nesting_field.lower,
             tokenize=tokenize,
+            tokenizer_language=tokenizer_language,
             batch_first=True,
             pad_token=pad_token,
             unk_token=nesting_field.unk_token,
