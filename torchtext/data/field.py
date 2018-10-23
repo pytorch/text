@@ -163,14 +163,10 @@ class Field(RawField):
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
         self.truncate_first = truncate_first
-        if stop_words is not None:
-            try:
-                self.stop_words = set(stop_words)
-            except TypeError:
-                raise ValueError("Stop words must be convertible to a set")
-        else:
-            self.stop_words = stop_words
-        self.stop_words = stop_words
+        try:
+            self.stop_words = set(stop_words) if stop_words is not None else None
+        except TypeError:
+            raise ValueError("Stop words must be convertible to a set")
         self.is_target = is_target
 
     def __getstate__(self):
