@@ -29,11 +29,14 @@ class RawField(object):
             using this field before assigning to a batch.
             Function signature: (batch(list)) -> object
             Default: None.
+        is_target: Whether this field is a target variable.
+            Affects iteration over batches. Default: False
     """
 
-    def __init__(self, preprocessing=None, postprocessing=None):
+    def __init__(self, preprocessing=None, postprocessing=None, is_target=False):
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
+        self.is_target = is_target
 
     def preprocess(self, x):
         """ Preprocess an example if the `preprocessing` Pipeline is provided. """
