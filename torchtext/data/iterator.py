@@ -220,10 +220,15 @@ class BPTTIterator(Iterator):
             for i in range(0, len(self) * self.bptt_len, self.bptt_len):
                 self.iterations += 1
                 seq_len = min(self.bptt_len, len(data) - i - 1)
+                batch_text = data[i:i + seq_len]
+                batch_target = data[i + 1:i + 1 + seq_len]
+                if TEXT.batch_first:
+                    batch_text = batch_text.t().contiguous()
+                    batch_target = batch_target.t().contiguous()
                 yield Batch.fromvars(
                     dataset, self.batch_size,
-                    text=data[i:i + seq_len],
-                    target=data[i + 1:i + 1 + seq_len])
+                    text=batch_text,
+                    target=batch_target)
             if not self.repeat:
                 return
 
