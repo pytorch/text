@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import torchtext.data as data
 import tempfile
 import six
+import itertools
 
 import pytest
 
@@ -12,8 +13,9 @@ import os
 
 class TestDataset(TorchtextTestCase):
     def test_tabular_simple_data(self):
-        for data_format in ["csv", "tsv", "json"]:
-            self.write_test_ppid_dataset(data_format=data_format)
+        for data_format, compression in itertools.product(["csv", "tsv", "json"], [None, "gz", "bz2"]):
+            self.write_test_ppid_dataset(
+                data_format=data_format, compression=compression)
 
             if data_format == "json":
                 question_field = data.Field(sequential=True)
@@ -28,7 +30,8 @@ class TestDataset(TorchtextTestCase):
                           ("q2", question_field), ("label", label_field)]
 
             dataset = data.TabularDataset(
-                path=self.test_ppid_dataset_path, format=data_format, fields=fields)
+                path=self.test_ppid_dataset_path, format=data_format, fields=fields,
+                compression=compression)
 
             assert len(dataset) == 3
 

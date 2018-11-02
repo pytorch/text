@@ -6,6 +6,9 @@ import os
 import shutil
 import subprocess
 import tempfile
+import bz2
+import gzip
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +40,7 @@ class TorchtextTestCase(TestCase):
         except:
             subprocess.call(["rm", "-rf", self.test_dir])
 
-    def write_test_ppid_dataset(self, data_format="csv"):
+    def write_test_ppid_dataset(self, data_format="csv", compression=None):
         data_format = data_format.lower()
         if data_format == "csv":
             delim = ","
@@ -54,7 +57,10 @@ class TorchtextTestCase(TestCase):
              "question2": "2+2=?",
              "label": "1"},
         ]
-        with open(self.test_ppid_dataset_path, "w") as test_ppid_dataset_file:
+
+        open_call = {"gz": gzip.open, "bz2": bz2.open}.get(
+            compression, io.open)
+        with open_call(self.test_ppid_dataset_path, "wt", encoding="utf8") as test_ppid_dataset_file:
             for example in dict_dataset:
                 if data_format == "json":
                     test_ppid_dataset_file.write(json.dumps(example) + "\n")

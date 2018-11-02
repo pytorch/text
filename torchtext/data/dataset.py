@@ -3,6 +3,7 @@ import os
 import zipfile
 import tarfile
 import gzip
+import bz2
 import shutil
 from functools import partial
 
@@ -218,7 +219,7 @@ class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
     def __init__(self, path, format, fields, skip_header=False,
-                 csv_reader_params={}, **kwargs):
+                 csv_reader_params={}, compression=None, **kwargs):
         """Create a TabularDataset given a path, file format, and field list.
 
         Arguments:
@@ -242,13 +243,19 @@ class TabularDataset(Dataset):
                 See
                 https://docs.python.org/3/library/csv.html#csv.reader
                 for more details.
+            compression (str): Allows to read datasets compressed by gzip or bzip2.
+                Must be one of "gz", "bz2", or None.
         """
         format = format.lower()
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
             'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format]
 
-        with io.open(os.path.expanduser(path), encoding="utf8") as f:
+        if compression:
+            compression = compression.lower()
+        open_call = {'gz': gzip.open, 'bz2': bz2.open}.get(
+            compression, io.open)
+        with open_call(os.path.expanduser(path), mode="rt", encoding="utf8") as f:
             if format == 'csv':
                 reader = unicode_csv_reader(f, **csv_reader_params)
             elif format == 'tsv':
