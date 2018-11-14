@@ -214,7 +214,7 @@ class Field(RawField):
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x.rstrip('\n'))
         if self.lower:
-            x = Pipeline(six.text_type.lower)(x)
+            x = Pipeline(six.text_type.lower)(six.text_type(x))
         if self.sequential and self.use_vocab and self.stop_words is not None:
             x = [w for w in x if w not in self.stop_words]
         if self.preprocessing is not None:
