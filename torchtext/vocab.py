@@ -341,7 +341,7 @@ class Vectors(object):
 
                 itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
 
-                for line in tqdm(f, total=num_lines):
+                for line in tqdm(f, total=max_vectors):
                     # Explicitly splitting on " " is important, so we don't
                     # get rid of Unicode non-breaking spaces in the vectors.
                     entries = line.rstrip().split(b" ")
