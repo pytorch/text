@@ -208,8 +208,8 @@ class Field(RawField):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types) and
-                not isinstance(x, six.text_type)):
+        if (six.PY2 and isinstance(x, six.string_types)
+            and not isinstance(x, six.text_type)):
             x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x.rstrip('\n'))
@@ -259,16 +259,16 @@ class Field(RawField):
         for x in minibatch:
             if self.pad_first:
                 padded.append(
-                    [self.pad_token] * max(0, max_len - len(x)) +
-                    ([] if self.init_token is None else [self.init_token]) +
-                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
-                    ([] if self.eos_token is None else [self.eos_token]))
+                    [self.pad_token] * max(0, max_len - len(x))
+                    + ([] if self.init_token is None else [self.init_token])
+                    + list(x[-max_len:] if self.truncate_first else x[:max_len])
+                    + ([] if self.eos_token is None else [self.eos_token]))
             else:
                 padded.append(
-                    ([] if self.init_token is None else [self.init_token]) +
-                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
-                    ([] if self.eos_token is None else [self.eos_token]) +
-                    [self.pad_token] * max(0, max_len - len(x)))
+                    ([] if self.init_token is None else [self.init_token])
+                    + list(x[-max_len:] if self.truncate_first else x[:max_len])
+                    + ([] if self.eos_token is None else [self.eos_token])
+                    + [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
         if self.include_lengths:
             return (padded, lengths)

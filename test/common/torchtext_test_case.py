@@ -124,8 +124,8 @@ def verify_numericalized_example(field, test_example_data,
             # account unknown tokens.
             if field.vocab.stoi[test_example_token] != 0:
                 # token is in-vocabulary
-                assert (field.vocab.itos[numericalized_token] ==
-                        test_example_token)
+                assert (field.vocab.itos[numericalized_token]
+                        == test_example_token)
             else:
                 # token is OOV and <unk> always has an index of 0
                 assert numericalized_token == 0
