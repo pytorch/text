@@ -204,7 +204,7 @@ class SubwordVocab(Vocab):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero\_
+                returns a Tensor of the same size. Default: torch.Tensor.zero_
         """
         try:
             import revtok
