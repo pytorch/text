@@ -100,6 +100,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
@@ -160,6 +161,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')
