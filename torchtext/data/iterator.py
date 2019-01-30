@@ -203,7 +203,7 @@ class BPTTIterator(Iterator):
 
     def __len__(self):
         return math.ceil((len(self.dataset[0].text) / self.batch_size - 1)
-                          /self.bptt_len)
+                         /self.bptt_len)
 
     def __iter__(self):
         text = self.dataset[0].text
