@@ -30,7 +30,7 @@ class BABI20Field(Field):
                 padded.append(
                     super(BABI20Field, self).pad(nex)
                     + [[self.pad_token] * self.fix_length]
-                       * (self.memory_size - len(nex)))
+                      * (self.memory_size - len(nex)))
             self.fix_length = None
             return padded
         else:
