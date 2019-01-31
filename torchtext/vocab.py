@@ -270,7 +270,7 @@ class Vectors(object):
                Thus, in situations where the entire set doesn't fit in memory,
                or is not needed for another reason, passing `max_vectors`
                can limit the size of the loaded set.
-         """
+        """
         cache = '.vector_cache' if cache is None else cache
         self.itos = None
         self.stoi = None
