@@ -94,6 +94,7 @@ class TestVocab(TorchtextTestCase):
                                      [0.3, 0.4]])
         assert_allclose(v.vectors.numpy(), expected_vectors)
 
+    @slow
     def test_vocab_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching, then once more
@@ -131,6 +132,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
@@ -162,6 +164,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
@@ -190,6 +193,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')
