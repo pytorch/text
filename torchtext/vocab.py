@@ -79,7 +79,11 @@ class Vocab(object):
         if not specials_first:
             self.itos.extend(list(specials))
 
-        self.stoi = defaultdict(_default_unk_index)
+        if '<unk>' in specials:  # hard-coded for now
+            self.stoi = defaultdict(_default_unk_index)
+        else:
+            self.stoi = defaultdict()
+
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
 
@@ -204,7 +208,7 @@ class SubwordVocab(Vocab):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero\_
+                returns a Tensor of the same size. Default: torch.Tensor.zero_
         """
         try:
             import revtok
@@ -270,7 +274,7 @@ class Vectors(object):
                Thus, in situations where the entire set doesn't fit in memory,
                or is not needed for another reason, passing `max_vectors`
                can limit the size of the loaded set.
-         """
+        """
         cache = '.vector_cache' if cache is None else cache
         self.itos = None
         self.stoi = None

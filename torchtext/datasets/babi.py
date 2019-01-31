@@ -28,8 +28,9 @@ class BABI20Field(Field):
                 # sentences are indexed in reverse order and truncated to memory_size
                 nex = ex[::-1][:self.memory_size]
                 padded.append(
-                    super(BABI20Field, self).pad(nex) +
-                    [[self.pad_token] * self.fix_length] * (self.memory_size - len(nex)))
+                    super(BABI20Field, self).pad(nex)
+                    + [[self.pad_token] * self.fix_length]
+                    * (self.memory_size - len(nex)))
             self.fix_length = None
             return padded
         else:

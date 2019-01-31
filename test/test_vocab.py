@@ -49,6 +49,38 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.itos, expected_itos)
         self.assertEqual(dict(v.stoi), expected_stoi)
 
+    def test_vocab_without_unk(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        oov_word = 'OOVWORD'
+        self.assertNotIn(oov_word, c)
+
+        # tests for specials_first=True
+        v_first = vocab.Vocab(c, min_freq=3, specials=['<pad>'], specials_first=True)
+        expected_itos_first = ['<pad>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+        expected_stoi_first = {x: index for index, x in enumerate(expected_itos_first)}
+        self.assertEqual(v_first.itos, expected_itos_first)
+        self.assertEqual(dict(v_first.stoi), expected_stoi_first)
+        self.assertNotIn(oov_word, v_first.itos)
+        self.assertNotIn(oov_word, v_first.stoi)
+
+        # tests for specials_first=False
+        v_last = vocab.Vocab(c, min_freq=3, specials=['<pad>'], specials_first=False)
+        expected_itos_last = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<pad>']
+        expected_stoi_last = {x: index for index, x in enumerate(expected_itos_last)}
+        self.assertEqual(v_last.itos, expected_itos_last)
+        self.assertEqual(dict(v_last.stoi), expected_stoi_last)
+        self.assertNotIn(oov_word, v_last.itos)
+        self.assertNotIn(oov_word, v_last.stoi)
+
+        # check if pad is mapped to the first index
+        self.assertEqual(v_first.stoi['<pad>'], 0)
+        # check if pad is mapped to the last index
+        self.assertEqual(v_last.stoi['<pad>'], max(v_last.stoi.values()))
+
+        # check if an oovword is not in vocab and a default unk_id is not assigned to it
+        self.assertRaises(KeyError, v_first.stoi.__getitem__, oov_word)
+        self.assertRaises(KeyError, v_last.stoi.__getitem__, oov_word)
+
     def test_vocab_set_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5,
                      'ｔｅｓｔ': 4, 'freq_too_low': 2})
@@ -62,6 +94,7 @@ class TestVocab(TorchtextTestCase):
                                      [0.3, 0.4]])
         assert_allclose(v.vectors.numpy(), expected_vectors)
 
+    @slow
     def test_vocab_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching, then once more
@@ -99,6 +132,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
@@ -130,6 +164,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
@@ -158,6 +193,7 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
+    @slow
     def test_vocab_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')
