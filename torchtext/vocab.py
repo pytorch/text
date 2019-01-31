@@ -79,7 +79,11 @@ class Vocab(object):
         if not specials_first:
             self.itos.extend(list(specials))
 
-        self.stoi = defaultdict(_default_unk_index)
+        if '<unk>' in specials:  # hard-coded for now
+            self.stoi = defaultdict(_default_unk_index)
+        else:
+            self.stoi = defaultdict()
+
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
 
