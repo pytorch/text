@@ -621,14 +621,14 @@ class NestedField(Field):
                 pad = pad
             elif self.pad_first:
                 lens[:(max_sen_len - sentence_len)] = (
-                        [0] * (max_sen_len - sentence_len))
+                    [0] * (max_sen_len - sentence_len))
                 pad[:(max_sen_len - sentence_len)] = (
-                        [self.pad_token] * (max_sen_len - sentence_len))
+                    [self.pad_token] * (max_sen_len - sentence_len))
             else:
                 lens[-(max_sen_len - sentence_len):] = (
-                        [0] * (max_sen_len - sentence_len))
+                    [0] * (max_sen_len - sentence_len))
                 pad[-(max_sen_len - sentence_len):] = (
-                        [self.pad_token] * (max_sen_len - sentence_len))
+                    [self.pad_token] * (max_sen_len - sentence_len))
             word_lengths.append(lens)
             final_padded.append(pad)
         padded = final_padded
