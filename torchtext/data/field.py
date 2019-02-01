@@ -304,7 +304,7 @@ class Field(RawField):
                     counter.update(chain.from_iterable(x))
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.unk_token, self.pad_token, self.init_token,
-                            self.eos_token]
+                            self.eos_token] + kwargs.pop('specials', [])
             if tok is not None))
         self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
 
