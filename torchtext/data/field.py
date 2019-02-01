@@ -304,7 +304,7 @@ class Field(RawField):
                     counter.update(chain.from_iterable(x))
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.unk_token, self.pad_token, self.init_token,
-                            self.eos_token] + kwargs.get('specials', [])
+                            self.eos_token] + kwargs.pop('specials', [])
             if tok is not None))
         self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
 
@@ -621,14 +621,14 @@ class NestedField(Field):
                 pad = pad
             elif self.pad_first:
                 lens[:(max_sen_len - sentence_len)] = (
-                    [0] * (max_sen_len - sentence_len))
+                        [0] * (max_sen_len - sentence_len))
                 pad[:(max_sen_len - sentence_len)] = (
-                    [self.pad_token] * (max_sen_len - sentence_len))
+                        [self.pad_token] * (max_sen_len - sentence_len))
             else:
                 lens[-(max_sen_len - sentence_len):] = (
-                    [0] * (max_sen_len - sentence_len))
+                        [0] * (max_sen_len - sentence_len))
                 pad[-(max_sen_len - sentence_len):] = (
-                    [self.pad_token] * (max_sen_len - sentence_len))
+                        [self.pad_token] * (max_sen_len - sentence_len))
             word_lengths.append(lens)
             final_padded.append(pad)
         padded = final_padded
