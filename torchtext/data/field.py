@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 from .dataset import Dataset
 from .pipeline import Pipeline
-from .utils import get_tokenizer
+from .utils import get_tokenizer, dtype_to_attr, is_tokenizer_serializable
 from ..vocab import Vocab, SubwordVocab
 
 
@@ -17,8 +17,8 @@ class RawField(object):
     Every dataset consists of one or more types of data. For instance, a text
     classification dataset contains sentences and their classes, while a
     machine translation dataset contains paired examples of text in two
-    languages. Each of these types of data is represented by an RawField object.
-    An RawField object does not assume any property of the data type and
+    languages. Each of these types of data is represented by a RawField object.
+    A RawField object does not assume any property of the data type and
     it holds parameters relating to how a datatype should be processed.
 
     Attributes:
@@ -29,11 +29,14 @@ class RawField(object):
             using this field before assigning to a batch.
             Function signature: (batch(list)) -> object
             Default: None.
+        is_target: Whether this field is a target variable.
+            Affects iteration over batches. Default: False
     """
 
-    def __init__(self, preprocessing=None, postprocessing=None):
+    def __init__(self, preprocessing=None, postprocessing=None, is_target=False):
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
+        self.is_target = is_target
 
     def preprocess(self, x):
         """ Preprocess an example if the `preprocessing` Pipeline is provided. """
@@ -51,7 +54,7 @@ class RawField(object):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             object: Processed object given the input and custom
-                postprocessing Pipeline.
+            postprocessing Pipeline.
         """
         if self.postprocessing is not None:
             batch = self.postprocessing(batch)
@@ -95,8 +98,11 @@ class Field(RawField):
             Default: None.
         lower: Whether to lowercase the text in this field. Default: False.
         tokenize: The function used to tokenize strings using this field into
-            sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: str.split.
+            sequential examples. If "spacy", the SpaCy tokenizer is
+            used. If a non-serializable function is passed as an argument,
+            the field will not be able to be serialized. Default: string.split.
+        tokenizer_language: The language of the tokenizer to be constructed.
+            Various languages currently supported only in SpaCy.
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
@@ -105,7 +111,10 @@ class Field(RawField):
         pad_token: The string token used as padding. Default: "<pad>".
         unk_token: The string token used to represent OOV words. Default: "<unk>".
         pad_first: Do the padding of the sequence at the beginning. Default: False.
-        truncate_first: Do the truncating of the sequence at the beginning. Defaulf: False
+        truncate_first: Do the truncating of the sequence at the beginning. Default: False
+        stop_words: Tokens to discard during the preprocessing step. Default: None
+        is_target: Whether this field is a target variable.
+            Affects iteration over batches. Default: False
     """
 
     vocab_cls = Vocab
@@ -129,12 +138,15 @@ class Field(RawField):
         torch.long: int,
     }
 
+    ignore = ['dtype', 'tokenize']
+
     def __init__(self, sequential=True, use_vocab=True, init_token=None,
                  eos_token=None, fix_length=None, dtype=torch.long,
                  preprocessing=None, postprocessing=None, lower=False,
-                 tokenize=(lambda s: s.split()), include_lengths=False,
+                 tokenize=None, tokenizer_language='en', include_lengths=False,
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
-                 pad_first=False, truncate_first=False):
+                 pad_first=False, truncate_first=False, stop_words=None,
+                 is_target=False):
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -145,12 +157,49 @@ class Field(RawField):
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
         self.lower = lower
-        self.tokenize = get_tokenizer(tokenize)
+        # store params to construct tokenizer for serialization
+        # in case the tokenizer isn't picklable (e.g. spacy)
+        self.tokenizer_args = (tokenize, tokenizer_language)
+        self.tokenize = get_tokenizer(tokenize, tokenizer_language)
         self.include_lengths = include_lengths
         self.batch_first = batch_first
         self.pad_token = pad_token if self.sequential else None
         self.pad_first = pad_first
         self.truncate_first = truncate_first
+        try:
+            self.stop_words = set(stop_words) if stop_words is not None else None
+        except TypeError:
+            raise ValueError("Stop words must be convertible to a set")
+        self.is_target = is_target
+
+    def __getstate__(self):
+        str_type = dtype_to_attr(self.dtype)
+        if is_tokenizer_serializable(*self.tokenizer_args):
+            tokenize = self.tokenize
+        else:
+            # signal to restore in `__setstate__`
+            tokenize = None
+        attrs = {k: v for k, v in self.__dict__.items() if k not in self.ignore}
+        attrs['dtype'] = str_type
+        attrs['tokenize'] = tokenize
+
+        return attrs
+
+    def __setstate__(self, state):
+        state['dtype'] = getattr(torch, state['dtype'])
+        if not state['tokenize']:
+            state['tokenize'] = get_tokenizer(*state['tokenizer_args'])
+        self.__dict__.update(state)
+
+    def __hash__(self):
+        # we don't expect this to be called often
+        return 42
+
+    def __eq__(self, other):
+        if not isinstance(other, RawField):
+            return False
+
+        return self.__dict__ == other.__dict__
 
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
@@ -159,13 +208,15 @@ class Field(RawField):
         first. If `sequential=True`, it will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types) and
-                not isinstance(x, six.text_type)):
+        if (six.PY2 and isinstance(x, six.string_types)
+                and not isinstance(x, six.text_type)):
             x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
         if self.sequential and isinstance(x, six.text_type):
             x = self.tokenize(x.rstrip('\n'))
         if self.lower:
             x = Pipeline(six.text_type.lower)(x)
+        if self.sequential and self.use_vocab and self.stop_words is not None:
+            x = [w for w in x if w not in self.stop_words]
         if self.preprocessing is not None:
             return self.preprocessing(x)
         else:
@@ -180,7 +231,7 @@ class Field(RawField):
             batch (list(object)): A list of object from a batch of examples.
         Returns:
             torch.autograd.Variable: Processed object given the input
-                and custom postprocessing Pipeline.
+            and custom postprocessing Pipeline.
         """
         padded = self.pad(batch)
         tensor = self.numericalize(padded, device=device)
@@ -208,16 +259,16 @@ class Field(RawField):
         for x in minibatch:
             if self.pad_first:
                 padded.append(
-                    [self.pad_token] * max(0, max_len - len(x)) +
-                    ([] if self.init_token is None else [self.init_token]) +
-                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
-                    ([] if self.eos_token is None else [self.eos_token]))
+                    [self.pad_token] * max(0, max_len - len(x))
+                    + ([] if self.init_token is None else [self.init_token])
+                    + list(x[-max_len:] if self.truncate_first else x[:max_len])
+                    + ([] if self.eos_token is None else [self.eos_token]))
             else:
                 padded.append(
-                    ([] if self.init_token is None else [self.init_token]) +
-                    list(x[-max_len:] if self.truncate_first else x[:max_len]) +
-                    ([] if self.eos_token is None else [self.eos_token]) +
-                    [self.pad_token] * max(0, max_len - len(x)))
+                    ([] if self.init_token is None else [self.init_token])
+                    + list(x[-max_len:] if self.truncate_first else x[:max_len])
+                    + ([] if self.eos_token is None else [self.eos_token])
+                    + [self.pad_token] * max(0, max_len - len(x)))
             lengths.append(len(padded[-1]) - max(0, max_len - len(x)))
         if self.include_lengths:
             return (padded, lengths)
@@ -253,7 +304,7 @@ class Field(RawField):
                     counter.update(chain.from_iterable(x))
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.unk_token, self.pad_token, self.init_token,
-                            self.eos_token]
+                            self.eos_token] + kwargs.pop('specials', [])
             if tok is not None))
         self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
 
@@ -296,7 +347,7 @@ class Field(RawField):
                     "Please raise an issue at "
                     "https://github.com/pytorch/text/issues".format(self.dtype))
             numericalization_func = self.dtypes[self.dtype]
-            # It doesn't make sense to explictly coerce to a numeric type if
+            # It doesn't make sense to explicitly coerce to a numeric type if
             # the data is sequential, since it's unclear how to coerce padding tokens
             # to a numeric type.
             if not self.sequential:
@@ -428,9 +479,12 @@ class NestedField(Field):
         include_lengths: Whether to return a tuple of a padded minibatch and
             a list containing the lengths of each examples, or just a padded
             minibatch. Default: False.
-        tokenize (callable or str): The function used to tokenize strings using this
-            field into sequential examples. If "spacy", the SpaCy English tokenizer is
-            used. Default: ``lambda s: s.split()``
+        tokenize: The function used to tokenize strings using this field into
+            sequential examples. If "spacy", the SpaCy tokenizer is
+            used. If a non-serializable function is passed as an argument,
+            the field will not be able to be serialized. Default: string.split.
+        tokenizer_language: The language of the tokenizer to be constructed.
+            Various languages currently supported only in SpaCy.
         pad_token (str): The string token used as padding. If ``nesting_field`` is
             sequential, this will be set to its ``pad_token``. Default: ``"<pad>"``.
         pad_first (bool): Do the padding of the sequence at the beginning. Default:
@@ -439,7 +493,7 @@ class NestedField(Field):
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, dtype=torch.long, preprocessing=None,
-                 postprocessing=None, tokenize=lambda s: s.split(),
+                 postprocessing=None, tokenize=None, tokenizer_language='en',
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
         if isinstance(nesting_field, NestedField):
@@ -459,6 +513,7 @@ class NestedField(Field):
             postprocessing=postprocessing,
             lower=nesting_field.lower,
             tokenize=tokenize,
+            tokenizer_language=tokenizer_language,
             batch_first=True,
             pad_token=pad_token,
             unk_token=nesting_field.unk_token,
@@ -629,6 +684,7 @@ class NestedField(Field):
         self.nesting_field.build_vocab(*flattened, **kwargs)
         super(NestedField, self).build_vocab()
         self.vocab.extend(self.nesting_field.vocab)
+        self.vocab.freqs = self.nesting_field.vocab.freqs.copy()
         if old_vectors is not None:
             self.vocab.load_vectors(old_vectors,
                                     unk_init=old_unk_init, cache=old_vectors_cache)
@@ -660,8 +716,9 @@ class NestedField(Field):
 
         self.nesting_field.include_lengths = True
         if self.include_lengths:
-            sentence_lengths = torch.LongTensor(sentence_lengths, device=device)
-            word_lengths = torch.LongTensor(word_lengths, device=device)
+            sentence_lengths = \
+                torch.tensor(sentence_lengths, dtype=self.dtype, device=device)
+            word_lengths = torch.tensor(word_lengths, dtype=self.dtype, device=device)
             return (padded_batch, sentence_lengths, word_lengths)
         return padded_batch
 
@@ -675,8 +732,10 @@ class LabelField(Field):
     """
 
     def __init__(self, **kwargs):
-        # whichever value is set for sequential and unk_token will be overwritten
+        # whichever value is set for sequential, unk_token, and is_target
+        # will be overwritten
         kwargs['sequential'] = False
         kwargs['unk_token'] = None
+        kwargs['is_target'] = True
 
         super(LabelField, self).__init__(**kwargs)

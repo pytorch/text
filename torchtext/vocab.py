@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
-import array
 from collections import defaultdict
 from functools import partial
-import io
 import logging
 import os
 import zipfile
+import gzip
 
 import six
 from six.moves.urllib.request import urlretrieve
@@ -29,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None):
+                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -49,12 +48,18 @@ class Vocab(object):
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
+            specials_first: Whether to add special tokens into the vocabulary at first.
+                If it is False, they are added into the vocabulary at last.
+                Default: True.
         """
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
 
-        self.itos = list(specials)
+        self.itos = list()
+        if specials_first:
+            self.itos = list(specials)
+
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
@@ -71,7 +76,14 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        self.stoi = defaultdict(_default_unk_index)
+        if not specials_first:
+            self.itos.extend(list(specials))
+
+        if '<unk>' in specials:  # hard-coded for now
+            self.stoi = defaultdict(_default_unk_index)
+        else:
+            self.stoi = defaultdict()
+
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
 
@@ -191,6 +203,12 @@ class SubwordVocab(Vocab):
             specials: The list of special tokens (e.g., padding or eos) that
                 will be prepended to the vocabulary in addition to an <unk>
                 token.
+            vectors: One of either the available pretrained vectors
+                or custom pretrained vectors (see Vocab.load_vectors);
+                or a list of aforementioned vectors
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and
+                returns a Tensor of the same size. Default: torch.Tensor.zero_
         """
         try:
             import revtok
@@ -200,7 +218,7 @@ class SubwordVocab(Vocab):
 
         self.stoi = defaultdict(_default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
-        self.itos = specials
+        self.itos = specials.copy()
 
         self.segment = revtok.SubwordSegmenter(counter, max_size)
 
@@ -211,6 +229,8 @@ class SubwordVocab(Vocab):
                       key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
 
         for tok, _ in toks:
+            if len(self.itos) == max_size:
+                break
             self.itos.append(tok)
             self.stoi[tok] = len(self.itos) - 1
 
@@ -218,36 +238,72 @@ class SubwordVocab(Vocab):
             self.load_vectors(vectors, unk_init=unk_init)
 
 
+def _infer_shape(f):
+    num_lines, vector_dim = 0, None
+    for line in f:
+        if vector_dim is None:
+            row = line.rstrip().split(b" ")
+            vector = row[1:]
+            # Assuming word, [vector] format
+            if len(vector) > 2:
+                # The header present in some (w2v) formats contains two elements.
+                vector_dim = len(vector)
+                num_lines += 1  # First element read
+        else:
+            num_lines += 1
+    f.seek(0)
+    return num_lines, vector_dim
+
+
 class Vectors(object):
 
     def __init__(self, name, cache=None,
-                 url=None, unk_init=None):
+                 url=None, unk_init=None, max_vectors=None):
         """
         Arguments:
            name: name of the file that contains the vectors
            cache: directory for cached vectors
            url: url for download if vectors not found in cache
-           unk_init (callback): by default, initalize out-of-vocabulary word vectors
+           unk_init (callback): by default, initialize out-of-vocabulary word vectors
                to zero vectors; can be any function that takes in a Tensor and
                returns a Tensor of the same size
-         """
+           max_vectors (int): this can be used to limit the number of
+               pre-trained vectors loaded.
+               Most pre-trained vector sets are sorted
+               in the descending order of word frequency.
+               Thus, in situations where the entire set doesn't fit in memory,
+               or is not needed for another reason, passing `max_vectors`
+               can limit the size of the loaded set.
+        """
         cache = '.vector_cache' if cache is None else cache
+        self.itos = None
+        self.stoi = None
+        self.vectors = None
+        self.dim = None
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
-        self.cache(name, cache, url=url)
+        self.cache(name, cache, url=url, max_vectors=max_vectors)
 
     def __getitem__(self, token):
         if token in self.stoi:
             return self.vectors[self.stoi[token]]
         else:
-            return self.unk_init(torch.Tensor(1, self.dim))
+            return self.unk_init(torch.Tensor(self.dim))
 
-    def cache(self, name, cache, url=None):
+    def cache(self, name, cache, url=None, max_vectors=None):
         if os.path.isfile(name):
             path = name
-            path_pt = os.path.join(cache, os.path.basename(name)) + '.pt'
+            if max_vectors:
+                file_suffix = '_{}.pt'.format(max_vectors)
+            else:
+                file_suffix = '.pt'
+            path_pt = os.path.join(cache, os.path.basename(name)) + file_suffix
         else:
             path = os.path.join(cache, name)
-            path_pt = path + '.pt'
+            if max_vectors:
+                file_suffix = '_{}.pt'.format(max_vectors)
+            else:
+                file_suffix = '.pt'
+            path_pt = path + file_suffix
 
         if not os.path.isfile(path_pt):
             if not os.path.isfile(path) and url:
@@ -268,59 +324,59 @@ class Vectors(object):
                     with zipfile.ZipFile(dest, "r") as zf:
                         zf.extractall(cache)
                 elif ext == 'gz':
-                    with tarfile.open(dest, 'r:gz') as tar:
-                        tar.extractall(path=cache)
+                    if dest.endswith('.tar.gz'):
+                        with tarfile.open(dest, 'r:gz') as tar:
+                            tar.extractall(path=cache)
             if not os.path.isfile(path):
                 raise RuntimeError('no vectors found at {}'.format(path))
 
-            # str call is necessary for Python 2/3 compatibility, since
-            # argument must be Python 2 str (Python 3 bytes) or
-            # Python 3 str (Python 2 unicode)
-            itos, vectors, dim = [], array.array(str('d')), None
-
-            # Try to read the whole file with utf-8 encoding.
-            binary_lines = False
-            try:
-                with io.open(path, encoding="utf8") as f:
-                    lines = [line for line in f]
-            # If there are malformed lines, read in binary mode
-            # and manually decode each word from utf-8
-            except:
-                logger.warning("Could not read {} as UTF8 file, "
-                               "reading file as bytes and skipping "
-                               "words with malformed UTF8.".format(path))
-                with open(path, 'rb') as f:
-                    lines = [line for line in f]
-                binary_lines = True
-
             logger.info("Loading vectors from {}".format(path))
-            for line in tqdm(lines, total=len(lines)):
-                # Explicitly splitting on " " is important, so we don't
-                # get rid of Unicode non-breaking spaces in the vectors.
-                entries = line.rstrip().split(b" " if binary_lines else " ")
+            ext = os.path.splitext(path)[1][1:]
+            if ext == 'gz':
+                open_file = gzip.open
+            else:
+                open_file = open
 
-                word, entries = entries[0], entries[1:]
-                if dim is None and len(entries) > 1:
-                    dim = len(entries)
-                elif len(entries) == 1:
-                    logger.warning("Skipping token {} with 1-dimensional "
-                                   "vector {}; likely a header".format(word, entries))
-                    continue
-                elif dim != len(entries):
-                    raise RuntimeError(
-                        "Vector for token {} has {} dimensions, but previously "
-                        "read vectors have {} dimensions. All vectors must have "
-                        "the same number of dimensions.".format(word, len(entries), dim))
+            vectors_loaded = 0
+            with open_file(path, 'rb') as f:
+                num_lines, dim = _infer_shape(f)
+                if not max_vectors or max_vectors > num_lines:
+                    max_vectors = num_lines
 
-                if binary_lines:
+                itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
+
+                for line in tqdm(f, total=num_lines):
+                    # Explicitly splitting on " " is important, so we don't
+                    # get rid of Unicode non-breaking spaces in the vectors.
+                    entries = line.rstrip().split(b" ")
+
+                    word, entries = entries[0], entries[1:]
+                    if dim is None and len(entries) > 1:
+                        dim = len(entries)
+                    elif len(entries) == 1:
+                        logger.warning("Skipping token {} with 1-dimensional "
+                                       "vector {}; likely a header".format(word, entries))
+                        continue
+                    elif dim != len(entries):
+                        raise RuntimeError(
+                            "Vector for token {} has {} dimensions, but previously "
+                            "read vectors have {} dimensions. All vectors must have "
+                            "the same number of dimensions.".format(word, len(entries),
+                                                                    dim))
+
                     try:
                         if isinstance(word, six.binary_type):
                             word = word.decode('utf-8')
-                    except:
+                    except UnicodeDecodeError:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
                         continue
-                vectors.extend(float(x) for x in entries)
-                itos.append(word)
+
+                    vectors[vectors_loaded] = torch.tensor([float(x) for x in entries])
+                    vectors_loaded += 1
+                    itos.append(word)
+
+                    if vectors_loaded == max_vectors:
+                        break
 
             self.itos = itos
             self.stoi = {word: i for i, word in enumerate(itos)}

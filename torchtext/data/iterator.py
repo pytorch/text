@@ -29,11 +29,10 @@ class Iterator(object):
             provided to the Iterator constructor overrides the sort_key
             attribute of the Dataset, or defers to it if None.
         train: Whether the iterator represents a train set.
-        repeat: Whether to repeat the iterator for multiple epochs.
+        repeat: Whether to repeat the iterator for multiple epochs. Default: False.
         shuffle: Whether to shuffle examples between epochs.
         sort: Whether to sort examples according to self.sort_key.
-            Note that repeat, shuffle, and sort default to train, train, and
-            (not train).
+            Note that shuffle and sort default to train and (not train).
         sort_within_batch: Whether to sort (in descending order according to
             self.sort_key) within each batch. If None, defaults to self.sort.
             If self.sort is True and this is False, the batch is left in the
@@ -45,12 +44,12 @@ class Iterator(object):
 
     def __init__(self, dataset, batch_size, sort_key=None, device=None,
                  batch_size_fn=None, train=True,
-                 repeat=None, shuffle=None, sort=None,
+                 repeat=False, shuffle=None, sort=None,
                  sort_within_batch=None):
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0
-        self.repeat = train if repeat is None else repeat
+        self.repeat = repeat
         self.shuffle = train if shuffle is None else shuffle
         self.sort = not train if sort is None else sort
 
@@ -64,9 +63,9 @@ class Iterator(object):
             self.sort_key = sort_key
 
         if type(device) == int:
-            logger.warning("The `device` argument should be set by using `torch.device`" +
-                           " or passing a string as an argument. This behavior will be" +
-                           " deprecated soon and currently defaults to cpu.")
+            logger.warning("The `device` argument should be set by using `torch.device`"
+                           + " or passing a string as an argument. This behavior will be"
+                           + " deprecated soon and currently defaults to cpu.")
             device = None
         self.device = device
         self.random_shuffler = RandomShuffler()
@@ -189,11 +188,10 @@ class BPTTIterator(Iterator):
             provided to the Iterator constructor overrides the sort_key
             attribute of the Dataset, or defers to it if None.
         train: Whether the iterator represents a train set.
-        repeat: Whether to repeat the iterator for multiple epochs.
+        repeat: Whether to repeat the iterator for multiple epochs. Default: False.
         shuffle: Whether to shuffle examples between epochs.
         sort: Whether to sort examples according to self.sort_key.
-            Note that repeat, shuffle, and sort default to train, train, and
-            (not train).
+            Note that shuffle and sort default to train and (not train).
         device (str or torch.device): A string or instance of `torch.device`
             specifying which device the Variables are going to be created on.
             If left as default, the tensors will be created on cpu. Default: None.
@@ -204,15 +202,15 @@ class BPTTIterator(Iterator):
         super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
 
     def __len__(self):
-        return math.ceil((len(self.dataset[0].text) / self.batch_size - 1) /
-                         self.bptt_len)
+        return math.ceil((len(self.dataset[0].text) / self.batch_size - 1)
+                         / self.bptt_len)
 
     def __iter__(self):
         text = self.dataset[0].text
         TEXT = self.dataset.fields['text']
         TEXT.eos_token = None
-        text = text + ([TEXT.pad_token] * int(math.ceil(len(text) / self.batch_size) *
-                                              self.batch_size - len(text)))
+        text = text + ([TEXT.pad_token] * int(math.ceil(len(text) / self.batch_size)
+                                              * self.batch_size - len(text)))
         data = TEXT.numericalize(
             [text], device=self.device)
         data = data.view(self.batch_size, -1).t().contiguous()
@@ -222,10 +220,15 @@ class BPTTIterator(Iterator):
             for i in range(0, len(self) * self.bptt_len, self.bptt_len):
                 self.iterations += 1
                 seq_len = min(self.bptt_len, len(data) - i - 1)
+                batch_text = data[i:i + seq_len]
+                batch_target = data[i + 1:i + 1 + seq_len]
+                if TEXT.batch_first:
+                    batch_text = batch_text.t().contiguous()
+                    batch_target = batch_target.t().contiguous()
                 yield Batch.fromvars(
                     dataset, self.batch_size,
-                    text=data[i:i + seq_len],
-                    target=data[i + 1:i + 1 + seq_len])
+                    text=batch_text,
+                    target=batch_target)
             if not self.repeat:
                 return
 

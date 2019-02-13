@@ -70,7 +70,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
-                test splits in that order, if provided.
+            test splits in that order, if provided.
         """
         if path is None:
             path = cls.download(root)
@@ -92,16 +92,17 @@ class Dataset(torch.utils.data.Dataset):
                 of data to be used for the training split (rest is used for validation),
                 or a list of numbers denoting the relative sizes of train, test and valid
                 splits respectively. If the relative size for valid is missing, only the
-                train-test split is returned. Default is 0.7 (for th train set).
+                train-test split is returned. Default is 0.7 (for the train set).
             stratified (bool): whether the sampling should be stratified.
                 Default is False.
             strata_field (str): name of the examples Field stratified over.
                 Default is 'label' for the conventional label field.
-            random_state (int): the random seed used for shuffling.
+            random_state (tuple): the random seed used for shuffling.
+                A return value of `random.getstate()`.
 
         Returns:
             Tuple[Dataset]: Datasets for train, validation, and
-                test splits in that order, if the splits are provided.
+            test splits in that order, if the splits are provided.
         """
         train_ratio, test_ratio, val_ratio = check_split_ratio(split_ratio)
 
@@ -197,11 +198,27 @@ class Dataset(torch.utils.data.Dataset):
 
         return os.path.join(path, cls.dirname)
 
+    def filter_examples(self, field_names):
+        """Remove unknown words from dataset examples with respect to given field.
+
+        Arguments:
+            field_names (list(str)): Within example only the parts with field names in
+                field_names will have their unknown words deleted.
+        """
+        for i, example in enumerate(self.examples):
+            for field_name in field_names:
+                vocab = set(self.fields[field_name].vocab.stoi)
+                text = getattr(example, field_name)
+                example_part = [word for word in text if word in vocab]
+                setattr(example, field_name, example_part)
+            self.examples[i] = example
+
 
 class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
-    def __init__(self, path, format, fields, skip_header=False, **kwargs):
+    def __init__(self, path, format, fields, skip_header=False,
+                 csv_reader_params={}, **kwargs):
         """Create a TabularDataset given a path, file format, and field list.
 
         Arguments:
@@ -220,16 +237,22 @@ class TabularDataset(Dataset):
                 This allows the user to rename columns from their JSON/CSV/TSV key names
                 and also enables selecting a subset of columns to load.
             skip_header (bool): Whether to skip the first line of the input file.
+            csv_reader_params(dict): Parameters to pass to the csv reader.
+                Only relevant when format is csv or tsv.
+                See
+                https://docs.python.org/3/library/csv.html#csv.reader
+                for more details.
         """
+        format = format.lower()
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
-            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
+            'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format]
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
-                reader = unicode_csv_reader(f)
+                reader = unicode_csv_reader(f, **csv_reader_params)
             elif format == 'tsv':
-                reader = unicode_csv_reader(f, delimiter='\t')
+                reader = unicode_csv_reader(f, delimiter='\t', **csv_reader_params)
             else:
                 reader = f
 
@@ -264,7 +287,7 @@ def check_split_ratio(split_ratio):
     if isinstance(split_ratio, float):
         # Only the train set relative ratio is provided
         # Assert in bounds, validation size is zero
-        assert split_ratio > 0. and split_ratio < 1., (
+        assert 0. < split_ratio < 1., (
             "Split ratio {} not between 0 and 1".format(split_ratio))
 
         test_ratio = 1. - split_ratio
