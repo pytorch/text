@@ -56,8 +56,8 @@ class Batch(object):
                               for name in fields_to_index if hasattr(self, name)])
 
         data_str = (' from {}'.format(self.dataset.name.upper())
-                    if hasattr(self.dataset, 'name') and
-                    isinstance(self.dataset.name, str) else '')
+                    if hasattr(self.dataset, 'name')
+                    and isinstance(self.dataset.name, str) else '')
 
         strt = '[{} of size {}{}]\n{}'.format(torch.typename(self),
                                               self.batch_size, data_str, var_strs)
