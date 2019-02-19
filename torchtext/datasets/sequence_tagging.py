@@ -21,11 +21,11 @@ class SequenceTaggingDataset(data.Dataset):
                 return len(getattr(example, attr))
         return 0
 
-    def __init__(self, path, fields, separator="\t", **kwargs):
+    def __init__(self, path, fields, encoding="utf-8", separator="\t", **kwargs):
         examples = []
         columns = []
 
-        with open(path) as input_file:
+        with open(path, encoding=encoding) as input_file:
             for line in input_file:
                 line = line.strip()
                 if line == "":
