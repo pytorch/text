@@ -6,7 +6,7 @@ from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking  
 from .trec import TREC
 from .imdb import IMDB
 from .babi import BABI20
-
+from .agnews import AGNEWS
 
 __all__ = ['LanguageModelingDataset',
            'SNLI',
@@ -24,4 +24,5 @@ __all__ = ['LanguageModelingDataset',
            'SequenceTaggingDataset',
            'UDPOS',
            'CoNLL2000Chunking',
-           'BABI20']
+           'BABI20',
+           'AGNEWS']
