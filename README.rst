@@ -15,6 +15,14 @@ This repository consists of:
 * `torchtext.data <#data>`_: Generic data loaders, abstractions, and iterators for text (including vocabulary and word vectors)
 * `torchtext.datasets <#datasets>`_: Pre-built loaders for common NLP datasets
 
+Maintenance
+============
+
+This project is not being maintained, please consider using `PyTorch-NLP 
+<https://github.com/PetrochukM/PyTorch-NLP>`_ for the meantime. 
+
+Let us know if you'd like to step in!
+
 Installation
 ============
 
