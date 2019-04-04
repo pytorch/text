@@ -4,6 +4,9 @@ tqdm
 # Downloading data and other files
 requests
 
+# Legacy
+six
+
 # Optional NLP tools
 nltk
 spacy

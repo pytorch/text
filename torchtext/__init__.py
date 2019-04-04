@@ -3,7 +3,7 @@ from . import datasets
 from . import utils
 from . import vocab
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 
 __all__ = ['data',
            'datasets',
