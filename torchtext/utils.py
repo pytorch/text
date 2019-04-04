@@ -89,9 +89,7 @@ def check_integrity(fpath, md5=None):
         for chunk in iter(lambda: f.read(1024 * 1024), b''):
             md5o.update(chunk)
     md5c = md5o.hexdigest()
-    if md5c != md5:
-        return False
-    return True
+    return md5c != md5
 
 def makedir_exist_ok(dirpath):
     """
@@ -115,7 +113,7 @@ def download_file_from_google_drive(file_id, root, filename=None, md5=None):
     """
     # Based on https://stackoverflow.com/questions/38511444/python-download-files-from-google-drive-using-url
     import requests
-    url = "https://docs.google.com/uc?export=download"
+    url = 'https://docs.google.com/uc?export=download'
 
     root = os.path.expanduser(root)
     if not filename:
@@ -146,7 +144,7 @@ def _get_confirm_token(response):
     return None
 
 def _save_response_content(response, destination, chunk_size=32768):
-    with open(destination, "wb") as f:
+    with open(destination, 'wb') as f:
         pbar = tqdm(total=None)
         progress = 0
         for chunk in response.iter_content(chunk_size):

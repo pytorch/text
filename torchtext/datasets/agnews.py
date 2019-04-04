@@ -21,7 +21,7 @@ class AGNEWS(data.Dataset):
         
         fields = [('label', label_field), ('title', title_field), ('description', description_field)]
         
-        with io.open(os.path.expanduser(path), encoding="utf8") as f:
+        with io.open(os.path.expanduser(path), encoding='utf8') as f:
 
             reader = unicode_csv_reader(f, delimiter=',')
 
