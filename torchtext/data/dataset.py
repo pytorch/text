@@ -1,4 +1,5 @@
 import io
+import bisect
 import os
 import zipfile
 import tarfile
@@ -212,6 +213,52 @@ class Dataset(torch.utils.data.Dataset):
                 example_part = [word for word in text if word in vocab]
                 setattr(example, field_name, example_part)
             self.examples[i] = example
+
+
+class ConcatDataset(Dataset):
+    """
+    Dataset to concatenate multiple datasets.
+    Purpose: useful to assemble different existing datasets, possibly
+    large-scale datasets as the concatenation operation is done in an
+    on-the-fly manner.
+
+    Arguments:
+        datasets (sequence): List of datasets to be concatenated
+    """
+
+    def __init__(self, datasets, **kwargs):
+        assert len(datasets) > 0, 'datasets should not be an empty iterable'
+        self.datasets = list(datasets)
+        self.examples = self._get_examples()
+        self.fields = self._get_fields()
+
+        super(ConcatDataset, self).__init__(self.examples, self.fields,
+                                            **kwargs)
+
+    def _get_examples(self):
+        examples = []
+        for dataset in self.datasets:
+            for example in dataset.examples:
+                examples.append(example)
+
+        return examples
+
+    def _get_fields(self):
+        def validate_fields(fields):
+            for field1 in fields:
+                for field2 in fields:
+                    if field1 != field2:
+                        return False
+            return True
+
+        fields = []
+        for dataset in self.datasets:
+            fields.append(dataset.fields)
+
+        if not validate_fields(fields):
+            raise ValueError("Fields must be the same accross all datasets!")
+
+        return fields[0]
 
 
 class TabularDataset(Dataset):

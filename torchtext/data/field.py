@@ -5,7 +5,7 @@ import six
 import torch
 from tqdm import tqdm
 
-from .dataset import Dataset
+from .dataset import Dataset, ConcatDataset
 from .pipeline import Pipeline
 from .utils import get_tokenizer, dtype_to_attr, is_tokenizer_serializable
 from ..vocab import Vocab, SubwordVocab
@@ -289,7 +289,7 @@ class Field(RawField):
         counter = Counter()
         sources = []
         for arg in args:
-            if isinstance(arg, Dataset):
+            if isinstance(arg, Dataset) or isinstance(arg, ConcatDataset):
                 sources += [getattr(arg, name) for name, field in
                             arg.fields.items() if field is self]
             else:

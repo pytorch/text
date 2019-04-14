@@ -154,6 +154,7 @@ class TestDataset(TorchtextTestCase):
             dataset = data.TabularDataset(
                 path=self.test_has_header_dataset_path, format=format_,
                 skip_header=False, fields=fields)
+            dataset = data.ConcatDataset([dataset])
 
             TEXT.build_vocab(dataset)
 
@@ -518,3 +519,25 @@ def filter_init(ex_val1, ex_val2, ex_val3):
     text_field.build_vocab(dataset)
 
     return dataset, text_field
+
+
+# class ConcatDataset(TorchtextTestCase):
+#     def test_concat_has_fields(self):
+#         text_field = data.Field(sequential=True)
+#         label_field = data.Field(sequential=False)
+
+#         def make_dataset():
+#             mock_dataset = self.make_mock_dataset()
+#             examples = []
+#             for example in mock_dataset:
+#                 examples.append(data.Example.fromdict(example))
+
+#             return data.Dataset(examples, [
+#                 ("text", text_field), ("label", label_field)])
+
+#         dataset1 = make_dataset()
+#         dataset2 = make_dataset()
+
+#         concat_dataset = data.ConcatDataset([dataset1, dataset2])
+
+#         assert
