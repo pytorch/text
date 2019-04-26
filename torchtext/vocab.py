@@ -57,14 +57,14 @@ class Vocab(object):
         min_freq = max(min_freq, 1)
 
         self.itos = list()
-        unk_index = -1
+        self.unk_index = None
         if specials_first:
             self.itos = list(specials)
             # find the unk_index in specials
             if '<unk>' in specials:
-                unk_index = specials.index('<unk>')
+                self.unk_index = specials.index('<unk>')
             elif '<pad>' in specials:
-                unk_index = specials.index('<pad>')
+                self.unk_index = specials.index('<pad>')
 
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
@@ -85,15 +85,15 @@ class Vocab(object):
         if not specials_first:
             # find the unk_index in specials
             if '<unk>' in specials:
-                unk_index = specials.index('<unk>') + len(self.itos)
+                self.unk_index = specials.index('<unk>') + len(self.itos)
             elif '<pad>' in specials:
-                unk_index = specials.index('<pad>') + len(self.itos)
+                self.unk_index = specials.index('<pad>') + len(self.itos)
             self.itos.extend(list(specials))
         
-        if unk_index == -1:
+        if self.unk_index is None:
             self.stoi = defaultdict()
         else:
-            self.stoi = defaultdict(lambda: unk_index)
+            self.stoi = defaultdict(self._default_unk_index)
 
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
@@ -103,6 +103,9 @@ class Vocab(object):
             self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
         else:
             assert unk_init is None and vectors_cache is None
+    
+    def _default_unk_index(self):
+        return self.unk_index
 
     def __eq__(self, other):
         if self.freqs != other.freqs:
@@ -227,17 +230,17 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
-        unk_index = -1
+        self.unk_index = None
         # find the unk_index in specials
         if '<unk>' in specials:
-            unk_index = specials.index('<unk>')
+            self.unk_index = specials.index('<unk>')
         elif '<pad>' in specials:
-            unk_index = specials.index('<pad>')
+            self.unk_index = specials.index('<pad>')
         
-        if unk_index == -1:
+        if self.unk_index is None:
             self.stoi = defaultdict()
         else:
-            self.stoi = defaultdict(lambda: unk_index)
+            self.stoi = defaultdict(self._default_unk_index)
 
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
         self.itos = specials.copy()
