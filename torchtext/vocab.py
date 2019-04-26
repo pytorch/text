@@ -63,8 +63,8 @@ class Vocab(object):
             # find the unk_index in specials
             if '<unk>' in specials:
                 self.unk_index = specials.index('<unk>')
-            elif '<pad>' in specials:
-                self.unk_index = specials.index('<pad>')
+            # elif '<pad>' in specials:
+                # self.unk_index = specials.index('<pad>')
 
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
@@ -86,10 +86,10 @@ class Vocab(object):
             # find the unk_index in specials
             if '<unk>' in specials:
                 self.unk_index = specials.index('<unk>') + len(self.itos)
-            elif '<pad>' in specials:
-                self.unk_index = specials.index('<pad>') + len(self.itos)
+            # elif '<pad>' in specials:
+                # self.unk_index = specials.index('<pad>') + len(self.itos)
             self.itos.extend(list(specials))
-        
+
         if self.unk_index is None:
             self.stoi = defaultdict()
         else:
@@ -103,7 +103,7 @@ class Vocab(object):
             self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
         else:
             assert unk_init is None and vectors_cache is None
-    
+
     def _default_unk_index(self):
         return self.unk_index
 
@@ -234,9 +234,9 @@ class SubwordVocab(Vocab):
         # find the unk_index in specials
         if '<unk>' in specials:
             self.unk_index = specials.index('<unk>')
-        elif '<pad>' in specials:
-            self.unk_index = specials.index('<pad>')
-        
+        # elif '<pad>' in specials:
+            # self.unk_index = specials.index('<pad>')
+
         if self.unk_index is None:
             self.stoi = defaultdict()
         else:
