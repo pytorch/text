@@ -57,8 +57,14 @@ class Vocab(object):
         min_freq = max(min_freq, 1)
 
         self.itos = list()
+        unk_index = -1
         if specials_first:
             self.itos = list(specials)
+            # find the unk_index in specials
+            if '<unk>' in specials:
+                unk_index = specials.index('<unk>')
+            elif '<pad>' in specials:
+                unk_index = specials.index('<pad>')
 
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
@@ -77,12 +83,17 @@ class Vocab(object):
             self.itos.append(word)
 
         if not specials_first:
+            # find the unk_index in specials
+            if '<unk>' in specials:
+                unk_index = specials.index('<unk>') + len(self.itos)
+            elif '<pad>' in specials:
+                unk_index = specials.index('<pad>') + len(self.itos)
             self.itos.extend(list(specials))
-
-        if '<unk>' in specials:  # hard-coded for now
-            self.stoi = defaultdict(_default_unk_index)
-        else:
+        
+        if unk_index == -1:
             self.stoi = defaultdict()
+        else:
+            self.stoi = defaultdict(lambda: unk_index)
 
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
@@ -216,7 +227,18 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
-        self.stoi = defaultdict(_default_unk_index)
+        unk_index = -1
+        # find the unk_index in specials
+        if '<unk>' in specials:
+            unk_index = specials.index('<unk>')
+        elif '<pad>' in specials:
+            unk_index = specials.index('<pad>')
+        
+        if unk_index == -1:
+            self.stoi = defaultdict()
+        else:
+            self.stoi = defaultdict(lambda: unk_index)
+
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
         self.itos = specials.copy()
 
@@ -445,10 +467,6 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
-
-
-def _default_unk_index():
-    return 0
 
 
 pretrained_aliases = {
