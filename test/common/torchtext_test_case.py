@@ -109,7 +109,7 @@ def verify_numericalized_example(field, test_example_data,
         test_example_numericalized, lengths = test_example_numericalized
         assert test_example_lengths == lengths.tolist()
     if batch_first:
-        test_example_numericalized.data.t_()
+        test_example_numericalized.t_()
     # Transpose numericalized example so we can compare over batches
     for example_idx, numericalized_single_example in enumerate(
             test_example_numericalized.t()):
