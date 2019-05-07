@@ -9,7 +9,7 @@ The data module provides the following:
 - Ability to define a preprocessing pipeline
 - Batching, padding, and numericalizing (including building a vocabulary object)
 - Wrapper for dataset splits (train, validation, test)
-- Loader a custom NLP dataset
+- Loader for a custom NLP dataset
 
 
 .. automodule:: torchtext.data
