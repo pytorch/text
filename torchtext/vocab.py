@@ -345,7 +345,7 @@ class Vectors(object):
 
                 itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
 
-                for line in tqdm(f, total=num_lines):
+                for line in tqdm(f, total=max_vectors):
                     # Explicitly splitting on " " is important, so we don't
                     # get rid of Unicode non-breaking spaces in the vectors.
                     entries = line.rstrip().split(b" ")
@@ -407,7 +407,7 @@ class GloVe(Vectors):
 
 class FastText(Vectors):
 
-    url_base = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{}.vec'
+    url_base = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'
 
     def __init__(self, language="en", **kwargs):
         url = self.url_base.format(language)
