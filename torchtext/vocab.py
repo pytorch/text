@@ -27,6 +27,10 @@ class Vocab(object):
             numerical identifiers.
         itos: A list of token strings indexed by their numerical identifiers.
     """
+
+    # TODO (@mttk): Populate classs with default values of special symbols
+    UNK = '<unk>'
+
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
@@ -35,7 +39,8 @@ class Vocab(object):
             counter: collections.Counter object holding the frequencies of
                 each value found in the data.
             max_size: The maximum size of the vocabulary, or None for no
-                maximum. Default: None.
+                maximum. Does not include special symbols (the final size
+                will be `max_size + len(specials)`). Default: None.
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
@@ -57,6 +62,7 @@ class Vocab(object):
         min_freq = max(min_freq, 1)
 
         self.itos = list()
+        self.specials = specials
         if specials_first:
             self.itos = list(specials)
 
@@ -65,7 +71,8 @@ class Vocab(object):
         for tok in specials:
             del counter[tok]
 
-        max_size = None if max_size is None else max_size + len(self.itos)
+        # max_size is not expected to account for special symbols
+        max_size = None if max_size is None else max_size + len(specials)
 
         # sort by frequency, then alphabetically
         words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
@@ -76,13 +83,17 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        if not specials_first:
-            self.itos.extend(list(specials))
-
-        if '<unk>' in specials:  # hard-coded for now
+        if Vocab.UNK in specials:  # hard-coded for now
+            unk_index = specials.index(Vocab.UNK) # position in list
+            # account for ordering of specials
+            unk_index = unk_index if specials_first else len(itos) + unk_index
             self.stoi = defaultdict(_default_unk_index)
         else:
+            # all tokens
             self.stoi = defaultdict()
+
+        if not specials_first:
+            self.itos.extend(list(specials))
 
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
@@ -448,6 +459,7 @@ class CharNGram(Vectors):
 
 
 def _default_unk_index():
+
     return 0
 
 
