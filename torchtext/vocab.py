@@ -233,8 +233,8 @@ class SubwordVocab(Vocab):
             raise
 
         # Hardcode unk_index as subword_vocab has no specials_first argument
-        self.unk_index = specials.index(SubwordVocab.UNK) if SubwordVocab.UNK in specials
-                                                          else None
+        self.unk_index = (specials.index(SubwordVocab.UNK)
+                          if SubwordVocab.UNK in specials else None)
         self.stoi = defaultdict(self._default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
         self.itos = specials.copy()
