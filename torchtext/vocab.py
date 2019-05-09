@@ -63,16 +63,18 @@ class Vocab(object):
 
         self.itos = list()
         self.specials = specials
+
         if specials_first:
             self.itos = list(specials)
+            # increment max-size only if specials are to be prepended
+            # max_size is not expected to account for special symbols
+            max_size = None if max_size is None else max_size + len(specials)
 
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
             del counter[tok]
 
-        # max_size is not expected to account for special symbols
-        max_size = None if max_size is None else max_size + len(specials)
 
         # sort by frequency, then alphabetically
         words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
@@ -83,11 +85,10 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-
         if Vocab.UNK in specials:  # hard-coded for now
-            unk_index = specials.index(Vocab.UNK) # position in list
+            unk_index = specials.index(Vocab.UNK)  # position in list
             # account for ordering of specials, set variable
-            self.unk_index = unk_index if specials_first else len(itos) + unk_index
+            self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
             self.stoi = defaultdict(self._default_unk_index)
         else:
             self.stoi = defaultdict()
@@ -231,7 +232,10 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
-        self.stoi = defaultdict(_default_unk_index)
+        # Hardcode unk_index as subword_vocab has no specials_first argument
+        self.unk_index = specials.index(SubwordVocab.UNK) if SubwordVocab.UNK in specials
+                                                          else None
+        self.stoi = defaultdict(self._default_unk_index)
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
         self.itos = specials.copy()
 
