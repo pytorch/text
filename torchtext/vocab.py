@@ -87,7 +87,7 @@ class Vocab(object):
             unk_index = specials.index(Vocab.UNK) # position in list
             # account for ordering of specials
             unk_index = unk_index if specials_first else len(itos) + unk_index
-            self.stoi = defaultdict(_default_unk_index)
+            self.stoi = defaultdict(unk_index)
         else:
             # all tokens
             self.stoi = defaultdict()
@@ -459,7 +459,6 @@ class CharNGram(Vectors):
 
 
 def _default_unk_index():
-
     return 0
 
 
