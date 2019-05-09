@@ -83,13 +83,13 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
+
         if Vocab.UNK in specials:  # hard-coded for now
             unk_index = specials.index(Vocab.UNK) # position in list
-            # account for ordering of specials
-            unk_index = unk_index if specials_first else len(itos) + unk_index
-            self.stoi = defaultdict(unk_index)
+            # account for ordering of specials, set variable
+            self.unk_index = unk_index if specials_first else len(itos) + unk_index
+            self.stoi = defaultdict(self._default_unk_index)
         else:
-            # all tokens
             self.stoi = defaultdict()
 
         if not specials_first:
@@ -103,6 +103,10 @@ class Vocab(object):
             self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
         else:
             assert unk_init is None and vectors_cache is None
+
+    def _default_unk_index(self):
+        # getter to accomodate defaultdict
+        return self.unk_index
 
     def __eq__(self, other):
         if self.freqs != other.freqs:
@@ -456,10 +460,6 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
-
-
-def _default_unk_index():
-    return 0
 
 
 pretrained_aliases = {
