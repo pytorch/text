@@ -67,7 +67,6 @@ class Vocab(object):
             # only extend max size if specials are prepended
             max_size = None if max_size is None else max_size + len(specials)
 
-
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
