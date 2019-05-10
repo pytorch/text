@@ -107,6 +107,22 @@ class Vocab(object):
     def _default_unk_index(self):
         return self.unk_index
 
+    def __getstate__(self):
+        # avoid picking defaultdict
+        attrs = dict(self.__dict__)
+        # cast to regular dict
+        attrs['stoi'] = dict(self.stoi)
+        return attrs
+
+    def __setstate__(self, state):
+        if state['unk_index'] is None:
+            stoi = defaultdict()
+        else:
+            stoi = defaultdict(self._default_unk_index)
+        stoi.update(state['stoi'])
+        state['stoi'] = stoi
+        self.__dict__.update(state)
+
     def __eq__(self, other):
         if self.freqs != other.freqs:
             return False
