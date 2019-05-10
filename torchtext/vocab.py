@@ -27,6 +27,10 @@ class Vocab(object):
             numerical identifiers.
         itos: A list of token strings indexed by their numerical identifiers.
     """
+
+    # TODO (@mttk): Populate classs with default values of special symbols
+    UNK = '<unk>'
+
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
@@ -60,18 +64,14 @@ class Vocab(object):
         self.unk_index = None
         if specials_first:
             self.itos = list(specials)
-            # find the unk_index in specials
-            if '<unk>' in specials:
-                self.unk_index = specials.index('<unk>')
-            # elif '<pad>' in specials:
-                # self.unk_index = specials.index('<pad>')
+            # only extend max size if specials are prepended
+            max_size = None if max_size is None else max_size + len(specials)
+
 
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
             del counter[tok]
-
-        max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
         words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
@@ -82,18 +82,16 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        if not specials_first:
-            # find the unk_index in specials
-            if '<unk>' in specials:
-                self.unk_index = specials.index('<unk>') + len(self.itos)
-            # elif '<pad>' in specials:
-                # self.unk_index = specials.index('<pad>') + len(self.itos)
-            self.itos.extend(list(specials))
-
-        if self.unk_index is None:
-            self.stoi = defaultdict()
-        else:
+        if Vocab.UNK in specials:  # hard-coded for now
+            unk_index = specials.index(Vocab.UNK)  # position in list
+            # account for ordering of specials, set variable
+            self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
             self.stoi = defaultdict(self._default_unk_index)
+        else:
+            self.stoi = defaultdict()
+
+        if not specials_first:
+            self.itos.extend(list(specials))
 
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
@@ -246,12 +244,9 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
-        self.unk_index = None
-        # find the unk_index in specials
-        if '<unk>' in specials:
-            self.unk_index = specials.index('<unk>')
-        # elif '<pad>' in specials:
-            # self.unk_index = specials.index('<pad>')
+        # Hardcode unk_index as subword_vocab has no specials_first argument
+        self.unk_index = (specials.index(SubwordVocab.UNK)
+                          if SubwordVocab.UNK in specials else None)
 
         if self.unk_index is None:
             self.stoi = defaultdict()
