@@ -69,10 +69,7 @@ def download_from_url(url, destination):
                         pbar.update(len(chunk))
 
         # Rename the temp file to the correct name if fully downloaded
-        if file_size == os.path.getsize(tmp_file_path):
-            shutil.move(tmp_file_path, destination)
-        else:
-            raise Exception('Error getting file from server: %s' % url)
+        shutil.move(tmp_file_path, destination)
 
     tmp_file_path = destination + '.part'
     first_byte = os.path.getsize(tmp_file_path) if os.path.exists(tmp_file_path) else 0
