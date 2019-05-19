@@ -47,15 +47,21 @@ def download_from_url(url, destination):
 
         chunk_size = 1024 ** 2  # 1MB
         file_mode = 'ab' if first_byte else 'wb'
-        file_size = len(r.content)
-        if file_size < 0:
-            raise Exception('Error getting file from server: %s' % url)
+        file_size = int(r.headers.get('Content-length', 0))
+        if file_size != 0:
+            # Content-length set
+            file_size += first_byte
+            total = file_size
+        else:
+            # Content-length not set
+            print('Cannot retrieve Content-length from server')
+            total = None
 
         print('Download from ' + url)
         print('Starting download at %.1fMB' % (first_byte / chunk_size))
         print('File size is %.1fMB' % (file_size / chunk_size))
 
-        with tqdm(initial=first_byte, total=file_size, unit_scale=True) as pbar:
+        with tqdm(initial=first_byte, total=total, unit_scale=True) as pbar:
             with open(tmp_file_path, file_mode) as f:
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     if chunk:  # filter out keep-alive new chunks
