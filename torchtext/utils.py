@@ -56,6 +56,8 @@ def download_from_url(url, destination):
             # Content-length not set
             print('Cannot retrieve Content-length from server')
             total = None
+        if file_size < 0:
+            raise Exception('Error getting file from server: %s' % url)
 
         print('Download from ' + url)
         print('Starting download at %.1fMB' % (first_byte / chunk_size))
