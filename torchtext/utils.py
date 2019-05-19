@@ -5,6 +5,7 @@ import shutil
 import os
 from tqdm import tqdm
 
+
 def reporthook(t):
     """https://github.com/tqdm/tqdm"""
     last_b = [0]
@@ -28,7 +29,7 @@ def reporthook(t):
 def download_from_url(url, destination):
     """Download file, with logic (from tensor2tensor) for Google Drive"""
     def process_response(r, first_byte):
-        
+
         # Since requests doesn't support local file reading
         # we check if the protocol is file://
         if url.startswith('file://'):
@@ -36,15 +37,15 @@ def download_from_url(url, destination):
             if os.path.exists(url_no_protocol):
                 print('File already exists, no need to download')
                 return
-            else:
-                raise Exception('File not found at %s' % url_no_protocol)
-        
+        else:
+            raise Exception('File not found at %s' % url_no_protocol)
+
         # Don't download if the file exists
         if os.path.exists(destination):
             print('File already exists, no need to download')
             return
-        
-        chunk_size = 1024 ** 2 # 1MB
+
+        chunk_size = 1024 ** 2  # 1MB
         file_mode = 'ab' if first_byte else 'wb'
         file_size = len(r.content)
         if file_size < 0:
@@ -54,10 +55,10 @@ def download_from_url(url, destination):
         print('Starting download at %.1fMB' % (first_byte / chunk_size))
         print('File size is %.1fMB' % (file_size / chunk_size))
 
-        with tqdm(initial=first_byte, total=file_size, unit='bit', unit_scale=True) as pbar:
+        with tqdm(initial=first_byte, total=file_size, unit_scale=True) as pbar:
             with open(tmp_file_path, file_mode) as f:
                 for chunk in r.iter_content(chunk_size=chunk_size):
-                    if chunk: # filter out keep-alive new chunks
+                    if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
                         pbar.update(len(chunk))
 
@@ -69,7 +70,7 @@ def download_from_url(url, destination):
 
     tmp_file_path = destination + '.part'
     first_byte = os.path.getsize(tmp_file_path) if os.path.exists(tmp_file_path) else 0
-    
+
     # Set headers: this will tell the server to start download from the specified byte
     headers = {"Range": "bytes=%s-" % first_byte}
 
@@ -77,7 +78,7 @@ def download_from_url(url, destination):
         headers.update({'User-Agent': 'Mozilla/5.0'})
         response = requests.get(url, headers=headers, stream=True)
         process_response(response, first_byte)
-        return
+    return
 
     print('downloading from Google Drive; may take a few minutes')
     confirm_token = None
@@ -89,7 +90,7 @@ def download_from_url(url, destination):
 
     if confirm_token:
         url = url + "&confirm=" + confirm_token
-        response = session.get(url, headers={"Range": "bytes=%s-" % first_byte}, stream=True)
+        response = session.get(url, headers=headers, stream=True)
 
     process_response(response, first_byte)
 
