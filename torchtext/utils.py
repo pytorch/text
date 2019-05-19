@@ -37,8 +37,8 @@ def download_from_url(url, destination):
             if os.path.exists(url_no_protocol):
                 print('File already exists, no need to download')
                 return
-        else:
-            raise Exception('File not found at %s' % url_no_protocol)
+            else:
+                raise Exception('File not found at %s' % url_no_protocol)
 
         # Don't download if the file exists
         if os.path.exists(destination):
