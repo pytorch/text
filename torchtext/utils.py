@@ -92,7 +92,7 @@ def download_from_url(url, destination):
         headers.update({'User-Agent': 'Mozilla/5.0'})
         response = requests.get(url, headers=headers, stream=True)
         process_response(response, first_byte)
-    return
+        return
 
     print('downloading from Google Drive; may take a few minutes')
     confirm_token = None
