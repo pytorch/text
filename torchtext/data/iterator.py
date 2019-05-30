@@ -230,7 +230,7 @@ class BPTTIterator(Iterator):
                     text=batch_text,
                     target=batch_target,
                     input_fields=['text'],
-                    output_fields=['target'])
+                    target_fields=['target'])
             if not self.repeat:
                 return
 
