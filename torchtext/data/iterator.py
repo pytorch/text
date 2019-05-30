@@ -228,7 +228,9 @@ class BPTTIterator(Iterator):
                 yield Batch.fromvars(
                     dataset, self.batch_size,
                     text=batch_text,
-                    target=batch_target)
+                    target=batch_target,
+                    input_fields=['text'],
+                    output_fields=['target'])
             if not self.repeat:
                 return
 
