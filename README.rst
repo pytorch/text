@@ -21,21 +21,21 @@ Installation
 
 Make sure you have Python 2.7 or 3.5+ and PyTorch 0.4.0 or newer. You can then install torchtext using pip::
 
-    pip install torchtext
+    pip install --user torchtext
     
-For PyTorch versions before 0.4.0, please use `pip install torchtext==0.2.3`.
+For PyTorch versions before 0.4.0, please use `pip install --user torchtext==0.2.3`.
 
 Optional requirements
 ---------------------
 
 If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need to install SpaCy and download its English model::
 
-    pip install spacy
-    python -m spacy download en
+    pip install --user spacy
+    python -m spacy download en --user
 
 Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
-    pip install sacremoses
+    pip install --user sacremoses
 
 Documentation
 =============
