@@ -11,7 +11,6 @@ from six.moves.urllib.request import urlretrieve
 import torch
 from tqdm import tqdm
 import tarfile
-import math
 
 from .utils import reporthook
 
@@ -34,9 +33,15 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
+<<<<<<< HEAD
     def __init__(self, counter, max_size=None, max_freq=math.inf, min_freq=1,
                 specials=['<unk>', '<pad>'], vectors=None, unk_init=None,
                 vectors_cache=None, specials_first=True):
+=======
+    def __init__(self, counter, max_size=None, max_freq=float('inf'), min_freq=1,
+                 specials=['<pad>'], vectors=None, unk_init=None, vectors_cache=None,
+                 specials_first=True):
+>>>>>>> follow flake8 and support python2
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -45,7 +50,7 @@ class Vocab(object):
             max_size: The maximum size of the vocabulary, or None for no
                 maximum. Default: None.
             max_freq: The max frequency of tokens in the vocabulary.
-                      Values less than 1 will be set to 1. Default: math.inf (no filter).
+                      Values less than 1 will be set to 1. Default: inf (no filter).
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
@@ -63,7 +68,7 @@ class Vocab(object):
         """
         self.freqs = counter
         counter = counter.copy()
-        max_freq = min(max(max_freq, 1), math.inf)
+        max_freq = min(max(max_freq, 1), float('inf'))
         min_freq = max(min_freq, 1)
 
         self.itos = list()
