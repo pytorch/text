@@ -185,6 +185,7 @@ class BPTTIterator(Iterator):
         bptt_len: Length of sequences for backpropagation through time.
         cutoff_bptt_rate: Chance of sequence length get cut by a half.
             Following recommendation from https://arxiv.org/pdf/1708.02182.pdf.
+            It should be in the range of 0 to 1.
         sort_key: A key to use for sorting examples in order to batch together
             examples with similar lengths and minimize padding. The sort_key
             provided to the Iterator constructor overrides the sort_key
@@ -201,6 +202,9 @@ class BPTTIterator(Iterator):
 
     def __init__(self, dataset, batch_size, bptt_len,
                  cutoff_bptt_rate=1.0, **kwargs):
+
+        assert 0.0 < cutoff_bptt_rate <= 1.0
+
         self.bptt_len = bptt_len
         self.cutoff_bptt_rate = cutoff_bptt_rate
         super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
