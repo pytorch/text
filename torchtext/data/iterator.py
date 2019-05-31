@@ -216,7 +216,8 @@ class BPTTIterator(Iterator):
         """
         total_data = math.ceil((len(self.dataset[0].text) / self.batch_size - 1))
         total_data_full_batch = (total_data / self.bptt_len) * self.cutoff_bptt_rate
-        total_data_half_batch = (total_data / int(self.bptt_len / 2)) * (1 - self.bptt_len)
+        total_data_half_batch = (total_data / int(self.bptt_len / 2)) * \
+            (1 - self.bptt_len)
         return total_data_full_batch + total_data_half_batch
 
     def __iter__(self):
