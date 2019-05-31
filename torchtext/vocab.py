@@ -27,6 +27,10 @@ class Vocab(object):
             numerical identifiers.
         itos: A list of token strings indexed by their numerical identifiers.
     """
+
+    # TODO (@mttk): Populate classs with default values of special symbols
+    UNK = '<unk>'
+
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
@@ -57,15 +61,16 @@ class Vocab(object):
         min_freq = max(min_freq, 1)
 
         self.itos = list()
+        self.unk_index = None
         if specials_first:
             self.itos = list(specials)
+            # only extend max size if specials are prepended
+            max_size = None if max_size is None else max_size + len(specials)
 
         # frequencies of special tokens are not counted when building vocabulary
         # in frequency order
         for tok in specials:
             del counter[tok]
-
-        max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency, then alphabetically
         words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
@@ -76,13 +81,16 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        if not specials_first:
-            self.itos.extend(list(specials))
-
-        if '<unk>' in specials:  # hard-coded for now
-            self.stoi = defaultdict(_default_unk_index)
+        if Vocab.UNK in specials:  # hard-coded for now
+            unk_index = specials.index(Vocab.UNK)  # position in list
+            # account for ordering of specials, set variable
+            self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
+            self.stoi = defaultdict(self._default_unk_index)
         else:
             self.stoi = defaultdict()
+
+        if not specials_first:
+            self.itos.extend(list(specials))
 
         # stoi is simply a reverse dict for itos
         self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
@@ -92,6 +100,25 @@ class Vocab(object):
             self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
         else:
             assert unk_init is None and vectors_cache is None
+
+    def _default_unk_index(self):
+        return self.unk_index
+
+    def __getstate__(self):
+        # avoid picking defaultdict
+        attrs = dict(self.__dict__)
+        # cast to regular dict
+        attrs['stoi'] = dict(self.stoi)
+        return attrs
+
+    def __setstate__(self, state):
+        if state['unk_index'] is None:
+            stoi = defaultdict()
+        else:
+            stoi = defaultdict(self._default_unk_index)
+        stoi.update(state['stoi'])
+        state['stoi'] = stoi
+        self.__dict__.update(state)
 
     def __eq__(self, other):
         if self.freqs != other.freqs:
@@ -216,7 +243,15 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
-        self.stoi = defaultdict(_default_unk_index)
+        # Hardcode unk_index as subword_vocab has no specials_first argument
+        self.unk_index = (specials.index(SubwordVocab.UNK)
+                          if SubwordVocab.UNK in specials else None)
+
+        if self.unk_index is None:
+            self.stoi = defaultdict()
+        else:
+            self.stoi = defaultdict(self._default_unk_index)
+
         self.stoi.update({tok: i for i, tok in enumerate(specials)})
         self.itos = specials.copy()
 
@@ -345,7 +380,7 @@ class Vectors(object):
 
                 itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
 
-                for line in tqdm(f, total=num_lines):
+                for line in tqdm(f, total=max_vectors):
                     # Explicitly splitting on " " is important, so we don't
                     # get rid of Unicode non-breaking spaces in the vectors.
                     entries = line.rstrip().split(b" ")
@@ -407,7 +442,7 @@ class GloVe(Vectors):
 
 class FastText(Vectors):
 
-    url_base = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{}.vec'
+    url_base = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'
 
     def __init__(self, language="en", **kwargs):
         url = self.url_base.format(language)
@@ -445,10 +480,6 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
-
-
-def _default_unk_index():
-    return 0
 
 
 pretrained_aliases = {
