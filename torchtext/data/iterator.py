@@ -183,6 +183,8 @@ class BPTTIterator(Iterator):
         dataset: The Dataset object to load Examples from.
         batch_size: Batch size.
         bptt_len: Length of sequences for backpropagation through time.
+        cutoff_bptt_rate: Chance of sequence length get cut by a half.
+            Following recommendation from https://arxiv.org/pdf/1708.02182.pdf.
         sort_key: A key to use for sorting examples in order to batch together
             examples with similar lengths and minimize padding. The sort_key
             provided to the Iterator constructor overrides the sort_key
@@ -197,13 +199,17 @@ class BPTTIterator(Iterator):
             If left as default, the tensors will be created on cpu. Default: None.
     """
 
-    def __init__(self, dataset, batch_size, bptt_len, **kwargs):
+    def __init__(self, dataset, batch_size, bptt_len,
+                 cutoff_bptt_rate=1.0, **kwargs):
         self.bptt_len = bptt_len
+        self.cutoff_bptt_rate = cutoff_bptt_rate
         super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
 
     def __len__(self):
-        return math.ceil((len(self.dataset[0].text) / self.batch_size - 1)
-                         / self.bptt_len)
+        total_data = math.ceil((len(self.dataset[0].text) / self.batch_size - 1))
+        total_data_full_batch = (total_data / self.bptt_len) * self.cutoff_bptt_rate
+        total_data_half_batch = (total_data / int(self.bptt_len / 2)) * (1 - self.bptt_len)
+        return total_data_full_batch + total_data_half_batch
 
     def __iter__(self):
         text = self.dataset[0].text
@@ -217,9 +223,15 @@ class BPTTIterator(Iterator):
         dataset = Dataset(examples=self.dataset.examples, fields=[
             ('text', TEXT), ('target', TEXT)])
         while True:
-            for i in range(0, len(self) * self.bptt_len, self.bptt_len):
+            bptt_len = self.bptt_len
+            i = 0
+            while i < data.size(0) - 1:
+                if random.uniform(0, 1) < self.cutoff_bptt_rate:
+                    bptt_len = self.bptt_len
+                else:
+                    bptt_len = int(self.bptt_len / 2.)
                 self.iterations += 1
-                seq_len = min(self.bptt_len, len(data) - i - 1)
+                seq_len = min(bptt_len, len(data) - i - 1)
                 batch_text = data[i:i + seq_len]
                 batch_target = data[i + 1:i + 1 + seq_len]
                 if TEXT.batch_first:
@@ -229,6 +241,7 @@ class BPTTIterator(Iterator):
                     dataset, self.batch_size,
                     text=batch_text,
                     target=batch_target)
+                i += bptt_len
             if not self.repeat:
                 return
 
