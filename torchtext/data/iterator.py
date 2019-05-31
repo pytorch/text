@@ -206,6 +206,10 @@ class BPTTIterator(Iterator):
         super(BPTTIterator, self).__init__(dataset, batch_size, **kwargs)
 
     def __len__(self):
+        """When cutoff_bptt_rate is lower than 1, this would be an approximation
+        of total data as it is hard to know the total of iteration required
+        since we modify the length on-the-fly
+        """
         total_data = math.ceil((len(self.dataset[0].text) / self.batch_size - 1))
         total_data_full_batch = (total_data / self.bptt_len) * self.cutoff_bptt_rate
         total_data_half_batch = (total_data / int(self.bptt_len / 2)) * (1 - self.bptt_len)
