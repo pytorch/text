@@ -154,7 +154,6 @@ class TestDataset(TorchtextTestCase):
             dataset = data.TabularDataset(
                 path=self.test_has_header_dataset_path, format=format_,
                 skip_header=False, fields=fields)
-            dataset = data.ConcatDataset([dataset])
 
             TEXT.build_vocab(dataset)
 
