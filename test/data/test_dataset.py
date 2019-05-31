@@ -503,6 +503,61 @@ class TestDataset(TorchtextTestCase):
         assert os.path.isfile(os.path.join(self.test_dir, 'train.txt'))
         assert os.path.isfile(os.path.join(self.test_dir, 'test.txt'))
 
+    def test_concat_has_fields(self):
+        text_field = data.Field(sequential=True)
+        label_field = data.Field(sequential=False)
+
+        def make_dataset():
+            mock_dataset = self.make_mock_dataset()
+            examples = []
+            for example in mock_dataset:
+                examples.append(data.Example.fromdict(example, {
+                    "text": [("text", text_field)],
+                    "label": [("label", label_field)]}))
+
+            return data.Dataset(examples, [
+                ("text", text_field), ("label", label_field)])
+
+        dataset1 = make_dataset()
+        dataset2 = make_dataset()
+
+        concat_dataset = data.ConcatDataset([dataset1, dataset2])
+
+        # Test field
+        assert hasattr(concat_dataset, "text")
+        assert hasattr(concat_dataset, "label")
+
+    def test_concat_has_all_data(self):
+        text_field = data.Field(sequential=True)
+        label_field = data.Field(sequential=False)
+
+        def make_dataset():
+            mock_dataset = self.make_mock_dataset()
+            examples = []
+            for example in mock_dataset:
+                examples.append(data.Example.fromdict(example, {
+                    "text": [("text", text_field)],
+                    "label": [("label", label_field)]}))
+
+            return data.Dataset(examples, [
+                ("text", text_field), ("label", label_field)])
+
+        dataset1 = make_dataset()
+        dataset2 = make_dataset()
+
+        expected_examples = []
+        for _data in dataset1:
+            expected_examples.append((_data.text, _data.label))
+        for _data in dataset2:
+            expected_examples.append((_data.text, _data.label))
+
+        concat_dataset = data.ConcatDataset([dataset1, dataset2])
+
+        # Test __iter__
+        for example, ex_example in zip(concat_dataset, expected_examples):
+            assert example.text == ex_example[0]
+            assert example.label == ex_example[1]
+
 
 def filter_init(ex_val1, ex_val2, ex_val3):
     text_field = data.Field(sequential=True)
@@ -520,24 +575,3 @@ def filter_init(ex_val1, ex_val2, ex_val3):
 
     return dataset, text_field
 
-
-# class ConcatDataset(TorchtextTestCase):
-#     def test_concat_has_fields(self):
-#         text_field = data.Field(sequential=True)
-#         label_field = data.Field(sequential=False)
-
-#         def make_dataset():
-#             mock_dataset = self.make_mock_dataset()
-#             examples = []
-#             for example in mock_dataset:
-#                 examples.append(data.Example.fromdict(example))
-
-#             return data.Dataset(examples, [
-#                 ("text", text_field), ("label", label_field)])
-
-#         dataset1 = make_dataset()
-#         dataset2 = make_dataset()
-
-#         concat_dataset = data.ConcatDataset([dataset1, dataset2])
-
-#         assert
