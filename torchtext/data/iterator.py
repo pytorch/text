@@ -129,6 +129,8 @@ class Iterator(object):
 
     @property
     def epoch(self):
+        if self.batch_size_fn is not None:
+            raise NotImplementedError
         return math.floor(self.iterations / len(self))
 
     def __len__(self):
