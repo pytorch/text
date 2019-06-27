@@ -52,6 +52,75 @@ IMDb
 .. autoclass:: IMDB
   :members: splits, iters
 
+TextClassificationDataset
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: TextClassificationDataset
+  :members: __init__, split, iters, generate_ngrams
+
+AG_NEWS
+~~~~~~~
+
+AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: AG_NEWS
+  :members: __init__
+
+SogouNews
+~~~~~~~~~
+
+SogouNews dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: SogouNews
+  :members: __init__
+
+DBpedia
+~~~~~~~
+
+DBpedia dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: DBpedia
+  :members: __init__
+
+YelpReviewPolarity
+~~~~~~~~~~~~~~~~~~
+
+YelpReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: YelpReviewPolarity
+  :members: __init__
+
+YelpReviewFull
+~~~~~~~~~~~~~~
+
+YelpReviewFull dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: YelpReviewFull
+  :members: __init__
+
+YahooAnswers
+~~~~~~~~~~~~
+
+YahooAnswers dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: YahooAnswers
+  :members: __init__
+
+AmazonReviewPolarity
+~~~~~~~
+
+AmazonReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: AmazonReviewPolarity
+  :members: __init__
+
+AmazonReviewFull
+~~~~~~~~~~~~~~~~
+
+AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
+
+.. autoclass:: AmazonReviewFull
+  :members: __init__
 
 
 Question Classification
