@@ -13,7 +13,7 @@ from tqdm import tqdm
 import tarfile
 
 from .utils import reporthook
-
+import ssl
 logger = logging.getLogger(__name__)
 
 
@@ -349,6 +349,7 @@ class Vectors(object):
                 if not os.path.isfile(dest):
                     with tqdm(unit='B', unit_scale=True, miniters=1, desc=dest) as t:
                         try:
+                            ssl._create_default_https_context = ssl._create_unverified_context
                             urlretrieve(url, dest, reporthook=reporthook(t))
                         except KeyboardInterrupt as e:  # remove the partial zip file
                             os.remove(dest)
