@@ -13,7 +13,7 @@ from tqdm import tqdm
 import tarfile
 
 from .utils import reporthook
-import ssl
+
 logger = logging.getLogger(__name__)
 
 
@@ -325,6 +325,8 @@ class Vectors(object):
             return self.unk_init(torch.Tensor(self.dim))
 
     def cache(self, name, cache, url=None, max_vectors=None):
+        import ssl
+        ssl._create_default_https_context = ssl._create_unverified_context
         if os.path.isfile(name):
             path = name
             if max_vectors:
@@ -349,7 +351,6 @@ class Vectors(object):
                 if not os.path.isfile(dest):
                     with tqdm(unit='B', unit_scale=True, miniters=1, desc=dest) as t:
                         try:
-                            ssl._create_default_https_context = ssl._create_unverified_context
                             urlretrieve(url, dest, reporthook=reporthook(t))
                         except KeyboardInterrupt as e:  # remove the partial zip file
                             os.remove(dest)
