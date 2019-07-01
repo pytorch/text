@@ -1,12 +1,3 @@
----
-name: Feature Request
-about: Submit a proposal/request for a new TorchText feature.
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## 🚀 Feature
 <!-- A clear and concise description of the feature proposal -->
 
