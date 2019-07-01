@@ -8,7 +8,8 @@ import os
 from collections import namedtuple
 
 try:
-    import torch, torchtext
+    import torch
+    import torchtext
     TORCH_AVAILABLE = True
 except (ImportError, NameError, AttributeError):
     TORCH_AVAILABLE = False
@@ -117,7 +118,7 @@ def get_running_cuda_version(run_lambda):
 
 
 def get_cudnn_version(run_lambda):
-    """This will return a list of libcudnn.so; it's hard to tell which one is being used"""
+    """This will return a list of libcudnn"""
     if get_platform() == 'win32':
         cudnn_cmd = 'where /R "%CUDA_PATH%\\bin" cudnn*.dll'
     elif get_platform() == 'darwin':
@@ -131,9 +132,9 @@ def get_cudnn_version(run_lambda):
     rc, out, _ = run_lambda(cudnn_cmd)
     # find will return 1 if there are permission errors or if not found
     if len(out) == 0 or (rc != 1 and rc != 0):
-        l = os.environ.get('CUDNN_LIBRARY')
-        if l is not None and os.path.isfile(l):
-            return os.path.realpath(l)
+        lib = os.environ.get('CUDNN_LIBRARY')
+        if lib is not None and os.path.isfile(lib):
+            return os.path.realpath(lib)
         return None
     files = set()
     for fn in out.split('\n'):
@@ -280,6 +281,7 @@ def get_env_info():
         cmake_version=get_cmake_version(run_lambda),
     )
 
+
 env_info_fmt = """
 PyTorch version: {torch_version}
 TorchText version: {torchtext_version}
@@ -350,7 +352,8 @@ def pretty_str(envinfo):
     all_cuda_fields = dynamic_cuda_fields + ['cudnn_version']
     all_dynamic_cuda_fields_missing = all(
         mutable_dict[field] is None for field in dynamic_cuda_fields)
-    if TORCH_AVAILABLE and not torch.cuda.is_available() and all_dynamic_cuda_fields_missing:
+    if TORCH_AVAILABLE and not torch.cuda.is_available() \
+            and all_dynamic_cuda_fields_missing:
         for field in all_cuda_fields:
             mutable_dict[field] = 'No CUDA'
         if envinfo.cuda_compiled_version is None:
