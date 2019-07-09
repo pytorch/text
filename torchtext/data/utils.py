@@ -115,19 +115,26 @@ def dtype_to_attr(dtype):
 
 
 def generate_ngrams(token_list, ngrams):
-    """Generate a list of token with ngrams.
+    """Generate a list of token up to ngrams.
+
     Arguments:
         token_list: A list of tokens
         ngrams: the number of ngrams.
+
     Examples:
         >>> token_list = ['here', 'we', 'are']
-        >>> generate_ngrams(token_list, 2)
-        >>> ['here we', 'we are']
+        >>> torchtext.data.utils.generate_ngrams(token_list, 2)
+        >>> ['here', 'here we', 'we', 'we are', 'are']
     """
 
-    sequences = [token_list[i:] for i in range(ngrams)]
-    ngram_list = list(zip(*sequences))
-    return [' '.join(list(gram)) for gram in ngram_list]
+    re_list = []
+    for i in range(0, len(token_list)):
+        x = token_list[i]
+        re_list.append(x)
+        for j in range(i + 1, min(i + ngrams, len(token_list))):
+            x += ' ' + token_list[j]
+            re_list.append(x)
+    return re_list
 
 
 class RandomShuffler(object):

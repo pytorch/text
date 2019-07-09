@@ -220,11 +220,15 @@ class Vocab(object):
 
 def build_vocab(dataset, field, data_name, **kwargs):
     """Construct the Vocab object for the field from a dataset.
+
     Arguments:
-        dataset: Dataset carries the set of data
-        field: Field object used to process token.
-        data_name: The name of data used to build vocab.
+        dataset: Dataset with the iterable data.
+        field: Field object with the information of the special tokens.
+        data_name: The name of data used to build vocab (e.g. 'text', 'label').
         Remaining keyword arguments: Passed to the constructor of Vocab.
+
+    Examples:
+        >>> field.vocab = build_vocab(dataset, field, 'text')
     """
     counter = Counter()
     for x in dataset:
