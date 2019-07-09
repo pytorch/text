@@ -13,6 +13,8 @@ from tqdm import tqdm
 import tarfile
 
 from .utils import reporthook
+from collections import Counter, OrderedDict
+from itertools import chain
 
 logger = logging.getLogger(__name__)
 
@@ -214,6 +216,29 @@ class Vocab(object):
                 self.vectors[i] = vectors[wv_index]
             else:
                 self.vectors[i] = unk_init(self.vectors[i])
+
+
+def build_vocab(dataset, field, data_name, **kwargs):
+    """Construct the Vocab object for the field from a dataset.
+    Arguments:
+        dataset: Dataset carries the set of data
+        field: Field object used to process token.
+        data_name: The name of data used to build vocab.
+        Remaining keyword arguments: Passed to the constructor of Vocab.
+    """
+    counter = Counter()
+    for x in dataset:
+        x = getattr(x, data_name)
+        if not field.sequential:
+            x = [x]
+        try:
+            counter.update(x)
+        except TypeError:
+            counter.update(chain.from_iterable(x.text))
+    specials = list(OrderedDict.fromkeys(
+        tok for tok in [field.unk_token, field.pad_token, field.init_token,
+                        field.eos_token] if tok is not None))
+    return Vocab(counter, specials=specials, **kwargs)
 
 
 class SubwordVocab(Vocab):

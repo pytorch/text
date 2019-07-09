@@ -2,6 +2,9 @@ import six
 import requests
 import csv
 from tqdm import tqdm
+import os
+import errno
+import tarfile
 
 
 def reporthook(t):
@@ -75,3 +78,42 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
 def utf_8_encoder(unicode_csv_data):
     for line in unicode_csv_data:
         yield line.encode('utf-8')
+
+
+def makedir_exist_ok(dirpath):
+    """
+    Python2 support for os.makedirs(.., exist_ok=True)
+    """
+    try:
+        os.makedirs(dirpath)
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            pass
+        else:
+            raise
+
+
+def extract_archive(from_path, to_path=None, remove_finished=False):
+    if to_path is None:
+        to_path = os.path.dirname(from_path)
+
+    if from_path.endswith(".tar.gz"):
+        with tarfile.open(from_path, 'r:gz') as tar:
+            tar.extractall(path=to_path)
+    else:
+        raise ValueError("Extraction of {} not supported".format(from_path))
+
+    if remove_finished:
+        os.remove(from_path)
+
+
+def gen_bar_updater():
+    pbar = tqdm(total=None)
+
+    def bar_update(count, block_size, total_size):
+        if pbar.total is None and total_size:
+            pbar.total = total_size
+        progress_bytes = count * block_size
+        pbar.update(progress_bytes - pbar.n)
+
+    return bar_update

@@ -252,6 +252,17 @@ class BucketIterator(Iterator):
                                 sort_within_batch=self.sort_within_batch)
 
 
+def generate_iterators(datasets, batch_sizes, **kwargs):
+    """Create Iterator objects for multiple splits of a dataset.
+    """
+    ret = []
+    for i in range(len(datasets)):
+        train = i == 0
+        ret.append(Iterator(
+            datasets[i], batch_size=batch_sizes[i], train=train, **kwargs))
+    return tuple(ret)
+
+
 def batch(data, batch_size, batch_size_fn=None):
     """Yield elements from data in chunks of batch_size."""
     if batch_size_fn is None:
