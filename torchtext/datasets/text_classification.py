@@ -33,26 +33,20 @@ def download(url, raw_folder, dataset_name):
     print('Dataset %s downloaded.' % dataset_name)
 
 
+def text_normalize(line):
+    """Normalize text string and separate label/text."""
+
+    line = line.lower()
+    label, text = line.split(",", 1)
+    label = "__label__" + re.sub(r'[^0-9\s]', '', label)
+    text = re.sub(r'[^a-zA-Z0-9\s]', ' ', text)
+    text = ' '.join(text.split())
+    line = label + ' , ' + text + ' \n'
+    return line
+
+
 def preprocess(raw_folder, processed_folder, dataset_name):
     """Preprocess the csv files."""
-
-    def text_normalize(src_filepath, tgt_filepath):
-        """Normalize text and separate label/text."""
-
-        lines = []
-        with open(src_filepath) as src_data:
-            with open(tgt_filepath, 'w') as new_data:
-                for line in src_data:
-                    line = line.lower()
-                    label, text = line.split(",", 1)
-                    label = "__label__" + re.sub(r'[^0-9\s]', '', label)
-                    text = re.sub(r'[^a-zA-Z0-9\s]', ' ', text)
-                    text = ' '.join(text.split())
-                    line = label + ' , ' + text + ' \n'
-                    lines.append(line)
-                random.shuffle(lines)
-                new_data.writelines(lines)
-        return
 
     raw_folder = os.path.join(raw_folder, dataset_name.lower() + '_csv')
 
@@ -61,11 +55,23 @@ def preprocess(raw_folder, processed_folder, dataset_name):
 
     src_filepath = os.path.join(raw_folder, 'train.csv')
     tgt_filepath = os.path.join(processed_folder, dataset_name + '.train')
-    text_normalize(src_filepath, tgt_filepath)
+    lines = []
+    with open(src_filepath) as src_data:
+        with open(tgt_filepath, 'w') as new_data:
+            for line in src_data:
+                lines.append(text_normalize(line))
+            random.shuffle(lines)
+            new_data.writelines(lines)
 
     src_filepath = os.path.join(raw_folder, 'test.csv')
     tgt_filepath = os.path.join(processed_folder, dataset_name + '.test')
-    text_normalize(src_filepath, tgt_filepath)
+    lines = []
+    with open(src_filepath) as src_data:
+        with open(tgt_filepath, 'w') as new_data:
+            for line in src_data:
+                lines.append(text_normalize(line))
+            random.shuffle(lines)
+            new_data.writelines(lines)
 
     print("Dataset %s preprocessed." % dataset_name)
 
