@@ -28,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
 
-    # TODO (@mttk): Populate classs with default values of special symbols
+    # TODO (@mttk): Populate class with default values of special symbols
     UNK = '<unk>'
 
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
@@ -160,6 +160,7 @@ class Vocab(object):
                 glove.6B.100d
                 glove.6B.200d
                 glove.6B.300d
+                word2vec.googlenews.300d
             Remaining keyword arguments: Passed to the constructor of Vectors classes.
         """
         if not isinstance(vectors, list):
@@ -274,7 +275,7 @@ class SubwordVocab(Vocab):
 
 
 def _infer_shape(f):
-    num_lines, vector_dim = 0, None
+    num_lines, vector_dim = 1, None
 
     # Read the first line (it may be a header of word2vec/fasttext format)
     line = f.readline()
@@ -282,14 +283,12 @@ def _infer_shape(f):
 
     # Assuming word, [vector] format
     if len(row) == 2:
-        # The header present in some (w2v) formats contains two elements.
+        # The header provides the size of vocab and the dim.
         num_lines, vector_dim = list(map(int, row))
-        num_lines += 1
     else:
-        # glove format: no header line
+        # glove format: no header
         vector = row[1:]
         vector_dim = len(vector)
-        num_lines += 1
 
         for _ in f:
             num_lines += 1
@@ -436,7 +435,7 @@ class Vectors(object):
 
 
 class GloVe(Vectors):
-    urls = {
+    url = {
         '42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
         '840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
         'twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
@@ -444,15 +443,15 @@ class GloVe(Vectors):
     }
 
     def __init__(self, name='840B', dim=300, **kwargs):
-        url = self.urls[name]
+        url = self.url[name]
         name = 'glove.{}.{}d.txt'.format(name, str(dim))
         super(GloVe, self).__init__(name, url=url, **kwargs)
 
 
 class Word2Vec(Vectors):
-    urls = {
-        'googlenews': 'https://s3.amazonaws.com/'
-                      'dl4j-distribution/GoogleNews-vectors-negative300.bin.gz'
+    url = {
+        'googlenews': 'https://s3.amazonaws.com/dl4j-distribution/'
+                      'GoogleNews-vectors-negative300.bin.gz'
     }
 
     def __init__(self, name='googlenews', **kwargs):
@@ -516,6 +515,6 @@ pretrained_aliases = {
     "glove.6B.100d": partial(GloVe, name="6B", dim="100"),
     "glove.6B.200d": partial(GloVe, name="6B", dim="200"),
     "glove.6B.300d": partial(GloVe, name="6B", dim="300"),
-    "word2vec.googlenews.300d": partial(Word2Vec, name="googlenews"),
+    "word2vec.googlenews.300d": partial(Word2Vec, name="googlenews", dim="300"),
 }
 """Mapping from string name to factory function"""

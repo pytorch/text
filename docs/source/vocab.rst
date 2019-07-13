@@ -45,7 +45,6 @@ Pretrained Word Embeddings
     :members:
     :special-members: __init__
 
-
 :hidden:`FastText`
 ~~~~~~~~~~~~~~~~~~
 
