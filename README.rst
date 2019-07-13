@@ -33,10 +33,9 @@ If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need 
     pip install spacy
     python -m spacy download en
 
-Alternatively, you might want to use Moses tokenizer from `NLTK <http://nltk.org/>`_. You have to install NLTK and download the data needed::
+Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
-    pip install nltk
-    python -m nltk.downloader perluniprops nonbreaking_prefixes
+    pip install sacremoses
 
 Documentation
 =============
