@@ -329,7 +329,6 @@ class TestVocab(TorchtextTestCase):
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
-            # :TODO
             expected_googlenews = {
                 'hello': [-0.05419922, 0.01708984, -0.00527954, 0.33203125, -0.25],
                 'world': [-0.06396484, 0.06835938, 0.22460938, 0.13183594, -0.05957031],
