@@ -449,6 +449,9 @@ class GloVe(Vectors):
 
 
 class Word2Vec(Vectors):
+    """
+    Load pretrained word2vec's skip-gram word vectors as a Vector instance.
+    """
     url = {
         'googlenews': 'https://s3.amazonaws.com/dl4j-distribution/'
                       'GoogleNews-vectors-negative300.bin.gz'
