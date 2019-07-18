@@ -1,6 +1,8 @@
 import json
-
 import six
+
+# Modified by JahoJiang in 2019.07.17
+from functools import reduce
 
 
 class Example(object):
@@ -11,7 +13,29 @@ class Example(object):
 
     @classmethod
     def fromJSON(cls, data, fields):
-        return cls.fromdict(json.loads(data), fields)
+        # Modified by JahoJiang in 2019.07.17
+        ex = cls()
+        obj = json.loads(data)
+
+        for key, vals in fields.items():
+            if vals is not None:
+                if not isinstance(vals, list):
+                    vals = [vals]
+
+                for val in vals:
+                    # for processing the key likes 'foo.bar'
+                    name, field = val
+                    ks = key.split('.')
+                    def reducer(o, k):
+                        if isinstance(o, list):
+                            return [v[k] for v in o]
+                        else:
+                            return o[k]
+                    v = reduce(reducer, ks, obj)
+                    setattr(ex, name, field.preprocess(v))
+        return ex
+
+
 
     @classmethod
     def fromdict(cls, data, fields):
