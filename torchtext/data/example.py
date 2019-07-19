@@ -22,6 +22,7 @@ class Example(object):
                     # for processing the key likes 'foo.bar'
                     name, field = val
                     ks = key.split('.')
+
                     def reducer(obj, key):
                         if isinstance(obj, list):
                             # if this is a list, we should traverse the list to get every value for the key
@@ -39,6 +40,7 @@ class Example(object):
                                 raise ValueError("Specified key {} was not found in the input data".format(key))
                             else:
                                 return obj[key]
+
                     v = reduce(reducer, ks, obj)
                     setattr(ex, name, field.preprocess(v))
         return ex
