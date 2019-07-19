@@ -99,7 +99,7 @@ class TestDataset(TorchtextTestCase):
 
         question_field = data.Field(sequential=True)
         label_field = data.Field(sequential=False)
-        fields = {"question1": ("q1", question_field),
+        fields = {"qeustion1": ("q1", question_field),
                   "question2": ("q2", question_field),
                   "label": ("label", label_field)}
 

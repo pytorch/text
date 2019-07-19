@@ -22,11 +22,23 @@ class Example(object):
                     # for processing the key likes 'foo.bar'
                     name, field = val
                     ks = key.split('.')
-                    def reducer(o, k):
-                        if isinstance(o, list):
-                            return [v[k] for v in o]
+                    def reducer(obj, key):
+                        if isinstance(obj, list):
+                            # if this is a list, we should traverse the list to get every value for the key
+                            results = []
+                            for data in obj:
+                                if key not in data:
+                                    # key error
+                                    raise ValueError("Specified key {} was not found in the input data".format(key))
+                                else:
+                                    results.append(data[key])
+                            return results
                         else:
-                            return o[k]
+                            # key error
+                            if key not in obj:
+                                raise ValueError("Specified key {} was not found in the input data".format(key))
+                            else:
+                                return obj[key]
                     v = reduce(reducer, ks, obj)
                     setattr(ex, name, field.preprocess(v))
         return ex
