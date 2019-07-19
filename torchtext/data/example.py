@@ -1,7 +1,6 @@
 import json
 import six
 
-# Modified by JahoJiang in 2019.07.17
 from functools import reduce
 
 
@@ -13,7 +12,6 @@ class Example(object):
 
     @classmethod
     def fromJSON(cls, data, fields):
-        # Modified by JahoJiang in 2019.07.17
         ex = cls()
         obj = json.loads(data)
 
