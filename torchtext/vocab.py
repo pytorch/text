@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from collections import defaultdict
+from collections import defaultdict, Iterable
 from functools import partial
 import logging
 import os
@@ -426,6 +426,26 @@ class Vectors(object):
         else:
             logger.info('Loading vectors from {}'.format(path_pt))
             self.itos, self.stoi, self.vectors, self.dim = torch.load(path_pt)
+    
+    def __len__(self):
+        return len(self.vectors)
+
+    def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
+        to_reduce = False
+
+        if not isinstance(tokens, list):
+            tokens = [tokens]
+            to_reduce = True
+
+        if not lower_case_backup:
+            indices = [self[token] for token in tokens]
+        else:
+            indices = [self[token] if token in self.stoi
+                       else self[token.lower()]
+                       for token in tokens]
+        
+        vecs = torch.stack(indices)
+        return vecs[0] if to_reduce else vecs
 
 
 class GloVe(Vectors):
