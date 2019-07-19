@@ -1,6 +1,5 @@
-import json
 import six
-
+import json
 from functools import reduce
 
 
@@ -9,7 +8,6 @@ class Example(object):
 
     Stores each column of the example as an attribute.
     """
-
     @classmethod
     def fromJSON(cls, data, fields):
         ex = cls()
@@ -32,8 +30,6 @@ class Example(object):
                     v = reduce(reducer, ks, obj)
                     setattr(ex, name, field.preprocess(v))
         return ex
-
-
 
     @classmethod
     def fromdict(cls, data, fields):
