@@ -25,19 +25,20 @@ class Example(object):
 
                     def reducer(obj, key):
                         if isinstance(obj, list):
-                            # if this is a list, we should traverse the list to get every value for the key
                             results = []
                             for data in obj:
                                 if key not in data:
                                     # key error
-                                    raise ValueError("Specified key {} was not found in the input data".format(key))
+                                    raise ValueError("Specified key {} was not found in "
+                                                     "the input data".format(key))
                                 else:
                                     results.append(data[key])
                             return results
                         else:
                             # key error
                             if key not in obj:
-                                raise ValueError("Specified key {} was not found in the input data".format(key))
+                                raise ValueError("Specified key {} was not found in "
+                                                 "the input data".format(key))
                             else:
                                 return obj[key]
 
