@@ -30,6 +30,8 @@ class TorchtextTestCase(TestCase):
                                                             "test_msg_field_dst")
         self.test_dataset_splitting_path = os.path.join(self.test_dir,
                                                         "test_dataset_split")
+        self.test_nested_key_json_dataset_path = os.path.join(self.test_dir,
+                                                        "test_nested_key_json")
 
     def tearDown(self):
         try:
@@ -64,6 +66,25 @@ class TorchtextTestCase(TestCase):
                                     example["question2"], example["label"]])))
                 else:
                     raise ValueError("Invalid format {}".format(data_format))
+
+    def write_test_nested_key_json_dataset(self):
+        """
+        Used only to test nested key parsing of Example.fromJSON()
+        """
+        dict_dataset = [
+            {"foods": 
+                {"fruits": ["Apple", "Banana"], 
+                "vegetables": [
+                    {"name": "lettuce"}, 
+                    {"name": "marrow"}
+                    ]
+                }
+            }
+        ]
+        with open(self.test_nested_key_json_dataset_path, "w") as test_nested_key_json_dataset_file:
+            for example in dict_dataset:
+                test_nested_key_json_dataset_file.write(json.dumps(example) + "\n")
+
 
     def write_test_numerical_features_dataset(self):
         with open(self.test_numerical_features_dataset_path,
