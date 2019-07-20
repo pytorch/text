@@ -93,6 +93,26 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(example.q2_spacy, expected_examples[i][3])
             self.assertEqual(example.label, expected_examples[i][4])
 
+    def test_json_valid_and_invalid_nested_key(self):
+        self.write_test_nested_key_json_dataset()
+        valid_fields = {'foods.vegetables.name': ('vegs', data.Field())}
+        invalid_fields = {'foods.vegetables.color': ('vegs', data.Field())}
+
+        valid_expected_results = ['lettuce', 'marrow']
+        dataset = data.TabularDataset(
+            path=self.test_nested_key_json_dataset_path,
+            format="json",
+            fields=valid_fields)
+        # check results
+        assert dataset.examples[0].vegs[0] == valid_expected_results[0]
+        assert dataset.examples[0].vegs[1] == valid_expected_results[1]
+
+        with self.assertRaises(ValueError):
+            data.TabularDataset(
+                path=self.test_nested_key_json_dataset_path,
+                format="json",
+                fields=invalid_fields)
+
     def test_errors(self):
         # Ensure that trying to retrieve a key not in JSON data errors
         self.write_test_ppid_dataset(data_format="json")
