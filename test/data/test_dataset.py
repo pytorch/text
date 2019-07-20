@@ -100,8 +100,8 @@ class TestDataset(TorchtextTestCase):
 
         valid_expected_results = ['lettuce', 'marrow']
         dataset = data.TabularDataset(
-            path=self.test_nested_key_json_dataset_path, 
-            format="json", 
+            path=self.test_nested_key_json_dataset_path,
+            format="json",
             fields=valid_fields)
         # check results
         assert dataset.examples[0].vegs[0] == valid_expected_results[0]
@@ -109,9 +109,9 @@ class TestDataset(TorchtextTestCase):
 
         with self.assertRaises(ValueError):
             data.TabularDataset(
-                    path=self.test_nested_key_json_dataset_path, 
-                    format="json",
-                    fields=invalid_fields)
+                path=self.test_nested_key_json_dataset_path,
+                format="json",
+                fields=invalid_fields)
 
     def test_errors(self):
         # Ensure that trying to retrieve a key not in JSON data errors
