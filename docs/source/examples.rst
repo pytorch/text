@@ -21,7 +21,9 @@ Examples
 2. Ability to parse nested keys for loading a JSON dataset
 
 2.1 sample.json
+
 .. code-block:: json
+
     {"foods": {
         "fruits": ["Apple", "Banana"], 
         "vegetables": [{"name": "lettuce"}, {"name": "marrow"}]
@@ -29,7 +31,9 @@ Examples
     }
 
 2.2 pass in nested keys to parse nested data directly
+
 .. code-block:: python
+
     In [1]: from torchtext import data
     In [2]: fields = {'foods.vegetables.name': ('vegs', data.Field())}
     In [3]: dataset = data.TabularDataset(path='sample.json', format='json', fields=fields)
