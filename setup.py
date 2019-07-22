@@ -95,7 +95,7 @@ setup_info = dict(
     install_requires=[
         'tqdm', 'requests', 'torch', 'numpy', 'six'
     ],
-    
+
     ext_modules=get_extensions(),
     cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension, 'clean': clean},
 
