@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 import torch
 from torchtext.utils import download_from_url, extract_archive
 from torchtext import data
@@ -27,7 +28,7 @@ def download(url, raw_folder, dataset_name):
     download_from_url(url, path)
     extract_archive(path, raw_folder, remove_finished=True)
 
-    print('Dataset %s downloaded.' % dataset_name)
+    logging.info('Dataset %s downloaded.' % dataset_name)
 
 
 def text_normalize(line):
@@ -70,7 +71,7 @@ def _preprocess(raw_folder, processed_folder, dataset_name):
             random.shuffle(lines)
             new_data.writelines(lines)
 
-    print("Dataset %s preprocessed." % dataset_name)
+    logging.info("Dataset %s preprocessed." % dataset_name)
 
 
 def _load_text_classification_data(src_data, fields, ngrams=1):
