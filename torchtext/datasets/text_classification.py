@@ -9,7 +9,7 @@ import random
 from tqdm import tqdm
 
 
-def download(url, raw_folder, dataset_name):
+def download_extract_archive(url, raw_folder, dataset_name):
     """Download the dataset if it doesn't exist in processed_folder already."""
 
     train_csv_path = os.path.join(raw_folder,
@@ -149,7 +149,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                                              'processed')
         filepath = os.path.join(self.processed_folder, self.dataset_name + '.train')
         if not os.path.isfile(filepath):
-            download(self.url, self.raw_folder, self.dataset_name)
+            download_extract_archive(self.url, self.raw_folder, self.dataset_name)
             _preprocess(self.raw_folder, self.processed_folder, self.dataset_name)
         with open(filepath) as src_data:
             self.train_examples = _load_text_classification_data(src_data, self.fields, ngrams)
