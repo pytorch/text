@@ -98,7 +98,7 @@ def load_text_classification_data(filepath, fields, ngrams=1):
     return examples
 
 
-def iters(train_examples, test_examples, fields, sort_key,
+def generate_iters(train_examples, test_examples, fields, sort_key,
           split_ratio=0.7, batch_size=32, device='cpu', random_state=None):
     """Create iterator objects for splits of the dataset.
 
@@ -110,7 +110,7 @@ def iters(train_examples, test_examples, fields, sort_key,
         random_state: the random state provided by user. Default: None
 
     Examples:
-        >>> train_iter, test_iter, valid_iter = txt_cls.iters(device="cpu")
+        >>> train_iter, test_iter, valid_iter = txt_cls.generate_iters(device="cpu")
 
     Outputs:
         - train_iter: a iterator based on
