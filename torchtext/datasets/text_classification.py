@@ -197,7 +197,7 @@ class AG_NEWS(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.AG_NEWS(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms'
+        self.url = URLS['AG_NEWS']
         super(AG_NEWS, self).__init__(self.url, root, text_field,
                                       label_field, ngrams)
 
@@ -222,7 +222,7 @@ class SogouNews(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.SogouNews(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE'
+        self.url = URLS['SogouNews']
         super(SogouNews, self).__init__(self.url, root, text_field,
                                         label_field, ngrams)
 
@@ -255,7 +255,7 @@ class DBpedia(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.DBpedia(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k'
+        self.url = URLS['DBpedia']
         super(DBpedia, self).__init__(self.url, root, text_field, label_field, ngrams)
 
 
@@ -275,7 +275,7 @@ class YelpReviewPolarity(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.YelpReviewPolarity(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg'
+        self.url = URLS['YelpReviewPolarity']
         super(YelpReviewPolarity, self).__init__(self.url,
                                                  root, text_field, label_field, ngrams)
 
@@ -295,7 +295,7 @@ class YelpReviewFull(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.YelpReviewFull(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0'
+        self.url = URLS['YelpReviewFull']
         super(YelpReviewFull, self).__init__(self.url,
                                              root, text_field, label_field, ngrams)
 
@@ -324,7 +324,7 @@ class YahooAnswers(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.YahooAnswers(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU'
+        self.url = URLS['YahooAnswers']
         super(YahooAnswers, self).__init__(self.url,
                                            root, text_field, label_field, ngrams)
 
@@ -346,7 +346,7 @@ class AmazonReviewPolarity(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM'
+        self.url = URLS['AmazonReviewPolarity']
         super(AmazonReviewPolarity, self).__init__(self.url,
                                                    root, text_field, label_field, ngrams)
 
@@ -366,6 +366,26 @@ class AmazonReviewFull(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.AmazonReviewFull(ngrams=3)
 
         """
-        self.url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
+        self.url = URLS['AmazonReviewFull']
         super(AmazonReviewFull, self).__init__(self.url,
                                                root, text_field, label_field, ngrams)
+
+
+URLS = {
+    'AG_NEWS':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
+    'SogouNews':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
+    'DBpedia':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k',
+    'YelpReviewPolarity':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg',
+    'YelpReviewFull':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0',
+    'YahooAnswers':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU',
+    'AmazonReviewPolarity':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
+    'AmazonReviewFull':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
+}
