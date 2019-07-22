@@ -73,7 +73,7 @@ def _preprocess(raw_folder, processed_folder, dataset_name):
     print("Dataset %s preprocessed." % dataset_name)
 
 
-def _load_text_classification_data(filepath, fields, ngrams=1):
+def _load_text_classification_data(src_data, fields, ngrams=1):
     """Load train/test data from a file and generate data
         examples with ngrams.
     """
@@ -89,9 +89,8 @@ def _load_text_classification_data(filepath, fields, ngrams=1):
         return ex
 
     examples = []
-    with open(filepath) as src_data:
-        for line in tqdm(src_data):
-            examples.append(label_text_processor(line, fields, ngrams))
+    for line in tqdm(src_data):
+        examples.append(label_text_processor(line, fields, ngrams))
     return examples
 
 
@@ -151,9 +150,13 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         if not os.path.isfile(filepath):
             download(self.url, self.raw_folder, self.dataset_name)
             _preprocess(self.raw_folder, self.processed_folder, self.dataset_name)
-        self.train_examples = _load_text_classification_data(filepath, self.fields, ngrams)
+        with open(filepath) as src_data:
+            self.train_examples = _load_text_classification_data(src_data, self.fields, ngrams)
+
         filepath = os.path.join(self.processed_folder, self.dataset_name + '.test')
-        self.test_examples = _load_text_classification_data(filepath, self.fields, ngrams)
+        with open(filepath) as src_data:
+            self.test_examples = _load_text_classification_data(src_data, self.fields, ngrams)
+
         self.examples = self.train_examples + self.test_examples
         self.fields['text'].vocab = build_dictionary(self, self.fields['text'], 'text')
         self.fields['label'].vocab = build_dictionary(self, self.fields['label'], 'label')
