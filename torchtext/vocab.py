@@ -218,13 +218,14 @@ class Vocab(object):
                 self.vectors[i] = unk_init(self.vectors[i])
 
 
-def build_vocab(dataset, field, data_name, **kwargs):
+def build_dictionary(dataset, field, data_name, **kwargs):
     """Construct the Vocab object for the field from a dataset.
 
     Arguments:
         dataset: Dataset with the iterable data.
         field: Field object with the information of the special tokens.
-        data_name: The name of data used to build vocab (e.g. 'text', 'label').
+        data_name: The names of data used to build vocab (e.g. 'text', 'label').
+            It must be the attributes of dataset's examples.
         Remaining keyword arguments: Passed to the constructor of Vocab.
 
     Examples:
