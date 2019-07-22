@@ -1,13 +1,20 @@
-#include "vocabulary.h"
+#include "dictionary.h"
 #include <iostream>
 
-namespace torchtext {
+namespace torch {
+namespace text {
 namespace core {
-size_t Vocabulary::word_hash(const std::string& word) {
-  return std::hash<std::string>()(word);
+size_t Dictionary::word_hash(const std::string& word) {
+  size_t hash = 2166136261;
+  for (auto C : word) {
+    hash = hash ^ uint32_t(uint8_t(C));
+    hash = hash * 16777619;
+  }
+
+  return hash;
 }
 
-size_t Vocabulary::find(const std::string& word) {
+size_t Dictionary::find(const std::string& word) {
   auto words_size = words.size();
   auto index = word_hash(word) % words_size;
 
@@ -17,7 +24,7 @@ size_t Vocabulary::find(const std::string& word) {
   return index;
 }
 
-size_t Vocabulary::add_word(const std::string& word) {
+size_t Dictionary::add_word(const std::string& word) {
   auto& item = words[find(word)];
 
   if (item.index == negative) {
@@ -29,9 +36,10 @@ size_t Vocabulary::add_word(const std::string& word) {
   return item.index;
 }
 
-size_t Vocabulary::get_index(const std::string& word) {
+size_t Dictionary::get_index(const std::string& word) {
   return words[find(word)].index;
 }
 
 } // namespace core
-} // namespace torchtext
+} // namespace text
+} // namespace torch

@@ -1,13 +1,13 @@
-#ifndef VOCABULARY_H
-#define VOCABULARY_H
+#ifndef DICTIONARY_H
+#define DICTIONARY_H
 
-#include <stdint.h>
 #include <string>
 #include <vector>
 
-namespace torchtext {
+namespace torch {
+namespace text {
 namespace core {
-class Vocabulary {
+class Dictionary {
   static const size_t MAX_VOCAB_SIZE = 30000000;
   static const size_t negative = static_cast<size_t>(-1);
 
@@ -24,13 +24,14 @@ class Vocabulary {
   size_t find(const std::string& word);
 
  public:
-  inline Vocabulary() : size(0), words(MAX_VOCAB_SIZE) {}
+  inline Dictionary() : size(0), words(MAX_VOCAB_SIZE) {}
 
   size_t add_word(const std::string& word);
   size_t get_index(const std::string& word);
 };
 
 } // namespace core
-} // namespace torchtext
+} // namespace text
+} // namespace torch
 
 #endif

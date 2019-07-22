@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <torchtext/text.h>
 #include <iostream>
-#include "vocabtest.h"
+#include "dicttest.h"
 
 using namespace std;
 
