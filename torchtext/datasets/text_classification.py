@@ -98,65 +98,7 @@ def load_text_classification_data(filepath, fields, ngrams=1):
     return examples
 
 
-def generate_iters(train_examples, test_examples, fields, sort_key,
-          split_ratio=0.7, batch_size=32, device='cpu', random_state=None):
-    """Create iterator objects for splits of the dataset.
-
-    Arguments:
-        split_ratio: split train_examples into train set (split_ratio)
-            and valid set (1-split_ratio). Default: 0.7
-        batch_size: batch size. Default: 32
-        device: the device to sent data. Default: 'cpu'
-        random_state: the random state provided by user. Default: None
-
-    Examples:
-        >>> train_iter, test_iter, valid_iter = txt_cls.generate_iters(device="cpu")
-
-    Outputs:
-        - train_iter: a iterator based on
-            train.csv file with split_ratio percent.
-        - train_iter: a iterator based on test.csv file.
-        - valid_iter: a iterator based on
-            train.csv file with 1-split_ratio percent.
-
-    """
-
-    rnd = dataset.RandomShuffler(random_state)
-    train_ratio, valid_ratio = split_ratio, 1 - split_ratio
-    train_examples, _test_examples, valid_examples = \
-        dataset.rationed_split(train_examples, train_ratio, 0.0,
-                               valid_ratio, rnd)
-    train = TextDataset(train_examples, fields)
-    train.sort_key = sort_key
-    test = TextDataset(test_examples, fields)
-    test.sort_key = sort_key
-    valid = TextDataset(valid_examples, fields)
-    valid.sort_key = sort_key
-
-    return generate_iterators(
-        (train, test, valid), [batch_size] * 3, device=device)
-
-
-class TextDataset(torch.utils.data.Dataset):
-    def __init__(self, examples, fields):
-        self.examples = examples
-        self.fields = fields
-
-    def __getitem__(self, i):
-        return self.examples[i]
-
-    def __len__(self):
-        try:
-            return len(self.examples)
-        except TypeError:
-            return 2**32
-
-    def __iter__(self):
-        for x in self.examples:
-            yield x
-
-
-class TextClassificationDataset(TextDataset):
+class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines text classification datasets.
         Currently, we only support the following datasets:
 
@@ -222,6 +164,19 @@ class TextClassificationDataset(TextDataset):
     @staticmethod
     def sort_key(ex):
         return len(ex.text)
+
+    def __getitem__(self, i):
+        return self.examples[i]
+
+    def __len__(self):
+        try:
+            return len(self.examples)
+        except TypeError:
+            return 2**32
+
+    def __iter__(self):
+        for x in self.examples:
+            yield x
 
 
 class AG_NEWS(TextClassificationDataset):
