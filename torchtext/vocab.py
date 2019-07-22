@@ -434,16 +434,20 @@ class Vectors(object):
         """Look up embedding vectors of tokens.
 
         Arguments:
-            tokens: a token or a list of tokens. if `tokens` is a string, 
-                returns a 1-D tensor of shape `self.dim`; if `tokens` is a 
-                list of strings, returns a 2-D tensor of shape=(len(tokens),  self.dim).
+            tokens: a token or a list of tokens. if `tokens` is a string,
+                returns a 1-D tensor of shape `self.dim`; if `tokens` is a
+                list of strings, returns a 2-D tensor of shape=(len(tokens),
+                self.dim).
             lower_case_backup : Whether to look up the token in the lower case.
-                If False, each token in the original case will be looked up; if True, each token in the original case will be looked up first, if not found in the keys of the property `stoi`, the token in the lower case will be looked up. Default: False.
+                If False, each token in the original case will be looked up;
+                if True, each token in the original case will be looked up first,
+                if not found in the keys of the property `stoi`, the token in the
+                lower case will be looked up. Default: False.
 
-        Examples: 
-            >>> examples = ['chip', 'baby', 'Beautiful'] 
+        Examples:
+            >>> examples = ['chip', 'baby', 'Beautiful']
             >>> vec = text.vocab.GloVe(name='6B', dim=50)
-            >>> ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True) 
+            >>> ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)
         """
         to_reduce = False
 
