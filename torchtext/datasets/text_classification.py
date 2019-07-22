@@ -2,13 +2,10 @@ import os
 import re
 import torch
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.utils import generate_ngrams
+from torchtext import data
 from torchtext.vocab import build_vocab
 import random
-from torchtext import data
 from tqdm import tqdm
-from torchtext.data import dataset
-from torchtext.data.iterator import generate_iterators
 
 
 def download(url, raw_folder, dataset_name):
@@ -88,7 +85,7 @@ def load_text_classification_data(filepath, fields, ngrams=1):
         label = float(label.split("__label__")[1])
         ex = data.Example.fromlist([text, label], fields)
         tokens = ex.text[1:]  # Skip the first space '\t'
-        ex.text = generate_ngrams(tokens, ngrams)
+        ex.text = data.utils.generate_ngrams(tokens, ngrams)
         return ex
 
     examples = []
@@ -134,6 +131,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
             >>> txt_cls = TextClassificationDataset(url, ngrams=2)
 
         """
+        super(TextClassificationDataset, self).__init__()
         fields = []
         fields.append(('text', text_field if text_field is not None
                        else data.Field(tokenize=data.get_tokenizer('spacy'),
@@ -141,8 +139,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                                        eos_token='<EOS>')))
         fields.append(('label', label_field if label_field is not None
                        else data.LabelField(dtype=torch.float)))
-
-        super(TextClassificationDataset, self).__init__([], dict(fields))
+        self.fields = dict(fields)
 
         self.dataset_name = self.__class__.__name__
         self.root = root
