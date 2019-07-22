@@ -3,7 +3,7 @@ import re
 import torch
 from torchtext.utils import download_from_url, extract_archive
 from torchtext import data
-from torchtext.vocab import build_vocab
+from torchtext.vocab import build_dictionary
 import random
 from tqdm import tqdm
 
@@ -155,8 +155,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         filepath = os.path.join(self.processed_folder, self.dataset_name + '.test')
         self.test_examples = load_text_classification_data(filepath, self.fields, ngrams)
         self.examples = self.train_examples + self.test_examples
-        self.fields['text'].vocab = build_vocab(self, self.fields['text'], 'text')
-        self.fields['label'].vocab = build_vocab(self, self.fields['label'], 'label')
+        self.fields['text'].vocab = build_dictionary(self, self.fields['text'], 'text')
+        self.fields['label'].vocab = build_dictionary(self, self.fields['label'], 'label')
 
     @staticmethod
     def sort_key(ex):
