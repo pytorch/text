@@ -1,9 +1,9 @@
 import six
 import requests
 import csv
-from tqdm import tqdm
 import os
 import tarfile
+import logging
 
 
 def reporthook(t):
@@ -39,23 +39,27 @@ def download_from_url(url, path):
         >>> torchtext.utils.download_from_url(url, path)
     """
 
+    logger = logging.getLogger('torchtext')
+
     def process_response(r):
         chunk_size = 16 * 1024
-        total_size = int(r.headers.get('Content-length', 0))
         with open(path, "wb") as file:
-            with tqdm(total=total_size, unit='B',
-                      unit_scale=1, desc=path.split('/')[-1]) as t:
-                for chunk in r.iter_content(chunk_size):
-                    if chunk:
-                        file.write(chunk)
-                        t.update(len(chunk))
+            downloaded = 0
+            for chunk in r.iter_content(chunk_size):
+                if chunk:
+                    file.write(chunk)
+                    if downloaded % (chunk_size * 16) == 0:
+                        logger.info('Downloaded {} bytes'.format(downloaded))
+                    downloaded += len(chunk)
+            logger.info('Downloaded {} bytes'.format(downloaded))
 
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
         process_response(response)
-        return
+        return path
 
-    print('downloading from Google Drive; may take a few minutes')
+    logger.info('Downloading to path ' + path)
+    logger.info('Downloading from Google Drive')
     confirm_token = None
     session = requests.Session()
     response = session.get(url, stream=True)
@@ -68,6 +72,7 @@ def download_from_url(url, path):
         response = session.get(url, stream=True)
 
     process_response(response)
+    return path
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
@@ -90,13 +95,12 @@ def utf_8_encoder(unicode_csv_data):
         yield line.encode('utf-8')
 
 
-def extract_archive(from_path, to_path=None, remove_finished=False):
+def extract_archive(from_path, to_path=None):
     """Extract tar.gz archives.
 
     Arguments:
         from_path: the path where the tar.gz file is.
         to_path: the path where the extracted files are.
-        remove_finished: remove the original tar.gz file. Default: False
 
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
@@ -107,12 +111,12 @@ def extract_archive(from_path, to_path=None, remove_finished=False):
     """
     if to_path is None:
         to_path = os.path.dirname(from_path)
+    logger = logging.getLogger('torchtext')
+    logger.info('Extracting {} to path {}'.format(from_path, to_path))
 
-    if from_path.endswith(".tar.gz"):
-        with tarfile.open(from_path, 'r:gz') as tar:
-            tar.extractall(path=to_path)
-    else:
-        raise ValueError("Extraction of {} not supported".format(from_path))
+    # We rely on tarfile to throw an exception if the given file isn't
+    # a valid archive
+    with tarfile.open(from_path, 'r:gz') as tar:
+        tar.extractall(path=to_path)
 
-    if remove_finished:
-        os.remove(from_path)
+    return to_path
