@@ -2,6 +2,8 @@ import six
 import requests
 import csv
 from tqdm import tqdm
+import os
+import tarfile
 
 
 def reporthook(t):
@@ -25,7 +27,18 @@ def reporthook(t):
 
 
 def download_from_url(url, path):
-    """Download file, with logic (from tensor2tensor) for Google Drive"""
+    """Download file, with logic (from tensor2tensor) for Google Drive
+
+    Arguments:
+        url: the url for online Dataset
+        path: directory and filename for the downloaded dataset.
+
+    Examples:
+        >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
+        >>> path = './validation.tar.gz'
+        >>> torchtext.utils.download_from_url(url, path)
+    """
+
     def process_response(r):
         chunk_size = 16 * 1024
         total_size = int(r.headers.get('Content-length', 0))
@@ -75,3 +88,31 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
 def utf_8_encoder(unicode_csv_data):
     for line in unicode_csv_data:
         yield line.encode('utf-8')
+
+
+def extract_archive(from_path, to_path=None, remove_finished=False):
+    """Extract tar.gz archives.
+
+    Arguments:
+        from_path: the path where the tar.gz file is.
+        to_path: the path where the extracted files are.
+        remove_finished: remove the original tar.gz file. Default: False
+
+    Examples:
+        >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
+        >>> from_path = './validation.tar.gz'
+        >>> to_path = './'
+        >>> torchtext.utils.download_from_url(url, from_path)
+        >>> torchtext.utils.extract_archive(from_path, to_path)
+    """
+    if to_path is None:
+        to_path = os.path.dirname(from_path)
+
+    if from_path.endswith(".tar.gz"):
+        with tarfile.open(from_path, 'r:gz') as tar:
+            tar.extractall(path=to_path)
+    else:
+        raise ValueError("Extraction of {} not supported".format(from_path))
+
+    if remove_finished:
+        os.remove(from_path)
