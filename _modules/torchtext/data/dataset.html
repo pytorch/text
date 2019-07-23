@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.data.dataset &mdash; torchtext 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#batch"><span class="hidden-section">Batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#example"><span class="hidden-section">Example</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#fields">Fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#field"><span class="hidden-section">Field</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#iterators">Iterators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#pipeline">Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#id2"><span class="hidden-section">batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#pool"><span class="hidden-section">pool</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#sst">SST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#imdb">IMDb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#question-classification">Question Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#trec">TREC</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#entailment">Entailment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#snli">SNLI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#multinli">MultiNLI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#language-modeling">Language Modeling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wikitext-2">WikiText-2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wikitext103">WikiText103</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#penntreebank">PennTreebank</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#machine-translation">Machine Translation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#multi30k">Multi30k</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#iwslt">IWSLT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wmt14">WMT14</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#sequence-tagging">Sequence Tagging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#udpos">UDPOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#question-answering">Question Answering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#babi20">BABI20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../vocab.html#misc">Misc.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">torchtext</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchtext.data.dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchtext.data.dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">torch.utils.data</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">RandomShuffler</span>
+<span class="kn">from</span> <span class="nn">.example</span> <span class="k">import</span> <span class="n">Example</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">unicode_csv_reader</span>
+
+
+<div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../data.html#torchtext.data.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines a dataset composed of Examples along with its Fields.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        sort_key (callable): A key to use for sorting dataset examples for batching</span>
+<span class="sd">            together examples with similar lengths to minimize padding.</span>
+<span class="sd">        examples (list(Example)): The examples in this dataset.</span>
+<span class="sd">        fields (dict[str, Field]): Contains the name of each column or field, together</span>
+<span class="sd">            with the corresponding Field object. Two fields with the same Field object</span>
+<span class="sd">            will have a shared vocabulary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sort_key</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Dataset.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.Dataset.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">filter_pred</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a dataset from a list of Examples and Fields.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            examples: List of Examples.</span>
+<span class="sd">            fields (List(tuple(str, Field))): The Fields to use in this tuple. The</span>
+<span class="sd">                string is a field name, and the Field is the associated field.</span>
+<span class="sd">            filter_pred (callable or None): Use only examples for which</span>
+<span class="sd">                filter_pred(example) is True, or use all examples if None.</span>
+<span class="sd">                Default is None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filter_pred</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">make_list</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+            <span class="n">examples</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">filter_pred</span><span class="p">,</span> <span class="n">examples</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">make_list</span><span class="p">:</span>
+                <span class="n">examples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">examples</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="c1"># Unpack field tuples</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">n</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Dataset.splits"><a class="viewcode-back" href="../../../data.html#torchtext.data.Dataset.splits">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create Dataset objects for multiple splits of a dataset.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            path (str): Common prefix of the splits&#39; file paths, or None to use</span>
+<span class="sd">                the result of cls.download(root).</span>
+<span class="sd">            root (str): Root dataset storage directory. Default is &#39;.data&#39;.</span>
+<span class="sd">            train (str): Suffix to add to path for the train set, or None for no</span>
+<span class="sd">                train set. Default is None.</span>
+<span class="sd">            validation (str): Suffix to add to path for the validation set, or None</span>
+<span class="sd">                for no validation set. Default is None.</span>
+<span class="sd">            test (str): Suffix to add to path for the test set, or None for no test</span>
+<span class="sd">                set. Default is None.</span>
+<span class="sd">            Remaining keyword arguments: Passed to the constructor of the</span>
+<span class="sd">                Dataset (sub)class being used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[Dataset]: Datasets for train, validation, and</span>
+<span class="sd">            test splits in that order, if provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">train_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">train</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">train</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">val_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">validation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">validation</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">test_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">test</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">test</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.split"><a class="viewcode-back" href="../../../data.html#torchtext.data.Dataset.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_ratio</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strata_field</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span>
+              <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create train-test(-valid?) splits from the instance&#39;s examples.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            split_ratio (float or List of floats): a number [0, 1] denoting the amount</span>
+<span class="sd">                of data to be used for the training split (rest is used for validation),</span>
+<span class="sd">                or a list of numbers denoting the relative sizes of train, test and valid</span>
+<span class="sd">                splits respectively. If the relative size for valid is missing, only the</span>
+<span class="sd">                train-test split is returned. Default is 0.7 (for the train set).</span>
+<span class="sd">            stratified (bool): whether the sampling should be stratified.</span>
+<span class="sd">                Default is False.</span>
+<span class="sd">            strata_field (str): name of the examples Field stratified over.</span>
+<span class="sd">                Default is &#39;label&#39; for the conventional label field.</span>
+<span class="sd">            random_state (tuple): the random seed used for shuffling.</span>
+<span class="sd">                A return value of `random.getstate()`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[Dataset]: Datasets for train, validation, and</span>
+<span class="sd">            test splits in that order, if the splits are provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">train_ratio</span><span class="p">,</span> <span class="n">test_ratio</span><span class="p">,</span> <span class="n">val_ratio</span> <span class="o">=</span> <span class="n">check_split_ratio</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">)</span>
+
+        <span class="c1"># For the permutations</span>
+        <span class="n">rnd</span> <span class="o">=</span> <span class="n">RandomShuffler</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stratified</span><span class="p">:</span>
+            <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">val_data</span> <span class="o">=</span> <span class="n">rationed_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">train_ratio</span><span class="p">,</span>
+                                                             <span class="n">test_ratio</span><span class="p">,</span> <span class="n">val_ratio</span><span class="p">,</span> <span class="n">rnd</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">strata_field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid field name for strata_field </span><span class="si">{}</span><span class="s2">&quot;</span>
+                                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">strata_field</span><span class="p">))</span>
+            <span class="n">strata</span> <span class="o">=</span> <span class="n">stratify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">strata_field</span><span class="p">)</span>
+            <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">val_data</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">strata</span><span class="p">:</span>
+                <span class="c1"># Stratify each group and add together the indices.</span>
+                <span class="n">group_train</span><span class="p">,</span> <span class="n">group_test</span><span class="p">,</span> <span class="n">group_val</span> <span class="o">=</span> <span class="n">rationed_split</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">train_ratio</span><span class="p">,</span>
+                                                                    <span class="n">test_ratio</span><span class="p">,</span> <span class="n">val_ratio</span><span class="p">,</span>
+                                                                    <span class="n">rnd</span><span class="p">)</span>
+                <span class="n">train_data</span> <span class="o">+=</span> <span class="n">group_train</span>
+                <span class="n">test_data</span> <span class="o">+=</span> <span class="n">group_test</span>
+                <span class="n">val_data</span> <span class="o">+=</span> <span class="n">group_val</span>
+
+        <span class="n">splits</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Dataset</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+                       <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">)</span>
+
+        <span class="c1"># In case the parent sort key isn&#39;t none</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_key</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">splits</span><span class="p">:</span>
+                <span class="n">subset</span><span class="o">.</span><span class="n">sort_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_key</span>
+        <span class="k">return</span> <span class="n">splits</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">x</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Dataset.download"><a class="viewcode-back" href="../../../data.html#torchtext.data.Dataset.download">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download and unzip an online archive (.zip, .gz, or .tgz).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            root (str): Folder to download data to.</span>
+<span class="sd">            check (str or None): Folder whose existence indicates</span>
+<span class="sd">                that the dataset has already been downloaded, or</span>
+<span class="sd">                None to check the existence of root/{cls.name}.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Path to extracted dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">check</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">check</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">check</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">urls</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="n">url</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">url</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+                <span class="n">zpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">zpath</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">zpath</span><span class="p">)):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">zpath</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;downloading </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+                    <span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">zpath</span><span class="p">)</span>
+                <span class="n">zroot</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">zpath</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">ext_inner</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">zroot</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.zip&#39;</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zpath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zfile</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;extracting&#39;</span><span class="p">)</span>
+                        <span class="n">zfile</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="c1"># tarfile cannot handle bare .gz files</span>
+                <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.tgz&#39;</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.gz&#39;</span> <span class="ow">and</span> <span class="n">ext_inner</span> <span class="o">==</span> <span class="s1">&#39;.tar&#39;</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">zpath</span><span class="p">,</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+                        <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">member</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">()]</span>
+                        <span class="n">tar</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">members</span><span class="o">=</span><span class="n">dirs</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.gz&#39;</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">zpath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gz</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">zroot</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">uncompressed</span><span class="p">:</span>
+                            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">gz</span><span class="p">,</span> <span class="n">uncompressed</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">dirname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.filter_examples"><a class="viewcode-back" href="../../../data.html#torchtext.data.Dataset.filter_examples">[docs]</a>    <span class="k">def</span> <span class="nf">filter_examples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove unknown words from dataset examples with respect to given field.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            field_names (list(str)): Within example only the parts with field names in</span>
+<span class="sd">                field_names will have their unknown words deleted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">example</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">:</span>
+                <span class="n">vocab</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">stoi</span><span class="p">)</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)</span>
+                <span class="n">example_part</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">text</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">vocab</span><span class="p">]</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">example_part</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">example</span></div></div>
+
+
+<div class="viewcode-block" id="TabularDataset"><a class="viewcode-back" href="../../../data.html#torchtext.data.TabularDataset">[docs]</a><span class="k">class</span> <span class="nc">TabularDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines a Dataset of columns stored in CSV, TSV, or JSON format.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TabularDataset.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.TabularDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">csv_reader_params</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a TabularDataset given a path, file format, and field list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            path (str): Path to the data file.</span>
+<span class="sd">            format (str): The format of the data file. One of &quot;CSV&quot;, &quot;TSV&quot;, or</span>
+<span class="sd">                &quot;JSON&quot; (case-insensitive).</span>
+<span class="sd">            fields (list(tuple(str, Field)) or dict[str: tuple(str, Field)]:</span>
+<span class="sd">                If using a list, the format must be CSV or TSV, and the values of the list</span>
+<span class="sd">                should be tuples of (name, field).</span>
+<span class="sd">                The fields should be in the same order as the columns in the CSV or TSV</span>
+<span class="sd">                file, while tuples of (name, None) represent columns that will be ignored.</span>
+
+<span class="sd">                If using a dict, the keys should be a subset of the JSON keys or CSV/TSV</span>
+<span class="sd">                columns, and the values should be tuples of (name, field).</span>
+<span class="sd">                Keys not present in the input dictionary are ignored.</span>
+<span class="sd">                This allows the user to rename columns from their JSON/CSV/TSV key names</span>
+<span class="sd">                and also enables selecting a subset of columns to load.</span>
+<span class="sd">            skip_header (bool): Whether to skip the first line of the input file.</span>
+<span class="sd">            csv_reader_params(dict): Parameters to pass to the csv reader.</span>
+<span class="sd">                Only relevant when format is csv or tsv.</span>
+<span class="sd">                See</span>
+<span class="sd">                https://docs.python.org/3/library/csv.html#csv.reader</span>
+<span class="sd">                for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">format</span> <span class="o">=</span> <span class="nb">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">make_example</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;json&#39;</span><span class="p">:</span> <span class="n">Example</span><span class="o">.</span><span class="n">fromJSON</span><span class="p">,</span> <span class="s1">&#39;dict&#39;</span><span class="p">:</span> <span class="n">Example</span><span class="o">.</span><span class="n">fromdict</span><span class="p">,</span>
+            <span class="s1">&#39;tsv&#39;</span><span class="p">:</span> <span class="n">Example</span><span class="o">.</span><span class="n">fromCSV</span><span class="p">,</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span> <span class="n">Example</span><span class="o">.</span><span class="n">fromCSV</span><span class="p">}[</span><span class="nb">format</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">unicode_csv_reader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">csv_reader_params</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;tsv&#39;</span><span class="p">:</span>
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">unicode_csv_reader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">csv_reader_params</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">f</span>
+
+            <span class="k">if</span> <span class="nb">format</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;csv&#39;</span><span class="p">,</span> <span class="s1">&#39;tsv&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">skip_header</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;When using a dict to specify fields with a </span><span class="si">{}</span><span class="s1"> file,&#39;</span>
+                                     <span class="s1">&#39;skip_header must be False and&#39;</span>
+                                     <span class="s1">&#39;the file must have a header.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">format</span><span class="p">))</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+                <span class="n">field_to_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+                <span class="n">make_example</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">make_example</span><span class="p">,</span> <span class="n">field_to_index</span><span class="o">=</span><span class="n">field_to_index</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">skip_header</span><span class="p">:</span>
+                <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+            <span class="n">examples</span> <span class="o">=</span> <span class="p">[</span><span class="n">make_example</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">fields</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">fields</span>
+            <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">field_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">fields</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TabularDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">check_split_ratio</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check that the split ratio argument is not malformed&quot;&quot;&quot;</span>
+    <span class="n">valid_ratio</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># Only the train set relative ratio is provided</span>
+        <span class="c1"># Assert in bounds, validation size is zero</span>
+        <span class="k">assert</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">split_ratio</span> <span class="o">&lt;</span> <span class="mf">1.</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Split ratio </span><span class="si">{}</span><span class="s2"> not between 0 and 1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">))</span>
+
+        <span class="n">test_ratio</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">split_ratio</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">split_ratio</span><span class="p">,</span> <span class="n">test_ratio</span><span class="p">,</span> <span class="n">valid_ratio</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="c1"># A list of relative ratios is provided</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Length of split ratio list should be 2 or 3, got </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">))</span>
+
+        <span class="c1"># Normalize if necessary</span>
+        <span class="n">ratio_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ratio_sum</span> <span class="o">==</span> <span class="mf">1.</span><span class="p">:</span>
+            <span class="n">split_ratio</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span> <span class="o">/</span> <span class="n">ratio_sum</span> <span class="k">for</span> <span class="n">ratio</span> <span class="ow">in</span> <span class="n">split_ratio</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">split_ratio</span> <span class="o">+</span> <span class="p">[</span><span class="n">valid_ratio</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Split ratio must be float or a list, got </span><span class="si">{}</span><span class="s1">&#39;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">stratify</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">strata_field</span><span class="p">):</span>
+    <span class="c1"># The field has to be hashable otherwise this doesn&#39;t work</span>
+    <span class="c1"># There&#39;s two iterations over the whole dataset here, which can be</span>
+    <span class="c1"># reduced to just one if a dedicated method for stratified splitting is used</span>
+    <span class="n">unique_strata</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">strata_field</span><span class="p">)</span> <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">)</span>
+    <span class="n">strata_maps</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">unique_strata</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">:</span>
+        <span class="n">strata_maps</span><span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">strata_field</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">example</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">strata_maps</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">rationed_split</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">train_ratio</span><span class="p">,</span> <span class="n">test_ratio</span><span class="p">,</span> <span class="n">val_ratio</span><span class="p">,</span> <span class="n">rnd</span><span class="p">):</span>
+    <span class="c1"># Create a random permutation of examples, then split them</span>
+    <span class="c1"># by ratio x length slices for each of the train/test/dev? splits</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">examples</span><span class="p">)</span>
+    <span class="n">randperm</span> <span class="o">=</span> <span class="n">rnd</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+    <span class="n">train_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">train_ratio</span> <span class="o">*</span> <span class="n">N</span><span class="p">))</span>
+
+    <span class="c1"># Due to possible rounding problems</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">val_ratio</span><span class="p">:</span>
+        <span class="n">test_len</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="n">train_len</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">test_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">test_ratio</span> <span class="o">*</span> <span class="n">N</span><span class="p">))</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">randperm</span><span class="p">[:</span><span class="n">train_len</span><span class="p">],</span>  <span class="c1"># Train</span>
+               <span class="n">randperm</span><span class="p">[</span><span class="n">train_len</span><span class="p">:</span><span class="n">train_len</span> <span class="o">+</span> <span class="n">test_len</span><span class="p">],</span>  <span class="c1"># Test</span>
+               <span class="n">randperm</span><span class="p">[</span><span class="n">train_len</span> <span class="o">+</span> <span class="n">test_len</span><span class="p">:])</span>  <span class="c1"># Validation</span>
+
+    <span class="c1"># There&#39;s a possibly empty list for the validation set</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">examples</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

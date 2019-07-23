@@ -1,0 +1,727 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Index &mdash; torchtext 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#batch"><span class="hidden-section">Batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#example"><span class="hidden-section">Example</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html#fields">Fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#field"><span class="hidden-section">Field</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html#iterators">Iterators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html#pipeline">Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data.html#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data.html#id2"><span class="hidden-section">batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#pool"><span class="hidden-section">pool</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#sst">SST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#imdb">IMDb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#question-classification">Question Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#trec">TREC</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#entailment">Entailment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#snli">SNLI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#multinli">MultiNLI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#language-modeling">Language Modeling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#wikitext-2">WikiText-2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#wikitext103">WikiText103</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#penntreebank">PennTreebank</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#machine-translation">Machine Translation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#multi30k">Multi30k</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#iwslt">IWSLT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#wmt14">WMT14</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#sequence-tagging">Sequence Tagging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#udpos">UDPOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#question-answering">Question Answering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="datasets.html#babi20">BABI20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vocab.html#misc">Misc.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">torchtext</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Index</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Batch.__init__">__init__() (torchtext.data.Batch method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.BPTTIterator.__init__">(torchtext.data.BPTTIterator method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.Dataset.__init__">(torchtext.data.Dataset method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.Field.__init__">(torchtext.data.Field method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.Iterator.__init__">(torchtext.data.Iterator method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.NestedField.__init__">(torchtext.data.NestedField method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.Pipeline.__init__">(torchtext.data.Pipeline method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.RawField.__init__">(torchtext.data.RawField method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.ReversibleField.__init__">(torchtext.data.ReversibleField method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.SubwordField.__init__">(torchtext.data.SubwordField method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.TabularDataset.__init__">(torchtext.data.TabularDataset method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.BABI20.__init__">(torchtext.datasets.BABI20 method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.LanguageModelingDataset.__init__">(torchtext.datasets.LanguageModelingDataset method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.SequenceTaggingDataset.__init__">(torchtext.datasets.SequenceTaggingDataset method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.TranslationDataset.__init__">(torchtext.datasets.TranslationDataset method)</a>
+</li>
+        <li><a href="vocab.html#torchtext.vocab.CharNGram.__init__">(torchtext.vocab.CharNGram method)</a>
+</li>
+        <li><a href="vocab.html#torchtext.vocab.FastText.__init__">(torchtext.vocab.FastText method)</a>
+</li>
+        <li><a href="vocab.html#torchtext.vocab.GloVe.__init__">(torchtext.vocab.GloVe method)</a>
+</li>
+        <li><a href="vocab.html#torchtext.vocab.SubwordVocab.__init__">(torchtext.vocab.SubwordVocab method)</a>
+</li>
+        <li><a href="vocab.html#torchtext.vocab.Vectors.__init__">(torchtext.vocab.Vectors method)</a>
+</li>
+        <li><a href="vocab.html#torchtext.vocab.Vocab.__init__">(torchtext.vocab.Vocab method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Pipeline.add_after">add_after() (torchtext.data.Pipeline method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Pipeline.add_before">add_before() (torchtext.data.Pipeline method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.BABI20">BABI20 (class in torchtext.datasets)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Batch">Batch (class in torchtext.data)</a>
+</li>
+      <li><a href="data.html#torchtext.data.batch">batch() (in module torchtext.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.BPTTIterator">BPTTIterator (class in torchtext.data)</a>
+</li>
+      <li><a href="data.html#torchtext.data.BucketIterator">BucketIterator (class in torchtext.data)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Field.build_vocab">build_vocab() (torchtext.data.Field method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.NestedField.build_vocab">(torchtext.data.NestedField method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Pipeline.call">call() (torchtext.data.Pipeline method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vocab.html#torchtext.vocab.CharNGram">CharNGram (class in torchtext.vocab)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.CoNLL2000Chunking">CoNLL2000Chunking (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Iterator.data">data() (torchtext.data.Iterator method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Dataset">Dataset (class in torchtext.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Dataset.download">download() (torchtext.data.Dataset class method)</a>
+</li>
+      <li><a href="utils.html#torchtext.utils.download_from_url">download_from_url() (in module torchtext.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Example">Example (class in torchtext.data)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vocab.html#torchtext.vocab.FastText">FastText (class in torchtext.vocab)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Field">Field (class in torchtext.data)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Dataset.filter_examples">filter_examples() (torchtext.data.Dataset method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Example.fromCSV">fromCSV() (torchtext.data.Example class method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Example.fromdict">fromdict() (torchtext.data.Example class method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Example.fromJSON">fromJSON() (torchtext.data.Example class method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Example.fromlist">fromlist() (torchtext.data.Example class method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Example.fromtree">fromtree() (torchtext.data.Example class method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Batch.fromvars">fromvars() (torchtext.data.Batch class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.get_tokenizer">get_tokenizer() (in module torchtext.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vocab.html#torchtext.vocab.GloVe">GloVe (class in torchtext.vocab)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Pipeline.identity">identity() (torchtext.data.Pipeline static method)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.IMDB">IMDB (class in torchtext.datasets)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Iterator.init_epoch">init_epoch() (torchtext.data.Iterator method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.interleave_keys">interleave_keys() (in module torchtext.data)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Iterator">Iterator (class in torchtext.data)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.IMDB.iters">iters() (torchtext.datasets.IMDB class method)</a>
+
+      <ul>
+        <li><a href="datasets.html#torchtext.datasets.MultiNLI.iters">(torchtext.datasets.MultiNLI class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.PennTreebank.iters">(torchtext.datasets.PennTreebank class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.SNLI.iters">(torchtext.datasets.SNLI class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.SST.iters">(torchtext.datasets.SST class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.TREC.iters">(torchtext.datasets.TREC class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.WikiText103.iters">(torchtext.datasets.WikiText103 class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.WikiText2.iters">(torchtext.datasets.WikiText2 class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.IWSLT">IWSLT (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.LanguageModelingDataset">LanguageModelingDataset (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vocab.html#torchtext.vocab.Vocab.load_vectors">load_vectors() (torchtext.vocab.Vocab method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.Multi30k">Multi30k (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.MultiNLI">MultiNLI (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.NestedField">NestedField (class in torchtext.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Field.numericalize">numericalize() (torchtext.data.Field method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.NestedField.numericalize">(torchtext.data.NestedField method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Field.pad">pad() (torchtext.data.Field method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.NestedField.pad">(torchtext.data.NestedField method)</a>
+</li>
+      </ul></li>
+      <li><a href="datasets.html#torchtext.datasets.PennTreebank">PennTreebank (class in torchtext.datasets)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Pipeline">Pipeline (class in torchtext.data)</a>
+</li>
+      <li><a href="data.html#torchtext.data.pool">pool() (in module torchtext.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Field.preprocess">preprocess() (torchtext.data.Field method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.NestedField.preprocess">(torchtext.data.NestedField method)</a>
+</li>
+        <li><a href="data.html#torchtext.data.RawField.preprocess">(torchtext.data.RawField method)</a>
+</li>
+      </ul></li>
+      <li><a href="vocab.html#torchtext.vocab.pretrained_aliases">pretrained_aliases (in module torchtext.vocab)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Field.process">process() (torchtext.data.Field method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.RawField.process">(torchtext.data.RawField method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.RawField">RawField (class in torchtext.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#torchtext.utils.reporthook">reporthook() (in module torchtext.utils)</a>
+</li>
+      <li><a href="data.html#torchtext.data.ReversibleField">ReversibleField (class in torchtext.data)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.SubwordField.segment">segment() (torchtext.data.SubwordField method)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.SequenceTaggingDataset">SequenceTaggingDataset (class in torchtext.datasets)</a>
+</li>
+      <li><a href="vocab.html#torchtext.vocab.Vocab.set_vectors">set_vectors() (torchtext.vocab.Vocab method)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.SNLI">SNLI (class in torchtext.datasets)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Dataset.split">split() (torchtext.data.Dataset method)</a>
+</li>
+      <li><a href="data.html#torchtext.data.Dataset.splits">splits() (torchtext.data.Dataset class method)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.Iterator.splits">(torchtext.data.Iterator class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.BABI20.splits">(torchtext.datasets.BABI20 class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.CoNLL2000Chunking.splits">(torchtext.datasets.CoNLL2000Chunking class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.IMDB.splits">(torchtext.datasets.IMDB class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.IWSLT.splits">(torchtext.datasets.IWSLT class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.Multi30k.splits">(torchtext.datasets.Multi30k class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.MultiNLI.splits">(torchtext.datasets.MultiNLI class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.PennTreebank.splits">(torchtext.datasets.PennTreebank class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.SNLI.splits">(torchtext.datasets.SNLI class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.SST.splits">(torchtext.datasets.SST class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.TREC.splits">(torchtext.datasets.TREC class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.UDPOS.splits">(torchtext.datasets.UDPOS class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.WMT14.splits">(torchtext.datasets.WMT14 class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.WikiText103.splits">(torchtext.datasets.WikiText103 class method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.WikiText2.splits">(torchtext.datasets.WikiText2 class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.SST">SST (class in torchtext.datasets)</a>
+</li>
+      <li><a href="data.html#torchtext.data.SubwordField">SubwordField (class in torchtext.data)</a>
+</li>
+      <li><a href="vocab.html#torchtext.vocab.SubwordVocab">SubwordVocab (class in torchtext.vocab)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.TabularDataset">TabularDataset (class in torchtext.data)</a>
+</li>
+      <li><a href="index.html#module-torchtext">torchtext (module)</a>
+</li>
+      <li><a href="data.html#module-torchtext.data">torchtext.data (module)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#module-torchtext.utils">torchtext.utils (module)</a>
+</li>
+      <li><a href="vocab.html#module-torchtext.vocab">torchtext.vocab (module)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.TranslationDataset">TranslationDataset (class in torchtext.datasets)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.TREC">TREC (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.UDPOS">UDPOS (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vocab.html#torchtext.vocab.Vectors">Vectors (class in torchtext.vocab)</a>
+</li>
+      <li><a href="vocab.html#torchtext.vocab.Vocab">Vocab (class in torchtext.vocab)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Field.vocab_cls">vocab_cls (torchtext.data.Field attribute)</a>
+
+      <ul>
+        <li><a href="data.html#torchtext.data.SubwordField.vocab_cls">(torchtext.data.SubwordField attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.WikiText103">WikiText103 (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.WikiText2">WikiText2 (class in torchtext.datasets)</a>
+</li>
+      <li><a href="datasets.html#torchtext.datasets.WMT14">WMT14 (class in torchtext.datasets)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

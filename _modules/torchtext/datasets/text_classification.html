@@ -1,0 +1,738 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.datasets.text_classification &mdash; torchtext 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#batch"><span class="hidden-section">Batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#example"><span class="hidden-section">Example</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#fields">Fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#field"><span class="hidden-section">Field</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#iterators">Iterators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#pipeline">Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#id2"><span class="hidden-section">batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#pool"><span class="hidden-section">pool</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#sst">SST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#imdb">IMDb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#question-classification">Question Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#trec">TREC</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#entailment">Entailment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#snli">SNLI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#multinli">MultiNLI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#language-modeling">Language Modeling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wikitext-2">WikiText-2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wikitext103">WikiText103</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#penntreebank">PennTreebank</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#machine-translation">Machine Translation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#multi30k">Multi30k</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#iwslt">IWSLT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wmt14">WMT14</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#sequence-tagging">Sequence Tagging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#udpos">UDPOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#question-answering">Question Answering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#babi20">BABI20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../vocab.html#misc">Misc.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">torchtext</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchtext.datasets.text_classification</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchtext.datasets.text_classification</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">download_and_extract_archive</span><span class="p">,</span> <span class="n">makedir_exist_ok</span> 
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">data</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">..data</span> <span class="k">import</span> <span class="n">dataset</span>
+
+<div class="viewcode-block" id="TextClassificationDataset"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset">[docs]</a><span class="k">class</span> <span class="nc">TextClassificationDataset</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines text classification datasets.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TextClassificationDataset.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a text classification dataset instance. </span>
+<span class="sd">           Currently, we only support the following datasets:</span>
+<span class="sd">                - &quot;ag_news&quot;</span>
+<span class="sd">                - &quot;sogou_news&quot;</span>
+<span class="sd">                - &quot;dbpedia&quot;</span>
+<span class="sd">                - &quot;yelp_review_polarity&quot;</span>
+<span class="sd">                - &quot;yelp_review_full&quot;</span>
+<span class="sd">                - &quot;yahoo_answers&quot;</span>
+<span class="sd">                - &quot;amazon_review_full&quot;</span>
+<span class="sd">                - &quot;amazon_review_polarity&quot;</span>
+
+<span class="sd">            Arguments:</span>
+<span class="sd">                dataset_name: The name of dataset</span>
+<span class="sd">                root: Directory where the dataset are saved. Default: &#39;./.data&#39;</span>
+<span class="sd">                text_field: The field that will be used for the sentence. If not given,</span>
+<span class="sd">                    &#39;spacy&#39; token will be used.</span>
+<span class="sd">                label_field: The field that will be used for the label. If not given,</span>
+<span class="sd">                    &#39;float&#39; token will be used.</span>
+<span class="sd">                ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">                    Default: 1</span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                txt_cls = torchtext.datasets.TextClassificationDataset(&quot;ag_news&quot;, ngrams=2)</span>
+
+<span class="sd">                ex10 = txt_cls.train_examples[10]</span>
+<span class="sd">                print(ex10.text)</span>
+<span class="sd">                &gt;&gt; [[&#39;this&#39;], [&#39;is&#39;], [&#39;an&#39;], [&#39;example&#39;], </span>
+<span class="sd">                    [&#39;this&#39;, &#39;is&#39;], [&#39;is&#39;, &#39;an&#39;], [&#39;an&#39;, &#39;example&#39;]]</span>
+<span class="sd">                print(ex10.label)</span>
+<span class="sd">                &gt;&gt; 1.0</span>
+<span class="sd">                print(txt_cls.fields[&#39;text&#39;].vocab.stoi[&#39;we&#39;]) # example</span>
+<span class="sd">                &gt;&gt; 516</span>
+<span class="sd">                print(txt_cls.fields[&#39;text&#39;].vocab.itos[516]) # example</span>
+<span class="sd">                &gt;&gt; &#39;we&#39;</span>
+
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">=</span> <span class="n">dataset_name</span>
+        <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">in</span> <span class="n">supported_text_classification_datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">supported_text_classification_datasets</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Specified dataset_name </span><span class="si">%s</span><span class="s2"> is not supported.&quot;</span> <span class="o">%</span><span class="n">dataset_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">text_field</span> <span class="k">if</span> <span class="n">text_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s1">&#39;spacy&#39;</span><span class="p">),</span>
+                                                                                    <span class="n">init_token</span><span class="o">=</span><span class="s1">&#39;&lt;SOS&gt;&#39;</span><span class="p">,</span>
+                                                                                    <span class="n">eos_token</span><span class="o">=</span><span class="s1">&#39;&lt;EOS&gt;&#39;</span><span class="p">)))</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">label_field</span> <span class="k">if</span> <span class="n">label_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data</span><span class="o">.</span><span class="n">LabelField</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)))</span>
+        <span class="n">examples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processed_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;processed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_examples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_train_data</span><span class="p">(</span><span class="n">ngrams</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_examples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_test_data</span><span class="p">(</span><span class="n">ngrams</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_examples</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_examples</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create dataset objects for splits of the dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TextClassificationDataset.split"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_ratio</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create train-test-valid splits from the instance&#39;s examples. </span>
+<span class="sd">            The initial dataset has no valid set. Therefore, the train set is split into train and valid parts.</span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                split_ratio: the percent out of the initial train set split into train dataset objects.</span>
+<span class="sd">                    Default: 0.7</span>
+
+<span class="sd">            Examples:</span>
+<span class="sd">                train_data, test_data, valid_data = txt_cls.split()</span>
+
+<span class="sd">            Outputs:</span>
+<span class="sd">                train_data is a datset objects based on train.csv file with split_ratio percent          </span>
+<span class="sd">                train_data is a datset objects based on test.csv file            </span>
+<span class="sd">                valid_data is a datset objects based on train.csv file with 1-split_ratio percent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rnd</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RandomShuffler</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="n">train_examples</span><span class="p">,</span> <span class="n">test_examples</span><span class="p">,</span> <span class="n">valid_examples</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rationed_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_examples</span><span class="p">,</span>
+                                                                <span class="n">split_ratio</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">split_ratio</span><span class="p">,</span> <span class="n">rnd</span><span class="p">)</span>
+        <span class="n">test_examples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_examples</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">train_examples</span><span class="p">,</span> <span class="n">test_examples</span><span class="p">,</span> <span class="n">valid_examples</span><span class="p">)</span>
+                      <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
+            <span class="n">subset</span><span class="o">.</span><span class="n">sort_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_key</span>
+
+        <span class="k">return</span> <span class="n">split</span></div>
+
+<div class="viewcode-block" id="TextClassificationDataset.iters"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset.iters">[docs]</a>    <span class="k">def</span> <span class="nf">iters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_ratio</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create iterator objects for splits of the dataset.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            split_ratio: split train_examples into train set (split_ratio) and valid set (1-split_ratio).</span>
+<span class="sd">                Default: 0.7</span>
+<span class="sd">            batch_size: batch size. Default: 32</span>
+<span class="sd">            device: the device to sent data. Default: &#39;cpu&#39;</span>
+<span class="sd">            random_state: the random state provided by user. Default: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_ratio</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">valid</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the dataset if it doesn&#39;t exist in processed_folder already.&quot;&quot;&quot;</span>
+
+        <span class="n">train_csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">)</span>
+        <span class="n">test_csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">train_csv_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_csv_path</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="n">makedir_exist_ok</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;_csv.tar.gz&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ag_news&#39;</span><span class="p">,</span> <span class="s1">&#39;dbpedia&#39;</span><span class="p">]:</span>
+            <span class="n">download_and_extract_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">download_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">,</span>
+                                         <span class="n">extract_root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+                                         <span class="n">remove_finished</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;curl -c ./cookies </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> &gt; ./intermezzo.html&quot;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;curl -L -b ./cookies </span><span class="se">\&quot;</span><span class="s2">https://drive.google.com$(cat ./intermezzo.html &quot;</span> \
+                      <span class="s2">&quot;| grep -Po </span><span class="se">\&#39;</span><span class="s2">uc-download-link</span><span class="se">\&quot;</span><span class="s2"> [^&gt;]* href=</span><span class="se">\&quot;</span><span class="s2">\K[^</span><span class="se">\&quot;</span><span class="s2">]*</span><span class="se">\&#39;</span><span class="s2"> &quot;</span> \
+                      <span class="s2">&quot;| sed </span><span class="se">\&#39;</span><span class="s2">s/\&amp;amp;/\&amp;/g</span><span class="se">\&#39;</span><span class="s2">)</span><span class="se">\&quot;</span><span class="s2"> &gt; </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> &quot;</span> <span class="o">%</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span> <span class="o">+</span> \
+                      <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;tar -xzvf </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> -C </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span> <span class="o">+</span> \
+                      <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm ./cookies ./intermezzo.html&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dataset </span><span class="si">%s</span><span class="s1"> downloaded.&#39;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processed_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Preprocess the csv files.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">raw_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">raw_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;_csv&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">processed_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">processed_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processed_folder</span>
+        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">processed_folder</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">makedir_exist_ok</span><span class="p">(</span><span class="n">processed_folder</span><span class="p">)</span>
+
+        <span class="n">src_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_folder</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">src_filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+        <span class="n">tgt_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processed_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;.train&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_normalize</span><span class="p">(</span><span class="n">src_filepath</span><span class="p">,</span> <span class="n">tgt_filepath</span><span class="p">)</span>
+
+        <span class="n">src_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_folder</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">src_filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+        <span class="n">tgt_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processed_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;.test&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_normalize</span><span class="p">(</span><span class="n">src_filepath</span><span class="p">,</span> <span class="n">tgt_filepath</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataset </span><span class="si">%s</span><span class="s2"> preprocessed.&quot;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">text_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_filepath</span><span class="p">,</span> <span class="n">tgt_filepath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Normalize text and separate label/text.&quot;&quot;&quot;</span> 
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">src_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">src_data</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tgt_filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">new_data</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src_data</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="n">label</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;__label__&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^0-9\s]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^a-zA-Z0-9\s]&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; , &#39;</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="s1">&#39; </span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+                <span class="n">new_data</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="TextClassificationDataset.generate_ngrams"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset.generate_ngrams">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">generate_ngrams</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token_list</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a list of token with ngrams.&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            token_list: A list of tokens</span>
+<span class="sd">            num: the number of ngrams.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            token_list = [&#39;here&#39;, &#39;we&#39;, &#39;are&#39;]</span>
+<span class="sd">            ngrams_tokens = torchtext.datasets.TextClassificationDataset.generate_ngrams(token_list, 2)</span>
+<span class="sd">            print(ngrams_tokens)</span>
+<span class="sd">            &gt;&gt; [&#39;here we&#39;, &#39;we are&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">sequences</span> <span class="o">=</span> <span class="p">[</span><span class="n">token_list</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">)]</span>
+        <span class="n">ngram_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">sequences</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">gram</span><span class="p">))</span> <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">ngram_list</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">label_text_processor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process text string and generate examples for dataset.&quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span> <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])]</span>
+        <span class="n">label</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;__label__&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ex</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Example</span><span class="o">.</span><span class="n">fromlist</span><span class="p">([</span><span class="n">text</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">fields</span><span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># Skip the first space &#39;\t&#39;</span>
+        <span class="n">ex</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ngrams</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">ex</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_ngrams</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ex</span>
+ 
+    <span class="k">def</span> <span class="nf">_load_text_classification_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">examples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">src_data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">src_data</span><span class="p">):</span>
+                <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_text_processor</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">examples</span>
+
+    <span class="k">def</span> <span class="nf">load_train_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load train data and generate ngrams.&quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;.train&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_text_classification_data</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_test_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load test data and generate ngrams.&quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;.test&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_text_classification_data</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AG_NEWS"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AG_NEWS">[docs]</a><span class="k">class</span> <span class="nc">AG_NEWS</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines AG_NEWS datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 : World</span>
+<span class="sd">            2 : Sports</span>
+<span class="sd">            3 : Business</span>
+<span class="sd">            4 : Sci/Tech</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AG_NEWS.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AG_NEWS.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: AG_NEWS&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.AG_NEWS(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AG_NEWS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ag_news&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="SogouNews"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SogouNews">[docs]</a><span class="k">class</span> <span class="nc">SogouNews</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines SogouNews datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 : Sports</span>
+<span class="sd">            2 : Finance</span>
+<span class="sd">            3 : Entertainment</span>
+<span class="sd">            4 : Automobile</span>
+<span class="sd">            5 : Technology</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SogouNews.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SogouNews.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: SogouNews&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.SogouNews(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SogouNews</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;sogou_news&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia">[docs]</a><span class="k">class</span> <span class="nc">DBpedia</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines DBpedia datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 : Company</span>
+<span class="sd">            2 : EducationalInstitution</span>
+<span class="sd">            3 : Artist</span>
+<span class="sd">            4 : Athlete</span>
+<span class="sd">            5 : OfficeHolder</span>
+<span class="sd">            6 : MeanOfTransportation</span>
+<span class="sd">            7 : Building</span>
+<span class="sd">            8 : NaturalPlace</span>
+<span class="sd">            9 : Village</span>
+<span class="sd">           10 : Animal</span>
+<span class="sd">           11 : Plant</span>
+<span class="sd">           12 : Album</span>
+<span class="sd">           13 : Film</span>
+<span class="sd">           14 : WrittenWork</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DBpedia.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: DBpedia&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.DBpedia(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DBpedia</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;dbpedia&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="YelpReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewPolarity">[docs]</a><span class="k">class</span> <span class="nc">YelpReviewPolarity</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines YelpReviewPolarity datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 : Negative polarity</span>
+<span class="sd">            2 : Positive polarity</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="YelpReviewPolarity.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewPolarity.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: YelpReviewPolarity&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.YelpReviewPolarity(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">YelpReviewPolarity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;yelp_review_polarity&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="YelpReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewFull">[docs]</a><span class="k">class</span> <span class="nc">YelpReviewFull</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines YelpReviewFull datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 - 5 : rating classes (5 is highly recommended)</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="YelpReviewFull.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewFull.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: YelpReviewFull&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.YelpReviewFull(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">YelpReviewFull</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;yelp_review_full&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="YahooAnswers"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YahooAnswers">[docs]</a><span class="k">class</span> <span class="nc">YahooAnswers</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines YahooAnswers datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 : Society &amp; Culture</span>
+<span class="sd">            2 : Science &amp; Mathematics</span>
+<span class="sd">            3 : Health</span>
+<span class="sd">            4 : Education &amp; Reference</span>
+<span class="sd">            5 : Computers &amp; Internet</span>
+<span class="sd">            6 : Sports</span>
+<span class="sd">            7 : Business &amp; Finance</span>
+<span class="sd">            8 : Entertainment &amp; Music</span>
+<span class="sd">            9 : Family &amp; Relationships</span>
+<span class="sd">           10 : Politics &amp; Government</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="YahooAnswers.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YahooAnswers.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: YahooAnswers&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.YahooAnswers(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">YahooAnswers</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;yahoo_answers&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="AmazonReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewPolarity">[docs]</a><span class="k">class</span> <span class="nc">AmazonReviewPolarity</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines AmazonReviewPolarity datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 : Negative polarity</span>
+<span class="sd">            2 : Positive polarity</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AmazonReviewPolarity.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewPolarity.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: AmazonReviewPolarity&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.AmazonReviewPolarity(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AmazonReviewPolarity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;amazon_review_polarity&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="AmazonReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewFull">[docs]</a><span class="k">class</span> <span class="nc">AmazonReviewFull</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines AmazonReviewFull datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 - 5 : rating classes (5 is highly recommended)</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AmazonReviewFull.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewFull.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./.data&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create supervised learning dataset: AmazonReviewFull&quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inputs:</span>
+<span class="sd">                See TextClassificationDataset() class </span>
+
+<span class="sd">            Example:</span>
+<span class="sd">                text_cls = torchtext.datasets.AmazonReviewFull(ngrams=3)</span>
+<span class="sd">                train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128, device=&quot;cpu&quot;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AmazonReviewFull</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;amazon_review_full&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span></div></div>
+
+<span class="n">supported_text_classification_datasets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;ag_news&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sogou_news&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dbpedia&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;yelp_review_polarity&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;yelp_review_full&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;yahoo_answers&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;amazon_review_full&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;amazon_review_polarity&#39;</span> <span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM&#39;</span>
+        <span class="p">}</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

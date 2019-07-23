@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.data.utils &mdash; torchtext 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#batch"><span class="hidden-section">Batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#example"><span class="hidden-section">Example</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#fields">Fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#field"><span class="hidden-section">Field</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#iterators">Iterators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#pipeline">Pipeline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data.html#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#id2"><span class="hidden-section">batch</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#pool"><span class="hidden-section">pool</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#sst">SST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#imdb">IMDb</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#question-classification">Question Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#trec">TREC</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#entailment">Entailment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#snli">SNLI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#multinli">MultiNLI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#language-modeling">Language Modeling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wikitext-2">WikiText-2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wikitext103">WikiText103</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#penntreebank">PennTreebank</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#machine-translation">Machine Translation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#multi30k">Multi30k</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#iwslt">IWSLT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#wmt14">WMT14</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#sequence-tagging">Sequence Tagging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#udpos">UDPOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#question-answering">Question Answering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../datasets.html#babi20">BABI20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../vocab.html#misc">Misc.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">torchtext</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchtext.data.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchtext.data.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+
+<span class="k">def</span> <span class="nf">_split_tokenizer</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_spacy_tokenize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">spacy</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tok</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">spacy</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+
+
+<div class="viewcode-block" id="get_tokenizer"><a class="viewcode-back" href="../../../data.html#torchtext.data.get_tokenizer">[docs]</a><span class="k">def</span> <span class="nf">get_tokenizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+    <span class="c1"># default tokenizer is string.split(), added as a module function for serialization</span>
+    <span class="k">if</span> <span class="n">tokenizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_split_tokenizer</span>
+
+    <span class="c1"># simply return if a function is passed</span>
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">tokenizer</span>
+
+    <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s2">&quot;spacy&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">spacy</span>
+            <span class="n">spacy</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">_spacy_tokenize</span><span class="p">,</span> <span class="n">spacy</span><span class="o">=</span><span class="n">spacy</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install SpaCy. &quot;</span>
+                  <span class="s2">&quot;See the docs at https://spacy.io for more information.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install SpaCy and the SpaCy </span><span class="si">{}</span><span class="s2"> tokenizer. &quot;</span>
+                  <span class="s2">&quot;See the docs at https://spacy.io for more &quot;</span>
+                  <span class="s2">&quot;information.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">language</span><span class="p">))</span>
+            <span class="k">raise</span>
+    <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s2">&quot;moses&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sacremoses</span> <span class="k">import</span> <span class="n">MosesTokenizer</span>
+            <span class="n">moses_tokenizer</span> <span class="o">=</span> <span class="n">MosesTokenizer</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">moses_tokenizer</span><span class="o">.</span><span class="n">tokenize</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install SacreMoses. &quot;</span>
+                  <span class="s2">&quot;See the docs at https://github.com/alvations/sacremoses &quot;</span>
+                  <span class="s2">&quot;for more information.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+    <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s2">&quot;toktok&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">nltk.tokenize.toktok</span> <span class="k">import</span> <span class="n">ToktokTokenizer</span>
+            <span class="n">toktok</span> <span class="o">=</span> <span class="n">ToktokTokenizer</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">toktok</span><span class="o">.</span><span class="n">tokenize</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install NLTK. &quot;</span>
+                  <span class="s2">&quot;See the docs at https://nltk.org  for more information.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+    <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;revtok&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">revtok</span>
+            <span class="k">return</span> <span class="n">revtok</span><span class="o">.</span><span class="n">tokenize</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install revtok.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+    <span class="k">elif</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;subword&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">revtok</span>
+            <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">revtok</span><span class="o">.</span><span class="n">tokenize</span><span class="p">,</span> <span class="n">decap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install revtok.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Requested tokenizer </span><span class="si">{}</span><span class="s2">, valid choices are a &quot;</span>
+                     <span class="s2">&quot;callable that takes a single string as input, &quot;</span>
+                     <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">revtok</span><span class="se">\&quot;</span><span class="s2"> for the revtok reversible tokenizer, &quot;</span>
+                     <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">subword</span><span class="se">\&quot;</span><span class="s2"> for the revtok caps-aware tokenizer, &quot;</span>
+                     <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">spacy</span><span class="se">\&quot;</span><span class="s2"> for the SpaCy English tokenizer, or &quot;</span>
+                     <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">moses</span><span class="se">\&quot;</span><span class="s2"> for the NLTK port of the Moses tokenization &quot;</span>
+                     <span class="s2">&quot;script.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">is_tokenizer_serializable</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extend with other tokenizers which are found to not be serializable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s1">&#39;spacy&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="interleave_keys"><a class="viewcode-back" href="../../../data.html#torchtext.data.interleave_keys">[docs]</a><span class="k">def</span> <span class="nf">interleave_keys</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interleave bits from two sort keys to form a joint sort key.</span>
+
+<span class="sd">    Examples that are similar in both of the provided keys will have similar</span>
+<span class="sd">    values for the key defined by this function. Useful for tasks with two</span>
+<span class="sd">    text fields like machine translation or natural language inference.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">interleave</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">t</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">interleave</span><span class="p">(</span><span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;016b&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))),</span> <span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_torch_version</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">torch</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">__version__</span>
+    <span class="n">version_substrings</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">major</span><span class="p">,</span> <span class="n">minor</span> <span class="o">=</span> <span class="n">version_substrings</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">version_substrings</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">major</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">minor</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">dtype_to_attr</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="c1"># convert torch.dtype to dtype string id</span>
+    <span class="c1"># e.g. torch.int32 -&gt; &quot;int32&quot;</span>
+    <span class="c1"># used for serialization</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dtype</span>
+
+
+<span class="k">class</span> <span class="nc">RandomShuffler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Use random functions while keeping track of the random state to make it</span>
+<span class="sd">    reproducible and deterministic.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">()</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">use_internal_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use a specific RNG state.&quot;&quot;&quot;</span>
+        <span class="n">old_state</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">()</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">setstate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="p">)</span>
+        <span class="k">yield</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">()</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">setstate</span><span class="p">(</span><span class="n">old_state</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">random_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="p">)</span>
+
+    <span class="nd">@random_state</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">random_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shuffle and return a new list.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_internal_state</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
