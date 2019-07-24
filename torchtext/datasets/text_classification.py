@@ -7,28 +7,6 @@ from torchtext import data
 import random
 from tqdm import tqdm
 
-
-def download_extract_archive(url, raw_folder, dataset_name):
-    """Download the dataset if it doesn't exist in processed_folder already."""
-
-    train_csv_path = os.path.join(raw_folder,
-                                  dataset_name + '_csv',
-                                  'train.csv')
-    test_csv_path = os.path.join(raw_folder,
-                                 dataset_name + '_csv',
-                                 'test.csv')
-    if os.path.exists(train_csv_path) and os.path.exists(test_csv_path):
-        return
-
-    os.makedirs(raw_folder)
-    filename = dataset_name + '_csv.tar.gz'
-    url = url
-    path = os.path.join(raw_folder, filename)
-    download_from_url(url, path)
-    extract_archive(path, raw_folder, remove_finished=True)
-
-    logging.info('Dataset %s downloaded.' % dataset_name)
-
 # TODO: Replicate below
 #  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
 #    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
