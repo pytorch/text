@@ -115,9 +115,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         """Create a text classification dataset instance.
 
         Arguments:
-            dataset_name: The name of dataset, include "ag_news", "sogou_news",
-                "dbpedia", "yelp_review_polarity", "yelp_review_full",
-                "yahoo_answers", "amazon_review_full", "amazon_review_polarity".
+            url: url of the online raw data files.
             root: Directory where the dataset are saved. Default: ".data"
             text_field: The field that will be used for the sentence. If not given,
                 'spacy' token will be used.
@@ -131,6 +129,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
             >>> txt_cls = TextClassificationDataset(url, ngrams=2)
 
         """
+
         super(TextClassificationDataset, self).__init__()
         fields = []
         fields.append(('text', text_field if text_field is not None
@@ -143,13 +142,13 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
         self.dataset_name = self.__class__.__name__
         self.root = root
-        self.raw_folder = os.path.join(self.root, self.__class__.__name__, 'raw')
+        self.raw_folder = os.path.join(root, self.__class__.__name__, 'raw')
         self.processed_folder = os.path.join(self.root,
                                              self.__class__.__name__,
                                              'processed')
         filepath = os.path.join(self.processed_folder, self.dataset_name + '.train')
         if not os.path.isfile(filepath):
-            download_extract_archive(self.url, self.raw_folder, self.dataset_name)
+            download_extract_archive(url, self.raw_folder, self.dataset_name)
             _preprocess(self.raw_folder, self.processed_folder, self.dataset_name)
         with open(filepath) as src_data:
             self.train_examples = _load_text_classification_data(src_data, self.fields, ngrams)

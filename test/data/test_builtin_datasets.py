@@ -54,7 +54,9 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure ag_news dataset works properly
 
         datadir = os.path.join(self.project_root, ".data")
-        txt_cls = TextClassificationDataset("ag_news", root=datadir, ngrams=2)
+        url = 'https://drive.google.com/uc?export=' \
+            'download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms'
+        txt_cls = TextClassificationDataset(url, root=datadir, ngrams=2)
         train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128,
                                                           device="cpu")
         ag_news_cls = AG_NEWS(root=datadir, ngrams=3)
