@@ -95,17 +95,27 @@ class TestDataset(TorchtextTestCase):
 
     def test_json_valid_and_invalid_nested_key(self):
         self.write_test_nested_key_json_dataset()
-        valid_fields = {'foods.vegetables.name': ('vegs', data.Field())}
+        valid_fields = {'foods.vegetables.name': ('vegs', data.Field()),
+                        'foods.fruits': ('fruits', data.Field())}
+        
         invalid_fields = {'foods.vegetables.color': ('vegs', data.Field())}
 
-        valid_expected_results = ['lettuce', 'marrow']
+        valid_expected_examples = [
+            {"fruits": ["Apple", "Banana"],
+             "vegs": ["Broccoli", "Cabbage"]},
+            {"fruits": ["Cherry", "Grape", "Lemon"],
+             "vegs": ["Cucumber","Lettuce"]},
+            {"fruits": ["Orange", "Pear", "Strawberry"],
+             "vegs": ["Marrow","Spinach"]}
+        ]
         dataset = data.TabularDataset(
             path=self.test_nested_key_json_dataset_path,
             format="json",
             fields=valid_fields)
         # check results
-        assert dataset.examples[0].vegs[0] == valid_expected_results[0]
-        assert dataset.examples[0].vegs[1] == valid_expected_results[1]
+        for example, expect in zip(dataset.examples, expected_examples):
+            assertEqual(example.vegs, expect['vegs'])
+            assertEqual(example.fruits, expect['fruits'])
 
         with self.assertRaises(ValueError):
             data.TabularDataset(

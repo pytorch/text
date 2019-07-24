@@ -75,8 +75,20 @@ class TorchtextTestCase(TestCase):
             {"foods":
                 {"fruits": ["Apple", "Banana"],
                  "vegetables": [
-                    {"name": "lettuce"},
-                    {"name": "marrow"}]}}
+                    {"name": "Broccoli"},
+                    {"name": "Cabbage"}]}},
+            
+            {"foods":
+                {"fruits": ["Cherry", "Grape", "Lemon"],
+                 "vegetables": [
+                    {"name": "Cucumber"},
+                    {"name": "Lettuce"}]}},
+
+            {"foods":
+                {"fruits": ["Orange", "Pear", "Strawberry"],
+                 "vegetables": [
+                    {"name": "Marrow"},
+                    {"name": "Spinach"}]}},
         ]
         with open(self.test_nested_key_json_dataset_path,
                   "w") as test_nested_key_json_dataset_file:
