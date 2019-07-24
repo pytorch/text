@@ -17,5 +17,4 @@ class TextSentiment(nn.Module):
         
     def forward(self, text, offsets):
         embedded = self.embedding(text, offsets)
-        out = self.fc(embedded)
-        return F.log_softmax(out, dim=0)
+        return self.fc(embedded)

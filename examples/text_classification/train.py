@@ -40,7 +40,7 @@ def train(epoch, data, labels, train=False):
         text, offsets, cls = generate_batch(data, labels, i, batch_size)
         optimizer.zero_grad()
         output = model(text, offsets)
-        loss = loss_func(output, cls)
+        loss = criterion(output, cls)
         total_loss.append(loss.item())
         loss.backward()
         optimizer.step()
@@ -58,8 +58,8 @@ def test(data, labels):
 if __name__ == "__main__":
     num_epochs = 3
     embed_dim = 128
-    batch_size = 32
-    device = 'cuda:1'
+    batch_size = 512
+    device = 'cpu'
 
     train_data = torch.load("/tmp/asdf/train_data.torch")
     train_labels = torch.load("/tmp/asdf/train_labels.torch")
@@ -72,12 +72,10 @@ if __name__ == "__main__":
     print("Dictionary size: " + str(len(dictionary)))
 
     model = TextSentiment(len(dictionary), embed_dim, len(set(train_labels))).to(device)
-    loss_func = torch.nn.NLLLoss().to(device)
+    criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(model.parameters(), lr=4.0)
 
     for epoch in range(num_epochs):
-        t0 = time.time()
-        print("Loss; " + str(train(epoch, train_data, train_labels)))
-        print(time.time() - t0)
+        print("Epoch: {} - Loss: {}".format(epoch,  str(train(epoch, train_data, train_labels))))
     print("Test accuracy: {}".format(test(test_data, test_labels)))
     torch.save(model.to('cpu'), "/tmp/asdf/model.torch")
