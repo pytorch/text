@@ -14,8 +14,6 @@ from torch.optim.lr_scheduler import ExponentialLR
 
 from model import TextSentiment
 
-
-
 def generate_offsets(data_batch):
     offsets = [0]
     for entry in data_batch:
@@ -58,7 +56,7 @@ def test(data, labels):
     return torch.tensor(total_accuracy).float().mean()
 
 if __name__ == "__main__":
-    num_epochs = 6
+    num_epochs = 3
     embed_dim = 128
     batch_size = 32
     device = 'cuda:1'

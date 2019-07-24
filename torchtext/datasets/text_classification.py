@@ -4,7 +4,6 @@ import logging
 import torch
 from torchtext.utils import download_from_url, extract_archive
 from torchtext import data
-from torchtext.vocab import build_dictionary
 import random
 from tqdm import tqdm
 

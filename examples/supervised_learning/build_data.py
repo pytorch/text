@@ -6,27 +6,24 @@ import time
 
 import torch
 import torchtext
+import tempfile
 
 from torchtext.datasets.text_classification import URLS
 from torchtext.data.utils import generate_ngrams
+from collections import Counter
+from collections import OrderedDict
 
 def build_dictionary(all_data):
-    dictionary = {}
+    dictionary = Counter()
     for tokens in all_data:
-        for token in tokens:
-            if token not in dictionary:
-                dictionary[token] = 1
-            else:
-                dictionary[token] += 1
-    most_frequent_tokens = sorted(list(dictionary.items()), key=lambda x: -x[1])
-    dictionary = {}
-    for (token, frequency) in most_frequent_tokens:
-        dictionary[token] = len(dictionary)
-    return dictionary
+        dictionary.update(tokens)
+    word_dictionary = OrderedDict()
+    for (token, frequency) in dictionary.most_common():
+        word_dictionary[token] = len(word_dictionary)
+    return word_dictionary
 
 def download_data():
     data_path = '/tmp/asdf'
-    import tempfile
     with tempfile.NamedTemporaryFile() as tmp_file:
         torchtext.utils.extract_archive(torchtext.utils.download_from_url(URLS['AG_NEWS'], tmp_file.name), data_path)
     data_path = os.path.join(data_path, 'ag_news_csv')
@@ -50,6 +47,7 @@ def create_data(path):
     return data, labels
 
 if __name__ == "__main__":
+    import time
     logging.basicConfig(level=logging.INFO)
     train_data_path, test_data_path = download_data()
     train_data, train_labels = create_data(train_data_path)
