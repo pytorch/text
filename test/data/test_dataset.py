@@ -103,9 +103,9 @@ class TestDataset(TorchtextTestCase):
             {"fruits": ["Apple", "Banana"],
              "vegs": ["Broccoli", "Cabbage"]},
             {"fruits": ["Cherry", "Grape", "Lemon"],
-             "vegs": ["Cucumber","Lettuce"]},
+             "vegs": ["Cucumber", "Lettuce"]},
             {"fruits": ["Orange", "Pear", "Strawberry"],
-             "vegs": ["Marrow","Spinach"]}
+             "vegs": ["Marrow", "Spinach"]}
         ]
         dataset = data.TabularDataset(
             path=self.test_nested_key_json_dataset_path,
