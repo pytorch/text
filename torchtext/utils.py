@@ -90,13 +90,16 @@ def utf_8_encoder(unicode_csv_data):
         yield line.encode('utf-8')
 
 
-def extract_archive(from_path, to_path=None, remove_finished=False):
+def extract_archive(from_path, to_path=None, overwrite=False):
     """Extract tar.gz archives.
 
     Arguments:
         from_path: the path where the tar.gz file is.
         to_path: the path where the extracted files are.
-        remove_finished: remove the original tar.gz file. Default: False
+        overwrite: overwrite existing files if they already exist.
+
+    Returns:
+        List of extracted files even if not overwritten.
 
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
@@ -108,11 +111,13 @@ def extract_archive(from_path, to_path=None, remove_finished=False):
     if to_path is None:
         to_path = os.path.dirname(from_path)
 
-    if from_path.endswith(".tar.gz"):
-        with tarfile.open(from_path, 'r:gz') as tar:
-            tar.extractall(path=to_path)
-    else:
-        raise ValueError("Extraction of {} not supported".format(from_path))
-
-    if remove_finished:
-        os.remove(from_path)
+    with tarfile.open(from_path, 'r:gz') as tar:
+        names = tar.getnames()
+        for name in names:
+            to_path_name = os.path.join(to_path, name)
+            if not os.path.exists(to_path_name):
+                tar.extract(name, to_path_name)
+            else:
+                if overwrite:
+                    tar.extract(name, to_path_name)
+        return [os.path.join(to_path, name) for name in names]
