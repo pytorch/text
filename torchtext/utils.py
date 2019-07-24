@@ -40,7 +40,6 @@ def download_from_url(url, path):
     """
 
     logger = logging.getLogger('torchtext')
-
     def process_response(r):
         chunk_size = 16 * 1024
         with open(path, "wb") as file:
