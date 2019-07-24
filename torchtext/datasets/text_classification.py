@@ -65,7 +65,8 @@ def _build_dictionary_from_path(data_path, ngrams):
     return word_dictionary
 
 def _create_data(dictionary, data_path):
-    all_data = []
+    data = []
+    labels = []
     with open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
@@ -73,8 +74,9 @@ def _create_data(dictionary, data_path):
             tokens = text_normalize(row[1])
             tokens = generate_ngrams(tokens, 2)
             tokens = torch.tensor([dictionary.get(entry, dictionary['UNK']) for entry in tokens])
-            all_data.append((cls, tokens))
-    return all_data
+            labels.append(cls)
+            data.append(tokens)
+    return data, labels
 
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
@@ -115,10 +117,12 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         dataset_tar = dataset_root + '.tar.gz'
 
         if not os.path.exists(dataset_tar):
+            import pdb; pdb.set_trace()
             download_from_url(URLS[dataset_name], dataset_tar)
             logging.info('Dataset %s downloaded.' % dataset_name)
 
         extracted_files = extract_archive(dataset_tar, root)
+        print(extracted_files)
         for fname in extracted_files:
             if fname.endswith('train.csv'):
                 train_csv_path = fname
@@ -128,26 +132,10 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
         dictionary['UNK'] = len(dictionary)
 
-        self.train_examples = _create_data(dictionary, train_csv_path)
-        self.test_examples = _create_data(dictionary, test_csv_path)
-        self.examples = self.train_examples + self.test_examples
-
-    @staticmethod
-    def sort_key(ex):
-        return len(ex.text)
-
-    def __getitem__(self, i):
-        return self.examples[i]
-
-    def __len__(self):
-        try:
-            return len(self.examples)
-        except TypeError:
-            return 2**32
-
-    def __iter__(self):
-        for x in self.examples:
-            yield x
+        self.train_data, self.train_labels = _create_data(dictionary, train_csv_path)
+        self.test_data, self.test_labels = _create_data(dictionary, test_csv_path)
+        self.dictionary = dictionary
+        self.unk = 'UNK'
 
 
 class AG_NEWS(TextClassificationDataset):

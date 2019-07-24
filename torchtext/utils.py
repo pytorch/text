@@ -99,7 +99,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         overwrite: overwrite existing files if they already exist.
 
     Returns:
-        List of extracted files even if not overwritten.
+        List of paths to extracted files even if not overwritten.
 
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
@@ -112,12 +112,15 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         to_path = os.path.dirname(from_path)
 
     with tarfile.open(from_path, 'r:gz') as tar:
-        names = tar.getnames()
-        for name in names:
-            to_path_name = os.path.join(to_path, name)
-            if not os.path.exists(to_path_name):
-                tar.extract(name, to_path_name)
+        files = []
+        for file_ in tar:
+            if file_.isfile():
+                if os.path.exists(file_.name):
+                    if overwrite:
+                        tar.extract(file_, to_path)
+                else:
+                    tar.extract(file_, to_path)
+                files.append(os.path.join(to_path, file_.name))
             else:
-                if overwrite:
-                    tar.extract(name, to_path_name)
-        return [os.path.join(to_path, name) for name in names]
+                tar.extract(file_, to_path)
+        return files

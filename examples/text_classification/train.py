@@ -11,6 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR
+from torchtext.datasets.text_classification import AG_NEWS
 
 from model import TextSentiment
 
@@ -29,7 +30,7 @@ def generate_batch(data, labels, i, batch_size):
     text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
     return text, offsets, cls
 
-def train(epoch, data, labels, train=False):
+def train(epoch, data, labels):
     perm = list(range(len(data)))
     random.shuffle(perm)
     data = [data[i] for i in perm]
@@ -61,21 +62,12 @@ if __name__ == "__main__":
     batch_size = 512
     device = 'cuda:1'
 
-    train_data = torch.load("/tmp/asdf/train_data.torch")
-    train_labels = torch.load("/tmp/asdf/train_labels.torch")
-
-    test_data = torch.load("/tmp/asdf/test_data.torch")
-    test_labels = torch.load("/tmp/asdf/test_labels.torch")
-
-    dictionary = torch.load("/tmp/asdf/dictionary.torch")
-
-    print("Dictionary size: " + str(len(dictionary)))
-
-    model = TextSentiment(len(dictionary), embed_dim, len(set(train_labels))).to(device)
+    dataset = AG_NEWS(ngrams=2)
+    model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.train_labels))).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(model.parameters(), lr=4.0)
 
     for epoch in range(num_epochs):
-        print("Epoch: {} - Loss: {}".format(epoch,  str(train(epoch, train_data, train_labels))))
-    print("Test accuracy: {}".format(test(test_data, test_labels)))
+        print("Epoch: {} - Loss: {}".format(epoch,  str(train(epoch, dataset.train_data, dataset.train_labels))))
+    print("Test accuracy: {}".format(test(dataset.test_data, dataset.test_labels)))
     torch.save(model.to('cpu'), "/tmp/asdf/model.torch")
