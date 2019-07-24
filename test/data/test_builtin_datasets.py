@@ -1,8 +1,7 @@
 import os
 import torchtext.data as data
 from torchtext.datasets import WikiText2, PennTreebank
-from torchtext.datasets import TextClassificationDataset, \
-    AG_NEWS
+from torchtext.datasets import AG_NEWS
 
 from ..common.test_markers import slow
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -54,19 +53,9 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure ag_news dataset works properly
 
         datadir = os.path.join(self.project_root, ".data")
-        url = 'https://drive.google.com/uc?export=' \
-            'download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms'
-        txt_cls = TextClassificationDataset(url, root=datadir, ngrams=2)
-        train_iter, test_iter, valid_iter = txt_cls.iters(batch_size=128,
-                                                          device="cpu")
         ag_news_cls = AG_NEWS(root=datadir, ngrams=3)
-        train_iter, test_iter, valid_iter = ag_news_cls.iters(batch_size=128,
-                                                              device="cpu")
 
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root,
-                                    ".data", "TextClassificationDataset")
-            conditional_remove(datafile)
             datafile = os.path.join(self.project_root, ".data", "AG_NEWS")
             conditional_remove(datafile)

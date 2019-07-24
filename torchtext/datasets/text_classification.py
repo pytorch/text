@@ -96,7 +96,7 @@ def _load_text_classification_data(src_data, fields, ngrams=1):
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
-    """Defines text classification datasets.
+    """Defines an abstract text classification datasets.
         Currently, we only support the following datasets:
 
              - AG_NEWS
@@ -112,7 +112,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     def __init__(self, url, root='.data',
                  text_field=None, label_field=None, ngrams=1):
-        """Create a text classification dataset instance.
+        """Initiate text-classification dataset.
 
         Arguments:
             url: url of the online raw data files.
@@ -123,11 +123,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                 'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
-
-        Examples:
-            >>> url = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms'
-            >>> txt_cls = TextClassificationDataset(url, ngrams=2)
-
         """
 
         super(TextClassificationDataset, self).__init__()
@@ -190,8 +185,14 @@ class AG_NEWS(TextClassificationDataset):
     def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
         """Create supervised learning dataset: AG_NEWS
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.AG_NEWS(ngrams=3)
@@ -215,8 +216,14 @@ class SogouNews(TextClassificationDataset):
                  label_field=None, ngrams=1):
         """Create supervised learning dataset: SogouNews
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.SogouNews(ngrams=3)
@@ -248,8 +255,14 @@ class DBpedia(TextClassificationDataset):
     def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
         """Create supervised learning dataset: DBpedia
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.DBpedia(ngrams=3)
@@ -268,8 +281,14 @@ class YelpReviewPolarity(TextClassificationDataset):
     def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
         """Create supervised learning dataset: YelpReviewPolarity
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.YelpReviewPolarity(ngrams=3)
@@ -288,8 +307,14 @@ class YelpReviewFull(TextClassificationDataset):
     def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
         """Create supervised learning dataset: YelpReviewFull
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.YelpReviewFull(ngrams=3)
@@ -317,8 +342,14 @@ class YahooAnswers(TextClassificationDataset):
     def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
         """Create supervised learning dataset: YahooAnswers
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.YahooAnswers(ngrams=3)
@@ -339,8 +370,14 @@ class AmazonReviewPolarity(TextClassificationDataset):
                  label_field=None, ngrams=1):
         """Create supervised learning dataset: AmazonReviewPolarity
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
@@ -359,8 +396,14 @@ class AmazonReviewFull(TextClassificationDataset):
     def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
         """Create supervised learning dataset: AmazonReviewFull
 
-        Inputs:
-            See TextClassificationDataset() class
+        Arguments:
+            root: Directory where the dataset are saved. Default: ".data"
+            text_field: The field that will be used for the sentence. If not given,
+                'spacy' token will be used.
+            label_field: The field that will be used for the label. If not given,
+                'float' token will be used.
+            ngrams: a contiguous sequence of n items from s string text.
+                Default: 1
 
         Examples:
             >>> text_cls = torchtext.datasets.AmazonReviewFull(ngrams=3)
