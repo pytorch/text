@@ -59,7 +59,7 @@ if __name__ == "__main__":
     num_epochs = 3
     embed_dim = 128
     batch_size = 512
-    device = 'cpu'
+    device = 'cuda:1'
 
     train_data = torch.load("/tmp/asdf/train_data.torch")
     train_labels = torch.load("/tmp/asdf/train_labels.torch")
