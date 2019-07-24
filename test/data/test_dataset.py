@@ -97,10 +97,9 @@ class TestDataset(TorchtextTestCase):
         self.write_test_nested_key_json_dataset()
         valid_fields = {'foods.vegetables.name': ('vegs', data.Field()),
                         'foods.fruits': ('fruits', data.Field())}
-        
         invalid_fields = {'foods.vegetables.color': ('vegs', data.Field())}
 
-        valid_expected_examples = [
+        expected_examples = [
             {"fruits": ["Apple", "Banana"],
              "vegs": ["Broccoli", "Cabbage"]},
             {"fruits": ["Cherry", "Grape", "Lemon"],
@@ -114,8 +113,8 @@ class TestDataset(TorchtextTestCase):
             fields=valid_fields)
         # check results
         for example, expect in zip(dataset.examples, expected_examples):
-            assertEqual(example.vegs, expect['vegs'])
-            assertEqual(example.fruits, expect['fruits'])
+            self.assertEqual(example.vegs, expect['vegs'])
+            self.assertEqual(example.fruits, expect['fruits'])
 
         with self.assertRaises(ValueError):
             data.TabularDataset(

@@ -77,13 +77,11 @@ class TorchtextTestCase(TestCase):
                  "vegetables": [
                     {"name": "Broccoli"},
                     {"name": "Cabbage"}]}},
-            
             {"foods":
                 {"fruits": ["Cherry", "Grape", "Lemon"],
                  "vegetables": [
                     {"name": "Cucumber"},
                     {"name": "Lettuce"}]}},
-
             {"foods":
                 {"fruits": ["Orange", "Pear", "Strawberry"],
                  "vegetables": [
