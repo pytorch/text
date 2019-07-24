@@ -146,15 +146,21 @@ class TextClassificationDataset(torch.utils.data.Dataset):
             download_extract_archive(url, self.raw_folder, self.dataset_name)
             _preprocess(self.raw_folder, self.processed_folder, self.dataset_name)
         with open(filepath) as src_data:
-            self.train_examples = _load_text_classification_data(src_data, self.fields, ngrams)
+            self.train_examples = _load_text_classification_data(src_data,
+                                                                 self.fields,
+                                                                 ngrams)
 
         filepath = os.path.join(self.processed_folder, self.dataset_name + '.test')
         with open(filepath) as src_data:
-            self.test_examples = _load_text_classification_data(src_data, self.fields, ngrams)
+            self.test_examples = _load_text_classification_data(src_data,
+                                                                self.fields,
+                                                                ngrams)
 
         self.examples = self.train_examples + self.test_examples
-        self.fields['text'].vocab = build_dictionary(self, self.fields['text'], 'text')
-        self.fields['label'].vocab = build_dictionary(self, self.fields['label'], 'label')
+        self.fields['text'].vocab = build_dictionary(self,
+                                                     self.fields['text'], 'text')
+        self.fields['label'].vocab = build_dictionary(self,
+                                                      self.fields['label'], 'label')
 
     @staticmethod
     def sort_key(ex):
