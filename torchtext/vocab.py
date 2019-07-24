@@ -445,7 +445,7 @@ class Vectors(object):
                 lower case will be looked up. Default: False.
 
         Examples:
-            >>> examples = ['chip', 'Baby', 'Beautiful']
+            >>> examples = ['chip', 'baby', 'Beautiful']
             >>> vec = text.vocab.GloVe(name='6B', dim=50)
             >>> ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)
         """
