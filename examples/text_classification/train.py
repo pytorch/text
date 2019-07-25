@@ -93,7 +93,7 @@ if __name__ == "__main__":
         os.mkdir(data)
 
     dataset = AG_NEWS(root=data, ngrams=args.ngrams)
-    model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.train_labels))).to(device)
+    model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.labels))).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
     train(lr, num_epochs, dataset.train_data, dataset.train_labels)
