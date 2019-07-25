@@ -117,9 +117,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
         Arguments:
             url: url of the online raw data files.
-            root: Directory where the dataset are saved. Default: ".data"
+            root: Directory where the dataset are saved.
             ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
         """
 
         super(TextClassificationDataset, self).__init__()
