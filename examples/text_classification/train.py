@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR
-from torchtext.datasets.text_classification import AG_NEWS
+from torchtext.datasets import text_classification
 from torch.utils.data import BatchSampler
 from torch.utils.data import SequentialSampler
 from torch.utils.data import DataLoader
@@ -74,6 +74,7 @@ def test(data_):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Train a text classification model on AG_NEWS')
+    parser.add_argument('dataset', choices=text_classification.DATASETS)
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
@@ -100,7 +101,7 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
-    train_dataset, test_dataset = AG_NEWS(root=data, ngrams=args.ngrams)
+    train_dataset, test_dataset = text_classification.DATASETS[args.dataset](root=data, ngrams=args.ngrams)
     model = TextSentiment(len(train_dataset.get_dictionary()),
                           embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)

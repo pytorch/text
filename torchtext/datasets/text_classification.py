@@ -30,12 +30,15 @@ URLS = {
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
 }
 
+
+
 # TODO: Replicate below
 #  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
 #    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
 #        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
 #        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
 _normalize_pattern_re = re.compile(r'[\W_]+')
+
 
 def text_normalize(line):
     """
@@ -51,32 +54,38 @@ def text_normalize(line):
 
     return line.split()
 
+
 def _build_dictionary_from_path(data_path, ngrams):
     dictionary = Counter()
-    with open(data_path, encoding="utf8") as f:
+    with open(data_path) as f:
         reader = unicode_csv_reader(f)
-        for row in reader:
-            tokens = text_normalize(row[1])
-            tokens = generate_ngrams(tokens, ngrams)
-            dictionary.update(tokens)
+        with tqdm(unit_scale=0, unit='lines') as t:
+            for row in reader:
+                tokens = text_normalize(row[1])
+                tokens = generate_ngrams(tokens, ngrams)
+                dictionary.update(tokens)
+                t.update(1)
     word_dictionary = OrderedDict()
     for (token, frequency) in dictionary.most_common():
         word_dictionary[token] = len(word_dictionary)
     return word_dictionary
 
+
 def _create_data(dictionary, data_path):
     data = []
     labels = []
-    with open(data_path, encoding="utf8") as f:
+    with open(data_path) as f:
         reader = unicode_csv_reader(f)
         for row in reader:
             cls = int(row[0]) - 1
             tokens = text_normalize(row[1])
             tokens = generate_ngrams(tokens, 2)
-            tokens = torch.tensor([dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
+            tokens = torch.tensor(
+                [dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
             data.append((cls, tokens))
             labels.append(cls)
     return data, set(labels)
+
 
 def _extract_data(root, dataset_name):
     dataset_root = os.path.join(root, dataset_name + '_csv')
@@ -95,6 +104,7 @@ def _extract_data(root, dataset_name):
         if fname.endswith('test.csv'):
             test_csv_path = fname
     return train_csv_path, test_csv_path
+
 
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
@@ -141,15 +151,19 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def get_dictionary(self):
         return self._dictionary
 
+
 def _setup_datasets(root, ngrams, dataset_name):
     train_csv_path, test_csv_path = _extract_data(root, dataset_name)
 
+    logging.info('Building dictionary based on {}'.format(train_csv_path))
     # TODO: Clean up and use Vocab object
     # Standardized on torchtext.Vocab
     UNK = '<unk>'
     dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
     dictionary[UNK] = len(dictionary)
+    logging.info('Creating training data')
     train_data, train_labels = _create_data(dictionary, train_csv_path)
+    logging.info('Creating testing data')
     test_data, test_labels = _create_data(dictionary, test_csv_path)
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
@@ -167,15 +181,17 @@ def AG_NEWS(root='.data', ngrams=1):
 
     Create supervised learning dataset: AG_NEWS
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.AG_NEWS(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "AG_NEWS")
 
@@ -191,15 +207,17 @@ def SogouNews(root='.data', ngrams=1):
 
     Create supervised learning dataset: SogouNews
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.SogouNews(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "SogouNews")
 
@@ -224,15 +242,17 @@ def DBpedia(root='.data', ngrams=1):
 
     Create supervised learning dataset: DBpedia
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.DBpedia(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "DBpedia")
 
@@ -245,15 +265,17 @@ def YelpReviewPolarity(root='.data', ngrams=1):
 
     Create supervised learning dataset: YelpReviewPolarity
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.YelpReviewPolarity(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "YelpReviewPolarity")
 
@@ -265,15 +287,17 @@ def YelpReviewFull(root='.data', ngrams=1):
 
     Create supervised learning dataset: YelpReviewFull
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.YelpReviewFull(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "YelpReviewFull")
 
@@ -294,15 +318,17 @@ def YahooAnswers(root='.data', ngrams=1):
 
     Create supervised learning dataset: YahooAnswers
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.YahooAnswers(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "YahooAnswers")
 
@@ -315,15 +341,17 @@ def AmazonReviewPolarity(root='.data', ngrams=1):
 
     Create supervised learning dataset: AmazonReviewPolarity
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "AmazonReviewPolarity")
 
@@ -335,14 +363,27 @@ def AmazonReviewFull(root='.data', ngrams=1):
 
     Create supervised learning dataset: AmazonReviewFull
 
-        Arguments:
-            root: Directory where the dataset are saved. Default: ".data"
-            ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
+    Separately returns the training and test dataset
 
-        Examples:
-            >>> text_cls = torchtext.datasets.AmazonReviewFull(ngrams=3)
+    Arguments:
+        root: Directory where the dataset are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
 
-        """
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
+
+    """
 
     return _setup_datasets(root, ngrams, "AmazonReviewFull")
+
+DATASETS = {
+    'AG_NEWS': AG_NEWS,
+    'SogouNews': SogouNews,
+    'DBpedia': DBpedia,
+    'YelpReviewPolarity': YelpReviewPolarity,
+    'YelpReviewFull': YelpReviewFull,
+    'YahooAnswers': YahooAnswers,
+    'AmazonReviewPolarity': AmazonReviewPolarity,
+    'AmazonReviewFull': AmazonReviewFull
+}
