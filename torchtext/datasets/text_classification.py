@@ -32,7 +32,6 @@ URLS = {
 }
 
 
-
 # TODO: Replicate below
 #  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
 #    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
@@ -377,6 +376,7 @@ def AmazonReviewFull(root='.data', ngrams=1):
     """
 
     return _setup_datasets(root, ngrams, "AmazonReviewFull")
+
 
 DATASETS = {
     'AG_NEWS': AG_NEWS,
