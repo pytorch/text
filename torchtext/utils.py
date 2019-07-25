@@ -46,7 +46,8 @@ def download_from_url(url, path):
         download_dir = os.path.dirname(path)
         if not os.path.exists(download_dir):
             raise RuntimeError(
-                "Download directorty {} does not exist. Did you create it?".format(download_dir))
+                "Download directorty {} does not exist. "
+                "Did you create it?".format(download_dir))
         with open(path, "wb") as file:
             with tqdm(total=total_size, unit='B',
                       unit_scale=1, desc=path.split('/')[-1]) as t:

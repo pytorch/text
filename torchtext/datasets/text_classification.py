@@ -2,12 +2,9 @@ import os
 import re
 import logging
 import torch
-import csv
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import generate_ngrams
-import random
-from tqdm import tqdm
 
 from collections import Counter
 from collections import OrderedDict

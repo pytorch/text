@@ -1,17 +1,10 @@
 import os
 import logging
-import csv
 import random
-import time
 import argparse
 
 import torch
-import torchtext
 
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.optim.lr_scheduler import ExponentialLR
 from torchtext.datasets.text_classification import AG_NEWS
 
 from model import TextSentiment
@@ -51,7 +44,8 @@ def train(lr_, num_epoch, data, labels):
             lr = lr_ * (1 - progress)
             if i % 1024 == 0:
                 print(
-                    "\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(progress * 100, loss.item(), lr), end='')
+                    "\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(
+                        progress * 100, loss.item(), lr), end='')
             # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
