@@ -3,6 +3,7 @@ import logging
 import csv
 import random
 import time
+import argparse
 
 import torch
 import torchtext
@@ -57,17 +58,40 @@ def test(data, labels):
     return torch.tensor(total_accuracy).float().mean()
 
 if __name__ == "__main__":
-    num_epochs = 3
-    embed_dim = 128
-    batch_size = 512
-    device = 'cuda:1'
+    parser = argparse.ArgumentParser(description='Train a text classification model on AG_NEWS')
+    parser.add_argument('--num-epochs', type=int, default=3)
+    parser.add_argument('--embed-dim', type=int, default=128)
+    parser.add_argument('--batch-size', type=int, default=64)
+    parser.add_argument('--device', default='cpu')
+    parser.add_argument('--data', default='./data')
+    parser.add_argument('--save-model-path')
+    parser.add_argument('--save-dictionary-path')
+    parser.add_argument('--logging-level', default='WARNING')
+    args = parser.parse_args()
 
-    dataset = AG_NEWS(ngrams=2)
+    num_epochs = args.num_epochs
+    embed_dim = args.embed_dim
+    batch_size = args.batch_size
+    device = args.device
+    data = args.data
+
+    logging.basicConfig(level=getattr(logging, args.logging_level))
+
+    if not os.path.exists(data):
+        print("Creating directory {}".format(data))
+        os.mkdir(data)
+
+    dataset = AG_NEWS(root=data, ngrams=2)
     model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.train_labels))).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     optimizer = optim.SGD(model.parameters(), lr=4.0)
 
     for epoch in range(num_epochs):
         print("Epoch: {} - Loss: {}".format(epoch,  str(train(epoch, dataset.train_data, dataset.train_labels))))
-    print("Test accuracy: {}".format(test(dataset.test_data, dataset.test_labels)))
-    torch.save(model.to('cpu'), "/tmp/asdf/model.torch")
+    print("Test - Accuracy: {}".format(test(dataset.test_data, dataset.test_labels)))
+    if args.save_model_path:
+        print("Saving model to {}".format(args.save_model_path))
+        torch.save(model.to('cpu'), args.save_model_path)
+    if args.save_dictionary_path:
+        print("Saving dictionary to {}".format(args.save_dictionary_path))
+        torch.save(dataset.dictionary, args.save_dictionary_path)

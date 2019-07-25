@@ -116,13 +116,13 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         dataset_root = os.path.join(root, dataset_name + '_csv')
         dataset_tar = dataset_root + '.tar.gz'
 
-        if not os.path.exists(dataset_tar):
-            import pdb; pdb.set_trace()
+        if os.path.exists(dataset_tar):
+            logging.info('Dataset %s already downloaded.' % dataset_name)
+        else:
             download_from_url(URLS[dataset_name], dataset_tar)
             logging.info('Dataset %s downloaded.' % dataset_name)
 
         extracted_files = extract_archive(dataset_tar, root)
-        print(extracted_files)
         for fname in extracted_files:
             if fname.endswith('train.csv'):
                 train_csv_path = fname
