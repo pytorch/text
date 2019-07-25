@@ -66,6 +66,7 @@ def _build_dictionary_from_path(data_path, ngrams):
 
 def _create_data(dictionary, data_path):
     data = []
+    labels = []
     with open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
@@ -74,7 +75,8 @@ def _create_data(dictionary, data_path):
             tokens = generate_ngrams(tokens, 2)
             tokens = torch.tensor([dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
             data.append((cls, tokens))
-    return data
+            labels.append(cls)
+    return data, set(labels)
 
 def _extract_data(root, dataset_name):
     dataset_root = os.path.join(root, dataset_name + '_csv')
@@ -109,7 +111,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, data):
+    def __init__(self, dictionary, data, labels):
         """Initiate text-classification dataset.
 
         Arguments:
@@ -120,32 +122,42 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
         super(TextClassificationDataset, self).__init__()
         self._data = data
+        self._labels = labels
+        self._dictionary = dictionary
 
     def __getitem__(self, i):
         return self._data[i]
 
     def __len__(self):
-        return len(self._data[i])
+        return len(self._data)
 
     def __iter__(self):
         for x in self._data:
             yield x
 
+    def get_labels(self):
+        return self._labels
+
+    def get_dictionary(self):
+        return self._dictionary
+
 def _setup_datasets(root, ngrams, dataset_name):
-    train_csv_path, test_csv_path = _extract_data(root, self.__class__.__name__)
+    train_csv_path, test_csv_path = _extract_data(root, dataset_name)
 
     # TODO: Clean up and use Vocab object
     # Standardized on torchtext.Vocab
     UNK = '<unk>'
     dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
     dictionary[UNK] = len(dictionary)
-    self.dictionary = dictionary
-    train_data = _create_data(dictionary, train_csv_path)
-    test_data = _create_data(dictionary, test_csv_path)
-    return TextClassificationDataset(train_data), TextClassificationDataset(test_data)
+    train_data, train_labels = _create_data(dictionary, train_csv_path)
+    test_data, test_labels = _create_data(dictionary, test_csv_path)
+    if len(train_labels ^ test_labels) > 0:
+        raise ValueError("Training and test labels don't match")
+    return (TextClassificationDataset(dictionary, train_data, train_labels),
+            TextClassificationDataset(dictionary, test_data, test_labels))
 
 
-def AG_NEWS(self, root='.data', ngrams=1):
+def AG_NEWS(root='.data', ngrams=1):
     """ Defines AG_NEWS datasets.
         The labels includes:
             - 1 : World
@@ -168,7 +180,7 @@ def AG_NEWS(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "AG_NEWS")
 
 
-def SogouNews(self, root='.data', ngrams=1):
+def SogouNews(root='.data', ngrams=1):
     """ Defines SogouNews datasets.
         The labels includes:
             - 1 : Sports
@@ -192,7 +204,7 @@ def SogouNews(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "SogouNews")
 
 
-def DBpedia(self, root='.data', ngrams=1):
+def DBpedia(root='.data', ngrams=1):
     """ Defines DBpedia datasets.
         The labels includes:
             - 1 : Company
@@ -225,7 +237,7 @@ def DBpedia(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "DBpedia")
 
 
-def YelpReviewPolarity(self, root='.data', ngrams=1):
+def YelpReviewPolarity(root='.data', ngrams=1):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity.
@@ -246,7 +258,7 @@ def YelpReviewPolarity(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "YelpReviewPolarity")
 
 
-def YelpReviewFull(self, root='.data', ngrams=1):
+def YelpReviewFull(root='.data', ngrams=1):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
@@ -266,7 +278,7 @@ def YelpReviewFull(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "YelpReviewFull")
 
 
-def YahooAnswers(self, root='.data', ngrams=1):
+def YahooAnswers(root='.data', ngrams=1):
     """ Defines YahooAnswers datasets.
         The labels includes:
             - 1 : Society & Culture
@@ -295,7 +307,7 @@ def YahooAnswers(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "YahooAnswers")
 
 
-def AmazonReviewPolarity(self, root='.data', ngrams=1):
+def AmazonReviewPolarity(root='.data', ngrams=1):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity
@@ -316,7 +328,7 @@ def AmazonReviewPolarity(self, root='.data', ngrams=1):
     return _setup_datasets(root, ngrams, "AmazonReviewPolarity")
 
 
-def AmazonReviewFull(self, root='.data', ngrams=1):
+def AmazonReviewFull(root='.data', ngrams=1):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)

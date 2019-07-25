@@ -13,41 +13,41 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ExponentialLR
 from torchtext.datasets.text_classification import AG_NEWS
+from torch.utils.data import BatchSampler
+from torch.utils.data import SequentialSampler
+from torch.utils.data import DataLoader
 
 from model import TextSentiment
 
-def generate_offsets(data_batch):
-    offsets = [0]
-    for entry in data_batch:
-        offsets.append(offsets[-1] + len(entry))
-    offsets = torch.tensor(offsets[:-1])
-    return offsets
 
-def generate_batch(data, labels, i, batch_size):
-    data_batch = data[i:i+batch_size]
-    text = torch.cat(data_batch)
-    offsets = generate_offsets(data_batch)
-    cls = torch.tensor(labels[i:i+batch_size])
-    text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
+def generate_batch(batch):
+
+    def generate_offsets(data_batch):
+        offsets = [0]
+        for entry in data_batch:
+            offsets.append(offsets[-1] + len(entry))
+        offsets = torch.tensor(offsets[:-1])
+        return offsets
+
+    cls = torch.tensor([entry[0] for entry in batch])
+    text = [entry[1] for entry in batch]
+    offsets = generate_offsets(text)
+    text = torch.cat(text)
     return text, offsets, cls
 
-def train(lr_, num_epoch, data, labels):
+def train(lr_, num_epoch, data_):
+    data = DataLoader(data_, batch_size=batch_size, shuffle=True, collate_fn=generate_batch, num_workers=args.num_workers)
     num_lines = num_epochs * len(data)
     for epoch in range(num_epochs):
-        perm = list(range(len(data)))
-        random.shuffle(perm)
-        data = [data[i] for i in perm]
-        labels = [labels[i] for i in perm]
-
-        for i in range(0, len(data), batch_size):
-            text, offsets, cls = generate_batch(data, labels, i, batch_size)
+        for i, (text, offsets, cls) in enumerate(data):
+            text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
             output = model(text, offsets)
             loss = criterion(output, cls)
             loss.backward()
             progress = (i + len(data) * epoch) / float(num_lines)
             lr = lr_ * (1 - progress)
-            if i % 1024 == 0:
-                print("\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(progress * 100, loss.item(), lr), end='')
+            if i % 128 == 0:
+                print("\rProgress: {:3.0f}% - Loss: {:8.5f} - LR: {:8.5f}".format(progress * 100, loss.item(), lr), end='')
             # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
@@ -55,11 +55,12 @@ def train(lr_, num_epoch, data, labels):
                 p.grad.zero_()
     print("")
 
-def test(data, labels):
+def test(data_):
+    data = DataLoader(data_, batch_size=batch_size, collate_fn=generate_batch)
     total_accuracy = []
-    for i in range(0, len(data), batch_size):
+    for text, offsets, cls in data:
+        text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
         with torch.no_grad():
-            text, offsets, cls = generate_batch(data, labels, i, batch_size)
             output = model(text, offsets)
             accuracy = (output.argmax(1) == cls).float().mean().item()
             total_accuracy.append(accuracy)
@@ -72,6 +73,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
     parser.add_argument('--ngrams', type=int, default=2)
+    parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
@@ -92,12 +94,12 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
-    dataset = AG_NEWS(root=data, ngrams=args.ngrams)
-    model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.labels))).to(device)
+    train_dataset, test_dataset = AG_NEWS(root=data, ngrams=args.ngrams)
+    model = TextSentiment(len(train_dataset.get_dictionary()), embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
-    train(lr, num_epochs, dataset.train_data, dataset.train_labels)
-    test(dataset.test_data, dataset.test_labels)
+    train(lr, num_epochs, train_dataset)
+    test(test_dataset)
 
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
