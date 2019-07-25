@@ -6,6 +6,10 @@ from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking, 
 from .trec import TREC
 from .imdb import IMDB
 from .babi import BABI20
+from .text_classification import TextClassificationDataset, \
+    AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
+    YelpReviewFull, YahooAnswers, \
+    AmazonReviewPolarity, AmazonReviewFull
 
 
 __all__ = ['LanguageModelingDataset',
@@ -25,4 +29,13 @@ __all__ = ['LanguageModelingDataset',
            'UDPOS',
            'CoNLL2000Chunking',
            'BABI20',
-           'ATIS']
+           'ATIS',
+           'TextClassificationDataset',
+           'AG_NEWS',
+           'SogouNews',
+           'DBpedia',
+           'YelpReviewPolarity',
+           'YelpReviewFull',
+           'YahooAnswers',
+           'AmazonReviewPolarity',
+           'AmazonReviewFull']
