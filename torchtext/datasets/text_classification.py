@@ -38,6 +38,7 @@ URLS = {
 #        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
 _normalize_pattern_re = re.compile(r'[\W_]+')
 
+
 def text_normalize(line):
     """
     Basic normalization for a line of text.
@@ -52,6 +53,7 @@ def text_normalize(line):
 
     return line.split()
 
+
 def _build_dictionary_from_path(data_path, ngrams):
     dictionary = Counter()
     with io.open(data_path, encoding="utf8") as f:
@@ -65,6 +67,7 @@ def _build_dictionary_from_path(data_path, ngrams):
         word_dictionary[token] = len(word_dictionary)
     return word_dictionary
 
+
 def _create_data(dictionary, data_path):
     data = []
     labels = []
@@ -74,10 +77,12 @@ def _create_data(dictionary, data_path):
             cls = int(row[0]) - 1
             tokens = text_normalize(row[1])
             tokens = generate_ngrams(tokens, 2)
-            tokens = torch.tensor([dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
+            tokens = torch.tensor(
+                [dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
             labels.append(cls)
             data.append(tokens)
     return data, labels
+
 
 def _extract_data(root, dataset_name):
     dataset_root = os.path.join(root, dataset_name + '_csv')
@@ -165,6 +170,7 @@ class AG_NEWS(TextClassificationDataset):
             - 3 : Business
             - 4 : Sci/Tech
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: AG_NEWS
 
@@ -190,6 +196,7 @@ class SogouNews(TextClassificationDataset):
             - 4 : Automobile
             - 5 : Technology
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: SogouNews
 
@@ -224,6 +231,7 @@ class DBpedia(TextClassificationDataset):
             - 13 : Film
             - 14 : WrittenWork
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: DBpedia
 
@@ -246,6 +254,7 @@ class YelpReviewPolarity(TextClassificationDataset):
             - 1 : Negative polarity.
             - 2 : Positive polarity.
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: YelpReviewPolarity
 
@@ -267,6 +276,7 @@ class YelpReviewFull(TextClassificationDataset):
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: YelpReviewFull
 
@@ -297,6 +307,7 @@ class YahooAnswers(TextClassificationDataset):
             - 9 : Family & Relationships
             - 10 : Politics & Government
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: YahooAnswers
 
@@ -319,6 +330,7 @@ class AmazonReviewPolarity(TextClassificationDataset):
             - 1 : Negative polarity
             - 2 : Positive polarity
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: AmazonReviewPolarity
 
@@ -340,6 +352,7 @@ class AmazonReviewFull(TextClassificationDataset):
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
      """
+
     def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: AmazonReviewFull
 

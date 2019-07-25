@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class TextSentiment(nn.Module):
     def __init__(self, vocab_size, embed_dim, num_class):
         super().__init__()
@@ -14,7 +15,7 @@ class TextSentiment(nn.Module):
         self.embedding.weight.data.uniform_(-initrange, initrange)
         self.fc.weight.data.uniform_(-initrange, initrange)
         self.fc.bias.data.zero_()
-        
+
     def forward(self, text, offsets):
         embedded = self.embedding(text, offsets)
         return self.fc(embedded)

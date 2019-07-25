@@ -16,6 +16,7 @@ from torchtext.datasets.text_classification import AG_NEWS
 
 from model import TextSentiment
 
+
 def generate_offsets(data_batch):
     offsets = [0]
     for entry in data_batch:
@@ -23,13 +24,15 @@ def generate_offsets(data_batch):
     offsets = torch.tensor(offsets[:-1])
     return offsets
 
+
 def generate_batch(data, labels, i, batch_size):
-    data_batch = data[i:i+batch_size]
+    data_batch = data[i:i + batch_size]
     text = torch.cat(data_batch)
     offsets = generate_offsets(data_batch)
-    cls = torch.tensor(labels[i:i+batch_size])
+    cls = torch.tensor(labels[i:i + batch_size])
     text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
     return text, offsets, cls
+
 
 def train(lr_, num_epoch, data, labels):
     num_lines = num_epochs * len(data)
@@ -47,13 +50,15 @@ def train(lr_, num_epoch, data, labels):
             progress = (i + len(data) * epoch) / float(num_lines)
             lr = lr_ * (1 - progress)
             if i % 1024 == 0:
-                print("\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(progress * 100, loss.item(), lr), end='')
+                print(
+                    "\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(progress * 100, loss.item(), lr), end='')
             # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
                 p.grad.detach_()
                 p.grad.zero_()
     print("")
+
 
 def test(data, labels):
     total_accuracy = []
@@ -65,8 +70,10 @@ def test(data, labels):
             total_accuracy.append(accuracy)
     print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Train a text classification model on AG_NEWS')
+    parser = argparse.ArgumentParser(
+        description='Train a text classification model on AG_NEWS')
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
@@ -93,7 +100,8 @@ if __name__ == "__main__":
         os.mkdir(data)
 
     dataset = AG_NEWS(root=data, ngrams=args.ngrams)
-    model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.labels))).to(device)
+    model = TextSentiment(len(dataset.dictionary), embed_dim,
+                          len(set(dataset.labels))).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
     train(lr, num_epochs, dataset.train_data, dataset.train_labels)
