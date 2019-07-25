@@ -101,7 +101,8 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
-    train_dataset, test_dataset = text_classification.DATASETS[args.dataset](root=data, ngrams=args.ngrams)
+    train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
+        root=data, ngrams=args.ngrams)
     model = TextSentiment(len(train_dataset.get_vocab()),
                           embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)

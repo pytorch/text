@@ -80,7 +80,8 @@ def _create_data(vocab, data_path):
             cls = int(row[0]) - 1
             tokens = text_normalize(row[1])
             if len(tokens) == 0:
-                logging.info('Row {} of dataset {} contains no tokens.'.format(i, data_path))
+                logging.info(
+                    'Row {} of dataset {} contains no tokens.'.format(i, data_path))
             tokens = generate_ngrams(tokens, 2)
             tokens = torch.tensor(
                 [vocab[token] for token in tokens])

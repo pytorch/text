@@ -543,6 +543,7 @@ pretrained_aliases = {
 }
 """Mapping from string name to factory function"""
 
+
 def build_vocab_from_iterator(iter_, tokenizer, ngrams=2):
     counter = Counter()
     with tqdm(unit_scale=0, unit='lines') as t:
