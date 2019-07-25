@@ -1,11 +1,8 @@
 import torch
-import torchtext
-from model import TextSentiment
 import sys
 import argparse
 
 from torchtext.datasets.text_classification import text_normalize
-from torchtext.data.utils import generate_ngrams
 
 
 def predict(text, model, dictionary):

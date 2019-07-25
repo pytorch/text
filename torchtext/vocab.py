@@ -13,8 +13,6 @@ from tqdm import tqdm
 import tarfile
 
 from .utils import reporthook
-from collections import Counter, OrderedDict
-from itertools import chain
 
 logger = logging.getLogger(__name__)
 
