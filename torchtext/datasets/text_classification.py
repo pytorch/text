@@ -6,6 +6,7 @@ import csv
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import generate_ngrams
+from torchtext.vocab import build_vocab_from_iterator
 import random
 from tqdm import tqdm
 
@@ -56,33 +57,34 @@ def text_normalize(line):
     return line.split()
 
 
-def _build_dictionary_from_path(data_path, ngrams):
-    dictionary = Counter()
+def _build_vocab_from_csv(data_path, ngrams):
+    class csv_iterator(object):
+        def __iter__(self):
+            for row in reader:
+                yield ' '.join(row[1:])
+
+    def tokenizer(line):
+        tokens = text_normalize(line)
+        return generate_ngrams(tokens, ngrams)
+
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
-        with tqdm(unit_scale=0, unit='lines') as t:
-            for row in reader:
-                tokens = text_normalize(row[1])
-                tokens = generate_ngrams(tokens, ngrams)
-                dictionary.update(tokens)
-                t.update(1)
-    word_dictionary = OrderedDict()
-    for (token, frequency) in dictionary.most_common():
-        word_dictionary[token] = len(word_dictionary)
-    return word_dictionary
+        return build_vocab_from_iterator(csv_iterator(), tokenizer, ngrams)
 
 
-def _create_data(dictionary, data_path):
+def _create_data(vocab, data_path):
     data = []
     labels = []
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
-        for row in reader:
+        for i, row in enumerate(reader):
             cls = int(row[0]) - 1
             tokens = text_normalize(row[1])
+            if len(tokens) == 0:
+                logging.info('Row {} of dataset {} contains no tokens.'.format(i, data_path))
             tokens = generate_ngrams(tokens, 2)
             tokens = torch.tensor(
-                [dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
+                [vocab[token] for token in tokens])
             data.append((cls, tokens))
             labels.append(cls)
     return data, set(labels)
@@ -122,7 +124,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, dictionary, data, labels):
+    def __init__(self, vocab, data, labels):
         """Initiate text-classification dataset.
 
         Arguments:
@@ -134,7 +136,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         super(TextClassificationDataset, self).__init__()
         self._data = data
         self._labels = labels
-        self._dictionary = dictionary
+        self._vocab = vocab
 
     def __getitem__(self, i):
         return self._data[i]
@@ -149,27 +151,24 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def get_labels(self):
         return self._labels
 
-    def get_dictionary(self):
-        return self._dictionary
+    def get_vocab(self):
+        return self._vocab
 
 
 def _setup_datasets(root, ngrams, dataset_name):
     train_csv_path, test_csv_path = _extract_data(root, dataset_name)
 
-    logging.info('Building dictionary based on {}'.format(train_csv_path))
-    # TODO: Clean up and use Vocab object
-    # Standardized on torchtext.Vocab
-    UNK = '<unk>'
-    dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
-    dictionary[UNK] = len(dictionary)
+    logging.info('Building Vocab based on {}'.format(train_csv_path))
+    vocab = _build_vocab_from_csv(train_csv_path, ngrams)
+    logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
-    train_data, train_labels = _create_data(dictionary, train_csv_path)
+    train_data, train_labels = _create_data(vocab, train_csv_path)
     logging.info('Creating testing data')
-    test_data, test_labels = _create_data(dictionary, test_csv_path)
+    test_data, test_labels = _create_data(vocab, test_csv_path)
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
-    return (TextClassificationDataset(dictionary, train_data, train_labels),
-            TextClassificationDataset(dictionary, test_data, test_labels))
+    return (TextClassificationDataset(vocab, train_data, train_labels),
+            TextClassificationDataset(vocab, test_data, test_labels))
 
 
 def AG_NEWS(root='.data', ngrams=1):
