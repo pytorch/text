@@ -78,6 +78,25 @@ def _create_data(dictionary, data_path):
             data.append(tokens)
     return data, labels
 
+def _extract_data(root, dataset_name):
+    dataset_root = os.path.join(root, dataset_name + '_csv')
+    dataset_tar = dataset_root + '.tar.gz'
+
+    if os.path.exists(dataset_tar):
+        logging.info('Dataset %s already downloaded.' % dataset_name)
+    else:
+        download_from_url(URLS[dataset_name], dataset_tar)
+        logging.info('Dataset %s downloaded.' % dataset_name)
+    extracted_files = extract_archive(dataset_tar, root)
+
+    for fname in extracted_files:
+        if fname.endswith('train.csv'):
+            train_csv_path = fname
+        if fname.endswith('test.csv'):
+            test_csv_path = fname
+    return train_csv_path, test_csv_path
+
+
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
         Currently, we only support the following datasets:
@@ -103,39 +122,33 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                 Default: 1
         """
 
-        def _apply_preprocessing_to_csv(csv_filepath, tgt_filepath, function):
-            lines = []
-            with open(src_filepath) as src_data, open(tgt_filepath, 'w') as new_data:
-                reader = unicode_csv_reader(src_data)
-                lines.append((row[0], generate_ngrams(text_normalize(row[1]), ngrams)))
-            return lines
-
         super(TextClassificationDataset, self).__init__()
+        train_csv_path, test_csv_path = _extract_data(root, self.__class__.__name__)
 
-        dataset_name = self.__class__.__name__
-        dataset_root = os.path.join(root, dataset_name + '_csv')
-        dataset_tar = dataset_root + '.tar.gz'
-
-        if os.path.exists(dataset_tar):
-            logging.info('Dataset %s already downloaded.' % dataset_name)
-        else:
-            download_from_url(URLS[dataset_name], dataset_tar)
-            logging.info('Dataset %s downloaded.' % dataset_name)
-
-        extracted_files = extract_archive(dataset_tar, root)
-        for fname in extracted_files:
-            if fname.endswith('train.csv'):
-                train_csv_path = fname
-            if fname.endswith('test.csv'):
-                test_csv_path = fname
-
+        # We don't need the full Vocab object here, since the indicies are stored
+        # Standardized on torchtext.Vocab
+        UNK = '<unk>'
         dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
-        dictionary['UNK'] = len(dictionary)
-
+        dictionary[UNK] = len(dictionary)
+        self.dictionary = dictionary
         self.train_data, self.train_labels = _create_data(dictionary, train_csv_path)
         self.test_data, self.test_labels = _create_data(dictionary, test_csv_path)
-        self.dictionary = dictionary
-        self.unk = 'UNK'
+        self.data = self.train_data + self.test_data
+        self.labels = self.train_labels + self.test_labels
+        self.entries = zip(self.data, self.labels)
+
+     def __getitem__(self, i):
+        return self._entries[i]
+
+     def __len__(self):
+        try:
+            return len(self._entries)
+        except TypeError:
+            return 2**32
+
+     def __iter__(self):
+        for x in self._entries:
+            yield x
 
 
 class AG_NEWS(TextClassificationDataset):
@@ -240,8 +253,7 @@ class YelpReviewPolarity(TextClassificationDataset):
 
         """
 
-        super(YelpReviewPolarity, self).__init__(
-                                                 root, ngrams)
+        super(YelpReviewPolarity, self).__init__(root, ngrams)
 
 
 class YelpReviewFull(TextClassificationDataset):
@@ -262,8 +274,7 @@ class YelpReviewFull(TextClassificationDataset):
 
         """
 
-        super(YelpReviewFull, self).__init__(
-                                             root, ngrams)
+        super(YelpReviewFull, self).__init__(root, ngrams)
 
 
 class YahooAnswers(TextClassificationDataset):
@@ -293,8 +304,7 @@ class YahooAnswers(TextClassificationDataset):
 
         """
 
-        super(YahooAnswers, self).__init__(
-                                           root, ngrams)
+        super(YahooAnswers, self).__init__(root, ngrams)
 
 
 class AmazonReviewPolarity(TextClassificationDataset):
@@ -316,8 +326,7 @@ class AmazonReviewPolarity(TextClassificationDataset):
 
         """
 
-        super(AmazonReviewPolarity, self).__init__(
-                                                   root, ngrams)
+        super(AmazonReviewPolarity, self).__init__(root, ngrams)
 
 
 class AmazonReviewFull(TextClassificationDataset):
@@ -338,5 +347,4 @@ class AmazonReviewFull(TextClassificationDataset):
 
         """
 
-        super(AmazonReviewFull, self).__init__(
-                                               root, ngrams)
+        super(AmazonReviewFull, self).__init__(root, ngrams)
