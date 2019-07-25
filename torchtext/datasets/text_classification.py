@@ -73,7 +73,7 @@ def _create_data(dictionary, data_path):
             cls = int(row[0]) - 1
             tokens = text_normalize(row[1])
             tokens = generate_ngrams(tokens, 2)
-            tokens = torch.tensor([dictionary.get(entry, dictionary['UNK']) for entry in tokens])
+            tokens = torch.tensor([dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
             labels.append(cls)
             data.append(tokens)
     return data, labels
@@ -125,7 +125,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         super(TextClassificationDataset, self).__init__()
         train_csv_path, test_csv_path = _extract_data(root, self.__class__.__name__)
 
-        # We don't need the full Vocab object here, since the indicies are stored
+        # TODO: Clean up and use Vocab object
         # Standardized on torchtext.Vocab
         UNK = '<unk>'
         dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
@@ -135,18 +135,18 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         self.test_data, self.test_labels = _create_data(dictionary, test_csv_path)
         self.data = self.train_data + self.test_data
         self.labels = self.train_labels + self.test_labels
-        self.entries = zip(self.data, self.labels)
+        self._entries = zip(self.data, self.labels)
 
-     def __getitem__(self, i):
+    def __getitem__(self, i):
         return self._entries[i]
 
-     def __len__(self):
+    def __len__(self):
         try:
             return len(self._entries)
         except TypeError:
             return 2**32
 
-     def __iter__(self):
+    def __iter__(self):
         for x in self._entries:
             yield x
 

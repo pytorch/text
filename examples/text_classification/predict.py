@@ -4,13 +4,12 @@ from model import TextSentiment
 import sys
 import argparse
 
-from torchtext.datasets.text_classification import URLS
+from torchtext.datasets.text_classification import text_normalize
 from torchtext.data.utils import generate_ngrams
 
 def predict(text, model, dictionary):
     with torch.no_grad():
-        text = torchtext.datasets.text_classification.text_normalize(text)
-        text = torch.tensor([dictionary.get(token, dictionary['UNK']) for token in text])
+        text = torch.tensor([dictionary.get(token, dictionary['<unk>']) for token in text_normalize(text)])
         output = model(text, torch.tensor([0]))
         return output.argmax(1).item() + 1
 

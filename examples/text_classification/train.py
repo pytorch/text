@@ -48,9 +48,9 @@ def train(lr_, num_epoch, data, labels):
             lr = lr_ * (1 - progress)
             if i % 1024 == 0:
                 print("\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(progress * 100, loss.item(), lr), end='')
+            # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
-            for p in model.parameters():
                 p.grad.detach_()
                 p.grad.zero_()
     print("")
@@ -58,10 +58,11 @@ def train(lr_, num_epoch, data, labels):
 def test(data, labels):
     total_accuracy = []
     for i in range(0, len(data), batch_size):
-        text, offsets, cls = generate_batch(data, labels, i, batch_size)
-        output = model(text, offsets)
-        accuracy = (output.argmax(1) == cls).float().mean().item()
-        total_accuracy.append(accuracy)
+        with torch.no_grad():
+            text, offsets, cls = generate_batch(data, labels, i, batch_size)
+            output = model(text, offsets)
+            accuracy = (output.argmax(1) == cls).float().mean().item()
+            total_accuracy.append(accuracy)
     print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
 
 if __name__ == "__main__":
@@ -70,8 +71,9 @@ if __name__ == "__main__":
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
+    parser.add_argument('--ngrams', type=int, default=2)
     parser.add_argument('--device', default='cpu')
-    parser.add_argument('--data', default='./data')
+    parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
     parser.add_argument('--save-dictionary-path')
     parser.add_argument('--logging-level', default='WARNING')
@@ -90,7 +92,7 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
-    dataset = AG_NEWS(root=data, ngrams=2)
+    dataset = AG_NEWS(root=data, ngrams=args.ngrams)
     model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.train_labels))).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
