@@ -132,6 +132,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         self.dictionary = dictionary
         self.train_data, self.train_labels = _create_data(dictionary, train_csv_path)
         self.test_data, self.test_labels = _create_data(dictionary, test_csv_path)
+        self.train_examples = zip(self.train_data, self.train_labels)
+        self.test_examples = zip(self.test_data, self.test_labels)
         self.data = self.train_data + self.test_data
         self.labels = self.train_labels + self.test_labels
         self._entries = zip(self.data, self.labels)
