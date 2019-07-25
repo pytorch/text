@@ -8,7 +8,6 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.data.utils import ngrams_iterator
 from torchtext.vocab import build_vocab_from_iterator
 import random
-from tqdm import tqdm
 
 from collections import Counter
 from collections import OrderedDict
