@@ -1,6 +1,7 @@
 import pytest
+import os
 
 slow = pytest.mark.skipif(
-    not pytest.config.getoption("--runslow"),
-    reason="This test is slow. Set --runslow flag to run."
+    os.getenv('RUN_SLOW', 'False') == 'False',
+    reason="This test is slow."
 )
