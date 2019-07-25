@@ -3,6 +3,7 @@ import re
 import logging
 import torch
 import csv
+import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import generate_ngrams
 import random
@@ -53,7 +54,7 @@ def text_normalize(line):
 
 def _build_dictionary_from_path(data_path, ngrams):
     dictionary = Counter()
-    with open(data_path, encoding="utf8") as f:
+    with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
             tokens = text_normalize(row[1])
@@ -67,7 +68,7 @@ def _build_dictionary_from_path(data_path, ngrams):
 def _create_data(dictionary, data_path):
     data = []
     labels = []
-    with open(data_path, encoding="utf8") as f:
+    with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
             cls = int(row[0]) - 1
