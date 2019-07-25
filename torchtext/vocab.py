@@ -544,11 +544,18 @@ pretrained_aliases = {
 """Mapping from string name to factory function"""
 
 
-def build_vocab_from_iterator(iter_, tokenizer, ngrams=2):
+def build_vocab_from_iterator(iterator):
+    """
+    Build a Vocab from an iterator.
+
+    Arguments:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+    """
+
     counter = Counter()
     with tqdm(unit_scale=0, unit='lines') as t:
-        for row in iter_:
-            counter.update(tokenizer(row))
+        for tokens in iterator:
+            counter.update(tokens)
             t.update(1)
     word_vocab = Vocab(counter)
     return word_vocab

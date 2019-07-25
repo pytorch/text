@@ -85,6 +85,7 @@ if __name__ == "__main__":
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
     parser.add_argument('--save-vocab-path')
+    parser.add_argument('--load-vocab-path')
     parser.add_argument('--logging-level', default='WARNING')
     args = parser.parse_args()
 
@@ -94,6 +95,7 @@ if __name__ == "__main__":
     lr = args.lr
     device = args.device
     data = args.data
+    vocab = args.load_vocab_path
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
@@ -102,7 +104,12 @@ if __name__ == "__main__":
         os.mkdir(data)
 
     train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
-        root=data, ngrams=args.ngrams)
+        root=data, ngrams=args.ngrams, vocab=vocab)
+
+    if args.save_vocab_path:
+        print("Saving vocab to {}".format(args.save_vocab_path))
+        torch.save(train_dataset.get_vocab, args.save_vocab_path)
+
     model = TextSentiment(len(train_dataset.get_vocab()),
                           embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
@@ -113,6 +120,3 @@ if __name__ == "__main__":
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
         torch.save(model.to('cpu'), args.save_model_path)
-    if args.save_vocab_path:
-        print("Saving vocab to {}".format(args.save_vocab_path))
-        torch.save(dataset.vocab, args.save_vocab_path)

@@ -5,7 +5,7 @@ import torch
 import csv
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.utils import generate_ngrams
+from torchtext.data.utils import ngrams_iterator
 from torchtext.vocab import build_vocab_from_iterator
 import random
 from tqdm import tqdm
@@ -56,37 +56,28 @@ def text_normalize(line):
     return line.split()
 
 
-def _build_vocab_from_csv(data_path, ngrams):
-    class csv_iterator(object):
-        def __iter__(self):
-            for row in reader:
-                yield ' '.join(row[1:])
-
-    def tokenizer(line):
-        tokens = text_normalize(line)
-        return generate_ngrams(tokens, ngrams)
-
+def _csv_iterator(data_path, ngrams, yield_cls=False):
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
-        return build_vocab_from_iterator(csv_iterator(), tokenizer, ngrams)
+        for row in reader:
+            tokens = ' '.join(row[1:])
+            tokens = text_normalize(tokens)
+            if yield_cls:
+                yield int(row[0]) - 1, ngrams_iterator(tokens, ngrams)
+            else:
+                yield ngrams_iterator(tokens, ngrams)
 
 
-def _create_data(vocab, data_path):
+def _create_data_from_iterator(vocab, iterator):
     data = []
     labels = []
-    with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for i, row in enumerate(reader):
-            cls = int(row[0]) - 1
-            tokens = text_normalize(row[1])
-            if len(tokens) == 0:
-                logging.info(
-                    'Row {} of dataset {} contains no tokens.'.format(i, data_path))
-            tokens = generate_ngrams(tokens, 2)
-            tokens = torch.tensor(
-                [vocab[token] for token in tokens])
-            data.append((cls, tokens))
-            labels.append(cls)
+    for cls, tokens in iterator:
+        tokens = torch.tensor([vocab[token] for token in tokens])
+        if len(tokens) == 0:
+            logging.info(
+                'Row {} of dataset {} contains no tokens.'.format(i, data_path))
+        data.append((cls, tokens))
+        labels.append(cls)
     return data, set(labels)
 
 
@@ -155,23 +146,25 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(root, ngrams, dataset_name):
+def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
     train_csv_path, test_csv_path = _extract_data(root, dataset_name)
-
-    logging.info('Building Vocab based on {}'.format(train_csv_path))
-    vocab = _build_vocab_from_csv(train_csv_path, ngrams)
+    if vocab is None:
+        logging.info('Building Vocab based on {}'.format(train_csv_path))
+        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
-    train_data, train_labels = _create_data(vocab, train_csv_path)
+    train_data, train_labels = _create_data_from_iterator(
+        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True))
     logging.info('Creating testing data')
-    test_data, test_labels = _create_data(vocab, test_csv_path)
+    test_data, test_labels = _create_data_from_iterator(
+        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True))
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
     return (TextClassificationDataset(vocab, train_data, train_labels),
             TextClassificationDataset(vocab, test_data, test_labels))
 
 
-def AG_NEWS(root='.data', ngrams=1):
+def AG_NEWS(*args, **kwargs):
     """ Defines AG_NEWS datasets.
         The labels includes:
             - 1 : World
@@ -193,10 +186,10 @@ def AG_NEWS(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "AG_NEWS")
+    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
 
 
-def SogouNews(root='.data', ngrams=1):
+def SogouNews(*args, **kwargs):
     """ Defines SogouNews datasets.
         The labels includes:
             - 1 : Sports
@@ -219,10 +212,10 @@ def SogouNews(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "SogouNews")
+    return _setup_datasets(*(("SogouNews",) + args), **kwargs)
 
 
-def DBpedia(root='.data', ngrams=1):
+def DBpedia(*args, **kwargs):
     """ Defines DBpedia datasets.
         The labels includes:
             - 1 : Company
@@ -254,10 +247,10 @@ def DBpedia(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "DBpedia")
+    return _setup_datasets(*(("DBpedia",) + args), **kwargs)
 
 
-def YelpReviewPolarity(root='.data', ngrams=1):
+def YelpReviewPolarity(*args, **kwargs):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity.
@@ -277,10 +270,10 @@ def YelpReviewPolarity(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "YelpReviewPolarity")
+    return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
 
 
-def YelpReviewFull(root='.data', ngrams=1):
+def YelpReviewFull(*args, **kwargs):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
@@ -299,10 +292,10 @@ def YelpReviewFull(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "YelpReviewFull")
+    return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
 
 
-def YahooAnswers(root='.data', ngrams=1):
+def YahooAnswers(*args, **kwargs):
     """ Defines YahooAnswers datasets.
         The labels includes:
             - 1 : Society & Culture
@@ -330,10 +323,10 @@ def YahooAnswers(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "YahooAnswers")
+    return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
 
 
-def AmazonReviewPolarity(root='.data', ngrams=1):
+def AmazonReviewPolarity(*args, **kwargs):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity
@@ -353,10 +346,10 @@ def AmazonReviewPolarity(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "AmazonReviewPolarity")
+    return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
 
 
-def AmazonReviewFull(root='.data', ngrams=1):
+def AmazonReviewFull(*args, **kwargs):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
@@ -375,7 +368,7 @@ def AmazonReviewFull(root='.data', ngrams=1):
 
     """
 
-    return _setup_datasets(root, ngrams, "AmazonReviewFull")
+    return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
 
 
 DATASETS = {
