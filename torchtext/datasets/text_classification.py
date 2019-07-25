@@ -66,7 +66,6 @@ def _build_dictionary_from_path(data_path, ngrams):
 
 def _create_data(dictionary, data_path):
     data = []
-    labels = []
     with open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
@@ -74,9 +73,8 @@ def _create_data(dictionary, data_path):
             tokens = text_normalize(row[1])
             tokens = generate_ngrams(tokens, 2)
             tokens = torch.tensor([dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
-            labels.append(cls)
-            data.append(tokens)
-    return data, labels
+            data.append((cls, tokens))
+    return data
 
 def _extract_data(root, dataset_name):
     dataset_root = os.path.join(root, dataset_name + '_csv')
@@ -96,7 +94,6 @@ def _extract_data(root, dataset_name):
             test_csv_path = fname
     return train_csv_path, test_csv_path
 
-
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
         Currently, we only support the following datasets:
@@ -112,7 +109,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, root, ngrams):
+    def __init__(self, data):
         """Initiate text-classification dataset.
 
         Arguments:
@@ -122,50 +119,41 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         """
 
         super(TextClassificationDataset, self).__init__()
-        train_csv_path, test_csv_path = _extract_data(root, self.__class__.__name__)
-
-        # TODO: Clean up and use Vocab object
-        # Standardized on torchtext.Vocab
-        UNK = '<unk>'
-        dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
-        dictionary[UNK] = len(dictionary)
-        self.dictionary = dictionary
-        self.train_data, self.train_labels = _create_data(dictionary, train_csv_path)
-        self.test_data, self.test_labels = _create_data(dictionary, test_csv_path)
-        self.train_examples = []
-        for data, label in zip(self.train_data, self.train_labels):
-            self.train_examples.append((label, data))
-        self.test_examples = []
-        for data, label in zip(self.test_data, self.test_labels):
-            self.test_examples.append((label, data))
-        self.data = self.train_data + self.test_data
-        self.labels = self.train_labels + self.test_labels
-        self._entries = zip(self.data, self.labels)
+        self._data = data
 
     def __getitem__(self, i):
-        return self._entries[i]
+        return self._data[i]
 
     def __len__(self):
-        try:
-            return len(self._entries)
-        except TypeError:
-            return 2**32
+        return len(self._data[i])
 
     def __iter__(self):
-        for x in self._entries:
+        for x in self._data:
             yield x
 
+def _setup_datasets(root, ngrams, dataset_name):
+    train_csv_path, test_csv_path = _extract_data(root, self.__class__.__name__)
 
-class AG_NEWS(TextClassificationDataset):
+    # TODO: Clean up and use Vocab object
+    # Standardized on torchtext.Vocab
+    UNK = '<unk>'
+    dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
+    dictionary[UNK] = len(dictionary)
+    self.dictionary = dictionary
+    train_data = _create_data(dictionary, train_csv_path)
+    test_data = _create_data(dictionary, test_csv_path)
+    return TextClassificationDataset(train_data), TextClassificationDataset(test_data)
+
+
+def AG_NEWS(self, root='.data', ngrams=1):
     """ Defines AG_NEWS datasets.
         The labels includes:
             - 1 : World
             - 2 : Sports
             - 3 : Business
             - 4 : Sci/Tech
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: AG_NEWS
+
+    Create supervised learning dataset: AG_NEWS
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -177,10 +165,10 @@ class AG_NEWS(TextClassificationDataset):
 
         """
 
-        super(AG_NEWS, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "AG_NEWS")
 
 
-class SogouNews(TextClassificationDataset):
+def SogouNews(self, root='.data', ngrams=1):
     """ Defines SogouNews datasets.
         The labels includes:
             - 1 : Sports
@@ -188,9 +176,8 @@ class SogouNews(TextClassificationDataset):
             - 3 : Entertainment
             - 4 : Automobile
             - 5 : Technology
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: SogouNews
+
+    Create supervised learning dataset: SogouNews
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -202,10 +189,10 @@ class SogouNews(TextClassificationDataset):
 
         """
 
-        super(SogouNews, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "SogouNews")
 
 
-class DBpedia(TextClassificationDataset):
+def DBpedia(self, root='.data', ngrams=1):
     """ Defines DBpedia datasets.
         The labels includes:
             - 1 : Company
@@ -222,9 +209,8 @@ class DBpedia(TextClassificationDataset):
             - 12 : Album
             - 13 : Film
             - 14 : WrittenWork
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: DBpedia
+
+    Create supervised learning dataset: DBpedia
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -236,17 +222,16 @@ class DBpedia(TextClassificationDataset):
 
         """
 
-        super(DBpedia, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "DBpedia")
 
 
-class YelpReviewPolarity(TextClassificationDataset):
+def YelpReviewPolarity(self, root='.data', ngrams=1):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity.
             - 2 : Positive polarity.
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: YelpReviewPolarity
+
+    Create supervised learning dataset: YelpReviewPolarity
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -258,16 +243,15 @@ class YelpReviewPolarity(TextClassificationDataset):
 
         """
 
-        super(YelpReviewPolarity, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "YelpReviewPolarity")
 
 
-class YelpReviewFull(TextClassificationDataset):
+def YelpReviewFull(self, root='.data', ngrams=1):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: YelpReviewFull
+
+    Create supervised learning dataset: YelpReviewFull
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -279,10 +263,10 @@ class YelpReviewFull(TextClassificationDataset):
 
         """
 
-        super(YelpReviewFull, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "YelpReviewFull")
 
 
-class YahooAnswers(TextClassificationDataset):
+def YahooAnswers(self, root='.data', ngrams=1):
     """ Defines YahooAnswers datasets.
         The labels includes:
             - 1 : Society & Culture
@@ -295,9 +279,8 @@ class YahooAnswers(TextClassificationDataset):
             - 8 : Entertainment & Music
             - 9 : Family & Relationships
             - 10 : Politics & Government
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: YahooAnswers
+
+    Create supervised learning dataset: YahooAnswers
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -309,17 +292,16 @@ class YahooAnswers(TextClassificationDataset):
 
         """
 
-        super(YahooAnswers, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "YahooAnswers")
 
 
-class AmazonReviewPolarity(TextClassificationDataset):
+def AmazonReviewPolarity(self, root='.data', ngrams=1):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity
             - 2 : Positive polarity
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: AmazonReviewPolarity
+
+    Create supervised learning dataset: AmazonReviewPolarity
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -331,16 +313,15 @@ class AmazonReviewPolarity(TextClassificationDataset):
 
         """
 
-        super(AmazonReviewPolarity, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "AmazonReviewPolarity")
 
 
-class AmazonReviewFull(TextClassificationDataset):
+def AmazonReviewFull(self, root='.data', ngrams=1):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
-     """
-    def __init__(self, root='.data', ngrams=1):
-        """Create supervised learning dataset: AmazonReviewFull
+
+    Create supervised learning dataset: AmazonReviewFull
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
@@ -352,4 +333,4 @@ class AmazonReviewFull(TextClassificationDataset):
 
         """
 
-        super(AmazonReviewFull, self).__init__(root, ngrams)
+    return _setup_datasets(root, ngrams, "AmazonReviewFull")
