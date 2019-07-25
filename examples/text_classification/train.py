@@ -31,37 +31,45 @@ def generate_batch(data, labels, i, batch_size):
     text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
     return text, offsets, cls
 
-def train(epoch, data, labels):
-    perm = list(range(len(data)))
-    random.shuffle(perm)
-    data = [data[i] for i in perm]
-    labels = [labels[i] for i in perm]
+def train(lr_, num_epoch, data, labels):
+    num_lines = num_epochs * len(data)
+    for epoch in range(num_epochs):
+        perm = list(range(len(data)))
+        random.shuffle(perm)
+        data = [data[i] for i in perm]
+        labels = [labels[i] for i in perm]
 
-    total_loss = []
-    for i in range(0, len(data), batch_size):
-        text, offsets, cls = generate_batch(data, labels, i, batch_size)
-        optimizer.zero_grad()
-        output = model(text, offsets)
-        loss = criterion(output, cls)
-        total_loss.append(loss.item())
-        loss.backward()
-        optimizer.step()
-    return sum(total_loss) / len(total_loss)
+        for i in range(0, len(data), batch_size):
+            text, offsets, cls = generate_batch(data, labels, i, batch_size)
+            output = model(text, offsets)
+            loss = criterion(output, cls)
+            loss.backward()
+            progress = (i + len(data) * epoch) / float(num_lines)
+            lr = lr_ * (1 - progress)
+            if i % 1024 == 0:
+                print("\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(progress * 100, loss.item(), lr), end='')
+            for p in model.parameters():
+                p.data.add_(p.grad.data * -lr)
+            for p in model.parameters():
+                p.grad.detach_()
+                p.grad.zero_()
+    print("")
 
 def test(data, labels):
     total_accuracy = []
     for i in range(0, len(data), batch_size):
         text, offsets, cls = generate_batch(data, labels, i, batch_size)
         output = model(text, offsets)
-        accuracy = (output.argmax(1) == cls).float().mean()
+        accuracy = (output.argmax(1) == cls).float().mean().item()
         total_accuracy.append(accuracy)
-    return torch.tensor(total_accuracy).float().mean()
+    print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train a text classification model on AG_NEWS')
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
+    parser.add_argument('--lr', type=float, default=64.0)
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='./data')
     parser.add_argument('--save-model-path')
@@ -72,6 +80,7 @@ if __name__ == "__main__":
     num_epochs = args.num_epochs
     embed_dim = args.embed_dim
     batch_size = args.batch_size
+    lr = args.lr
     device = args.device
     data = args.data
 
@@ -84,11 +93,10 @@ if __name__ == "__main__":
     dataset = AG_NEWS(root=data, ngrams=2)
     model = TextSentiment(len(dataset.dictionary), embed_dim, len(set(dataset.train_labels))).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
-    optimizer = optim.SGD(model.parameters(), lr=4.0)
 
-    for epoch in range(num_epochs):
-        print("Epoch: {} - Loss: {}".format(epoch,  str(train(epoch, dataset.train_data, dataset.train_labels))))
-    print("Test - Accuracy: {}".format(test(dataset.test_data, dataset.test_labels)))
+    train(lr, num_epochs, dataset.train_data, dataset.train_labels)
+    test(dataset.test_data, dataset.test_labels)
+
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
         torch.save(model.to('cpu'), args.save_model_path)
