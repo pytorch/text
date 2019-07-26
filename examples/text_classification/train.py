@@ -3,6 +3,7 @@ import logging
 import argparse
 
 import torch
+import sys
 
 from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
@@ -36,13 +37,16 @@ def train(lr_, num_epoch, data_):
             output = model(text, offsets)
             loss = criterion(output, cls)
             loss.backward()
-            progress = (i + len(data) * epoch) / float(num_lines)
+            processed_lines = i + len(data) * epoch
+            progress = processed_lines / float(num_lines)
             lr = lr_ * (1 - progress)
             # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
                 p.grad.detach_()
                 p.grad.zero_()
+            if processed_lines % 1024:
+                sys.stderr.write("\rProgress: {:3.0f}% lr: {:3.3f} loss: {:3.3f}".format(progress * 100, lr, loss))
     print("")
 
 
