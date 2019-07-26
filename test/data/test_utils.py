@@ -4,7 +4,6 @@ import pytest
 from ..common.torchtext_test_case import TorchtextTestCase
 from torchtext.datasets.text_classification import text_normalize
 
-
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
 
@@ -51,11 +50,11 @@ class TestUtils(TorchtextTestCase):
         # Test text_nomalize function in torchtext.datasets.text_classification
         ref_lines = []
         test_lines = []
-        with open('../asset/test.csv') as src_data:
+        with open('../asset/text_normalization_ag_news_test.csv') as src_data:
             for line in src_data:
                 test_lines.append(text_normalize(line))
 
-        with open('../asset/ag_news.test') as ref_data:
+        with open('../asset/text_normalization_ag_news_ref_results.test') as ref_data:
             for line in ref_data:
                 line = line.split()
                 line[0] = line[0][9:]  # remove '__label__'

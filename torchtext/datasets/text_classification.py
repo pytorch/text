@@ -57,8 +57,8 @@ def text_normalize(line):
         add spaces before and after ')'
         add spaces before and after '!'
         add spaces before and after '?'
-        replace ';' multiple spaces with single space
-        replace ':' multiple spaces with single space
+        replace ';' with single space
+        replace ':' with single space
         replace multiple spaces with single space
 
     Returns a list of tokens after splitting on whitespace.
