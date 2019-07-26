@@ -63,8 +63,8 @@ class TestUtils(TorchtextTestCase):
         with io.open(data_path, encoding="utf8") as ref_data:
             for line in ref_data:
                 line = line.split()
-                assert line[0][:9] == '__label__'
+                self.assertEqual(line[0][:9], '__label__')
                 line[0] = line[0][9:]  # remove '__label__'
                 ref_lines.append(line)
 
-        assert ref_lines == test_lines
+        self.assertEqual(ref_lines, test_lines)
