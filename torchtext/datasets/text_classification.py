@@ -43,7 +43,7 @@ replaced_string = [' \'  ', '',
 
 
 def text_normalize(line):
-    """
+    r"""
     Basic normalization for a line of text.
     Normalization includes
     - lowercasing

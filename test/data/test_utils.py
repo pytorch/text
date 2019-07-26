@@ -6,6 +6,7 @@ from torchtext.datasets.text_classification import text_normalize
 from torchtext.utils import unicode_csv_reader
 import io
 
+
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
 
