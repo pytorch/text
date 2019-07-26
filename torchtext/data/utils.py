@@ -13,26 +13,46 @@ def _split_tokenizer(x):
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
-# TODO: Replicate below
-#  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
-#    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
-#        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
-#        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
-_normalize_pattern_re = re.compile(r'[\W_]+')
+_normalize_pattern_re = [re.compile(r'\''), re.compile(r'\"'),
+                         re.compile(r'\.'), re.compile(r'<br \/>'),
+                         re.compile(r','), re.compile(r'\('),
+                         re.compile(r'\)'), re.compile(r'\!'),
+                         re.compile(r'\?'), re.compile(r'\;'),
+                         re.compile(r'\:'), re.compile(' +')]
+
+replaced_string = [' \'  ', '',
+                   ' . ', ' ',
+                   ' , ', ' ( ',
+                   ' ) ', ' ! ',
+                   ' ? ', ' ',
+                   ' ', ' ']
 
 
 def _basic_english_normalize(line):
-    """
+    r"""
     Basic normalization for a line of text.
     Normalization includes
     - lowercasing
-    - replacing all non-alphanumeric characters with whitespace
+    - complete some basic text normalization for English words as follows:
+        add spaces before and after '\''
+        remove '\"',
+        add spaces before and after '.'
+        replace '<br \/>'with single space
+        add spaces before and after ','
+        add spaces before and after '('
+        add spaces before and after ')'
+        add spaces before and after '!'
+        add spaces before and after '?'
+        replace ';' with single space
+        replace ':' with single space
+        replace multiple spaces with single space
+
     Returns a list of tokens after splitting on whitespace.
     """
 
     line = line.lower()
-    line = _normalize_pattern_re.sub(' ', line)
-
+    for pattern_re, replaced_str in zip(_normalize_pattern_re, replaced_string):
+        line = pattern_re.sub(replaced_str, line)
     return line.split()
 
 
