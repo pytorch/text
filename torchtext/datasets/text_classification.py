@@ -27,13 +27,6 @@ URLS = {
 }
 
 
-# TODO: Replicate below
-#  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
-#    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
-#        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
-#        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
-
-import re
 _normalize_pattern_re = [re.compile(r'\''), re.compile(r'\"'),
                          re.compile(r'\.'), re.compile(r'<br \/>'),
                          re.compile(r','), re.compile(r'\('),
@@ -50,7 +43,8 @@ replaced_string = [' \'  ', '',
                    ' ', ' ',
                    ' ']
 
-def text_normalized(line):
+
+def text_normalize(line):
     """
     Basic normalization for a line of text.
     Normalization includes
@@ -62,7 +56,7 @@ def text_normalized(line):
     line = line.lower()
     for pattern_re, replaced_str in zip(_normalize_pattern_re, replaced_string):
         line = pattern_re.sub(replaced_str, line)
-    return line.split()
+    return line
 
 
 def _csv_iterator(data_path, ngrams, yield_cls=False):
