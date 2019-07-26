@@ -45,7 +45,7 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
         >>> '.data/validation.tar.gz'
     """
 
-    def process_response(r, root, filename):
+    def _process_response(r, root, filename):
         chunk_size = 16 * 1024
         total_size = int(r.headers.get('Content-length', 0))
         if not os.path.exists(root):
@@ -77,7 +77,7 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
 
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
-        return process_response(response, root, filename)
+        return _process_response(response, root, filename)
 
     logging.info('Downloading from Google Drive; may take a few minutes')
     confirm_token = None
@@ -91,7 +91,7 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
         url = url + "&confirm=" + confirm_token
         response = session.get(url, stream=True)
 
-    return process_response(response, root, filename)
+    return _process_response(response, root, filename)
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
