@@ -48,10 +48,18 @@ def text_normalize(line):
     Normalization includes
     - lowercasing
     - complete some basic text normalization for English words as follows:
-        add spaces before and after '\'', '.', ',', '(', ')', '!', , '?',
+        add spaces before and after '\''
         remove '\"',
-        replace r'<br \/>', ';', ':', multiple spaces with single space
-
+        add spaces before and after '.'
+        replace '<br \/>'with single space
+        add spaces before and after ','
+        add spaces before and after '('
+        add spaces before and after ')'
+        add spaces before and after '!'
+        add spaces before and after '?'
+        replace ';' multiple spaces with single space
+        replace ':' multiple spaces with single space
+        replace multiple spaces with single space
 
     Returns a list of tokens after splitting on whitespace.
     """
