@@ -15,4 +15,5 @@ class TextSentiment(nn.Module):
         self.fc.bias.data.zero_()
 
     def forward(self, text, offsets):
-        return self.fc(self.embedding(text, offsets))
+        embedded = self.embedding(text, offsets)
+        return self.fc(embedded)
