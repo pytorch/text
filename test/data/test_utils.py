@@ -2,6 +2,7 @@ import six
 import torchtext.data as data
 import pytest
 from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext.datasets.text_classification import text_normalize
 
 
 class TestUtils(TorchtextTestCase):
@@ -45,3 +46,11 @@ class TestUtils(TorchtextTestCase):
             data.get_tokenizer(1)
         with self.assertRaises(ValueError):
             data.get_tokenizer("some other string")
+
+    def test_text_nomalize_function(self):
+        # Test text_nomalize function in torchtext.datasets.text_classification
+        origin_line = r'U.S. Stocks Set for Slightly Firmer Open"," NEW YORK (Reuters) - U.S. stocks were set to move slightly  higher at the open on Friday with a \$1 billion share buyback at Texas Instruments Inc. &lt;A HREF=""http://www.investor.reuters.com/FullQuote.aspx?ticker=TXN.N target=/stocks/quickinfo/fullquote""&gt;TXN.N&lt;/A&gt; supporting technology stocks,  although rising oil prices could limit gains.'
+        ref_result = r'u . s . stocks set for slightly firmer open , new york ( reuters ) - u . s . stocks were set to move slightly higher at the open on friday with a \$1 billion share buyback at texas instruments inc . &lt a href=http //www . investor . reuters . com/fullquote . aspx ? ticker=txn . n target=/stocks/quickinfo/fullquote&gt txn . n&lt /a&gt supporting technology stocks , although rising oil prices could limit gains .'
+
+        test_result = text_normalize(origin_line)
+        assert test_result == ref_result.split()
