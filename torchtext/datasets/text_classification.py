@@ -5,7 +5,9 @@ import io
 import os
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import ngrams_iterator
+from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
+from torchtext.vocab import Vocab
 
 URLS = {
     'AG_NEWS':
@@ -27,35 +29,13 @@ URLS = {
 }
 
 
-# TODO: Replicate below
-#  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
-#    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
-#        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
-#        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
-_normalize_pattern_re = re.compile(r'[\W_]+')
-
-
-def text_normalize(line):
-    """
-    Basic normalization for a line of text.
-    Normalization includes
-    - lowercasing
-    - replacing all non-alphanumeric characters with whitespace
-    Returns a list of tokens after splitting on whitespace.
-    """
-
-    line = line.lower()
-    line = _normalize_pattern_re.sub(' ', line)
-
-    return line.split()
-
-
 def _csv_iterator(data_path, ngrams, yield_cls=False):
+    tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
             tokens = ' '.join(row[1:])
-            tokens = text_normalize(tokens)
+            tokens = tokenizer(tokens)
             if yield_cls:
                 yield int(row[0]) - 1, ngrams_iterator(tokens, ngrams)
             else:
@@ -72,25 +52,6 @@ def _create_data_from_iterator(vocab, iterator):
         data.append((cls, tokens))
         labels.append(cls)
     return data, set(labels)
-
-
-def _extract_data(root, dataset_name):
-    dataset_root = os.path.join(root, dataset_name + '_csv')
-    dataset_tar = dataset_root + '.tar.gz'
-
-    if os.path.exists(dataset_tar):
-        logging.info('Dataset %s already downloaded.' % dataset_name)
-    else:
-        download_from_url(URLS[dataset_name], dataset_tar)
-        logging.info('Dataset %s downloaded.' % dataset_name)
-    extracted_files = extract_archive(dataset_tar, root)
-
-    for fname in extracted_files:
-        if fname.endswith('train.csv'):
-            train_csv_path = fname
-        if fname.endswith('test.csv'):
-            test_csv_path = fname
-    return train_csv_path, test_csv_path
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -140,10 +101,28 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
-    train_csv_path, test_csv_path = _extract_data(root, dataset_name)
+    dataset_root = os.path.join(root, dataset_name + '_csv')
+    dataset_tar = dataset_root + '.tar.gz'
+
+    if os.path.exists(dataset_tar):
+        logging.info('Dataset %s already downloaded.' % dataset_name)
+    else:
+        download_from_url(URLS[dataset_name], dataset_tar)
+        logging.info('Dataset %s downloaded.' % dataset_name)
+    extracted_files = extract_archive(dataset_tar, root)
+
+    for fname in extracted_files:
+        if fname.endswith('train.csv'):
+            train_csv_path = fname
+        if fname.endswith('test.csv'):
+            test_csv_path = fname
+
     if vocab is None:
         logging.info('Building Vocab based on {}'.format(train_csv_path))
         vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
+    else:
+        if not isinstance(vocab, Vocab):
+            raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
     train_data, train_labels = _create_data_from_iterator(

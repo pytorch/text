@@ -1,6 +1,7 @@
 import random
 from contextlib import contextmanager
 from copy import deepcopy
+import re
 
 from functools import partial
 
@@ -12,11 +13,36 @@ def _split_tokenizer(x):
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
+# TODO: Replicate below
+#  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
+#    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
+#        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
+#        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
+_normalize_pattern_re = re.compile(r'[\W_]+')
+
+
+def _basic_english_normalize(line):
+    """
+    Basic normalization for a line of text.
+    Normalization includes
+    - lowercasing
+    - replacing all non-alphanumeric characters with whitespace
+    Returns a list of tokens after splitting on whitespace.
+    """
+
+    line = line.lower()
+    line = _normalize_pattern_re.sub(' ', line)
+
+    return line.split()
+
 
 def get_tokenizer(tokenizer, language='en'):
     # default tokenizer is string.split(), added as a module function for serialization
     if tokenizer is None:
         return _split_tokenizer
+
+    if tokenizer is "basic_english":
+        return _basic_english_normalize
 
     # simply return if a function is passed
     if callable(tokenizer):

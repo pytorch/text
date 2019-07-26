@@ -71,7 +71,6 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
-    parser.add_argument('--save-vocab-path')
     parser.add_argument('--load-vocab-path')
     parser.add_argument('--logging-level', default='WARNING')
     args = parser.parse_args()
@@ -90,12 +89,11 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
+    if args.load_vocab_path:
+        vocab = torch.load(args.load_vocab_path)
+
     train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
         root=data, ngrams=args.ngrams, vocab=vocab)
-
-    if args.save_vocab_path:
-        print("Saving vocab to {}".format(args.save_vocab_path))
-        torch.save(train_dataset.get_vocab, args.save_vocab_path)
 
     model = TextSentiment(len(train_dataset.get_vocab()),
                           embed_dim, len(train_dataset.get_labels())).to(device)

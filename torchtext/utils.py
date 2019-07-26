@@ -5,6 +5,7 @@ from tqdm import tqdm
 import os
 import tarfile
 import logging
+import re
 
 
 def reporthook(t):
@@ -27,27 +28,42 @@ def reporthook(t):
     return inner
 
 
-def download_from_url(url, path):
-    """Download file, with logic (from tensor2tensor) for Google Drive
+def download_from_url(url, root='.data', filename=None, overwrite=False):
+    """Download file, with logic (from tensor2tensor) for Google Drive.
+    Returns the path to the downloaded file.
 
     Arguments:
-        url: the url for online Dataset
-        path: directory and filename for the downloaded dataset.
+        url: the url of the file
+        root: download folder used to store the file in (.data)
+        filename: explicitly set the filename, otherwise attempts to detect the file name from URL header. (None)
+        overwrite: overwrite existing files (False)
 
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
-        >>> path = './validation.tar.gz'
-        >>> torchtext.utils.download_from_url(url, path)
+        >>> torchtext.utils.download_from_url(url)
+        >>> '.data/validation.tar.gz'
     """
 
-    def process_response(r):
+    def process_response(r, root, filename):
         chunk_size = 16 * 1024
         total_size = int(r.headers.get('Content-length', 0))
-        download_dir = os.path.dirname(path)
-        if not os.path.exists(download_dir):
+        if not os.path.exists(root):
             raise RuntimeError(
                 "Download directorty {} does not exist. "
                 "Did you create it?".format(download_dir))
+        if filename is None:
+            d = r.headers['content-disposition']
+            filename = re.findall("filename=\"(.+)\"", d)
+            if filename is None:
+                raise RuntimeError("Filename could not be autodetected")
+            filename = filename[0]
+        path = os.path.join(root, filename)
+        if os.path.exists(path):
+            logging.info('File %s already exists.' % path)
+            if not overwrite:
+                return path
+            logging.info('Overwriting file %s.' % path)
+        logging.info('Downloading file {} to {}.'.format(filename, path))
         with open(path, "wb") as file:
             with tqdm(total=total_size, unit='B',
                       unit_scale=1, desc=path.split('/')[-1]) as t:
@@ -55,11 +71,12 @@ def download_from_url(url, path):
                     if chunk:
                         file.write(chunk)
                         t.update(len(chunk))
+        logging.info('File {} downloaded.'.format(path))
+        return path
 
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
-        process_response(response)
-        return
+        return process_response(response, root, filename)
 
     logging.info('Downloading from Google Drive; may take a few minutes')
     confirm_token = None
@@ -73,7 +90,7 @@ def download_from_url(url, path):
         url = url + "&confirm=" + confirm_token
         response = session.get(url, stream=True)
 
-    process_response(response)
+    return process_response(response, root, filename)
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
@@ -126,8 +143,8 @@ def extract_archive(from_path, to_path=None, overwrite=False, archive='tar'):
         files = []
         for file_ in tar.getnames():
             file_path = os.path.join(to_path, file_)
-            files.append(file_path)
             if os.path.isfile(file_path):
+                files.append(file_path)
                 if os.path.exists(file_path):
                     logging.info('{} already extracted.'.format(file_path))
                     if overwrite:
