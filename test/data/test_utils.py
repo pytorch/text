@@ -3,6 +3,8 @@ import torchtext.data as data
 import pytest
 from ..common.torchtext_test_case import TorchtextTestCase
 from torchtext.datasets.text_classification import text_normalize
+from torchtext.utils import unicode_csv_reader
+import io
 
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
@@ -50,9 +52,12 @@ class TestUtils(TorchtextTestCase):
         # Test text_nomalize function in torchtext.datasets.text_classification
         ref_lines = []
         test_lines = []
-        with open('../asset/text_normalization_ag_news_test.csv') as src_data:
-            for line in src_data:
-                test_lines.append(text_normalize(line))
+
+        data_path = 'test/asset/text_normalization_ag_news_test.csv'
+        with io.open(data_path, encoding="utf8") as f:
+            reader = unicode_csv_reader(f)
+            for row in reader:
+                test_lines.append(text_normalize(' , '.join(row)))
 
         with open('../asset/text_normalization_ag_news_ref_results.test') as ref_data:
             for line in ref_data:
