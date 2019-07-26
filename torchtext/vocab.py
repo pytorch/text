@@ -15,6 +15,7 @@ import tarfile
 from .utils import reporthook
 
 from collections import Counter
+from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ class Vocab(object):
             self.itos.extend(list(specials))
 
         # stoi is simply a reverse dict for itos
-        self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
+        self.stoi = OrderedDict(((tok, i) for i, tok in enumerate(self.itos)))
 
         self.vectors = None
         if vectors is not None:
@@ -102,11 +103,13 @@ class Vocab(object):
         else:
             assert unk_init is None and vectors_cache is None
 
+        self.unk_index = self.stoi.get(Vocab.UNK)
+
     def _default_unk_index(self):
         return self.unk_index
 
     def __getitem__(self, token):
-        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
+        return self.stoi.get(token, self.unk_index)
 
     def __getstate__(self):
         # avoid picking defaultdict

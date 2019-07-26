@@ -142,16 +142,13 @@ def extract_archive(from_path, to_path=None, overwrite=False, archive='tar'):
     logging.info('Opening tar file {}.'.format(from_path))
     with tarfile.open(from_path, 'r') as tar:
         files = []
-        for file_ in tar.getnames():
-            file_path = os.path.join(to_path, file_)
-            if os.path.isfile(file_path):
+        for file_ in tar:
+            file_path = os.path.join(to_path, file_.name)
+            if file_.isfile():
                 files.append(file_path)
                 if os.path.exists(file_path):
                     logging.info('{} already extracted.'.format(file_path))
-                    if overwrite:
-                        tar.extract(file_, to_path)
-                else:
-                    tar.extract(file_, to_path)
-            else:
-                tar.extract(file_, to_path)
+                    if not overwrite:
+                        continue
+            tar.extract(file_, to_path)
         return files
