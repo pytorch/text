@@ -32,16 +32,14 @@ _normalize_pattern_re = [re.compile(r'\''), re.compile(r'\"'),
                          re.compile(r','), re.compile(r'\('),
                          re.compile(r'\)'), re.compile(r'\!'),
                          re.compile(r'\?'), re.compile(r'\;'),
-                         re.compile(r'\:'), re.compile(r'\:'),
-                         re.compile(' +')]
+                         re.compile(r'\:'), re.compile(' +')]
 
 replaced_string = [' \'  ', '',
                    ' . ', ' ',
                    ' , ', ' ( ',
                    ' ) ', ' ! ',
                    ' ? ', ' ',
-                   ' ', ' ',
-                   ' ']
+                   ' ', ' ']
 
 
 def text_normalize(line):
@@ -49,14 +47,19 @@ def text_normalize(line):
     Basic normalization for a line of text.
     Normalization includes
     - lowercasing
-    - complete some basic text normalization for English words.
+    - complete some basic text normalization for English words as follows:
+        add spaces before and after '\'', '.', ',', '(', ')', '!', , '?',
+        remove '\"',
+        replace r'<br \/>', ';', ':', multiple spaces with single space
+
+
     Returns a list of tokens after splitting on whitespace.
     """
 
     line = line.lower()
     for pattern_re, replaced_str in zip(_normalize_pattern_re, replaced_string):
         line = pattern_re.sub(replaced_str, line)
-    return line
+    return line.split()
 
 
 def _csv_iterator(data_path, ngrams, yield_cls=False):
