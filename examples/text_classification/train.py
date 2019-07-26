@@ -42,10 +42,6 @@ def train(lr_, num_epoch, data, labels):
             loss.backward()
             progress = (i + len(data) * epoch) / float(num_lines)
             lr = lr_ * (1 - progress)
-            if i % 1024 == 0:
-                print(
-                    "\rProgress: {:3.0f}% - Loss: {:.8f} - LR: {:.8f}".format(
-                        progress * 100, loss.item(), lr), end='')
             # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
