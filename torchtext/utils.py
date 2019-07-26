@@ -35,7 +35,8 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
     Arguments:
         url: the url of the file
         root: download folder used to store the file in (.data)
-        filename: explicitly set the filename, otherwise attempts to detect the file name from URL header. (None)
+        filename: explicitly set the filename, otherwise attempts to
+            detect the file name from URL header. (None)
         overwrite: overwrite existing files (False)
 
     Examples:
@@ -50,7 +51,7 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
         if not os.path.exists(root):
             raise RuntimeError(
                 "Download directorty {} does not exist. "
-                "Did you create it?".format(download_dir))
+                "Did you create it?".format(root))
         if filename is None:
             d = r.headers['content-disposition']
             filename = re.findall("filename=\"(.+)\"", d)

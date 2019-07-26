@@ -13,6 +13,7 @@ def _split_tokenizer(x):
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
+
 _normalize_pattern_re = [re.compile(r'\''), re.compile(r'\"'),
                          re.compile(r'\.'), re.compile(r'<br \/>'),
                          re.compile(r','), re.compile(r'\('),
@@ -61,7 +62,7 @@ def get_tokenizer(tokenizer, language='en'):
     if tokenizer is None:
         return _split_tokenizer
 
-    if tokenizer is "basic_english":
+    if tokenizer == "basic_english":
         return _basic_english_normalize
 
     # simply return if a function is passed
