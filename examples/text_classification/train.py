@@ -46,7 +46,9 @@ def train(lr_, num_epoch, data_):
                 p.grad.detach_()
                 p.grad.zero_()
             if processed_lines % 1024:
-                sys.stderr.write("\rProgress: {:3.0f}% lr: {:3.3f} loss: {:3.3f}".format(progress * 100, lr, loss))
+                sys.stderr.write(
+                    "\rProgress: {:3.0f}% lr: {:3.3f} loss: {:3.3f}".format(
+                        progress * 100, lr, loss))
     print("")
 
 

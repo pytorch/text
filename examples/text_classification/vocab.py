@@ -1,17 +1,16 @@
-import os
 import logging
 import argparse
 
 import torch
 import io
 
-from torchtext.datasets import text_classification
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.utils import unicode_csv_reader
 
-def _csv_iterator(data_path, ngrams):
+
+def csv_iterator(data_path, ngrams):
     tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
@@ -19,6 +18,7 @@ def _csv_iterator(data_path, ngrams):
             tokens = ' '.join(row[1:])
             tokens = tokenizer(tokens)
             yield ngrams_iterator(tokens, ngrams)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
-    vocab = build_vocab_from_iterator(_csv_iterator(args.data_path, ngrams))
+    vocab = build_vocab_from_iterator(csv_iterator(args.data_path, ngrams))
 
     print("Saving vocab to {}".format(args.save_vocab_path))
     torch.save(vocab, args.save_vocab_path)

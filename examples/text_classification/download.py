@@ -1,15 +1,7 @@
-import os
 import logging
 import argparse
 
-import torch
-import io
-
 from torchtext.datasets import text_classification
-from torchtext.vocab import build_vocab_from_iterator
-from torchtext.data.utils import ngrams_iterator
-from torchtext.data.utils import get_tokenizer
-from torchtext.utils import unicode_csv_reader
 from torchtext.utils import extract_archive
 from torchtext.utils import download_from_url
 from torchtext.datasets.text_classification import URLS
@@ -29,4 +21,3 @@ if __name__ == "__main__":
     print("Downloaded and extracted files:")
     for extracted_file in extracted_files:
         print(extracted_file)
-
