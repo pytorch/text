@@ -121,16 +121,19 @@ def extract_archive(from_path, to_path=None, overwrite=False, archive='tar'):
     if archive != 'tar':
         raise NotImplementedError("We currently only support tar achives.")
 
-    with tarfile.open(from_path, 'r:gz') as tar:
+    logging.info('Opening tar file {}.'.format(from_path))
+    with tarfile.open(from_path, 'r') as tar:
         files = []
-        for file_ in tar:
-            if file_.isfile():
-                if os.path.exists(file_.name):
+        for file_ in tar.getnames():
+            file_path = os.path.join(to_path, file_)
+            files.append(file_path)
+            if os.path.isfile(file_path):
+                if os.path.exists(file_path):
+                    logging.info('{} already extracted.'.format(file_path))
                     if overwrite:
                         tar.extract(file_, to_path)
                 else:
                     tar.extract(file_, to_path)
-                files.append(os.path.join(to_path, file_.name))
             else:
                 tar.extract(file_, to_path)
         return files
