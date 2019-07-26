@@ -49,8 +49,16 @@ class TestUtils(TorchtextTestCase):
 
     def test_text_nomalize_function(self):
         # Test text_nomalize function in torchtext.datasets.text_classification
-        origin_line = r'U.S. Stocks Set for Slightly Firmer Open"," NEW YORK (Reuters) - U.S. stocks were set to move slightly  higher at the open on Friday with a \$1 billion share buyback at Texas Instruments Inc. &lt;A HREF=""http://www.investor.reuters.com/FullQuote.aspx?ticker=TXN.N target=/stocks/quickinfo/fullquote""&gt;TXN.N&lt;/A&gt; supporting technology stocks,  although rising oil prices could limit gains.'
-        ref_result = r'u . s . stocks set for slightly firmer open , new york ( reuters ) - u . s . stocks were set to move slightly higher at the open on friday with a \$1 billion share buyback at texas instruments inc . &lt a href=http //www . investor . reuters . com/fullquote . aspx ? ticker=txn . n target=/stocks/quickinfo/fullquote&gt txn . n&lt /a&gt supporting technology stocks , although rising oil prices could limit gains .'
+        ref_lines = []
+        test_lines = []
+        with open('../asset/test.csv') as src_data:
+            for line in src_data:
+                test_lines.append(text_normalize(line))
 
-        test_result = text_normalize(origin_line)
-        assert test_result == ref_result.split()
+        with open('../asset/ag_news.test') as ref_data:
+            for line in ref_data:
+                line = line.split()
+                line[0] = line[0][9:]  # remove '__label__'
+                ref_lines.append(line)
+
+        assert ref_lines == test_lines
