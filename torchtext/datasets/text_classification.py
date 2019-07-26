@@ -32,21 +32,36 @@ URLS = {
 #    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
 #        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
 #        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
-_normalize_pattern_re = re.compile(r'[\W_]+')
 
+import re
+_normalize_pattern_re = [re.compile(r'\''), re.compile(r'\"'),
+                         re.compile(r'\.'), re.compile(r'<br \/>'),
+                         re.compile(r','), re.compile(r'\('),
+                         re.compile(r'\)'), re.compile(r'\!'),
+                         re.compile(r'\?'), re.compile(r'\;'),
+                         re.compile(r'\:'), re.compile(r'\:'),
+                         re.compile(' +')]
 
-def text_normalize(line):
+replaced_string = [' \'  ', '',
+                   ' . ', ' ',
+                   ' , ', ' ( ',
+                   ' ) ', ' ! ',
+                   ' ? ', ' ',
+                   ' ', ' ',
+                   ' ']
+
+def text_normalized(line):
     """
     Basic normalization for a line of text.
     Normalization includes
     - lowercasing
-    - replacing all non-alphanumeric characters with whitespace
+    - complete some basic text normalization for English words.
     Returns a list of tokens after splitting on whitespace.
     """
 
     line = line.lower()
-    line = _normalize_pattern_re.sub(' ', line)
-
+    for pattern_re, replaced_str in zip(_normalize_pattern_re, replaced_string):
+        line = pattern_re.sub(replaced_str, line)
     return line.split()
 
 
