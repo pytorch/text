@@ -9,6 +9,7 @@ class Pipeline(object):
         pipes: The Pipelines that will be applied to input sequence
             data in order.
     """
+
     def __init__(self, convert_token=None):
         """Create a pipeline.
 

@@ -17,6 +17,7 @@ class ParsedTextField(data.Field):
         Expensive tokenization could be omitted from the pipeline as
         the parse tree annotations are already in tokenized form.
     """
+
     def __init__(self, eos_token='<pad>', lower=False, reverse=False):
         if reverse:
             super(ParsedTextField, self).__init__(

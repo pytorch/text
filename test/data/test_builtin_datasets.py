@@ -53,6 +53,8 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure ag_news dataset works properly
 
         datadir = os.path.join(self.project_root, ".data")
+        if not os.path.exists(datadir):
+            os.mkdir(datadir)
         ag_news_cls = AG_NEWS(root=datadir, ngrams=3)
         self.assertEqual(len(ag_news_cls.train_examples), 120000)
         self.assertEqual(len(ag_news_cls.test_examples), 7600)

@@ -2,97 +2,102 @@ import os
 import re
 import logging
 import torch
-from torchtext.utils import download_from_url, extract_archive
-from torchtext import data
-from torchtext.vocab import build_dictionary
-import random
-from tqdm import tqdm
+import io
+from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.data.utils import generate_ngrams
 
+from collections import Counter
+from collections import OrderedDict
 
-def download_extract_archive(url, raw_folder, dataset_name):
-    """Download the dataset if it doesn't exist in processed_folder already."""
+URLS = {
+    'AG_NEWS':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
+    'SogouNews':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
+    'DBpedia':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k',
+    'YelpReviewPolarity':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg',
+    'YelpReviewFull':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0',
+    'YahooAnswers':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU',
+    'AmazonReviewPolarity':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
+    'AmazonReviewFull':
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
+}
 
-    train_csv_path = os.path.join(raw_folder,
-                                  dataset_name + '_csv',
-                                  'train.csv')
-    test_csv_path = os.path.join(raw_folder,
-                                 dataset_name + '_csv',
-                                 'test.csv')
-    if os.path.exists(train_csv_path) and os.path.exists(test_csv_path):
-        return
-
-    os.makedirs(raw_folder)
-    filename = dataset_name + '_csv.tar.gz'
-    url = url
-    path = os.path.join(raw_folder, filename)
-    download_from_url(url, path)
-    extract_archive(path, raw_folder, remove_finished=True)
-
-    logging.info('Dataset %s downloaded.' % dataset_name)
+# TODO: Replicate below
+#  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
+#    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
+#        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
+#        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " "
+_normalize_pattern_re = re.compile(r'[\W_]+')
 
 
 def text_normalize(line):
-    """Normalize text string and separate label/text."""
-
-    line = line.lower()
-    label, text = line.split(",", 1)
-    label = "__label__" + re.sub(r'[^0-9\s]', '', label)
-    text = re.sub(r'[^a-zA-Z0-9\s]', ' ', text)
-    text = ' '.join(text.split())
-    line = label + ' , ' + text + ' \n'
-    return line
-
-
-def _preprocess(raw_folder, processed_folder, dataset_name):
-    """Preprocess the csv files."""
-
-    raw_folder = os.path.join(raw_folder, dataset_name.lower() + '_csv')
-
-    if os.path.exists(processed_folder) is not True:
-        os.makedirs(processed_folder)
-
-    src_filepath = os.path.join(raw_folder, 'train.csv')
-    tgt_filepath = os.path.join(processed_folder, dataset_name + '.train')
-    lines = []
-    with open(src_filepath) as src_data:
-        with open(tgt_filepath, 'w') as new_data:
-            for line in src_data:
-                lines.append(text_normalize(line))
-            random.shuffle(lines)
-            new_data.writelines(lines)
-
-    src_filepath = os.path.join(raw_folder, 'test.csv')
-    tgt_filepath = os.path.join(processed_folder, dataset_name + '.test')
-    lines = []
-    with open(src_filepath) as src_data:
-        with open(tgt_filepath, 'w') as new_data:
-            for line in src_data:
-                lines.append(text_normalize(line))
-            random.shuffle(lines)
-            new_data.writelines(lines)
-
-    logging.info("Dataset %s preprocessed." % dataset_name)
-
-
-def _load_text_classification_data(src_data, fields, ngrams=1):
-    """Load train/test data from a file and generate data
-        examples with ngrams.
+    """
+    Basic normalization for a line of text.
+    Normalization includes
+    - lowercasing
+    - replacing all non-alphanumeric characters with whitespace
+    Returns a list of tokens after splitting on whitespace.
     """
 
-    def label_text_processor(line, fields, ngrams=1):
-        """Process text string and generate examples for dataset."""
-        fields = [('text', fields['text']), ('label', fields['label'])]
-        label, text = line.split(",", 1)
-        label = float(label.split("__label__")[1])
-        ex = data.Example.fromlist([text, label], fields)
-        tokens = ex.text[1:]  # Skip the first space '\t'
-        ex.text = data.utils.generate_ngrams(tokens, ngrams)
-        return ex
+    line = line.lower()
+    line = _normalize_pattern_re.sub(' ', line)
 
-    examples = []
-    for line in tqdm(src_data):
-        examples.append(label_text_processor(line, fields, ngrams))
-    return examples
+    return line.split()
+
+
+def _build_dictionary_from_path(data_path, ngrams):
+    dictionary = Counter()
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            tokens = text_normalize(row[1])
+            tokens = generate_ngrams(tokens, ngrams)
+            dictionary.update(tokens)
+    word_dictionary = OrderedDict()
+    for (token, frequency) in dictionary.most_common():
+        word_dictionary[token] = len(word_dictionary)
+    return word_dictionary
+
+
+def _create_data(dictionary, data_path):
+    data = []
+    labels = []
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            cls = int(row[0]) - 1
+            tokens = text_normalize(row[1])
+            tokens = generate_ngrams(tokens, 2)
+            tokens = torch.tensor(
+                [dictionary.get(entry, dictionary['<unk>']) for entry in tokens])
+            labels.append(cls)
+            data.append(tokens)
+    return data, labels
+
+
+def _extract_data(root, dataset_name):
+    dataset_root = os.path.join(root, dataset_name + '_csv')
+    dataset_tar = dataset_root + '.tar.gz'
+
+    if os.path.exists(dataset_tar):
+        logging.info('Dataset %s already downloaded.' % dataset_name)
+    else:
+        download_from_url(URLS[dataset_name], dataset_tar)
+        logging.info('Dataset %s downloaded.' % dataset_name)
+    extracted_files = extract_archive(dataset_tar, root)
+
+    for fname in extracted_files:
+        if fname.endswith('train.csv'):
+            train_csv_path = fname
+        if fname.endswith('test.csv'):
+            test_csv_path = fname
+    return train_csv_path, test_csv_path
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -110,73 +115,47 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, url, root='.data',
-                 text_field=None, label_field=None, ngrams=1):
+    def __init__(self, root, ngrams):
         """Initiate text-classification dataset.
 
         Arguments:
             url: url of the online raw data files.
-            root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
+            root: Directory where the dataset are saved.
             ngrams: a contiguous sequence of n items from s string text.
-                Default: 1
         """
 
         super(TextClassificationDataset, self).__init__()
-        fields = []
-        fields.append(('text', text_field if text_field is not None
-                       else data.Field(tokenize=data.get_tokenizer('spacy'),
-                                       init_token='<SOS>',
-                                       eos_token='<EOS>')))
-        fields.append(('label', label_field if label_field is not None
-                       else data.LabelField(dtype=torch.float)))
-        self.fields = dict(fields)
+        train_csv_path, test_csv_path = _extract_data(root, self.__class__.__name__)
 
-        self.dataset_name = self.__class__.__name__
-        self.root = root
-        self.raw_folder = os.path.join(root, self.__class__.__name__, 'raw')
-        self.processed_folder = os.path.join(self.root,
-                                             self.__class__.__name__,
-                                             'processed')
-        filepath = os.path.join(self.processed_folder, self.dataset_name + '.train')
-        if not os.path.isfile(filepath):
-            download_extract_archive(url, self.raw_folder, self.dataset_name)
-            _preprocess(self.raw_folder, self.processed_folder, self.dataset_name)
-        with open(filepath) as src_data:
-            self.train_examples = _load_text_classification_data(src_data,
-                                                                 self.fields,
-                                                                 ngrams)
-
-        filepath = os.path.join(self.processed_folder, self.dataset_name + '.test')
-        with open(filepath) as src_data:
-            self.test_examples = _load_text_classification_data(src_data,
-                                                                self.fields,
-                                                                ngrams)
-
-        self.examples = self.train_examples + self.test_examples
-        self.fields['text'].vocab = build_dictionary(self,
-                                                     self.fields['text'], 'text')
-        self.fields['label'].vocab = build_dictionary(self,
-                                                      self.fields['label'], 'label')
-
-    @staticmethod
-    def sort_key(ex):
-        return len(ex.text)
+        # TODO: Clean up and use Vocab object
+        # Standardized on torchtext.Vocab
+        UNK = '<unk>'
+        dictionary = _build_dictionary_from_path(train_csv_path, ngrams)
+        dictionary[UNK] = len(dictionary)
+        self.dictionary = dictionary
+        self.train_data, self.train_labels = _create_data(dictionary, train_csv_path)
+        self.test_data, self.test_labels = _create_data(dictionary, test_csv_path)
+        self.train_examples = []
+        for data, label in zip(self.train_data, self.train_labels):
+            self.train_examples.append((label, data))
+        self.test_examples = []
+        for data, label in zip(self.test_data, self.test_labels):
+            self.test_examples.append((label, data))
+        self.data = self.train_data + self.test_data
+        self.labels = self.train_labels + self.test_labels
+        self._entries = zip(self.data, self.labels)
 
     def __getitem__(self, i):
-        return self.examples[i]
+        return self._entries[i]
 
     def __len__(self):
         try:
-            return len(self.examples)
+            return len(self._entries)
         except TypeError:
             return 2**32
 
     def __iter__(self):
-        for x in self.examples:
+        for x in self._entries:
             yield x
 
 
@@ -188,15 +167,12 @@ class AG_NEWS(TextClassificationDataset):
             - 3 : Business
             - 4 : Sci/Tech
      """
-    def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: AG_NEWS
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -204,9 +180,8 @@ class AG_NEWS(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.AG_NEWS(ngrams=3)
 
         """
-        self.url = URLS['AG_NEWS']
-        super(AG_NEWS, self).__init__(self.url, root, text_field,
-                                      label_field, ngrams)
+
+        super(AG_NEWS, self).__init__(root, ngrams)
 
 
 class SogouNews(TextClassificationDataset):
@@ -218,16 +193,12 @@ class SogouNews(TextClassificationDataset):
             - 4 : Automobile
             - 5 : Technology
      """
-    def __init__(self, root='.data', text_field=None,
-                 label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: SogouNews
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -235,9 +206,8 @@ class SogouNews(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.SogouNews(ngrams=3)
 
         """
-        self.url = URLS['SogouNews']
-        super(SogouNews, self).__init__(self.url, root, text_field,
-                                        label_field, ngrams)
+
+        super(SogouNews, self).__init__(root, ngrams)
 
 
 class DBpedia(TextClassificationDataset):
@@ -258,15 +228,12 @@ class DBpedia(TextClassificationDataset):
             - 13 : Film
             - 14 : WrittenWork
      """
-    def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: DBpedia
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -274,8 +241,8 @@ class DBpedia(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.DBpedia(ngrams=3)
 
         """
-        self.url = URLS['DBpedia']
-        super(DBpedia, self).__init__(self.url, root, text_field, label_field, ngrams)
+
+        super(DBpedia, self).__init__(root, ngrams)
 
 
 class YelpReviewPolarity(TextClassificationDataset):
@@ -284,15 +251,12 @@ class YelpReviewPolarity(TextClassificationDataset):
             - 1 : Negative polarity.
             - 2 : Positive polarity.
      """
-    def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: YelpReviewPolarity
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -300,9 +264,8 @@ class YelpReviewPolarity(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.YelpReviewPolarity(ngrams=3)
 
         """
-        self.url = URLS['YelpReviewPolarity']
-        super(YelpReviewPolarity, self).__init__(self.url,
-                                                 root, text_field, label_field, ngrams)
+
+        super(YelpReviewPolarity, self).__init__(root, ngrams)
 
 
 class YelpReviewFull(TextClassificationDataset):
@@ -310,15 +273,12 @@ class YelpReviewFull(TextClassificationDataset):
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
      """
-    def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: YelpReviewFull
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -326,9 +286,8 @@ class YelpReviewFull(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.YelpReviewFull(ngrams=3)
 
         """
-        self.url = URLS['YelpReviewFull']
-        super(YelpReviewFull, self).__init__(self.url,
-                                             root, text_field, label_field, ngrams)
+
+        super(YelpReviewFull, self).__init__(root, ngrams)
 
 
 class YahooAnswers(TextClassificationDataset):
@@ -345,15 +304,12 @@ class YahooAnswers(TextClassificationDataset):
             - 9 : Family & Relationships
             - 10 : Politics & Government
      """
-    def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: YahooAnswers
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -361,9 +317,8 @@ class YahooAnswers(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.YahooAnswers(ngrams=3)
 
         """
-        self.url = URLS['YahooAnswers']
-        super(YahooAnswers, self).__init__(self.url,
-                                           root, text_field, label_field, ngrams)
+
+        super(YahooAnswers, self).__init__(root, ngrams)
 
 
 class AmazonReviewPolarity(TextClassificationDataset):
@@ -372,16 +327,12 @@ class AmazonReviewPolarity(TextClassificationDataset):
             - 1 : Negative polarity
             - 2 : Positive polarity
      """
-    def __init__(self, root='.data', text_field=None,
-                 label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: AmazonReviewPolarity
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -389,9 +340,8 @@ class AmazonReviewPolarity(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
 
         """
-        self.url = URLS['AmazonReviewPolarity']
-        super(AmazonReviewPolarity, self).__init__(self.url,
-                                                   root, text_field, label_field, ngrams)
+
+        super(AmazonReviewPolarity, self).__init__(root, ngrams)
 
 
 class AmazonReviewFull(TextClassificationDataset):
@@ -399,15 +349,12 @@ class AmazonReviewFull(TextClassificationDataset):
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
      """
-    def __init__(self, root='.data', text_field=None, label_field=None, ngrams=1):
+
+    def __init__(self, root='.data', ngrams=1):
         """Create supervised learning dataset: AmazonReviewFull
 
         Arguments:
             root: Directory where the dataset are saved. Default: ".data"
-            text_field: The field that will be used for the sentence. If not given,
-                'spacy' token will be used.
-            label_field: The field that will be used for the label. If not given,
-                'float' token will be used.
             ngrams: a contiguous sequence of n items from s string text.
                 Default: 1
 
@@ -415,26 +362,5 @@ class AmazonReviewFull(TextClassificationDataset):
             >>> text_cls = torchtext.datasets.AmazonReviewFull(ngrams=3)
 
         """
-        self.url = URLS['AmazonReviewFull']
-        super(AmazonReviewFull, self).__init__(self.url,
-                                               root, text_field, label_field, ngrams)
 
-
-URLS = {
-    'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
-    'SogouNews':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
-    'DBpedia':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k',
-    'YelpReviewPolarity':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg',
-    'YelpReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0',
-    'YahooAnswers':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU',
-    'AmazonReviewPolarity':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
-    'AmazonReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
-}
+        super(AmazonReviewFull, self).__init__(root, ngrams)
