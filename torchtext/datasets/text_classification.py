@@ -1,16 +1,11 @@
-import os
 import re
 import logging
 import torch
-import csv
 import io
+import os
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import ngrams_iterator
 from torchtext.vocab import build_vocab_from_iterator
-import random
-
-from collections import Counter
-from collections import OrderedDict
 
 URLS = {
     'AG_NEWS':
@@ -73,8 +68,7 @@ def _create_data_from_iterator(vocab, iterator):
     for cls, tokens in iterator:
         tokens = torch.tensor([vocab[token] for token in tokens])
         if len(tokens) == 0:
-            logging.info(
-                'Row {} of dataset {} contains no tokens.'.format(i, data_path))
+            logging.info('Row contains no tokens.')
         data.append((cls, tokens))
         labels.append(cls)
     return data, set(labels)
@@ -341,7 +335,7 @@ def AmazonReviewPolarity(*args, **kwargs):
             Default: 1
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
+       >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
 
     """
 

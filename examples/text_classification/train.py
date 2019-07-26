@@ -1,20 +1,10 @@
 import os
 import logging
-import csv
-import random
-import time
 import argparse
 
 import torch
-import torchtext
 
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.optim.lr_scheduler import ExponentialLR
 from torchtext.datasets import text_classification
-from torch.utils.data import BatchSampler
-from torch.utils.data import SequentialSampler
 from torch.utils.data import DataLoader
 
 from model import TextSentiment
