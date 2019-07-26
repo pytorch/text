@@ -59,9 +59,11 @@ class TestUtils(TorchtextTestCase):
             for row in reader:
                 test_lines.append(text_normalize(' , '.join(row)))
 
-        with open('../asset/text_normalization_ag_news_ref_results.test') as ref_data:
+        data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
+        with io.open(data_path, encoding="utf8") as ref_data:
             for line in ref_data:
                 line = line.split()
+                assert line[0][:9] == '__label__'
                 line[0] = line[0][9:]  # remove '__label__'
                 ref_lines.append(line)
 
