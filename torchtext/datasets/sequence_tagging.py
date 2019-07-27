@@ -1,5 +1,7 @@
 from .. import data
+
 import random
+from io import open
 
 
 class SequenceTaggingDataset(data.Dataset):
