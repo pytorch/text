@@ -61,6 +61,7 @@ class TestDataset(TorchtextTestCase):
             datafile = os.path.join(self.project_root, ".data", "AG_NEWS")
             conditional_remove(datafile)
 
+    @slow
     def test_atis(self):
         # smoke test to ensure ATIS works properly
         TEXT = data.Field(lower=True, batch_first=True)
