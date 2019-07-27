@@ -66,7 +66,7 @@ def test(data_):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Train a text classification model on AG_NEWS')
+        description='Train a text classification model on text classification datasets.')
     parser.add_argument('dataset', choices=text_classification.DATASETS)
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
@@ -77,7 +77,6 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
-    parser.add_argument('--load-vocab-path')
     parser.add_argument('--logging-level', default='WARNING')
     args = parser.parse_args()
 
@@ -87,7 +86,6 @@ if __name__ == "__main__":
     lr = args.lr
     device = args.device
     data = args.data
-    vocab = args.load_vocab_path
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
@@ -95,11 +93,8 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
-    if args.load_vocab_path:
-        vocab = torch.load(args.load_vocab_path)
-
     train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
-        root=data, ngrams=args.ngrams, vocab=vocab)
+        root=data, ngrams=args.ngrams)
 
     model = TextSentiment(len(train_dataset.get_vocab()),
                           embed_dim, len(train_dataset.get_labels())).to(device)
