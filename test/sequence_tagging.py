@@ -22,7 +22,7 @@ PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 # Load the specified data.
 train, val, test = datasets.UDPOS.splits(
     fields=(('word', WORD), ('udtag', UD_TAG), ('ptbtag', PTB_TAG)),
-    path=".data/sequence-labeling/en-ud-v2",
+    path=".data/udpos/en-ud-v2",
     train="en-ud-tag.v2.train.txt",
     validation="en-ud-tag.v2.dev.txt",
     test="en-ud-tag.v2.test.txt")
