@@ -54,7 +54,7 @@ class TestDataset(TorchtextTestCase):
 
         datadir = os.path.join(self.project_root, ".data")
         if not os.path.exists(datadir):
-            os.mkdir(datadir)
+            os.makedirs(datadir)
         ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
         self.assertEqual(len(ag_news_train), 120000)
         self.assertEqual(len(ag_news_test), 7600)

@@ -28,15 +28,15 @@ def reporthook(t):
     return inner
 
 
-def download_from_url(url, root='.data', filename=None, overwrite=False):
+def download_from_url(url, path=None, root='.data', overwrite=False):
     """Download file, with logic (from tensor2tensor) for Google Drive.
     Returns the path to the downloaded file.
 
     Arguments:
         url: the url of the file
-        root: download folder used to store the file in (.data)
-        filename: explicitly set the filename, otherwise attempts to
+        path: explicitly set the filename, otherwise attempts to
             detect the file name from URL header. (None)
+        root: download folder used to store the file in (.data)
         overwrite: overwrite existing files (False)
 
     Examples:
@@ -48,10 +48,6 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
     def _process_response(r, root, filename):
         chunk_size = 16 * 1024
         total_size = int(r.headers.get('Content-length', 0))
-        if not os.path.exists(root):
-            raise RuntimeError(
-                "Download directorty {} does not exist. "
-                "Did you create it?".format(root))
         if filename is None:
             d = r.headers['content-disposition']
             filename = re.findall("filename=\"(.+)\"", d)
@@ -74,6 +70,15 @@ def download_from_url(url, root='.data', filename=None, overwrite=False):
                         t.update(len(chunk))
         logging.info('File {} downloaded.'.format(path))
         return path
+
+    filename = None
+    if path is not None:
+        root, filename = os.path.split(path)
+
+    if not os.path.exists(root):
+        raise RuntimeError(
+            "Download directory {} does not exist. "
+            "Did you create it?".format(root))
 
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
