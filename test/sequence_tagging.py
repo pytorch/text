@@ -91,7 +91,8 @@ SLOT = data.Field(batch_first=True, unk_token=None)
 INTENT = data.Field(batch_first=True, unk_token=None)
 
 # make splits for data
-train, val, test = datasets.ATIS.splits(fields=(('text', TEXT), ('slot', SLOT), ('intent', INTENT)))
+train, val, test = datasets.ATIS.splits(
+    fields=(('text', TEXT), ('slot', SLOT), ('intent', INTENT)))
 print('train.fields', train.fields)
 print('len(train)', len(train))
 print('vars(train[0])', vars(train[0]))
