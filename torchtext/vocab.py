@@ -104,12 +104,13 @@ class Vocab(object):
             assert unk_init is None and vectors_cache is None
 
         self.unk_index = self.stoi.get(Vocab.UNK)
+        self.stoi_get = self.stoi.get
 
     def _default_unk_index(self):
         return self.unk_index
 
     def __getitem__(self, token):
-        return self.stoi.get(token, self.unk_index)
+        return self.stoi_get(token, self.unk_index)
 
     def __getstate__(self):
         # avoid picking defaultdict

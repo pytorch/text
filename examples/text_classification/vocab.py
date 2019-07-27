@@ -16,8 +16,7 @@ def csv_iterator(data_path, ngrams):
         reader = unicode_csv_reader(f)
         for row in reader:
             tokens = ' '.join(row[1:])
-            tokens = tokenizer(tokens)
-            yield ngrams_iterator(tokens, ngrams)
+            yield ngrams_iterator(tokenizer(tokens), ngrams)
 
 
 if __name__ == "__main__":

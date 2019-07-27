@@ -14,19 +14,33 @@ def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
 
-_normalize_pattern_re = [re.compile(r'\''), re.compile(r'\"'),
-                         re.compile(r'\.'), re.compile(r'<br \/>'),
-                         re.compile(r','), re.compile(r'\('),
-                         re.compile(r'\)'), re.compile(r'\!'),
-                         re.compile(r'\?'), re.compile(r'\;'),
-                         re.compile(r'\:'), re.compile(' +')]
+_patterns = [r'\'',
+             r'\"',
+             r'\.',
+             r'<br \/>',
+             r',',
+             r'\(',
+             r'\)',
+             r'\!',
+             r'\?',
+             r'\;',
+             r'\:',
+             r'\s+']
 
-replaced_string = [' \'  ', '',
-                   ' . ', ' ',
-                   ' , ', ' ( ',
-                   ' ) ', ' ! ',
-                   ' ? ', ' ',
-                   ' ', ' ']
+_replacements = [' \'  ',
+                 '',
+                 ' . ',
+                 ' ',
+                 ' , ',
+                 ' ( ',
+                 ' ) ',
+                 ' ! ',
+                 ' ? ',
+                 ' ',
+                 ' ',
+                 ' ']
+
+_patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
 
 
 def _basic_english_normalize(line):
@@ -52,7 +66,7 @@ def _basic_english_normalize(line):
     """
 
     line = line.lower()
-    for pattern_re, replaced_str in zip(_normalize_pattern_re, replaced_string):
+    for pattern_re, replaced_str in _patterns_dict:
         line = pattern_re.sub(replaced_str, line)
     return line.split()
 
@@ -161,6 +175,7 @@ def dtype_to_attr(dtype):
     return dtype
 
 
+# TODO: Write more tests!
 def ngrams_iterator(token_list, ngrams):
     """Return an iterator that yields the given tokens and their ngrams.
 
@@ -174,12 +189,14 @@ def ngrams_iterator(token_list, ngrams):
         >>> ['here', 'here we', 'we', 'we are', 'are']
     """
 
-    for i in range(0, len(token_list)):
-        x = token_list[i]
+    def _get_ngrams(n):
+        return zip(*[token_list[i:] for i in range(n)])
+
+    for x in token_list:
         yield x
-        for j in range(i + 1, min(i + ngrams, len(token_list))):
-            x += ' ' + token_list[j]
-            yield x
+    for n in range(2, ngrams + 1):
+        for x in _get_ngrams(n):
+            yield ' '.join(x)
 
 
 class RandomShuffler(object):
