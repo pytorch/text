@@ -2,7 +2,6 @@ import six
 import torchtext.data as data
 import pytest
 from ..common.torchtext_test_case import TorchtextTestCase
-from torchtext.datasets.text_classification import text_normalize
 from torchtext.utils import unicode_csv_reader
 import io
 
@@ -54,11 +53,12 @@ class TestUtils(TorchtextTestCase):
         ref_lines = []
         test_lines = []
 
+        tokenizer = data.get_tokenizer("basic_english")
         data_path = 'test/asset/text_normalization_ag_news_test.csv'
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
-                test_lines.append(text_normalize(' , '.join(row)))
+                test_lines.append(tokenizer(' , '.join(row)))
 
         data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
         with io.open(data_path, encoding="utf8") as ref_data:
