@@ -6,6 +6,7 @@ import os
 import tarfile
 import logging
 import re
+import sys
 
 
 def reporthook(t):
@@ -114,6 +115,19 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
         >>>     reader = unicode_csv_reader(f)
 
     """
+
+    # Fix field larger than field limit error
+    maxInt = sys.maxsize
+    while True:
+        # decrease the maxInt value by factor 10
+        # as long as the OverflowError occurs.
+        try:
+            csv.field_size_limit(maxInt)
+            break
+        except OverflowError:
+            maxInt = int(maxInt / 10)
+
+    csv.field_size_limit(sys.maxsize)
 
     if six.PY2:
         # csv.py doesn't do Unicode; encode temporarily as UTF-8:
