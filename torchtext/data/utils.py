@@ -1,6 +1,7 @@
 import random
 from contextlib import contextmanager
 from copy import deepcopy
+import re
 
 from functools import partial
 
@@ -13,10 +14,70 @@ def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
 
+_patterns = [r'\'',
+             r'\"',
+             r'\.',
+             r'<br \/>',
+             r',',
+             r'\(',
+             r'\)',
+             r'\!',
+             r'\?',
+             r'\;',
+             r'\:',
+             r'\s+']
+
+_replacements = [' \'  ',
+                 '',
+                 ' . ',
+                 ' ',
+                 ' , ',
+                 ' ( ',
+                 ' ) ',
+                 ' ! ',
+                 ' ? ',
+                 ' ',
+                 ' ',
+                 ' ']
+
+_patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
+
+
+def _basic_english_normalize(line):
+    r"""
+    Basic normalization for a line of text.
+    Normalization includes
+    - lowercasing
+    - complete some basic text normalization for English words as follows:
+        add spaces before and after '\''
+        remove '\"',
+        add spaces before and after '.'
+        replace '<br \/>'with single space
+        add spaces before and after ','
+        add spaces before and after '('
+        add spaces before and after ')'
+        add spaces before and after '!'
+        add spaces before and after '?'
+        replace ';' with single space
+        replace ':' with single space
+        replace multiple spaces with single space
+
+    Returns a list of tokens after splitting on whitespace.
+    """
+
+    line = line.lower()
+    for pattern_re, replaced_str in _patterns_dict:
+        line = pattern_re.sub(replaced_str, line)
+    return line.split()
+
+
 def get_tokenizer(tokenizer, language='en'):
     # default tokenizer is string.split(), added as a module function for serialization
     if tokenizer is None:
         return _split_tokenizer
+
+    if tokenizer == "basic_english":
+        return _basic_english_normalize
 
     # simply return if a function is passed
     if callable(tokenizer):
@@ -114,6 +175,7 @@ def dtype_to_attr(dtype):
     return dtype
 
 
+# TODO: Write more tests!
 def ngrams_iterator(token_list, ngrams):
     """Return an iterator that yields the given tokens and their ngrams.
 
@@ -127,12 +189,14 @@ def ngrams_iterator(token_list, ngrams):
         >>> ['here', 'here we', 'we', 'we are', 'are']
     """
 
-    for i in range(0, len(token_list)):
-        x = token_list[i]
+    def _get_ngrams(n):
+        return zip(*[token_list[i:] for i in range(n)])
+
+    for x in token_list:
         yield x
-        for j in range(i + 1, min(i + ngrams, len(token_list))):
-            x += ' ' + token_list[j]
-            yield x
+    for n in range(2, ngrams + 1):
+        for x in _get_ngrams(n):
+            yield ' '.join(x)
 
 
 class RandomShuffler(object):

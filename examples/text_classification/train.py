@@ -3,6 +3,7 @@ import logging
 import argparse
 
 import torch
+import sys
 
 from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
@@ -36,13 +37,18 @@ def train(lr_, num_epoch, data_):
             output = model(text, offsets)
             loss = criterion(output, cls)
             loss.backward()
-            progress = (i + len(data) * epoch) / float(num_lines)
+            processed_lines = i + len(data) * epoch
+            progress = processed_lines / float(num_lines)
             lr = lr_ * (1 - progress)
             # SGD
             for p in model.parameters():
                 p.data.add_(p.grad.data * -lr)
                 p.grad.detach_()
                 p.grad.zero_()
+            if processed_lines % 1024:
+                sys.stderr.write(
+                    "\rProgress: {:3.0f}% lr: {:3.3f} loss: {:3.3f}".format(
+                        progress * 100, lr, loss))
     print("")
 
 
@@ -60,7 +66,7 @@ def test(data_):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Train a text classification model on AG_NEWS')
+        description='Train a text classification model on text classification datasets.')
     parser.add_argument('dataset', choices=text_classification.DATASETS)
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
@@ -71,8 +77,6 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
-    parser.add_argument('--save-vocab-path')
-    parser.add_argument('--load-vocab-path')
     parser.add_argument('--logging-level', default='WARNING')
     args = parser.parse_args()
 
@@ -82,7 +86,6 @@ if __name__ == "__main__":
     lr = args.lr
     device = args.device
     data = args.data
-    vocab = args.load_vocab_path
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
@@ -91,11 +94,7 @@ if __name__ == "__main__":
         os.mkdir(data)
 
     train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
-        root=data, ngrams=args.ngrams, vocab=vocab)
-
-    if args.save_vocab_path:
-        print("Saving vocab to {}".format(args.save_vocab_path))
-        torch.save(train_dataset.get_vocab, args.save_vocab_path)
+        root=data, ngrams=args.ngrams)
 
     model = TextSentiment(len(train_dataset.get_vocab()),
                           embed_dim, len(train_dataset.get_labels())).to(device)
