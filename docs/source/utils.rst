@@ -16,3 +16,13 @@ torchtext.utils
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: download_from_url
+
+:hidden:`unicode_csv_reader`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: unicode_csv_reader 
+
+:hidden:`extract_archive`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: extract_archive
