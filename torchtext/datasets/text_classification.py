@@ -80,7 +80,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                 {label1, label2}
 
         Examples:
-            See _setup_datasets() function in torchtext.datasets.text_classification
+            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and
+                examples/text_classification/
 
         """
 
@@ -107,9 +108,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
-    if not os.path.exists(root):
-        os.makedirs(root)
-
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
