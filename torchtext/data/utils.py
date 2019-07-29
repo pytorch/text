@@ -72,6 +72,29 @@ def _basic_english_normalize(line):
 
 
 def get_tokenizer(tokenizer, language='en'):
+    r"""
+    Generate tokenizer function for a string sentence.
+
+    Arguments:
+        tokenizer: the name of tokenizer function. If None, it returns split()
+            function, which splits the string sentence by space.
+            If basic_english, it returns _basic_english_normalize() function,
+            which normalize the string first and split by space. If a callable
+            function, it will return the function. If a tokenizer library
+            (e.g. spacy, moses, toktok, revtok, subword), it returns the
+            corresponding library.
+        language: Default en
+
+    Examples:
+        >>> import torchtext
+        >>> from torchtext.data import get_tokenizer
+        >>> tokenizer = get_tokenizer("basic_english")
+        >>> tokens = tokenizer("You can now install TorchText using pip!")
+        >>> tokens
+        >>> ['you', 'can', 'now', 'install', 'torchtext', 'using', 'pip', '!']
+
+    """
+
     # default tokenizer is string.split(), added as a module function for serialization
     if tokenizer is None:
         return _split_tokenizer
