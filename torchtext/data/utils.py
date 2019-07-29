@@ -100,6 +100,8 @@ def get_tokenizer(tokenizer, language='en'):
         return _split_tokenizer
 
     if tokenizer == "basic_english":
+        if language != 'en':
+            raise ValueError("Basic normalization is only available for Enlish(en)")
         return _basic_english_normalize
 
     # simply return if a function is passed

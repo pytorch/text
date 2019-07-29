@@ -1,11 +1,9 @@
-import os
 import logging
 import argparse
 
 import torch
 import sys
 
-from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
 
 from model import TextSentiment
@@ -87,7 +85,6 @@ if __name__ == "__main__":
     device = args.device
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
-
 
     print("Loading data")
     train_dataset = torch.load(args.train_data)
