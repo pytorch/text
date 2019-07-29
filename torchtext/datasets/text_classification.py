@@ -1,7 +1,6 @@
 import logging
 import torch
 import io
-import os
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
