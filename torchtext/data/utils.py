@@ -114,6 +114,27 @@ def dtype_to_attr(dtype):
     return dtype
 
 
+def ngrams_iterator(token_list, ngrams):
+    """Return an iterator that yields the given tokens and their ngrams.
+
+    Arguments:
+        token_list: A list of tokens
+        ngrams: the number of ngrams.
+
+    Examples:
+        >>> token_list = ['here', 'we', 'are']
+        >>> list(ngrams_iterator(token_list, 2))
+        >>> ['here', 'here we', 'we', 'we are', 'are']
+    """
+
+    for i in range(0, len(token_list)):
+        x = token_list[i]
+        yield x
+        for j in range(i + 1, min(i + ngrams, len(token_list))):
+            x += ' ' + token_list[j]
+            yield x
+
+
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""

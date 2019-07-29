@@ -121,6 +121,7 @@ The datasets module currently contains:
 * Machine translation: abstract class + Multi30k, IWSLT, WMT14
 * Sequence tagging (e.g. POS/NER): abstract class + UDPOS, CoNLL2000Chunking
 * Question answering: 20 QA bAbI tasks
+* Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull
 
 Others are planned or a work in progress:
 

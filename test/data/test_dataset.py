@@ -93,6 +93,35 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(example.q2_spacy, expected_examples[i][3])
             self.assertEqual(example.label, expected_examples[i][4])
 
+    def test_json_valid_and_invalid_nested_key(self):
+        self.write_test_nested_key_json_dataset()
+        valid_fields = {'foods.vegetables.name': ('vegs', data.Field()),
+                        'foods.fruits': ('fruits', data.Field())}
+        invalid_fields = {'foods.vegetables.color': ('vegs', data.Field())}
+
+        expected_examples = [
+            {"fruits": ["Apple", "Banana"],
+             "vegs": ["Broccoli", "Cabbage"]},
+            {"fruits": ["Cherry", "Grape", "Lemon"],
+             "vegs": ["Cucumber", "Lettuce"]},
+            {"fruits": ["Orange", "Pear", "Strawberry"],
+             "vegs": ["Marrow", "Spinach"]}
+        ]
+        dataset = data.TabularDataset(
+            path=self.test_nested_key_json_dataset_path,
+            format="json",
+            fields=valid_fields)
+        # check results
+        for example, expect in zip(dataset.examples, expected_examples):
+            self.assertEqual(example.vegs, expect['vegs'])
+            self.assertEqual(example.fruits, expect['fruits'])
+
+        with self.assertRaises(ValueError):
+            data.TabularDataset(
+                path=self.test_nested_key_json_dataset_path,
+                format="json",
+                fields=invalid_fields)
+
     def test_errors(self):
         # Ensure that trying to retrieve a key not in JSON data errors
         self.write_test_ppid_dataset(data_format="json")

@@ -14,6 +14,8 @@ import tarfile
 
 from .utils import reporthook
 
+from collections import Counter
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +33,7 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
+    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
@@ -43,8 +45,7 @@ class Vocab(object):
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
-                will be prepended to the vocabulary in addition to an <unk>
-                token. Default: ['<pad>']
+                will be prepended to the vocabulary. Default: ['<unk'>, '<pad>']
             vectors: One of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
@@ -103,6 +104,9 @@ class Vocab(object):
 
     def _default_unk_index(self):
         return self.unk_index
+
+    def __getitem__(self, token):
+        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
 
     def __getstate__(self):
         # avoid picking defaultdict
@@ -427,6 +431,44 @@ class Vectors(object):
             logger.info('Loading vectors from {}'.format(path_pt))
             self.itos, self.stoi, self.vectors, self.dim = torch.load(path_pt)
 
+    def __len__(self):
+        return len(self.vectors)
+
+    def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
+        """Look up embedding vectors of tokens.
+
+        Arguments:
+            tokens: a token or a list of tokens. if `tokens` is a string,
+                returns a 1-D tensor of shape `self.dim`; if `tokens` is a
+                list of strings, returns a 2-D tensor of shape=(len(tokens),
+                self.dim).
+            lower_case_backup : Whether to look up the token in the lower case.
+                If False, each token in the original case will be looked up;
+                if True, each token in the original case will be looked up first,
+                if not found in the keys of the property `stoi`, the token in the
+                lower case will be looked up. Default: False.
+
+        Examples:
+            >>> examples = ['chip', 'baby', 'Beautiful']
+            >>> vec = text.vocab.GloVe(name='6B', dim=50)
+            >>> ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)
+        """
+        to_reduce = False
+
+        if not isinstance(tokens, list):
+            tokens = [tokens]
+            to_reduce = True
+
+        if not lower_case_backup:
+            indices = [self[token] for token in tokens]
+        else:
+            indices = [self[token] if token in self.stoi
+                       else self[token.lower()]
+                       for token in tokens]
+
+        vecs = torch.stack(indices)
+        return vecs[0] if to_reduce else vecs
+
 
 class GloVe(Vectors):
     url = {
@@ -500,3 +542,20 @@ pretrained_aliases = {
     "glove.6B.300d": partial(GloVe, name="6B", dim="300")
 }
 """Mapping from string name to factory function"""
+
+
+def build_vocab_from_iterator(iterator):
+    """
+    Build a Vocab from an iterator.
+
+    Arguments:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+    """
+
+    counter = Counter()
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for tokens in iterator:
+            counter.update(tokens)
+            t.update(1)
+    word_vocab = Vocab(counter)
+    return word_vocab
