@@ -1,15 +1,18 @@
 import torch.nn as nn
 
-r'''
+r"""
 The model is composed of the embeddingbag layer and the linear layer.
-nn.EmbeddingBag computes the mean of 'bags' of embeddings. Since it
-doesn't instantiate the intermediate embeddings, nn.EmbeddingBag can
-enhance the performance and memory efficiency to process a sequence
-of tensors. Additionally, the text entries here have different lengths.
-nn.EmbeddingBag requires no padding here so this method is much faster
-than the original one with TorchText Iterator and Batch.
 
-'''
+nn.EmbeddingBag computes the mean of 'bags' of embeddings. The text
+entries here have different lengths. nn.EmbeddingBag requires no
+padding here so this method is much faster than the original one
+with TorchText Iterator and Batch.
+
+Additionally, since it accumulates the average across the embeddings on the fly,
+nn.EmbeddingBag can enhance the performance and memory efficiency
+to process a sequence of tensors.
+
+"""
 
 class TextSentiment(nn.Module):
     def __init__(self, vocab_size, embed_dim, num_class):
@@ -25,10 +28,11 @@ class TextSentiment(nn.Module):
         self.fc.bias.data.zero_()
 
     def forward(self, text, offsets):
-        r'''
+        r"""
         Arguments:
-            text: a bag of text tensors
-            offsets: a list of offsets
+            text: 1-D tensor representing a bag of text tensors
+            offsets: a list of offsets to delimit the 1-D text tensor
+                into the individual sequences.
 
-        '''
+        """
         return self.fc(self.embedding(text, offsets))

@@ -5,21 +5,21 @@ import argparse
 from torchtext.datasets.text_classification import text_normalize
 
 
-def predict(text, model, dictionary):
+def predict(text, model, vocab):
     r'''
     The predict() function here is used to test the model on a sample text.
-    The input text is numericalized with the dictionary and then sent to
+    The input text is numericalized with the vocab and then sent to
     the model for inference.
 
     Arguments:
         text: a sample text string
         model: the trained model
-        dictionary: a vocab object for the information of string-to-index
+        vocab: a vocab object for the information of string-to-index
 
     '''
 
     with torch.no_grad():
-        text = torch.tensor([dictionary.get(token, dictionary['<unk>'])
+        text = torch.tensor([vocab.get(token, vocab['<unk>'])
                              for token in text_normalize(text)])
         output = model(text, torch.tensor([0]))
         return output.argmax(1).item() + 1

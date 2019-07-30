@@ -10,13 +10,13 @@ from torch.utils.data import DataLoader
 
 from model import TextSentiment
 
-r'''
+r"""
 This file shows the training process of the text sentiment model.
-'''
+"""
 
 
 def generate_batch(batch):
-    r'''
+    r"""
     Since the text entries have different lengths, a custom function
     generate_batch() is used to generate data batches and offsets,
     which are compatible with EmbeddingBag. The function is passed
@@ -27,7 +27,13 @@ def generate_batch(batch):
     as a top level def. This ensures that the function is available
     in each worker.
 
-    '''
+    Output:
+        text: the text entries in the data_batch are packed into a list and
+            concatenated as a single tensor for the input of nn.EmbeddingBag.
+        offsets: the offsets is a tensor of delimiters to represent the beginning
+            index of the individual sequence in the text tensor.
+        cls: a tensor saving the labels of individual text entries.
+    """
     def generate_offsets(data_batch):
         offsets = [0]
         for entry in data_batch:
@@ -42,15 +48,15 @@ def generate_batch(batch):
     return text, offsets, cls
 
 
-r'''
-torch.utils.data.DataLoader is recommended for PyTorch domain libraries.
+r"""
+torch.utils.data.DataLoader is recommended for PyTorch users to load data.
 We use DataLoader here to load datasets and send it to the train()
 and text() functions.
 
-'''
+"""
 
 def train(lr_, num_epoch, data_):
-    r'''
+    r"""
     We use a custom SGD optimizer to train the model here and the learning rate
     decreases linearly with the progress of the training process.
 
@@ -58,7 +64,7 @@ def train(lr_, num_epoch, data_):
         lr_: learning rate
         num_epoch: the number of epoches for training the model
         data_: the data used to train the model
-    '''
+    """
 
     data = DataLoader(data_, batch_size=batch_size, shuffle=True,
                       collate_fn=generate_batch, num_workers=args.num_workers)
@@ -85,10 +91,10 @@ def train(lr_, num_epoch, data_):
 
 
 def test(data_):
-    r'''
+    r"""
     Arguments:
         data_: the data used to train the model
-    '''
+    """
     data = DataLoader(data_, batch_size=batch_size, collate_fn=generate_batch)
     total_accuracy = []
     for text, offsets, cls in data:
