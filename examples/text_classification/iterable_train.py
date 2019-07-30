@@ -18,6 +18,8 @@ from torchtext.data.utils import build_iterable_dataset_from_iterator
 from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
 
+from tqdm import tqdm
+
 
 def generate_batch(batch):
 
@@ -37,25 +39,25 @@ def generate_batch(batch):
 
 def train(lr_, num_epoch, data_):
     data = DataLoader(data_, batch_size=batch_size,
-                      collate_fn=generate_batch, num_workers=args.num_workers)
+                      collate_fn=generate_batch, num_workers=args.num_workers, pin_memory=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, 0.99)
-    import time
-    t0 = time.time()
-    for epoch in range(num_epochs):
+    with tqdm(unit_scale=0, unit='lines', total=num_lines) as t:
+        avg_loss = 0.0
         for i, (text, offsets, cls) in enumerate(data):
             optimizer.zero_grad()
             text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
             output = model(text, offsets)
             loss = criterion(output, cls)
             loss.backward()
+            avg_loss += loss.item()
             optimizer.step()
-            if i % 16 == 0:
-                sys.stderr.write(
-                        "\rEpoch: {:9.3f} lr: {:9.3f} loss: {:9.3f} Time: {:9.3f}s".format(epoch, scheduler.get_lr()[0], loss, time.time() - t0))
             if i % (16 * batch_size) == 0:
                 scheduler.step()
-        print("")
+                avg_loss = avg_loss / (16 * batch_size)
+                avg_loss = 0
+                t.set_description("lr: {:9.3f} loss: {:9.3f}".format(scheduler.get_lr()[0], loss))
+            t.update(batch_size)
 
 
 def test(data_):
@@ -69,14 +71,23 @@ def test(data_):
             total_accuracy.append(accuracy)
     print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
 
-def csv_iterator(data_path, ngrams, vocab):
+def csv_iterator(data_path, ngrams, vocab, epochs=1, is_worker=False):
     tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            tokens = ' '.join(row[1:])
-            tokens = ngrams_iterator(tokenizer(tokens), ngrams)
-            yield int(row[0]) - 1, torch.tensor([vocab[token] for token in tokens])
+        f.seek(0, 2)
+        max_offset = f.tell()
+        f.seek(0)
+        offset = 0.0
+        if is_worker:
+            offset = (max_offset / worker_info.num_workers) * worker_info.id
+        f.seek(offset)
+        for epoch in range(epochs):
+            reader = unicode_csv_reader(f)
+            for row in reader:
+                tokens = ' '.join(row[1:])
+                tokens = ngrams_iterator(tokenizer(tokens), ngrams)
+                yield int(row[0]) - 1, torch.tensor([vocab[token] for token in tokens])
+            f.seek(0)
 
 def count_labels(data_path):
     with io.open(data_path, encoding="utf8") as f:
@@ -95,7 +106,8 @@ if __name__ == "__main__":
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
     parser.add_argument('--ngrams', type=int, default=2)
-    parser.add_argument('--num-labels')
+    parser.add_argument('--num-labels', type=int)
+    parser.add_argument('--num-lines', type=int) # Optional for better progress display
     parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
@@ -111,6 +123,9 @@ if __name__ == "__main__":
     data = args.data
     ngrams = args.ngrams
     num_labels = args.num_labels
+    num_lines = args.num_lines
+    if num_lines:
+        num_lines *= num_epochs
 
     train_data_path = args.train_data_path
     test_data_path = args.test_data_path
