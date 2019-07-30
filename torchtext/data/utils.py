@@ -224,19 +224,6 @@ def ngrams_iterator(token_list, ngrams):
         for x in _get_ngrams(n):
             yield ' '.join(x)
 
-def build_iterable_dataset_from_iterator(iterator):
-    class ReturnDataset(torch.utils.data.IterableDataset):
-        def __init__(self, iterator):
-            super(ReturnDataset, self).__init__()
-            self._iterator = iterator
-
-        def __iter__(self):
-            for x in self._iterator:
-                yield x
-
-    return ReturnDataset(iterator)
-
-
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""
