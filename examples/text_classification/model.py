@@ -5,7 +5,8 @@ The model is composed of the embeddingbag layer and the linear layer.
 
 nn.EmbeddingBag computes the mean of 'bags' of embeddings. The text
 entries here have different lengths. nn.EmbeddingBag requires no
-padding here so this method is much faster than the original one
+padding because the lengths of sentences are saved in offsets.
+Therefore, this method is much faster than the original one
 with TorchText Iterator and Batch.
 
 Additionally, since it accumulates the average across the embeddings on the fly,

@@ -16,8 +16,8 @@ from torchtext.utils import unicode_csv_reader
 from tqdm import tqdm
 
 r"""
-This example shows how to build an iterable dataset from the iterator. A
-new API get_csv_iterator() is used to read CSV file for the data. An abstract
+This example shows how to build an iterable dataset from the iterator. The
+get_csv_iterator() function is used to read CSV file for the data. An abstract
 dataset class setups the iterators for training the model.
 """
 
@@ -117,6 +117,7 @@ def test(data_):
 def get_csv_iterator(data_path, ngrams, vocab, start=0, num_lines=None):
     r"""
     Generate an iterator to read CSV file.
+    The yield values are an integer for the label and a tensor for the text part.
 
     Arguments:
         data_path: a path for the data file.
@@ -165,6 +166,13 @@ class Dataset(torch.utils.data.IterableDataset):
         self._setup = False
 
     def _setup_iterator(self):
+        r"""
+        _setup_iterator() function assign the starting line and the number
+        of lines to read for the individual worker. Then, send them to the iterator
+        to load the data.
+
+        If worker info is not avaialble, it will read all the lines across epochs.
+        """
         worker_info = torch.utils.data.get_worker_info()
         if worker_info:
             chunk = int(self._num_lines / worker_info.num_workers)
@@ -193,7 +201,7 @@ class Dataset(torch.utils.data.IterableDataset):
 
 def count(data_path):
     r"""
-    return the total numerbers of text entries and labels.
+    return the total numerber of text entries and labels.
     """
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
