@@ -10,9 +10,24 @@ from torch.utils.data import DataLoader
 
 from model import TextSentiment
 
+r'''
+This file shows the training process of the text sentiment model.
+'''
+
 
 def generate_batch(batch):
+    r'''
+    Since the text entries have different lengths, a custom function
+    generate_batch() is used to generate data batches and offsets,
+    which are compatible with EmbeddingBag. The function is passed
+    to 'collate_fn' in torch.utils.data.DataLoader. The input to
+    'collate_fn' is a list of tensors with the size of batch_size,
+    and the 'collate_fn' function packs them into a mini-batch.
+    Pay attention here and make sure that 'collate_fn' is declared
+    as a top level def. This ensures that the function is available
+    in each worker.
 
+    '''
     def generate_offsets(data_batch):
         offsets = [0]
         for entry in data_batch:
@@ -27,7 +42,24 @@ def generate_batch(batch):
     return text, offsets, cls
 
 
+r'''
+torch.utils.data.DataLoader is recommended for PyTorch domain libraries.
+We use DataLoader here to load datasets and send it to the train()
+and text() functions.
+
+'''
+
 def train(lr_, num_epoch, data_):
+    r'''
+    We use a custom SGD optimizer to train the model here and the learning rate
+    decreases linearly with the progress of the training process.
+
+    Arguments:
+        lr_: learning rate
+        num_epoch: the number of epoches for training the model
+        data_: the data used to train the model
+    '''
+
     data = DataLoader(data_, batch_size=batch_size, shuffle=True,
                       collate_fn=generate_batch, num_workers=args.num_workers)
     num_lines = num_epochs * len(data)
@@ -53,6 +85,10 @@ def train(lr_, num_epoch, data_):
 
 
 def test(data_):
+    r'''
+    Arguments:
+        data_: the data used to train the model
+    '''
     data = DataLoader(data_, batch_size=batch_size, collate_fn=generate_batch)
     total_accuracy = []
     for text, offsets, cls in data:
