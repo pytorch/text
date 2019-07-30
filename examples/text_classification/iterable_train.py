@@ -15,8 +15,32 @@ from torchtext.utils import unicode_csv_reader
 
 from tqdm import tqdm
 
+r"""
+This example shows how to build an iterable dataset from the iterator. A
+new API get_csv_iterator() is used to read CSV file for the data. An abstract
+dataset class setups the iterators for training the model.
+"""
+
 
 def generate_batch(batch):
+    """
+    Since the text entries have different lengths, a custom function
+    generate_batch() is used to generate data batches and offsets,
+    which are compatible with EmbeddingBag. The function is passed
+    to 'collate_fn' in torch.utils.data.DataLoader. The input to
+    'collate_fn' is a list of tensors with the size of batch_size,
+    and the 'collate_fn' function packs them into a mini-batch.
+    Pay attention here and make sure that 'collate_fn' is declared
+    as a top level def. This ensures that the function is available
+    in each worker.
+    Output:
+        text: the text entries in the data_batch are packed into a list and
+            concatenated as a single tensor for the input of nn.EmbeddingBag.
+        offsets: the offsets is a tensor of delimiters to represent the beginning
+            index of the individual sequence in the text tensor.
+        label: a tensor saving the labels of individual text entries.
+    """
+
     label = torch.tensor([entry[0] for entry in batch])
     text = [entry[1] for entry in batch]
     offsets = [0] + [len(entry) for entry in text]
@@ -25,7 +49,22 @@ def generate_batch(batch):
     return text, offsets, label
 
 
+r"""
+torch.utils.data.DataLoader is recommended for PyTorch users to load data.
+We use DataLoader here to load datasets and send it to the train()
+and text() functions.
+"""
+
+
 def train(lr_, num_epoch, data_):
+    r"""
+    Here we use SGD optimizer to train the model.
+
+    Arguments:
+        lr_: learning rate
+        num_epoch: the number of epoches for training the model
+        data_: the data used to train the model
+    """
     data = DataLoader(
         data_,
         batch_size=batch_size,
@@ -55,6 +94,10 @@ def train(lr_, num_epoch, data_):
 
 
 def test(data_):
+    r"""
+    Arguments:
+        data_: the data used to train the model
+    """
     data = DataLoader(
         data_,
         batch_size=batch_size,
@@ -72,6 +115,18 @@ def test(data_):
 
 
 def get_csv_iterator(data_path, ngrams, vocab, start=0, num_lines=None):
+    r"""
+    Generate an iterator to read CSV file.
+
+    Arguments:
+        data_path: a path for the data file.
+        ngrams: the number used for ngrams.
+        vocab: a vocab object saving the string-to-index information
+        start: the starting line to read (Default: 0). This is useful for
+            on-fly multi-processing data loading.
+        num_lines: the number of lines read by the iterator (Default: None).
+
+    """
     def iterator(start, num_lines):
         tokenizer = get_tokenizer("basic_english")
         with io.open(data_path, encoding="utf8") as f:
@@ -93,6 +148,15 @@ def get_csv_iterator(data_path, ngrams, vocab, start=0, num_lines=None):
 
 
 class Dataset(torch.utils.data.IterableDataset):
+    r"""
+    An iterable dataset to save the data. This dataset supports multi-processing
+    to load the data.
+
+    Arguments:
+        iterator: the iterator to read data.
+        num_lines: the number of lines read by the individual iterator.
+        num_epochs: the numerber of epochs.
+    """
     def __init__(self, iterator, num_lines, num_epochs):
         super(Dataset, self).__init__()
         self._num_lines = num_lines
@@ -128,6 +192,9 @@ class Dataset(torch.utils.data.IterableDataset):
 
 
 def count(data_path):
+    r"""
+    return the total numerbers of text entries and labels.
+    """
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         labels = [int(row[0]) for row in reader]
