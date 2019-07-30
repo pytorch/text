@@ -6,6 +6,7 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
+from tqdm import tqdm
 
 URLS = {
     'AG_NEWS':
@@ -43,12 +44,14 @@ def _csv_iterator(data_path, ngrams, yield_cls=False):
 def _create_data_from_iterator(vocab, iterator):
     data = []
     labels = []
-    for cls, tokens in iterator:
-        tokens = torch.tensor([vocab[token] for token in tokens])
-        if len(tokens) == 0:
-            logging.info('Row contains no tokens.')
-        data.append((cls, tokens))
-        labels.append(cls)
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for cls, tokens in iterator:
+            tokens = torch.tensor([vocab[token] for token in tokens])
+            if len(tokens) == 0:
+                logging.info('Row contains no tokens.')
+            data.append((cls, tokens))
+            labels.append(cls)
+            t.update(1)
     return data, set(labels)
 
 
