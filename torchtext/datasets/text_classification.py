@@ -27,6 +27,7 @@ URLS = {
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
 }
 
+
 def _csv_iterator(data_path, ngrams, yield_cls=False):
     tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
@@ -108,7 +109,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, iterable=False):
+def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -125,9 +126,6 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, iterable=F
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
-    if iterable:
-        return (TextClassificationIterableDataset(vocab, ngrams, train_csv_path),
-                TextClassificationIterableDataset(vocab, ngrams, test_csv_path))
     logging.info('Creating training data')
     train_data, train_labels = _create_data_from_iterator(
         vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True))
