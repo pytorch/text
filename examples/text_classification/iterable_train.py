@@ -17,12 +17,12 @@ from tqdm import tqdm
 
 
 def generate_batch(batch):
-    cls = torch.tensor([entry[0] for entry in batch])
+    label = torch.tensor([entry[0] for entry in batch])
     text = [entry[1] for entry in batch]
     offsets = [0] + [len(entry) for entry in text]
     offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
     text = torch.cat(text)
-    return text, offsets, cls
+    return text, offsets, label
 
 
 def train(lr_, num_epoch, data_):
@@ -36,12 +36,12 @@ def train(lr_, num_epoch, data_):
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, args.lr_gamma)
     with tqdm(unit_scale=0, unit='lines', total=train_num_lines * num_epochs) as t:
         avg_loss = 0.0
-        for i, (text, offsets, cls) in enumerate(data):
-            t.update(len(cls))
+        for i, (text, offsets, label) in enumerate(data):
+            t.update(len(label))
             optimizer.zero_grad()
-            text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
+            text, offsets, label = text.to(device), offsets.to(device), label.to(device)
             output = model(text, offsets)
-            loss = criterion(output, cls)
+            loss = criterion(output, label)
             loss.backward()
             avg_loss += loss.item()
             optimizer.step()
@@ -62,11 +62,11 @@ def test(data_):
         num_workers=args.num_workers,
         pin_memory=True)
     total_accuracy = []
-    for text, offsets, cls in data:
-        text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
+    for text, offsets, label in data:
+        text, offsets, label = text.to(device), offsets.to(device), label.to(device)
         with torch.no_grad():
             output = model(text, offsets)
-            accuracy = (output.argmax(1) == cls).float().mean().item()
+            accuracy = (output.argmax(1) == label).float().mean().item()
             total_accuracy.append(accuracy)
     print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
 
