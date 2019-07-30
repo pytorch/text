@@ -2,7 +2,6 @@ import random
 from contextlib import contextmanager
 from copy import deepcopy
 import re
-import torch
 
 from functools import partial
 
@@ -223,6 +222,7 @@ def ngrams_iterator(token_list, ngrams):
     for n in range(2, ngrams + 1):
         for x in _get_ngrams(n):
             yield ' '.join(x)
+
 
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it

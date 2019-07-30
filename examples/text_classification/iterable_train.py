@@ -1,22 +1,17 @@
-import os
 import logging
 import argparse
 
 import torch
-import sys
 import io
 import time
 
-from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
 
 from model import TextSentiment
 
-from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.utils import unicode_csv_reader
-from torchtext.vocab import build_vocab_from_iterator
 
 from tqdm import tqdm
 
@@ -31,11 +26,15 @@ def generate_batch(batch):
 
 
 def train(lr_, num_epoch, data_):
-    data = DataLoader(data_, batch_size=batch_size,
-                      collate_fn=generate_batch, num_workers=args.num_workers, pin_memory=True)
+    data = DataLoader(
+        data_,
+        batch_size=batch_size,
+        collate_fn=generate_batch,
+        num_workers=args.num_workers,
+        pin_memory=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, args.lr_gamma)
-    with tqdm(unit_scale=0, unit='lines', total=train_num_lines*num_epochs) as t:
+    with tqdm(unit_scale=0, unit='lines', total=train_num_lines * num_epochs) as t:
         avg_loss = 0.0
         for i, (text, offsets, cls) in enumerate(data):
             t.update(len(cls))
@@ -50,12 +49,18 @@ def train(lr_, num_epoch, data_):
                 scheduler.step()
                 avg_loss = avg_loss / (16 * batch_size)
                 avg_loss = 0
-                t.set_description("lr: {:9.3f} loss: {:9.3f}".format(scheduler.get_lr()[0], loss))
+                t.set_description(
+                    "lr: {:9.3f} loss: {:9.3f}".format(
+                        scheduler.get_lr()[0], loss))
 
 
 def test(data_):
-    data = DataLoader(data_, batch_size=batch_size,
-                      collate_fn=generate_batch, num_workers=args.num_workers, pin_memory=True)
+    data = DataLoader(
+        data_,
+        batch_size=batch_size,
+        collate_fn=generate_batch,
+        num_workers=args.num_workers,
+        pin_memory=True)
     total_accuracy = []
     for text, offsets, cls in data:
         text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
@@ -85,6 +90,7 @@ def get_csv_iterator(data_path, ngrams, vocab, start=0, num_lines=None):
                     reader = unicode_csv_reader(f)
                     row = next(reader)
     return iterator
+
 
 class Dataset(torch.utils.data.IterableDataset):
     def __init__(self, iterator, num_lines, num_epochs):
@@ -119,6 +125,7 @@ class Dataset(torch.utils.data.IterableDataset):
             self._setup = True
         for x in self._iterator:
             yield x
+
 
 def count(data_path):
     with io.open(data_path, encoding="utf8") as f:
@@ -171,9 +178,20 @@ if __name__ == "__main__":
     num_labels, test_num_lines = count(test_data_path)
 
     logging.info("Loading iterable datasets")
-    train_dataset = Dataset(get_csv_iterator(train_data_path, ngrams, vocab), train_num_lines, num_epochs)
-    test_dataset = Dataset(get_csv_iterator(test_data_path, ngrams, vocab), test_num_lines, num_epochs)
-
+    train_dataset = Dataset(
+        get_csv_iterator(
+            train_data_path,
+            ngrams,
+            vocab),
+        train_num_lines,
+        num_epochs)
+    test_dataset = Dataset(
+        get_csv_iterator(
+            test_data_path,
+            ngrams,
+            vocab),
+        test_num_lines,
+        num_epochs)
 
     logging.info("Creating models")
     model = TextSentiment(len(vocab),
