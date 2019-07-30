@@ -27,7 +27,6 @@ URLS = {
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
 }
 
-
 def _csv_iterator(data_path, ngrams, yield_cls=False):
     tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
@@ -109,7 +108,54 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
+class TextClassificationIterableDataset(torch.utils.data.IterableDataset):
+    """Defines an abstract text classification datasets.
+       Currently, we only support the following datasets:
+
+             - AG_NEWS
+             - SogouNews
+             - DBpedia
+             - YelpReviewPolarity
+             - YelpReviewFull
+             - YahooAnswers
+             - AmazonReviewPolarity
+             - AmazonReviewFull
+
+    """
+
+    def __init__(self, vocab, ngrams, path):
+        """Initiate text-classification dataset.
+
+        Arguments:
+            vocab: Vocabulary object used for dataset.
+            data: a list of label/tokens tuple. tokens are a tensor after
+                numericalizing the string tokens. label is an integer.
+                [(label1, tokens1), (label2, tokens2), (label2, tokens3)]
+            label: a set of the labels.
+                {label1, label2}
+
+        Examples:
+            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and
+                examples/text_classification/
+
+        """
+
+        super(TextClassificationIterableDataset, self).__init__()
+        self._vocab = vocab
+        self._path = path
+        self._ngrams = ngrams
+
+    def __iter__(self):
+        for x in _csv_iterator(self._path, self._ngrams, yield_cls=True):
+            cls, tokens = x
+            tokens = torch.tensor([self._vocab[token] for token in tokens])
+            yield cls, tokens
+
+    def get_vocab(self):
+        return self._vocab
+
+
+def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, iterable=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -126,6 +172,9 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
+    if iterable:
+        return (TextClassificationIterableDataset(vocab, ngrams, train_csv_path),
+                TextClassificationIterableDataset(vocab, ngrams, test_csv_path))
     logging.info('Creating training data')
     train_data, train_labels = _create_data_from_iterator(
         vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True))

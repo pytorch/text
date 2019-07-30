@@ -21,8 +21,8 @@ def csv_iterator(data_path, ngrams):
 
 parser = argparse.ArgumentParser(
     description='Train a text classification model on AG_NEWS')
-parser.add_argument('--data_path', default='test.csv')
-parser.add_argument('--save_vocab_path', default='saved.vocab')
+parser.add_argument('data_path')
+parser.add_argument('save_vocab_path')
 parser.add_argument('--ngrams', type=int, default=2)
 parser.add_argument('--logging-level', default='WARNING')
 args = parser.parse_args()

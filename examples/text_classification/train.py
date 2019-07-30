@@ -28,28 +28,26 @@ def generate_batch(batch):
 
 
 def train(lr_, num_epoch, data_):
-    data = DataLoader(data_, batch_size=batch_size, shuffle=True,
+    data = DataLoader(data_, batch_size=batch_size,
                       collate_fn=generate_batch, num_workers=args.num_workers)
-    num_lines = num_epochs * len(data)
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, 0.99)
+    import time
+    t0 = time.time()
     for epoch in range(num_epochs):
         for i, (text, offsets, cls) in enumerate(data):
+            optimizer.zero_grad()
             text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
             output = model(text, offsets)
             loss = criterion(output, cls)
             loss.backward()
-            processed_lines = i + len(data) * epoch
-            progress = processed_lines / float(num_lines)
-            lr = lr_ * (1 - progress)
-            # SGD
-            for p in model.parameters():
-                p.data.add_(p.grad.data * -lr)
-                p.grad.detach_()
-                p.grad.zero_()
-            if processed_lines % 1024:
+            optimizer.step()
+            if i % 16 == 0:
                 sys.stderr.write(
-                    "\rProgress: {:3.0f}% lr: {:3.3f} loss: {:3.3f}".format(
-                        progress * 100, lr, loss))
-    print("")
+                        "\rEpoch: {:9.3f} lr: {:9.3f} loss: {:9.3f} Time: {:9.3f}s".format(epoch, scheduler.get_lr()[0], loss, time.time() - t0))
+            if i % (16 * batch_size) == 0:
+                scheduler.step()
+        print("")
 
 
 def test(data_):
@@ -77,6 +75,7 @@ if __name__ == "__main__":
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
+    parser.add_argument('--load-vocab-path')
     parser.add_argument('--logging-level', default='WARNING')
     args = parser.parse_args()
 
@@ -93,11 +92,13 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
+    vocab = args.load_vocab_path
+
     train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
-        root=data, ngrams=args.ngrams)
+        root=data, ngrams=args.ngrams, iterable=True, vocab=vocab)
 
     model = TextSentiment(len(train_dataset.get_vocab()),
-                          embed_dim, len(train_dataset.get_labels())).to(device)
+                          embed_dim, 4).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
     train(lr, num_epochs, train_dataset)
