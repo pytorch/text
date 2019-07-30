@@ -108,53 +108,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-class TextClassificationIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstract text classification datasets.
-       Currently, we only support the following datasets:
-
-             - AG_NEWS
-             - SogouNews
-             - DBpedia
-             - YelpReviewPolarity
-             - YelpReviewFull
-             - YahooAnswers
-             - AmazonReviewPolarity
-             - AmazonReviewFull
-
-    """
-
-    def __init__(self, vocab, ngrams, path):
-        """Initiate text-classification dataset.
-
-        Arguments:
-            vocab: Vocabulary object used for dataset.
-            data: a list of label/tokens tuple. tokens are a tensor after
-                numericalizing the string tokens. label is an integer.
-                [(label1, tokens1), (label2, tokens2), (label2, tokens3)]
-            label: a set of the labels.
-                {label1, label2}
-
-        Examples:
-            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and
-                examples/text_classification/
-
-        """
-
-        super(TextClassificationIterableDataset, self).__init__()
-        self._vocab = vocab
-        self._path = path
-        self._ngrams = ngrams
-
-    def __iter__(self):
-        for x in _csv_iterator(self._path, self._ngrams, yield_cls=True):
-            cls, tokens = x
-            tokens = torch.tensor([self._vocab[token] for token in tokens])
-            yield cls, tokens
-
-    def get_vocab(self):
-        return self._vocab
-
-
 def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, iterable=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
