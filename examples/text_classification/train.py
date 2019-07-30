@@ -1,9 +1,11 @@
+import os
 import logging
 import argparse
 
 import torch
 import sys
 
+from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
 
 from model import TextSentiment
@@ -64,13 +66,13 @@ def test(data_):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Train a text classification model on given text classification data')
-    parser.add_argument('train_data')
-    parser.add_argument('test_data')
+        description='Train a text classification model on text classification datasets.')
+    parser.add_argument('dataset', choices=text_classification.DATASETS)
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
+    parser.add_argument('--ngrams', type=int, default=2)
     parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
@@ -83,14 +85,17 @@ if __name__ == "__main__":
     batch_size = args.batch_size
     lr = args.lr
     device = args.device
+    data = args.data
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
-    print("Loading data")
-    train_dataset = torch.load(args.train_data)
-    test_dataset = torch.load(args.test_data)
+    if not os.path.exists(data):
+        print("Creating directory {}".format(data))
+        os.mkdir(data)
 
-    print("Creating model")
+    train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
+        root=data, ngrams=args.ngrams)
+
     model = TextSentiment(len(train_dataset.get_vocab()),
                           embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
