@@ -41,7 +41,7 @@ def train(lr_, num_epoch, data_):
     data = DataLoader(data_, batch_size=batch_size,
                       collate_fn=generate_batch, num_workers=args.num_workers, pin_memory=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, 0.99)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, args.lr_gamma)
     with tqdm(unit_scale=0, unit='lines', total=num_lines) as t:
         avg_loss = 0.0
         for i, (text, offsets, cls) in enumerate(data):
@@ -105,6 +105,7 @@ if __name__ == "__main__":
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
+    parser.add_argument('--lr-gamma', type=float, default=0.999)
     parser.add_argument('--ngrams', type=int, default=2)
     parser.add_argument('--num-labels', type=int)
     parser.add_argument('--num-lines', type=int) # Optional for better progress display
