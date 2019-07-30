@@ -2,6 +2,7 @@ import random
 from contextlib import contextmanager
 from copy import deepcopy
 import re
+import torch
 
 from functools import partial
 
@@ -226,8 +227,8 @@ def ngrams_iterator(token_list, ngrams):
 def build_iterable_dataset_from_iterator(iterator):
     class ReturnDataset(torch.utils.data.IterableDataset):
         def __init__(self, iterator):
-        super(ReturnDataset, self).__init__()
-        self._iterator = iterator
+            super(ReturnDataset, self).__init__()
+            self._iterator = iterator
 
         def __iter__(self):
             for x in self._iterator:

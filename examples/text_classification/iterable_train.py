@@ -4,11 +4,19 @@ import argparse
 
 import torch
 import sys
+import io
 
 from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
 
 from model import TextSentiment
+
+from torchtext.vocab import build_vocab_from_iterator
+from torchtext.data.utils import ngrams_iterator
+from torchtext.data.utils import get_tokenizer
+from torchtext.data.utils import build_iterable_dataset_from_iterator
+from torchtext.utils import unicode_csv_reader
+from torchtext.vocab import build_vocab_from_iterator
 
 
 def generate_batch(batch):
@@ -61,21 +69,37 @@ def test(data_):
             total_accuracy.append(accuracy)
     print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
 
+def csv_iterator(data_path, ngrams, vocab):
+    tokenizer = get_tokenizer("basic_english")
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            tokens = ' '.join(row[1:])
+            tokens = ngrams_iterator(tokenizer(tokens), ngrams)
+            yield int(row[0]) - 1, torch.tensor([vocab[token] for token in tokens])
+
+def count_labels(data_path):
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        return len(set([int(row[0]) for row in reader]))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Train a text classification model on text classification datasets.')
-    parser.add_argument('dataset', choices=text_classification.DATASETS)
+    parser.add_argument('train_data_path')
+    parser.add_argument('test_data_path')
+    parser.add_argument('vocab')
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
     parser.add_argument('--ngrams', type=int, default=2)
+    parser.add_argument('--num-labels')
     parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--data', default='.data')
     parser.add_argument('--save-model-path')
-    parser.add_argument('--load-vocab-path')
     parser.add_argument('--logging-level', default='WARNING')
     args = parser.parse_args()
 
@@ -85,22 +109,30 @@ if __name__ == "__main__":
     lr = args.lr
     device = args.device
     data = args.data
+    ngrams = args.ngrams
+    num_labels = args.num_labels
+
+    train_data_path = args.train_data_path
+    test_data_path = args.test_data_path
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
-    if not os.path.exists(data):
-        print("Creating directory {}".format(data))
-        os.mkdir(data)
+    logging.info("Loading vocab from: {}".format(args.vocab))
+    vocab = torch.load(args.vocab)
 
-    vocab = args.load_vocab_path
+    logging.info("Loading iterable datasets")
+    train_dataset = build_iterable_dataset_from_iterator(csv_iterator(train_data_path, ngrams, vocab))
+    test_dataset = build_iterable_dataset_from_iterator(csv_iterator(test_data_path, ngrams, vocab))
 
-    train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
-        root=data, ngrams=args.ngrams, iterable=True, vocab=vocab)
-
-    model = TextSentiment(len(train_dataset.get_vocab()),
-                          embed_dim, 4).to(device)
+    if not num_labels:
+        logging.info("Counting labels")
+        num_labels = count_labels(test_data_path)
+    logging.info("Creating models")
+    model = TextSentiment(len(vocab),
+                          embed_dim, num_labels).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
+    logging.info("Starting training")
     train(lr, num_epochs, train_dataset)
     test(test_dataset)
 
