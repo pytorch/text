@@ -55,6 +55,7 @@ and text() functions.
 
 """
 
+
 def train(lr_, num_epoch, data_):
     r"""
     We use a custom SGD optimizer to train the model here and the learning rate
