@@ -6,6 +6,11 @@ import torch
 
 from torchtext.datasets import text_classification
 
+r'''
+Once you have the datasets, you can save the datasets for re-use.
+Here is an example to load/save text_classification datasets.
+
+'''
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=(
         'Create list of Tensors for training and '
