@@ -28,9 +28,10 @@ def predict(text, model, dictionary, ngrams):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Predict text from stdin given model and dictionary')
-    parser.add_argument('model')
-    parser.add_argument('dictionary')
-    parser.add_argument('--ngrams', type=int, default=2)
+    parser.add_argument('model', help='the path for model')
+    parser.add_argument('dictionary', help='the path for dictionary')
+    parser.add_argument('--ngrams', type=int, default=2,
+                        help='ngrams (default=2)')
     args = parser.parse_args()
 
     model = torch.load(args.model)

@@ -111,17 +111,27 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Train a text classification model on text classification datasets.')
     parser.add_argument('dataset', choices=text_classification.DATASETS)
-    parser.add_argument('--num-epochs', type=int, default=3)
-    parser.add_argument('--embed-dim', type=int, default=128)
-    parser.add_argument('--batch-size', type=int, default=64)
-    parser.add_argument('--lr', type=float, default=4.0)
-    parser.add_argument('--lr-gamma', type=float, default=0.8)
-    parser.add_argument('--ngrams', type=int, default=2)
-    parser.add_argument('--num-workers', type=int, default=1)
-    parser.add_argument('--device', default='cpu')
-    parser.add_argument('--data', default='.data')
+    parser.add_argument('--num-epochs', type=int, default=3,
+                        help='num epochs (default=3)')
+    parser.add_argument('--embed-dim', type=int, default=128,
+                        help='embed dim. (default=128)')
+    parser.add_argument('--batch-size', type=int, default=64,
+                        help='batch size (default=64)')
+    parser.add_argument('--lr', type=float, default=4.0,
+                        help='learning rate (default=4.0)')
+    parser.add_argument('--lr-gamma', type=float, default=0.8,
+                        help='gamma value for lr (default=0.8)')
+    parser.add_argument('--ngrams', type=int, default=2,
+                        help='ngrams (default=2)')
+    parser.add_argument('--num-workers', type=int, default=1,
+                        help='num of workers (default=1)')
+    parser.add_argument('--device', default='cpu',
+                        help='device (default=cpu)')
+    parser.add_argument('--data', default='.data',
+                        help='data directory (default=.data)')
     parser.add_argument('--save-model-path')
-    parser.add_argument('--logging-level', default='WARNING')
+    parser.add_argument('--logging-level', default='WARNING',
+                        help='logging level (default=WARNING)')
     args = parser.parse_args()
 
     num_epochs = args.num_epochs
