@@ -8,7 +8,8 @@ from torchtext.datasets import text_classification
 
 r"""
 Once you have the datasets, you can save them as a list of tensors
-for re-use. Here is an example to load/save text_classification datasets.
+and load later on in other projects. Here is an example to load/save
+text_classification datasets.
 """
 
 if __name__ == "__main__":
