@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from model import TextSentiment
 
 r"""
-This file shows the training process of the text sentiment model.
+This file shows the training process of the text classification model.
 """
 
 
