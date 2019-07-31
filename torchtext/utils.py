@@ -6,6 +6,7 @@ import os
 import tarfile
 import logging
 import re
+import sys
 
 
 def reporthook(t):
@@ -100,9 +101,34 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
-    """Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
+    r"""Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
     Borrowed and slightly modified from the Python docs:
-    https://docs.python.org/2/library/csv.html#csv-examples"""
+    https://docs.python.org/2/library/csv.html#csv-examples
+
+    Arguments:
+        unicode_csv_data: unicode csv data (see example below)
+
+    Examples:
+        >>> from torchtext.utils import unicode_csv_reader
+        >>> import io
+        >>> with io.open(data_path, encoding="utf8") as f:
+        >>>     reader = unicode_csv_reader(f)
+
+    """
+
+    # Fix field larger than field limit error
+    maxInt = sys.maxsize
+    while True:
+        # decrease the maxInt value by factor 10
+        # as long as the OverflowError occurs.
+        try:
+            csv.field_size_limit(maxInt)
+            break
+        except OverflowError:
+            maxInt = int(maxInt / 10)
+
+    csv.field_size_limit(sys.maxsize)
+
     if six.PY2:
         # csv.py doesn't do Unicode; encode temporarily as UTF-8:
         csv_reader = csv.reader(utf_8_encoder(unicode_csv_data), **kwargs)

@@ -6,6 +6,7 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
+from tqdm import tqdm
 
 URLS = {
     'AG_NEWS':
@@ -43,18 +44,20 @@ def _csv_iterator(data_path, ngrams, yield_cls=False):
 def _create_data_from_iterator(vocab, iterator):
     data = []
     labels = []
-    for cls, tokens in iterator:
-        tokens = torch.tensor([vocab[token] for token in tokens])
-        if len(tokens) == 0:
-            logging.info('Row contains no tokens.')
-        data.append((cls, tokens))
-        labels.append(cls)
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for cls, tokens in iterator:
+            tokens = torch.tensor([vocab[token] for token in tokens])
+            if len(tokens) == 0:
+                logging.info('Row contains no tokens.')
+            data.append((cls, tokens))
+            labels.append(cls)
+            t.update(1)
     return data, set(labels)
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
-        Currently, we only support the following datasets:
+       Currently, we only support the following datasets:
 
              - AG_NEWS
              - SogouNews
@@ -71,9 +74,17 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         """Initiate text-classification dataset.
 
         Arguments:
-            url: url of the online raw data files.
-            root: Directory where the dataset are saved.
-            ngrams: a contiguous sequence of n items from s string text.
+            vocab: Vocabulary object used for dataset.
+            data: a list of label/tokens tuple. tokens are a tensor after
+                numericalizing the string tokens. label is an integer.
+                [(label1, tokens1), (label2, tokens2), (label2, tokens3)]
+            label: a set of the labels.
+                {label1, label2}
+
+        Examples:
+            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and
+                examples/text_classification/
+
         """
 
         super(TextClassificationDataset, self).__init__()
@@ -143,6 +154,8 @@ def AG_NEWS(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
@@ -169,6 +182,8 @@ def SogouNews(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
@@ -204,6 +219,8 @@ def DBpedia(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
@@ -227,6 +244,8 @@ def YelpReviewPolarity(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
@@ -249,6 +268,8 @@ def YelpReviewFull(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
@@ -280,6 +301,8 @@ def YahooAnswers(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
@@ -303,6 +326,8 @@ def AmazonReviewPolarity(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
@@ -325,6 +350,8 @@ def AmazonReviewFull(*args, **kwargs):
         root: Directory where the dataset are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
