@@ -6,14 +6,24 @@ import torch
 
 from torchtext.datasets import text_classification
 
+r"""
+Once you have the datasets, you can save them as a list of tensors
+and load later on in other projects. Here is an example to load/save
+text_classification datasets.
+"""
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=(
         'Create list of Tensors for training and '
         'testing based on given datasets'))
-    parser.add_argument('dataset', choices=text_classification.DATASETS)
-    parser.add_argument('--logging-level', default='WARNING')
-    parser.add_argument('--ngrams', type=int, default=2)
-    parser.add_argument('--root', default='.data')
+    parser.add_argument('dataset', choices=text_classification.DATASETS,
+                        help='dataset name')
+    parser.add_argument('--logging-level', default='WARNING',
+                        help='logging level (default=WARNING)')
+    parser.add_argument('--ngrams', type=int, default=2,
+                        help='ngrams (default=2)')
+    parser.add_argument('--root', default='.data',
+                        help='data directory (default=.data)')
     args = parser.parse_args()
 
     logging.basicConfig(level=getattr(logging, args.logging_level))

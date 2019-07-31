@@ -55,12 +55,13 @@ Pretrained Word Embeddings
 Misc.
 -----
 
-:hidden:`_default_unk_index`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:hidden:`build_vocab_from_iterator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: _default_unk_index
+.. autodata:: build_vocab_from_iterator
 
 :hidden:`pretrained_aliases`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autodata:: pretrained_aliases
+
