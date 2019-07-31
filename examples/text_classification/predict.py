@@ -1,8 +1,8 @@
 import torch
 import sys
 import argparse
-
 from torchtext.data.utils import get_tokenizer
+
 
 def predict(text, model, dictionary):
     r'''
