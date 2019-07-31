@@ -72,7 +72,7 @@ def train(lr_, num_epoch, data_):
         num_workers=args.num_workers,
         pin_memory=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, args.lr_gamma)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
     with tqdm(unit_scale=0, unit='lines', total=train_num_lines * num_epochs) as t:
         avg_loss = 0.0
         for i, (text, offsets, label) in enumerate(data):
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     parser.add_argument('--num-epochs', type=int, default=3)
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
-    parser.add_argument('--lr', type=float, default=64.0)
+    parser.add_argument('--lr', type=float, default=4.0)
     parser.add_argument('--lr-gamma', type=float, default=0.999)
     parser.add_argument('--ngrams', type=int, default=2)
     parser.add_argument('--num-workers', type=int, default=1)
