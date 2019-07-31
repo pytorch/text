@@ -58,7 +58,7 @@ and text() functions.
 
 def train(lr_, num_epoch, data_):
     r"""
-    We use a custom SGD optimizer to train the model here and the learning rate
+    We use a SGD optimizer to train the model here and the learning rate
     decreases linearly with the progress of the training process.
 
     Arguments:
