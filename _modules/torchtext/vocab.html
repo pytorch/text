@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -17,69 +18,115 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /> -->
   <link rel="stylesheet" href="../../_static/css/pytorch_theme.css" type="text/css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
 </head>
 
-<body class="wy-body-for-nav">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/features">Features</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
 
    
-  <div class="wy-grid-for-nav">
+
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
 
-          
-            <a href="../../index.html">
-          
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
 
-          
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
             
-            <img src="../../_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
-          
-          </a>
 
-          
             
+              
+              
+                <div class="version">
+                  0.4.0
+                </div>
+              
             
-              <div class="version">
-                0.4.0
-              </div>
-            
-          
 
-          
+            
+
+
+  
+
+
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search Docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-        </div>
+            
+          </div>
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
             
@@ -89,101 +136,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../data.html">torchtext.data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#batch"><span class="hidden-section">Batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#example"><span class="hidden-section">Example</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#fields">Fields</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#field"><span class="hidden-section">Field</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#iterators">Iterators</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#pipeline">Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#functions">Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#id2"><span class="hidden-section">batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#pool"><span class="hidden-section">pool</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#sst">SST</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#imdb">IMDb</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#question-classification">Question Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#trec">TREC</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#entailment">Entailment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#snli">SNLI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#multinli">MultiNLI</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#language-modeling">Language Modeling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#wikitext-2">WikiText-2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#wikitext103">WikiText103</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#penntreebank">PennTreebank</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#machine-translation">Machine Translation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#multi30k">Multi30k</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#iwslt">IWSLT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#wmt14">WMT14</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#sequence-tagging">Sequence Tagging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#udpos">UDPOS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#question-answering">Question Answering</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#babi20">BABI20</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../vocab.html#misc">Misc.</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 </ul>
 
@@ -193,21 +149,9 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">torchtext</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
           
 
 
@@ -226,27 +170,47 @@
 
 <div role="navigation" aria-label="breadcrumbs navigation">
 
-  <ul class="wy-breadcrumbs">
+  <ul class="pytorch-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li>
+        <a href="../../index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
         
-          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &gt;</li>
         
       <li>torchtext.vocab</li>
     
     
-      <li class="wy-breadcrumbs-aside">
+      <li class="pytorch-breadcrumbs-aside">
         
       </li>
     
   </ul>
 
   
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
   <h1>Source code for torchtext.vocab</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
@@ -263,6 +227,8 @@
 <span class="kn">import</span> <span class="nn">tarfile</span>
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">reporthook</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -281,7 +247,7 @@
     <span class="c1"># TODO (@mttk): Populate classs with default values of special symbols</span>
     <span class="n">UNK</span> <span class="o">=</span> <span class="s1">&#39;&lt;unk&gt;&#39;</span>
 
-<div class="viewcode-block" id="Vocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">],</span>
+<div class="viewcode-block" id="Vocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">],</span>
                  <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vectors_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials_first</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Vocab object from a collections.Counter.</span>
 
@@ -293,8 +259,7 @@
 <span class="sd">            min_freq: The minimum frequency needed to include a token in the</span>
 <span class="sd">                vocabulary. Values less than 1 will be set to 1. Default: 1.</span>
 <span class="sd">            specials: The list of special tokens (e.g., padding or eos) that</span>
-<span class="sd">                will be prepended to the vocabulary in addition to an &lt;unk&gt;</span>
-<span class="sd">                token. Default: [&#39;&lt;pad&gt;&#39;]</span>
+<span class="sd">                will be prepended to the vocabulary. Default: [&#39;&lt;unk&#39;&gt;, &#39;&lt;pad&gt;&#39;]</span>
 <span class="sd">            vectors: One of either the available pretrained vectors</span>
 <span class="sd">                or custom pretrained vectors (see Vocab.load_vectors);</span>
 <span class="sd">                or a list of aforementioned vectors</span>
@@ -353,6 +318,9 @@
 
     <span class="k">def</span> <span class="nf">_default_unk_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_index</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Vocab</span><span class="o">.</span><span class="n">UNK</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># avoid picking defaultdict</span>
@@ -575,6 +543,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">ssl</span>
+        <span class="n">ssl</span><span class="o">.</span><span class="n">_create_default_https_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">name</span>
             <span class="k">if</span> <span class="n">max_vectors</span><span class="p">:</span>
@@ -673,7 +643,45 @@
             <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">path_pt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading vectors from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_pt</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_pt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Vectors.get_vecs_by_tokens"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vectors.get_vecs_by_tokens">[docs]</a>    <span class="k">def</span> <span class="nf">get_vecs_by_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Look up embedding vectors of tokens.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            tokens: a token or a list of tokens. if `tokens` is a string,</span>
+<span class="sd">                returns a 1-D tensor of shape `self.dim`; if `tokens` is a</span>
+<span class="sd">                list of strings, returns a 2-D tensor of shape=(len(tokens),</span>
+<span class="sd">                self.dim).</span>
+<span class="sd">            lower_case_backup : Whether to look up the token in the lower case.</span>
+<span class="sd">                If False, each token in the original case will be looked up;</span>
+<span class="sd">                if True, each token in the original case will be looked up first,</span>
+<span class="sd">                if not found in the keys of the property `stoi`, the token in the</span>
+<span class="sd">                lower case will be looked up. Default: False.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; examples = [&#39;chip&#39;, &#39;baby&#39;, &#39;Beautiful&#39;]</span>
+<span class="sd">            &gt;&gt;&gt; vec = text.vocab.GloVe(name=&#39;6B&#39;, dim=50)</span>
+<span class="sd">            &gt;&gt;&gt; ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_reduce</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">tokens</span><span class="p">]</span>
+            <span class="n">to_reduce</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lower_case_backup</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span>
+                       <span class="k">else</span> <span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+                       <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+
+        <span class="n">vecs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">to_reduce</span> <span class="k">else</span> <span class="n">vecs</span></div></div>
 
 
 <div class="viewcode-block" id="GloVe"><a class="viewcode-back" href="../../vocab.html#torchtext.data.GloVe">[docs]</a><span class="k">class</span> <span class="nc">GloVe</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
@@ -748,45 +756,268 @@
     <span class="s2">&quot;glove.6B.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;300&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 <span class="sd">&quot;&quot;&quot;Mapping from string name to factory function&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="build_vocab_from_iterator"><a class="viewcode-back" href="../../vocab.html#torchtext.data.build_vocab_from_iterator">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a Vocab from an iterator.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+            <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">word_vocab</span> <span class="o">=</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">word_vocab</span></div>
 </pre></div>
 
-           </div>
-           
-          </div>
-          <footer>
+             </article>
+             
+            </div>
+            <footer>
   
 
-  <hr/>
+  
+
+    <hr>
+
+  
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Torch Contributors
+        &copy; Copyright 2017, Torch Contributors.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
 
 </footer>
 
+          </div>
         </div>
-      </div>
 
-    </section>
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
-  </div>
   
 
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+         <script type="text/javascript" src="../../_static/jquery.js"></script>
+         <script type="text/javascript" src="../../_static/underscore.js"></script>
+         <script type="text/javascript" src="../../_static/doctools.js"></script>
+         <script type="text/javascript" src="../../_static/language_data.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://pytorch.org/resources">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.slack.com" target="_blank">Slack</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Follow Us</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="../../_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="#">Get Started</a>
+          </li>
+
+          <li>
+            <a href="#">Features</a>
+          </li>
+
+          <li>
+            <a href="#">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="../../_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
   </script>
-
-  
-  
-    
-   
-
 </body>
 </html>

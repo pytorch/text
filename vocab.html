@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -17,71 +18,117 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
   <link rel="stylesheet" href="_static/css/pytorch_theme.css" type="text/css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="torchtext.utils" href="utils.html" />
     <link rel="prev" title="torchtext.datasets" href="datasets.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
 </head>
 
-<body class="wy-body-for-nav">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/features">Features</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
 
    
-  <div class="wy-grid-for-nav">
+
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
 
-          
-            <a href="index.html">
-          
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
 
-          
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
             
-            <img src="_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
-          
-          </a>
 
-          
             
+              
+              
+                <div class="version">
+                  0.4.0
+                </div>
+              
             
-              <div class="version">
-                0.4.0
-              </div>
-            
-          
 
-          
+            
+
+
+  
+
+
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search Docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-        </div>
+            
+          </div>
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
             
@@ -91,101 +138,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#batch"><span class="hidden-section">Batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#example"><span class="hidden-section">Example</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#fields">Fields</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#field"><span class="hidden-section">Field</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#iterators">Iterators</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#pipeline">Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#functions">Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#id2"><span class="hidden-section">batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#pool"><span class="hidden-section">pool</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#sst">SST</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#imdb">IMDb</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#question-classification">Question Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#trec">TREC</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#entailment">Entailment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#snli">SNLI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#multinli">MultiNLI</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#language-modeling">Language Modeling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#wikitext-2">WikiText-2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#wikitext103">WikiText103</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#penntreebank">PennTreebank</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#machine-translation">Machine Translation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#multi30k">Multi30k</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#iwslt">IWSLT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#wmt14">WMT14</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#sequence-tagging">Sequence Tagging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#udpos">UDPOS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#question-answering">Question Answering</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="datasets.html#babi20">BABI20</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.vocab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#vocab"><span class="hidden-section">Vocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#vectors"><span class="hidden-section">Vectors</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#glove"><span class="hidden-section">GloVe</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fasttext"><span class="hidden-section">FastText</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#charngram"><span class="hidden-section">CharNGram</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#misc">Misc.</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -195,21 +151,9 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">torchtext</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
           
 
 
@@ -228,17 +172,24 @@
 
 <div role="navigation" aria-label="breadcrumbs navigation">
 
-  <ul class="wy-breadcrumbs">
+  <ul class="pytorch-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li>
+        <a href="index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
         
       <li>torchtext.vocab</li>
     
     
-      <li class="wy-breadcrumbs-aside">
+      <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/vocab.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/vocab.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -246,18 +197,31 @@
   </ul>
 
   
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
   <div class="section" id="module-torchtext.vocab">
 <span id="torchtext-vocab"></span><h1>torchtext.vocab<a class="headerlink" href="#module-torchtext.vocab" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="vocab">
 <h2><span class="hidden-section">Vocab</span><a class="headerlink" href="#vocab" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.Vocab">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">Vocab</code><span class="sig-paren">(</span><em>counter, max_size=None, min_freq=1, specials=['&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">Vocab</code><span class="sig-paren">(</span><em>counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a vocabulary object that will be used to numericalize a field.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -276,7 +240,7 @@ numerical identifiers.</li>
 </table>
 <dl class="method">
 <dt id="torchtext.vocab.Vocab.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>counter, max_size=None, min_freq=1, specials=['&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Vocab object from a collections.Counter.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -290,8 +254,7 @@ maximum. Default: None.</li>
 <li><strong>min_freq</strong> – The minimum frequency needed to include a token in the
 vocabulary. Values less than 1 will be set to 1. Default: 1.</li>
 <li><strong>specials</strong> – The list of special tokens (e.g., padding or eos) that
-will be prepended to the vocabulary in addition to an &lt;unk&gt;
-token. Default: [‘&lt;pad&gt;’]</li>
+will be prepended to the vocabulary. Default: [‘&lt;unk’&gt;, ‘&lt;pad&gt;’]</li>
 <li><strong>vectors</strong> – One of either the available pretrained vectors
 or custom pretrained vectors (see Vocab.load_vectors);
 or a list of aforementioned vectors</li>
@@ -440,6 +403,37 @@ can limit the size of the loaded set.</li>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="torchtext.vocab.Vectors.get_vecs_by_tokens">
+<code class="descname">get_vecs_by_tokens</code><span class="sig-paren">(</span><em>tokens</em>, <em>lower_case_backup=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors.get_vecs_by_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.get_vecs_by_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up embedding vectors of tokens.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tokens</strong> – a token or a list of tokens. if <cite>tokens</cite> is a string,
+returns a 1-D tensor of shape <cite>self.dim</cite>; if <cite>tokens</cite> is a
+list of strings, returns a 2-D tensor of shape=(len(tokens),
+self.dim).</li>
+<li><strong>lower_case_backup</strong> – Whether to look up the token in the lower case.
+If False, each token in the original case will be looked up;
+if True, each token in the original case will be looked up first,
+if not found in the keys of the property <cite>stoi</cite>, the token in the
+lower case will be looked up. Default: False.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">examples</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chip&#39;</span><span class="p">,</span> <span class="s1">&#39;baby&#39;</span><span class="p">,</span> <span class="s1">&#39;Beautiful&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">GloVe</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;6B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ret</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">get_vecs_by_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <div class="section" id="pretrained-word-embeddings">
@@ -539,8 +533,22 @@ can limit the size of the loaded set.</dd>
 <h3>Misc.<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
-<div class="section" id="default-unk-index">
-<h2><span class="hidden-section">_default_unk_index</span><a class="headerlink" href="#default-unk-index" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="build-vocab-from-iterator">
+<h2><span class="hidden-section">build_vocab_from_iterator</span><a class="headerlink" href="#build-vocab-from-iterator" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="torchtext.vocab.build_vocab_from_iterator">
+<code class="descclassname">torchtext.vocab.</code><code class="descname">build_vocab_from_iterator</code><em class="property"> = &lt;function build_vocab_from_iterator&gt;</em><a class="reference internal" href="_modules/torchtext/vocab.html#build_vocab_from_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a Vocab from an iterator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>iterator</strong> – Iterator used to build Vocab. Must yield list or iterator of tokens.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="pretrained-aliases">
 <h2><span class="hidden-section">pretrained_aliases</span><a class="headerlink" href="#pretrained-aliases" title="Permalink to this headline">¶</a></h2>
@@ -554,52 +562,277 @@ can limit the size of the loaded set.</dd>
 </div>
 
 
-           </div>
-           
-          </div>
-          <footer>
+             </article>
+             
+            </div>
+            <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="utils.html" class="btn btn-neutral float-right" title="torchtext.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="torchtext.utils" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="datasets.html" class="btn btn-neutral float-left" title="torchtext.datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="datasets.html" class="btn btn-neutral" title="torchtext.datasets" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
 
-  <hr/>
+  
+
+    <hr>
+
+  
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Torch Contributors
+        &copy; Copyright 2017, Torch Contributors.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
 
 </footer>
 
+          </div>
         </div>
-      </div>
 
-    </section>
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">torchtext.vocab</a><ul>
+<li><a class="reference internal" href="#vocab"><span class="hidden-section">Vocab</span></a></li>
+<li><a class="reference internal" href="#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
+<li><a class="reference internal" href="#vectors"><span class="hidden-section">Vectors</span></a><ul>
+<li><a class="reference internal" href="#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#glove"><span class="hidden-section">GloVe</span></a></li>
+<li><a class="reference internal" href="#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li><a class="reference internal" href="#charngram"><span class="hidden-section">CharNGram</span></a><ul>
+<li><a class="reference internal" href="#misc">Misc.</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#build-vocab-from-iterator"><span class="hidden-section">build_vocab_from_iterator</span></a></li>
+<li><a class="reference internal" href="#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
+</ul>
+</li>
+</ul>
 
-  </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
   
 
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script type="text/javascript" src="_static/jquery.js"></script>
+         <script type="text/javascript" src="_static/underscore.js"></script>
+         <script type="text/javascript" src="_static/doctools.js"></script>
+         <script type="text/javascript" src="_static/language_data.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://pytorch.org/resources">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.slack.com" target="_blank">Slack</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Follow Us</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="#">Get Started</a>
+          </li>
+
+          <li>
+            <a href="#">Features</a>
+          </li>
+
+          <li>
+            <a href="#">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
   </script>
-
-  
-  
-    
-   
-
 </body>
 </html>

@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -17,69 +18,115 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /> -->
   <link rel="stylesheet" href="../../_static/css/pytorch_theme.css" type="text/css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
 </head>
 
-<body class="wy-body-for-nav">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/features">Features</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
 
    
-  <div class="wy-grid-for-nav">
+
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
 
-          
-            <a href="../../index.html">
-          
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
 
-          
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
             
-            <img src="../../_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
-          
-          </a>
 
-          
             
+              
+              
+                <div class="version">
+                  0.4.0
+                </div>
+              
             
-              <div class="version">
-                0.4.0
-              </div>
-            
-          
 
-          
+            
+
+
+  
+
+
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search Docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-        </div>
+            
+          </div>
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
             
@@ -89,101 +136,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../data.html">torchtext.data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#batch"><span class="hidden-section">Batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#example"><span class="hidden-section">Example</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#fields">Fields</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#field"><span class="hidden-section">Field</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#iterators">Iterators</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#pipeline">Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../data.html#functions">Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#id2"><span class="hidden-section">batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#pool"><span class="hidden-section">pool</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#sentiment-analysis">Sentiment Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#sst">SST</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#imdb">IMDb</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#question-classification">Question Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#trec">TREC</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#entailment">Entailment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#snli">SNLI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#multinli">MultiNLI</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#language-modeling">Language Modeling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#wikitext-2">WikiText-2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#wikitext103">WikiText103</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#penntreebank">PennTreebank</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#machine-translation">Machine Translation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#multi30k">Multi30k</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#iwslt">IWSLT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#wmt14">WMT14</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#sequence-tagging">Sequence Tagging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#udpos">UDPOS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#conll2000chunking">CoNLL2000Chunking</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../datasets.html#question-answering">Question Answering</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../datasets.html#babi20">BABI20</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../vocab.html#misc">Misc.</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 </ul>
 
@@ -193,21 +149,9 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">torchtext</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
           
 
 
@@ -226,35 +170,58 @@
 
 <div role="navigation" aria-label="breadcrumbs navigation">
 
-  <ul class="wy-breadcrumbs">
+  <ul class="pytorch-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li>
+        <a href="../../index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
         
-          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &gt;</li>
         
       <li>torchtext.utils</li>
     
     
-      <li class="wy-breadcrumbs-aside">
+      <li class="pytorch-breadcrumbs-aside">
         
       </li>
     
   </ul>
 
   
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
   <h1>Source code for torchtext.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">errno</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
 
 <div class="viewcode-block" id="reporthook"><a class="viewcode-back" href="../../utils.html#torchtext.utils.reporthook">[docs]</a><span class="k">def</span> <span class="nf">reporthook</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;https://github.com/tqdm/tqdm&quot;&quot;&quot;</span>
@@ -276,11 +243,39 @@
     <span class="k">return</span> <span class="n">inner</span></div>
 
 
-<div class="viewcode-block" id="download_from_url"><a class="viewcode-back" href="../../utils.html#torchtext.utils.download_from_url">[docs]</a><span class="k">def</span> <span class="nf">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Download file, with logic (from tensor2tensor) for Google Drive&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">process_response</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+<div class="viewcode-block" id="download_from_url"><a class="viewcode-back" href="../../utils.html#torchtext.utils.download_from_url">[docs]</a><span class="k">def</span> <span class="nf">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download file, with logic (from tensor2tensor) for Google Drive.</span>
+<span class="sd">    Returns the path to the downloaded file.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        url: the url of the file</span>
+<span class="sd">        path: explicitly set the filename, otherwise attempts to</span>
+<span class="sd">            detect the file name from URL header. (None)</span>
+<span class="sd">        root: download folder used to store the file in (.data)</span>
+<span class="sd">        overwrite: overwrite existing files (False)</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
+<span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url)</span>
+<span class="sd">        &gt;&gt;&gt; &#39;.data/validation.tar.gz&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_process_response</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">1024</span>
         <span class="n">total_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Content-length&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;content-disposition&#39;</span><span class="p">]</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;filename=</span><span class="se">\&quot;</span><span class="s2">(.+)</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Filename could not be autodetected&quot;</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">%s</span><span class="s1"> already exists.&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">path</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Overwriting file </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Downloading file </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">total_size</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">,</span>
                       <span class="n">unit_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
@@ -288,13 +283,23 @@
                     <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
                         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
                         <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> downloaded.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">root</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Download directory </span><span class="si">{}</span><span class="s2"> does not exist. &quot;</span>
+            <span class="s2">&quot;Did you create it?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="s1">&#39;drive.google.com&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">url</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0&#39;</span><span class="p">},</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">process_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-        <span class="k">return</span>
+        <span class="k">return</span> <span class="n">_process_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;downloading from Google Drive; may take a few minutes&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Downloading from Google Drive; may take a few minutes&#39;</span><span class="p">)</span>
     <span class="n">confirm_token</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -306,13 +311,38 @@
         <span class="n">url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;&amp;confirm=&quot;</span> <span class="o">+</span> <span class="n">confirm_token</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">process_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_process_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">unicode_csv_reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Since the standard csv library does not handle unicode in Python 2, we need a wrapper.</span>
+<div class="viewcode-block" id="unicode_csv_reader"><a class="viewcode-back" href="../../utils.html#torchtext.utils.unicode_csv_reader">[docs]</a><span class="k">def</span> <span class="nf">unicode_csv_reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Since the standard csv library does not handle unicode in Python 2, we need a wrapper.</span>
 <span class="sd">    Borrowed and slightly modified from the Python docs:</span>
-<span class="sd">    https://docs.python.org/2/library/csv.html#csv-examples&quot;&quot;&quot;</span>
+<span class="sd">    https://docs.python.org/2/library/csv.html#csv-examples</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        unicode_csv_data: unicode csv data (see example below)</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.utils import unicode_csv_reader</span>
+<span class="sd">        &gt;&gt;&gt; import io</span>
+<span class="sd">        &gt;&gt;&gt; with io.open(data_path, encoding=&quot;utf8&quot;) as f:</span>
+<span class="sd">        &gt;&gt;&gt;     reader = unicode_csv_reader(f)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Fix field larger than field limit error</span>
+    <span class="n">maxInt</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># decrease the maxInt value by factor 10</span>
+        <span class="c1"># as long as the OverflowError occurs.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csv</span><span class="o">.</span><span class="n">field_size_limit</span><span class="p">(</span><span class="n">maxInt</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">OverflowError</span><span class="p">:</span>
+            <span class="n">maxInt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxInt</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">csv</span><span class="o">.</span><span class="n">field_size_limit</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY2</span><span class="p">:</span>
         <span class="c1"># csv.py doesn&#39;t do Unicode; encode temporarily as UTF-8:</span>
         <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">utf_8_encoder</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -321,139 +351,297 @@
             <span class="k">yield</span> <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">line</span>
+            <span class="k">yield</span> <span class="n">line</span></div>
 
 
 <span class="k">def</span> <span class="nf">utf_8_encoder</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">unicode_csv_data</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">line</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">makedir_exist_ok</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Python2 support for os.makedirs(.., exist_ok=True)</span>
+
+<div class="viewcode-block" id="extract_archive"><a class="viewcode-back" href="../../utils.html#torchtext.utils.extract_archive">[docs]</a><span class="k">def</span> <span class="nf">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">archive</span><span class="o">=</span><span class="s1">&#39;tar&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract archive.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        from_path: the path of the archive.</span>
+<span class="sd">        to_path: the root path of the extraced files (directory of from_path)</span>
+<span class="sd">        overwrite: overwrite existing files (False)</span>
+<span class="sd">        archive: the archive format to extract (tar)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of paths to extracted files even if not overwritten.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
+<span class="sd">        &gt;&gt;&gt; from_path = &#39;./validation.tar.gz&#39;</span>
+<span class="sd">        &gt;&gt;&gt; to_path = &#39;./&#39;</span>
+<span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url, from_path)</span>
+<span class="sd">        &gt;&gt;&gt; torchtext.utils.extract_archive(from_path, to_path)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span>
-
-<span class="k">def</span> <span class="nf">download_and_extract_archive</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">download_root</span><span class="p">,</span> <span class="n">extract_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                 <span class="n">md5</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_finished</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">download_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">download_root</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">extract_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">extract_root</span> <span class="o">=</span> <span class="n">download_root</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-
-    <span class="n">download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">download_root</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">md5</span><span class="p">)</span>
-
-    <span class="n">archive</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">download_root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extracting </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="n">extract_root</span><span class="p">))</span>
-    <span class="n">extract_archive</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="n">extract_root</span><span class="p">,</span> <span class="n">remove_finished</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">md5</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Download a file from a url and place it in root.</span>
-<span class="sd">    Args:</span>
-<span class="sd">        url (str): URL to download file from</span>
-<span class="sd">        root (str): Directory to place downloaded file in</span>
-<span class="sd">        filename (str, optional): Name to save the file under. If None, use the basename of the URL</span>
-<span class="sd">        md5 (str, optional): MD5 checksum of the download. If None, do not check</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">urllib</span>
-
-    <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-
-    <span class="n">makedir_exist_ok</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-
-    <span class="c1"># downloads file</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Downloading &#39;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39; to &#39;</span> <span class="o">+</span> <span class="n">fpath</span><span class="p">)</span>
-        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
-            <span class="n">url</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span>
-            <span class="n">reporthook</span><span class="o">=</span><span class="n">gen_bar_updater</span><span class="p">()</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">url</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;https&#39;</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;https:&#39;</span><span class="p">,</span> <span class="s1">&#39;http:&#39;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed download. Trying https -&gt; http instead.&#39;</span>
-                  <span class="s1">&#39; Downloading &#39;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39; to &#39;</span> <span class="o">+</span> <span class="n">fpath</span><span class="p">)</span>
-            <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
-                <span class="n">url</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span>
-                <span class="n">reporthook</span><span class="o">=</span><span class="n">gen_bar_updater</span><span class="p">()</span>
-            <span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_finished</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">to_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">to_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">from_path</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">_is_targz</span><span class="p">(</span><span class="n">from_path</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-            <span class="n">tar</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">to_path</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Extraction of </span><span class="si">{}</span><span class="s2"> not supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_path</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">archive</span> <span class="o">!=</span> <span class="s1">&#39;tar&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;We currently only support tar achives.&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">remove_finished</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">from_path</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">_is_targz</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.tar.gz&quot;</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">gen_bar_updater</span><span class="p">():</span>
-    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">bar_update</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">total_size</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">pbar</span><span class="o">.</span><span class="n">total</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">total_size</span><span class="p">:</span>
-            <span class="n">pbar</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">total_size</span>
-        <span class="n">progress_bytes</span> <span class="o">=</span> <span class="n">count</span> <span class="o">*</span> <span class="n">block_size</span>
-        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">progress_bytes</span> <span class="o">-</span> <span class="n">pbar</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">bar_update</span>
-
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Opening tar file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">from_path</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_</span> <span class="ow">in</span> <span class="n">tar</span><span class="p">:</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_path</span><span class="p">,</span> <span class="n">file_</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">file_</span><span class="o">.</span><span class="n">isfile</span><span class="p">():</span>
+                <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> already extracted.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                        <span class="k">continue</span>
+            <span class="n">tar</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">file_</span><span class="p">,</span> <span class="n">to_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">files</span></div>
 </pre></div>
 
-           </div>
-           
-          </div>
-          <footer>
+             </article>
+             
+            </div>
+            <footer>
   
 
-  <hr/>
+  
+
+    <hr>
+
+  
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Torch Contributors
+        &copy; Copyright 2017, Torch Contributors.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
 
 </footer>
 
+          </div>
         </div>
-      </div>
 
-    </section>
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
-  </div>
   
 
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+         <script type="text/javascript" src="../../_static/jquery.js"></script>
+         <script type="text/javascript" src="../../_static/underscore.js"></script>
+         <script type="text/javascript" src="../../_static/doctools.js"></script>
+         <script type="text/javascript" src="../../_static/language_data.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://pytorch.org/resources">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.slack.com" target="_blank">Slack</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Follow Us</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="../../_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="#">Get Started</a>
+          </li>
+
+          <li>
+            <a href="#">Features</a>
+          </li>
+
+          <li>
+            <a href="#">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="../../_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
   </script>
-
-  
-  
-    
-   
-
 </body>
 </html>

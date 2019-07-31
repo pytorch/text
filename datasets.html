@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -17,71 +18,117 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
 
+  
+  
     
 
   
+
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
   <link rel="stylesheet" href="_static/css/pytorch_theme.css" type="text/css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="torchtext.vocab" href="vocab.html" />
     <link rel="prev" title="torchtext.data" href="data.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
 </head>
 
-<body class="wy-body-for-nav">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/features">Features</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
 
    
-  <div class="wy-grid-for-nav">
+
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
 
-          
-            <a href="index.html">
-          
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
 
-          
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
             
-            <img src="_static/pytorch-logo-dark.svg" class="logo" alt="Logo"/>
-          
-          </a>
 
-          
             
+              
+              
+                <div class="version">
+                  0.4.0
+                </div>
+              
             
-              <div class="version">
-                0.4.0
-              </div>
-            
-          
 
-          
+            
+
+
+  
+
+
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search Docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-        </div>
+            
+          </div>
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
             
@@ -91,101 +138,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data.html#dataset-batch-and-example">Dataset, Batch, and Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#dataset"><span class="hidden-section">Dataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#tabulardataset"><span class="hidden-section">TabularDataset</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#batch"><span class="hidden-section">Batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#example"><span class="hidden-section">Example</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#fields">Fields</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#rawfield"><span class="hidden-section">RawField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#field"><span class="hidden-section">Field</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#reversiblefield"><span class="hidden-section">ReversibleField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#subwordfield"><span class="hidden-section">SubwordField</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#nestedfield"><span class="hidden-section">NestedField</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#iterators">Iterators</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#iterator"><span class="hidden-section">Iterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#bucketiterator"><span class="hidden-section">BucketIterator</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#bpttiterator"><span class="hidden-section">BPTTIterator</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#pipeline">Pipeline</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#id1"><span class="hidden-section">Pipeline</span></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#functions">Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="data.html#id2"><span class="hidden-section">batch</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#pool"><span class="hidden-section">pool</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li class="toctree-l3"><a class="reference internal" href="data.html#interleave-keys"><span class="hidden-section">interleave_keys</span></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#sentiment-analysis">Sentiment Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#sst">SST</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imdb">IMDb</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#question-classification">Question Classification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#trec">TREC</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#entailment">Entailment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#snli">SNLI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#multinli">MultiNLI</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#language-modeling">Language Modeling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#wikitext-2">WikiText-2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#wikitext103">WikiText103</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#penntreebank">PennTreebank</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#machine-translation">Machine Translation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#multi30k">Multi30k</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#iwslt">IWSLT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#wmt14">WMT14</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#sequence-tagging">Sequence Tagging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#udpos">UDPOS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#conll2000chunking">CoNLL2000Chunking</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#question-answering">Question Answering</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#babi20">BABI20</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#subwordvocab"><span class="hidden-section">SubwordVocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#vectors"><span class="hidden-section">Vectors</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="vocab.html#pretrained-word-embeddings">Pretrained Word Embeddings</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#glove"><span class="hidden-section">GloVe</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#fasttext"><span class="hidden-section">FastText</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#charngram"><span class="hidden-section">CharNGram</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="vocab.html#misc">Misc.</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#default-unk-index"><span class="hidden-section">_default_unk_index</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="vocab.html#pretrained-aliases"><span class="hidden-section">pretrained_aliases</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#reporthook"><span class="hidden-section">reporthook</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -195,21 +151,9 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">torchtext</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
           
 
 
@@ -228,17 +172,24 @@
 
 <div role="navigation" aria-label="breadcrumbs navigation">
 
-  <ul class="wy-breadcrumbs">
+  <ul class="pytorch-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li>
+        <a href="index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
         
       <li>torchtext.datasets</li>
     
     
-      <li class="wy-breadcrumbs-aside">
+      <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/datasets.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/datasets.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -246,11 +197,24 @@
   </ul>
 
   
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
   <div class="section" id="torchtext-datasets">
 <h1>torchtext.datasets<a class="headerlink" href="#torchtext-datasets" title="Permalink to this headline">¶</a></h1>
 <p>All datasets are subclasses of <a class="reference internal" href="data.html#torchtext.data.Dataset" title="torchtext.data.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchtext.data.Dataset</span></code></a>, which
@@ -286,36 +250,45 @@ inherits from <a class="reference external" href="https://pytorch.org/docs/0.3.0
 <li><a class="reference internal" href="#sentiment-analysis" id="id1">Sentiment Analysis</a><ul>
 <li><a class="reference internal" href="#sst" id="id2">SST</a></li>
 <li><a class="reference internal" href="#imdb" id="id3">IMDb</a></li>
+<li><a class="reference internal" href="#textclassificationdataset" id="id4">TextClassificationDataset</a></li>
+<li><a class="reference internal" href="#ag-news" id="id5">AG_NEWS</a></li>
+<li><a class="reference internal" href="#sogounews" id="id6">SogouNews</a></li>
+<li><a class="reference internal" href="#dbpedia" id="id7">DBpedia</a></li>
+<li><a class="reference internal" href="#yelpreviewpolarity" id="id8">YelpReviewPolarity</a></li>
+<li><a class="reference internal" href="#yelpreviewfull" id="id9">YelpReviewFull</a></li>
+<li><a class="reference internal" href="#yahooanswers" id="id10">YahooAnswers</a></li>
+<li><a class="reference internal" href="#amazonreviewpolarity" id="id11">AmazonReviewPolarity</a></li>
+<li><a class="reference internal" href="#amazonreviewfull" id="id12">AmazonReviewFull</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#question-classification" id="id4">Question Classification</a><ul>
-<li><a class="reference internal" href="#trec" id="id5">TREC</a></li>
+<li><a class="reference internal" href="#question-classification" id="id13">Question Classification</a><ul>
+<li><a class="reference internal" href="#trec" id="id14">TREC</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#entailment" id="id6">Entailment</a><ul>
-<li><a class="reference internal" href="#snli" id="id7">SNLI</a></li>
-<li><a class="reference internal" href="#multinli" id="id8">MultiNLI</a></li>
+<li><a class="reference internal" href="#entailment" id="id15">Entailment</a><ul>
+<li><a class="reference internal" href="#snli" id="id16">SNLI</a></li>
+<li><a class="reference internal" href="#multinli" id="id17">MultiNLI</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#language-modeling" id="id9">Language Modeling</a><ul>
-<li><a class="reference internal" href="#wikitext-2" id="id10">WikiText-2</a></li>
-<li><a class="reference internal" href="#wikitext103" id="id11">WikiText103</a></li>
-<li><a class="reference internal" href="#penntreebank" id="id12">PennTreebank</a></li>
+<li><a class="reference internal" href="#language-modeling" id="id18">Language Modeling</a><ul>
+<li><a class="reference internal" href="#wikitext-2" id="id19">WikiText-2</a></li>
+<li><a class="reference internal" href="#wikitext103" id="id20">WikiText103</a></li>
+<li><a class="reference internal" href="#penntreebank" id="id21">PennTreebank</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#machine-translation" id="id13">Machine Translation</a><ul>
-<li><a class="reference internal" href="#multi30k" id="id14">Multi30k</a></li>
-<li><a class="reference internal" href="#iwslt" id="id15">IWSLT</a></li>
-<li><a class="reference internal" href="#wmt14" id="id16">WMT14</a></li>
+<li><a class="reference internal" href="#machine-translation" id="id22">Machine Translation</a><ul>
+<li><a class="reference internal" href="#multi30k" id="id23">Multi30k</a></li>
+<li><a class="reference internal" href="#iwslt" id="id24">IWSLT</a></li>
+<li><a class="reference internal" href="#wmt14" id="id25">WMT14</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sequence-tagging" id="id17">Sequence Tagging</a><ul>
-<li><a class="reference internal" href="#udpos" id="id18">UDPOS</a></li>
-<li><a class="reference internal" href="#conll2000chunking" id="id19">CoNLL2000Chunking</a></li>
+<li><a class="reference internal" href="#sequence-tagging" id="id26">Sequence Tagging</a><ul>
+<li><a class="reference internal" href="#udpos" id="id27">UDPOS</a></li>
+<li><a class="reference internal" href="#conll2000chunking" id="id28">CoNLL2000Chunking</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#question-answering" id="id20">Question Answering</a><ul>
-<li><a class="reference internal" href="#babi20" id="id21">BABI20</a></li>
+<li><a class="reference internal" href="#question-answering" id="id29">Question Answering</a><ul>
+<li><a class="reference internal" href="#babi20" id="id30">BABI20</a></li>
 </ul>
 </li>
 </ul>
@@ -439,11 +412,453 @@ Dataset.</li>
 </dd></dl>
 
 </div>
+<div class="section" id="textclassificationdataset">
+<h3><a class="toc-backref" href="#id4">TextClassificationDataset</a><a class="headerlink" href="#textclassificationdataset" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.datasets.TextClassificationDataset">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">TextClassificationDataset</code><span class="sig-paren">(</span><em>vocab</em>, <em>data</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#TextClassificationDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.TextClassificationDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines an abstract text classification datasets.
+Currently, we only support the following datasets:</p>
+<blockquote>
+<div><ul class="simple">
+<li>AG_NEWS</li>
+<li>SogouNews</li>
+<li>DBpedia</li>
+<li>YelpReviewPolarity</li>
+<li>YelpReviewFull</li>
+<li>YahooAnswers</li>
+<li>AmazonReviewPolarity</li>
+<li>AmazonReviewFull</li>
+</ul>
+</div></blockquote>
+<dl class="method">
+<dt id="torchtext.datasets.TextClassificationDataset.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>vocab</em>, <em>data</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#TextClassificationDataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.TextClassificationDataset.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiate text-classification dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vocab</strong> – Vocabulary object used for dataset.</li>
+<li><strong>data</strong> – a list of label/tokens tuple. tokens are a tensor after
+numericalizing the string tokens. label is an integer.
+[(label1, tokens1), (label2, tokens2), (label2, tokens3)]</li>
+<li><strong>label</strong> – a set of the labels.
+{label1, label2}</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<dl class="docutils">
+<dt>See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and</dt>
+<dd>examples/text_classification/</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="ag-news">
+<h3><a class="toc-backref" href="#id5">AG_NEWS</a><a class="headerlink" href="#ag-news" title="Permalink to this headline">¶</a></h3>
+<p>AG_NEWS dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.AG_NEWS">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">AG_NEWS</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines AG_NEWS datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd><ul class="first last simple">
+<li>1 : World</li>
+<li>2 : Sports</li>
+<li>3 : Business</li>
+<li>4 : Sci/Tech</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: AG_NEWS</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">AG_NEWS</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.AG_NEWS.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.AG_NEWS.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sogounews">
+<h3><a class="toc-backref" href="#id6">SogouNews</a><a class="headerlink" href="#sogounews" title="Permalink to this headline">¶</a></h3>
+<p>SogouNews dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.SogouNews">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">SogouNews</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines SogouNews datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd><ul class="first last simple">
+<li>1 : Sports</li>
+<li>2 : Finance</li>
+<li>3 : Entertainment</li>
+<li>4 : Automobile</li>
+<li>5 : Technology</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: SogouNews</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">SogouNews</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.SogouNews.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.SogouNews.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="dbpedia">
+<h3><a class="toc-backref" href="#id7">DBpedia</a><a class="headerlink" href="#dbpedia" title="Permalink to this headline">¶</a></h3>
+<p>DBpedia dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.DBpedia">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">DBpedia</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines DBpedia datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd><ul class="first last simple">
+<li>1 : Company</li>
+<li>2 : EducationalInstitution</li>
+<li>3 : Artist</li>
+<li>4 : Athlete</li>
+<li>5 : OfficeHolder</li>
+<li>6 : MeanOfTransportation</li>
+<li>7 : Building</li>
+<li>8 : NaturalPlace</li>
+<li>9 : Village</li>
+<li>10 : Animal</li>
+<li>11 : Plant</li>
+<li>12 : Album</li>
+<li>13 : Film</li>
+<li>14 : WrittenWork</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: DBpedia</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">DBpedia</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.DBpedia.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.DBpedia.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="yelpreviewpolarity">
+<h3><a class="toc-backref" href="#id8">YelpReviewPolarity</a><a class="headerlink" href="#yelpreviewpolarity" title="Permalink to this headline">¶</a></h3>
+<p>YelpReviewPolarity dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.YelpReviewPolarity">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">YelpReviewPolarity</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines YelpReviewPolarity datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd><ul class="first last simple">
+<li>1 : Negative polarity.</li>
+<li>2 : Positive polarity.</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: YelpReviewPolarity</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.YelpReviewPolarity.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="yelpreviewfull">
+<h3><a class="toc-backref" href="#id9">YelpReviewFull</a><a class="headerlink" href="#yelpreviewfull" title="Permalink to this headline">¶</a></h3>
+<p>YelpReviewFull dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.YelpReviewFull">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">YelpReviewFull</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines YelpReviewFull datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd>1 - 5 : rating classes (5 is highly recommended).</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: YelpReviewFull</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.YelpReviewFull.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.YelpReviewFull.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="yahooanswers">
+<h3><a class="toc-backref" href="#id10">YahooAnswers</a><a class="headerlink" href="#yahooanswers" title="Permalink to this headline">¶</a></h3>
+<p>YahooAnswers dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.YahooAnswers">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">YahooAnswers</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines YahooAnswers datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd><ul class="first last simple">
+<li>1 : Society &amp; Culture</li>
+<li>2 : Science &amp; Mathematics</li>
+<li>3 : Health</li>
+<li>4 : Education &amp; Reference</li>
+<li>5 : Computers &amp; Internet</li>
+<li>6 : Sports</li>
+<li>7 : Business &amp; Finance</li>
+<li>8 : Entertainment &amp; Music</li>
+<li>9 : Family &amp; Relationships</li>
+<li>10 : Politics &amp; Government</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: YahooAnswers</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">YahooAnswers</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.YahooAnswers.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.YahooAnswers.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="amazonreviewpolarity">
+<h3><a class="toc-backref" href="#id11">AmazonReviewPolarity</a><a class="headerlink" href="#amazonreviewpolarity" title="Permalink to this headline">¶</a></h3>
+<p>AmazonReviewPolarity dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.AmazonReviewPolarity">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">AmazonReviewPolarity</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines AmazonReviewPolarity datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd><ul class="first last simple">
+<li>1 : Negative polarity</li>
+<li>2 : Positive polarity</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: AmazonReviewPolarity</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.AmazonReviewPolarity.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="amazonreviewfull">
+<h3><a class="toc-backref" href="#id12">AmazonReviewFull</a><a class="headerlink" href="#amazonreviewfull" title="Permalink to this headline">¶</a></h3>
+<p>AmazonReviewFull dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.datasets.AmazonReviewFull">
+<em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">AmazonReviewFull</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Defines AmazonReviewFull datasets.</dt>
+<dd><dl class="first last docutils">
+<dt>The labels includes:</dt>
+<dd>1 - 5 : rating classes (5 is highly recommended)</dd>
+</dl>
+</dd>
+</dl>
+<p>Create supervised learning dataset: AmazonReviewFull</p>
+<p>Separately returns the training and test dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>root</strong> – Directory where the dataset are saved. Default: “.data”</li>
+<li><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</li>
+<li><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.datasets.AmazonReviewFull.__init__">
+<code class="descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="question-classification">
-<h2><a class="toc-backref" href="#id4">Question Classification</a><a class="headerlink" href="#question-classification" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Question Classification</a><a class="headerlink" href="#question-classification" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="trec">
-<h3><a class="toc-backref" href="#id5">TREC</a><a class="headerlink" href="#trec" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">TREC</a><a class="headerlink" href="#trec" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.TREC">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">TREC</code><span class="sig-paren">(</span><em>path</em>, <em>text_field</em>, <em>label_field</em>, <em>fine_grained=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/trec.html#TREC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.TREC" title="Permalink to this definition">¶</a></dt>
@@ -499,9 +914,9 @@ Dataset.</li>
 </div>
 </div>
 <div class="section" id="entailment">
-<h2><a class="toc-backref" href="#id6">Entailment</a><a class="headerlink" href="#entailment" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Entailment</a><a class="headerlink" href="#entailment" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="snli">
-<h3><a class="toc-backref" href="#id7">SNLI</a><a class="headerlink" href="#snli" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">SNLI</a><a class="headerlink" href="#snli" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.SNLI">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">SNLI</code><span class="sig-paren">(</span><em>path</em>, <em>format</em>, <em>fields</em>, <em>skip_header=False</em>, <em>csv_reader_params={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/nli.html#SNLI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SNLI" title="Permalink to this definition">¶</a></dt>
@@ -568,7 +983,7 @@ set. Default: ‘test.jsonl’.</li>
 
 </div>
 <div class="section" id="multinli">
-<h3><a class="toc-backref" href="#id8">MultiNLI</a><a class="headerlink" href="#multinli" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">MultiNLI</a><a class="headerlink" href="#multinli" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.MultiNLI">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">MultiNLI</code><span class="sig-paren">(</span><em>path</em>, <em>format</em>, <em>fields</em>, <em>skip_header=False</em>, <em>csv_reader_params={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/nli.html#MultiNLI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.MultiNLI" title="Permalink to this definition">¶</a></dt>
@@ -636,7 +1051,7 @@ set. Default: ‘test.jsonl’.</li>
 </div>
 </div>
 <div class="section" id="language-modeling">
-<h2><a class="toc-backref" href="#id9">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
 <p>Language modeling datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">LanguageModelingDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.datasets.LanguageModelingDataset">
@@ -667,7 +1082,7 @@ data.Dataset.</li>
 </dd></dl>
 
 <div class="section" id="wikitext-2">
-<h3><a class="toc-backref" href="#id10">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.WikiText2">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">WikiText2</code><span class="sig-paren">(</span><em>path</em>, <em>text_field</em>, <em>newline_eos=True</em>, <em>encoding='utf-8'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/language_modeling.html#WikiText2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WikiText2" title="Permalink to this definition">¶</a></dt>
@@ -730,7 +1145,7 @@ set. Default: ‘wiki.test.tokens’.</li>
 
 </div>
 <div class="section" id="wikitext103">
-<h3><a class="toc-backref" href="#id11">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.WikiText103">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">WikiText103</code><span class="sig-paren">(</span><em>path</em>, <em>text_field</em>, <em>newline_eos=True</em>, <em>encoding='utf-8'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/language_modeling.html#WikiText103"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WikiText103" title="Permalink to this definition">¶</a></dt>
@@ -793,7 +1208,7 @@ set. Default: ‘wiki.test.tokens’.</li>
 
 </div>
 <div class="section" id="penntreebank">
-<h3><a class="toc-backref" href="#id12">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.PennTreebank">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">PennTreebank</code><span class="sig-paren">(</span><em>path</em>, <em>text_field</em>, <em>newline_eos=True</em>, <em>encoding='utf-8'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/language_modeling.html#PennTreebank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
@@ -857,7 +1272,7 @@ set. Default: ‘ptb.test.txt’.</li>
 </div>
 </div>
 <div class="section" id="machine-translation">
-<h2><a class="toc-backref" href="#id13">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
 <p>Machine translation datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">TranslationDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.datasets.TranslationDataset">
@@ -888,7 +1303,7 @@ data.Dataset.</li>
 </dd></dl>
 
 <div class="section" id="multi30k">
-<h3><a class="toc-backref" href="#id14">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.Multi30k">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">Multi30k</code><span class="sig-paren">(</span><em>path</em>, <em>exts</em>, <em>fields</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/translation.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
@@ -922,7 +1337,7 @@ Dataset.</li>
 
 </div>
 <div class="section" id="iwslt">
-<h3><a class="toc-backref" href="#id15">IWSLT</a><a class="headerlink" href="#iwslt" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">IWSLT</a><a class="headerlink" href="#iwslt" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.IWSLT">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">IWSLT</code><span class="sig-paren">(</span><em>path</em>, <em>exts</em>, <em>fields</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/translation.html#IWSLT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IWSLT" title="Permalink to this definition">¶</a></dt>
@@ -956,7 +1371,7 @@ Dataset.</li>
 
 </div>
 <div class="section" id="wmt14">
-<h3><a class="toc-backref" href="#id16">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.WMT14">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">WMT14</code><span class="sig-paren">(</span><em>path</em>, <em>exts</em>, <em>fields</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/translation.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
@@ -997,7 +1412,7 @@ Dataset.</li>
 </div>
 </div>
 <div class="section" id="sequence-tagging">
-<h2><a class="toc-backref" href="#id17">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
 <p>Sequence tagging datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">SequenceTaggingDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.datasets.SequenceTaggingDataset">
@@ -1033,7 +1448,7 @@ Default is None.</li>
 </dd></dl>
 
 <div class="section" id="udpos">
-<h3><a class="toc-backref" href="#id18">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.UDPOS">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">UDPOS</code><span class="sig-paren">(</span><em>path</em>, <em>fields</em>, <em>encoding='utf-8'</em>, <em>separator='t'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sequence_tagging.html#UDPOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
@@ -1048,7 +1463,7 @@ data.</p>
 
 </div>
 <div class="section" id="conll2000chunking">
-<h3><a class="toc-backref" href="#id19">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.CoNLL2000Chunking">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">CoNLL2000Chunking</code><span class="sig-paren">(</span><em>path</em>, <em>fields</em>, <em>encoding='utf-8'</em>, <em>separator='t'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sequence_tagging.html#CoNLL2000Chunking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
@@ -1066,9 +1481,9 @@ NOTE: There is only a train and test dataset so we use</p>
 </div>
 </div>
 <div class="section" id="question-answering">
-<h2><a class="toc-backref" href="#id20">Question Answering</a><a class="headerlink" href="#question-answering" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">Question Answering</a><a class="headerlink" href="#question-answering" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="babi20">
-<h3><a class="toc-backref" href="#id21">BABI20</a><a class="headerlink" href="#babi20" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">BABI20</a><a class="headerlink" href="#babi20" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.datasets.BABI20">
 <em class="property">class </em><code class="descclassname">torchtext.datasets.</code><code class="descname">BABI20</code><span class="sig-paren">(</span><em>path</em>, <em>text_field</em>, <em>only_supporting=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/babi.html#BABI20"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.BABI20" title="Permalink to this definition">¶</a></dt>
@@ -1135,52 +1550,307 @@ test splits in that order, if provided.</p>
 </div>
 
 
-           </div>
-           
-          </div>
-          <footer>
+             </article>
+             
+            </div>
+            <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="vocab.html" class="btn btn-neutral float-right" title="torchtext.vocab" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="vocab.html" class="btn btn-neutral float-right" title="torchtext.vocab" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="data.html" class="btn btn-neutral float-left" title="torchtext.data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="data.html" class="btn btn-neutral" title="torchtext.data" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
 
-  <hr/>
+  
+
+    <hr>
+
+  
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Torch Contributors
+        &copy; Copyright 2017, Torch Contributors.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
 
 </footer>
 
+          </div>
         </div>
-      </div>
 
-    </section>
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">torchtext.datasets</a><ul>
+<li><a class="reference internal" href="#sentiment-analysis">Sentiment Analysis</a><ul>
+<li><a class="reference internal" href="#sst">SST</a></li>
+<li><a class="reference internal" href="#imdb">IMDb</a></li>
+<li><a class="reference internal" href="#textclassificationdataset">TextClassificationDataset</a></li>
+<li><a class="reference internal" href="#ag-news">AG_NEWS</a></li>
+<li><a class="reference internal" href="#sogounews">SogouNews</a></li>
+<li><a class="reference internal" href="#dbpedia">DBpedia</a></li>
+<li><a class="reference internal" href="#yelpreviewpolarity">YelpReviewPolarity</a></li>
+<li><a class="reference internal" href="#yelpreviewfull">YelpReviewFull</a></li>
+<li><a class="reference internal" href="#yahooanswers">YahooAnswers</a></li>
+<li><a class="reference internal" href="#amazonreviewpolarity">AmazonReviewPolarity</a></li>
+<li><a class="reference internal" href="#amazonreviewfull">AmazonReviewFull</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#question-classification">Question Classification</a><ul>
+<li><a class="reference internal" href="#trec">TREC</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#entailment">Entailment</a><ul>
+<li><a class="reference internal" href="#snli">SNLI</a></li>
+<li><a class="reference internal" href="#multinli">MultiNLI</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#language-modeling">Language Modeling</a><ul>
+<li><a class="reference internal" href="#wikitext-2">WikiText-2</a></li>
+<li><a class="reference internal" href="#wikitext103">WikiText103</a></li>
+<li><a class="reference internal" href="#penntreebank">PennTreebank</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#machine-translation">Machine Translation</a><ul>
+<li><a class="reference internal" href="#multi30k">Multi30k</a></li>
+<li><a class="reference internal" href="#iwslt">IWSLT</a></li>
+<li><a class="reference internal" href="#wmt14">WMT14</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sequence-tagging">Sequence Tagging</a><ul>
+<li><a class="reference internal" href="#udpos">UDPOS</a></li>
+<li><a class="reference internal" href="#conll2000chunking">CoNLL2000Chunking</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#question-answering">Question Answering</a><ul>
+<li><a class="reference internal" href="#babi20">BABI20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-  </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
   
 
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script type="text/javascript" src="_static/jquery.js"></script>
+         <script type="text/javascript" src="_static/underscore.js"></script>
+         <script type="text/javascript" src="_static/doctools.js"></script>
+         <script type="text/javascript" src="_static/language_data.js"></script>
+     
+
+  
+
+  <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://pytorch.org/resources">Resources</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.slack.com" target="_blank">Slack</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Follow Us</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="#">Get Started</a>
+          </li>
+
+          <li>
+            <a href="#">Features</a>
+          </li>
+
+          <li>
+            <a href="#">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
   </script>
-
-  
-  
-    
-   
-
 </body>
 </html>
