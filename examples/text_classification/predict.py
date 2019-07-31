@@ -18,8 +18,7 @@ def predict(text, model, dictionary):
     '''
     tokenizer = get_tokenizer("basic_english")
     with torch.no_grad():
-        text = torch.tensor([dictionary.get(token, dictionary['<unk>'])
-                             for token in tokenizer(text)])
+        text = torch.tensor([dictionary[token] for token in tokenizer(text)])
         output = model(text, torch.tensor([0]))
         return output.argmax(1).item() + 1
 
