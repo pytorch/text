@@ -64,3 +64,8 @@ Misc.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autodata:: pretrained_aliases
+
+:hidden:`build_vocab_from_iterator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autodata:: build_vocab_from_iterator
