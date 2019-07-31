@@ -69,6 +69,8 @@ def train(lr_, num_epoch, data_):
 
     data = DataLoader(data_, batch_size=batch_size, shuffle=True,
                       collate_fn=generate_batch, num_workers=args.num_workers)
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, args.lr_gamma)
     num_lines = num_epochs * len(data)
     for epoch in range(num_epochs):
         for i, (text, offsets, cls) in enumerate(data):
@@ -76,14 +78,14 @@ def train(lr_, num_epoch, data_):
             output = model(text, offsets)
             loss = criterion(output, cls)
             loss.backward()
+            optimizer.step()
+
+            # Adjust the learning rate
+            if i % (16 * batch_size) == 0:
+                scheduler.step()
+
             processed_lines = i + len(data) * epoch
             progress = processed_lines / float(num_lines)
-            lr = lr_ * (1 - progress)
-            # SGD
-            for p in model.parameters():
-                p.data.add_(p.grad.data * -lr)
-                p.grad.detach_()
-                p.grad.zero_()
             if processed_lines % 1024:
                 sys.stderr.write(
                     "\rProgress: {:3.0f}% lr: {:3.3f} loss: {:3.3f}".format(
@@ -115,6 +117,7 @@ if __name__ == "__main__":
     parser.add_argument('--embed-dim', type=int, default=128)
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=64.0)
+    parser.add_argument('--lr-gamma', type=float, default=0.999)
     parser.add_argument('--ngrams', type=int, default=2)
     parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--device', default='cpu')
