@@ -2,8 +2,7 @@ import torch
 import sys
 import argparse
 
-from torchtext.datasets.text_classification import text_normalize
-
+from torchtext.data.utils import get_tokenizer
 
 def predict(text, model, vocab):
     r'''
@@ -17,10 +16,10 @@ def predict(text, model, vocab):
         vocab: a vocab object for the information of string-to-index
 
     '''
-
+    tokenizer = get_tokenizer("basic_english")
     with torch.no_grad():
         text = torch.tensor([vocab.get(token, vocab['<unk>'])
-                             for token in text_normalize(text)])
+                             for token in tokenizer(text)])
         output = model(text, torch.tensor([0]))
         return output.argmax(1).item() + 1
 
