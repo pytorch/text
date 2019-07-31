@@ -4,7 +4,7 @@ import argparse
 
 from torchtext.data.utils import get_tokenizer
 
-def predict(text, model, vocab):
+def predict(text, model, dictionary):
     r'''
     The predict() function here is used to test the model on a sample text.
     The input text is numericalized with the vocab and then sent to
@@ -13,12 +13,12 @@ def predict(text, model, vocab):
     Arguments:
         text: a sample text string
         model: the trained model
-        vocab: a vocab object for the information of string-to-index
+        dictionary: a vocab object for the information of string-to-index
 
     '''
     tokenizer = get_tokenizer("basic_english")
     with torch.no_grad():
-        text = torch.tensor([vocab.get(token, vocab['<unk>'])
+        text = torch.tensor([dictionary.get(token, dictionary['<unk>'])
                              for token in tokenizer(text)])
         output = model(text, torch.tensor([0]))
         return output.argmax(1).item() + 1
