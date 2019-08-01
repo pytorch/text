@@ -65,11 +65,11 @@ def train_and_valid(lr_, num_epoch, data_):
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
     num_lines = num_epochs * len(data_) / batch_size * split_ratio
-    for epoch in range(num_epochs):
+    train_len = int(len(data_) * split_ratio)
+    sub_train_, sub_valid_ = \
+        random_split(data_, [train_len, len(data_) - train_len])
 
-        train_len = int(len(data_) * split_ratio)
-        sub_train_, sub_valid_ = \
-            random_split(data_, [train_len, len(data_) - train_len])
+    for epoch in range(num_epochs):
 
         # Train the model
         data = DataLoader(sub_train_, batch_size=batch_size, shuffle=True,
@@ -91,19 +91,8 @@ def train_and_valid(lr_, num_epoch, data_):
         scheduler.step()
 
         # Test the model on valid set
-        data = DataLoader(sub_valid_, batch_size=batch_size, collate_fn=generate_batch)
-        total_accuracy = []
-        for text, offsets, cls in data:
-            text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
-            with torch.no_grad():
-                output = model(text, offsets)
-                accuracy = (output.argmax(1) == cls).float().mean().item()
-                total_accuracy.append(accuracy)
         print("")
-        print("valid - Accuracy for Epoch {}: {}".format(epoch, sum(total_accuracy)
-                                                         / len(total_accuracy)))
-
-    print("")
+        test(sub_valid_)
 
 
 def test(data_):
@@ -147,7 +136,7 @@ if __name__ == "__main__":
     parser.add_argument('--data', default='.data',
                         help='data directory (default=.data)')
     parser.add_argument('--dictionary',
-                        help='path to save vocab (default=NONE)')
+                        help='path to save vocab')
     parser.add_argument('--save-model-path')
     parser.add_argument('--logging-level', default='WARNING',
                         help='logging level (default=WARNING)')
