@@ -137,11 +137,6 @@ Functions
 
 .. autofunction:: get_tokenizer
 
-:hidden:`ngrams_iterator`
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: ngrams_iterator
-
 :hidden:`interleave_keys`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
