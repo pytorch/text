@@ -51,7 +51,7 @@ and text() functions.
 """
 
 
-def train_and_valid(lr_, num_epoch, data_):
+def train_and_valid(lr_, num_epoch, sub_train_, sub_valid_):
     r"""
     We use a SGD optimizer to train the model here and the learning rate
     decreases linearly with the progress of the training process.
@@ -64,10 +64,7 @@ def train_and_valid(lr_, num_epoch, data_):
 
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
-    num_lines = num_epochs * len(data_) / batch_size * split_ratio
-    train_len = int(len(data_) * split_ratio)
-    sub_train_, sub_valid_ = \
-        random_split(data_, [train_len, len(data_) - train_len])
+    num_lines = num_epochs * len(sub_train_) / batch_size * split_ratio
 
     for epoch in range(num_epochs):
 
@@ -163,7 +160,11 @@ if __name__ == "__main__":
                           embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
-    train_and_valid(lr, num_epochs, train_dataset)
+    # split train_dataset into train and valid
+    train_len = int(len(train_dataset) * split_ratio)
+    sub_train_, sub_valid_ = \
+        random_split(train_dataset, [train_len, len(train_dataset) - train_len])
+    train_and_valid(lr, num_epochs, sub_train_, sub_valid_)
     test(test_dataset)
 
     if args.save_model_path:
