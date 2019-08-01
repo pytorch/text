@@ -58,7 +58,7 @@ Misc.
 :hidden:`build_vocab_from_iterator`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autodata:: build_vocab_from_iterator
+.. autofunction:: build_vocab_from_iterator
 
 :hidden:`pretrained_aliases`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
