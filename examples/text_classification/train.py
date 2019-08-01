@@ -9,6 +9,7 @@ from torchtext.datasets import text_classification
 from torch.utils.data import DataLoader
 
 from model import TextSentiment
+from torch.utils.data.dataset import random_split
 
 r"""
 This file shows the training process of the text classification model.
@@ -44,13 +45,13 @@ def generate_batch(batch):
 
 r"""
 torch.utils.data.DataLoader is recommended for PyTorch users to load data.
-We use DataLoader here to load datasets and send it to the train()
+We use DataLoader here to load datasets and send it to the train_and_valid()
 and text() functions.
 
 """
 
 
-def train(lr_, num_epoch, data_):
+def train_and_valid(lr_, num_epoch, data_):
     r"""
     We use a SGD optimizer to train the model here and the learning rate
     decreases linearly with the progress of the training process.
@@ -61,12 +62,18 @@ def train(lr_, num_epoch, data_):
         data_: the data used to train the model
     """
 
-    data = DataLoader(data_, batch_size=batch_size, shuffle=True,
-                      collate_fn=generate_batch, num_workers=args.num_workers)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
-    num_lines = num_epochs * len(data)
+    num_lines = num_epochs * len(data_) / batch_size * split_ratio
     for epoch in range(num_epochs):
+
+        train_len = int(len(data_) * split_ratio)
+        sub_train_, sub_valid_ = \
+            random_split(data_, [train_len, len(data_) - train_len])
+
+        # Train the model
+        data = DataLoader(sub_train_, batch_size=batch_size, shuffle=True,
+                          collate_fn=generate_batch, num_workers=args.num_workers)
         for i, (text, offsets, cls) in enumerate(data):
             optimizer.zero_grad()
             text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
@@ -82,6 +89,20 @@ def train(lr_, num_epoch, data_):
                         progress * 100, scheduler.get_lr()[0], loss))
         # Adjust the learning rate
         scheduler.step()
+
+        # Test the model on valid set
+        data = DataLoader(sub_valid_, batch_size=batch_size, collate_fn=generate_batch)
+        total_accuracy = []
+        for text, offsets, cls in data:
+            text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
+            with torch.no_grad():
+                output = model(text, offsets)
+                accuracy = (output.argmax(1) == cls).float().mean().item()
+                total_accuracy.append(accuracy)
+        print("")
+        print("valid - Accuracy for Epoch {}: {}".format(epoch, sum(total_accuracy)
+                                                         / len(total_accuracy)))
+
     print("")
 
 
@@ -111,6 +132,8 @@ if __name__ == "__main__":
                         help='embed dim. (default=128)')
     parser.add_argument('--batch-size', type=int, default=64,
                         help='batch size (default=64)')
+    parser.add_argument('--split-ratio', type=float, default=0.95,
+                        help='train/valid split ratio (default=0.95)')
     parser.add_argument('--lr', type=float, default=4.0,
                         help='learning rate (default=4.0)')
     parser.add_argument('--lr-gamma', type=float, default=0.8,
@@ -123,7 +146,7 @@ if __name__ == "__main__":
                         help='device (default=cpu)')
     parser.add_argument('--data', default='.data',
                         help='data directory (default=.data)')
-    parser.add_argument('--dictionary', default='NONE',
+    parser.add_argument('--dictionary',
                         help='path to save vocab (default=NONE)')
     parser.add_argument('--save-model-path')
     parser.add_argument('--logging-level', default='WARNING',
@@ -136,6 +159,7 @@ if __name__ == "__main__":
     lr = args.lr
     device = args.device
     data = args.data
+    split_ratio = args.split_ratio
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
@@ -150,13 +174,13 @@ if __name__ == "__main__":
                           embed_dim, len(train_dataset.get_labels())).to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
-    train(lr, num_epochs, train_dataset)
+    train_and_valid(lr, num_epochs, train_dataset)
     test(test_dataset)
 
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
         torch.save(model.to('cpu'), args.save_model_path)
 
-    if args.dictionary != 'NONE':
+    if args.dictionary is not None:
         print("Save vocab to {}".format(args.dictionary))
         torch.save(train_dataset.get_vocab(), args.dictionary)
