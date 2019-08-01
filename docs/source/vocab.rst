@@ -60,8 +60,3 @@ Misc.
 
 .. autofunction:: build_vocab_from_iterator
 
-:hidden:`pretrained_aliases`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autodata:: pretrained_aliases
-
