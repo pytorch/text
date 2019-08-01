@@ -34,18 +34,12 @@ def generate_batch(batch):
             index of the individual sequence in the text tensor.
         cls: a tensor saving the labels of individual text entries.
     """
-    def generate_offsets(data_batch):
-        offsets = [0]
-        for entry in data_batch:
-            offsets.append(offsets[-1] + len(entry))
-        offsets = torch.tensor(offsets[:-1])
-        return offsets
-
-    cls = torch.tensor([entry[0] for entry in batch])
+    label = torch.tensor([entry[0] for entry in batch])
     text = [entry[1] for entry in batch]
-    offsets = generate_offsets(text)
+    offsets = [0] + [len(entry) for entry in text]
+    offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
     text = torch.cat(text)
-    return text, offsets, cls
+    return text, offsets, label
 
 
 r"""
@@ -129,6 +123,8 @@ if __name__ == "__main__":
                         help='device (default=cpu)')
     parser.add_argument('--data', default='.data',
                         help='data directory (default=.data)')
+    parser.add_argument('--dictionary', default='NONE',
+                        help='path to save vocab (default=NONE)')
     parser.add_argument('--save-model-path')
     parser.add_argument('--logging-level', default='WARNING',
                         help='logging level (default=WARNING)')
@@ -160,3 +156,7 @@ if __name__ == "__main__":
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
         torch.save(model.to('cpu'), args.save_model_path)
+
+    if args.dictionary != 'NONE':
+        print("Save vocab to {}".format(args.dictionary))
+        torch.save(train_dataset.get_vocab(), args.dictionary)
