@@ -89,7 +89,7 @@ def train_and_valid(lr_, num_epoch, sub_train_, sub_valid_):
 
         # Test the model on valid set
         print("")
-        test(sub_valid_)
+        print("Valid - Accuracy: {}".format(test(sub_valid_)))
 
 
 def test(data_):
@@ -105,7 +105,7 @@ def test(data_):
             output = model(text, offsets)
             accuracy = (output.argmax(1) == cls).float().mean().item()
             total_accuracy.append(accuracy)
-    print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
+    return sum(total_accuracy) / len(total_accuracy)
 
 
 if __name__ == "__main__":
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     sub_train_, sub_valid_ = \
         random_split(train_dataset, [train_len, len(train_dataset) - train_len])
     train_and_valid(lr, num_epochs, sub_train_, sub_valid_)
-    test(test_dataset)
+    print("Test - Accuracy: {}".format(test(test_dataset)))
 
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
