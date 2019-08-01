@@ -415,7 +415,7 @@
 
 
 <span class="c1"># TODO: Write more tests!</span>
-<span class="k">def</span> <span class="nf">ngrams_iterator</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">):</span>
+<div class="viewcode-block" id="ngrams_iterator"><a class="viewcode-back" href="../../../data/utils.html#torchtext.data.ngrams_iterator">[docs]</a><span class="k">def</span> <span class="nf">ngrams_iterator</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return an iterator that yields the given tokens and their ngrams.</span>
 
 <span class="sd">    Arguments:</span>
@@ -435,7 +435,7 @@
         <span class="k">yield</span> <span class="n">x</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">ngrams</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">_get_ngrams</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">RandomShuffler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
