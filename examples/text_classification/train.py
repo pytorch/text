@@ -64,14 +64,14 @@ def train_and_valid(lr_, num_epoch, sub_train_, sub_valid_):
 
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
-    num_lines = num_epochs * len(sub_train_) / batch_size * split_ratio
+    train_data = DataLoader(sub_train_, batch_size=batch_size, shuffle=True,
+                            collate_fn=generate_batch, num_workers=args.num_workers)
+    num_lines = num_epochs * len(train_data) * split_ratio
 
     for epoch in range(num_epochs):
 
         # Train the model
-        data = DataLoader(sub_train_, batch_size=batch_size, shuffle=True,
-                          collate_fn=generate_batch, num_workers=args.num_workers)
-        for i, (text, offsets, cls) in enumerate(data):
+        for i, (text, offsets, cls) in enumerate(train_data):
             optimizer.zero_grad()
             text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
             output = model(text, offsets)
