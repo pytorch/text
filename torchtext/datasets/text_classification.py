@@ -87,8 +87,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                 {label1, label2}
 
         Examples:
-            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and
-                examples/text_classification/
+            See the examples in examples/text_classification/
 
         """
 
