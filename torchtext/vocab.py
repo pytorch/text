@@ -219,6 +219,20 @@ class Vocab(object):
             else:
                 self.vectors[i] = unk_init(self.vectors[i])
 
+    def set_fallback_vectors(self, stoi, vectors):
+        """
+        Set vectors only for words which are not already in the Vocab instance.
+
+        Arguments:
+            stoi: A dictionary of string to the index of the associated vector in the
+                `vectors` input argument.
+            vectors: An indexed iterable that returns a FloatTensor given an input index.
+                Dimension must match that of existing vectors.
+        """
+        for token in set(stoi) - set(self.stoi):
+            self.vectors = torch.cat([self.vectors, vectors[stoi[token]]])
+            self.stoi[token] = len(self.vectors) - 1
+
 
 class SubwordVocab(Vocab):
 
