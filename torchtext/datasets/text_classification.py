@@ -41,12 +41,17 @@ def _csv_iterator(data_path, ngrams, yield_cls=False):
                 yield ngrams_iterator(tokens, ngrams)
 
 
-def _create_data_from_iterator(vocab, iterator):
+def _create_data_from_iterator(vocab, iterator, include_unk):
     data = []
     labels = []
     with tqdm(unit_scale=0, unit='lines') as t:
         for cls, tokens in iterator:
-            tokens = torch.tensor([vocab[token] for token in tokens])
+            if include_unk:
+                tokens = torch.tensor([vocab[token] for token in tokens])
+            else:
+                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                                        for token in tokens]))
+                tokens = torch.tensor(token_ids)
             if len(tokens) == 0:
                 logging.info('Row contains no tokens.')
             data.append((cls, tokens))
@@ -109,7 +114,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
+def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -128,10 +133,10 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
     train_data, train_labels = _create_data_from_iterator(
-        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True))
+        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
     logging.info('Creating testing data')
     test_data, test_labels = _create_data_from_iterator(
-        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True))
+        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
     return (TextClassificationDataset(vocab, train_data, train_labels),
@@ -156,6 +161,7 @@ def AG_NEWS(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
@@ -184,6 +190,7 @@ def SogouNews(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
@@ -221,6 +228,7 @@ def DBpedia(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
@@ -246,6 +254,7 @@ def YelpReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
@@ -270,6 +279,7 @@ def YelpReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
@@ -303,6 +313,7 @@ def YahooAnswers(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
@@ -328,6 +339,7 @@ def AmazonReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
@@ -352,6 +364,7 @@ def AmazonReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
