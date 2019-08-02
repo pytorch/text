@@ -12,7 +12,6 @@ from model import TextSentiment
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.utils import unicode_csv_reader
-from torch.utils.data.dataset import random_split
 
 from tqdm import tqdm
 
@@ -57,7 +56,7 @@ and text() functions.
 """
 
 
-def train_and_valid(lr_, num_epoch, train_data_, valid_data_, train_len):
+def train_and_valid(lr_, num_epoch, train_data_, valid_data_):
     r"""
     Here we use SGD optimizer to train the model.
 
@@ -308,7 +307,7 @@ if __name__ == "__main__":
     logging.info("Setup took: {:3.0f}s".format(time.time() - start_time))
 
     logging.info("Starting training")
-    train_and_valid(lr, num_epochs, train_dataset, valid_dataset, train_len)
+    train_and_valid(lr, num_epochs, train_dataset, valid_dataset)
     print("Test - Accuracy: {}".format(test(test_dataset)))
 
     if args.save_model_path:
