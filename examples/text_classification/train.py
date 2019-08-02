@@ -51,15 +51,15 @@ and text() functions.
 """
 
 
-def train_and_valid(lr_, num_epoch, sub_train_, sub_valid_):
+def train_and_valid(lr_, sub_train_, sub_valid_):
     r"""
     We use a SGD optimizer to train the model here and the learning rate
     decreases linearly with the progress of the training process.
 
     Arguments:
         lr_: learning rate
-        num_epoch: the number of epoches for training the model
-        data_: the data used to train the model
+        sub_train_: the data used to train the model
+        sub_valid_: the data used for validation
     """
 
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     train_len = int(len(train_dataset) * split_ratio)
     sub_train_, sub_valid_ = \
         random_split(train_dataset, [train_len, len(train_dataset) - train_len])
-    train_and_valid(lr, num_epochs, sub_train_, sub_valid_)
+    train_and_valid(lr, sub_train_, sub_valid_)
     print("Test - Accuracy: {}".format(test(test_dataset)))
 
     if args.save_model_path:
