@@ -112,18 +112,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Train a text classification model on text classification datasets.')
     parser.add_argument('dataset', choices=text_classification.DATASETS)
-    parser.add_argument('--num-epochs', type=int, default=3,
+    parser.add_argument('--num-epochs', type=int, default=5,
                         help='num epochs (default=3)')
-    parser.add_argument('--embed-dim', type=int, default=128,
-                        help='embed dim. (default=128)')
-    parser.add_argument('--batch-size', type=int, default=64,
-                        help='batch size (default=64)')
+    parser.add_argument('--embed-dim', type=int, default=32,
+                        help='embed dim. (default=32)')
+    parser.add_argument('--batch-size', type=int, default=16,
+                        help='batch size (default=16)')
     parser.add_argument('--split-ratio', type=float, default=0.95,
                         help='train/valid split ratio (default=0.95)')
     parser.add_argument('--lr', type=float, default=4.0,
                         help='learning rate (default=4.0)')
-    parser.add_argument('--lr-gamma', type=float, default=0.8,
-                        help='gamma value for lr (default=0.8)')
+    parser.add_argument('--lr-gamma', type=float, default=0.9,
+                        help='gamma value for lr (default=0.9)')
     parser.add_argument('--ngrams', type=int, default=2,
                         help='ngrams (default=2)')
     parser.add_argument('--num-workers', type=int, default=1,
