@@ -105,6 +105,7 @@ def train_and_valid(lr_, num_epoch, train_data_, valid_data_):
         # Test the model on valid set
         print("Valid - Accuracy: {}".format(test(valid_data_)))
 
+
 def test(data_):
     r"""
     Arguments:
