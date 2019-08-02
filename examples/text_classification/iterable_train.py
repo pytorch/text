@@ -124,6 +124,11 @@ def test(data_):
             output = model(text, offsets)
             accuracy = (output.argmax(1) == label).float().mean().item()
             total_accuracy.append(accuracy)
+
+    # In case that nothing in the dataset
+    if total_accuracy == []:
+        return 0.0
+
     return sum(total_accuracy) / len(total_accuracy)
 
 
