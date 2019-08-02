@@ -12,6 +12,7 @@ from model import TextSentiment
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.utils import unicode_csv_reader
+from torch.utils.data.dataset import random_split
 
 from tqdm import tqdm
 
@@ -56,42 +57,54 @@ and text() functions.
 """
 
 
-def train(lr_, num_epoch, data_):
+def train_and_valid(lr_, num_epoch, train_data_, valid_data_, train_len):
     r"""
     Here we use SGD optimizer to train the model.
 
     Arguments:
         lr_: learning rate
         num_epoch: the number of epoches for training the model
-        data_: the data used to train the model
+        train_data_: the data used to train the model
+        valid_data_: the data used to validation
+        trian_len: the length of training dataset.
     """
-    data = DataLoader(
-        data_,
+    train_data = DataLoader(
+        train_data_,
         batch_size=batch_size,
         collate_fn=generate_batch,
         num_workers=args.num_workers,
         pin_memory=True)
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
-    with tqdm(unit_scale=0, unit='lines', total=train_num_lines * num_epochs) as t:
-        avg_loss = 0.0
-        for i, (text, offsets, label) in enumerate(data):
-            t.update(len(label))
-            optimizer.zero_grad()
-            text, offsets, label = text.to(device), offsets.to(device), label.to(device)
-            output = model(text, offsets)
-            loss = criterion(output, label)
-            loss.backward()
-            avg_loss += loss.item()
-            optimizer.step()
-            if i % (16 * batch_size) == 0:
-                scheduler.step()
-                avg_loss = avg_loss / (16 * batch_size)
-                avg_loss = 0
-                t.set_description(
-                    "lr: {:9.3f} loss: {:9.3f}".format(
-                        scheduler.get_lr()[0], loss))
 
+    for epoch in range(num_epochs):
+
+        print("Training on epoch {}".format(epoch))
+        # Train the model
+        with tqdm(unit_scale=0, unit='lines', total=train_len) as t:
+            avg_loss = 0.0
+            for i, (text, offsets, label) in enumerate(train_data):
+                t.update(len(label))
+                optimizer.zero_grad()
+                text, offsets, label = text.to(device), offsets.to(device), \
+                    label.to(device)
+                output = model(text, offsets)
+                loss = criterion(output, label)
+                loss.backward()
+                avg_loss += loss.item()
+                optimizer.step()
+                if i % (16 * batch_size) == 0:
+                    avg_loss = avg_loss / (16 * batch_size)
+                    avg_loss = 0
+                    t.set_description(
+                        "lr: {:9.3f} loss: {:9.3f}".format(
+                            scheduler.get_lr()[0], loss))
+
+        # Adjust the learning rate
+        scheduler.step()
+
+        # Test the model on valid set
+        print("Valid - Accuracy: {}".format(test(valid_data_)))
 
 def test(data_):
     r"""
@@ -111,7 +124,7 @@ def test(data_):
             output = model(text, offsets)
             accuracy = (output.argmax(1) == label).float().mean().item()
             total_accuracy.append(accuracy)
-    print("Test - Accuracy: {}".format(sum(total_accuracy) / len(total_accuracy)))
+    return sum(total_accuracy) / len(total_accuracy)
 
 
 def get_csv_iterator(data_path, ngrams, vocab, start=0, num_lines=None):
@@ -156,12 +169,10 @@ class Dataset(torch.utils.data.IterableDataset):
     Arguments:
         iterator: the iterator to read data.
         num_lines: the number of lines read by the individual iterator.
-        num_epochs: the numerber of epochs.
     """
-    def __init__(self, iterator, num_lines, num_epochs):
+    def __init__(self, iterator, num_lines):
         super(Dataset, self).__init__()
         self._num_lines = num_lines
-        self._num_epochs = num_epochs
         self._iterator = iterator
         self._setup = False
 
@@ -177,18 +188,17 @@ class Dataset(torch.utils.data.IterableDataset):
         if worker_info:
             chunk = int(self._num_lines / worker_info.num_workers)
             start = chunk * worker_info.id
-            read = chunk * self._num_epochs
+            read = chunk
             if worker_info.id == worker_info.num_workers - 1:
                 # The last worker needs to pick up some extra lines
                 # if the number of lines aren't exactly divisible
                 # by the number of workers.
                 # Each epoch we loose an 'extra' number of lines.
                 extra = self._num_lines % worker_info.num_workers
-                extra = extra * self._num_epochs
                 read += extra
         else:
             start = 0
-            read = self._num_epochs * self._num_lines
+            read = self._num_lines
         self._iterator = self._iterator(start, read)
 
     def __iter__(self):
@@ -217,16 +227,18 @@ if __name__ == "__main__":
     parser.add_argument('train_data_path', help='path for train data')
     parser.add_argument('test_data_path', help='path for test data')
     parser.add_argument('vocab', help='path for vocab object')
-    parser.add_argument('--num-epochs', type=int, default=3,
-                        help='num epochs (default=3)')
-    parser.add_argument('--embed-dim', type=int, default=128,
-                        help='embed dim. (default=128)')
-    parser.add_argument('--batch-size', type=int, default=64,
-                        help='batch size (default=64)')
+    parser.add_argument('--num-epochs', type=int, default=5,
+                        help='num epochs (default=5)')
+    parser.add_argument('--embed-dim', type=int, default=32,
+                        help='embed dim. (default=32)')
+    parser.add_argument('--batch-size', type=int, default=16,
+                        help='batch size (default=16)')
+    parser.add_argument('--split-ratio', type=float, default=0.95,
+                        help='train/valid split ratio (default=0.95)')
     parser.add_argument('--lr', type=float, default=4.0,
                         help='learning rate (default=4.0)')
-    parser.add_argument('--lr-gamma', type=float, default=0.8,
-                        help='gamma value for lr (default=0.8)')
+    parser.add_argument('--lr-gamma', type=float, default=0.9,
+                        help='gamma value for lr (default=0.9)')
     parser.add_argument('--ngrams', type=int, default=2,
                         help='ngrams (default=2)')
     parser.add_argument('--num-workers', type=int, default=1,
@@ -248,6 +260,7 @@ if __name__ == "__main__":
     device = args.device
     data = args.data
     ngrams = args.ngrams
+    split_ratio = args.split_ratio
 
     train_data_path = args.train_data_path
     test_data_path = args.test_data_path
@@ -263,21 +276,30 @@ if __name__ == "__main__":
     logging.info("Counting testing lines and labels")
     num_labels, test_num_lines = count(test_data_path)
 
+    # Split training dataset into train and valid
+    train_len = int(train_num_lines * split_ratio)
+
     logging.info("Loading iterable datasets")
     train_dataset = Dataset(
         get_csv_iterator(
             train_data_path,
             ngrams,
-            vocab),
-        train_num_lines,
-        num_epochs)
+            vocab, start=0, num_lines=train_len),
+        train_len)
+
+    valid_dataset = Dataset(
+        get_csv_iterator(
+            train_data_path,
+            ngrams,
+            vocab, start=train_len),
+        train_num_lines - train_len)
+
     test_dataset = Dataset(
         get_csv_iterator(
             test_data_path,
             ngrams,
             vocab),
-        test_num_lines,
-        num_epochs)
+        test_num_lines)
 
     logging.info("Creating models")
     model = TextSentiment(len(vocab),
@@ -286,8 +308,8 @@ if __name__ == "__main__":
     logging.info("Setup took: {:3.0f}s".format(time.time() - start_time))
 
     logging.info("Starting training")
-    train(lr, num_epochs, train_dataset)
-    test(test_dataset)
+    train_and_valid(lr, num_epochs, train_dataset, valid_dataset, train_len)
+    print("Test - Accuracy: {}".format(test(test_dataset)))
 
     if args.save_model_path:
         print("Saving model to {}".format(args.save_model_path))
