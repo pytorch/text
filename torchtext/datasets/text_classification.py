@@ -41,12 +41,17 @@ def _csv_iterator(data_path, ngrams, yield_cls=False):
                 yield ngrams_iterator(tokens, ngrams)
 
 
-def _create_data_from_iterator(vocab, iterator):
+def _create_data_from_iterator(vocab, iterator, include_unk):
     data = []
     labels = []
     with tqdm(unit_scale=0, unit='lines') as t:
         for cls, tokens in iterator:
-            tokens = torch.tensor([vocab[token] for token in tokens])
+            if include_unk:
+                tokens = torch.tensor([vocab[token] for token in tokens])
+            else:
+                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                                        for token in tokens]))
+                tokens = torch.tensor(token_ids)
             if len(tokens) == 0:
                 logging.info('Row contains no tokens.')
             data.append((cls, tokens))
@@ -82,8 +87,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
                 {label1, label2}
 
         Examples:
-            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and
-                examples/text_classification/
+            See the examples in examples/text_classification/
 
         """
 
@@ -109,7 +113,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
+def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -128,10 +132,10 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None):
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
     train_data, train_labels = _create_data_from_iterator(
-        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True))
+        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
     logging.info('Creating testing data')
     test_data, test_labels = _create_data_from_iterator(
-        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True))
+        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
     return (TextClassificationDataset(vocab, train_data, train_labels),
@@ -156,6 +160,7 @@ def AG_NEWS(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
@@ -184,6 +189,7 @@ def SogouNews(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
@@ -221,6 +227,7 @@ def DBpedia(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
@@ -246,6 +253,7 @@ def YelpReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
@@ -270,6 +278,7 @@ def YelpReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
@@ -303,6 +312,7 @@ def YahooAnswers(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
@@ -328,6 +338,7 @@ def AmazonReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
@@ -352,6 +363,7 @@ def AmazonReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
@@ -370,4 +382,55 @@ DATASETS = {
     'YahooAnswers': YahooAnswers,
     'AmazonReviewPolarity': AmazonReviewPolarity,
     'AmazonReviewFull': AmazonReviewFull
+}
+
+
+LABELS = {
+    'AG_NEWS': {1: 'World',
+                2: 'Sports',
+                3: 'Business',
+                4: 'Sci/Tech'},
+    'SogouNews': {1: 'Sports',
+                  2: 'Finance',
+                  3: 'Entertainment',
+                  4: 'Automobile',
+                  5: 'Technology'},
+    'DBpedia': {1: 'Company',
+                2: 'EducationalInstitution',
+                3: 'Artist',
+                4: 'Athlete',
+                5: 'OfficeHolder',
+                6: 'MeanOfTransportation',
+                7: 'Building',
+                8: 'NaturalPlace',
+                9: 'Village',
+                10: 'Animal',
+                11: 'Plant',
+                12: 'Album',
+                13: 'Film',
+                14: 'WrittenWork'},
+    'YelpReviewPolarity': {1: 'Negative polarity',
+                           2: 'Positive polarity'},
+    'YelpReviewFull': {1: 'score 1',
+                       2: 'score 2',
+                       3: 'score 3',
+                       4: 'score 4',
+                       5: 'score 5'},
+    'YahooAnswers': {1: 'Society & Culture',
+                     2: 'Science & Mathematics',
+                     3: 'Health',
+                     4: 'Education & Reference',
+                     5: 'Computers & Internet',
+                     6: 'Sports',
+                     7: 'Business & Finance',
+                     8: 'Entertainment & Music',
+                     9: 'Family & Relationships',
+                     10: 'Politics & Government'},
+    'AmazonReviewPolarity': {1: 'Negative polarity',
+                             2: 'Positive polarity'},
+    'AmazonReviewFull': {1: 'score 1',
+                         2: 'score 2',
+                         3: 'score 3',
+                         4: 'score 4',
+                         5: 'score 5'}
 }
