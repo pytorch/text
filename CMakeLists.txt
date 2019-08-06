@@ -18,4 +18,4 @@ install(FILES ${CORE_HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJ
 add_executable(benchmarks torchtext/csrc/benchmarks.cpp)
 target_link_libraries(benchmarks PUBLIC benchmark)
 target_link_libraries(benchmarks PUBLIC ${PROJECT_NAME})
-configure_file(assets/benchmakr-article.txt assets/benchmakr-article.txt COPYONLY)
+configure_file(test/asset/text_normalization_ag_news_test.csv benchmark-article.txt COPYONLY)
