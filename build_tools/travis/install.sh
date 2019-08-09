@@ -60,4 +60,7 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
 
     # PyTorch
     conda install --yes pytorch torchvision -c pytorch
+
+    # Installation
+    python setup.py install
 fi
