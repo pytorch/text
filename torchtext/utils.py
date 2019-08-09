@@ -125,7 +125,7 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
             csv.field_size_limit(maxInt)
             break
         except OverflowError:
-            maxInt = int(maxInt / 10)   
+            maxInt = int(maxInt / 10)
     csv.field_size_limit(maxInt)
 
     if six.PY2:
