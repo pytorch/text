@@ -126,8 +126,7 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
             break
         except OverflowError:
             maxInt = int(maxInt / 10)
-
-    csv.field_size_limit(sys.maxsize)
+    csv.field_size_limit(maxInt)
 
     if six.PY2:
         # csv.py doesn't do Unicode; encode temporarily as UTF-8:
