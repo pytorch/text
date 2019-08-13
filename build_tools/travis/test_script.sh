@@ -9,10 +9,14 @@ set -e
 python --version
 
 run_tests() {
+	cd $HOME
+    export INSTALL_PATH="$(python -c 'import os; import torchtext; print(os.path.dirname(os.path.abspath(torchtext.__file__)))')"
+    echo "$INSTALL_PATH"
+    cd -
     if [[ "$RUN_SLOW" == "true" ]]; then
-        TEST_CMD="py.test --runslow -s -v --cov=torchtext --durations=20"
+        TEST_CMD="py.test --runslow -s -v --cov=torchtext --durations=20 $INSTALL_PATH test"
     else
-        TEST_CMD="py.test -v --cov=torchtext --durations=20"
+        TEST_CMD="py.test -v --cov=torchtext --durations=20 $INSTALL_PATH test"
     fi
     $TEST_CMD
 }

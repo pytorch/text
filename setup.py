@@ -85,7 +85,6 @@ def get_extensions():
 
     sources = [os.path.join(extensions_dir, s) for s in sources]
 
-    print('sources', sources)
     ext_modules = [
         extension(
             'torchtext._C',
