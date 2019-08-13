@@ -43,6 +43,7 @@ _replacements = [' \'  ',
 
 _patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
 
+import os
 
 def get_tokenizer(tokenizer, language='en'):
     r"""
@@ -80,8 +81,10 @@ def get_tokenizer(tokenizer, language='en'):
         # ['__doc__', '__package__', '__spec__', 'basic_english_normalize', '__name__', '__file__', '__loader__'], 
         # <built-in method basic_english_normalize of PyCapsule object at 0x7f8e14626c60>])
         # raise Exception('emm', [_C, _C.__file__, _C.__dir__(), _C.basic_english_normalize])
-        f = open(_C.__file__, "r")
-        raise Exception(f.read())
+        ff = _C.__file__
+        f = open(f, "r")
+        s = os.path.exists(_C.__file__)
+        raise Exception(s, os.path.dirname(ff), os.listdir(os.path.dirname(ff)))
         return _C.basic_english_normalize
 
     # simply return if a function is passed
