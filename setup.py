@@ -33,6 +33,35 @@ VERSION = find_version('torchtext', '__init__.py')
 long_description = read('README.rst')
 
 
+def get_extensions2():
+    extensions_dir = os.path.join('torchtext', 'csrc')
+
+    main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
+    source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
+
+    sources = main_file + source_core
+
+    define_macros = []
+    extra_compile_args = {}
+
+    if sys.platform == 'win32':
+        define_macros += [('torchtext_EXPORTS', None)]
+
+    include_dirs = [extensions_dir]
+
+    ext_modules = [
+        CppExtension(
+            'torchtext._C',
+            sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args
+        )
+    ]
+
+    return ext_modules
+
+
 def get_extensions():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
@@ -55,7 +84,7 @@ def get_extensions():
 
     ext_modules = [
         extension(
-            '_C',
+            'torchtext._C',
             sources,
             include_dirs=include_dirs,
             define_macros=define_macros,
@@ -64,7 +93,6 @@ def get_extensions():
     ]
 
     return ext_modules
-
 
 class clean(distutils.command.clean.clean):
     def run(self):
@@ -83,7 +111,6 @@ class clean(distutils.command.clean.clean):
 
 setup_info = dict(
     # Metadata
-    name='torchtext',
     version=VERSION,
     author='PyTorch core devs and James Bradbury',
     author_email='jekbradbury@gmail.com',
