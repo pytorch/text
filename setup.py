@@ -83,7 +83,7 @@ def get_extensions():
 
     include_dirs = [extensions_dir]
 
-    sources = [os.path.join(extensions_dir, s) for s in sources]
+    # sources = [os.path.join(extensions_dir, s) for s in sources]
 
     ext_modules = [
         extension(
