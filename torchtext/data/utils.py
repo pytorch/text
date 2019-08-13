@@ -75,6 +75,11 @@ def get_tokenizer(tokenizer, language='en'):
     if tokenizer == "basic_english":
         if language != 'en':
             raise ValueError("Basic normalization is only available for Enlish(en)")
+        print('relo')
+        print(_C)
+        print(_C.__file__)
+        print(_C.__dir__())
+        print(_C.basic_english_normalize)
         return _C.basic_english_normalize
 
     # simply return if a function is passed
