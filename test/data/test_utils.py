@@ -50,6 +50,7 @@ class TestUtils(TorchtextTestCase):
 
     def test_text_nomalize_function(self):
         # Test text_nomalize function in torchtext.datasets.text_classification
+        print('asdf')
         ref_lines = []
         test_lines = []
 
