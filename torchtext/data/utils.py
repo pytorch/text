@@ -81,10 +81,11 @@ def get_tokenizer(tokenizer, language='en'):
         # ['__doc__', '__package__', '__spec__', 'basic_english_normalize', '__name__', '__file__', '__loader__'], 
         # <built-in method basic_english_normalize of PyCapsule object at 0x7f8e14626c60>])
         # raise Exception('emm', [_C, _C.__file__, _C.__dir__(), _C.basic_english_normalize])
-        ff = _C.__file__
+        # ff = _C.__file__
         # f = open(f, "r")
-        s = os.path.exists(_C.__file__)
-        raise Exception(s, os.path.dirname(ff), os.listdir(os.path.dirname(ff)))
+        # s = os.path.exists(_C.__file__)
+        # Exception: (True, '/home/travis/.cache/Python-Eggs/torchtext-0.4.0-py3.5-linux-x86_64.egg-tmp', ['_C.cpython-35m-x86_64-linux-gnu.so'])
+        # raise Exception(s, os.path.dirname(ff), os.listdir(os.path.dirname(ff)))
         return _C.basic_english_normalize
 
     # simply return if a function is passed

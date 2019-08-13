@@ -34,8 +34,8 @@ long_description = read('README.rst')
 
 
 def get_extensions():
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    # this_dir = ''
+    # this_dir = os.path.dirname(os.path.abspath(__file__))
+    this_dir = ''
     extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
 
     main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
@@ -52,7 +52,7 @@ def get_extensions():
 
     include_dirs = [extensions_dir]
 
-    sources = [os.path.join(extensions_dir, s) for s in sources]
+    # sources = [os.path.join(extensions_dir, s) for s in sources]
 
     ext_modules = [
         extension(
