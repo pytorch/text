@@ -42,7 +42,6 @@ def get_extensions():
     source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
 
     sources = main_file + source_core
-    extension = CppExtension
 
     define_macros = []
     extra_compile_args = {}
@@ -55,7 +54,7 @@ def get_extensions():
     # sources = [os.path.join(extensions_dir, s) for s in sources]
 
     ext_modules = [
-        extension(
+        CppExtension(
             '_C',
             ['torchtext/csrc/a.cpp'],
             # sources,
