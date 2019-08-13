@@ -12,54 +12,54 @@ def conditional_remove(f):
         os.remove(f)
 
 
-# class TestDataset(TorchtextTestCase):
-#     @slow
-#     def test_wikitext2(self):
-#         # smoke test to ensure wikitext2 works properly
-#         ds = WikiText2
-#         TEXT = data.Field(lower=True, batch_first=True)
-#         train, valid, test = ds.splits(TEXT)
-#         TEXT.build_vocab(train)
-#         train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-#             (train, valid, test), batch_size=3, bptt_len=30)
+class TestDataset(TorchtextTestCase):
+    @slow
+    def test_wikitext2(self):
+        # smoke test to ensure wikitext2 works properly
+        ds = WikiText2
+        TEXT = data.Field(lower=True, batch_first=True)
+        train, valid, test = ds.splits(TEXT)
+        TEXT.build_vocab(train)
+        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
+            (train, valid, test), batch_size=3, bptt_len=30)
 
-#         train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-#                                                      bptt_len=30)
+        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
+                                                     bptt_len=30)
 
-#         # Delete the dataset after we're done to save disk space on CI
-#         if os.environ.get("TRAVIS") == "true":
-#             datafile = os.path.join(self.project_root, ".data", "wikitext-2")
-#             conditional_remove(datafile)
+        # Delete the dataset after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            datafile = os.path.join(self.project_root, ".data", "wikitext-2")
+            conditional_remove(datafile)
 
-#     @slow
-#     def test_penntreebank(self):
-#         # smoke test to ensure penn treebank works properly
-#         TEXT = data.Field(lower=True, batch_first=True)
-#         ds = PennTreebank
-#         train, valid, test = ds.splits(TEXT)
-#         TEXT.build_vocab(train)
-#         train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-#             (train, valid, test), batch_size=3, bptt_len=30)
+    @slow
+    def test_penntreebank(self):
+        # smoke test to ensure penn treebank works properly
+        TEXT = data.Field(lower=True, batch_first=True)
+        ds = PennTreebank
+        train, valid, test = ds.splits(TEXT)
+        TEXT.build_vocab(train)
+        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
+            (train, valid, test), batch_size=3, bptt_len=30)
 
-#         train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-#                                                      bptt_len=30)
+        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
+                                                     bptt_len=30)
 
-#         # Delete the dataset after we're done to save disk space on CI
-#         if os.environ.get("TRAVIS") == "true":
-#             datafile = os.path.join(self.project_root, ".data", "penn-treebank")
-#             conditional_remove(datafile)
+        # Delete the dataset after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            datafile = os.path.join(self.project_root, ".data", "penn-treebank")
+            conditional_remove(datafile)
 
-#     def test_text_classification(self):
-#         # smoke test to ensure ag_news dataset works properly
+    def test_text_classification(self):
+        # smoke test to ensure ag_news dataset works properly
 
-#         datadir = os.path.join(self.project_root, ".data")
-#         if not os.path.exists(datadir):
-#             os.makedirs(datadir)
-#         ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
-#         self.assertEqual(len(ag_news_train), 120000)
-#         self.assertEqual(len(ag_news_test), 7600)
+        datadir = os.path.join(self.project_root, ".data")
+        if not os.path.exists(datadir):
+            os.makedirs(datadir)
+        ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
+        self.assertEqual(len(ag_news_train), 120000)
+        self.assertEqual(len(ag_news_test), 7600)
 
-#         # Delete the dataset after we're done to save disk space on CI
-#         if os.environ.get("TRAVIS") == "true":
-#             datafile = os.path.join(self.project_root, ".data", "AG_NEWS")
-#             conditional_remove(datafile)
+        # Delete the dataset after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            datafile = os.path.join(self.project_root, ".data", "AG_NEWS")
+            conditional_remove(datafile)

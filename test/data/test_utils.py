@@ -51,7 +51,7 @@ class TestUtils(TorchtextTestCase):
     def test_text_nomalize_function(self):
         # Test text_nomalize function in torchtext.datasets.text_classification
         print('asdf')
-        ref_lines = []
+        # ref_lines = []
         test_lines = []
 
         tokenizer = data.get_tokenizer("basic_english")
@@ -60,6 +60,8 @@ class TestUtils(TorchtextTestCase):
             reader = unicode_csv_reader(f)
             for row in reader:
                 test_lines.append(tokenizer(' , '.join(row)))
+                assert test_lines[-1][0] == 'hello'
+                assert test_lines[-1][1] == 'world'
 
         # data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
         # with io.open(data_path, encoding="utf8") as ref_data:
