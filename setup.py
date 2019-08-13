@@ -48,6 +48,8 @@ def get_extensions2():
     if sys.platform == 'win32':
         define_macros += [('torchtext_EXPORTS', None)]
 
+    sources = [os.path.join(extensions_dir, s) for s in sources]
+    
     include_dirs = [extensions_dir]
 
     ext_modules = [
