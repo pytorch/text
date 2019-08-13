@@ -58,8 +58,8 @@ class TestUtils(TorchtextTestCase):
         data_path = 'test/asset/text_normalization_ag_news_test.csv'
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
-            for row in reader:
-                test_lines.append(tokenizer(' , '.join(row)))
+            # for row in reader:
+            #     test_lines.append(tokenizer(' , '.join(row)))
 
         # data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
         # with io.open(data_path, encoding="utf8") as ref_data:
