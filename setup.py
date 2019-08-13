@@ -111,6 +111,7 @@ class clean(distutils.command.clean.clean):
 
 setup_info = dict(
     # Metadata
+    name='torchtext',
     version=VERSION,
     author='PyTorch core devs and James Bradbury',
     author_email='jekbradbury@gmail.com',
