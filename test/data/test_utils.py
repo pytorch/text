@@ -52,7 +52,7 @@ class TestUtils(TorchtextTestCase):
         # Test text_nomalize function in torchtext.datasets.text_classification
         print('asdf')
         # ref_lines = []
-        test_lines = []
+        # test_lines = []
 
         tokenizer = data.get_tokenizer("basic_english")
 

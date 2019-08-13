@@ -35,24 +35,24 @@ long_description = read('README.rst')
 
 def get_extensions():
     # this_dir = os.path.dirname(os.path.abspath(__file__))
-    this_dir = ''
-    extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
+    # this_dir = ''
+    # extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
 
-    main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
-    source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
+    # main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
+    # source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
 
-    sources = main_file + source_core
+    # sources = main_file + source_core
 
-    define_macros = []
-    extra_compile_args = {}
+    # define_macros = []
+    # extra_compile_args = {}
 
-    if sys.platform == 'win32':
-        define_macros += [('torchtext_EXPORTS', None)]
+    # if sys.platform == 'win32':
+    #     define_macros += [('torchtext_EXPORTS', None)]
 
-    include_dirs = [extensions_dir]
+    # include_dirs = [extensions_dir]
 
     # sources = [os.path.join(extensions_dir, s) for s in sources]
-
+    print(sys.__dir__())
     ext_modules = [
         CppExtension(
             '_C',
