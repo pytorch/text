@@ -86,7 +86,8 @@ def get_tokenizer(tokenizer, language='en'):
         # s = os.path.exists(_C.__file__)
         # Exception: (True, '/home/travis/.cache/Python-Eggs/torchtext-0.4.0-py3.5-linux-x86_64.egg-tmp', ['_C.cpython-35m-x86_64-linux-gnu.so'])
         # raise Exception(s, os.path.dirname(ff), os.listdir(os.path.dirname(ff)))
-        return _C.basic_english_normalize
+        # return _C.basic_english_normalize
+        return _C.x
 
     # simply return if a function is passed
     if callable(tokenizer):

@@ -57,10 +57,11 @@ def get_extensions():
     ext_modules = [
         extension(
             '_C',
-            sources,
-            include_dirs=include_dirs,
-            define_macros=define_macros,
-            extra_compile_args=extra_compile_args,
+            ['torchtext/csrc/a.cpp'],
+            # sources,
+            include_dirs=[],
+            define_macros=[],
+            extra_compile_args={},
         )
     ]
 

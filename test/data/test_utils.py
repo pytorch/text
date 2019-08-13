@@ -60,7 +60,9 @@ class TestUtils(TorchtextTestCase):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
-                raise Exception(tokenizer('jason'))
+                y = tokenizer(100)
+                assert y == 11, "rek: %d" % (y)
+                # raise Exception(tokenizer('jason'))
                 # test_lines.append(tokenizer(' , '.join(row)))
                 # assert test_lines[-1] == 'hello world'
         # raise Exception(test_lines)
