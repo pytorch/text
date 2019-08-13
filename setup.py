@@ -34,7 +34,8 @@ long_description = read('README.rst')
 
 
 def get_extensions2():
-    extensions_dir = os.path.join('torchtext', 'csrc')
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
 
     main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
     source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
@@ -91,12 +92,15 @@ def get_extensions():
 
     return ext_modules
 
+
 class clean(distutils.command.clean.clean):
     def run(self):
         with open('.gitignore', 'r') as f:
             ignores = f.read()
             for wildcard in filter(None, ignores.split('\n')):
                 for filename in glob.glob(wildcard):
+                    if filename == 'requirements.txt':
+                        continue
                     try:
                         os.remove(filename)
                     except OSError:
