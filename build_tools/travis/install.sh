@@ -63,5 +63,5 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
 
     # Installation
     python setup.py install
-    cd $HOME
+    rm -rf torchtext
 fi
