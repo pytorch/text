@@ -82,7 +82,7 @@ def get_tokenizer(tokenizer, language='en'):
         # <built-in method basic_english_normalize of PyCapsule object at 0x7f8e14626c60>])
         # raise Exception('emm', [_C, _C.__file__, _C.__dir__(), _C.basic_english_normalize])
         ff = _C.__file__
-        f = open(f, "r")
+        # f = open(f, "r")
         s = os.path.exists(_C.__file__)
         raise Exception(s, os.path.dirname(ff), os.listdir(os.path.dirname(ff)))
         return _C.basic_english_normalize
