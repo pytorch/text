@@ -1,4 +1,5 @@
 *.txt
+*.txt
 !CMakeLists.txt
 *.zip
 *~
