@@ -4,19 +4,7 @@ namespace torch {
 namespace text {
 namespace core {
 namespace impl {
-static std::vector<std::pair<std::regex, std::string>> _patterns = {
-    {std::regex("\\\'"), " \'  "},
-    {std::regex("\\\""), ""},
-    {std::regex("\\."), " . "},
-    {std::regex("<br \\/>"), " "},
-    {std::regex(","), " , "},
-    {std::regex("\\("), " ( "},
-    {std::regex("\\)"), " ) "},
-    {std::regex("\\!"), " ! "},
-    {std::regex("\\?"), " ? "},
-    {std::regex("\\;"), " "},
-    {std::regex("\\:"), " "},
-    {std::regex("\\s+"), " "}};
+static std::vector<std::pair<std::regex, std::string>> _patterns = {};
 
 std::vector<std::string> basic_english_normalize(std::string line) {
   std::transform(line.begin(), line.end(), line.begin(), tolower);
@@ -33,15 +21,14 @@ std::vector<std::string> split(const std::string& text, char splitter) {
   while (current != std::string::npos) {
     current = text.find(splitter, previous);
     string = text.substr(previous, current - previous);
-    if (!string.empty())
-      list.push_back(string);
+    if (!string.empty()) list.push_back(string);
     previous = current + 1;
   }
 
   return list;
 }
 
-} // namespace impl
-} // namespace core
-} // namespace text
-} // namespace torch
+}  // namespace impl
+}  // namespace core
+}  // namespace text
+}  // namespace torch
