@@ -49,7 +49,7 @@ def get_extensions2():
         define_macros += [('torchtext_EXPORTS', None)]
 
     sources = [os.path.join(extensions_dir, s) for s in sources]
-    
+
     include_dirs = [extensions_dir]
 
     ext_modules = [
@@ -66,7 +66,8 @@ def get_extensions2():
 
 
 def get_extensions():
-    extensions_dir = os.path.join('torchtext', 'csrc')
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
 
     main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
     source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
@@ -81,6 +82,8 @@ def get_extensions():
         define_macros += [('torchtext_EXPORTS', None)]
 
     include_dirs = [extensions_dir]
+
+    sources = [os.path.join(extensions_dir, s) for s in sources]
 
     ext_modules = [
         extension(
