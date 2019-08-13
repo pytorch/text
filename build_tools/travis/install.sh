@@ -63,5 +63,9 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
 
     # Installation
     python setup.py install
-    rm -rf torchtext
+    cd $HOME
+    echo 'BAM'
+    python -c 'import torchtext'
+    python -c 'import torchtext._C'
+    echo 'SAM'
 fi
