@@ -87,7 +87,7 @@ def get_extensions():
 
     ext_modules = [
         extension(
-            'torchtext._C',
+            '_C',
             sources,
             include_dirs=include_dirs,
             define_macros=define_macros,

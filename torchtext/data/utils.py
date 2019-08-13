@@ -1,5 +1,5 @@
 import random
-from torchtext import _C
+import _C
 from contextlib import contextmanager
 from copy import deepcopy
 import re
