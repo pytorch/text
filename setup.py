@@ -33,38 +33,6 @@ VERSION = find_version('torchtext', '__init__.py')
 long_description = read('README.rst')
 
 
-def get_extensions2():
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
-
-    main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
-    source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
-
-    sources = main_file + source_core
-
-    define_macros = []
-    extra_compile_args = {}
-
-    if sys.platform == 'win32':
-        define_macros += [('torchtext_EXPORTS', None)]
-
-    sources = [os.path.join(extensions_dir, s) for s in sources]
-
-    include_dirs = [extensions_dir]
-
-    ext_modules = [
-        CppExtension(
-            'torchtext._C',
-            sources,
-            include_dirs=include_dirs,
-            define_macros=define_macros,
-            extra_compile_args=extra_compile_args
-        )
-    ]
-
-    return ext_modules
-
-
 def get_extensions():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
