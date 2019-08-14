@@ -6,7 +6,7 @@ from torchtext.utils import unicode_csv_reader
 import io
 
 print('asdf')
-import torchtext._C as _C
+import _C
 print('melo')
 print(_C.__dir__())
 print(_C.basic_english_normalize("hello,world"))
