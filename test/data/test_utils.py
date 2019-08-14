@@ -57,35 +57,11 @@ class TestUtils(TorchtextTestCase):
     def test_text_nomalize_function(self):
         return
         # Test text_nomalize function in torchtext.datasets.text_classification
-        # import sys, os
-        # def trace(frame, event, arg):
-        #     print("%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno))
-        #     return trace
-        
-        
         # ref_lines = []
         # test_lines = []
-
-        # import _wasup
-        # print(_wasup.__dir__())
-        # print(_wasup.x)
-        # print(_wasup.__file__)
-        # print(os.path.exists(_wasup.__file__))
-        
-        # assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
+        #
         # tokenizer = data.get_tokenizer("basic_english")
-
-        # data_path = 'test/asset/text_normalization_ag_news_test.csv'
-        # with io.open(data_path, encoding="utf8") as f:
-        #     reader = unicode_csv_reader(f)
-        #     for row in reader:
-        #         y = tokenizer(121)
-        #         assert y == 122, "rek: %d" % (y)
-                # raise Exception(tokenizer('jason'))
-                # test_lines.append(tokenizer(' , '.join(row)))
-                # assert test_lines[-1] == 'hello world'
-        # raise Exception(test_lines)
-
+        #
         # data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
         # with io.open(data_path, encoding="utf8") as ref_data:
         #     for line in ref_data:
@@ -95,4 +71,3 @@ class TestUtils(TorchtextTestCase):
         #         ref_lines.append(line)
 
         # self.assertEqual(ref_lines, test_lines)
-
