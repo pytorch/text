@@ -53,18 +53,26 @@ def get_extensions():
 
     # sources = [os.path.join(extensions_dir, s) for s in sources]
     print(sys.__dir__())
+    # ext_modules = [
+    #     CppExtension(
+    #         '_wasup',
+    #         ['torchtext/a.cpp'],
+    #         # sources,
+    #         # include_dirs=[],
+    #         # define_macros=[],
+    #         extra_link_args=[],
+    #         extra_compile_args=[],
+    #         # extra_compile_args={},
+    #     )
+    # ]
     ext_modules = [
         CppExtension(
-            '_wasup',
-            ['torchtext/a.cpp'],
-            # sources,
-            # include_dirs=[],
-            # define_macros=[],
-            extra_link_args=[],
-            extra_compile_args=[],
-            # extra_compile_args={},
-        )
+            '_fft',
+            ['torchtext/fft.cpp'],
+            extra_compile_args=eca,
+            extra_link_args=ela),
     ]
+    
 
     return ext_modules
 
