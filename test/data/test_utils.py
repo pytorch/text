@@ -50,13 +50,22 @@ class TestUtils(TorchtextTestCase):
 
     def test_text_nomalize_function(self):
         # Test text_nomalize function in torchtext.datasets.text_classification
+        import sys, os
+        def trace(frame, event, arg):
+            print "%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno)
+            return trace
+        
         print('asdf')
         # ref_lines = []
         # test_lines = []
         import _C
         print(_C.__dir__())
         print(_C.x)
-        assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
+        print(_C.__file__)
+        print(os.path.exists(_C.__file__))
+        sys.settrace(trace)
+        _C.x(121)
+        # assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
         # tokenizer = data.get_tokenizer("basic_english")
 
         # data_path = 'test/asset/text_normalization_ag_news_test.csv'
@@ -79,3 +88,4 @@ class TestUtils(TorchtextTestCase):
         #         ref_lines.append(line)
 
         # self.assertEqual(ref_lines, test_lines)
+
