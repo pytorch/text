@@ -33,15 +33,9 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
-<<<<<<< HEAD
-    def __init__(self, counter, max_size=None, max_freq=math.inf, min_freq=1,
+    def __init__(self, counter, max_size=None, max_freq=float('inf'), min_freq=1,
                 specials=['<unk>', '<pad>'], vectors=None, unk_init=None,
                 vectors_cache=None, specials_first=True):
-=======
-    def __init__(self, counter, max_size=None, max_freq=float('inf'), min_freq=1,
-                 specials=['<pad>'], vectors=None, unk_init=None, vectors_cache=None,
-                 specials_first=True):
->>>>>>> follow flake8 and support python2
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
