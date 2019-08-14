@@ -52,7 +52,7 @@ class TestUtils(TorchtextTestCase):
         # Test text_nomalize function in torchtext.datasets.text_classification
         import sys, os
         def trace(frame, event, arg):
-            print "%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno)
+            print("%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno))
             return trace
         
         print('asdf')
@@ -65,6 +65,7 @@ class TestUtils(TorchtextTestCase):
         print(os.path.exists(_C.__file__))
         sys.settrace(trace)
         _C.x(121)
+        print('done')
         # assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
         # tokenizer = data.get_tokenizer("basic_english")
 
