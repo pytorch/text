@@ -7,6 +7,7 @@ import io
 
 print('asdf')
 import _C
+print(_C.__dir__())
 print(_C.basic_english_normalize("hello,world"))
 print('done')
 

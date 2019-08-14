@@ -53,14 +53,13 @@ def get_extensions():
 
     sources = [os.path.join(extensions_dir, s) for s in sources]
 
-    print('sources', sources)
     ext_modules = [
         CppExtension(
             '_C',
             sources,
             include_dirs=include_dirs,
             define_macros=define_macros,
-            extra_compile_args={},
+            extra_compile_args=extra_compile_args,
         )
     ]
 
