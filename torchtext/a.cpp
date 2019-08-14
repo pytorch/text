@@ -3,7 +3,7 @@
 
 namespace torch {
 namespace text {
-int x(int temp) { return temp + 1; }
+int x(int temp) { return 100; }
 }  // namespace text
 }  // namespace torch
 
