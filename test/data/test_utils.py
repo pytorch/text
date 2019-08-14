@@ -63,7 +63,7 @@ class TestUtils(TorchtextTestCase):
         print(_C.x)
         print(_C.__file__)
         print(os.path.exists(_C.__file__))
-        sys.settrace(trace)
+        # sys.settrace(trace)
         _C.x(121)
         print('done')
         # assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
