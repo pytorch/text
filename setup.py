@@ -69,8 +69,8 @@ def get_extensions():
         CppExtension(
             '_fft',
             ['torchtext/fft.cpp'],
-            extra_compile_args=eca,
-            extra_link_args=ela),
+            extra_compile_args=[],
+            extra_link_args=[]),
     ]
     
 
