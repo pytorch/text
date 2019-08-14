@@ -5,6 +5,14 @@ from ..common.torchtext_test_case import TorchtextTestCase
 from torchtext.utils import unicode_csv_reader
 import io
 
+print('asdf')
+import torch, os
+import _fft
+print(_fft.__dir__())
+print(_fft.__file__)
+print(os.path.exists(_fft.__file__))
+print(_fft.fft(torch.rand(2,100)))
+print('done')
 
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
@@ -55,20 +63,16 @@ class TestUtils(TorchtextTestCase):
         #     print("%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno))
         #     return trace
         
-        print('asdf')
+        
         # ref_lines = []
         # test_lines = []
-        import torch
-        import _fft
-        print(_fft.__dir__())
-        print(_fft.__file__)
-        print(_fft.fft(torch.rand(2,100)))
+
         # import _wasup
         # print(_wasup.__dir__())
         # print(_wasup.x)
         # print(_wasup.__file__)
         # print(os.path.exists(_wasup.__file__))
-        print('done')
+        
         # assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
         # tokenizer = data.get_tokenizer("basic_english")
 
