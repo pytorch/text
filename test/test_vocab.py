@@ -50,7 +50,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(dict(v.stoi), expected_stoi)
 
     def test_vocab_max_freq(self):
-        c = Counter({'hello': 0.0, 'world': 1.0, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 100,
+        c = Counter({'hello': 0.0, 'world': 1.0, '!': 3.0, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 100,
                      'freq_too_high': float('inf')})
 
         # test for max_freq=0.0
@@ -69,7 +69,7 @@ class TestVocab(TorchtextTestCase):
 
         # test for max_freq=100
         v_third = vocab.Vocab(c, max_freq=100, specials=['<unk>', '<pad>'])
-        expected_itos_third = ['<unk>', '<pad>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'world']
+        expected_itos_third = ['<unk>', '<pad>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', '!', 'world']
         expected_stoi_third = {x: index for index, x in enumerate(expected_itos_third)}
         self.assertEqual(v_third.itos, expected_itos_third)
         self.assertEqual(dict(v_third.stoi), expected_stoi_third)
@@ -77,10 +77,21 @@ class TestVocab(TorchtextTestCase):
         # test for max_freq=float('inf')
         v_fourth = vocab.Vocab(c, max_freq=float('inf'), specials=['<unk>', '<pad>'])
         expected_itos_fourth = ['<unk>', '<pad>', 'freq_too_high',
-                                'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'world']
+                                'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', '!', 'world']
         expected_stoi_fourth = {x: index for index, x in enumerate(expected_itos_fourth)}
         self.assertEqual(v_fourth.itos, expected_itos_fourth)
         self.assertEqual(dict(v_fourth.stoi), expected_stoi_fourth)
+
+        # test for the case man_freq is larger than min_freq
+        v_fourth = vocab.Vocab(c, max_freq=100, min_freq=2, specials=['<unk>', '<pad>'])
+        expected_itos_fourth = ['<unk>', '<pad>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', '!']
+        expected_stoi_fourth = {x: index for index, x in enumerate(expected_itos_fourth)}
+        self.assertEqual(v_fourth.itos, expected_itos_fourth)
+        self.assertEqual(dict(v_fourth.stoi), expected_stoi_fourth)
+
+        # test for the case min_freq is larger than max_freq
+        with self.assertRaises(ValueError):
+            v_fourth = vocab.Vocab(c, max_freq=3, min_freq=4, specials=['<unk>', '<pad>'])
 
     def test_vocab_without_unk(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})

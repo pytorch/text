@@ -43,8 +43,6 @@ class Vocab(object):
                 each value found in the data.
             max_size: The maximum size of the vocabulary, or None for no
                 maximum. Default: None.
-            max_freq: The max frequency of tokens in the vocabulary.
-                      Values less than 1 will be set to 1. Default: inf (no filter).
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
@@ -64,6 +62,11 @@ class Vocab(object):
         counter = counter.copy()
         max_freq = min(max(max_freq, 1), float('inf'))
         min_freq = max(min_freq, 1)
+        if max_freq < min_freq:
+            raise ValueError(
+                "Got max_freq={} and min_freq={} "
+                "max_freq must be larger than min_freq".format(
+                    max_freq, min_freq))
 
         self.itos = list()
         self.unk_index = None
