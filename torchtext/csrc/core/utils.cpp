@@ -5,15 +5,15 @@ namespace text {
 namespace core {
 namespace impl {
 
+static std::vector<std::pair<std::regex, std::string>> _patterns = {
+    {std::regex("\\\'"), " \'  "}, {std::regex("\\\""), ""},
+    {std::regex("\\."), " . "},    {std::regex("<br \\/>"), " "},
+    {std::regex(","), " , "},      {std::regex("\\("), " ( "},
+    {std::regex("\\)"), " ) "},    {std::regex("\\!"), " ! "},
+    {std::regex("\\?"), " ? "},    {std::regex("\\;"), " "},
+    {std::regex("\\:"), " "},      {std::regex("\\s+"), " "}};
+
 std::vector<std::string> basic_english_normalize(std::string line) {
-  std::vector<std::pair<std::regex, std::string>> _patterns = {
-      {std::regex("\\\'"), " \'  "}, {std::regex("\\\""), ""},
-      {std::regex("\\."), " . "},    {std::regex("<br \\/>"), " "},
-      {std::regex(","), " , "},      {std::regex("\\("), " ( "},
-      {std::regex("\\)"), " ) "},    {std::regex("\\!"), " ! "},
-      {std::regex("\\?"), " ? "},    {std::regex("\\;"), " "},
-      {std::regex("\\:"), " "},      {std::regex("\\s+"), " "}};
-  // std::vector<std::pair<std::regex, std::string>> _patterns = {};
   std::transform(line.begin(), line.end(), line.begin(), tolower);
   for (const auto& P : _patterns)
     line = std::regex_replace(line, P.first, P.second);
@@ -22,7 +22,7 @@ std::vector<std::string> basic_english_normalize(std::string line) {
 
 std::vector<std::string> split(const std::string& text, char splitter) {
   std::string token;
-  std::istringstream ss(s);
+  std::istringstream ss(text);
   std::vector<std::string> res;
   while (getline(ss, token, splitter)) {
     res.push_back(token);
