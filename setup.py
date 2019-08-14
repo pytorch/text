@@ -58,10 +58,11 @@ def get_extensions():
             '_wasup',
             ['torchtext/a.cpp'],
             # sources,
-            include_dirs=[],
-            define_macros=[],
-            ela=[],
-            extra_compile_args={},
+            # include_dirs=[],
+            # define_macros=[],
+            extra_link_args=[],
+            extra_compile_args=[],
+            # extra_compile_args={},
         )
     ]
 
