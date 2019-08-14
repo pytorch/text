@@ -56,8 +56,7 @@ def get_extensions():
     ext_modules = [
         CppExtension(
             '_C',
-            # ['torchtext/csrc/a.cpp'],
-            ['torchtext/a.cpp'],
+            ['torchtext/csrc/a.cpp'],
             # sources,
             include_dirs=[],
             define_macros=[],
