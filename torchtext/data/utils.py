@@ -1,5 +1,5 @@
 import random
-from torchtext import _C
+import _C
 from contextlib import contextmanager
 from copy import deepcopy
 import re
@@ -13,35 +13,6 @@ def _split_tokenizer(x):
 
 def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
-
-
-_patterns = [r'\'',
-             r'\"',
-             r'\.',
-             r'<br \/>',
-             r',',
-             r'\(',
-             r'\)',
-             r'\!',
-             r'\?',
-             r'\;',
-             r'\:',
-             r'\s+']
-
-_replacements = [' \'  ',
-                 '',
-                 ' . ',
-                 ' ',
-                 ' , ',
-                 ' ( ',
-                 ' ) ',
-                 ' ! ',
-                 ' ? ',
-                 ' ',
-                 ' ',
-                 ' ']
-
-_patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
 
 
 def get_tokenizer(tokenizer, language='en'):
