@@ -6,7 +6,7 @@ namespace core {
 namespace impl {
 
 std::vector<std::string> basic_english_normalize(std::string line) {
-  static std::vector<std::pair<std::regex, std::string>> _patterns = {
+  std::vector<std::pair<std::regex, std::string>> _patterns = {
       {std::regex("\\\'"), " \'  "}, {std::regex("\\\""), ""},
       {std::regex("\\."), " . "},    {std::regex("<br \\/>"), " "},
       {std::regex(","), " , "},      {std::regex("\\("), " ( "},
