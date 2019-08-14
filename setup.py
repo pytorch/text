@@ -37,8 +37,9 @@ def get_extensions():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     extensions_dir = os.path.join(this_dir, 'torchtext', 'csrc')
 
-    main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
-    source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
+    main_file = glob.glob(os.path.join(extensions_dir, 'a.cpp'))
+    # main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
+    # source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
 
     sources = main_file + source_core
 
@@ -52,6 +53,7 @@ def get_extensions():
 
     sources = [os.path.join(extensions_dir, s) for s in sources]
 
+    print('sources', sources)
     ext_modules = [
         CppExtension(
             '_C',
