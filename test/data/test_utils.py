@@ -53,15 +53,16 @@ class TestUtils(TorchtextTestCase):
         print('asdf')
         # ref_lines = []
         # test_lines = []
+        import _C
+        assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
+        # tokenizer = data.get_tokenizer("basic_english")
 
-        tokenizer = data.get_tokenizer("basic_english")
-
-        data_path = 'test/asset/text_normalization_ag_news_test.csv'
-        with io.open(data_path, encoding="utf8") as f:
-            reader = unicode_csv_reader(f)
-            for row in reader:
-                y = tokenizer(121)
-                assert y == 122, "rek: %d" % (y)
+        # data_path = 'test/asset/text_normalization_ag_news_test.csv'
+        # with io.open(data_path, encoding="utf8") as f:
+        #     reader = unicode_csv_reader(f)
+        #     for row in reader:
+        #         y = tokenizer(121)
+        #         assert y == 122, "rek: %d" % (y)
                 # raise Exception(tokenizer('jason'))
                 # test_lines.append(tokenizer(' , '.join(row)))
                 # assert test_lines[-1] == 'hello world'
