@@ -21,9 +21,9 @@ matrix:
       sudo: required
     - env: PYTHON_VERSION="3.6" RUN_SLOW="true" COVERAGE="true"
       sudo: required
-  allow_failures:
-    # - env: PYTHON_VERSION="2.7" RUN_SLOW="true" COVERAGE="true"
-    - env: PYTHON_VERSION="3.6" RUN_SLOW="true" COVERAGE="true"
+  # allow_failures:
+  #   - env: PYTHON_VERSION="2.7" RUN_SLOW="true" COVERAGE="true"
+  #   - env: PYTHON_VERSION="3.6" RUN_SLOW="true" COVERAGE="true"
 
 notifications:
   email: false
