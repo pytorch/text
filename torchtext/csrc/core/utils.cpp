@@ -4,14 +4,13 @@ namespace torch {
 namespace text {
 namespace core {
 namespace impl {
-static std::vector<std::pair<std::regex, std::string>> _patterns = {};
-// static std::vector<std::pair<std::regex, std::string>> _patterns = {
-//     {std::regex("\\\'"), " \'  "}, {std::regex("\\\""), ""},
-//     {std::regex("\\."), " . "},    {std::regex("<br \\/>"), " "},
-//     {std::regex(","), " , "},      {std::regex("\\("), " ( "},
-//     {std::regex("\\)"), " ) "},    {std::regex("\\!"), " ! "},
-//     {std::regex("\\?"), " ? "},    {std::regex("\\;"), " "},
-//     {std::regex("\\:"), " "},      {std::regex("\\s+"), " "}};
+static std::vector<std::pair<std::regex, std::string>> _patterns = {
+    {std::regex("\\\'"), " \'  "}, {std::regex("\\\""), ""},
+    {std::regex("\\."), " . "},    {std::regex("<br \\/>"), " "},
+    {std::regex(","), " , "},      {std::regex("\\("), " ( "},
+    {std::regex("\\)"), " ) "},    {std::regex("\\!"), " ! "},
+    {std::regex("\\?"), " ? "},    {std::regex("\\;"), " "},
+    {std::regex("\\:"), " "},      {std::regex("\\s+"), " "}};
 
 std::vector<std::string> basic_english_normalize(std::string line) {
   return {"hello", "eeworld"};
