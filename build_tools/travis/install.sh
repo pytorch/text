@@ -61,12 +61,6 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     # PyTorch
     conda install --yes pytorch torchvision -c pytorch
 
-    # export CXX="g++-4.9" CC="gcc-4.9"
     # Installation
-    echo "melo"
-    gcc --version
-    g++ --version
-    echo "selo"
     python setup.py install
-    # pip install .
 fi
