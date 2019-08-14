@@ -55,7 +55,7 @@ def get_extensions():
     print(sys.__dir__())
     ext_modules = [
         CppExtension(
-            '_C',
+            '_wasup',
             ['torchtext/a.cpp'],
             # sources,
             include_dirs=[],

@@ -1,6 +1,4 @@
 import random
-import torch
-import _C
 from contextlib import contextmanager
 from copy import deepcopy
 import re
@@ -96,7 +94,7 @@ def get_tokenizer(tokenizer, language='en'):
         # ['_C.cpython-35m-x86_64-linux-gnu.so'])
         # raise Exception(s, os.path.dirname(ff), os.listdir(os.path.dirname(ff)))
         # return _C.basic_english_normalize
-        return _C.x
+        return None
 
     # simply return if a function is passed
     if callable(tokenizer):

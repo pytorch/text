@@ -3,7 +3,7 @@ from . import datasets
 from . import utils
 from . import vocab
 import torch
-import _C
+import _wasup
 
 __version__ = '0.4.0'
 

@@ -59,13 +59,13 @@ class TestUtils(TorchtextTestCase):
         # ref_lines = []
         # test_lines = []
         import torch
-        import _C
-        print(_C.__dir__())
-        print(_C.x)
-        print(_C.__file__)
-        print(os.path.exists(_C.__file__))
+        import _wasup
+        print(_wasup.__dir__())
+        print(_wasup.x)
+        print(_wasup.__file__)
+        print(os.path.exists(_wasup.__file__))
         # sys.settrace(trace)
-        _C.x(121)
+        _wasup.x(121)
         print('done')
         # assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
         # tokenizer = data.get_tokenizer("basic_english")

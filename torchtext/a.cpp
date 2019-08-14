@@ -7,4 +7,4 @@ int x(int temp) { return temp + 1; }
 }  // namespace text
 }  // namespace torch
 
-PYBIND11_MODULE(_C, m) { m.def("x", &torch::text::x, "x"); }
+PYBIND11_MODULE(_wasup, m) { m.def("x", &torch::text::x, "x"); }
