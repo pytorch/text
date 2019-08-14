@@ -9,8 +9,7 @@ namespace torch {
 namespace text {
 namespace core {
 namespace impl {
-// std::vector<std::string> basic_english_normalize(std::string line);
-std::string basic_english_normalize(std::string line);
+std::vector<std::string> basic_english_normalize(std::string line);
 
 std::vector<std::string> split(const std::string& text, char splitter);
 

@@ -13,7 +13,9 @@ static std::vector<std::pair<std::regex, std::string>> _patterns = {};
 //     {std::regex("\\?"), " ? "},    {std::regex("\\;"), " "},
 //     {std::regex("\\:"), " "},      {std::regex("\\s+"), " "}};
 
-std::string basic_english_normalize(std::string line) { return "hello world"; }
+std::vector<std::string> basic_english_normalize(std::string line) {
+  return {"hello", "eeworld"};
+}
 
 // std::vector<std::string> basic_english_normalize(std::string line) {
 //   std::transform(line.begin(), line.end(), line.begin(), tolower);
