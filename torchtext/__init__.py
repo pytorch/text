@@ -2,7 +2,7 @@ from . import data
 from . import datasets
 from . import utils
 from . import vocab
-import _C
+from _C import *
 
 
 __version__ = '0.4.0'

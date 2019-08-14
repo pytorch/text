@@ -15,10 +15,12 @@ run_tests() {
  #    cd -
     if [[ "$RUN_SLOW" == "true" ]]; then
         # TEST_CMD="py.test --runslow -s -v --cov=torchtext --durations=20 $INSTALL_PATH test"
-        TEST_CMD="py.test --runslow -s -v --cov=torchtext --durations=20 test/data/test_utils.py"
+        # TEST_CMD="py.test --runslow -s -v --cov=torchtext --durations=20 test/data/test_utils.py"
+        TEST_CMD="python -m unittest -v test/data/test_utils.py"
     else
         # TEST_CMD="py.test -v --cov=torchtext --durations=20 $INSTALL_PATH test"
-        TEST_CMD="py.test -v --cov=torchtext --durations=20 test/data/test_utils.py"
+        # TEST_CMD="py.test -v --cov=torchtext --durations=20 test/data/test_utils.py"
+        TEST_CMD="python -m unittest -v test/data/test_utils.py"
     fi
     $TEST_CMD
 }

@@ -24,6 +24,7 @@ flake8
 
 # Run unit tests
 pytest
+unittest
 
 # Lets pytest find our code by automatically modifying PYTHONPATH
 pytest-pythonpath

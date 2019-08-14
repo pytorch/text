@@ -54,6 +54,8 @@ class TestUtils(TorchtextTestCase):
         # ref_lines = []
         # test_lines = []
         import _C
+        print(_C.__dir__())
+        print(_C.x)
         assert _C.x(121) == 122, 'rekee: %d' % _C.x(121)
         # tokenizer = data.get_tokenizer("basic_english")
 
