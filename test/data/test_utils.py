@@ -7,7 +7,7 @@ import io
 
 print('asdf')
 import _C
-print(_C.x(100))
+print(_C.basic_english_normalize("hello,world"))
 print('done')
 
 class TestUtils(TorchtextTestCase):
