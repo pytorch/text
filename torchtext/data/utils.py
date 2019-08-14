@@ -75,7 +75,7 @@ def get_tokenizer(tokenizer, language='en'):
     if tokenizer == "basic_english":
         if language != 'en':
             raise ValueError("Basic normalization is only available for Enlish(en)")
-        return _C._basic_english_normalize
+        return _C.basic_english_normalize
 
     # simply return if a function is passed
     if callable(tokenizer):
