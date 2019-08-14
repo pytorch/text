@@ -6,12 +6,8 @@ from torchtext.utils import unicode_csv_reader
 import io
 
 print('asdf')
-import torch, os
-import _fft
-print(_fft.__dir__())
-print(_fft.__file__)
-print(os.path.exists(_fft.__file__))
-print(_fft.fft(torch.rand(2,100)))
+import _C
+print(_C.x(100))
 print('done')
 
 class TestUtils(TorchtextTestCase):

@@ -67,8 +67,8 @@ def get_extensions():
     # ]
     ext_modules = [
         CppExtension(
-            '_fft',
-            ['torchtext/fft.cpp'],
+            '_C',
+            ['torchtext/csrc/a.cpp'],
             extra_compile_args=[],
             extra_link_args=[]),
     ]
