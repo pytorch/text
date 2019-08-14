@@ -2,6 +2,7 @@ import random
 from contextlib import contextmanager
 from copy import deepcopy
 import re
+import _C
 
 from functools import partial
 
@@ -74,7 +75,7 @@ def get_tokenizer(tokenizer, language='en'):
     if tokenizer == "basic_english":
         if language != 'en':
             raise ValueError("Basic normalization is only available for Enlish(en)")
-        return None
+        return _C._basic_english_normalize
 
     # simply return if a function is passed
     if callable(tokenizer):

@@ -5,13 +5,6 @@ from ..common.torchtext_test_case import TorchtextTestCase
 from torchtext.utils import unicode_csv_reader
 import io
 
-print('asdf')
-import _C
-print('melo')
-print(_C.__dir__())
-print(_C.basic_english_normalize("hello,world"))
-print('done')
-
 
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
@@ -56,19 +49,23 @@ class TestUtils(TorchtextTestCase):
             data.get_tokenizer("some other string")
 
     def test_text_nomalize_function(self):
-        return
-        # # Test text_nomalize function in torchtext.datasets.text_classification
-        # ref_lines = []
-        # test_lines = []
-        
-        # tokenizer = data.get_tokenizer("basic_english")
-        
-        # data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
-        # with io.open(data_path, encoding="utf8") as ref_data:
-        #     for line in ref_data:
-        #         line = line.split()
-        #         self.assertEqual(line[0][:9], '__label__')
-        #         line[0] = line[0][9:]  # remove '__label__'
-        #         ref_lines.append(line)
+        # Test text_nomalize function in torchtext.datasets.text_classification
+        ref_lines = []
+        test_lines = []
 
-        # self.assertEqual(ref_lines, test_lines)
+        tokenizer = data.get_tokenizer("basic_english")
+        data_path = 'test/asset/text_normalization_ag_news_test.csv'
+        with io.open(data_path, encoding="utf8") as f:
+            reader = unicode_csv_reader(f)
+            for row in reader:
+                test_lines.append(tokenizer(' , '.join(row)))
+
+        data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
+        with io.open(data_path, encoding="utf8") as ref_data:
+            for line in ref_data:
+                line = line.split()
+                self.assertEqual(line[0][:9], '__label__')
+                line[0] = line[0][9:]  # remove '__label__'
+                ref_lines.append(line)
+
+        self.assertEqual(ref_lines, test_lines)
