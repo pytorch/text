@@ -102,7 +102,8 @@ setup_info = dict(
     ],
 
     ext_modules=get_extensions(),
-    cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension, 'clean': clean},
+    # cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension, 'clean': clean},
+    cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension},
 
     # Package info
     packages=find_packages(exclude=('test', 'test.*')),
