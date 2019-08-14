@@ -41,7 +41,8 @@ def get_extensions():
     # main_file = glob.glob(os.path.join(extensions_dir, 'text_extension.cpp'))
     # source_core = glob.glob(os.path.join(extensions_dir, 'core', '*.cpp'))
 
-    sources = main_file + source_core
+    # sources = main_file + source_core
+    sources = main_file
 
     define_macros = []
     extra_compile_args = {}
