@@ -1,4 +1,5 @@
 import random
+import torch
 import _C
 from contextlib import contextmanager
 from copy import deepcopy

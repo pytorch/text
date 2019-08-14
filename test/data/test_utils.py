@@ -58,6 +58,7 @@ class TestUtils(TorchtextTestCase):
         print('asdf')
         # ref_lines = []
         # test_lines = []
+        import torch
         import _C
         print(_C.__dir__())
         print(_C.x)
