@@ -66,21 +66,6 @@ def get_extensions():
     return ext_modules
 
 
-class clean(distutils.command.clean.clean):
-    def run(self):
-        with open('.gitignore', 'r') as f:
-            ignores = f.read()
-            for wildcard in filter(None, ignores.split('\n')):
-                for filename in glob.glob(wildcard):
-                    try:
-                        os.remove(filename)
-                    except OSError:
-                        shutil.rmtree(filename, ignore_errors=True)
-
-        # It's an old-style class in Python 2.7...
-        distutils.command.clean.clean.run(self)
-
-
 setup_info = dict(
     # Metadata
     name='torchtext',
@@ -97,7 +82,7 @@ setup_info = dict(
     ],
 
     ext_modules=get_extensions(),
-    cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension, 'clean': clean},
+    cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension},
 
     # Package info
     packages=find_packages(exclude=('test', 'test.*')),

@@ -41,6 +41,15 @@ std::vector<std::string> split(const std::string& text, char splitter) {
   return list;
 }
 
+// std::vector<std::string> split(const std::string& text, char splitter) {
+//  std::string token;
+//  std::istringstream ss(text);
+//  std::vector<std::string> res;
+//  while (getline(ss, token, splitter))
+//    res.push_back(token);
+//  return res;
+//}
+
 } // namespace impl
 } // namespace core
 } // namespace text

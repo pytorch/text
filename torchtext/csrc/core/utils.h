@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <torch/torch.h>
 #include <regex>
 #include <vector>
 
