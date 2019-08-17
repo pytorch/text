@@ -3,13 +3,10 @@ import os
 import io
 import re
 import sys
+import glob
 import torch
 from setuptools import setup, find_packages
 from torch.utils.cpp_extension import CppExtension
-
-import glob
-import shutil
-import distutils.command.clean
 
 
 def read(*names, **kwargs):
