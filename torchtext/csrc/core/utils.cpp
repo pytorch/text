@@ -25,29 +25,16 @@ std::vector<std::string> basic_english_normalize(std::string line) {
   return split(line, ' ');
 }
 
-// std::vector<std::string> split(const std::string& text, char splitter) {
-//  std::string string;
-//  std::vector<std::string> list;
-//  size_t previous = 0, current = 0;
-
-//  while (current != std::string::npos) {
-//    current = text.find(splitter, previous);
-//    string = text.substr(previous, current - previous);
-//    if (!string.empty())
-//      list.push_back(string);
-//    previous = current + 1;
-//  }
-
-//  return list;
-//}
-
 std::vector<std::string> split(const std::string& text, char splitter) {
   std::string token;
-  std::istringstream ss(text);
-  std::vector<std::string> res;
-  while (getline(ss, token, splitter))
-    res.push_back(token);
-  return res;
+  std::istringstream stream(text);
+  std::vector<std::string> list;
+
+  while (getline(stream, token, splitter))
+    if (!token.empty())
+      list.push_back(token);
+
+  return list;
 }
 
 } // namespace impl
