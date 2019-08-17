@@ -8,6 +8,9 @@ import torch
 from setuptools import setup, find_packages
 from torch.utils.cpp_extension import CppExtension
 
+import shutil
+import distutils.command.clean
+
 
 def read(*names, **kwargs):
     with io.open(
@@ -61,6 +64,21 @@ def get_extensions():
     ]
 
     return ext_modules
+
+
+class clean(distutils.command.clean.clean):
+    def run(self):
+        with open('.gitignore', 'r') as f:
+            ignores = f.read()
+            for wildcard in filter(None, ignores.split('\n')):
+                for filename in glob.glob(wildcard):
+                    try:
+                        os.remove(filename)
+                    except OSError:
+                        shutil.rmtree(filename, ignore_errors=True)
+
+        # It's an old-style class in Python 2.7...
+        distutils.command.clean.clean.run(self)
 
 
 setup_info = dict(
