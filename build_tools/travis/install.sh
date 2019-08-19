@@ -56,6 +56,7 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     python -m spacy download en
 
     # NLTK data needed for Moses tokenizer
+    pip install certifi  # Install the certifi package
     python -m nltk.downloader perluniprops nonbreaking_prefixes
 
     # PyTorch
