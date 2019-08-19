@@ -130,7 +130,7 @@ Others are planned or a work in progress:
 See the ``test`` directory for examples of dataset usage.
 
 Disclaimer on Datasets
-============
+======================
 
 This is a utility library that downloads and prepares public datasets. We do not host or distribute these datasets, vouch for their quality or fairness, or claim that you have license to use the dataset. It is your responsibility to determine whether you have permission to use the dataset under the dataset's license.
 
