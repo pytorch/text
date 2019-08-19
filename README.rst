@@ -129,7 +129,6 @@ Others are planned or a work in progress:
 
 See the ``test`` directory for examples of dataset usage.
 
-
 Disclaimer on Datasets
 ============
 
