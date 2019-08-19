@@ -55,6 +55,11 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     # SpaCy English models
     python -m spacy download en
 
+# TODO: Add nltk data back once moses tokenizer is back online.
+# https://github.com/alvations/sacremoses/issues/61 
+#    # NLTK data needed for Moses tokenizer
+#    python -m nltk.downloader perluniprops nonbreaking_prefixes
+#
     # PyTorch
     conda install --yes pytorch torchvision -c pytorch
 
