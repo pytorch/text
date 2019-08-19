@@ -55,8 +55,9 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     # SpaCy English models
     python -m spacy download en
 
+    # Disable certificate verify
+    python -c 'import ssl' 'ssl._create_default_https_context = ssl._create_unverified_context' 
     # NLTK data needed for Moses tokenizer
-    pip install certifi  # Install the certifi package
     python -m nltk.downloader perluniprops nonbreaking_prefixes
 
     # PyTorch
