@@ -55,11 +55,6 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     # SpaCy English models
     python -m spacy download en
 
-    # NLTK data needed for Moses tokenizer
-    if [[ "$PYTHON_VERSION" != "2.7" ]]; then
-        python -m nltk.downloader perluniprops nonbreaking_prefixes
-    fi
-
     # PyTorch
     conda install --yes pytorch torchvision -c pytorch
 
