@@ -52,9 +52,11 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure ag_news dataset works properly
 
         datadir = os.path.join(self.project_root, ".data")
-        ag_news_cls = AG_NEWS(root=datadir, ngrams=3)
-        self.assertEqual(len(ag_news_cls.train_examples), 120000)
-        self.assertEqual(len(ag_news_cls.test_examples), 7600)
+        if not os.path.exists(datadir):
+            os.makedirs(datadir)
+        ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
+        self.assertEqual(len(ag_news_train), 120000)
+        self.assertEqual(len(ag_news_test), 7600)
 
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":

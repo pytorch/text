@@ -145,7 +145,7 @@ class TestVocab(TorchtextTestCase):
             self.assertGreater(len(v), n_vocab)
 
             self.assertEqual(v.itos[:6], ['<unk>', '<pad>', '<bos>',
-                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+                                          'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
@@ -267,7 +267,7 @@ class TestVocab(TorchtextTestCase):
             conditional_remove(zip_file)
             for dim in ["25", "50", "100", "200"]:
                 conditional_remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.twitter.27B.{}d.txt".format(dim)))
+                                                "glove.twitter.27B.{}d.txt".format(dim)))
 
     @slow
     def test_vocab_download_charngram_vectors(self):
@@ -355,4 +355,9 @@ class TestVocab(TorchtextTestCase):
             conditional_remove(zip_file)
             for dim in ["50", "100", "200", "300"]:
                 conditional_remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.6B.{}d.txt".format(dim)))
+                                                "glove.6B.{}d.txt".format(dim)))
+
+    def test_has_unk(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        v = vocab.Vocab(c)
+        self.assertEqual(v['not_in_it'], 0)

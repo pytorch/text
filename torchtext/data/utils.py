@@ -1,6 +1,7 @@
 import random
 from contextlib import contextmanager
 from copy import deepcopy
+import re
 
 from functools import partial
 
@@ -13,10 +14,95 @@ def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
 
+_patterns = [r'\'',
+             r'\"',
+             r'\.',
+             r'<br \/>',
+             r',',
+             r'\(',
+             r'\)',
+             r'\!',
+             r'\?',
+             r'\;',
+             r'\:',
+             r'\s+']
+
+_replacements = [' \'  ',
+                 '',
+                 ' . ',
+                 ' ',
+                 ' , ',
+                 ' ( ',
+                 ' ) ',
+                 ' ! ',
+                 ' ? ',
+                 ' ',
+                 ' ',
+                 ' ']
+
+_patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
+
+
+def _basic_english_normalize(line):
+    r"""
+    Basic normalization for a line of text.
+    Normalization includes
+    - lowercasing
+    - complete some basic text normalization for English words as follows:
+        add spaces before and after '\''
+        remove '\"',
+        add spaces before and after '.'
+        replace '<br \/>'with single space
+        add spaces before and after ','
+        add spaces before and after '('
+        add spaces before and after ')'
+        add spaces before and after '!'
+        add spaces before and after '?'
+        replace ';' with single space
+        replace ':' with single space
+        replace multiple spaces with single space
+
+    Returns a list of tokens after splitting on whitespace.
+    """
+
+    line = line.lower()
+    for pattern_re, replaced_str in _patterns_dict:
+        line = pattern_re.sub(replaced_str, line)
+    return line.split()
+
+
 def get_tokenizer(tokenizer, language='en'):
+    r"""
+    Generate tokenizer function for a string sentence.
+
+    Arguments:
+        tokenizer: the name of tokenizer function. If None, it returns split()
+            function, which splits the string sentence by space.
+            If basic_english, it returns _basic_english_normalize() function,
+            which normalize the string first and split by space. If a callable
+            function, it will return the function. If a tokenizer library
+            (e.g. spacy, moses, toktok, revtok, subword), it returns the
+            corresponding library.
+        language: Default en
+
+    Examples:
+        >>> import torchtext
+        >>> from torchtext.data import get_tokenizer
+        >>> tokenizer = get_tokenizer("basic_english")
+        >>> tokens = tokenizer("You can now install TorchText using pip!")
+        >>> tokens
+        >>> ['you', 'can', 'now', 'install', 'torchtext', 'using', 'pip', '!']
+
+    """
+
     # default tokenizer is string.split(), added as a module function for serialization
     if tokenizer is None:
         return _split_tokenizer
+
+    if tokenizer == "basic_english":
+        if language != 'en':
+            raise ValueError("Basic normalization is only available for Enlish(en)")
+        return _basic_english_normalize
 
     # simply return if a function is passed
     if callable(tokenizer):
@@ -114,8 +200,9 @@ def dtype_to_attr(dtype):
     return dtype
 
 
-def generate_ngrams(token_list, ngrams):
-    """Generate a list of token up to ngrams.
+# TODO: Write more tests!
+def ngrams_iterator(token_list, ngrams):
+    """Return an iterator that yields the given tokens and their ngrams.
 
     Arguments:
         token_list: A list of tokens
@@ -123,18 +210,18 @@ def generate_ngrams(token_list, ngrams):
 
     Examples:
         >>> token_list = ['here', 'we', 'are']
-        >>> torchtext.data.utils.generate_ngrams(token_list, 2)
+        >>> list(ngrams_iterator(token_list, 2))
         >>> ['here', 'here we', 'we', 'we are', 'are']
     """
 
-    re_list = []
-    for i in range(0, len(token_list)):
-        x = token_list[i]
-        re_list.append(x)
-        for j in range(i + 1, min(i + ngrams, len(token_list))):
-            x += ' ' + token_list[j]
-            re_list.append(x)
-    return re_list
+    def _get_ngrams(n):
+        return zip(*[token_list[i:] for i in range(n)])
+
+    for x in token_list:
+        yield x
+    for n in range(2, ngrams + 1):
+        for x in _get_ngrams(n):
+            yield ' '.join(x)
 
 
 class RandomShuffler(object):

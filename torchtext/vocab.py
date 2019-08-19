@@ -13,8 +13,8 @@ from tqdm import tqdm
 import tarfile
 
 from .utils import reporthook
-from collections import Counter, OrderedDict
-from itertools import chain
+
+from collections import Counter
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<pad>'],
+    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
@@ -45,8 +45,7 @@ class Vocab(object):
             min_freq: The minimum frequency needed to include a token in the
                 vocabulary. Values less than 1 will be set to 1. Default: 1.
             specials: The list of special tokens (e.g., padding or eos) that
-                will be prepended to the vocabulary in addition to an <unk>
-                token. Default: ['<pad>']
+                will be prepended to the vocabulary. Default: ['<unk'>, '<pad>']
             vectors: One of either the available pretrained vectors
                 or custom pretrained vectors (see Vocab.load_vectors);
                 or a list of aforementioned vectors
@@ -105,6 +104,9 @@ class Vocab(object):
 
     def _default_unk_index(self):
         return self.unk_index
+
+    def __getitem__(self, token):
+        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
 
     def __getstate__(self):
         # avoid picking defaultdict
@@ -216,34 +218,6 @@ class Vocab(object):
                 self.vectors[i] = vectors[wv_index]
             else:
                 self.vectors[i] = unk_init(self.vectors[i])
-
-
-def build_dictionary(dataset, field, data_name, **kwargs):
-    """Construct the Vocab object for the field from a dataset.
-
-    Arguments:
-        dataset: Dataset with the iterable data.
-        field: Field object with the information of the special tokens.
-        data_name: The names of data used to build vocab (e.g. 'text', 'label').
-            It must be the attributes of dataset's examples.
-        Remaining keyword arguments: Passed to the constructor of Vocab.
-
-    Examples:
-        >>> field.vocab = build_vocab(dataset, field, 'text')
-    """
-    counter = Counter()
-    for x in dataset:
-        x = getattr(x, data_name)
-        if not field.sequential:
-            x = [x]
-        try:
-            counter.update(x)
-        except TypeError:
-            counter.update(chain.from_iterable(x.text))
-    specials = list(OrderedDict.fromkeys(
-        tok for tok in [field.unk_token, field.pad_token, field.init_token,
-                        field.eos_token] if tok is not None))
-    return Vocab(counter, specials=specials, **kwargs)
 
 
 class SubwordVocab(Vocab):
@@ -568,3 +542,20 @@ pretrained_aliases = {
     "glove.6B.300d": partial(GloVe, name="6B", dim="300")
 }
 """Mapping from string name to factory function"""
+
+
+def build_vocab_from_iterator(iterator):
+    """
+    Build a Vocab from an iterator.
+
+    Arguments:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+    """
+
+    counter = Counter()
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for tokens in iterator:
+            counter.update(tokens)
+            t.update(1)
+    word_vocab = Vocab(counter)
+    return word_vocab
