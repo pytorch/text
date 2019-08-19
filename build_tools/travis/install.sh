@@ -55,10 +55,10 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
     # SpaCy English models
     python -m spacy download en
 
-    # Disable certificate verify
-    python -c 'import ssl' 'ssl._create_default_https_context = ssl._create_unverified_context' 
     # NLTK data needed for Moses tokenizer
-    python -m nltk.downloader perluniprops nonbreaking_prefixes
+    if [[ "$PYTHON_VERSION" != "2.7" ]]; then
+        python -m nltk.downloader perluniprops nonbreaking_prefixes
+    fi
 
     # PyTorch
     conda install --yes pytorch torchvision -c pytorch
