@@ -21,6 +21,7 @@ class TestUtils(TorchtextTestCase):
             "complex", "punctuation", "."]
 
     # TODO: Remove this once issue was been resolved.
+    # TODO# Add nltk data back in build_tools/travis/install.sh.
     @pytest.mark.skip(reason=("Impractically slow! "
                               "https://github.com/alvations/sacremoses/issues/61"))
     def test_get_tokenizer_moses(self):
