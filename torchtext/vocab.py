@@ -116,7 +116,7 @@ class Vocab(object):
         return attrs
 
     def __setstate__(self, state):
-        if state['unk_index'] is None:
+        if state.get("unk_index", None) is None:
             stoi = defaultdict()
         else:
             stoi = defaultdict(self._default_unk_index)
