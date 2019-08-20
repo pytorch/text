@@ -335,7 +335,7 @@ class TestVocab(TorchtextTestCase):
         # Test whether loading works on models saved in which
         #  the state was not required to have an "unk_index".
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>']) # no unk special
+        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])  # no unk special
         # Mock old vocabulary
         del v.__dict__["unk_index"]
 
