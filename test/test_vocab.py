@@ -331,6 +331,19 @@ class TestVocab(TorchtextTestCase):
         v_loaded = pickle.load(open(pickle_path, "rb"))
         assert v == v_loaded
 
+    def test_serialization_backcompat(self):
+        # Test whether loading works on models saved in which
+        #  the state was not required to have an "unk_index".
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])  # no unk special
+        # Mock old vocabulary
+        del v.__dict__["unk_index"]
+
+        pickle_path = os.path.join(self.test_dir, "vocab.pkl")
+        pickle.dump(v, open(pickle_path, "wb"))
+        v_loaded = pickle.load(open(pickle_path, "rb"))
+        assert v == v_loaded
+
     @slow
     def test_vectors_get_vecs(self):
         vec = GloVe(name='twitter.27B', dim='25')
