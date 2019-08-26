@@ -224,6 +224,14 @@ def ngrams_iterator(token_list, ngrams):
             yield ' '.join(x)
 
 
+def generate_sentencepiece_tokenizer_model(input_filename, vocab_size):
+    import sentencepiece as spm
+    sentencepiece_training_string = '--input=%s --vocab_size=%d --model_prefix=m_user' \
+        % (input_filename, vocab_size)
+    spm.SentencePieceTrainer.train(sentencepiece_training_string)
+    return None
+
+
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""
