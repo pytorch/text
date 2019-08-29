@@ -71,7 +71,7 @@ def _basic_english_normalize(line):
     return line.split()
 
 
-def get_tokenizer(tokenizer, language='en'):
+def get_tokenizer(tokenizer, language='en', spm_name=None):
     r"""
     Generate tokenizer function for a string sentence.
 
@@ -154,6 +154,15 @@ def get_tokenizer(tokenizer, language='en'):
             return partial(revtok.tokenize, decap=True)
         except ImportError:
             print("Please install revtok.")
+            raise
+    elif tokenizer == "sentencepiece" and spm_name is not None:
+        try:
+            import sentencepiece as spm
+            sp_user = spm.SentencePieceProcessor()
+            sp_user.load(spm_name)
+            return sp_user.encode_as_pieces
+        except ImportError:
+            print("Please install sentencepiece.")
             raise
     raise ValueError("Requested tokenizer {}, valid choices are a "
                      "callable that takes a single string as input, "
