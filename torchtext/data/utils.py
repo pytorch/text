@@ -233,11 +233,16 @@ def ngrams_iterator(token_list, ngrams):
             yield ' '.join(x)
 
 
-def generate_sentencepiece_tokenizer_model(input_filename, vocab_size):
+def generate_sentencepiece_tokenizer_model(input_filename, vocab_size,
+                                           model_type="unigram"):
     import sentencepiece as spm
-    sentencepiece_training_string = '--input=%s --vocab_size=%d --model_prefix=m_user' \
-        % (input_filename, vocab_size)
-    spm.SentencePieceTrainer.train(sentencepiece_training_string)
+    spm_training_string = "--input={} \
+                           --vocab_size={} \
+                           --model_prefix=m_user \
+                           --model_type={}".format(input_filename,
+                                                   vocab_size,
+                                                   model_type)
+    spm.SentencePieceTrainer.train(spm_training_string)
     return None
 
 
