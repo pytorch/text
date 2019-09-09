@@ -4,9 +4,11 @@ import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
+from torchtext.data.utils import generate_sentencepiece_tokenizer_model
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
 from tqdm import tqdm
+from os import path
 
 URLS = {
     'AG_NEWS':
@@ -130,7 +132,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_unk=False):
+def _setup_datasets(dataset_name, root='.data', vocab_size=20000, vocab=None, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -140,24 +142,12 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_un
         if fname.endswith('test.csv'):
             test_csv_path = fname
 
-#    if vocab is None:
-#        logging.info('Building Vocab based on {}'.format(train_csv_path))
-#        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
-#    else:
-#        if not isinstance(vocab, Vocab):
-#            raise TypeError("Passed vocabulary is not of type Vocab")
-#    logging.info('Vocab has {} entries'.format(len(vocab)))
-#    logging.info('Creating training data')
-#    train_data, train_labels = _create_data_from_iterator(
-#        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
-#    logging.info('Creating testing data')
-#    test_data, test_labels = _create_data_from_iterator(
-#        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
+    # generate sentencepiece  pretrained tokenizer
+    if not path.exists('m_user.model'):
+        generate_sentencepiece_tokenizer_model(train_csv_path, vocab_size)
 
     train_data, train_labels = _create_data_with_spm("m_user.model", train_csv_path)
     test_data, test_labels = _create_data_with_spm("m_user.model", test_csv_path)
-
-
 
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")

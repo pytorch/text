@@ -53,8 +53,10 @@ if not os.path.isdir('./.data'):
     os.mkdir('./.data')
 #[TODO]
 #train_dataset, test_dataset = text_classification.DATASETS['AG_NEWS'](
+#train_dataset, test_dataset = text_classification.DATASETS['YelpReviewFull'](
+#    root='./.data', ngrams=NGRAMS, vocab=None)
 train_dataset, test_dataset = text_classification.DATASETS['YelpReviewFull'](
-    root='./.data', ngrams=NGRAMS, vocab=None)
+    root='./.data', vocab=None)
 BATCH_SIZE = 16
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
