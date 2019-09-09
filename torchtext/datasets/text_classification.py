@@ -28,23 +28,6 @@ URLS = {
 }
 
 
-def _create_data_with_spm(spm_name, data_path):
-    import sentencepiece as spm
-
-    data = []
-    labels = []
-    sp_user = spm.SentencePieceProcessor()
-    sp_user.load(spm_name)
-    with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            corpus = ' '.join(row[1:])
-            token_ids = sp_user.encode_as_ids(corpus)
-            label = int(row[0]) - 1
-            data.append((label, torch.tensor(token_ids)))
-            labels.append(label)
-    return data, set(labels)
-
 def _csv_iterator(data_path, ngrams, yield_cls=False):
     tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
@@ -140,25 +123,19 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_un
         if fname.endswith('test.csv'):
             test_csv_path = fname
 
-#    if vocab is None:
-#        logging.info('Building Vocab based on {}'.format(train_csv_path))
-#        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
-#    else:
-#        if not isinstance(vocab, Vocab):
-#            raise TypeError("Passed vocabulary is not of type Vocab")
-#    logging.info('Vocab has {} entries'.format(len(vocab)))
-#    logging.info('Creating training data')
-#    train_data, train_labels = _create_data_from_iterator(
-#        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
-#    logging.info('Creating testing data')
-#    test_data, test_labels = _create_data_from_iterator(
-#        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
-
-    train_data, train_labels = _create_data_with_spm("m_user.model", train_csv_path)
-    test_data, test_labels = _create_data_with_spm("m_user.model", test_csv_path)
-
-
-
+    if vocab is None:
+        logging.info('Building Vocab based on {}'.format(train_csv_path))
+        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
+    else:
+        if not isinstance(vocab, Vocab):
+            raise TypeError("Passed vocabulary is not of type Vocab")
+    logging.info('Vocab has {} entries'.format(len(vocab)))
+    logging.info('Creating training data')
+    train_data, train_labels = _create_data_from_iterator(
+        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
+    logging.info('Creating testing data')
+    test_data, test_labels = _create_data_from_iterator(
+        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
     return (TextClassificationDataset(vocab, train_data, train_labels),
