@@ -47,18 +47,6 @@ def _create_data_with_spm(spm_name, data_path):
             labels.append(label)
     return data, set(labels)
 
-def _csv_iterator(data_path, ngrams, yield_cls=False):
-    tokenizer = get_tokenizer("basic_english")
-    with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            tokens = ' '.join(row[1:])
-            tokens = tokenizer(tokens)
-            if yield_cls:
-                yield int(row[0]) - 1, ngrams_iterator(tokens, ngrams)
-            else:
-                yield ngrams_iterator(tokens, ngrams)
-
 
 def _create_data_from_iterator(vocab, iterator, include_unk):
     data = []
@@ -113,7 +101,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         super(TextClassificationDataset, self).__init__()
         self._data = data
         self._labels = labels
-        self._vocab = vocab
 
     def __getitem__(self, i):
         return self._data[i]
@@ -128,11 +115,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def get_labels(self):
         return self._labels
 
-    def get_vocab(self):
-        return self._vocab
 
-
-def _setup_datasets(dataset_name, root='.data', vocab_size=20000, vocab=None, include_unk=False):
+def setup_datasets(dataset_name, root='.data', vocab_size=20000, vocab=None, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -144,6 +128,7 @@ def _setup_datasets(dataset_name, root='.data', vocab_size=20000, vocab=None, in
 
     # generate sentencepiece  pretrained tokenizer
     if not path.exists('m_user.model'):
+        logging.info('Generate SentencePiece pretrained tokenizer...')
         generate_sentencepiece_tokenizer_model(train_csv_path, vocab_size)
 
     train_data, train_labels = _create_data_with_spm("m_user.model", train_csv_path)
