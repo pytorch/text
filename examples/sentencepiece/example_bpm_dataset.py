@@ -2,7 +2,6 @@ import logging
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.data.utils import generate_sentencepiece_tokenizer_model
 from tqdm import tqdm

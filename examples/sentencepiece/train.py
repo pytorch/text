@@ -1,10 +1,8 @@
 import torch
 import torchtext
-import example_bpm_dataset as text_classification
-from model import TextSentiment
 import os
-if not os.path.isdir('./.data'):
-    os.mkdir('./.data')
+import logging
+import argparse
 
 r"""
 This example is similar to the one in examples/text_classification.
@@ -12,25 +10,6 @@ The only difference is the dataset, which applies SentencePiece as encoder.
 The subword method in SentencePiece was tested based on YelpReviewFull and
 we are able to reproduce the results from fastText.
 """
-
-train_dataset, test_dataset = text_classification.setup_datasets('YelpReviewFull', root='.data', vocab_size=20000)
-BATCH_SIZE = 16
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-r"""
-Load the SentencePiece vocab and have the total number of vocab.
-"""
-import sentencepiece as spm
-sp = spm.SentencePieceProcessor()
-sp.Load("m_user.model")
-VOCAB_SIZE = len(sp)
-EMBED_DIM = 32
-NUN_CLASS = 5  # YelpReviewFull
-model = TextSentiment(VOCAB_SIZE, EMBED_DIM, NUN_CLASS).to(device)
-
-
-
 
 def generate_batch(batch):
     label = torch.tensor([entry[0] for entry in batch])
@@ -49,12 +28,12 @@ def generate_batch(batch):
 
 from torch.utils.data import DataLoader
 
-def train_func(sub_train_):
+def train_func(sub_train_, batch_size):
 
     # Train the model
     train_loss = 0
     train_acc = 0
-    data = DataLoader(sub_train_, batch_size=BATCH_SIZE, shuffle=True,
+    data = DataLoader(sub_train_, batch_size=batch_size, shuffle=True,
                       collate_fn=generate_batch)
     for i, (text, offsets, cls) in enumerate(data):
         optimizer.zero_grad()
@@ -71,14 +50,14 @@ def train_func(sub_train_):
     
     return train_loss / len(sub_train_), train_acc / len(sub_train_)
 
-def test(data_):
+def test(test_model, data_, batch_size):
     loss = 0
     acc = 0
-    data = DataLoader(data_, batch_size=BATCH_SIZE, collate_fn=generate_batch)
+    data = DataLoader(data_, batch_size=batch_size, collate_fn=generate_batch)
     for text, offsets, cls in data:
         text, offsets, cls = text.to(device), offsets.to(device), cls.to(device)
         with torch.no_grad():
-            output = model(text, offsets)
+            output = test_model(text, offsets)
             loss = criterion(output, cls)
             loss += loss.item()
             acc += (output.argmax(1) == cls).sum().item()
@@ -88,34 +67,94 @@ def test(data_):
 
 
 
-import time
-from torch.utils.data.dataset import random_split
-N_EPOCHS = 5
-N_EPOCHS = 10
-min_valid_loss = float('inf')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Apply SentencePiece to text classification dataset.')
+    parser.add_argument('--dataset', default='YelpReviewFull',
+                        help='dataset name')
+    parser.add_argument('--num-epochs', type=int, default=10,
+                        help='num epochs (default=10)')
+    parser.add_argument('--embed-dim', type=int, default=32,
+                        help='embed dim. (default=32)')
+    parser.add_argument('--vocab-size', type=int, default=20000,
+                        help='vocab size in sentencepiece model (default=20000)')
+    parser.add_argument('--batch-size', type=int, default=16,
+                        help='batch size (default=16)')
+    parser.add_argument('--split-ratio', type=float, default=0.95,
+                        help='train/valid split ratio (default=0.95)')
+    parser.add_argument('--lr', type=float, default=4.0,
+                        help='learning rate (default=4.0)')
+    parser.add_argument('--lr-gamma', type=float, default=0.8,
+                        help='gamma value for lr (default=0.8)')
+    parser.add_argument('--num-workers', type=int, default=1,
+                        help='num of workers (default=1)')
+    parser.add_argument('--data-directory', default='.data',
+                        help='data directory (default=.data)')
+    parser.add_argument('--logging-level', default='WARNING',
+                        help='logging level (default=WARNING)')
+    args = parser.parse_args()
 
-criterion = torch.nn.CrossEntropyLoss().to(device)
-optimizer = torch.optim.SGD(model.parameters(), lr=4.0)
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.9)
+    r"""
+    Load the dataset
+    """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logging.basicConfig(level=getattr(logging, args.logging_level))
 
-train_len = int(len(train_dataset) * 0.95)
-sub_train_, sub_valid_ =     random_split(train_dataset, [train_len, len(train_dataset) - train_len])
+    if not os.path.exists(args.data_directory):
+        print("Creating directory {}".format(args.data_directory))
+        os.mkdir(args.data_directory)
 
-for epoch in range(N_EPOCHS):
+    import example_bpm_dataset as text_classification
+    train_dataset, test_dataset = text_classification.setup_datasets(args.dataset,
+                                                                     root='.data',
+                                                                     vocab_size=args.vocab_size)
+    from torchtext.datasets.text_classification import LABELS
+    NUN_CLASS = len(LABELS[args.dataset])
 
-    start_time = time.time()
-    train_loss, train_acc = train_func(sub_train_)
-    valid_loss, valid_acc = test(sub_valid_)
+    r"""
+    Load the model
+    """
+    from model import TextSentiment
+    model = TextSentiment(args.vocab_size, args.embed_dim, NUN_CLASS).to(device)
+    best_model = None  # Save the best model for test purpose
+    best_val_loss = float("inf")
 
-    secs = int(time.time() - start_time)
-    mins = secs / 60
-    secs = secs % 60
+    r"""
+    Set up the training loop and train the model
+    """
+    import time
+    from torch.utils.data.dataset import random_split
+    min_valid_loss = float('inf')
 
-    print('Epoch: %d' %(epoch + 1), " | time in %d minutes, %d seconds" %(mins, secs))
-    print(f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
-    print(f'\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
+    criterion = torch.nn.CrossEntropyLoss().to(device)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
+
+    train_len = int(len(train_dataset) * args.split_ratio)
+    sub_train_, sub_valid_ = random_split(train_dataset,
+                                          [train_len, len(train_dataset) - train_len])
+
+    for epoch in range(args.num_epochs):
+
+        start_time = time.time()
+        train_loss, train_acc = train_func(sub_train_, args.batch_size)
+        valid_loss, valid_acc = test(model, sub_valid_, args.batch_size)
+
+        secs = int(time.time() - start_time)
+        mins = secs / 60
+        secs = secs % 60
+
+        print('Epoch: %d' % (epoch + 1), " | time in %d minutes, %d seconds" % (mins,
+                                                                                secs))
+        print(f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
+        print(f'\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
+
+        if valid_loss < best_val_loss:
+            best_val_loss = valid_loss
+            best_model = model
 
 
-print('Checking the results of test dataset...')
-test_loss, test_acc = test(test_dataset)
-print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
+    print('Checking the results of test dataset...')
+    # Use the best model so far for testing
+    test_loss, test_acc = test(best_model, test_dataset, args.batch_size)
+    print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
