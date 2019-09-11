@@ -5,8 +5,6 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.data.utils import generate_sentencepiece_tokenizer_model
-from torchtext.vocab import build_vocab_from_iterator
-from torchtext.vocab import Vocab
 from tqdm import tqdm
 from os import path
 
@@ -63,11 +61,10 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, vocab, data, labels):
+    def __init__(self, data, labels):
         """Initiate text-classification dataset.
 
         Arguments:
-            vocab: Vocabulary object used for dataset.
             data: a list of label/tokens tuple. tokens are a tensor after
                 numericalizing the string tokens. label is an integer.
                 [(label1, tokens1), (label2, tokens2), (label2, tokens3)]
@@ -97,7 +94,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._labels
 
 
-def setup_datasets(dataset_name, root='.data', vocab_size=20000, vocab=None, include_unk=False):
+def setup_datasets(dataset_name, root='.data', vocab_size=20000, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -117,5 +114,5 @@ def setup_datasets(dataset_name, root='.data', vocab_size=20000, vocab=None, inc
 
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
-    return (TextClassificationDataset(vocab, train_data, train_labels),
-            TextClassificationDataset(vocab, test_data, test_labels))
+    return (TextClassificationDataset(train_data, train_labels),
+            TextClassificationDataset(test_data, test_labels))
