@@ -264,7 +264,7 @@ def test(data_):
 import time
 from torch.utils.data.dataset import random_split
 N_EPOCHS = 5
-N_EPOCHS = 8
+N_EPOCHS = 10
 min_valid_loss = float('inf')
 
 criterion = torch.nn.CrossEntropyLoss().to(device)
