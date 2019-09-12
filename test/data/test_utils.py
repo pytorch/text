@@ -4,7 +4,7 @@ import pytest
 from ..common.torchtext_test_case import TorchtextTestCase
 from torchtext.utils import unicode_csv_reader
 import io
-
+import sys
 
 class TestUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
@@ -71,6 +71,8 @@ class TestUtils(TorchtextTestCase):
 
         self.assertEqual(ref_lines, test_lines)
 
+    @pytest.mark.skipif(sys.version_info < (3, 0),
+                        reason="SyntaxError: Non-ASCII character in python 2.7")
     def test_get_tokenizer_sentencepiece(self):
         # Test SentencePiece option, and verify it properly handles punctuation.
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
