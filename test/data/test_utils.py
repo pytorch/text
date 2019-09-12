@@ -70,3 +70,14 @@ class TestUtils(TorchtextTestCase):
                 ref_lines.append(line)
 
         self.assertEqual(ref_lines, test_lines)
+
+    def test_get_tokenizer_sentencepiece(self):
+        # Test SentencePiece option, and verify it properly handles punctuation.
+        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        model_path = 'test/asset/spm_example.model'
+        tokenizer = data.get_tokenizer("sentencepiece", spm_name=model_path)
+        
+        ref_results = ['▁Sent', 'ence', 'P', 'ie', 'ce', '▁is', '▁an', '▁un',
+                       'super', 'vis', 'ed', '▁text', '▁to', 'ken', 'izer', '▁and',
+                       '▁de', 'to', 'ken', 'izer']
+        self.assertEqual(tokenizer(test_sample), ref_results)

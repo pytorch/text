@@ -27,7 +27,7 @@ def generate_batch(batch):
 from torch.utils.data import DataLoader
 
 
-def train_func(sub_train_, batch_size):
+def train_func(sub_train_):
 
     # Train the model
     train_loss = 0
@@ -50,7 +50,7 @@ def train_func(sub_train_, batch_size):
     return train_loss / len(sub_train_), train_acc / len(sub_train_)
 
 
-def test(test_model, data_, batch_size):
+def test(test_model, data_):
     loss = 0
     acc = 0
     data = DataLoader(data_, batch_size=batch_size, collate_fn=generate_batch)
@@ -70,9 +70,10 @@ if __name__ == "__main__":
         description='Apply SentencePiece to text classification dataset.')
     parser.add_argument('--dataset', default='YelpReviewFull',
                         help='dataset name')
-    parser.add_argument('--num-epochs', type=int, default=7,
-                        help='num epochs (default=7)')
-    parser.add_argument('--embed-dim', type=int, default=32,
+    parser.add_argument('--num-epochs', type=int, default=10,
+                        help='num epochs (default=10)')
+#    parser.add_argument('--embed-dim', type=int, default=32,
+    parser.add_argument('--embed-dim', type=int, default=64,
                         help='embed dim. (default=32)')
     parser.add_argument('--vocab-size', type=int, default=20000,
                         help='vocab size in sentencepiece model (default=20000)')
@@ -108,6 +109,7 @@ if __name__ == "__main__":
                                                                vocab_size=args.vocab_size)
     from torchtext.datasets.text_classification import LABELS
     NUN_CLASS = len(LABELS[args.dataset])
+    batch_size = args.batch_size
 
     r"""
     Load the model
@@ -135,8 +137,8 @@ if __name__ == "__main__":
     for epoch in range(args.num_epochs):
 
         start_time = time.time()
-        train_loss, train_acc = train_func(sub_train_, args.batch_size)
-        valid_loss, valid_acc = test(model, sub_valid_, args.batch_size)
+        train_loss, train_acc = train_func(sub_train_)
+        valid_loss, valid_acc = test(model, sub_valid_)
 
         secs = int(time.time() - start_time)
         mins = secs / 60
@@ -153,5 +155,5 @@ if __name__ == "__main__":
 
     print('Checking the results of test dataset...')
     # Use the best model so far for testing
-    test_loss, test_acc = test(best_model, test_data, args.batch_size)
+    test_loss, test_acc = test(best_model, test_data)
     print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
