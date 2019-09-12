@@ -83,12 +83,14 @@ class TestUtils(TorchtextTestCase):
         ref_results = ['_Sent', 'ence', 'P', 'ie', 'ce', '_is', '_an', '_un',
                        'super', 'vis', 'ed', '_text', '_to', 'ken', 'izer', '_and',
                        '_de', 'to', 'ken', 'izer']
+
         self.assertEqual(tokenizer(test_sample), ref_results)
 
     def test_generate_sp_tokenizer(self):
         # Test the function to train a sentencepiece tokenizer
         from torchtext.data.utils import generate_sp_tokenizer
         import sentencepiece as spm
+        import os
 
         data_path = 'test/asset/text_normalization_ag_news_test.csv'
         generate_sp_tokenizer(data_path,
@@ -97,4 +99,25 @@ class TestUtils(TorchtextTestCase):
 
         sp_user = spm.SentencePieceProcessor()
         sp_user.Load('spm_user.model')
+
         self.assertEqual(len(sp_user), 23456)
+
+        if os.path.isfile('spm_user.model'):
+            os.remove('spm_user.model')
+        if os.path.isfile('spm_user.vocab'):
+            os.remove('spm_user.vocab')
+
+    def test_spm_data_generator(self):
+        # Test the function to generate data with sentencepiece tokenizer
+        from torchtext.data.utils import spm_data_generator
+
+        iterator = ['Generic data loaders, abstractions, and iterators',
+                    'Pre-built loaders for common NLP datasets']
+        model_path = 'test/asset/spm_example.model'
+
+        results = spm_data_generator(model_path, iterator)
+
+        self.assertEqual(results, [[15122, 6030, 13208, 4503, 755, 5, 7640, 9383,
+                                    4703, 13, 5, 6, 15, 298, 4105, 13],
+                                   [5212, 47, 3106, 1782, 20, 4503, 755, 18,
+                                    2578, 1463, 1524, 981, 13208, 5116, 13]])
