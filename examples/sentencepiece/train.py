@@ -15,9 +15,6 @@ def generate_batch(batch):
     label = torch.tensor([entry[0] for entry in batch])
     text = [entry[1] for entry in batch]
     offsets = [0] + [len(entry) for entry in text]
-    # torch.Tensor.cumsum returns the cumulative sum
-    # of elements in the dimension dim.
-    # torch.Tensor([1.0, 2.0, 3.0]).cumsum(dim=0)
 
     offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
     text = torch.cat(text)
@@ -50,7 +47,7 @@ def train_func(sub_train_):
     return train_loss / len(sub_train_), train_acc / len(sub_train_)
 
 
-def test(test_model, data_):
+def test_func(test_model, data_):
     loss = 0
     acc = 0
     data = DataLoader(data_, batch_size=batch_size, collate_fn=generate_batch)
@@ -138,16 +135,20 @@ if __name__ == "__main__":
 
         start_time = time.time()
         train_loss, train_acc = train_func(sub_train_)
-        valid_loss, valid_acc = test(model, sub_valid_)
+        valid_loss, valid_acc = test_func(model, sub_valid_)
 
         secs = int(time.time() - start_time)
         mins = secs / 60
         secs = secs % 60
 
-        print('Epoch: %d' % (epoch + 1),
-              ' | time in %d minutes, %d seconds' % (mins, secs))
-        print('\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
-        print('\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
+#        print('Epoch: %d' % (epoch + 1),
+#              ' | time in %d minutes, %d seconds' % (mins, secs))
+#        print('\tLoss:\t %.4f(train)\t|\tAcc:\t %.1f'
+#              % (train_loss, train_acc * 100), '%')
+#        print('\tLoss:\t %.4f(valid)\t|\tAcc:\t %.1f'
+#              % (valid_loss, valid_acc * 100), '%')
+        print(f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
+        print(f'\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
 
         if valid_loss < best_val_loss:
             best_val_loss = valid_loss
@@ -155,5 +156,5 @@ if __name__ == "__main__":
 
     print('Checking the results of test dataset...')
     # Use the best model so far for testing
-    test_loss, test_acc = test(best_model, test_data)
+    test_loss, test_acc = test_func(best_model, test_data)
     print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
