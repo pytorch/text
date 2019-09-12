@@ -1,5 +1,4 @@
 import torch
-import torchtext
 import os
 import logging
 import argparse
@@ -11,6 +10,7 @@ The subword method in SentencePiece was tested based on YelpReviewFull and
 we are able to reproduce the results from fastText.
 """
 
+
 def generate_batch(batch):
     label = torch.tensor([entry[0] for entry in batch])
     text = [entry[1] for entry in batch]
@@ -18,15 +18,14 @@ def generate_batch(batch):
     # torch.Tensor.cumsum returns the cumulative sum
     # of elements in the dimension dim.
     # torch.Tensor([1.0, 2.0, 3.0]).cumsum(dim=0)
-    
+
     offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
     text = torch.cat(text)
     return text, offsets, label
 
 
-
-
 from torch.utils.data import DataLoader
+
 
 def train_func(sub_train_, batch_size):
 
@@ -47,8 +46,9 @@ def train_func(sub_train_, batch_size):
 
     # Adjust the learning rate
     scheduler.step()
-    
+
     return train_loss / len(sub_train_), train_acc / len(sub_train_)
+
 
 def test(test_model, data_, batch_size):
     loss = 0
@@ -65,15 +65,13 @@ def test(test_model, data_, batch_size):
     return loss / len(data_), acc / len(data_)
 
 
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Apply SentencePiece to text classification dataset.')
     parser.add_argument('--dataset', default='YelpReviewFull',
                         help='dataset name')
-    parser.add_argument('--num-epochs', type=int, default=10,
-                        help='num epochs (default=10)')
+    parser.add_argument('--num-epochs', type=int, default=7,
+                        help='num epochs (default=7)')
     parser.add_argument('--embed-dim', type=int, default=32,
                         help='embed dim. (default=32)')
     parser.add_argument('--vocab-size', type=int, default=20000,
@@ -105,9 +103,9 @@ if __name__ == "__main__":
         os.mkdir(args.data_directory)
 
     import example_bpm_dataset as text_classification
-    train_dataset, test_dataset = text_classification.setup_datasets(args.dataset,
-                                                                     root='.data',
-                                                                     vocab_size=args.vocab_size)
+    train_data, test_data = text_classification.setup_datasets(args.dataset,
+                                                               root='.data',
+                                                               vocab_size=args.vocab_size)
     from torchtext.datasets.text_classification import LABELS
     NUN_CLASS = len(LABELS[args.dataset])
 
@@ -130,9 +128,9 @@ if __name__ == "__main__":
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=args.lr_gamma)
 
-    train_len = int(len(train_dataset) * args.split_ratio)
-    sub_train_, sub_valid_ = random_split(train_dataset,
-                                          [train_len, len(train_dataset) - train_len])
+    train_len = int(len(train_data) * args.split_ratio)
+    sub_train_, sub_valid_ = random_split(train_data,
+                                          [train_len, len(train_data) - train_len])
 
     for epoch in range(args.num_epochs):
 
@@ -153,8 +151,7 @@ if __name__ == "__main__":
             best_val_loss = valid_loss
             best_model = model
 
-
     print('Checking the results of test dataset...')
     # Use the best model so far for testing
-    test_loss, test_acc = test(best_model, test_dataset, args.batch_size)
+    test_loss, test_acc = test(best_model, test_data, args.batch_size)
     print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
