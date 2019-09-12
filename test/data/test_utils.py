@@ -77,9 +77,12 @@ class TestUtils(TorchtextTestCase):
         model_path = 'test/asset/spm_example.model'
         tokenizer = data.get_tokenizer("sentencepiece", spm_name=model_path)
 
-        ref_results = ['▁Sent', 'ence', 'P', 'ie', 'ce', '▁is', '▁an', '▁un',
-                       'super', 'vis', 'ed', '▁text', '▁to', 'ken', 'izer', '▁and',
-                       '▁de', 'to', 'ken', 'izer']
+#        ref_results = ['▁Sent', 'ence', 'P', 'ie', 'ce', '▁is', '▁an', '▁un',
+#                       'super', 'vis', 'ed', '▁text', '▁to', 'ken', 'izer', '▁and',
+#                       '▁de', 'to', 'ken', 'izer']
+        ref_results = ['_Sent', 'ence', 'P', 'ie', 'ce', '_is', '_an', '_un',
+                       'super', 'vis', 'ed', '_text', '_to', 'ken', 'izer', '_and',
+                       '_de', 'to', 'ken', 'izer']
         self.assertEqual(tokenizer(test_sample), ref_results)
 
     def test_generate_sp_tokenizer(self):

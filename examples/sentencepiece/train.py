@@ -144,9 +144,10 @@ if __name__ == "__main__":
         mins = secs / 60
         secs = secs % 60
 
-        print('Epoch: %d' % (epoch + 1), ' | time in %d minutes, %d seconds' % (mins, secs))
-        print(f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
-        print(f'\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
+        print('Epoch: %d' % (epoch + 1),
+              ' | time in %d minutes, %d seconds' % (mins, secs))
+        print('\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
+        print('\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
 
         if valid_loss < best_val_loss:
             best_val_loss = valid_loss

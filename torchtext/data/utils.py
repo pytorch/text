@@ -300,6 +300,7 @@ def spm_data_generator(spm_name, iterator):
         data.append(token_ids)
     return data
 
+
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""
