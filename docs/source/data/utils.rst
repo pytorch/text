@@ -11,3 +11,13 @@ torchtext.data.utils
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: ngrams_iterator 
+
+:hidden:`generate_sp_tokenizer`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: generate_sp_tokenizer
+
+:hidden:`spm_data_generator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: spm_data_generator
