@@ -1,3 +1,4 @@
+# coding: utf-8
 import six
 import torchtext.data as data
 import pytest
