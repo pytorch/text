@@ -157,4 +157,6 @@ if __name__ == "__main__":
     print('Checking the results of test dataset...')
     # Use the best model so far for testing
     test_loss, test_acc = test_func(best_model, test_data)
-    print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
+    print('\tLoss:\t %.4f(valid)\t|\tAcc:\t %.1f'
+          % (test_loss, test_acc * 100), '%')
+#    print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
