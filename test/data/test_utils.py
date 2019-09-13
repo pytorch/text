@@ -1,4 +1,3 @@
-# coding: utf-8
 import six
 import torchtext.data as data
 import pytest
@@ -73,17 +72,16 @@ class TestUtils(TorchtextTestCase):
 
         self.assertEqual(ref_lines, test_lines)
 
-    @pytest.mark.skipif(sys.version_info < (3, 0),
-                        reason="SyntaxError: Non-ASCII character in python 2.7")
     def test_get_tokenizer_sentencepiece(self):
         # Test SentencePiece option, and verify it properly handles punctuation.
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
         tokenizer = data.get_tokenizer("sentencepiece", spm_name=model_path)
 
-        ref_results = ['▁Sent', 'ence', 'P', 'ie', 'ce', '▁is', '▁an', '▁un',
-                       'super', 'vis', 'ed', '▁text', '▁to', 'ken', 'izer', '▁and',
-                       '▁de', 'to', 'ken', 'izer']
+        ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+                       '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+                       '\u2581to', 'ken', 'izer', '\u2581and',
+                       '\u2581de', 'to', 'ken', 'izer']
 
         self.assertEqual(tokenizer(test_sample), ref_results)
 
