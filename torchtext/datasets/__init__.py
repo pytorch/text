@@ -1,5 +1,5 @@
 from .language_modeling import LanguageModelingDataset, WikiText2, WikiText103, PennTreebank  # NOQA
-from .nli import SNLI, MultiNLI
+from .nli import SNLI, MultiNLI, XNLI
 from .sst import SST
 from .translation import TranslationDataset, Multi30k, IWSLT, WMT14  # NOQA
 from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking  # NOQA
@@ -15,6 +15,7 @@ from .text_classification import TextClassificationDataset, \
 __all__ = ['LanguageModelingDataset',
            'SNLI',
            'MultiNLI',
+           'XNLI',
            'SST',
            'TranslationDataset',
            'Multi30k',
