@@ -4,29 +4,11 @@ import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import generate_sp_tokenizer
 from os import path
-
-URLS = {
-    'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
-    'SogouNews':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
-    'DBpedia':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k',
-    'YelpReviewPolarity':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg',
-    'YelpReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0',
-    'YahooAnswers':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU',
-    'AmazonReviewPolarity':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
-    'AmazonReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
-}
+from torchtext.datasets.text_classification import URLS
+import sentencepiece as spm
 
 
 def _create_data_with_spm(spm_name, data_path):
-    import sentencepiece as spm
 
     data = []
     labels = []
@@ -44,33 +26,9 @@ def _create_data_with_spm(spm_name, data_path):
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
-    """Defines an abstract text classification datasets.
-       Currently, we only support the following datasets:
-
-             - AG_NEWS
-             - SogouNews
-             - DBpedia
-             - YelpReviewPolarity
-             - YelpReviewFull
-             - YahooAnswers
-             - AmazonReviewPolarity
-             - AmazonReviewFull
-
-    """
-
     def __init__(self, data, labels):
         """Initiate text-classification dataset.
-
-        Arguments:
-            data: a list of label/tokens tuple. tokens are a tensor after
-                numericalizing the string tokens. label is an integer.
-                [(label1, tokens1), (label2, tokens2), (label2, tokens3)]
-            label: a set of the labels.
-                {label1, label2}
-
-        Examples:
-            See the examples in examples/text_classification/
-
+           The original one is here (torchtext/datasets/text_classification.py).
         """
 
         super(TextClassificationDataset, self).__init__()

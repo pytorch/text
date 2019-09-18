@@ -2,6 +2,12 @@ import torch
 import os
 import logging
 import argparse
+from torch.utils.data import DataLoader
+import example_bpm_dataset as text_classification
+import time
+from torch.utils.data.dataset import random_split
+from torchtext.datasets.text_classification import LABELS
+from model import TextSentiment
 
 r"""
 This example is similar to the one in examples/text_classification.
@@ -19,9 +25,6 @@ def generate_batch(batch):
     offsets = torch.tensor(offsets[:-1]).cumsum(dim=0)
     text = torch.cat(text)
     return text, offsets, label
-
-
-from torch.utils.data import DataLoader
 
 
 def train_func(sub_train_):
@@ -69,7 +72,6 @@ if __name__ == "__main__":
                         help='dataset name')
     parser.add_argument('--num-epochs', type=int, default=10,
                         help='num epochs (default=10)')
-#    parser.add_argument('--embed-dim', type=int, default=32,
     parser.add_argument('--embed-dim', type=int, default=64,
                         help='embed dim. (default=32)')
     parser.add_argument('--vocab-size', type=int, default=20000,
@@ -100,27 +102,22 @@ if __name__ == "__main__":
         print("Creating directory {}".format(args.data_directory))
         os.mkdir(args.data_directory)
 
-    import example_bpm_dataset as text_classification
     train_data, test_data = text_classification.setup_datasets(args.dataset,
                                                                root='.data',
                                                                vocab_size=args.vocab_size)
-    from torchtext.datasets.text_classification import LABELS
-    NUN_CLASS = len(LABELS[args.dataset])
+    NUM_CLASS = len(LABELS[args.dataset])
     batch_size = args.batch_size
 
     r"""
     Load the model
     """
-    from model import TextSentiment
-    model = TextSentiment(args.vocab_size, args.embed_dim, NUN_CLASS).to(device)
+    model = TextSentiment(args.vocab_size, args.embed_dim, NUM_CLASS).to(device)
     best_model = None  # Save the best model for test purpose
     best_val_loss = float("inf")
 
     r"""
     Set up the training loop and train the model
     """
-    import time
-    from torch.utils.data.dataset import random_split
     min_valid_loss = float('inf')
 
     criterion = torch.nn.CrossEntropyLoss().to(device)
@@ -147,8 +144,6 @@ if __name__ == "__main__":
               % (train_loss, train_acc * 100), '%')
         print('\tLoss:\t %.4f(valid)\t|\tAcc:\t %.1f'
               % (valid_loss, valid_acc * 100), '%')
-#        print(f'\tLoss: {train_loss:.4f}(train)\t|\tAcc: {train_acc * 100:.1f}%(train)')
-#        print(f'\tLoss: {valid_loss:.4f}(valid)\t|\tAcc: {valid_acc * 100:.1f}%(valid)')
 
         if valid_loss < best_val_loss:
             best_val_loss = valid_loss
@@ -159,4 +154,3 @@ if __name__ == "__main__":
     test_loss, test_acc = test_func(best_model, test_data)
     print('\tLoss:\t %.4f(valid)\t|\tAcc:\t %.1f'
           % (test_loss, test_acc * 100), '%')
-#    print(f'\tLoss: {test_loss:.4f}(test)\t|\tAcc: {test_acc * 100:.1f}%(test)')
