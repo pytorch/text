@@ -1,8 +1,4 @@
-import torch
 import sentencepiece as spm
-
-
-__all__ = ["SentencePieceTransform"]
 
 
 class SentencePieceTransform(object):

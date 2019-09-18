@@ -6,7 +6,7 @@ from .iterator import (batch, BucketIterator, Iterator, BPTTIterator,
                        pool)
 from .pipeline import Pipeline
 from .utils import get_tokenizer, interleave_keys
-from .transforms import *
+from .transforms import SentencePieceTransform
 
 __all__ = ["Batch",
            "Dataset", "TabularDataset",
@@ -16,4 +16,5 @@ __all__ = ["Batch",
            "batch", "BucketIterator", "Iterator", "BPTTIterator",
            "pool",
            "Pipeline",
-           "get_tokenizer", "interleave_keys"]
+           "get_tokenizer", "interleave_keys",
+           "SentencePieceTransform"]
