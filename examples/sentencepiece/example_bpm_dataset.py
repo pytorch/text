@@ -6,19 +6,18 @@ from torchtext.data.utils import generate_sp_tokenizer
 from os import path
 from torchtext.datasets.text_classification import URLS
 import sentencepiece as spm
-
+from torchtext.data.transforms import SentencePieceTransform
 
 def _create_data_with_spm(spm_name, data_path):
 
     data = []
     labels = []
-    sp_user = spm.SentencePieceProcessor()
-    sp_user.load(spm_name)
+    sp_user = SentencePieceTransform(spm_name)
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
             corpus = ' '.join(row[1:])
-            token_ids = sp_user.encode_as_ids(corpus)
+            token_ids = sp_user(corpus)
             label = int(row[0]) - 1
             data.append((label, torch.tensor(token_ids)))
             labels.append(label)
