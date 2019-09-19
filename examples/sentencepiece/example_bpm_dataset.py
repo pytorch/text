@@ -5,7 +5,6 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.data.utils import generate_sp_tokenizer
 from os import path
 from torchtext.datasets.text_classification import URLS
-import sentencepiece as spm
 from torchtext.data.transforms import SentencePieceTransform
 
 
