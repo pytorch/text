@@ -91,18 +91,3 @@ class TestUtils(TorchtextTestCase):
             os.remove('spm_user.model')
         if os.path.isfile('spm_user.vocab'):
             os.remove('spm_user.vocab')
-
-    def test_spm_data_generator(self):
-        # Test the function to generate data with sentencepiece tokenizer
-        from torchtext.data.utils import spm_data_generator
-
-        iterator = ['Generic data loaders, abstractions, and iterators',
-                    'Pre-built loaders for common NLP datasets']
-        model_path = 'test/asset/spm_example.model'
-
-        results = spm_data_generator(model_path, iterator)
-
-        self.assertEqual(results, [[15122, 6030, 13208, 4503, 755, 5, 7640, 9383,
-                                    4703, 13, 5, 6, 15, 298, 4105, 13],
-                                   [5212, 47, 3106, 1782, 20, 4503, 755, 18,
-                                    2578, 1463, 1524, 981, 13208, 5116, 13]])

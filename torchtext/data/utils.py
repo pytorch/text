@@ -261,37 +261,6 @@ def generate_sp_tokenizer(filename, vocab_size=20000,
     return None
 
 
-def spm_data_generator(spm_name, iterator):
-    """Tokenize and numericalize text sentences with SentencePiece
-       tokenizer and a data iterator.
-
-    Arguments:
-        spm_name: the filename of the sentencepiece model.
-        iterator: an iterator returns the text sentences.
-
-    Outputs:
-        data: a list of integer lists saving the numericalized tokens.
-
-    Examples:
-        >>> from torchtext.data.utils import spm_data_generator
-        >>> iterator = ['Generic data loaders, abstractions, and iterators',
-        >>>             'Pre-built loaders for common NLP datasets']
-        >>> spm_data_generator('spm_user.model', iterator)
-        >>> [[3046, 7706, 319, 14246, 174, 5, 4838, 4, 18995, 4, 5, 14, 41, 86, 6106],
-        >>>  [3493, 15, 14528, 14246, 174, 18, 3054, 3397, 264, 319, 17493]]
-    """
-
-    import sentencepiece as spm
-    sp_user = spm.SentencePieceProcessor()
-    sp_user.load(spm_name)
-
-    data = []
-    for corpus in iterator:
-        token_ids = sp_user.encode_as_ids(corpus)
-        data.append(token_ids)
-    return data
-
-
 class RandomShuffler(object):
     """Use random functions while keeping track of the random state to make it
     reproducible and deterministic."""
