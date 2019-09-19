@@ -7,6 +7,7 @@ import tarfile
 import logging
 import re
 import sys
+import zipfile
 
 
 def reporthook(t):
@@ -72,10 +73,11 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
         logging.info('File {} downloaded.'.format(path))
         return path
 
-    filename = None
-    if path is not None:
+    if path is None:
+        _, filename = os.path.split(url)
+    else:
         root, filename = os.path.split(path)
-
+ 
     if not os.path.exists(root):
         raise RuntimeError(
             "Download directory {} does not exist. "
@@ -84,6 +86,9 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
         return _process_response(response, root, filename)
+    else:
+        #google drive links get filename from google drive
+        filename = None
 
     logging.info('Downloading from Google Drive; may take a few minutes')
     confirm_token = None
@@ -144,14 +149,13 @@ def utf_8_encoder(unicode_csv_data):
         yield line.encode('utf-8')
 
 
-def extract_archive(from_path, to_path=None, overwrite=False, archive='tar'):
+def extract_archive(from_path, to_path=None, overwrite=False):
     """Extract archive.
 
     Arguments:
         from_path: the path of the archive.
         to_path: the root path of the extraced files (directory of from_path)
         overwrite: overwrite existing files (False)
-        archive: the archive format to extract (tar)
 
     Returns:
         List of paths to extracted files even if not overwritten.
@@ -163,22 +167,38 @@ def extract_archive(from_path, to_path=None, overwrite=False, archive='tar'):
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
     """
+
     if to_path is None:
         to_path = os.path.dirname(from_path)
 
-    if archive != 'tar':
-        raise NotImplementedError("We currently only support tar achives.")
-
-    logging.info('Opening tar file {}.'.format(from_path))
-    with tarfile.open(from_path, 'r') as tar:
-        files = []
-        for file_ in tar:
-            file_path = os.path.join(to_path, file_.name)
-            if file_.isfile():
-                files.append(file_path)
+    if from_path.endswith(('.tar.gz', '.tgz')):
+        logging.info('Opening tar file {}.'.format(from_path))
+        with tarfile.open(from_path, 'r') as tar:
+            files = []
+            for file_ in tar:
+                file_path = os.path.join(to_path, file_.name)
+                if file_.isfile():
+                    files.append(file_path)
+                    if os.path.exists(file_path):
+                        logging.info('{} already extracted.'.format(file_path))
+                        if not overwrite:
+                            continue
+                tar.extract(file_, to_path)
+            return files
+    
+    elif from_path.endswith('.zip'):
+        assert zipfile.is_zipfile(from_path), from_path
+        logging.info('Opening zip file {}.'.format(from_path))
+        with zipfile.ZipFile(from_path, 'r') as zfile:
+            files = zfile.namelist()
+            for file_ in files:
+                file_path = os.path.join(to_path, file_)
                 if os.path.exists(file_path):
                     logging.info('{} already extracted.'.format(file_path))
                     if not overwrite:
                         continue
-            tar.extract(file_, to_path)
+                zfile.extract(file_, to_path)
         return files
+
+    else:
+        raise NotImplementedError("We currently only support tar.gz, .tgz and zip achives.")
