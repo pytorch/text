@@ -4,7 +4,7 @@ import sentencepiece as spm
 
 class TestUtils(TorchtextTestCase):
     def test_sentencepiece_encode_as_ids(self):
-        from torchtext.data.functional import sentencepiece_encode_as_pieces
+        from torchtext.data.functional import sentencepiece_encode_as_ids
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
         sp_model = spm.SentencePieceProcessor()
@@ -13,7 +13,7 @@ class TestUtils(TorchtextTestCase):
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
                        144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
 
-        self.assertEqual(sentencepiece_encode_as_pieces(sp_model, test_sample),
+        self.assertEqual(sentencepiece_encode_as_ids(sp_model, test_sample),
                          ref_results)
 
     def test_sentencepiece_encode_as_pieces(self):
