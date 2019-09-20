@@ -41,10 +41,10 @@ _patterns = [(r'<.*>', ''),
              (r'M', 'm'), (r'N', 'n'), (r'O', 'o'), (r'P', 'p'), (r'Q', 'q'), (r'R', 'r'),
              (r'S', 's'), (r'T', 't'), (r'U', 'u'), (r'V', 'v'), (r'W', 'w'), (r'X', 'x'),
              (r'Y', 'y'), (r'Z', 'z'),
-             (r'0', 'zero'), (r'1', 'one'), (r'2', 'two'),
-             (r'3', 'three'), (r'4', 'four'), (r'5', 'five'),
-             (r'6', 'six'), (r'7', 'seven'), (r'8', 'eight'),
-             (r'9', 'nine'),
+             (r'0', ' zero '), (r'1', ' one '), (r'2', ' two '),
+             (r'3', ' three '), (r'4', ' four '), (r'5', ' five '),
+             (r'6', ' six '), (r'7', ' seven '), (r'8', ' eight '),
+             (r'9', ' nine '),
              (r'[^0-9a-zA-Z\n]+', ' '),
              (r'\n ', ''),
              (r'\n\s*\n', '\n'),
@@ -120,8 +120,10 @@ def enwik9_normalize(line):
 
 #getLines(20, 5)
 buffer_lines = []
-with open("enwik9", 'r') as f1:
-    with open("NORMAL_enwik9.txt", 'w') as f2:
+#with open("enwik9", 'r') as f1:
+#    with open("NORMAL_enwik9.txt", 'w') as f2:
+with open("enwik9_80000.txt", 'r') as f1:
+    with open("NORMAL_enwik9_80000.txt", 'w') as f2:
 #        t1, t2, t3, t4, t5 = 0.0, 0.0, 0.0, 0.0, 0.0
         while True:
 #        for _i in range(80000):
