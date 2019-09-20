@@ -1,6 +1,6 @@
-import torch
 import torch.nn as nn
 import sentencepiece as spm
+from .functional import sentencepiece_encode_as_ids
 
 
 class SentencePieceTransform(nn.Module):
@@ -30,4 +30,4 @@ class SentencePieceTransform(nn.Module):
             output: a list of integers based on SentencePiece model.
         """
 
-        return self.sp_model.EncodeAsIds(txt_str)
+        return sentencepiece_encode_as_ids(self.sp_model, txt_str)
