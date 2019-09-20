@@ -16,8 +16,3 @@ torchtext.data.utils
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: generate_sp_tokenizer
-
-:hidden:`spm_data_generator`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: spm_data_generator
