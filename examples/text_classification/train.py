@@ -118,7 +118,7 @@ if __name__ == "__main__":
         description='Train a text classification model on text classification datasets.')
     parser.add_argument('dataset', choices=text_classification.DATASETS)
     parser.add_argument('--num-epochs', type=int, default=5,
-                        help='num epochs (default=3)')
+                        help='num epochs (default=5)')
     parser.add_argument('--embed-dim', type=int, default=32,
                         help='embed dim. (default=32)')
     parser.add_argument('--batch-size', type=int, default=16,
@@ -139,7 +139,8 @@ if __name__ == "__main__":
                         help='data directory (default=.data)')
     parser.add_argument('--dictionary',
                         help='path to save vocab')
-    parser.add_argument('--save-model-path')
+    parser.add_argument('--save-model-path',
+                        help='path for saving model')
     parser.add_argument('--logging-level', default='WARNING',
                         help='logging level (default=WARNING)')
     args = parser.parse_args()

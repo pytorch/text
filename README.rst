@@ -4,8 +4,8 @@
 .. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
 
-.. image:: http://readthedocs.org/projects/torchtext/badge/?version=latest
-    :target: http://torchtext.readthedocs.io/en/latest/?badge=latest
+.. image:: https://img.shields.io/badge/dynamic/json.svg?label=docs&url=https%3A%2F%2Fpypi.org%2Fpypi%2Ftorchtext%2Fjson&query=%24.info.version&colorB=brightgreen&prefix=v
+    :target: https://pytorch.org/text/
 
 torchtext
 +++++++++
@@ -40,7 +40,7 @@ Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_
 Documentation
 =============
 
-Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`_.
+Find the documentation `here <https://pytorch.org/text/>`_.
 
 Data
 ====
