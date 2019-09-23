@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser.add_argument('--lr', type=float, default=4.0,
                         help='learning rate (default=4.0)')
     parser.add_argument('--lr-gamma', type=float, default=0.8,
-                        help='gamma value for lr (default=0.8)')
+                        help='lr decayed by gamma every step (default=0.8)')
     parser.add_argument('--num-workers', type=int, default=1,
                         help='num of workers (default=1)')
     parser.add_argument('--data-directory', default='.data',
