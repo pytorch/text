@@ -59,4 +59,3 @@ class TestUtils(TorchtextTestCase):
             os.remove('spm_user.model')
         if os.path.isfile('spm_user.vocab'):
             os.remove('spm_user.vocab')
-
