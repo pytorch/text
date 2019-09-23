@@ -70,24 +70,3 @@ class TestUtils(TorchtextTestCase):
                 ref_lines.append(line)
 
         self.assertEqual(ref_lines, test_lines)
-
-    def test_generate_sp_tokenizer(self):
-        # Test the function to train a sentencepiece tokenizer
-        from torchtext.data.utils import generate_sp_tokenizer
-        import sentencepiece as spm
-        import os
-
-        data_path = 'test/asset/text_normalization_ag_news_test.csv'
-        generate_sp_tokenizer(data_path,
-                              vocab_size=23456,
-                              model_prefix='spm_user')
-
-        sp_user = spm.SentencePieceProcessor()
-        sp_user.Load('spm_user.model')
-
-        self.assertEqual(len(sp_user), 23456)
-
-        if os.path.isfile('spm_user.model'):
-            os.remove('spm_user.model')
-        if os.path.isfile('spm_user.vocab'):
-            os.remove('spm_user.vocab')

@@ -16,3 +16,8 @@ torchtext.data.functional
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: sentencepiece_encode_as_pieces
+
+:hidden:`generate_sp_tokenizer`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: generate_sp_tokenizer

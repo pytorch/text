@@ -141,8 +141,3 @@ Functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: interleave_keys
-
-:hidden:`generate_sp_tokenizer`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: generate_sp_tokenizer

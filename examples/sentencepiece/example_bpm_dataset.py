@@ -2,7 +2,7 @@ import logging
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.utils import generate_sp_tokenizer
+from torchtext.data.functional import generate_sp_tokenizer
 from os import path
 from torchtext.datasets.text_classification import URLS
 from torchtext.data.transforms import SentencePieceTransform
