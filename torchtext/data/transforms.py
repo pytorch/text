@@ -2,7 +2,8 @@ import sentencepiece as spm
 
 
 __all__ = [
-    "sentencepiece_encode_as_ids", "sentencepiece_encode_as_pieces"
+    "sentencepiece_encode_as_ids",
+    "sentencepiece_encode_as_pieces"
 ]
 
 

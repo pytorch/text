@@ -12,7 +12,7 @@ class TestUtils(TorchtextTestCase):
                        144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
 
         self.assertEqual(list(spm_generator(test_sample)),
-                         ref_results)
+                         [ref_results])
 
     def test_sentencepiece_encode_as_pieces(self):
         import sys
@@ -35,4 +35,4 @@ class TestUtils(TorchtextTestCase):
                            '\u2581de', 'to', 'ken', 'izer']
 
         self.assertEqual(spm_generator(test_sample),
-                         ref_results)
+                         [ref_results])

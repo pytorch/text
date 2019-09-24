@@ -7,7 +7,12 @@ torchtext.data.transforms
 .. automodule:: torchtext.data.transforms
 .. currentmodule:: torchtext.data.transforms
 
-:hidden:`SentencePieceTransform`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:hidden:`sentencepiece_encode_as_ids`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: SentencePieceTransform 
+.. autofunction:: sentencepiece_encode_as_ids
+
+:hidden:`sentencepiece_encode_as_pieces`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: sentencepiece_encode_as_pieces
