@@ -53,8 +53,8 @@ def sentencepiece_encode_as_pieces(spm_path):
         >>> sp_tokens_generator = sentencepiece_encode_as_pieces("m_user.model")
         >>> list_a = ["sentencepiece encode as pieces", "examples to   try!"]
         >>> list(sp_tokens_generator(list_a))
-            [['▁sentence', 'piece', '▁en', 'co', 'de', '▁as', '▁pieces'],
-             ['▁example', 's', '▁to', '▁try', '!']]
+            [['_sentence', 'piece', '_en', 'co', 'de', '_as', '_pieces'],
+             ['_example', 's', '_to', '_try', '!']]
 
     """
 

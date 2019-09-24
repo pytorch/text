@@ -16,7 +16,7 @@ class TestUtils(TorchtextTestCase):
 
     def test_sentencepiece_encode_as_pieces(self):
         import sys
-        from torchtext.data.functional import sentencepiece_encode_as_pieces
+        from torchtext.data.transforms import sentencepiece_encode_as_pieces
 
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
