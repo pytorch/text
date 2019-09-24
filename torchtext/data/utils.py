@@ -1,4 +1,5 @@
 import random
+import _C
 from contextlib import contextmanager
 from copy import deepcopy
 import re
@@ -97,7 +98,7 @@ def get_tokenizer(tokenizer, language='en'):
 
     # default tokenizer is string.split(), added as a module function for serialization
     if tokenizer is None:
-        return _split_tokenizer
+        return _C.split_tokenizer
 
     if tokenizer == "basic_english":
         if language != 'en':
