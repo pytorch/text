@@ -6,6 +6,7 @@ from torchtext.data.functional import generate_sp_tokenizer
 from os import path
 from torchtext.datasets.text_classification import URLS
 from torchtext.data.transforms import sentencepiece_encode_as_ids
+from torchtext.datasets import text_classification
 
 
 def _create_data_with_sp_transform(sp_generator, data_path):
@@ -21,30 +22,6 @@ def _create_data_with_sp_transform(sp_generator, data_path):
             data.append((label, torch.tensor(token_ids)))
             labels.append(label)
     return data, set(labels)
-
-
-class TextClassificationDataset(torch.utils.data.Dataset):
-    def __init__(self, data, labels):
-        """Initiate text-classification dataset.
-           The original one is here (torchtext/datasets/text_classification.py).
-        """
-
-        super(TextClassificationDataset, self).__init__()
-        self._data = data
-        self._labels = labels
-
-    def __getitem__(self, i):
-        return self._data[i]
-
-    def __len__(self):
-        return len(self._data)
-
-    def __iter__(self):
-        for x in self._data:
-            yield x
-
-    def get_labels(self):
-        return self._labels
 
 
 def setup_datasets(dataset_name, root='.data', vocab_size=20000, include_unk=False):
@@ -70,5 +47,5 @@ def setup_datasets(dataset_name, root='.data', vocab_size=20000, include_unk=Fal
 
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
-    return (TextClassificationDataset(train_data, train_labels),
-            TextClassificationDataset(test_data, test_labels))
+    return (text_classification.TextClassificationDataset(None, train_data, train_labels),
+            text_classification.TextClassificationDataset(None, test_data, test_labels))
