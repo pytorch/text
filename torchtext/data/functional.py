@@ -1,3 +1,5 @@
+import sentencepiece as spm
+
 __all__ = [
     "generate_sp_tokenizer"
 ]
@@ -31,7 +33,6 @@ def generate_sp_tokenizer(filename, vocab_size=20000,
         >>> sp_user.load('spm_user.model')
     """
 
-    import sentencepiece as spm
     spm_training_string = "--input={} \
                            --vocab_size={} \
                            --model_prefix={} \
