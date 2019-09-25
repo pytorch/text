@@ -31,7 +31,6 @@ def sentencepiece_encode_as_ids(spm_path):
         >>> list(sp_id_generator(list_a))
             [[9858, 9249, 1629, 1305, 1809, 53, 842],
              [2347, 13, 9, 150, 37]]
-
     """
 
     sp_model = spm.SentencePieceProcessor()
@@ -61,7 +60,6 @@ def sentencepiece_encode_as_pieces(spm_path):
         >>> list(sp_tokens_generator(list_a))
             [['_sentence', 'piece', '_en', 'co', 'de', '_as', '_pieces'],
              ['_example', 's', '_to', '_try', '!']]
-
     """
 
     sp_model = spm.SentencePieceProcessor()

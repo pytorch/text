@@ -1,9 +1,11 @@
+import sys
 from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext.data.transforms import sentencepiece_encode_as_ids
+from torchtext.data.transforms import sentencepiece_encode_as_pieces
 
 
 class TestUtils(TorchtextTestCase):
     def test_sentencepiece_encode_as_ids(self):
-        from torchtext.data.transforms import sentencepiece_encode_as_ids
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
         spm_generator = sentencepiece_encode_as_ids(model_path)
@@ -15,8 +17,6 @@ class TestUtils(TorchtextTestCase):
                          ref_results)
 
     def test_sentencepiece_encode_as_pieces(self):
-        import sys
-        from torchtext.data.transforms import sentencepiece_encode_as_pieces
 
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'

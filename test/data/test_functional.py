@@ -1,12 +1,12 @@
 from ..common.torchtext_test_case import TorchtextTestCase
 import sentencepiece as spm
+from torchtext.data.functional import generate_sp_tokenizer
+import os
 
 
 class TestUtils(TorchtextTestCase):
     def test_generate_sp_tokenizer(self):
         # Test the function to train a sentencepiece tokenizer
-        from torchtext.data.functional import generate_sp_tokenizer
-        import os
 
         data_path = 'test/asset/text_normalization_ag_news_test.csv'
         generate_sp_tokenizer(data_path,
