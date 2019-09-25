@@ -127,8 +127,8 @@ if __name__ == "__main__":
                         help='train/valid split ratio (default=0.95)')
     parser.add_argument('--lr', type=float, default=4.0,
                         help='learning rate (default=4.0)')
-    parser.add_argument('--lr-gamma', type=float, default=0.9,
-                        help='gamma value for lr (default=0.9)')
+    parser.add_argument('--lr-gamma', type=float, default=0.8,
+                        help='gamma value for lr (default=0.8)')
     parser.add_argument('--ngrams', type=int, default=2,
                         help='ngrams (default=2)')
     parser.add_argument('--num-workers', type=int, default=1,
