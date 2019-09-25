@@ -3,6 +3,12 @@ __all__ = [
 ]
 
 
+"""
+This file contains experimental functionality.
+All of these are experimental, unstable, and subject to change or deletion.
+"""
+
+
 def generate_sp_tokenizer(filename, vocab_size=20000,
                           model_type="unigram",
                           model_prefix='m_user'):

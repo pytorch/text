@@ -7,6 +7,12 @@ __all__ = [
 ]
 
 
+"""
+This file contains experimental functionality
+All of these are experimental, unstable, and subject to change or deletion.
+"""
+
+
 def sentencepiece_encode_as_ids(spm_path):
     """A sentencepiece tokenizer to convert a text sentence into
        a generator over the ids.
