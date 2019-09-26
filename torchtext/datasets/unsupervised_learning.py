@@ -1,18 +1,23 @@
 import time
 time1 = time.time()
 import re
-
+from torchtext.data.functional import custom_replace
 
 def generate_offsets(filename):
+
+    time0 = time.time()
     offsets = []
     with open(filename) as f:
-        for line in range(100):
+        while f.readline():
+#        for line in range(100):
             offsets.append(f.tell())
-            f.readline()
+#            f.readline()
+    print("total time: ", time.time() - time0)
     return offsets
 
 
 def getLines(filename, offsets, begin_line, num_lines):
+    print(len(offsets))
     with open(filename) as f:
         f.seek(offsets[begin_line])
         for i in range(num_lines):
@@ -53,33 +58,25 @@ _patterns = [(r'<.*>', ''),
              (r'\s+', ' '),
              (r'\n\s*\n', r'\n')
              ]
-
-
-_patterns_dict = list((re.compile(p), r) for (p, r) in _patterns)
-
-
-def enwik9_normalize(line):
-    r"""
-    Basic normalization for a line of text.
-    Returns a list of tokens after splitting on whitespace.
-    """
-
-    for pattern_re, replaced_str in _patterns_dict:
-        line = pattern_re.sub(replaced_str, line)
-    return line
+enwik9_norm_transform = custom_replace(_patterns)
 
 
 buffer_lines = []
-with open("enwik9_8000.txt", 'r') as f1:
-    with open("NORMAL_enwik9_8000.txt", 'w') as f2:
+input_filename = "enwik9_8000.txt"
+output_filename = "NORMAL_enwik9_8000.txt"
+
+with open(input_filename, 'r') as f1:
+    with open(output_filename, 'w') as f2:
         while True:
             line = f1.readline()
             if not line:
                 break
-            line = enwik9_normalize(line)
+            line = list(enwik9_norm_transform([line]))[0]
             if line != ' ' and line != '':
                 if line[0] == ' ':
                     line = line[1:]
                 f2.writelines(line + '\n')
 print("total time: ", time.time() - time1)
-getLines("NORMAL_enwik9_8000.txt", generate_offsets("NORMAL_enwik9_8000.txt"), 20, 10)
+time2 = time.time()
+getLines(output_filename, generate_offsets(output_filename), 200, 10)
+print("total time: ", time.time() - time2)
