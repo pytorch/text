@@ -2,16 +2,19 @@ import time
 time1 = time.time()
 import re
 
-byte_list = []
-with open("enwik9_short.txt") as f:
-    for line in range(100):
-        byte_list.append(f.tell())
-        f.readline()
+
+def generate_offsets(filename):
+    offsets = []
+    with open(filename) as f:
+        for line in range(100):
+            offsets.append(f.tell())
+            f.readline()
+    return offsets
 
 
-def getLines(begin_line, num_lines):
-    with open("enwik9_short.txt") as f:
-        f.seek(byte_list[begin_line])
+def getLines(filename, offsets, begin_line, num_lines):
+    with open(filename) as f:
+        f.seek(offsets[begin_line])
         for i in range(num_lines):
             print(f.readline())
 
@@ -79,3 +82,4 @@ with open("enwik9_8000.txt", 'r') as f1:
                     line = line[1:]
                 f2.writelines(line + '\n')
 print("total time: ", time.time() - time1)
+getLines("NORMAL_enwik9_8000.txt", generate_offsets("NORMAL_enwik9_8000.txt"), 20, 10)
