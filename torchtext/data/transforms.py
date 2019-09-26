@@ -10,10 +10,10 @@ def simple_tokenizer():
     """A simple tokenizer that splits a sentence by spaces.
 
     Argument:
-        line: a line of text to tokenize
+        txt_iter: input sentence text generator
 
     Output:
-        output: a generator over the tokens
+        output: a generator over a list of tokens 
     """
 
     def _internal_func(txt_iter):
