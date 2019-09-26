@@ -60,4 +60,3 @@ class TestFunctional(TorchtextTestCase):
 
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
-
