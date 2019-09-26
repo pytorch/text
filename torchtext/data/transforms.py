@@ -13,7 +13,16 @@ def simple_tokenizer():
         txt_iter: input sentence text generator
 
     Output:
-        output: a generator over a list of tokens 
+        output: a generator over a list of tokens
+
+    Examples:
+        >>>import torchtext
+        >>>from torchtext.data.transforms import simple_tokenizer
+        >>>docs = ["You can now install TorchText using pip!"]
+        >>>tokenizer = simple_tokenizer()
+        >>>iter = tokenizer(docs)
+        >>>next(iter)
+           ['You', 'can', 'now', 'install', 'TorchText', 'using', 'pip!']
     """
 
     def _internal_func(txt_iter):
