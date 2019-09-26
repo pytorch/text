@@ -4,7 +4,7 @@ from torchtext.data.functional import generate_sp_tokenizer
 import os
 
 
-class TestUtils(TorchtextTestCase):
+class TestFunctional(TorchtextTestCase):
     def test_generate_sp_tokenizer(self):
         # Test the function to train a sentencepiece tokenizer
 

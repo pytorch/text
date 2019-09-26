@@ -4,7 +4,7 @@ from torchtext.data.transforms import sentencepiece_encode_as_ids
 from torchtext.data.transforms import sentencepiece_encode_as_pieces
 
 
-class TestUtils(TorchtextTestCase):
+class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_encode_as_ids(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
