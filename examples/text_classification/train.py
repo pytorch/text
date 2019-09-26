@@ -158,7 +158,7 @@ if __name__ == "__main__":
     split_ratio = args.split_ratio
     # two args for sentencepiece tokenizer
     use_sp_tokenizer = args.use_sp_tokenizer
-    vocab_size = args.vocab_size
+    sp_vocab_size = args.sp_vocab_size
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
@@ -170,8 +170,8 @@ if __name__ == "__main__":
         import spm_dataset
         train_dataset, test_dataset = spm_dataset.setup_datasets(args.dataset,
                                                                  root='.data',
-                                                                 vocab_size=vocab_size)
-        model = TextSentiment(vocab_size, embed_dim,
+                                                                 vocab_size=sp_vocab_size)
+        model = TextSentiment(sp_vocab_size, embed_dim,
                               len(train_dataset.get_labels())).to(device)
 
     else:
