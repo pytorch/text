@@ -114,3 +114,26 @@ def sentencepiece_tokenizer(sp_model):
         for line in txt_iter:
             yield sp_model.EncodeAsPieces(line)
     return _internal_func
+
+
+def custom_replace(replace_pattern):
+    """A transform to convert text string
+
+    Examples:
+        >>> from torchtext.data.functional import custom_replace
+        >>> custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
+        >>> list_a = ["Sentencepiece encode  aS  pieces", "exampleS to   try!"]
+        >>> list(custom_replace_transform(list_a))
+            ['sentencepiece encode as pieces', 'examples to try!']
+    """
+
+    import re
+    _patterns = list((re.compile(p), r)
+                     for (p, r) in replace_pattern)
+
+    def _internal_func(txt_iter):
+        for line in txt_iter:
+            for pattern_re, replaced_str in _patterns:
+                line = pattern_re.sub(replaced_str, line)
+            yield line
+    return _internal_func
