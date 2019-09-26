@@ -6,6 +6,10 @@ from .iterator import (batch, BucketIterator, Iterator, BPTTIterator,
                        pool)
 from .pipeline import Pipeline
 from .utils import get_tokenizer, interleave_keys
+from .functional import generate_sp_model, \
+    load_sp_model, \
+    sentencepiece_numericalizer, \
+    sentencepiece_tokenizer
 
 __all__ = ["Batch",
            "Dataset", "TabularDataset",
@@ -15,4 +19,6 @@ __all__ = ["Batch",
            "batch", "BucketIterator", "Iterator", "BPTTIterator",
            "pool",
            "Pipeline",
-           "get_tokenizer", "interleave_keys"]
+           "get_tokenizer", "interleave_keys",
+           "generate_sp_model", "load_sp_model",
+           "sentencepiece_numericalizer", "sentencepiece_tokenizer"]
