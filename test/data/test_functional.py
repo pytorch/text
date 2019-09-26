@@ -29,7 +29,7 @@ class TestFunctional(TorchtextTestCase):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
         sp_model = load_sp_model(model_path)
-        self.assertEqual(len(sp_model), 23456)
+        self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_numericalizer(sp_model)
 
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
@@ -43,7 +43,7 @@ class TestFunctional(TorchtextTestCase):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = 'test/asset/spm_example.model'
         sp_model = load_sp_model(model_path)
-        self.assertEqual(len(sp_model), 23456)
+        self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_tokenizer(sp_model)
 
         # Handle byte string in Python2 and Unicode string in Python3, respectively
