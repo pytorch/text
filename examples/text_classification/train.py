@@ -139,7 +139,7 @@ if __name__ == "__main__":
                         help='data directory (default=.data)')
     parser.add_argument('--use-sp-tokenizer', type=bool, default=False,
                         help='use sentencepiece tokenizer (default=False)')
-    parser.add_argument('--vocab-size', type=int, default=20000,
+    parser.add_argument('--sp-vocab-size', type=int, default=20000,
                         help='vocab size in sentencepiece model (default=20000)')
     parser.add_argument('--dictionary',
                         help='path to save vocab')
