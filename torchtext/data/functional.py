@@ -31,11 +31,7 @@ def generate_sp_model(filename, vocab_size=20000,
 
     Examples:
         >>> from torchtext.data.functional import generate_sp_model
-        >>> generate_sp_model('test.csv', vocab_size=23456,
-        >>>                   model_prefix='spm_user')
-        >>> import sentencepiece as spm
-        >>> sp_user = spm.SentencePieceProcessor()
-        >>> sp_user.load('spm_user.model')
+        >>> generate_sp_model('test.csv', vocab_size=23456, model_prefix='spm_user')
     """
 
     spm_training_string = "--input={} \
