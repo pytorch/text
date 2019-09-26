@@ -2,10 +2,10 @@ import logging
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.functional import generate_sp_tokenizer
 from os import path
 from torchtext.datasets.text_classification import URLS
-from torchtext.data.transforms import sentencepiece_encode_as_ids
+from torchtext.data.functional import generate_sp_model, \
+    load_sp_model, sentencepiece_numericalizer
 from torchtext.datasets import text_classification
 
 
@@ -37,9 +37,10 @@ def setup_datasets(dataset_name, root='.data', vocab_size=20000, include_unk=Fal
     # generate sentencepiece  pretrained tokenizer
     if not path.exists('m_user.model'):
         logging.info('Generate SentencePiece pretrained tokenizer...')
-        generate_sp_tokenizer(train_csv_path, vocab_size)
+        generate_sp_model(train_csv_path, vocab_size)
 
-    sp_generator = sentencepiece_encode_as_ids("m_user.model")
+    sp_model = load_sp_model("m_user.model")
+    sp_generator = sentencepiece_numericalizer(sp_model)
     train_data, train_labels = _create_data_with_sp_transform(sp_generator,
                                                               train_csv_path)
     test_data, test_labels = _create_data_with_sp_transform(sp_generator,
