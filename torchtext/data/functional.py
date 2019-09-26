@@ -25,7 +25,7 @@ def generate_sp_tokenizer(filename, vocab_size=20000,
         The model and vocab are saved in two separate files with
             model_prefix.
     Examples:
-        >>> from torchtext.data.utils import generate_sp_tokenizer
+        >>> from torchtext.data.functional import generate_sp_tokenizer
         >>> generate_sp_tokenizer('test.csv', vocab_size=23456,
         >>>                       model_prefix='spm_user')
         >>> import sentencepiece as spm

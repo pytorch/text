@@ -18,7 +18,7 @@ def sentencepiece_encode_as_ids(spm_path):
        a generator over the ids.
 
     Arguments:
-        sp_path: the file path saving the sentencepiece model.
+        spm_path: the file path saving the sentencepiece model.
         txt_iter: input sentence text generator.
 
     Outputs:
@@ -47,11 +47,11 @@ def sentencepiece_encode_as_pieces(spm_path):
        a generator over the tokens.
 
     Arguments:
-        sp_path: the file path saving the sentencepiece model.
+        spm_path: the file path saving the sentencepiece model.
         txt_iter: input sentence text generator.
 
     Outputs:
-        output: a generator over the ids based on SentencePiece model.
+        output: a generator over the tokens based on SentencePiece model.
 
     Examples:
         >>> from torchtext.data.transforms import sentencepiece_encode_as_pieces

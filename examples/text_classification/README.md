@@ -1,5 +1,4 @@
-# This is an example to create a text classification dataset and train a
-# sentiment model. 
+# This is an example to create a text classification dataset and train a sentiment model. 
 
 In the basic case, users can train the sentiment model in model.py with 
 AG_NEWS dataset in torchtext.datasets.text_classification. The dataset is
