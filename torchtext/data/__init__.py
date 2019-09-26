@@ -5,6 +5,7 @@ from .field import RawField, Field, ReversibleField, SubwordField, NestedField, 
 from .iterator import (batch, BucketIterator, Iterator, BPTTIterator,
                        pool)
 from .pipeline import Pipeline
+from .transforms import simple_tokenizer
 from .utils import get_tokenizer, interleave_keys
 from .functional import generate_sp_model, \
     load_sp_model, \
@@ -21,4 +22,5 @@ __all__ = ["Batch",
            "Pipeline",
            "get_tokenizer", "interleave_keys",
            "generate_sp_model", "load_sp_model",
+           "simple_tokenizer",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer"]
