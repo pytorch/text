@@ -3,15 +3,24 @@ time1 = time.time()
 import re
 from torchtext.data.functional import custom_replace
 
+import logging
+import torch
+import io
+from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.data.utils import ngrams_iterator
+from torchtext.data.utils import get_tokenizer
+from torchtext.vocab import build_vocab_from_iterator
+from torchtext.vocab import Vocab
+from tqdm import tqdm
+
 def generate_offsets(filename):
 
     time0 = time.time()
     offsets = []
     with open(filename) as f:
+        offsets.append(f.tell())
         while f.readline():
-#        for line in range(100):
             offsets.append(f.tell())
-#            f.readline()
     print("total time: ", time.time() - time0)
     return offsets
 
@@ -61,6 +70,11 @@ _patterns = [(r'<.*>', ''),
 enwik9_norm_transform = custom_replace(_patterns)
 
 
+def simple_split(iterator):
+    for line in iterator:
+        yield line.split()
+
+
 buffer_lines = []
 input_filename = "enwik9_8000.txt"
 output_filename = "NORMAL_enwik9_8000.txt"
@@ -76,7 +90,61 @@ with open(input_filename, 'r') as f1:
                 if line[0] == ' ':
                     line = line[1:]
                 f2.writelines(line + '\n')
-print("total time: ", time.time() - time1)
-time2 = time.time()
-getLines(output_filename, generate_offsets(output_filename), 200, 10)
-print("total time: ", time.time() - time2)
+
+# print("total time: ", time.time() - time1)
+# time2 = time.time()
+# getLines(output_filename, generate_offsets(output_filename), 200, 10)
+# print("total time: ", time.time() - time2)
+
+
+
+
+
+def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
+    with open(data_path) as f:
+        f.seek(offsets[begin_line])
+        for i in range(num_lines):
+            yield f.readline()
+
+
+
+class EnWik9Dataset(torch.utils.data.Dataset):
+    """Defines an abstract text classification datasets.
+       Currently, we only support the following datasets:
+    """
+
+    def __init__(self, data):
+        """Initiate text-classification dataset.
+        Arguments:
+            data: a list of label/tokens tuple. tokens are a tensor after
+        Examples:
+            See the examples in examples/text_classification/
+        """
+
+        super(EnWik9Dataset, self).__init__()
+        self._data = data
+
+    def __getitem__(self, i):
+        return self._data[i]
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        for x in self._data:
+            yield x
+
+
+def _setup_datasets(begin_line, num_lines, root='.data'):
+    filename = 'NORMAL_enwik9_8000.txt'
+    offsets = generate_offsets(filename)
+    read_lines = read_lines_from_iterator(filename,
+                                          offsets, begin_line, num_lines)
+
+    _data = []
+    for item in simple_split(read_lines):
+        _data += item
+
+    return _data
+
+print(_setup_datasets(0, 5))
