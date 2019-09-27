@@ -7,11 +7,7 @@ import logging
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.utils import ngrams_iterator
-from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import build_vocab_from_iterator
-from torchtext.vocab import Vocab
-from tqdm import tqdm
+import os
 
 def generate_offsets(filename):
 
@@ -75,37 +71,11 @@ def simple_split(iterator):
         yield line.split()
 
 
-buffer_lines = []
-input_filename = "enwik9_8000.txt"
-output_filename = "NORMAL_enwik9_8000.txt"
-
-with open(input_filename, 'r') as f1:
-    with open(output_filename, 'w') as f2:
-        while True:
-            line = f1.readline()
-            if not line:
-                break
-            line = list(enwik9_norm_transform([line]))[0]
-            if line != ' ' and line != '':
-                if line[0] == ' ':
-                    line = line[1:]
-                f2.writelines(line + '\n')
-
-# print("total time: ", time.time() - time1)
-# time2 = time.time()
-# getLines(output_filename, generate_offsets(output_filename), 200, 10)
-# print("total time: ", time.time() - time2)
-
-
-
-
-
 def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
     with open(data_path) as f:
         f.seek(offsets[begin_line])
         for i in range(num_lines):
             yield f.readline()
-
 
 
 class EnWik9Dataset(torch.utils.data.Dataset):
@@ -135,16 +105,38 @@ class EnWik9Dataset(torch.utils.data.Dataset):
             yield x
 
 
+def normalized_raw_enwik9(input_filename, output_filename):
+    with open(input_filename, 'r') as f1:
+        with open(output_filename, 'w') as f2:
+            while True:
+                line = f1.readline()
+                if not line:
+                    break
+                line = list(enwik9_norm_transform([line]))[0]
+                if line != ' ' and line != '':
+                    if line[0] == ' ':
+                        line = line[1:]
+                    f2.writelines(line + '\n')
+    return
+
+
 def _setup_datasets(begin_line, num_lines, root='.data'):
-    filename = 'NORMAL_enwik9_8000.txt'
-    offsets = generate_offsets(filename)
-    read_lines = read_lines_from_iterator(filename,
+
+    raw_filename = os.path.join(root, 'enwik9_raw', 'enwik9_8000.txt')
+    normalized_filename = os.path.join(root, 'enwik9_raw', 'NORMAL_enwik9_8000.txt')
+
+    if not os.path.exists(normalized_filename):
+        normalized_raw_enwik9(raw_filename, normalized_filename)
+
+    offsets = generate_offsets(normalized_filename)
+    read_lines = read_lines_from_iterator(normalized_filename,
                                           offsets, begin_line, num_lines)
 
     _data = []
     for item in simple_split(read_lines):
         _data += item
 
-    return _data
+    return EnWik9Dataset(_data)
 
-print(_setup_datasets(0, 5))
+
+print(_setup_datasets(0, 5)._data)
