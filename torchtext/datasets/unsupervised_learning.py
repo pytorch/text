@@ -1,23 +1,18 @@
-import time
-time1 = time.time()
-import re
 from torchtext.data.functional import custom_replace
-
 import logging
 import torch
-import io
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.utils import download_from_url
 import os
+import zipfile
+
 
 def generate_offsets(filename):
 
-    time0 = time.time()
     offsets = []
     with open(filename) as f:
         offsets.append(f.tell())
         while f.readline():
             offsets.append(f.tell())
-    print("total time: ", time.time() - time0)
     return offsets
 
 
@@ -78,33 +73,6 @@ def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
             yield f.readline()
 
 
-class EnWik9Dataset(torch.utils.data.Dataset):
-    """Defines an abstract text classification datasets.
-       Currently, we only support the following datasets:
-    """
-
-    def __init__(self, data):
-        """Initiate text-classification dataset.
-        Arguments:
-            data: a list of label/tokens tuple. tokens are a tensor after
-        Examples:
-            See the examples in examples/text_classification/
-        """
-
-        super(EnWik9Dataset, self).__init__()
-        self._data = data
-
-    def __getitem__(self, i):
-        return self._data[i]
-
-    def __len__(self):
-        return len(self._data)
-
-    def __iter__(self):
-        for x in self._data:
-            yield x
-
-
 def normalized_raw_enwik9(input_filename, output_filename):
     with open(input_filename, 'r') as f1:
         with open(output_filename, 'w') as f2:
@@ -120,23 +88,70 @@ def normalized_raw_enwik9(input_filename, output_filename):
     return
 
 
-def _setup_datasets(begin_line, num_lines, root='.data'):
+def extract_zip_archive(from_path, to_path=None, overwrite=False):
 
-    raw_filename = os.path.join(root, 'enwik9_raw', 'enwik9_8000.txt')
-    normalized_filename = os.path.join(root, 'enwik9_raw', 'NORMAL_enwik9_8000.txt')
+    if to_path is None:
+        to_path = os.path.dirname(from_path)
 
-    if not os.path.exists(normalized_filename):
-        normalized_raw_enwik9(raw_filename, normalized_filename)
+    assert zipfile.is_zipfile(from_path), from_path
+    logging.info('Opening zip file {}.'.format(from_path))
+    with zipfile.ZipFile(from_path, 'r') as zfile:
+        files = zfile.namelist()
+        for file_ in files:
+            file_path = os.path.join(to_path, file_)
+            if os.path.exists(file_path):
+                logging.info('{} already extracted.'.format(file_path))
+                if not overwrite:
+                    continue
+            zfile.extract(file_, to_path)
+    return files
 
-    offsets = generate_offsets(normalized_filename)
-    read_lines = read_lines_from_iterator(normalized_filename,
-                                          offsets, begin_line, num_lines)
 
-    _data = []
-    for item in simple_split(read_lines):
-        _data += item
+class EnWik9Dataset(torch.utils.data.Dataset):
+    """Defines an abstract text classification datasets.
+       Currently, we only support the following datasets:
+    """
 
-    return EnWik9Dataset(_data)
+    def __init__(self, begin_line, num_lines, root='.data'):
+        """Initiate text-classification dataset.
+        Arguments:
+            data: a list of label/tokens tuple. tokens are a tensor after
+        Examples:
+            See the examples in examples/text_classification/
+        """
+
+        super(EnWik9Dataset, self).__init__()
+
+        url = 'http://mattmahoney.net/dc/enwik9.zip'
+        dataset_zip = download_from_url(url,
+                                        path=os.path.join(root, 'enwik9.zip'),
+                                        root=root)
+        extracted_file = extract_zip_archive(dataset_zip)
+        raw_file = os.path.join(root, extracted_file[0])
+
+        processed_file = os.path.join(root, 'norm_enwik9')
+        if not os.path.exists(processed_file):
+            normalized_raw_enwik9(raw_file, processed_file)
+
+        # Meta information
+        offsets = generate_offsets(processed_file)
+        read_lines = read_lines_from_iterator(processed_file,
+                                              offsets, begin_line, num_lines)
+
+        self._data = []
+        for item in simple_split(read_lines):
+            self._data += item
+
+    def __getitem__(self, i):
+        return self._data[i]
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        for x in self._data:
+            yield x
 
 
-print(_setup_datasets(0, 5)._data)
+enwik9_dataset = EnWik9Dataset(0, 5)
+print(enwik9_dataset._data)
