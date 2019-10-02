@@ -2,6 +2,8 @@ from torchtext.data.functional import custom_replace
 import logging
 import torch
 from torchtext.utils import download_from_url, extract_archive
+from torchtext.vocab import build_vocab_from_iterator
+from torchtext.vocab import Vocab
 import os
 import zipfile
 
@@ -99,7 +101,7 @@ def extract_zip_archive(from_path, to_path=None, overwrite=False):
     return files
 
 
-class EnWik9Dataset(torch.utils.data.Dataset):
+class EnWik9(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
        Currently, we only support the following datasets:
     """
@@ -112,7 +114,7 @@ class EnWik9Dataset(torch.utils.data.Dataset):
             See the examples in examples/text_classification/
         """
 
-        super(EnWik9Dataset, self).__init__()
+        super(EnWik9, self).__init__()
 
         processed_file = os.path.join(root, 'norm_enwik9')
         if not os.path.exists(processed_file):
@@ -133,6 +135,8 @@ class EnWik9Dataset(torch.utils.data.Dataset):
         for item in simple_split(read_lines):
             self._data += item
 
+        self._vocab = None
+
     def __getitem__(self, i):
         return self._data[i]
 
@@ -143,7 +147,7 @@ class EnWik9Dataset(torch.utils.data.Dataset):
         for x in self._data:
             yield x
 
-
-enwik9_dataset = EnWik9Dataset(0, 20000)
-for i in range(20000):
-    print(enwik9_dataset[i])
+    def get_vocab(self):
+        if self._vocab is None:
+            self._vocab = build_vocab_from_iterator([self._data])
+        return self._vocab
