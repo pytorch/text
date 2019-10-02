@@ -77,7 +77,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
         _, filename = os.path.split(url)
     else:
         root, filename = os.path.split(path)
- 
+
     if not os.path.exists(root):
         raise RuntimeError(
             "Download directory {} does not exist. "
@@ -87,7 +87,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
         return _process_response(response, root, filename)
     else:
-        #google drive links get filename from google drive
+        # google drive links get filename from google drive
         filename = None
 
     logging.info('Downloading from Google Drive; may take a few minutes')
@@ -185,7 +185,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                             continue
                 tar.extract(file_, to_path)
             return files
-    
+
     elif from_path.endswith('.zip'):
         assert zipfile.is_zipfile(from_path), from_path
         logging.info('Opening zip file {}.'.format(from_path))
@@ -201,4 +201,5 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         return files
 
     else:
-        raise NotImplementedError("We currently only support tar.gz, .tgz and zip achives.")
+        raise NotImplementedError(
+            "We currently only support tar.gz, .tgz and zip achives.")
