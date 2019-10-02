@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--url',
                     default='http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/'
                     'validation.tar.gz')
-parser.add_argument('--data', default='validation.tar.gz')
+parser.add_argument('--data', default='./validation.tar.gz')
 parser.add_argument('--logging-level', default='WARNING')
 args = parser.parse_args()
 
