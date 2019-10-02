@@ -137,3 +137,17 @@ def custom_replace(replace_pattern):
                 line = pattern_re.sub(replaced_str, line)
             yield line
     return _internal_func
+
+
+def simple_space_split(iterator):
+    """A transform to split text string by spaces
+
+    Examples:
+        >>> from torchtext.data.functional import simple_space_split
+        >>> list_a = ["Sentencepiece encode as pieces", "example to try!"]
+        >>> list(simple_space_split(list_a))
+            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
+    """
+
+    for line in iterator:
+        yield line.split()

@@ -9,7 +9,7 @@ from .utils import get_tokenizer, interleave_keys
 from .functional import generate_sp_model, \
     load_sp_model, \
     sentencepiece_numericalizer, \
-    sentencepiece_tokenizer
+    sentencepiece_tokenizer, simple_space_split
 
 __all__ = ["Batch",
            "Dataset", "TabularDataset",
@@ -21,4 +21,5 @@ __all__ = ["Batch",
            "Pipeline",
            "get_tokenizer", "interleave_keys",
            "generate_sp_model", "load_sp_model",
-           "sentencepiece_numericalizer", "sentencepiece_tokenizer"]
+           "sentencepiece_numericalizer", "sentencepiece_tokenizer",
+           "simple_space_split"]

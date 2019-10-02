@@ -1,7 +1,8 @@
 from ..common.torchtext_test_case import TorchtextTestCase
 import sentencepiece as spm
 from torchtext.data.functional import generate_sp_model, load_sp_model, \
-    sentencepiece_numericalizer, sentencepiece_tokenizer
+    sentencepiece_numericalizer, sentencepiece_tokenizer, \
+    simple_space_split
 import os
 import sys
 
@@ -59,4 +60,12 @@ class TestFunctional(TorchtextTestCase):
                            '\u2581de', 'to', 'ken', 'izer']
 
         self.assertEqual(list(spm_generator([test_sample]))[0],
+                         ref_results)
+
+    def test_simple_space_split(self):
+        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        ref_results = ['SentencePiece', 'is', 'an', 'unsupervised', 'text',
+                       'tokenizer', 'and', 'detokenizer']
+
+        self.assertEqual(list(simple_space_split([test_sample]))[0],
                          ref_results)

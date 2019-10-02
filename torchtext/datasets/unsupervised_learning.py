@@ -1,15 +1,12 @@
 from torchtext.data.functional import custom_replace
-import logging
 import torch
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.vocab import Vocab
+from torchtext.data.functional import simple_space_split
 import os
-import zipfile
 
 
 def generate_offsets(filename):
-
     offsets = []
     with open(filename) as f:
         offsets.append(f.tell())
@@ -55,11 +52,6 @@ _patterns = [(r'<.*>', ''),
 enwik9_norm_transform = custom_replace(_patterns)
 
 
-def simple_split(iterator):
-    for line in iterator:
-        yield line.split()
-
-
 def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
     with open(data_path) as f:
         f.seek(offsets[begin_line])
@@ -80,25 +72,6 @@ def normalized_raw_enwik9(input_filename, output_filename):
                         line = line[1:]
                     f2.writelines(line + '\n')
     return
-
-
-def extract_zip_archive(from_path, to_path=None, overwrite=False):
-
-    if to_path is None:
-        to_path = os.path.dirname(from_path)
-
-    assert zipfile.is_zipfile(from_path), from_path
-    logging.info('Opening zip file {}.'.format(from_path))
-    with zipfile.ZipFile(from_path, 'r') as zfile:
-        files = zfile.namelist()
-        for file_ in files:
-            file_path = os.path.join(to_path, file_)
-            if os.path.exists(file_path):
-                logging.info('{} already extracted.'.format(file_path))
-                if not overwrite:
-                    continue
-            zfile.extract(file_, to_path)
-    return files
 
 
 class EnWik9(torch.utils.data.Dataset):
@@ -132,7 +105,7 @@ class EnWik9(torch.utils.data.Dataset):
                                               offsets, begin_line, num_lines)
 
         self._data = []
-        for item in simple_split(read_lines):
+        for item in simple_space_split(read_lines):
             self._data += item
 
         self._vocab = None
