@@ -6,15 +6,6 @@ from torchtext.data.functional import simple_space_split
 import os
 
 
-def generate_offsets(filename):
-    offsets = []
-    with open(filename) as f:
-        offsets.append(f.tell())
-        while f.readline():
-            offsets.append(f.tell())
-    return offsets
-
-
 _patterns = [(r'<.*>', ''),
              (r'&amp;', '&'),
              (r'&lt;', '<'),
@@ -50,6 +41,15 @@ _patterns = [(r'<.*>', ''),
              (r'\n\s*\n', r'\n')
              ]
 enwik9_norm_transform = custom_replace(_patterns)
+
+
+def generate_offsets(filename):
+    offsets = []
+    with open(filename) as f:
+        offsets.append(f.tell())
+        while f.readline():
+            offsets.append(f.tell())
+    return offsets
 
 
 def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
