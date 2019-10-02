@@ -13,7 +13,8 @@ class TestUtils(TorchtextTestCase):
     def test_download_extract_tar(self):
         # create root directory for downloading data
         root = '.data'
-        _ = os.makedirs(root, exist_ok=True)
+        if not os.path.exists(root):
+            os.makedirs(root)
 
         # ensure archive is not already downloaded, if it is then delete
         url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
@@ -37,7 +38,8 @@ class TestUtils(TorchtextTestCase):
     def test_download_extract_zip(self):
         # create root directory for downloading data
         root = '.data'
-        _ = os.makedirs(root, exist_ok=True)
+        if not os.path.exists(root):
+            os.makedirs(root)
 
         # ensure archive is not already downloaded, if it is then delete
         url = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
@@ -60,16 +62,19 @@ class TestUtils(TorchtextTestCase):
         # remove files and archive
         for f in files:
             conditional_remove(os.path.join(root, f))
+        os.rmdir(os.path.join(root, 'en-ud-v2'))
         conditional_remove(archive_path)
 
     def test_download_extract_to_path(self):
         # create root directory for downloading data
         root = '.data'
-        _ = os.makedirs(root, exist_ok=True)
+        if not os.path.exists(root):
+            os.makedirs(root)
 
         # create directory to extract archive to
         to_path = '.new_data'
-        _ = os.makedirs(to_path, exist_ok=True)
+        if not os.path.exists(root):
+            os.makedirs(root)
 
         # ensure archive is not already downloaded, if it is then delete
         url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
@@ -93,7 +98,8 @@ class TestUtils(TorchtextTestCase):
     def test_extract_non_tar_zip(self):
         # create root directory for downloading data
         root = '.data'
-        _ = os.makedirs(root, exist_ok=True)
+        if not os.path.exists(root):
+            os.makedirs(root)
 
         # ensure file is not already downloaded, if it is then delete
         url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.simple.vec'
