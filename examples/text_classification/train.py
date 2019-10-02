@@ -127,8 +127,8 @@ if __name__ == "__main__":
                         help='train/valid split ratio (default=0.95)')
     parser.add_argument('--lr', type=float, default=4.0,
                         help='learning rate (default=4.0)')
-    parser.add_argument('--lr-gamma', type=float, default=0.9,
-                        help='gamma value for lr (default=0.9)')
+    parser.add_argument('--lr-gamma', type=float, default=0.8,
+                        help='gamma value for lr (default=0.8)')
     parser.add_argument('--ngrams', type=int, default=2,
                         help='ngrams (default=2)')
     parser.add_argument('--num-workers', type=int, default=1,
@@ -137,6 +137,10 @@ if __name__ == "__main__":
                         help='device (default=cpu)')
     parser.add_argument('--data', default='.data',
                         help='data directory (default=.data)')
+    parser.add_argument('--use-sp-tokenizer', type=bool, default=False,
+                        help='use sentencepiece tokenizer (default=False)')
+    parser.add_argument('--sp-vocab-size', type=int, default=20000,
+                        help='vocab size in sentencepiece model (default=20000)')
     parser.add_argument('--dictionary',
                         help='path to save vocab')
     parser.add_argument('--save-model-path',
@@ -152,6 +156,9 @@ if __name__ == "__main__":
     device = args.device
     data = args.data
     split_ratio = args.split_ratio
+    # two args for sentencepiece tokenizer
+    use_sp_tokenizer = args.use_sp_tokenizer
+    sp_vocab_size = args.sp_vocab_size
 
     logging.basicConfig(level=getattr(logging, args.logging_level))
 
@@ -159,11 +166,20 @@ if __name__ == "__main__":
         print("Creating directory {}".format(data))
         os.mkdir(data)
 
-    train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
-        root=data, ngrams=args.ngrams)
+    if use_sp_tokenizer:
+        import spm_dataset
+        train_dataset, test_dataset = spm_dataset.setup_datasets(args.dataset,
+                                                                 root='.data',
+                                                                 vocab_size=sp_vocab_size)
+        model = TextSentiment(sp_vocab_size, embed_dim,
+                              len(train_dataset.get_labels())).to(device)
 
-    model = TextSentiment(len(train_dataset.get_vocab()),
-                          embed_dim, len(train_dataset.get_labels())).to(device)
+    else:
+        train_dataset, test_dataset = text_classification.DATASETS[args.dataset](
+            root=data, ngrams=args.ngrams)
+        model = TextSentiment(len(train_dataset.get_vocab()),
+                              embed_dim, len(train_dataset.get_labels())).to(device)
+
     criterion = torch.nn.CrossEntropyLoss().to(device)
 
     # split train_dataset into train and valid
