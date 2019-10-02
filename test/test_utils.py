@@ -24,30 +24,6 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
-        assert files == ['.data/val.de', 
-                         '.data/val.en']
-
-        # remove files and archive
-        conditional_remove('.data/val.de')
-        conditional_remove('.data/val.en')
-        conditional_remove(archive_path)
-
-    def test_download_extract_tar(self):
-        # create root directory for downloading data
-        root = '.data'
-        _ = os.makedirs(root, exist_ok=True)
-
-        # ensure archive is not already downloaded, if it is then delete
-        url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
-        target_archive_path = os.path.join(root, 'validation.tar.gz')
-        conditional_remove(target_archive_path)
-
-        # download archive and ensure is in correct location
-        archive_path = utils.download_from_url(url)
-        assert target_archive_path == archive_path
-
-        # extract files and ensure they are correct
-        files = utils.extract_archive(archive_path)
         assert files == [os.path.join(root, 'val.de'), 
                          os.path.join(root, 'val.en')]
 
