@@ -16,7 +16,7 @@ All of these are experimental, unstable, and subject to change or deletion.
 def generate_sp_model(filename, vocab_size=20000,
                       model_type="unigram",
                       model_prefix='m_user'):
-    """Train a SentencePiece tokenizer.
+    r"""Train a SentencePiece tokenizer.
 
     Arguments:
         filename: the data file for training SentencePiece model.
@@ -46,7 +46,7 @@ def generate_sp_model(filename, vocab_size=20000,
 
 
 def load_sp_model(spm_path):
-    """Load a  sentencepiece model for file.
+    r"""Load a  sentencepiece model for file.
 
     Arguments:
         spm_path: the file path saving the sentencepiece model.
@@ -65,7 +65,7 @@ def load_sp_model(spm_path):
 
 
 def sentencepiece_numericalizer(sp_model):
-    """A sentencepiece model to numericalize a text sentence into
+    r"""A sentencepiece model to numericalize a text sentence into
        a generator over the ids.
 
     Arguments:
@@ -91,7 +91,7 @@ def sentencepiece_numericalizer(sp_model):
 
 
 def sentencepiece_tokenizer(sp_model):
-    """A sentencepiece model to tokenize a text sentence into
+    r"""A sentencepiece model to tokenize a text sentence into
        a generator over the tokens.
 
     Arguments:
@@ -117,7 +117,7 @@ def sentencepiece_tokenizer(sp_model):
 
 
 def custom_replace(replace_pattern):
-    """A transform to convert text string
+    r"""A transform to convert text string
 
     Examples:
         >>> from torchtext.data.functional import custom_replace
@@ -140,7 +140,7 @@ def custom_replace(replace_pattern):
 
 
 def simple_space_split(iterator):
-    """A transform to split text string by spaces
+    r"""A transform to split text string by spaces
 
     Examples:
         >>> from torchtext.data.functional import simple_space_split
