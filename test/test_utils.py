@@ -2,9 +2,11 @@ import os
 from torchtext import utils
 from .common.torchtext_test_case import TorchtextTestCase
 
+
 def conditional_remove(f):
     if os.path.isfile(f):
         os.remove(f)
+
 
 class TestUtils(TorchtextTestCase):
 
@@ -24,7 +26,7 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
-        assert files == [os.path.join(root, 'val.de'), 
+        assert files == [os.path.join(root, 'val.de'),
                          os.path.join(root, 'val.en')]
 
         # remove files and archive
@@ -48,11 +50,11 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
-        assert files == ['en-ud-v2/', 
-                         'en-ud-v2/en-ud-tag.v2.dev.txt', 
-                         'en-ud-v2/en-ud-tag.v2.test.txt', 
-                         'en-ud-v2/en-ud-tag.v2.train.txt', 
-                         'en-ud-v2/LICENSE.txt', 
+        assert files == ['en-ud-v2/',
+                         'en-ud-v2/en-ud-tag.v2.dev.txt',
+                         'en-ud-v2/en-ud-tag.v2.test.txt',
+                         'en-ud-v2/en-ud-tag.v2.train.txt',
+                         'en-ud-v2/LICENSE.txt',
                          'en-ud-v2/README.txt']
 
         # remove files and archive
