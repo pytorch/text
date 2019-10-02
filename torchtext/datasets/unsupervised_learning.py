@@ -1,7 +1,7 @@
 from torchtext.data.functional import custom_replace
 import logging
 import torch
-from torchtext.utils import download_from_url
+from torchtext.utils import download_from_url, extract_archive
 import os
 import zipfile
 
@@ -14,14 +14,6 @@ def generate_offsets(filename):
         while f.readline():
             offsets.append(f.tell())
     return offsets
-
-
-def getLines(filename, offsets, begin_line, num_lines):
-    print(len(offsets))
-    with open(filename) as f:
-        f.seek(offsets[begin_line])
-        for i in range(num_lines):
-            print(f.readline())
 
 
 _patterns = [(r'<.*>', ''),
@@ -122,15 +114,14 @@ class EnWik9Dataset(torch.utils.data.Dataset):
 
         super(EnWik9Dataset, self).__init__()
 
-        url = 'http://mattmahoney.net/dc/enwik9.zip'
-        dataset_zip = download_from_url(url,
-                                        path=os.path.join(root, 'enwik9.zip'),
-                                        root=root)
-        extracted_file = extract_zip_archive(dataset_zip)
-        raw_file = os.path.join(root, extracted_file[0])
-
         processed_file = os.path.join(root, 'norm_enwik9')
         if not os.path.exists(processed_file):
+            url = 'http://mattmahoney.net/dc/enwik9.zip'
+            dataset_zip = download_from_url(url,
+                                            path=os.path.join(root, 'enwik9.zip'),
+                                            root=root)
+            extracted_file = extract_archive(dataset_zip)
+            raw_file = os.path.join(root, extracted_file[0])
             normalized_raw_enwik9(raw_file, processed_file)
 
         # Meta information
@@ -153,5 +144,6 @@ class EnWik9Dataset(torch.utils.data.Dataset):
             yield x
 
 
-enwik9_dataset = EnWik9Dataset(0, 5)
-print(enwik9_dataset._data)
+enwik9_dataset = EnWik9Dataset(0, 20000)
+for i in range(20000):
+    print(enwik9_dataset[i])
