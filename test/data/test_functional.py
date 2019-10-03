@@ -64,16 +64,15 @@ class TestFunctional(TorchtextTestCase):
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
-        test_sample = ['Sentencepiece encode  aS  pieces", "exampleS to   try!']
-        ref_results = ['sentencepiece encode as pieces', 'examples to try!']
+        test_sample = ['test     cuStom   replace', 'with   uSer   instruction']
+        ref_results = ['test custom replace', 'with user instruction']
 
         self.assertEqual(list(custom_replace_transform(test_sample)),
                          ref_results)
 
     def test_simple_space_split(self):
-        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        ref_results = ['SentencePiece', 'is', 'an', 'unsupervised', 'text',
-                       'tokenizer', 'and', 'detokenizer']
+        test_sample = ['test simple space split function']
+        ref_results = ['test', 'simple', 'space', 'split', 'function']
 
-        self.assertEqual(list(simple_space_split([test_sample]))[0],
+        self.assertEqual(list(simple_space_split(test_sample))[0],
                          ref_results)
