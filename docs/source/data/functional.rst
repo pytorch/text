@@ -27,6 +27,11 @@ torchtext.data.functional
 
 .. autofunction:: sentencepiece_tokenizer
 
+:hidden:`custom_replace`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: custom_replace
+ 
 :hidden:`simple_space_split`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
