@@ -26,10 +26,14 @@ _patterns = [(r'<.*>', ''),
              (r'\[', ''),
              (r'\]', ''),
              (r'&[^;]*;', ' '),
-             (r'A', 'a'), (r'B', 'b'), (r'C', 'c'), (r'D', 'd'), (r'E', 'e'), (r'F', 'f'),
-             (r'G', 'g'), (r'H', 'h'), (r'I', 'i'), (r'J', 'j'), (r'K', 'k'), (r'L', 'l'),
-             (r'M', 'm'), (r'N', 'n'), (r'O', 'o'), (r'P', 'p'), (r'Q', 'q'), (r'R', 'r'),
-             (r'S', 's'), (r'T', 't'), (r'U', 'u'), (r'V', 'v'), (r'W', 'w'), (r'X', 'x'),
+             (r'A', 'a'), (r'B', 'b'), (r'C', 'c'),
+             (r'D', 'd'), (r'E', 'e'), (r'F', 'f'),
+             (r'G', 'g'), (r'H', 'h'), (r'I', 'i'),
+             (r'J', 'j'), (r'K', 'k'), (r'L', 'l'),
+             (r'M', 'm'), (r'N', 'n'), (r'O', 'o'),
+             (r'P', 'p'), (r'Q', 'q'), (r'R', 'r'),
+             (r'S', 's'), (r'T', 't'), (r'U', 'u'),
+             (r'V', 'v'), (r'W', 'w'), (r'X', 'x'),
              (r'Y', 'y'), (r'Z', 'z'),
              (r'0', ' zero '), (r'1', ' one '), (r'2', ' two '),
              (r'3', ' three '), (r'4', ' four '), (r'5', ' five '),
@@ -75,16 +79,24 @@ def normalized_raw_enwik9(input_filename, output_filename):
 
 
 class EnWik9(torch.utils.data.Dataset):
-    """Defines an abstract text classification datasets.
-       Currently, we only support the following datasets:
+    r"""Compressed size of first 10^9 bytes of enwiki-20060303-pages-articles.xml.
+        It's part of Large Text Compression Benchmark project
     """
 
-    def __init__(self, begin_line, num_lines, root='.data'):
-        """Initiate text-classification dataset.
+    def __init__(self, begin_line=0, num_lines=6348957, root='.data'):
+        """Initiate EnWik9 dataset.
+
         Arguments:
+            begin_line: the number of beginning line. Default: 0
+            num_lines: the number of lines to be loaded. Default: 6348957
+            root: Directory where the datasets are saved. Default: ".data"
             data: a list of label/tokens tuple. tokens are a tensor after
+
         Examples:
-            See the examples in examples/text_classification/
+            >>> from torchtext.datasets import EnWik9
+            >>> enwik9 = EnWik9(num_lines=20000)
+            >>> vocab = enwik9.get_vocab()
+
         """
 
         super(EnWik9, self).__init__()
