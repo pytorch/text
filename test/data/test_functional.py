@@ -64,7 +64,7 @@ class TestFunctional(TorchtextTestCase):
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
-        test_sample = 'Sentencepiece encode  aS  pieces", "exampleS to   try!'
+        test_sample = ['Sentencepiece encode  aS  pieces", "exampleS to   try!']
         ref_results = ['sentencepiece encode as pieces', 'examples to try!']
 
         self.assertEqual(list(custom_replace_transform(test_sample)),
