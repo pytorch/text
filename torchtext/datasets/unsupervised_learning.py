@@ -63,7 +63,7 @@ def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
             yield f.readline()
 
 
-def normalized_raw_enwik9(input_filename, output_filename):
+def preprocess_raw_enwik9(input_filename, output_filename):
     with open(input_filename, 'r') as f1:
         with open(output_filename, 'w') as f2:
             while True:
@@ -75,7 +75,6 @@ def normalized_raw_enwik9(input_filename, output_filename):
                     if line[0] == ' ':
                         line = line[1:]
                     f2.writelines(line + '\n')
-    return
 
 
 class EnWik9(torch.utils.data.Dataset):
@@ -96,7 +95,6 @@ class EnWik9(torch.utils.data.Dataset):
             >>> from torchtext.datasets import EnWik9
             >>> enwik9 = EnWik9(num_lines=20000)
             >>> vocab = enwik9.get_vocab()
-
         """
 
         super(EnWik9, self).__init__()
@@ -109,7 +107,7 @@ class EnWik9(torch.utils.data.Dataset):
                                             root=root)
             extracted_file = extract_archive(dataset_zip)
             raw_file = os.path.join(root, extracted_file[0])
-            normalized_raw_enwik9(raw_file, processed_file)
+            preprocess_raw_enwik9(raw_file, processed_file)
 
         # Meta information
         offsets = generate_offsets(processed_file)

@@ -1,4 +1,5 @@
 import sentencepiece as spm
+import re
 
 
 __all__ = [
@@ -117,7 +118,7 @@ def sentencepiece_tokenizer(sp_model):
 
 
 def custom_replace(replace_pattern):
-    r"""A transform to convert text string
+    r"""A transform to convert text string.
 
     Examples:
         >>> from torchtext.data.functional import custom_replace
@@ -127,7 +128,6 @@ def custom_replace(replace_pattern):
             ['sentencepiece encode as pieces', 'examples to try!']
     """
 
-    import re
     _patterns = list((re.compile(p), r)
                      for (p, r) in replace_pattern)
 
@@ -140,7 +140,7 @@ def custom_replace(replace_pattern):
 
 
 def simple_space_split(iterator):
-    r"""A transform to split text string by spaces
+    r"""A transform to split text string by spaces.
 
     Examples:
         >>> from torchtext.data.functional import simple_space_split
