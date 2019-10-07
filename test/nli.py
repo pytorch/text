@@ -64,3 +64,31 @@ batch = next(iter(train_iter))
 print("Numericalize premises:\n", batch.premise)
 print("Numericalize hypotheses:\n", batch.hypothesis)
 print("Entailment labels:\n", batch.label)
+
+
+# Testing XNLI
+print("Run test on XNLI...")
+TEXT = data.Field()
+LABEL = data.LabelField()
+GENRE = data.Field()
+LANGUAGE = data.Field()
+
+val, test = datasets.XNLI.splits(TEXT, LABEL, GENRE, LANGUAGE)
+
+print("Fields:", val.fields)
+print("Number of examples:\n", len(val))
+print("First Example instance:\n", vars(val[0]))
+
+TEXT.build_vocab(val)
+LABEL.build_vocab(val)
+GENRE.build_vocab(val, test)
+LANGUAGE.build_vocab(val, test)
+
+val_iter, test_iter = data.Iterator.splits((val, test), batch_size=3)
+
+batch = next(iter(val_iter))
+print("Numericalize premises:\n", batch.premise)
+print("Numericalize hypotheses:\n", batch.hypothesis)
+print("Entailment labels:\n", batch.label)
+print("Genre categories:\n", batch.genre)
+print("Languages:\n", batch.language)
