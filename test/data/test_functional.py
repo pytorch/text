@@ -66,13 +66,11 @@ class TestFunctional(TorchtextTestCase):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
         test_sample = ['test     cuStom   replace', 'with   uSer   instruction']
         ref_results = ['test custom replace', 'with user instruction']
-
         self.assertEqual(list(custom_replace_transform(test_sample)),
                          ref_results)
 
     def test_simple_space_split(self):
         test_sample = ['test simple space split function']
         ref_results = ['test', 'simple', 'space', 'split', 'function']
-
         self.assertEqual(list(simple_space_split(test_sample))[0],
                          ref_results)
