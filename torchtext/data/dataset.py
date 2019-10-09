@@ -125,7 +125,8 @@ class Dataset(torch.utils.data.Dataset):
                 train_data += group_train
                 test_data += group_test
                 val_data += group_val
-
+        
+        test_data, val_data = val_data, test_data
         splits = tuple(Dataset(d, self.fields)
                        for d in (train_data, test_data, val_data) if d)
 
