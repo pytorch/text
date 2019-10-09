@@ -127,7 +127,7 @@ class Dataset(torch.utils.data.Dataset):
                 val_data += group_val
 
         splits = tuple(Dataset(d, self.fields)
-                       for d in (train_data, val_data, test_data) if d)
+                       for d in (train_data, test_data, val_data) if d)
 
         # In case the parent sort key isn't none
         if self.sort_key:
