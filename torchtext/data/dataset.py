@@ -1,5 +1,6 @@
 import io
 import os
+import csv
 import zipfile
 import tarfile
 import gzip
@@ -218,7 +219,7 @@ class TabularDataset(Dataset):
     """Defines a Dataset of columns stored in CSV, TSV, or JSON format."""
 
     def __init__(self, path, format, fields, skip_header=False,
-                 csv_reader_params={}, **kwargs):
+                 csv_reader_params={"quoting": csv.QUOTE_NONE}, **kwargs):
         """Create a TabularDataset given a path, file format, and field list.
 
         Arguments:
