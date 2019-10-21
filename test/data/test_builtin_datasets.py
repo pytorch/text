@@ -1,6 +1,7 @@
 import os
 import torchtext.data as data
 from torchtext.datasets import WikiText2, PennTreebank
+from torchtext.datasets import AG_NEWS
 
 from ..common.test_markers import slow
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -46,4 +47,19 @@ class TestDataset(TorchtextTestCase):
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
             datafile = os.path.join(self.project_root, ".data", "penn-treebank")
+            conditional_remove(datafile)
+
+    def test_text_classification(self):
+        # smoke test to ensure ag_news dataset works properly
+
+        datadir = os.path.join(self.project_root, ".data")
+        if not os.path.exists(datadir):
+            os.makedirs(datadir)
+        ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
+        self.assertEqual(len(ag_news_train), 120000)
+        self.assertEqual(len(ag_news_test), 7600)
+
+        # Delete the dataset after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            datafile = os.path.join(self.project_root, ".data", "AG_NEWS")
             conditional_remove(datafile)

@@ -90,7 +90,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Arguments:
             split_ratio (float or List of floats): a number [0, 1] denoting the amount
-                of data to be used for the training split (rest is used for validation),
+                of data to be used for the training split (rest is used for test),
                 or a list of numbers denoting the relative sizes of train, test and valid
                 splits respectively. If the relative size for valid is missing, only the
                 train-test split is returned. Default is 0.7 (for the train set).

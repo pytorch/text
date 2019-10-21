@@ -4,8 +4,8 @@
 .. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
 
-.. image:: http://readthedocs.org/projects/torchtext/badge/?version=latest
-    :target: http://torchtext.readthedocs.io/en/latest/?badge=latest
+.. image:: https://img.shields.io/badge/dynamic/json.svg?label=docs&url=https%3A%2F%2Fpypi.org%2Fpypi%2Ftorchtext%2Fjson&query=%24.info.version&colorB=brightgreen&prefix=v
+    :target: https://pytorch.org/text/
 
 torchtext
 +++++++++
@@ -40,7 +40,7 @@ Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_
 Documentation
 =============
 
-Find the documentation `here <https://torchtext.readthedocs.io/en/latest/index.html>`_.
+Find the documentation `here <https://pytorch.org/text/>`_.
 
 Data
 ====
@@ -121,9 +121,17 @@ The datasets module currently contains:
 * Machine translation: abstract class + Multi30k, IWSLT, WMT14
 * Sequence tagging (e.g. POS/NER): abstract class + UDPOS, CoNLL2000Chunking
 * Question answering: 20 QA bAbI tasks
+* Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull
 
 Others are planned or a work in progress:
 
 * Question answering: SQuAD
 
 See the ``test`` directory for examples of dataset usage.
+
+Disclaimer on Datasets
+======================
+
+This is a utility library that downloads and prepares public datasets. We do not host or distribute these datasets, vouch for their quality or fairness, or claim that you have license to use the dataset. It is your responsibility to determine whether you have permission to use the dataset under the dataset's license.
+
+If you're a dataset owner and wish to update any part of it (description, citation, etc.), or do not want your dataset to be included in this library, please get in touch through a GitHub issue. Thanks for your contribution to the ML community!
