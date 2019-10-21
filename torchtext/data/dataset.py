@@ -5,6 +5,7 @@ import tarfile
 import gzip
 import shutil
 from functools import partial
+from collections import defaultdict
 
 import torch.utils.data
 
@@ -313,10 +314,8 @@ def check_split_ratio(split_ratio):
 
 def stratify(examples, strata_field):
     # The field has to be hashable otherwise this doesn't work
-    # There's two iterations over the whole dataset here, which can be
-    # reduced to just one if a dedicated method for stratified splitting is used
-    unique_strata = set(getattr(example, strata_field) for example in examples)
-    strata_maps = {s: [] for s in unique_strata}
+    # refined to iterate once
+    strata_maps = defaultdict(list)
     for example in examples:
         strata_maps[getattr(example, strata_field)].append(example)
     return list(strata_maps.values())
