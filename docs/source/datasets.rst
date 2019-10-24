@@ -237,3 +237,12 @@ BABI20
 
 .. autoclass:: BABI20
   :members: __init__, splits, iters
+
+Unsupervised Learning
+^^^^^^^^^^^^^^^^^^^^^
+
+EnWik9
+~~~~~~
+
+.. autoclass:: EnWik9
+  :members: __init__, __getitem__, __len__, __iter__, get_vocab
