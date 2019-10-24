@@ -302,11 +302,15 @@ class Field(RawField):
                     counter.update(x)
                 except TypeError:
                     counter.update(chain.from_iterable(x))
+        # The unk_token is migrated from specials to a function argument as a hotfix.
+        # Look to migrate all specials to arguments as in huggingface/transformers
+        # as that is the cleaner approach.
+
         specials = list(OrderedDict.fromkeys(
             tok for tok in [self.unk_token, self.pad_token, self.init_token,
                             self.eos_token] + kwargs.pop('specials', [])
             if tok is not None))
-        self.vocab = self.vocab_cls(counter, specials=specials, **kwargs)
+        self.vocab = self.vocab_cls(counter, unk_token=self.unk_token, specials=specials, **kwargs)
 
     def numericalize(self, arr, device=None):
         """Turn a batch of examples that use this field into a Variable.

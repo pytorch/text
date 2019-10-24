@@ -30,10 +30,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
 
-    # TODO (@mttk): Populate classs with default values of special symbols
-    UNK = '<unk>'
-
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
+    def __init__(self, counter, max_size=None, min_freq=1, unk_token='<unk>', specials=['<pad>'],
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
@@ -82,8 +79,8 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        if Vocab.UNK in specials:  # hard-coded for now
-            unk_index = specials.index(Vocab.UNK)  # position in list
+        if unk_token is not None:
+            unk_index = specials.index(unk_token)  # position in list
             # account for ordering of specials, set variable
             self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
             self.stoi = defaultdict(self._default_unk_index)
