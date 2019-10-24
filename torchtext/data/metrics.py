@@ -1,6 +1,6 @@
 import math
 import collections
-from utils import ngrams_iterator
+from torchtext.data.utils import ngrams_iterator
 
 
 def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4):
