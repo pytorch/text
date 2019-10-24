@@ -80,7 +80,7 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        if unk_token is not None:
+        if unk_token is not None and unk_token in specials:
             unk_index = specials.index(unk_token)  # position in list
             # account for ordering of specials, set variable
             self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
