@@ -310,7 +310,8 @@ class Field(RawField):
             tok for tok in [self.unk_token, self.pad_token, self.init_token,
                             self.eos_token] + kwargs.pop('specials', [])
             if tok is not None))
-        self.vocab = self.vocab_cls(counter, unk_token=self.unk_token, specials=specials, **kwargs)
+        self.vocab = self.vocab_cls(counter, unk_token=self.unk_token,
+                                    specials=specials, **kwargs)
 
     def numericalize(self, arr, device=None):
         """Turn a batch of examples that use this field into a Variable.

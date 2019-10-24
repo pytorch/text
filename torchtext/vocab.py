@@ -30,8 +30,9 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
 
-    def __init__(self, counter, max_size=None, min_freq=1, unk_token='<unk>', specials=['<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
+    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
+                 unk_token='<unk>', vectors=None, unk_init=None, vectors_cache=None,
+                 specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
