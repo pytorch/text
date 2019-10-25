@@ -58,9 +58,10 @@ class Vocab(object):
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
-
         self.itos = list()
+
         self.unk_index = None
+        self.unk_token = unk_token # might be none
         if specials_first:
             self.itos = list(specials)
             # only extend max size if specials are prepended
@@ -104,7 +105,7 @@ class Vocab(object):
         return self.unk_index
 
     def __getitem__(self, token):
-        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
+        return self.stoi.get(token, self.unk_index)
 
     def __getstate__(self):
         # avoid picking defaultdict
@@ -221,7 +222,7 @@ class Vocab(object):
 class SubwordVocab(Vocab):
 
     def __init__(self, counter, max_size=None, specials=['<pad>'],
-                 vectors=None, unk_init=torch.Tensor.zero_):
+                 unk_token='<unk>', vectors=None, unk_init=torch.Tensor.zero_):
         """Create a revtok subword vocabulary from a collections.Counter.
 
         Arguments:
@@ -246,8 +247,8 @@ class SubwordVocab(Vocab):
             raise
 
         # Hardcode unk_index as subword_vocab has no specials_first argument
-        self.unk_index = (specials.index(SubwordVocab.UNK)
-                          if SubwordVocab.UNK in specials else None)
+        self.unk_index = (specials.index(unk_token)
+                          if unk_token is not None else None)
 
         if self.unk_index is None:
             self.stoi = defaultdict()
