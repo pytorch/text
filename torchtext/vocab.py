@@ -61,7 +61,7 @@ class Vocab(object):
         self.itos = list()
 
         self.unk_index = None
-        self.unk_token = unk_token # might be none
+        self.unk_token = unk_token  # might be none
         if specials_first:
             self.itos = list(specials)
             # only extend max size if specials are prepended

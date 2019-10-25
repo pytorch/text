@@ -49,7 +49,7 @@ def _create_data_from_iterator(vocab, iterator, include_unk):
             if include_unk:
                 tokens = torch.tensor([vocab[token] for token in tokens])
             else:
-                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                token_ids = list(filter(lambda x: x is not vocab.unk_token, [vocab[token]
                                         for token in tokens]))
                 tokens = torch.tensor(token_ids)
             if len(tokens) == 0:
