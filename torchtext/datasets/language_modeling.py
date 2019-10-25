@@ -1,33 +1,110 @@
+import torch
+import logging
 from .. import data
 import io
+from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.vocab import build_vocab_from_iterator
+from torchtext.data.utils import get_tokenizer
+from torchtext.vocab import Vocab
+from tqdm import tqdm
+
+URLS = {
+    'WikiText2':
+        'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip',
+    'WikiText103':
+        'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip',
+    'PennTreebank':
+        ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt',
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt']
+}
+
+def _read_text_iterator(data_path, tokenizer):
+    tokenizer = get_tokenizer("basic_english")
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            tokens = ' '.join(row[1:])
+            tokens = tokenizer(tokens)
+            yield tokens
 
 
-class LanguageModelingDataset(data.Dataset):
+def _create_data_from_iterator(vocab, iterator, include_unk):
+    data = []
+    labels = []
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for cls, tokens in iterator:
+            if include_unk:
+                tokens = torch.tensor([vocab[token] for token in tokens])
+            else:
+                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                                        for token in tokens]))
+                tokens = torch.tensor(token_ids)
+            if len(tokens) == 0:
+                logging.info('Row contains no tokens.')
+            data.append((cls, tokens))
+            labels.append(cls)
+            t.update(1)
+    return data, set(labels)
+
+class LanguageModelingDataset(torch.utils.data.Dataset):
     """Defines a dataset for language modeling."""
 
-    def __init__(self, path, text_field, newline_eos=True,
-                 encoding='utf-8', **kwargs):
+    def __init__(self, data, vocab):
         """Create a LanguageModelingDataset given a path and a field.
 
         Arguments:
             path: Path to the data file.
-            text_field: The field that will be used for text data.
-            newline_eos: Whether to add an <eos> token for every newline in the
-                data file. Default: True.
-            Remaining keyword arguments: Passed to the constructor of
-                data.Dataset.
         """
-        fields = [('text', text_field)]
-        text = []
-        with io.open(path, encoding=encoding) as f:
-            for line in f:
-                text += text_field.preprocess(line)
-                if newline_eos:
-                    text.append(u'<eos>')
+        super(LanguageModelingDataset, self).__init__()
+        self._data = data
+        self._vocab = vocab
 
-        examples = [data.Example.fromlist([text], fields)]
-        super(LanguageModelingDataset, self).__init__(
-            examples, fields, **kwargs)
+    def __getitem__(self, i):
+        return self._data[i]
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        for x in self._data:
+            yield x
+
+    def get_vocab(self):
+        return self._vocab
+
+def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
+                    root='.data', ngrams=2, vocab=None, include_unk=False):
+    dataset_tar = download_from_url(URLS[dataset_name], root=root)
+    extracted_files = extract_archive(dataset_tar)
+
+    for fname in extracted_files:
+        if 'train' in fname:
+            train_path = fname
+        if 'test' in fname:
+            test_path = fname
+        if 'valid' in fname:
+            valid_path = fname
+
+    if vocab is None:
+        logging.info('Building Vocab based on {}'.format(train_path))
+        vocab = build_vocab_from_iterator(_read_text_iterator(train_path, tokenizer))
+    else:
+        if not isinstance(vocab, Vocab):
+            raise TypeError("Passed vocabulary is not of type Vocab")
+    logging.info('Vocab has {} entries'.format(len(vocab)))
+    logging.info('Creating training data')
+    train_data = _create_data_from_iterator(
+        vocab, _read_text_iterator(train_path, tokenizer), include_unk)
+    logging.info('Creating testing data')
+    test_data = _create_data_from_iterator(
+        vocab, _read_text_iterator(test_path, tokenizer), include_unk)
+    logging.info('Creating valid data')
+    valid_data = _create_data_from_iterator(
+        vocab, _read_text_iterator(valid_path, tokenizer), include_unk)
+    return (LanguageModelingDataset(train_data, vocab),
+            LanguageModelingDataset(test_data, vocab),
+            LanguageModelingDataset(valid_data, vocab))
 
 
 class WikiText2(LanguageModelingDataset):
