@@ -105,7 +105,14 @@ class Vocab(object):
         return self.unk_index
 
     def __getitem__(self, token):
-        return self.stoi.get(token, self.unk_index)
+        token_index = self.stoi.get(token, self.unk_index)
+
+        if token_index is None:
+            # An unknown word was encountered and unk_token is not used
+            raise KeyError(f'Token {token} not found in the vocabulary '
+                             'and the unknown token is not used.')
+
+        return token_index
 
     def __getstate__(self):
         # avoid picking defaultdict
