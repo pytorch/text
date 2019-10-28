@@ -3,6 +3,35 @@ import collections
 from torchtext.data.utils import ngrams_iterator
 
 
+def _compute_ngram_counter(tokens, max_n):
+    """ Create a Counter with a count of unique n-grams in the tokens list
+
+    Arguments:
+        tokens: a list of tokens (typically a string split on whitespaces)
+        max_n: the maximum order of n-gram wanted
+
+    Outputs:
+        output: a collections.Counter object with the unique n-grams and their
+            associated count
+
+    Examples:
+        >>> from torchtext.data.functional import _compute_ngram_counter
+        >>> tokens = ['me', 'me', 'you']
+        >>> _compute_ngram_counter(tokens, 2)
+            Counter({('me',): 2,
+             ('you',): 1,
+             ('me', 'me'): 1,
+             ('me', 'you'): 1,
+             ('me', 'me', 'you'): 1})
+    """
+    assert max_n > 0
+
+    ngrams = [tuple(x.split(' ')) for x in ngrams_iterator(tokens, max_n)]
+    ngrams_counter = collections.Counter(ngrams)
+
+    return ngrams_counter
+
+
 def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4):
     """Computes the BLEU score between a candidate translation corpus and a references
     translation corpus. Based on https://www.aclweb.org/anthology/P02-1040.pdf
@@ -23,34 +52,6 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
         >>> bleu_score(candidate_corpus, references_corpus)
         >>> 0.7598356856515925
     """
-
-    def _compute_ngram_counter(tokens, max_n):
-        """ Create a Counter with a count of unique n-grams in the tokens list
-
-        Arguments:
-            tokens: a list of tokens (typically a string split on whitespaces)
-            max_n: the maximum order of n-gram wanted
-
-        Outputs:
-            output: a collections.Counter object with the unique n-grams and their
-                associated count
-
-        Examples:
-            >>> from torchtext.data.functional import _compute_ngram_counter
-            >>> tokens = ['me', 'me', 'you']
-            >>> _compute_ngram_counter(tokens, 2)
-                Counter({('me',): 2,
-                 ('you',): 1,
-                 ('me', 'me'): 1,
-                 ('me', 'you'): 1,
-                 ('me', 'me', 'you'): 1})
-        """
-        assert max_n > 0
-
-        ngrams = [tuple(x.split(' ')) for x in ngrams_iterator(tokens, max_n)]
-        ngrams_counter = collections.Counter(ngrams)
-
-        return ngrams_counter
 
     assert max_n == len(weights), 'Length of the "weights" list has be equal to max_n'
 
