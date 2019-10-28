@@ -65,7 +65,7 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
 
         # Get the length of the reference that's closest in length to the candidate
         refs_len_list = [float(len(ref)) for ref in refs]
-        refs_len = min(refs_len_list, key=lambda x: abs(len(candidate) - x))
+        refs_len += min(refs_len_list, key=lambda x: abs(len(candidate) - x))
 
         reference_counters = collections.Counter()
         for ref in refs:
