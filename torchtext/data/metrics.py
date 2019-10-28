@@ -15,7 +15,7 @@ def _compute_ngram_counter(tokens, max_n):
             associated count
 
     Examples:
-        >>> from torchtext.data.functional import _compute_ngram_counter
+        >>> from torchtext.data.metrics import _compute_ngram_counter
         >>> tokens = ['me', 'me', 'you']
         >>> _compute_ngram_counter(tokens, 2)
             Counter({('me',): 2,
@@ -35,20 +35,21 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
     translation corpus. Based on https://www.aclweb.org/anthology/P02-1040.pdf
 
     Arguments:
-        candidate_corpus: a list of candidate translations. Each translation is a list of
-            tokens
-        references_corpus: a list of lists of reference translations. Each translation
-            is a list of tokens
+        candidate_corpus: an iterable of candidate translations. Each translation is an
+            iterable of tokens
+        references_corpus: an iterable of iterables of reference translations. Each
+            translation is an iterable of tokens
         max_n: the maximum n-gram we want to use. E.g. if max_n=3, we will use unigrams,
             bigrams and trigrams
-        weights: weights used for each n-gram category (uniform by default)
+        weights: a list of weights used for each n-gram category (uniform by default)
 
     Examples:
+        >>> from torchtext.data.metrics import bleu_score
         >>> candidate_corpus = [['I', 'ate', 'the', 'apple'], ['I', 'did']]
         >>> references_corpus = [[['I', 'ate', 'it'], ['I', 'ate', 'apples']],
                 [['I', 'did']]]
         >>> bleu_score(candidate_corpus, references_corpus)
-        >>> 0.7598356856515925
+            0.7598356856515925
     """
 
     assert max_n == len(weights), 'Length of the "weights" list has be equal to max_n'
