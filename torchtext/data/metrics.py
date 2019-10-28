@@ -25,9 +25,7 @@ def _compute_ngram_counter(tokens, max_n):
              ('me', 'me', 'you'): 1})
     """
     assert max_n > 0
-
-    ngrams = [tuple(x.split(' ')) for x in ngrams_iterator(tokens, max_n)]
-    ngrams_counter = collections.Counter(ngrams)
+    ngrams_counter = collections.Counter(tuple(x.split(' ')) for x in ngrams_iterator(tokens, max_n))
 
     return ngrams_counter
 
