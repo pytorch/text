@@ -1,4 +1,5 @@
 import sentencepiece as spm
+import re
 
 
 __all__ = [
@@ -16,7 +17,7 @@ All of these are experimental, unstable, and subject to change or deletion.
 def generate_sp_model(filename, vocab_size=20000,
                       model_type="unigram",
                       model_prefix='m_user'):
-    """Train a SentencePiece tokenizer.
+    r"""Train a SentencePiece tokenizer.
 
     Arguments:
         filename: the data file for training SentencePiece model.
@@ -46,7 +47,7 @@ def generate_sp_model(filename, vocab_size=20000,
 
 
 def load_sp_model(spm_path):
-    """Load a  sentencepiece model for file.
+    r"""Load a  sentencepiece model for file.
 
     Arguments:
         spm_path: the file path saving the sentencepiece model.
@@ -65,7 +66,7 @@ def load_sp_model(spm_path):
 
 
 def sentencepiece_numericalizer(sp_model):
-    """A sentencepiece model to numericalize a text sentence into
+    r"""A sentencepiece model to numericalize a text sentence into
        a generator over the ids.
 
     Arguments:
@@ -91,7 +92,7 @@ def sentencepiece_numericalizer(sp_model):
 
 
 def sentencepiece_tokenizer(sp_model):
-    """A sentencepiece model to tokenize a text sentence into
+    r"""A sentencepiece model to tokenize a text sentence into
        a generator over the tokens.
 
     Arguments:
@@ -114,3 +115,39 @@ def sentencepiece_tokenizer(sp_model):
         for line in txt_iter:
             yield sp_model.EncodeAsPieces(line)
     return _internal_func
+
+
+def custom_replace(replace_pattern):
+    r"""A transform to convert text string.
+
+    Examples:
+        >>> from torchtext.data.functional import custom_replace
+        >>> custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
+        >>> list_a = ["Sentencepiece encode  aS  pieces", "exampleS to   try!"]
+        >>> list(custom_replace_transform(list_a))
+            ['sentencepiece encode as pieces', 'examples to try!']
+    """
+
+    _patterns = list((re.compile(p), r)
+                     for (p, r) in replace_pattern)
+
+    def _internal_func(txt_iter):
+        for line in txt_iter:
+            for pattern_re, replaced_str in _patterns:
+                line = pattern_re.sub(replaced_str, line)
+            yield line
+    return _internal_func
+
+
+def simple_space_split(iterator):
+    r"""A transform to split text string by spaces.
+
+    Examples:
+        >>> from torchtext.data.functional import simple_space_split
+        >>> list_a = ["Sentencepiece encode as pieces", "example to try!"]
+        >>> list(simple_space_split(list_a))
+            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
+    """
+
+    for line in iterator:
+        yield line.split()
