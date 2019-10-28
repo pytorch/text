@@ -109,8 +109,8 @@ class Vocab(object):
 
         if token_index is None:
             # An unknown word was encountered and unk_token is not used
-            raise KeyError(f'Token {token} not found in the vocabulary '
-                             'and the unknown token is not used.')
+            raise KeyError('Token {} not found in the vocabulary '
+                           'and the unknown token is not used.'.format(token))
 
         return token_index
 
