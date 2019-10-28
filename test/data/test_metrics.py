@@ -1,5 +1,5 @@
 from torchtext.data import metrics
-from .common.torchtext_test_case import TorchtextTestCase
+from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestUtils(TorchtextTestCase):
