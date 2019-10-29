@@ -46,14 +46,33 @@ def _create_data_from_iterator(vocab, iterator, include_unk):
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):
-    """Defines a dataset for language modeling."""
+    """Defines a dataset for language modeling.
+       Currently, we only support the following datasets:
+
+             - WikiText2
+             - WikiText103
+             - PennTreebank
+
+    """
 
     def __init__(self, data, vocab):
-        """Create a LanguageModelingDataset given a path and a field.
+        """Initiate language modeling dataset.
 
         Arguments:
-            path: Path to the data file.
+            data: a tensor of tokens. tokens are ids after
+                numericalizing the string tokens.
+                torch.Tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
+            vocab: Vocabulary object used for dataset.
+
+        Examples:
+            >>> from torchtext.vocab import build_vocab_from_iterator
+            >>> data = torch.Tensor([token_id_1, token_id_2,
+                                     token_id_3, token_id_1]).long()
+            >>> vocab = build_vocab_from_iterator([['language', 'modeling']])
+            >>> dataset = LanguageModelingDataset(data, vocab)
+
         """
+
         super(LanguageModelingDataset, self).__init__()
         self._data = data
         self._vocab = vocab
@@ -111,12 +130,84 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
 
 def WikiText2(*args, **kwargs):
+    """ Defines WikiText2 datasets.
+
+    Create language modeling dataset: WikiText2
+    Separately returns the train/test/valid set
+
+    Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well (see example below). A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
+
+    Examples:
+        >>> from torchtext.datasets import WikiText2
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
+        >>> vocab = train_dataset.get_vocab()
+
+    """
+
     return _setup_datasets(*(("WikiText2",) + args), **kwargs)
 
 
 def WikiText103(*args, **kwargs):
+    """ Defines WikiText103 datasets.
+
+    Create language modeling dataset: WikiText103
+    Separately returns the train/test/valid set
+
+    Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well (see example below). A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
+
+    Examples:
+        >>> from torchtext.datasets import WikiText103
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train_dataset, test_dataset, valid_dataset = WikiText103(tokenizer=tokenizer)
+        >>> vocab = train_dataset.get_vocab()
+
+    """
+
     return _setup_datasets(*(("WikiText103",) + args), **kwargs)
 
 
 def PennTreebank(*args, **kwargs):
+    """ Defines PennTreebank datasets.
+
+    Create language modeling dataset: PennTreebank
+    Separately returns the train/test/valid set
+
+    Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well (see example below). A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        include_unk: include unknown token in the data (Default: False)
+
+    Examples:
+        >>> from torchtext.datasets import PennTreebank
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
+        >>> vocab = train_dataset.get_vocab()
+
+    """
+
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
