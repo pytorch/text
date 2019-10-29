@@ -67,8 +67,8 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
         refs_len_list = [float(len(ref)) for ref in refs]
         refs_len += min(refs_len_list, key=lambda x: abs(len(candidate) - x))
 
-        reference_counters = collections.Counter()
-        for ref in refs:
+        reference_counters = _compute_ngram_counter(refs[0], max_n)
+        for ref in refs[1:]:
             reference_counters = reference_counters | _compute_ngram_counter(ref, max_n)
 
         candidate_counter = _compute_ngram_counter(candidate, max_n)
