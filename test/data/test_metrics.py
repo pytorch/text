@@ -31,3 +31,28 @@ class TestUtils(TorchtextTestCase):
         refs = [[['My', 'full', 'pytorch', 'test'], ['Completely', 'Different']],
                 [['No', 'Match']]]
         assert round(metrics.bleu_score(candidate, refs), 4) == 0.8409
+
+        # Empty input
+        candidate = [[]]
+        refs = [[[]]]
+        assert metrics.bleu_score(candidate, refs) == 0
+
+        # Long input, compared to NLTK implementation score
+        candidate = [['Lucille', 'Bluth', 'has', '3', 'sons'],
+                     ['She', 'loves', 'all', 'her', 'children', 'equally'],
+                     ['No', 'match', 'here', 'at', 'all']]
+
+        refs = [[['I', 'heard', 'Lucille', 'has', 'three', 'sons'],
+                ['Rumor', 'has', 'it', 'Lucille', 'has', '3', 'sons', '!']],
+                [['I', 'love', 'all', 'my', 'children', 'equally'],
+                ['She', 'loves', 'all', 'her', 'children', 'equally']],
+                [['I', 'have', 'made', 'a', 'terrible', 'mistake'], ['Big', 'mistake']]]
+
+        # Value computed using nltk.translate.bleu_score.corpus_bleu(refs, candidate)
+        assert round(metrics.bleu_score(candidate, refs), 4) == 0.4573
+        assert round(metrics.bleu_score(candidate, refs, 3,
+                     weights=[0.33, 0.33, 0.33]), 4) == 0.4901
+        assert round(metrics.bleu_score(candidate, refs, 2,
+                     weights=[0.5, 0.5]), 4) == 0.5120
+        assert round(metrics.bleu_score(candidate, refs, 1,
+                     weights=[1]), 4) == 0.5516
