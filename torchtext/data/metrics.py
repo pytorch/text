@@ -25,7 +25,8 @@ def _compute_ngram_counter(tokens, max_n):
              ('me', 'me', 'you'): 1})
     """
     assert max_n > 0
-    ngrams_counter = collections.Counter(tuple(x.split(' ')) for x in ngrams_iterator(tokens, max_n))
+    ngrams_counter = collections.Counter(tuple(x.split(' '))
+                                         for x in ngrams_iterator(tokens, max_n))
 
     return ngrams_counter
 
@@ -53,6 +54,8 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
     """
 
     assert max_n == len(weights), 'Length of the "weights" list has be equal to max_n'
+    assert len(candidate_corpus) == len(references_corpus),\
+        'The length of candidate and reference corpus should be the same'
 
     clipped_counts = [0.0] * max_n
     total_counts = [0.0] * max_n
