@@ -1,5 +1,6 @@
 import math
 import collections
+import torch
 from torchtext.data.utils import ngrams_iterator
 
 
@@ -57,8 +58,9 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
     assert len(candidate_corpus) == len(references_corpus),\
         'The length of candidate and reference corpus should be the same'
 
-    clipped_counts = [0.0] * max_n
-    total_counts = [0.0] * max_n
+    clipped_counts = torch.zeros(max_n)
+    total_counts = torch.zeros(max_n)
+    weights = torch.tensor(weights)
 
     candidate_len = 0.0
     refs_len = 0.0
@@ -87,10 +89,10 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
     if min(clipped_counts) == 0:
         return 0.0
     else:
-        pn = [clipped_counts[i] / total_counts[i] for i in range(max_n)]
-        log_pn = [weights[i] * math.log(pn[i]) for i in range(max_n)]
-        score = math.exp(sum(log_pn))
+        pn = clipped_counts / total_counts
+        log_pn = weights * torch.log(pn)
+        score = torch.exp(sum(log_pn))
 
         bp = math.exp(min(1 - refs_len / candidate_len, 0))
 
-        return bp * score
+        return bp * score.item()
