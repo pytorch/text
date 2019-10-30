@@ -19,19 +19,19 @@ class TestUtils(TorchtextTestCase):
         # Partial match
         candidate = [['My', 'full', 'pytorch', 'test']]
         refs = [[['My', 'full', 'pytorch', 'test', '!'], ['Different']]]
-        assert_allclose(bleu_score(candidate, refs), 0.7788)
+        assert_allclose(bleu_score(candidate, refs), 0.7788007)
 
         # Bigrams and unigrams only
         candidate = [['My', 'pytorch', 'test']]
         refs = [[['My', 'full', 'pytorch', 'test'], ['Different']]]
         assert_allclose(bleu_score(candidate, refs, max_n=2,
-                                   weights=[0.5, 0.5]), 0.5067)
+                                   weights=[0.5, 0.5]), 0.5066641)
 
         # Multi-sentence corpus
         candidate = [['My', 'full', 'pytorch', 'test'], ['Another', 'Sentence']]
         refs = [[['My', 'full', 'pytorch', 'test'], ['Completely', 'Different']],
                 [['No', 'Match']]]
-        assert_allclose(bleu_score(candidate, refs), 0.8409)
+        assert_allclose(bleu_score(candidate, refs), 0.8408964)
 
         # Empty input
         candidate = [[]]
@@ -39,7 +39,7 @@ class TestUtils(TorchtextTestCase):
         assert metrics.bleu_score(candidate, refs) == 0
 
         # Long input, compared to NLTK implementation score
-        candidate = [['Lucille', 'Bluth', 'has', '3', 'sons'],
+        candidate = [['Lucille', 'B', 'has', '3', 'sons'],
                      ['She', 'loves', 'all', 'her', 'children', 'equally'],
                      ['No', 'match', 'here', 'at', 'all']]
 
@@ -50,10 +50,10 @@ class TestUtils(TorchtextTestCase):
                 [['I', 'have', 'made', 'a', 'terrible', 'mistake'], ['Big', 'mistake']]]
 
         # Value computed using nltk.translate.bleu_score.corpus_bleu(refs, candidate)
-        assert_allclose(bleu_score(candidate, refs), 0.4573)
+        assert_allclose(bleu_score(candidate, refs), 0.4573199)
         assert_allclose(bleu_score(candidate, refs, 3,
-                     weights=[0.33, 0.33, 0.33]), 0.4901)
+                     weights=[0.33, 0.33, 0.33]), 0.4901113)
         assert_allclose(bleu_score(candidate, refs, 2,
-                     weights=[0.5, 0.5]), 0.5120)
+                     weights=[0.5, 0.5]), 0.5119535)
         assert_allclose(bleu_score(candidate, refs, 1,
-                     weights=[1]), 0.5516)
+                     weights=[1]), 0.5515605)
