@@ -49,11 +49,15 @@ class TestUtils(TorchtextTestCase):
                 ['She', 'loves', 'all', 'her', 'children', 'equally']],
                 [['I', 'have', 'made', 'a', 'terrible', 'mistake'], ['Big', 'mistake']]]
 
-        # Value computed using nltk.translate.bleu_score.corpus_bleu(refs, candidate)
+        # The comments below give the code used to get each hardcoded bleu score
+        # nltk.translate.bleu_score.corpus_bleu(refs, candidate)
         assert_allclose(bleu_score(candidate, refs), 0.4573199)
+        # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[0.33]*3)
         assert_allclose(bleu_score(candidate, refs, 3,
                      weights=[0.33, 0.33, 0.33]), 0.4901113)
+        # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[0.5]*2)
         assert_allclose(bleu_score(candidate, refs, 2,
                      weights=[0.5, 0.5]), 0.5119535)
+        # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[1])
         assert_allclose(bleu_score(candidate, refs, 1,
                      weights=[1]), 0.5515605)
