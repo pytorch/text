@@ -1,4 +1,5 @@
 import os
+import shutil 
 import torchtext.data as data
 from torchtext.datasets import AG_NEWS
 
@@ -9,6 +10,8 @@ from ..common.torchtext_test_case import TorchtextTestCase
 def conditional_remove(f):
     if os.path.isfile(f):
         os.remove(f)
+    elif os.path.isdir(f):
+        shutil.rmtree(f)
 
 
 class TestDataset(TorchtextTestCase):
@@ -46,6 +49,8 @@ class TestDataset(TorchtextTestCase):
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
             datafile = os.path.join(self.project_root, ".data", "wikitext-2")
+            conditional_remove(datafile)
+            datafile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
             conditional_remove(datafile)
 
     @slow
@@ -100,5 +105,8 @@ class TestDataset(TorchtextTestCase):
 
         # Delete the dataset after we're done to save disk space on CI
         if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root, ".data", "AG_NEWS")
+            datafile = os.path.join(self.project_root, ".data", "ag_news_csv")
+            conditional_remove(datafile)
+
+            datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
             conditional_remove(datafile)

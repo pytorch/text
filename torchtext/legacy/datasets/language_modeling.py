@@ -23,9 +23,9 @@ class LanguageModelingDataset(data.Dataset):
         fields = [('text', text_field)]
         text = []
         import os
-        print(os.listdir(".data/"))
-        print(os.listdir(".data/wikitext-2"))
-        print(os.listdir(".data/wikitext-2/wikitext-2"))
+        print(".data/ ", os.listdir(".data/"))
+        print(".data/wikitext-2 ", os.listdir(".data/wikitext-2"))
+        print(".data/wikitext-2/wikitext-2 ", os.listdir(".data/wikitext-2/wikitext-2"))
         with io.open(path, encoding=encoding) as f:
             for line in f:
                 text += text_field.preprocess(line)
