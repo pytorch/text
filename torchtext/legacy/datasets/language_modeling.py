@@ -22,6 +22,10 @@ class LanguageModelingDataset(data.Dataset):
                       "by the PyTorch team now !")
         fields = [('text', text_field)]
         text = []
+        import os
+        print(os.listdir(".data/"))
+        print(os.listdir(".data/wikitext-2"))
+        print(os.listdir(".data/wikitext-2/wikitext-2"))
         with io.open(path, encoding=encoding) as f:
             for line in f:
                 text += text_field.preprocess(line)
