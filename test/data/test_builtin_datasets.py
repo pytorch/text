@@ -88,7 +88,7 @@ class TestDataset(TorchtextTestCase):
         if os.environ.get("TRAVIS") == "true":
             datafile = os.path.join(self.project_root, ".data", 'ptb.train.txt')
             conditional_remove(datafile)
-            datafile = os.path.join(self.project_root, ".data", 'ptb.ttest.txt')
+            datafile = os.path.join(self.project_root, ".data", 'ptb.test.txt')
             conditional_remove(datafile)
             datafile = os.path.join(self.project_root, ".data", 'ptb.valid.txt')
             conditional_remove(datafile)
@@ -107,6 +107,5 @@ class TestDataset(TorchtextTestCase):
         if os.environ.get("TRAVIS") == "true":
             datafile = os.path.join(self.project_root, ".data", "ag_news_csv")
             conditional_remove(datafile)
-
             datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
             conditional_remove(datafile)
