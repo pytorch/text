@@ -39,6 +39,7 @@ class TestUtils(TorchtextTestCase):
         assert bleu_score(candidate, refs) == 0
 
         # Long input, compared to NLTK implementation score
+        # nltl version used: 3.4.5
         candidate = [['Lucille', 'B', 'has', '3', 'sons'],
                      ['She', 'loves', 'all', 'her', 'children', 'equally'],
                      ['No', 'match', 'here', 'at', 'all']]
