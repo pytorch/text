@@ -1,4 +1,4 @@
-from torchtext.data import metrics
+from torchtext.data.metrics import bleu_score
 from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
 
@@ -9,12 +9,12 @@ class TestUtils(TorchtextTestCase):
         # Full match
         candidate = [['My', 'full', 'pytorch', 'test']]
         refs = [[['My', 'full', 'pytorch', 'test'], ['Completely', 'Different']]]
-        assert metrics.bleu_score(candidate, refs) == 1
+        assert bleu_score(candidate, refs) == 1
 
         # No 4-gram
         candidate = [['My', 'full', 'pytorch']]
         refs = [[['My', 'full', 'pytorch', 'test'], ['Completely', 'Different']]]
-        assert metrics.bleu_score(candidate, refs) == 0
+        assert bleu_score(candidate, refs) == 0
 
         # Partial match
         candidate = [['My', 'full', 'pytorch', 'test']]
@@ -36,7 +36,7 @@ class TestUtils(TorchtextTestCase):
         # Empty input
         candidate = [[]]
         refs = [[[]]]
-        assert metrics.bleu_score(candidate, refs) == 0
+        assert bleu_score(candidate, refs) == 0
 
         # Long input, compared to NLTK implementation score
         candidate = [['Lucille', 'B', 'has', '3', 'sons'],
@@ -54,10 +54,10 @@ class TestUtils(TorchtextTestCase):
         assert_allclose(bleu_score(candidate, refs), 0.4573199)
         # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[0.33]*3)
         assert_allclose(bleu_score(candidate, refs, 3,
-                     weights=[0.33, 0.33, 0.33]), 0.4901113)
+                        weights=[0.33, 0.33, 0.33]), 0.4901113)
         # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[0.5]*2)
         assert_allclose(bleu_score(candidate, refs, 2,
-                     weights=[0.5, 0.5]), 0.5119535)
+                        weights=[0.5, 0.5]), 0.5119535)
         # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[1])
         assert_allclose(bleu_score(candidate, refs, 1,
-                     weights=[1]), 0.5515605)
+                        weights=[1]), 0.5515605)
