@@ -1,5 +1,5 @@
 import os
-import shutil 
+import shutil
 import torchtext.data as data
 from torchtext.datasets import AG_NEWS
 
