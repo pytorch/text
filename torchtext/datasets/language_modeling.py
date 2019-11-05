@@ -1,12 +1,11 @@
 import torch
 import logging
-import io
 import os
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import Vocab
-from tqdm import tqdm
+from torchtext.data.functional import read_text_iterator, create_data_from_iterator
 
 URLS = {
     'WikiText2':
@@ -18,31 +17,6 @@ URLS = {
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt']
 }
-
-
-def _read_text_iterator(data_path, tokenizer):
-    with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            tokens = tokenizer(' '.join(row))
-            yield tokens
-
-
-def _create_data_from_iterator(vocab, iterator, include_unk):
-    _data = []
-    with tqdm(unit_scale=0, unit='lines') as t:
-        for tokens in iterator:
-            if include_unk:
-                tokens = [vocab[token] for token in tokens]
-            else:
-                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
-                                        for token in tokens]))
-                tokens = token_ids
-            if len(tokens) == 0:
-                logging.info('Row contains no tokens.')
-            _data += tokens
-            t.update(1)
-    return torch.Tensor(_data).long()
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):
@@ -92,7 +66,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
-                    root='.data', vocab=None, include_unk=False):
+                    root='.data', vocab=None, removed_tokens=['<unk>']):
     if dataset_name == 'PennTreebank':
         train_path = download_from_url(URLS['PennTreebank'][0], root=root)
         test_path = download_from_url(URLS['PennTreebank'][1], root=root)
@@ -110,23 +84,35 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
     if vocab is None:
         logging.info('Building Vocab based on {}'.format(train_path))
-        vocab = build_vocab_from_iterator(_read_text_iterator(train_path, tokenizer))
+        vocab = build_vocab_from_iterator(read_text_iterator(train_path, tokenizer))
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
-    train_data = _create_data_from_iterator(
-        vocab, _read_text_iterator(train_path, tokenizer), include_unk)
+    train_iter = create_data_from_iterator(
+        vocab, read_text_iterator(train_path, tokenizer), removed_tokens)
+    train_data = []
+    for tokens in train_iter:
+        train_data += tokens
+
     logging.info('Creating testing data')
-    test_data = _create_data_from_iterator(
-        vocab, _read_text_iterator(test_path, tokenizer), include_unk)
+    test_iter = create_data_from_iterator(
+        vocab, read_text_iterator(test_path, tokenizer), removed_tokens)
+    test_data = []
+    for tokens in test_iter:
+        test_data += tokens
+
     logging.info('Creating valid data')
-    valid_data = _create_data_from_iterator(
-        vocab, _read_text_iterator(valid_path, tokenizer), include_unk)
-    return (LanguageModelingDataset(train_data, vocab),
-            LanguageModelingDataset(test_data, vocab),
-            LanguageModelingDataset(valid_data, vocab))
+    valid_iter = create_data_from_iterator(
+        vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
+    valid_data = []
+    for tokens in valid_iter:
+        valid_data += tokens
+
+    return (LanguageModelingDataset(torch.Tensor(train_data).long(), vocab),
+            LanguageModelingDataset(torch.Tensor(test_data).long(), vocab),
+            LanguageModelingDataset(torch.Tensor(valid_data).long(), vocab))
 
 
 def WikiText2(*args, **kwargs):
@@ -143,7 +129,7 @@ def WikiText2(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import WikiText2
@@ -171,7 +157,7 @@ def WikiText103(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import WikiText103
@@ -199,7 +185,7 @@ def PennTreebank(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import PennTreebank
