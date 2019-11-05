@@ -1,6 +1,10 @@
+import torch
 import sentencepiece as spm
 import re
-
+from torchtext.utils import unicode_csv_reader
+import logging
+import io
+from torchtext.vocab import Vocab
 
 __all__ = [
     "generate_sp_model", "load_sp_model",
@@ -151,3 +155,56 @@ def simple_space_split(iterator):
 
     for line in iterator:
         yield line.split()
+
+
+def read_text_iterator(path, tokenizer):
+    r"""Read text from path and yield a list of tokens based on the tokenizer
+
+    Arguments:
+        path: the file path.
+        tokenizer: the tokenizer used to tokenize string text.
+
+    Examples:
+        >>> from torchtext.data.functional import read_text_iterator
+        >>> tokenizer = get_tokenizer("basic_english")
+        >>> list((read_text_iterator('.data/ptb.train.txt', tokenizer)))
+            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
+    """
+
+    with io.open(path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            tokens = tokenizer(' '.join(row))
+            yield tokens
+
+
+def create_data_from_iterator(vocab, iterator, include_unk):
+    r"""Create data from an token iterator.
+
+    Arguments:
+        vocab: the vocabulary convert token into id.
+        iterator: the iterator yield a list of tokens.
+        include_unk: option to include unk token.
+
+    Examples:
+        >>> from torchtext.data.functional import simple_space_split
+        >>> from torchtext.data.functional import create_data_from_iterator
+        >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
+        >>> create_data_from_iterator(vocab,
+        >>>                           simple_space_split(["Sentencepiece as pieces"]),
+        >>>                           False)
+        >>> tensor([0, 2, 3])
+    """
+
+    _data = []
+    for tokens in iterator:
+        if include_unk:
+            tokens = [vocab[token] for token in tokens]
+        else:
+            token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                                    for token in tokens]))
+            tokens = token_ids
+        if len(tokens) == 0:
+            logging.info('Row contains no tokens.')
+        _data += tokens
+    return torch.Tensor(_data).long()
