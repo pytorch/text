@@ -66,7 +66,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
-                    root='.data', vocab=None, include_unk=False):
+                    root='.data', vocab=None, removed_tokens=['<unk>']):
     if dataset_name == 'PennTreebank':
         train_path = download_from_url(URLS['PennTreebank'][0], root=root)
         test_path = download_from_url(URLS['PennTreebank'][1], root=root)
@@ -91,13 +91,13 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
     train_data = create_data_from_iterator(
-        vocab, read_text_iterator(train_path, tokenizer), include_unk)
+        vocab, read_text_iterator(train_path, tokenizer), removed_tokens)
     logging.info('Creating testing data')
     test_data = create_data_from_iterator(
-        vocab, read_text_iterator(test_path, tokenizer), include_unk)
+        vocab, read_text_iterator(test_path, tokenizer), removed_tokens)
     logging.info('Creating valid data')
     valid_data = create_data_from_iterator(
-        vocab, read_text_iterator(valid_path, tokenizer), include_unk)
+        vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
     return (LanguageModelingDataset(train_data, vocab),
             LanguageModelingDataset(test_data, vocab),
             LanguageModelingDataset(valid_data, vocab))
@@ -117,7 +117,7 @@ def WikiText2(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import WikiText2
@@ -145,7 +145,7 @@ def WikiText103(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import WikiText103
@@ -173,7 +173,7 @@ def PennTreebank(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import PennTreebank

@@ -178,13 +178,13 @@ def read_text_iterator(path, tokenizer):
             yield tokens
 
 
-def create_data_from_iterator(vocab, iterator, include_unk):
+def create_data_from_iterator(vocab, iterator, removed_tokens=None):
     r"""Create data from an token iterator.
 
     Arguments:
         vocab: the vocabulary convert token into id.
         iterator: the iterator yield a list of tokens.
-        include_unk: option to include unk token.
+        removed_tokens: removed tokens from output dataset (Default: None)
 
     Examples:
         >>> from torchtext.data.functional import simple_space_split
@@ -192,16 +192,16 @@ def create_data_from_iterator(vocab, iterator, include_unk):
         >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
         >>> create_data_from_iterator(vocab,
         >>>                           simple_space_split(["Sentencepiece as pieces"]),
-        >>>                           False)
+        >>>                           removed_tokens=['<unk>'])
         >>> tensor([0, 2, 3])
     """
 
     _data = []
     for tokens in iterator:
-        if include_unk:
+        if removed_tokens is None:
             tokens = [vocab[token] for token in tokens]
         else:
-            token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+            token_ids = list(filter(lambda x: x not in removed_tokens, [vocab[token]
                                     for token in tokens]))
             tokens = token_ids
         if len(tokens) == 0:
