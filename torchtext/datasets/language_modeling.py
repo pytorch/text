@@ -90,17 +90,29 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
-    train_data = create_data_from_iterator(
+    train_iter = create_data_from_iterator(
         vocab, read_text_iterator(train_path, tokenizer), removed_tokens)
+    train_data = []
+    for tokens in train_iter:
+        train_data += tokens
+
     logging.info('Creating testing data')
-    test_data = create_data_from_iterator(
+    test_iter = create_data_from_iterator(
         vocab, read_text_iterator(test_path, tokenizer), removed_tokens)
+    test_data = []
+    for tokens in test_iter:
+        test_data += tokens
+
     logging.info('Creating valid data')
-    valid_data = create_data_from_iterator(
+    valid_iter = create_data_from_iterator(
         vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
-    return (LanguageModelingDataset(train_data, vocab),
-            LanguageModelingDataset(test_data, vocab),
-            LanguageModelingDataset(valid_data, vocab))
+    valid_data = []
+    for tokens in valid_iter:
+        valid_data += tokens
+
+    return (LanguageModelingDataset(torch.Tensor(train_data).long(), vocab),
+            LanguageModelingDataset(torch.Tensor(test_data).long(), vocab),
+            LanguageModelingDataset(torch.Tensor(valid_data).long(), vocab))
 
 
 def WikiText2(*args, **kwargs):

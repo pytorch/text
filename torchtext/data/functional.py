@@ -1,10 +1,8 @@
-import torch
 import sentencepiece as spm
 import re
 from torchtext.utils import unicode_csv_reader
 import logging
 import io
-from torchtext.vocab import Vocab
 
 __all__ = [
     "generate_sp_model", "load_sp_model",
@@ -179,7 +177,7 @@ def read_text_iterator(path, tokenizer):
 
 
 def create_data_from_iterator(vocab, iterator, removed_tokens=None):
-    r"""Create data from an token iterator.
+    r"""Yield a list of ids from an token iterator with a vocab.
 
     Arguments:
         vocab: the vocabulary convert token into id.
@@ -190,13 +188,12 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
         >>> from torchtext.data.functional import simple_space_split
         >>> from torchtext.data.functional import create_data_from_iterator
         >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
-        >>> create_data_from_iterator(vocab,
-        >>>                           simple_space_split(["Sentencepiece as pieces"]),
-        >>>                           removed_tokens=['<unk>'])
-        >>> tensor([0, 2, 3])
+        >>> list(create_data_from_iterator(vocab,
+        >>>                                simple_space_split(["Sentencepiece as pieces",
+        >>>                                                   "as pieces"]))
+        >>> [[0, 2, 3], [2, 3]]
     """
 
-    _data = []
     for tokens in iterator:
         if removed_tokens is None:
             tokens = [vocab[token] for token in tokens]
@@ -206,5 +203,4 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
             tokens = token_ids
         if len(tokens) == 0:
             logging.info('Row contains no tokens.')
-        _data += tokens
-    return torch.Tensor(_data).long()
+        yield tokens
