@@ -1,6 +1,5 @@
 import torch
 import logging
-import os
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
@@ -18,50 +17,67 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=['<unk>']):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
-    for fname in extracted_files:
-        if 'train' in fname:
-            train_path = os.path.join(root, fname)
-        if 'test' in fname:
-            test_path = os.path.join(root, fname)
 
     if vocab is None:
-        logging.info('Building Vocab based on {}'.format(train_path))
-        vocab = build_vocab_from_iterator(read_text_iterator(train_path, tokenizer))
+        logging.info('Building Vocab based on train data')
+        read_text = []
+        for fname in extracted_files:
+            if 'train' in fname and ('pos' in fname or 'neg' in fname):
+                read_text += list(read_text_iterator(fname, tokenizer))
+        vocab = build_vocab_from_iterator(read_text)
+        torch.save(vocab, "imdb_vocab.pt")
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
 
-    labels = ['pos', 'neg']
-
-    logging.info('Creating training data')
+    labels = {0, 1}
+    logging.info('Creating train/test data')
     train_data = []
-    for label in ['pos', 'neg']:
-        for fname in glob.iglob(os.path.join(train_path, label, '*.txt')):
-            text = list(create_data_from_iterator(vocab,
-                                                  read_text_iterator(train_path,
-                                                                     tokenizer),
-                                                  removed_tokens))[0]
-            train_data.append((torch.Tensor(text).long(), label))
-
-    logging.info('Creating testing data')
     test_data = []
-    for label in ['pos', 'neg']:
-        for fname in glob.iglob(os.path.join(test_path, label, '*.txt')):
-            text = list(create_data_from_iterator(vocab,
-                                                  read_text_iterator(test_path,
-                                                                     tokenizer),
-                                                  removed_tokens))[0]
-            test_data.append((torch.Tensor(text).long(), label))
+    for fname in extracted_files:
+        if 'urls' in fname:
+            continue
+        elif 'train' in fname:
+            if 'pos' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                train_data.append((1, torch.Tensor(text).long()))
+            elif 'neg' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                train_data.append((0, torch.Tensor(text).long()))
+        elif 'test' in fname:
+            if 'pos' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                test_data.append((1, torch.Tensor(text).long()))
+            elif 'neg' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                test_data.append((0, torch.Tensor(text).long()))
 
-    return (TextClassificationDataset(train_data, vocab, labels),
-            TextClassificationDataset(test_data), vocab, labels)
+    return (TextClassificationDataset(vocab, train_data, labels),
+            TextClassificationDataset(vocab, test_data, labels))
 
 
 def IMDB(*args, **kwargs):
-    """ Defines WikiText2 datasets.
-    Create language modeling dataset: WikiText2
-    Separately returns the train/test/valid set
+    """ Defines IMDB datasets.
+        The labels includes:
+            - 0 : Negative
+            - 1 : Positive
+
+    Create sentiment analysis dataset: IMDB
+    Separately returns the training and test dataset
+
     Arguments:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
@@ -71,11 +87,12 @@ def IMDB(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
+
     Examples:
-        >>> from torchtext.datasets import WikiText2
+        >>> from torchtext.datasets import IMDB
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
+        >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
     """
 
