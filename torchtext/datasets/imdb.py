@@ -25,7 +25,6 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             if 'train' in fname and ('pos' in fname or 'neg' in fname):
                 read_text += list(read_text_iterator(fname, tokenizer))
         vocab = build_vocab_from_iterator(read_text)
-        torch.save(vocab, "imdb_vocab.pt")
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
