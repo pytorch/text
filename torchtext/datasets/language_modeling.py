@@ -88,6 +88,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
+
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
     train_iter = create_data_from_iterator(
