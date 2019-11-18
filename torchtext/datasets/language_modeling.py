@@ -66,7 +66,9 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
-                    root='.data', vocab=None, removed_tokens=['<unk>']):
+                    root='.data', vocab=None, removed_tokens=['<unk>'],
+                    train_filename='train', test_filename='test',
+                    valid_filename='valid'):
     if dataset_name == 'PennTreebank':
         train_path = download_from_url(URLS['PennTreebank'][0], root=root)
         test_path = download_from_url(URLS['PennTreebank'][1], root=root)
@@ -74,46 +76,54 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
+
+        train_path = None
+        test_path = None
+        valid_path = None
         for fname in extracted_files:
-            if 'train' in fname:
+            if train_filename in fname:
                 train_path = os.path.join(root, fname)
-            if 'test' in fname:
+            if test_filename in fname:
                 test_path = os.path.join(root, fname)
-            if 'valid' in fname:
+            if valid_filename in fname:
                 valid_path = os.path.join(root, fname)
 
     if vocab is None:
         logging.info('Building Vocab based on {}'.format(train_path))
+        if train_path is None:
+            raise TypeError("Train file is not defined correctly to generate vocabulary")
         vocab = build_vocab_from_iterator(read_text_iterator(train_path, tokenizer))
+        logging.info('Vocab has {} entries'.format(len(vocab)))
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
 
-    logging.info('Vocab has {} entries'.format(len(vocab)))
-    logging.info('Creating training data')
-    train_iter = create_data_from_iterator(
-        vocab, read_text_iterator(train_path, tokenizer), removed_tokens)
     train_data = []
-    for tokens in train_iter:
-        train_data += tokens
+    if train_path is not None:
+        logging.info('Creating training data')
+        train_iter = create_data_from_iterator(
+            vocab, read_text_iterator(train_path, tokenizer), removed_tokens)
+        for tokens in train_iter:
+            train_data += tokens
 
-    logging.info('Creating testing data')
-    test_iter = create_data_from_iterator(
-        vocab, read_text_iterator(test_path, tokenizer), removed_tokens)
     test_data = []
-    for tokens in test_iter:
-        test_data += tokens
+    if test_path is not None:
+        logging.info('Creating testing data')
+        test_iter = create_data_from_iterator(
+            vocab, read_text_iterator(test_path, tokenizer), removed_tokens)
+        for tokens in test_iter:
+            test_data += tokens
 
-    logging.info('Creating valid data')
-    valid_iter = create_data_from_iterator(
-        vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
     valid_data = []
-    for tokens in valid_iter:
-        valid_data += tokens
+    if valid_path is not None:
+        logging.info('Creating valid data')
+        valid_iter = create_data_from_iterator(
+            vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
+        for tokens in valid_iter:
+            valid_data += tokens
 
-    return (LanguageModelingDataset(torch.Tensor(train_data).long(), vocab),
-            LanguageModelingDataset(torch.Tensor(test_data).long(), vocab),
-            LanguageModelingDataset(torch.Tensor(valid_data).long(), vocab))
+    return tuple(LanguageModelingDataset(torch.Tensor(d).long(), vocab)
+                 for d in (train_data, valid_data, test_data) if d != [])
 
 
 def WikiText2(*args, **kwargs):
