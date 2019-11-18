@@ -30,9 +30,8 @@ class TestDataset(TorchtextTestCase):
                                                      bptt_len=30)
 
         # Delete the dataset after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root, ".data", "wikitext-2")
-            conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "wikitext-2")
+        conditional_remove(datafile)
 
     def test_wikitext2(self):
         from torchtext.datasets import WikiText2
@@ -47,11 +46,10 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 285, 502, 699])
 
         # Delete the dataset after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root, ".data", "wikitext-2")
-            conditional_remove(datafile)
-            datafile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
-            conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "wikitext-2")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
+        conditional_remove(datafile)
 
     @slow
     def test_penntreebank_legacy(self):
@@ -68,9 +66,8 @@ class TestDataset(TorchtextTestCase):
                                                      bptt_len=30)
 
         # Delete the dataset after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root, ".data", "penn-treebank")
-            conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "penn-treebank")
+        conditional_remove(datafile)
 
     def test_penntreebank(self):
         from torchtext.datasets import PennTreebank
@@ -85,13 +82,12 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 2550, 3344, 1125])
 
         # Delete the dataset after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root, ".data", 'ptb.train.txt')
-            conditional_remove(datafile)
-            datafile = os.path.join(self.project_root, ".data", 'ptb.test.txt')
-            conditional_remove(datafile)
-            datafile = os.path.join(self.project_root, ".data", 'ptb.valid.txt')
-            conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", 'ptb.train.txt')
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", 'ptb.test.txt')
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", 'ptb.valid.txt')
+        conditional_remove(datafile)
 
     def test_text_classification(self):
         # smoke test to ensure ag_news dataset works properly
@@ -104,8 +100,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(len(ag_news_test), 7600)
 
         # Delete the dataset after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            datafile = os.path.join(self.project_root, ".data", "ag_news_csv")
-            conditional_remove(datafile)
-            datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
-            conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "ag_news_csv")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
+        conditional_remove(datafile)
