@@ -6,7 +6,7 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
-from tqdm import tqdm
+from torchtext.data.functional import read_text_iterator, create_data_from_iterator
 
 URLS = {
     'AG_NEWS':
@@ -24,7 +24,9 @@ URLS = {
     'AmazonReviewPolarity':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
     'AmazonReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA',
+    'IMDB':
+        'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 }
 
 
@@ -44,19 +46,17 @@ def _csv_iterator(data_path, ngrams, yield_cls=False):
 def _create_data_from_iterator(vocab, iterator, include_unk):
     data = []
     labels = []
-    with tqdm(unit_scale=0, unit='lines') as t:
-        for cls, tokens in iterator:
-            if include_unk:
-                tokens = torch.tensor([vocab[token] for token in tokens])
-            else:
-                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
-                                        for token in tokens]))
-                tokens = torch.tensor(token_ids)
-            if len(tokens) == 0:
-                logging.info('Row contains no tokens.')
-            data.append((cls, tokens))
-            labels.append(cls)
-            t.update(1)
+    for cls, tokens in iterator:
+        if include_unk:
+            tokens = torch.tensor([vocab[token] for token in tokens])
+        else:
+            token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                                    for token in tokens]))
+            tokens = torch.tensor(token_ids)
+        if len(tokens) == 0:
+            logging.info('Row contains no tokens.')
+        data.append((cls, tokens))
+        labels.append(cls)
     return data, set(labels)
 
 
@@ -373,6 +373,90 @@ def AmazonReviewFull(*args, **kwargs):
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
 
 
+def IMDB(tokenizer=get_tokenizer("basic_english"),
+         root='.data', vocab=None, removed_tokens=['<unk>']):
+    """ Defines IMDB datasets.
+        The labels includes:
+            - 0 : Negative
+            - 1 : Positive
+
+    Create sentiment analysis dataset: IMDB
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well (see example below). A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        removed_tokens: removed tokens from output dataset (Default: '<unk>')
+
+    Examples:
+        >>> from torchtext.datasets import IMDB
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
+        >>> vocab = train_dataset.get_vocab()
+
+    """
+    print("IMDB in text classification group.")
+    dataset_tar = download_from_url(URLS['IMDB'], root=root)
+    extracted_files = extract_archive(dataset_tar)
+
+    if vocab is None:
+        logging.info('Building Vocab based on train data')
+        read_text = []
+        for fname in extracted_files:
+            if 'train' in fname and ('pos' in fname or 'neg' in fname):
+                read_text += list(read_text_iterator(fname, tokenizer))
+        vocab = build_vocab_from_iterator(read_text)
+    else:
+        if not isinstance(vocab, Vocab):
+            raise TypeError("Passed vocabulary is not of type Vocab")
+    logging.info('Vocab has {} entries'.format(len(vocab)))
+
+    labels = {0, 1}
+    logging.info('Creating train/test data')
+    train_data = []
+    test_data = []
+
+    for fname in extracted_files:
+        if 'urls' in fname:
+            continue
+        elif 'train' in fname:
+            if 'pos' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                train_data.append((1, torch.Tensor(text).long()))
+            elif 'neg' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                train_data.append((0, torch.Tensor(text).long()))
+        elif 'test' in fname:
+            if 'pos' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                test_data.append((1, torch.Tensor(text).long()))
+            elif 'neg' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                test_data.append((0, torch.Tensor(text).long()))
+
+    return (TextClassificationDataset(vocab, train_data, labels),
+            TextClassificationDataset(vocab, test_data, labels))
+
+
 DATASETS = {
     'AG_NEWS': AG_NEWS,
     'SogouNews': SogouNews,
@@ -381,7 +465,8 @@ DATASETS = {
     'YelpReviewFull': YelpReviewFull,
     'YahooAnswers': YahooAnswers,
     'AmazonReviewPolarity': AmazonReviewPolarity,
-    'AmazonReviewFull': AmazonReviewFull
+    'AmazonReviewFull': AmazonReviewFull,
+    'IMDB': IMDB
 }
 
 
@@ -432,5 +517,7 @@ LABELS = {
                          2: 'score 2',
                          3: 'score 3',
                          4: 'score 4',
-                         5: 'score 5'}
+                         5: 'score 5'},
+    'IMDB': {0: 'Negative',
+             1: 'Positive'}
 }

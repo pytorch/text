@@ -4,12 +4,11 @@ from .sst import SST
 from .translation import TranslationDataset, Multi30k, IWSLT, WMT14  # NOQA
 from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking  # NOQA
 from .trec import TREC
-from .imdb import IMDB
 from .babi import BABI20
 from .text_classification import TextClassificationDataset, \
     AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
     YelpReviewFull, YahooAnswers, \
-    AmazonReviewPolarity, AmazonReviewFull
+    AmazonReviewPolarity, AmazonReviewFull, IMDB
 from .unsupervised_learning import EnWik9
 
 __all__ = ['LanguageModelingDataset',
