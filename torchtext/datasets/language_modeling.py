@@ -81,11 +81,11 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         test_path = None
         valid_path = None
         for fname in extracted_files:
-            if train_filename in fname:
+            if train_filename and train_filename in fname:
                 train_path = os.path.join(root, fname)
-            if test_filename in fname:
+            if test_filename and test_filename in fname:
                 test_path = os.path.join(root, fname)
-            if valid_filename in fname:
+            if valid_filename and valid_filename in fname:
                 valid_path = os.path.join(root, fname)
 
     if vocab is None:
@@ -123,7 +123,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             valid_data += tokens
 
     return tuple(LanguageModelingDataset(torch.Tensor(d).long(), vocab)
-                 for d in (train_data, valid_data, test_data) if d != [])
+                 for d in (train_data, test_data, valid_data) if d != [])
 
 
 def WikiText2(*args, **kwargs):
@@ -141,6 +141,14 @@ def WikiText2(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        train_filename: the filename for train (Default: 'train'). If set to None,
+            train dataset will not be generated.
+        test_filename: the filename for test (Default: 'test'). If set to None,
+            test dataset will not be generated. If train_filename is set to None, a
+            vocab object is required to generate test dataset.
+        valid_filename: the filename for valid (Default: 'valid'). If set to None,
+            valid dataset will not be generated. If train_filename is set to None, a
+            vocab object is required to generate valid dataset.
 
     Examples:
         >>> from torchtext.datasets import WikiText2
@@ -148,6 +156,8 @@ def WikiText2(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
+        >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
+                                       train_filename=None, test_filename=None)
 
     """
 
@@ -169,6 +179,14 @@ def WikiText103(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        train_filename: the filename for train (Default: 'train'). If set to None,
+            train dataset will not be generated.
+        test_filename: the filename for test (Default: 'test'). If set to None,
+            test dataset will not be generated. If train_filename is set to None, a
+            vocab object is required to generate test dataset.
+        valid_filename: the filename for valid (Default: 'valid'). If set to None,
+            valid dataset will not be generated. If train_filename is set to None, a
+            vocab object is required to generate valid dataset.
 
     Examples:
         >>> from torchtext.datasets import WikiText103
@@ -176,6 +194,8 @@ def WikiText103(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset, valid_dataset = WikiText103(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
+        >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
+                                         train_filename=None, test_filename=None)
 
     """
 
