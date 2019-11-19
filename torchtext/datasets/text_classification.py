@@ -374,7 +374,9 @@ def AmazonReviewFull(*args, **kwargs):
 
 
 def IMDB(tokenizer=get_tokenizer("basic_english"),
-         root='.data', vocab=None, removed_tokens=['<unk>']):
+         root='.data', vocab=None, removed_tokens=['<unk>'],
+         train_filename='train', test_filename='test'):
+
     """ Defines IMDB datasets.
         The labels includes:
             - 0 : Negative
@@ -393,6 +395,11 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        train_filename: the filename for train (Default: 'train'). If set to None,
+            train dataset will not be generated.
+        test_filename: the filename for test (Default: 'test'). If set to None,
+            test dataset will not be generated. If train_filename is set to None, a
+            vocab object is required to generate test dataset.
 
     Examples:
         >>> from torchtext.datasets import IMDB
@@ -400,19 +407,23 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
+        >>> test_dataset, = IMDB(tokenizer=tokenizer, vocab=vocab,
+                                 train_filename=None)
 
     """
-    print("IMDB in text classification group.")
+
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
 
-    if vocab is None:
+    if vocab is None and train_filename:
         logging.info('Building Vocab based on train data')
         read_text = []
         for fname in extracted_files:
-            if 'train' in fname and ('pos' in fname or 'neg' in fname):
+            if train_filename in fname and ('pos' in fname or 'neg' in fname):
                 read_text += list(read_text_iterator(fname, tokenizer))
         vocab = build_vocab_from_iterator(read_text)
+    elif vocab is None:
+        raise TypeError("Train file is not defined correctly to generate vocabulary")
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
@@ -426,7 +437,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
     for fname in extracted_files:
         if 'urls' in fname:
             continue
-        elif 'train' in fname:
+        elif train_filename and train_filename in fname:
             if 'pos' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
@@ -439,7 +450,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
                                                                          tokenizer),
                                                       removed_tokens))[0]
                 train_data.append((0, torch.Tensor(text).long()))
-        elif 'test' in fname:
+        elif test_filename and test_filename in fname:
             if 'pos' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
@@ -453,8 +464,8 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
                                                       removed_tokens))[0]
                 test_data.append((0, torch.Tensor(text).long()))
 
-    return (TextClassificationDataset(vocab, train_data, labels),
-            TextClassificationDataset(vocab, test_data, labels))
+    return tuple(TextClassificationDataset(vocab, d, labels)
+                 for d in (train_data, test_data) if d != [])
 
 
 DATASETS = {
