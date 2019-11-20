@@ -375,7 +375,7 @@ def AmazonReviewFull(*args, **kwargs):
 
 def IMDB(tokenizer=get_tokenizer("basic_english"),
          root='.data', vocab=None, removed_tokens=['<unk>'],
-         train_filename='train', test_filename='test'):
+         returned_datasets=('train', 'test')):
 
     """ Defines IMDB datasets.
         The labels includes:
@@ -395,11 +395,11 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
-        train_filename: the filename for train (Default: 'train'). If set to None,
-            train dataset will not be generated.
-        test_filename: the filename for test (Default: 'test'). If set to None,
-            test dataset will not be generated. If train_filename is set to None, a
-            vocab object is required to generate test dataset.
+        returned_datasets: the returned datasets (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test').
+            If 'train' is not in the tuple, an vocab object should be provided which will
+            be used to process valid and/or test data.
 
     Examples:
         >>> from torchtext.datasets import IMDB
@@ -407,8 +407,8 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
-        >>> test_dataset, = IMDB(tokenizer=tokenizer, vocab=vocab,
-                                 train_filename=None)
+        >>> train_dataset, = IMDB(tokenizer=tokenizer, vocab=vocab,
+                                  returned_datasets=('train'))
         >>>
         >>> # Attach text pre-processing iterator to tokenizer
         >>> # For example, add ngrams iterator to tokenizer
@@ -427,11 +427,11 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
 
-    if vocab is None and train_filename:
+    if vocab is None and 'train' in returned_datasets:
         logging.info('Building Vocab based on train data')
         read_text = []
         for fname in extracted_files:
-            if train_filename in fname and ('pos' in fname or 'neg' in fname):
+            if 'train' in fname and ('pos' in fname or 'neg' in fname):
                 read_text += list(read_text_iterator(fname, tokenizer))
         vocab = build_vocab_from_iterator(read_text)
     elif vocab is None:
@@ -449,7 +449,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
     for fname in extracted_files:
         if 'urls' in fname:
             continue
-        elif train_filename and train_filename in fname:
+        elif 'train' in returned_datasets and 'train' in fname:
             if 'pos' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
@@ -462,7 +462,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
                                                                          tokenizer),
                                                       removed_tokens))[0]
                 train_data.append((0, torch.Tensor(text).long()))
-        elif test_filename and test_filename in fname:
+        elif 'test' in returned_datasets and 'test' in fname:
             if 'pos' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
