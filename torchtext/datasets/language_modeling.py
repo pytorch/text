@@ -83,11 +83,11 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         extracted_files = extract_archive(dataset_tar)
 
         for fname in extracted_files:
-            if 'train' in returned_datasets:
+            if 'train' in returned_datasets and 'train' in fname:
                 train_path = os.path.join(root, fname)
-            if 'test' in returned_datasets:
+            elif 'test' in returned_datasets and 'test' in fname:
                 test_path = os.path.join(root, fname)
-            if 'valid' in returned_datasets:
+            elif 'valid' in returned_datasets and 'valid' in fname:
                 valid_path = os.path.join(root, fname)
 
     if vocab is None:
@@ -123,7 +123,9 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
         for tokens in valid_iter:
             valid_data += tokens
-
+    print("len(train_data): ", len(train_data))
+    print("len(test_data): ", len(test_data))
+    print("len(valid_data): ", len(valid_data))
     return tuple(LanguageModelingDataset(torch.Tensor(d).long(), vocab)
                  for d in (train_data, test_data, valid_data) if d != [])
 
