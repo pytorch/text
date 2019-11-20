@@ -409,7 +409,19 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         >>> vocab = train_dataset.get_vocab()
         >>> test_dataset, = IMDB(tokenizer=tokenizer, vocab=vocab,
                                  train_filename=None)
-
+        >>>
+        >>> # Attach text pre-processing iterator to tokenizer
+        >>> # For example, add ngrams iterator to tokenizer
+        >>> from torchtext.data.utils import ngrams_iterator
+        >>> def ngrams_tokenizer_wrapper(ngrams):
+        >>>     spacy_tokenizer = get_tokenizer("spacy")
+        >>>     def _wrapper(input_txt):
+        >>>         txt = ngrams_iterator(spacy_tokenizer(txt),
+        >>>                               ngrams)
+        >>>         return list(txt)
+        >>>     return _wrapper
+        >>> tokenizer = ngrams_tokenizer_wrapper(2)
+        >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
     """
 
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
