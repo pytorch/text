@@ -416,7 +416,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         >>> def ngrams_tokenizer_wrapper(ngrams):
         >>>     spacy_tokenizer = get_tokenizer("spacy")
         >>>     def _wrapper(input_txt):
-        >>>         txt = ngrams_iterator(spacy_tokenizer(txt),
+        >>>         txt = ngrams_iterator(spacy_tokenizer(input_txt),
         >>>                               ngrams)
         >>>         return list(txt)
         >>>     return _wrapper
