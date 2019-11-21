@@ -95,7 +95,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
     if vocab is None:
         if 'train' not in _path.keys():
-            raise TypeError("Train file is not defined correctly to generate vocabulary")
+            raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building Vocab based on {}'.format(_path['train']))
         vocab = build_vocab_from_iterator(read_text_iterator(_path['train'], tokenizer))
         logging.info('Vocab has {} entries'.format(len(vocab)))
