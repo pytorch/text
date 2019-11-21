@@ -69,66 +69,46 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
                     data_select=('train', 'test', 'valid')):
 
-    train_path = None
-    test_path = None
-    valid_path = None
-
+    _path = {}
     if isinstance(data_select, str):
         data_select = [data_select]
     if dataset_name == 'PennTreebank':
         if 'train' in data_select:
-            train_path = download_from_url(URLS['PennTreebank'][0], root=root)
+            _path['train'] = download_from_url(URLS['PennTreebank'][0], root=root)
         if 'test' in data_select:
-            test_path = download_from_url(URLS['PennTreebank'][1], root=root)
+            _path['test'] = download_from_url(URLS['PennTreebank'][1], root=root)
         if 'valid' in data_select:
-            valid_path = download_from_url(URLS['PennTreebank'][2], root=root)
+            _path['valid'] = download_from_url(URLS['PennTreebank'][2], root=root)
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
 
-        for fname in extracted_files:
-            if 'train' in data_select and 'train' in fname:
-                train_path = os.path.join(root, fname)
-            elif 'test' in data_select and 'test' in fname:
-                test_path = os.path.join(root, fname)
-            elif 'valid' in data_select and 'valid' in fname:
-                valid_path = os.path.join(root, fname)
+        for item in data_select:
+            for fname in extracted_files:
+                if item in fname:
+                    _path[item] = os.path.join(root, fname)
 
     if vocab is None:
-        logging.info('Building Vocab based on {}'.format(train_path))
-        if train_path is None:
+        if 'train' not in _path.keys():
             raise TypeError("Train file is not defined correctly to generate vocabulary")
-        vocab = build_vocab_from_iterator(read_text_iterator(train_path, tokenizer))
+        logging.info('Building Vocab based on {}'.format(_path['train']))
+        vocab = build_vocab_from_iterator(read_text_iterator(_path['train'], tokenizer))
         logging.info('Vocab has {} entries'.format(len(vocab)))
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
 
-    train_data = []
-    if train_path is not None:
-        logging.info('Creating training data')
-        train_iter = create_data_from_iterator(
-            vocab, read_text_iterator(train_path, tokenizer), removed_tokens)
-        for tokens in train_iter:
-            train_data += tokens
+    _data = {}
+    for item in _path.keys():
+        _data[item] = []
+        logging.info('Creating {} data'.format(item))
+        _iter = create_data_from_iterator(
+            vocab, read_text_iterator(_path[item], tokenizer), removed_tokens)
+        for tokens in _iter:
+            _data[item] += tokens
 
-    test_data = []
-    if test_path is not None:
-        logging.info('Creating testing data')
-        test_iter = create_data_from_iterator(
-            vocab, read_text_iterator(test_path, tokenizer), removed_tokens)
-        for tokens in test_iter:
-            test_data += tokens
-
-    valid_data = []
-    if valid_path is not None:
-        logging.info('Creating valid data')
-        valid_iter = create_data_from_iterator(
-            vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
-        for tokens in valid_iter:
-            valid_data += tokens
-    return tuple(LanguageModelingDataset(torch.tensor(d).long(), vocab)
-                 for d in (train_data, test_data, valid_data) if d != [])
+    return tuple(LanguageModelingDataset(torch.tensor(_data[d]).long(), vocab)
+                 for d in data_select if _data[d] != [])
 
 
 def WikiText2(*args, **kwargs):
