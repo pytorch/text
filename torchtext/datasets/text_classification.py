@@ -384,7 +384,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
 
     Create sentiment analysis dataset: IMDB
 
-   Separately returns the training and test dataset
+    Separately returns the training and test dataset
 
     Arguments:
         tokenizer: the tokenizer used to preprocess raw text data.
