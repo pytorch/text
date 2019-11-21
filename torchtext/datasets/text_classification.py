@@ -373,6 +373,27 @@ def AmazonReviewFull(*args, **kwargs):
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
 
 
+def _generate_imdb_data(key, extracted_files, vocab, tokenizer, removed_tokens):
+    _data = []
+    for fname in extracted_files:
+        if 'urls' in fname:
+            continue
+        elif key in fname:
+            if 'pos' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                _data.append((1, torch.tensor(text).long()))
+            elif 'neg' in fname:
+                text = list(create_data_from_iterator(vocab,
+                                                      read_text_iterator(fname,
+                                                                         tokenizer),
+                                                      removed_tokens))[0]
+                _data.append((0, torch.tensor(text).long()))
+    return _data
+
+
 def IMDB(tokenizer=get_tokenizer("basic_english"),
          root='.data', vocab=None, removed_tokens=[],
          data_select=('train', 'test')):
@@ -451,37 +472,11 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
 
     labels = {0, 1}
     logging.info('Creating train/test data')
-    _data = {item: [] for item in data_select}
+    _data = {key: [] for key in data_select}
 
-    for fname in extracted_files:
-        if 'urls' in fname:
-            continue
-        elif 'train' in data_select and 'train' in fname:
-            if 'pos' in fname:
-                text = list(create_data_from_iterator(vocab,
-                                                      read_text_iterator(fname,
-                                                                         tokenizer),
-                                                      removed_tokens))[0]
-                _data['train'].append((1, torch.tensor(text).long()))
-            elif 'neg' in fname:
-                text = list(create_data_from_iterator(vocab,
-                                                      read_text_iterator(fname,
-                                                                         tokenizer),
-                                                      removed_tokens))[0]
-                _data['train'].append((0, torch.tensor(text).long()))
-        elif 'test' in data_select and 'test' in fname:
-            if 'pos' in fname:
-                text = list(create_data_from_iterator(vocab,
-                                                      read_text_iterator(fname,
-                                                                         tokenizer),
-                                                      removed_tokens))[0]
-                _data['test'].append((1, torch.tensor(text).long()))
-            elif 'neg' in fname:
-                text = list(create_data_from_iterator(vocab,
-                                                      read_text_iterator(fname,
-                                                                         tokenizer),
-                                                      removed_tokens))[0]
-                _data['test'].append((0, torch.tensor(text).long()))
+    for key in _data.keys():
+        _data[key] = _generate_imdb_data(key, extracted_files, vocab,
+                                         tokenizer, removed_tokens)
 
     return tuple(TextClassificationDataset(vocab, _data[d], labels)
                  for d in data_select)

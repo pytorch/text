@@ -104,3 +104,19 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(datafile)
         datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
         conditional_remove(datafile)
+
+    @slow
+    def test_imdb(self):
+        from torchtext.datasets import IMDB
+        # smoke test to ensure wikitext2 works properly
+        train_dataset, test_dataset = IMDB()
+        self.assertEqual(len(train_dataset), 25000)
+        self.assertEqual(len(test_dataset), 25000)
+
+        # Delete the dataset after we're done to save disk space on CI
+        datafile = os.path.join(self.project_root, ".data", "imdb")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "aclImdb")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "aclImdb_v1.tar.gz")
+        conditional_remove(datafile)
