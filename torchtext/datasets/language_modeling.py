@@ -35,12 +35,12 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         Arguments:
             data: a tensor of tokens. tokens are ids after
                 numericalizing the string tokens.
-                torch.Tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
+                torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
             vocab: Vocabulary object used for dataset.
 
         Examples:
             >>> from torchtext.vocab import build_vocab_from_iterator
-            >>> data = torch.Tensor([token_id_1, token_id_2,
+            >>> data = torch.tensor([token_id_1, token_id_2,
                                      token_id_3, token_id_1]).long()
             >>> vocab = build_vocab_from_iterator([['language', 'modeling']])
             >>> dataset = LanguageModelingDataset(data, vocab)
@@ -127,7 +127,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             vocab, read_text_iterator(valid_path, tokenizer), removed_tokens)
         for tokens in valid_iter:
             valid_data += tokens
-    return tuple(LanguageModelingDataset(torch.Tensor(d).long(), vocab)
+    return tuple(LanguageModelingDataset(torch.tensor(d).long(), vocab)
                  for d in (train_data, test_data, valid_data) if d != [])
 
 
