@@ -452,9 +452,9 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
 
     if isinstance(data_select, str):
         data_select = [data_select]
-    for item in data_select:
-        if item not in ('train', 'test'):
-            raise TypeError('{} in data_select is not supported!'.format(item))
+    for key in data_select:
+        if key not in ('train', 'test'):
+            raise TypeError('{} in data_select is not supported!'.format(key))
 
     if vocab is None and 'train' in data_select:
         logging.info('Building Vocab based on train data')
