@@ -68,9 +68,13 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
                     data_select=('train', 'test', 'valid')):
+
     train_path = None
     test_path = None
     valid_path = None
+
+    if isinstance(data_select, str):
+        data_select = [data_select]
     if dataset_name == 'PennTreebank':
         if 'train' in data_select:
             train_path = download_from_url(URLS['PennTreebank'][0], root=root)
@@ -142,11 +146,13 @@ def WikiText2(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: the returned datasets (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test').
-            If 'train' is not in the tuple, an vocab object should be provided which will
-            be used to process valid and/or test data.
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import WikiText2
@@ -155,7 +161,7 @@ def WikiText2(*args, **kwargs):
         >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
-                                       data_select=('valid'))
+                                       data_select='valid')
 
     """
 
@@ -182,11 +188,13 @@ def WikiText103(*args, **kwargs):
             If 'train' is not in the tuple, an vocab object should be provided which will
             be used to process valid and/or test data.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: the returned datasets (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test').
-            If 'train' is not in the tuple, an vocab object should be provided which will
-            be used to process valid and/or test data.
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import WikiText103
@@ -195,7 +203,7 @@ def WikiText103(*args, **kwargs):
         >>> train_dataset, test_dataset, valid_dataset = WikiText103(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
-                                         data_select=('valid'))
+                                         data_select='valid')
 
     """
 
@@ -217,11 +225,13 @@ def PennTreebank(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: the returned datasets (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test').
-            If 'train' is not in the tuple, an vocab object should be provided which will
-            be used to process valid and/or test data.
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import PennTreebank
@@ -230,7 +240,7 @@ def PennTreebank(*args, **kwargs):
         >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = PennTreebank(tokenizer=tokenizer, vocab=vocab,
-                                          data_select=('valid'))
+                                          data_select='valid')
 
     """
 
