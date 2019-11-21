@@ -65,6 +65,12 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
+def _get_datafile_path(key, extracted_files):
+    for fname in extracted_files:
+        if key in fname:
+            return fname
+
+
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
                     data_select=('train', 'test', 'valid')):
@@ -89,9 +95,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
     _path = {}
     for item in data_select:
-        for fname in extracted_files:
-            if item in fname:
-                _path[item] = fname
+        _path[item] = _get_datafile_path(item, extracted_files)
 
     if vocab is None:
         if 'train' not in _path.keys():
