@@ -374,8 +374,8 @@ def AmazonReviewFull(*args, **kwargs):
 
 
 def IMDB(tokenizer=get_tokenizer("basic_english"),
-         root='.data', vocab=None, removed_tokens=['<unk>'],
-         returned_datasets=('train', 'test')):
+         root='.data', vocab=None, removed_tokens=[],
+         data_select=('train', 'test')):
 
     """ Defines IMDB datasets.
         The labels includes:
@@ -384,7 +384,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
 
     Create sentiment analysis dataset: IMDB
 
-    Separately returns the training and test dataset
+   Separately returns the training and test dataset
 
     Arguments:
         tokenizer: the tokenizer used to preprocess raw text data.
@@ -394,12 +394,14 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
-        returned_datasets: the returned datasets (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test').
-            If 'train' is not in the tuple, an vocab object should be provided which will
-            be used to process valid and/or test data.
+        removed_tokens: removed tokens from output dataset (Default: [])
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test) are generated. Users
+            could also choose any one of them, for example ('test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import IMDB
@@ -408,7 +410,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> train_dataset, = IMDB(tokenizer=tokenizer, vocab=vocab,
-                                  returned_datasets=('train'))
+                                  data_select='train')
         >>>
         >>> # Attach text pre-processing iterator to tokenizer
         >>> # For example, add ngrams iterator to tokenizer
@@ -427,7 +429,13 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
 
-    if vocab is None and 'train' in returned_datasets:
+    if isinstance(data_select, str):
+        data_select = [data_select]
+    for item in data_select:
+        if item not in ('train', 'test'):
+            raise TypeError('{} in data_select is not supported!'.format(item))
+
+    if vocab is None and 'train' in data_select:
         logging.info('Building Vocab based on train data')
         read_text = []
         for fname in extracted_files:
@@ -435,7 +443,7 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
                 read_text += list(read_text_iterator(fname, tokenizer))
         vocab = build_vocab_from_iterator(read_text)
     elif vocab is None:
-        raise TypeError("Train file is not defined correctly to generate vocabulary")
+        raise TypeError('Must pass a vocab if train is not selected.')
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
@@ -443,41 +451,40 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
 
     labels = {0, 1}
     logging.info('Creating train/test data')
-    train_data = []
-    test_data = []
+    _data = {item: [] for item in data_select}
 
     for fname in extracted_files:
         if 'urls' in fname:
             continue
-        elif 'train' in returned_datasets and 'train' in fname:
+        elif 'train' in data_select and 'train' in fname:
             if 'pos' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
                                                                          tokenizer),
                                                       removed_tokens))[0]
-                train_data.append((1, torch.Tensor(text).long()))
+                _data['train'].append((1, torch.tensor(text).long()))
             elif 'neg' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
                                                                          tokenizer),
                                                       removed_tokens))[0]
-                train_data.append((0, torch.Tensor(text).long()))
-        elif 'test' in returned_datasets and 'test' in fname:
+                _data['train'].append((0, torch.tensor(text).long()))
+        elif 'test' in data_select and 'test' in fname:
             if 'pos' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
                                                                          tokenizer),
                                                       removed_tokens))[0]
-                test_data.append((1, torch.Tensor(text).long()))
+                _data['test'].append((1, torch.tensor(text).long()))
             elif 'neg' in fname:
                 text = list(create_data_from_iterator(vocab,
                                                       read_text_iterator(fname,
                                                                          tokenizer),
                                                       removed_tokens))[0]
-                test_data.append((0, torch.Tensor(text).long()))
+                _data['test'].append((0, torch.tensor(text).long()))
 
-    return tuple(TextClassificationDataset(vocab, d, labels)
-                 for d in (train_data, test_data) if d != [])
+    return tuple(TextClassificationDataset(vocab, _data[d], labels)
+                 for d in data_select)
 
 
 DATASETS = {
