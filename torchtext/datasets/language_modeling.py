@@ -66,7 +66,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
-                    root='.data', vocab=None, removed_tokens=['<unk>'],
+                    root='.data', vocab=None, removed_tokens=[],
                     returned_datasets=('train', 'test', 'valid')):
     train_path = None
     test_path = None
@@ -141,7 +141,7 @@ def WikiText2(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        removed_tokens: removed tokens from output dataset (Default: [])
         returned_datasets: the returned datasets (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test').
@@ -181,7 +181,7 @@ def WikiText103(*args, **kwargs):
             could also choose any one or two of them, for example ('train', 'test').
             If 'train' is not in the tuple, an vocab object should be provided which will
             be used to process valid and/or test data.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        removed_tokens: removed tokens from output dataset (Default: [])
         returned_datasets: the returned datasets (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test').
@@ -216,7 +216,7 @@ def PennTreebank(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        removed_tokens: removed tokens from output dataset (Default: [])
         returned_datasets: the returned datasets (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test').
