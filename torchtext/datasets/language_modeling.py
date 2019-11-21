@@ -69,7 +69,6 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
                     data_select=('train', 'test', 'valid')):
 
-    _path = {}
     if isinstance(data_select, str):
         data_select = [data_select]
     for item in data_select:
@@ -77,20 +76,22 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             raise TypeError('{} in data_select is not supported!'.format(item))
 
     if dataset_name == 'PennTreebank':
+        extracted_files = []
         if 'train' in data_select:
-            _path['train'] = download_from_url(URLS['PennTreebank'][0], root=root)
+            extracted_files.append(download_from_url(URLS['PennTreebank'][0], root=root))
         if 'test' in data_select:
-            _path['test'] = download_from_url(URLS['PennTreebank'][1], root=root)
+            extracted_files.append(download_from_url(URLS['PennTreebank'][1], root=root))
         if 'valid' in data_select:
-            _path['valid'] = download_from_url(URLS['PennTreebank'][2], root=root)
+            extracted_files.append(download_from_url(URLS['PennTreebank'][2], root=root))
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files = extract_archive(dataset_tar)
+        extracted_files = [os.path.join(root, d) for d in extract_archive(dataset_tar)]
 
-        for item in data_select:
-            for fname in extracted_files:
-                if item in fname:
-                    _path[item] = os.path.join(root, fname)
+    _path = {}
+    for item in data_select:
+        for fname in extracted_files:
+            if item in fname:
+                _path[item] = fname
 
     if vocab is None:
         if 'train' not in _path.keys():
