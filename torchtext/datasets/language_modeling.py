@@ -114,7 +114,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         _iter = create_data_from_iterator(
             vocab, read_text_iterator(_path[item], tokenizer), removed_tokens)
         for tokens in _iter:
-            data[item] += tokens
+            data[item] += [token_id for token_id in tokens]
 
     return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
                  for d in data_select if data[d] != [])
