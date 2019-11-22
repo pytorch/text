@@ -83,12 +83,9 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
     if dataset_name == 'PennTreebank':
         extracted_files = []
-        if 'train' in data_select:
-            extracted_files.append(download_from_url(URLS['PennTreebank'][0], root=root))
-        if 'test' in data_select:
-            extracted_files.append(download_from_url(URLS['PennTreebank'][1], root=root))
-        if 'valid' in data_select:
-            extracted_files.append(download_from_url(URLS['PennTreebank'][2], root=root))
+        select_to_index = {'train': 0, 'test': 1, 'valid': 2}
+        extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
+                                             root=root) for key in data_select]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = [os.path.join(root, d) for d in extract_archive(dataset_tar)]
