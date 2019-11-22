@@ -380,17 +380,19 @@ def _generate_imdb_data(key, extracted_files, vocab, tokenizer, removed_tokens):
             continue
         elif key in fname:
             if 'pos' in fname:
-                text = list(create_data_from_iterator(vocab,
-                                                      read_text_iterator(fname,
-                                                                         tokenizer),
-                                                      removed_tokens))[0]
-                _data.append((1, torch.tensor(text).long()))
+                _iter = create_data_from_iterator(vocab,
+                                                  read_text_iterator(fname, tokenizer),
+                                                  removed_tokens)
+                for tokens in _iter:
+                    _data.append((1,
+                                  torch.tensor([token_id for token_id in tokens]).long()))
             elif 'neg' in fname:
-                text = list(create_data_from_iterator(vocab,
-                                                      read_text_iterator(fname,
-                                                                         tokenizer),
-                                                      removed_tokens))[0]
-                _data.append((0, torch.tensor(text).long()))
+                _iter = create_data_from_iterator(vocab,
+                                                  read_text_iterator(fname, tokenizer),
+                                                  removed_tokens)
+                for tokens in _iter:
+                    _data.append((0,
+                                  torch.tensor([token_id for token_id in tokens]).long()))
     return _data
 
 
