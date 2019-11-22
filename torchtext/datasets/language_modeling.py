@@ -48,21 +48,21 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         """
 
         super(LanguageModelingDataset, self).__init__()
-        self._data = data
-        self._vocab = vocab
+        self.data = data
+        self.vocab = vocab
 
     def __getitem__(self, i):
-        return self._data[i]
+        return self.data[i]
 
     def __len__(self):
-        return len(self._data)
+        return len(self.data)
 
     def __iter__(self):
-        for x in self._data:
+        for x in self.data:
             yield x
 
     def get_vocab(self):
-        return self._vocab
+        return self.vocab
 
 
 def _get_datafile_path(key, extracted_files):
@@ -77,18 +77,14 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
     if isinstance(data_select, str):
         data_select = [data_select]
-    for item in data_select:
-        if item not in ('train', 'test', 'valid'):
-            raise TypeError('{} in data_select is not supported!'.format(item))
+    if not set(data_select).issubset(set(('train', 'test', 'valid'))):
+        raise TypeError('data_select is not supported!')
 
     if dataset_name == 'PennTreebank':
         extracted_files = []
-        if 'train' in data_select:
-            extracted_files.append(download_from_url(URLS['PennTreebank'][0], root=root))
-        if 'test' in data_select:
-            extracted_files.append(download_from_url(URLS['PennTreebank'][1], root=root))
-        if 'valid' in data_select:
-            extracted_files.append(download_from_url(URLS['PennTreebank'][2], root=root))
+        select_to_index = {'train': 0, 'test': 1, 'valid': 2}
+        extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
+                                             root=root) for key in data_select]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = [os.path.join(root, d) for d in extract_archive(dataset_tar)]
@@ -107,17 +103,21 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
 
-    _data = {}
+    data = {}
     for item in _path.keys():
-        _data[item] = []
+        data[item] = []
         logging.info('Creating {} data'.format(item))
         _iter = create_data_from_iterator(
             vocab, read_text_iterator(_path[item], tokenizer), removed_tokens)
         for tokens in _iter:
-            _data[item] += tokens
+            data[item] += [token_id for token_id in tokens]
 
-    return tuple(LanguageModelingDataset(torch.tensor(_data[d]).long(), vocab)
-                 for d in data_select if _data[d] != [])
+    for key in data_select:
+        if data[key] == []:
+            raise TypeError('Dataset {} is empty!'.format(key))
+
+    return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
+                 for d in data_select)
 
 
 def WikiText2(*args, **kwargs):

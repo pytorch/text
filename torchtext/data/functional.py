@@ -188,20 +188,18 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
         >>> from torchtext.data.functional import simple_space_split
         >>> from torchtext.data.functional import create_data_from_iterator
         >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
-        >>> list(create_data_from_iterator(vocab,
-        >>>                                simple_space_split(["Sentencepiece as pieces",
+        >>> ids_iter = create_data_from_iterator(vocab,
+        >>>                               simple_space_split(["Sentencepiece as pieces",
         >>>                                                   "as pieces"]))
-        >>> [[0, 2, 3], [2, 3]]
+        >>> for ids in ids_iter:
+        >>>     print([num for num in ids])
+        >>> [0, 2, 3]
+        >>> [2, 3]
     """
 
     for tokens in iterator:
         if removed_tokens is None:
-            tokens = [vocab[token] for token in tokens]
+            yield iter(vocab[token] for token in tokens)
         else:
-            token_ids = list(filter(lambda x:
-                                    x not in [vocab[token] for token in removed_tokens],
-                                    [vocab[token] for token in tokens]))
-            tokens = token_ids
-        if len(tokens) == 0:
-            logging.info('Row contains no tokens.')
-        yield tokens
+            tokens = list(filter(lambda x: x not in removed_tokens, tokens))
+            yield iter(vocab[token] for token in tokens)
