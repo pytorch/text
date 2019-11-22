@@ -77,9 +77,8 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
     if isinstance(data_select, str):
         data_select = [data_select]
-    for item in data_select:
-        if item not in ('train', 'test', 'valid'):
-            raise TypeError('{} in data_select is not supported!'.format(item))
+    if not set(data_select).issubset(set(('train', 'test', 'valid'))):
+        raise TypeError('data_select is not supported!')
 
     if dataset_name == 'PennTreebank':
         extracted_files = []
