@@ -48,21 +48,21 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         """
 
         super(LanguageModelingDataset, self).__init__()
-        self._data = data
-        self._vocab = vocab
+        self.data = data
+        self.vocab = vocab
 
     def __getitem__(self, i):
-        return self._data[i]
+        return self.data[i]
 
     def __len__(self):
-        return len(self._data)
+        return len(self.data)
 
     def __iter__(self):
-        for x in self._data:
+        for x in self.data:
             yield x
 
     def get_vocab(self):
-        return self._vocab
+        return self.vocab
 
 
 def _get_datafile_path(key, extracted_files):
@@ -107,17 +107,17 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
 
-    _data = {}
+    data = {}
     for item in _path.keys():
-        _data[item] = []
+        data[item] = []
         logging.info('Creating {} data'.format(item))
         _iter = create_data_from_iterator(
             vocab, read_text_iterator(_path[item], tokenizer), removed_tokens)
         for tokens in _iter:
-            _data[item] += tokens
+            data[item] += tokens
 
-    return tuple(LanguageModelingDataset(torch.tensor(_data[d]).long(), vocab)
-                 for d in data_select if _data[d] != [])
+    return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
+                 for d in data_select if data[d] != [])
 
 
 def WikiText2(*args, **kwargs):
