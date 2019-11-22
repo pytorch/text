@@ -198,8 +198,9 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
         if removed_tokens is None:
             tokens = [vocab[token] for token in tokens]
         else:
-            token_ids = list(filter(lambda x: x not in removed_tokens, [vocab[token]
-                                    for token in tokens]))
+            token_ids = list(filter(lambda x:
+                                    x not in [vocab[token] for token in removed_tokens],
+                                    [vocab[token] for token in tokens]))
             tokens = token_ids
         if len(tokens) == 0:
             logging.info('Row contains no tokens.')
