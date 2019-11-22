@@ -112,8 +112,12 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         for tokens in _iter:
             data[item] += [token_id for token_id in tokens]
 
+    for key in data_select:
+        if data[key] == []:
+            raise TypeError('Dataset {} is empty!'.format(key))
+
     return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
-                 for d in data_select if data[d] != [])
+                 for d in data_select)
 
 
 def WikiText2(*args, **kwargs):
