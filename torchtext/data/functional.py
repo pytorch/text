@@ -201,5 +201,5 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
         if removed_tokens is None:
             yield iter(vocab[token] for token in tokens)
         else:
-            tokens = list(filter(lambda x: x not in removed_tokens, tokens))
-            yield iter(vocab[token] for token in tokens)
+            yield iter(vocab[token] for token in
+                       filter(lambda x: x not in removed_tokens, tokens))
