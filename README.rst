@@ -129,6 +129,16 @@ Others are planned or a work in progress:
 
 See the ``test`` directory for examples of dataset usage.
 
+Legacy Code
+===========
+
+We are currently retiring several datasets as legacy code ```torchtext.legacy```:
+
+* Sentiment analysis: IMDb
+* Language modeling: abstract class + WikiText-2, WikiText103, PennTreebank
+
+These datasets are re-written with a new pattern that is introduced in `Release v0.5.0 <https://github.com/pytorch/text/releases>`_.
+
 Disclaimer on Datasets
 ======================
 
