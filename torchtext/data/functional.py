@@ -1,7 +1,6 @@
 import sentencepiece as spm
 import re
 from torchtext.utils import unicode_csv_reader
-import logging
 import io
 
 __all__ = [
