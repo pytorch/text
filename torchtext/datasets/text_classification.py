@@ -474,13 +474,13 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
 
     labels = {0, 1}
     logging.info('Creating train/test data')
-    _data = {key: [] for key in data_select}
+    data = {key: [] for key in data_select}
 
-    for key in _data.keys():
-        _data[key] = _generate_imdb_data(key, extracted_files, vocab,
-                                         tokenizer, removed_tokens)
+    for key in data.keys():
+        data[key] = _generate_imdb_data(key, extracted_files, vocab,
+                                        tokenizer, removed_tokens)
 
-    return tuple(TextClassificationDataset(vocab, _data[d], labels)
+    return tuple(TextClassificationDataset(vocab, data[d], labels)
                  for d in data_select)
 
 
