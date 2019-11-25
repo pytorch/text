@@ -195,9 +195,9 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
         >>> [0, 2, 3]
         >>> [2, 3]
     """
-    print("new iterator data")
     for tokens in iterator:
         if removed_tokens is None:
             yield iter(vocab[token] for token in tokens)
         else:
-            yield iter(map(vocab, filter(lambda x: x not in removed_tokens, tokens)))
+            yield iter(map(lambda x: vocab[x],
+                       filter(lambda x: x not in removed_tokens, tokens)))
