@@ -123,7 +123,9 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
-                    removed_tokens=[], tokenizer=get_tokenizer("basic_english")):
+                    removed_tokens=[], tokenizer=None):
+    if not tokenizer:
+        tokenizer = get_tokenizer("basic_english")
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
