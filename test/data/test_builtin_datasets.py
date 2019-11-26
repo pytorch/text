@@ -43,7 +43,7 @@ class TestDataset(TorchtextTestCase):
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
-        self.assertEqual(tokens_ids, [2, 285, 502, 699])
+        self.assertEqual(tokens_ids, [[2, 286, 503, 700]])
 
         # Delete the dataset after we're done to save disk space on CI
         datafile = os.path.join(self.project_root, ".data", "wikitext-2")
