@@ -30,8 +30,7 @@ URLS = {
 }
 
 
-def _csv_iterator(data_path, ngrams, yield_cls=False):
-    tokenizer = get_tokenizer("basic_english")
+def _csv_iterator(data_path, tokenizer, ngrams, yield_cls=False):
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
@@ -113,7 +112,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_unk=False):
+def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
+                    root='.data', ngrams=2, vocab=None, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -125,17 +125,20 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_un
 
     if vocab is None:
         logging.info('Building Vocab based on {}'.format(train_csv_path))
-        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
+        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path,
+                                                        tokenizer, ngrams))
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
     logging.info('Creating training data')
     train_data, train_labels = _create_data_from_iterator(
-        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
+        vocab, _csv_iterator(train_csv_path, tokenizer,
+                             ngrams, yield_cls=True), include_unk)
     logging.info('Creating testing data')
     test_data, test_labels = _create_data_from_iterator(
-        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
+        vocab, _csv_iterator(test_csv_path, tokenizer,
+                             ngrams, yield_cls=True), include_unk)
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
     return (TextClassificationDataset(vocab, train_data, train_labels),
@@ -155,6 +158,10 @@ def AG_NEWS(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -184,6 +191,10 @@ def SogouNews(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -222,6 +233,10 @@ def DBpedia(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -248,6 +263,10 @@ def YelpReviewPolarity(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -273,6 +292,10 @@ def YelpReviewFull(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -307,6 +330,10 @@ def YahooAnswers(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -333,6 +360,10 @@ def AmazonReviewPolarity(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -358,6 +389,10 @@ def AmazonReviewFull(*args, **kwargs):
     Separately returns the training and test dataset
 
     Arguments:
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
         root: Directory where the dataset are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
