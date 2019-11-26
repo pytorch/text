@@ -123,64 +123,60 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
-                    removed_tokens=[], tokenizer=None):
+                    removed_tokens=[], tokenizer=None,
+                    data_select=('train', 'test')):
     if not tokenizer:
         tokenizer = get_tokenizer("basic_english")
+
+    if isinstance(data_select, str):
+        data_select = [data_select]
+    if not set(data_select).issubset(set(('train', 'test'))):
+        raise TypeError('data_select is not supported!')
+
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
+    path = {}
     for fname in extracted_files:
-        if fname.endswith('train.csv'):
-            train_csv_path = fname
-        if fname.endswith('test.csv'):
-            test_csv_path = fname
+        if fname.endswith('train.csv') and 'train' in data_select:
+            path['train'] = fname
+        if fname.endswith('test.csv') and 'test' in data_select:
+            path['test'] = fname
 
     if vocab is None:
+        if 'train' not in data_select:
+            raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building Vocab based on train data')
         if dataset_name == 'IMDB':
             data_iterator = _imdb_iterator('train', extracted_files, tokenizer, ngrams)
         else:
-            data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams)
+            data_iterator = _csv_iterator(path['train'], tokenizer, ngrams)
         vocab = build_vocab_from_iterator(data_iterator)
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
 
-    logging.info('Creating training data')
-    if dataset_name == 'IMDB':
-        data_iterator = _imdb_iterator('train', extracted_files,
-                                       tokenizer, ngrams, yield_cls=True)
-    else:
-        data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams, yield_cls=True)
-    data_iter = _create_data_from_iterator(vocab, data_iterator, removed_tokens)
-    train_data = []
-    train_labels = []
-    for cls, tokens in data_iter:
-        train_data.append((torch.tensor(cls),
-                           torch.tensor([token_id for token_id in tokens])))
-        train_labels.append(cls)
-    train_labels = set(train_labels)
+    data = {}
+    for item in data_select:
+        data[item] = {}
+        data[item]['data'] = []
+        data[item]['labels'] = []
+        logging.info('Creating {} data'.format(item))
+        if dataset_name == 'IMDB':
+            data_iterator = _imdb_iterator(item, extracted_files,
+                                           tokenizer, ngrams, yield_cls=True)
+        else:
+            data_iterator = _csv_iterator(path[item], tokenizer, ngrams, yield_cls=True)
+        data_iter = _create_data_from_iterator(vocab, data_iterator, removed_tokens)
+        for cls, tokens in data_iter:
+            data[item]['data'].append((torch.tensor(cls),
+                                       torch.tensor([token_id for token_id in tokens])))
+            data[item]['labels'].append(cls)
+        data[item]['labels'] = set(data[item]['labels'])
 
-    logging.info('Creating testing data')
-    if dataset_name == 'IMDB':
-        data_iterator = _imdb_iterator('test', extracted_files,
-                                       tokenizer, ngrams, yield_cls=True)
-    else:
-        data_iterator = _csv_iterator(test_csv_path, tokenizer, ngrams, yield_cls=True)
-    data_iter = _create_data_from_iterator(vocab, data_iterator, removed_tokens)
-    test_data = []
-    test_labels = []
-    for cls, tokens in data_iter:
-        test_data.append((torch.tensor(cls),
-                          torch.tensor([token_id for token_id in tokens])))
-        test_labels.append(cls)
-    test_labels = set(test_labels)
-
-    if len(train_labels ^ test_labels) > 0:
-        raise ValueError("Training and test labels don't match")
-    return (TextClassificationDataset(vocab, train_data, train_labels),
-            TextClassificationDataset(vocab, test_data, test_labels))
+    return tuple(TextClassificationDataset(vocab, data[item]['data'],
+                                           data[item]['labels']) for item in data_select)
 
 
 def AG_NEWS(*args, **kwargs):
@@ -206,6 +202,13 @@ def AG_NEWS(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
@@ -239,6 +242,13 @@ def SogouNews(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
@@ -281,6 +291,13 @@ def DBpedia(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
@@ -311,6 +328,13 @@ def YelpReviewPolarity(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
@@ -340,6 +364,13 @@ def YelpReviewFull(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
@@ -378,6 +409,13 @@ def YahooAnswers(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
@@ -408,6 +446,13 @@ def AmazonReviewPolarity(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
@@ -437,6 +482,13 @@ def AmazonReviewFull(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
@@ -467,6 +519,13 @@ def IMDB(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import IMDB
