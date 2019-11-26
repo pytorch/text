@@ -1,5 +1,7 @@
 from .. import data
+
 import random
+from io import open
 
 
 class SequenceTaggingDataset(data.Dataset):
@@ -45,7 +47,6 @@ class SequenceTaggingDataset(data.Dataset):
 
 
 class UDPOS(SequenceTaggingDataset):
-
     # Universal Dependencies English Web Treebank.
     # Download original at http://universaldependencies.org/
     # License: http://creativecommons.org/licenses/by-sa/4.0/
@@ -101,3 +102,23 @@ class CoNLL2000Chunking(SequenceTaggingDataset):
         val.sort_key = sort_key
 
         return train, val, test
+
+
+class ATIS(SequenceTaggingDataset):
+    # Airline Travel Information System Dataset.
+    # Convert from https://github.com/MiuLab/SlotGated-SLU/
+    urls = ['https://github.com/bebound/atis_dataset/archive/master.zip']
+    dirname = 'atis_dataset-master'
+    name = 'atis'
+
+    @classmethod
+    def splits(cls, fields, root=".data", train="train.txt",
+               validation="valid.txt",
+               test="test.txt", **kwargs):
+        """Downloads and loads the Universal Dependencies Version 2 POS Tagged
+        data.
+        """
+
+        return super(ATIS, cls).splits(
+            fields=fields, root=root, train=train, validation=validation,
+            test=test, **kwargs)

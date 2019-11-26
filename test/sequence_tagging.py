@@ -22,7 +22,7 @@ PTB_TAG = data.Field(init_token="<bos>", eos_token="<eos>")
 # Load the specified data.
 train, val, test = datasets.UDPOS.splits(
     fields=(('word', WORD), ('udtag', UD_TAG), ('ptbtag', PTB_TAG)),
-    path=".data/sequence-labeling/en-ud-v2",
+    path=".data/udpos/en-ud-v2",
     train="en-ud-tag.v2.train.txt",
     validation="en-ud-tag.v2.dev.txt",
     test="en-ud-tag.v2.test.txt")
@@ -84,3 +84,33 @@ train, val, test = datasets.CoNLL2000Chunking.splits(
     fields=(('inputs', INPUTS), (None, None), ('tags', CHUNK_TAGS))
 )
 print(len(train), len(val), len(test))
+
+# Using the ATIS dataset
+TEXT = data.Field(lower=True, batch_first=True)
+SLOT = data.Field(batch_first=True, unk_token=None)
+INTENT = data.Field(batch_first=True, unk_token=None)
+
+# make splits for data
+train, val, test = datasets.ATIS.splits(
+    fields=(('text', TEXT), ('slot', SLOT), ('intent', INTENT)))
+print('train.fields', train.fields)
+print('len(train)', len(train))
+print('vars(train[0])', vars(train[0]))
+
+TEXT.build_vocab(train, vectors=GloVe(name='6B', dim=300))
+SLOT.build_vocab(train, val, test)
+INTENT.build_vocab(train, val, test)
+
+# print vocab information
+print('len(TEXT.vocab)', len(TEXT.vocab))
+print('TEXT.vocab.vectors.size()', TEXT.vocab.vectors.size())
+
+# make iterator for splits
+train_iter, val_iter, test_iter = data.BucketIterator.splits(
+    (train, val, test), batch_sizes=(32, 256, 256))
+
+# print batch information
+batch = next(iter(train_iter))
+print(batch.text)
+print(batch.slot)
+print(batch.intent)
