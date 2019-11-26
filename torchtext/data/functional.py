@@ -154,7 +154,7 @@ def simple_space_split(iterator):
         yield line.split()
 
 
-def create_data_from_iterator(vocab, iterator, removed_tokens=None):
+def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
     r"""Yield a list of ids from an token iterator with a vocab.
 
     Arguments:
@@ -164,9 +164,9 @@ def create_data_from_iterator(vocab, iterator, removed_tokens=None):
 
     Examples:
         >>> from torchtext.data.functional import simple_space_split
-        >>> from torchtext.data.functional import create_data_from_iterator
+        >>> from torchtext.data.functional import numericalize_tokens_from_iterator
         >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
-        >>> ids_iter = create_data_from_iterator(vocab,
+        >>> ids_iter = numericalize_tokens_from_iterator(vocab,
         >>>                               simple_space_split(["Sentencepiece as pieces",
         >>>                                                   "as pieces"]))
         >>> for ids in ids_iter:

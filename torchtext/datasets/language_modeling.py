@@ -6,7 +6,7 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import Vocab
-from torchtext.data.functional import create_data_from_iterator
+from torchtext.data.functional import numericalize_tokens_from_iterator
 
 URLS = {
     'WikiText2':
@@ -112,7 +112,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         logging.info('Creating {} data'.format(item))
         txt_iter = iter(tokenizer(row) for row in io.open(_path[item],
                                                           encoding="utf8"))
-        _iter = create_data_from_iterator(
+        _iter = numericalize_tokens_from_iterator(
             vocab, txt_iter, removed_tokens)
         for tokens in _iter:
             data[item] += [token_id for token_id in tokens]
