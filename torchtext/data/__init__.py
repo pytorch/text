@@ -11,7 +11,7 @@ from .functional import generate_sp_model, \
     load_sp_model, \
     sentencepiece_numericalizer, \
     sentencepiece_tokenizer, custom_replace, simple_space_split, \
-    read_text_iterator, create_data_from_iterator
+    numericalize_tokens_from_iterator
 
 __all__ = ["Batch",
            "Dataset", "TabularDataset",
@@ -26,4 +26,4 @@ __all__ = ["Batch",
            "generate_sp_model", "load_sp_model",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer",
            "custom_replace", "simple_space_split",
-           "read_text_iterator", "create_data_from_iterator"]
+           "numericalize_tokens_from_iterator"]

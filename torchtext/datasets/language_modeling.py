@@ -1,11 +1,12 @@
 import torch
 import logging
 import os
+import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import Vocab
-from torchtext.data.functional import read_text_iterator, create_data_from_iterator
+from torchtext.data.functional import numericalize_tokens_from_iterator
 
 URLS = {
     'WikiText2':
@@ -97,7 +98,9 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         if 'train' not in _path.keys():
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building Vocab based on {}'.format(_path['train']))
-        vocab = build_vocab_from_iterator(read_text_iterator(_path['train'], tokenizer))
+        txt_iter = iter(tokenizer(row) for row in io.open(_path['train'],
+                                                          encoding="utf8"))
+        vocab = build_vocab_from_iterator(txt_iter)
         logging.info('Vocab has {} entries'.format(len(vocab)))
     else:
         if not isinstance(vocab, Vocab):
@@ -107,8 +110,10 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
     for item in _path.keys():
         data[item] = []
         logging.info('Creating {} data'.format(item))
-        _iter = create_data_from_iterator(
-            vocab, read_text_iterator(_path[item], tokenizer), removed_tokens)
+        txt_iter = iter(tokenizer(row) for row in io.open(_path[item],
+                                                          encoding="utf8"))
+        _iter = numericalize_tokens_from_iterator(
+            vocab, txt_iter, removed_tokens)
         for tokens in _iter:
             data[item] += [token_id for token_id in tokens]
 

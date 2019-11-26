@@ -37,9 +37,9 @@ class TestDataset(TorchtextTestCase):
         from torchtext.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
         train_dataset, test_dataset, valid_dataset = WikiText2()
-        self.assertEqual(len(train_dataset), 1947375)
-        self.assertEqual(len(test_dataset), 230357)
-        self.assertEqual(len(valid_dataset), 203947)
+        self.assertEqual(len(train_dataset), 2049990)
+        self.assertEqual(len(test_dataset), 241859)
+        self.assertEqual(len(valid_dataset), 214417)
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
