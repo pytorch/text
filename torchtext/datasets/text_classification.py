@@ -6,7 +6,7 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
-from torchtext.data.functional import read_text_iterator, create_data_from_iterator
+from torchtext.data.functional import numericalize_tokens_from_iterator
 
 URLS = {
     'AG_NEWS':
@@ -380,16 +380,20 @@ def _generate_imdb_data(key, extracted_files, vocab, tokenizer, removed_tokens):
             continue
         elif key in fname:
             if 'pos' in fname:
-                _iter = create_data_from_iterator(vocab,
-                                                  read_text_iterator(fname, tokenizer),
-                                                  removed_tokens)
+                txt_iter = iter(tokenizer(row) for row in io.open(fname,
+                                                                  encoding="utf8"))
+                _iter = numericalize_tokens_from_iterator(vocab,
+                                                          txt_iter,
+                                                          removed_tokens)
                 for tokens in _iter:
                     _data.append((1,
                                   torch.tensor([token_id for token_id in tokens]).long()))
             elif 'neg' in fname:
-                _iter = create_data_from_iterator(vocab,
-                                                  read_text_iterator(fname, tokenizer),
-                                                  removed_tokens)
+                txt_iter = iter(tokenizer(row) for row in io.open(fname,
+                                                                  encoding="utf8"))
+                _iter = numericalize_tokens_from_iterator(vocab,
+                                                          txt_iter,
+                                                          removed_tokens)
                 for tokens in _iter:
                     _data.append((0,
                                   torch.tensor([token_id for token_id in tokens]).long()))
@@ -463,7 +467,8 @@ def IMDB(tokenizer=get_tokenizer("basic_english"),
         read_text = []
         for fname in extracted_files:
             if 'train' in fname and ('pos' in fname or 'neg' in fname):
-                read_text += list(read_text_iterator(fname, tokenizer))
+                read_text += [tokenizer(row) for row in io.open(fname,
+                                                                encoding="utf8")]
         vocab = build_vocab_from_iterator(read_text)
     elif vocab is None:
         raise TypeError('Must pass a vocab if train is not selected.')
