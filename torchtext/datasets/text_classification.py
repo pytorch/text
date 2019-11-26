@@ -6,7 +6,6 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
-from torchtext.data.functional import numericalize_tokens_from_iterator
 
 URLS = {
     'AG_NEWS':
@@ -43,17 +42,9 @@ def _csv_iterator(data_path, tokenizer, ngrams, yield_cls=False):
 
 
 def _create_data_from_iterator(vocab, iterator, removed_tokens):
-    data = []
-    labels = []
     for cls, tokens in iterator:
-        token_ids = list(map(lambda x: vocab[x],
-                             filter(lambda x: x not in removed_tokens, tokens)))
-        tokens = torch.tensor(token_ids)
-        if len(tokens) == 0:
-            logging.info('Row contains no tokens.')
-        data.append((cls, tokens))
-        labels.append(cls)
-    return data, set(labels)
+        yield cls, iter(map(lambda x: vocab[x],
+                        filter(lambda x: x not in removed_tokens, tokens)))
 
 
 def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
@@ -145,10 +136,10 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
     if vocab is None:
         logging.info('Building Vocab based on train data')
         if dataset_name == 'IMDB':
-            _data_iterator = _imdb_iterator('train', extracted_files, tokenizer, ngrams)
+            data_iterator = _imdb_iterator('train', extracted_files, tokenizer, ngrams)
         else:
-            _data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams)
-        vocab = build_vocab_from_iterator(_data_iterator)
+            data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams)
+        vocab = build_vocab_from_iterator(data_iterator)
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
@@ -156,21 +147,33 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
 
     logging.info('Creating training data')
     if dataset_name == 'IMDB':
-        _data_iterator = _imdb_iterator('train', extracted_files,
-                                        tokenizer, ngrams, yield_cls=True)
+        data_iterator = _imdb_iterator('train', extracted_files,
+                                       tokenizer, ngrams, yield_cls=True)
     else:
-        _data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams, yield_cls=True)
-    train_data, train_labels = _create_data_from_iterator(
-        vocab, _data_iterator, removed_tokens)
+        data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams, yield_cls=True)
+    data_iter = _create_data_from_iterator(vocab, data_iterator, removed_tokens)
+    train_data = []
+    train_labels = []
+    for cls, tokens in data_iter:
+        train_data.append((torch.tensor(cls),
+                           torch.tensor([token_id for token_id in tokens])))
+        train_labels.append(cls)
+    train_labels = set(train_labels)
 
     logging.info('Creating testing data')
     if dataset_name == 'IMDB':
-        _data_iterator = _imdb_iterator('test', extracted_files,
-                                        tokenizer, ngrams, yield_cls=True)
+        data_iterator = _imdb_iterator('test', extracted_files,
+                                       tokenizer, ngrams, yield_cls=True)
     else:
-        _data_iterator = _csv_iterator(test_csv_path, tokenizer, ngrams, yield_cls=True)
-    test_data, test_labels = _create_data_from_iterator(
-        vocab, _data_iterator, removed_tokens)
+        data_iterator = _csv_iterator(test_csv_path, tokenizer, ngrams, yield_cls=True)
+    data_iter = _create_data_from_iterator(vocab, data_iterator, removed_tokens)
+    test_data = []
+    test_labels = []
+    for cls, tokens in data_iter:
+        test_data.append((torch.tensor(cls),
+                          torch.tensor([token_id for token_id in tokens])))
+        test_labels.append(cls)
+    test_labels = set(test_labels)
 
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
