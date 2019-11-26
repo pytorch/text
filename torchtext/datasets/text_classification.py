@@ -42,16 +42,13 @@ def _csv_iterator(data_path, tokenizer, ngrams, yield_cls=False):
                 yield ngrams_iterator(tokens, ngrams)
 
 
-def _create_data_from_iterator(vocab, iterator, include_unk):
+def _create_data_from_iterator(vocab, iterator, removed_tokens):
     data = []
     labels = []
     for cls, tokens in iterator:
-        if include_unk:
-            tokens = torch.tensor([vocab[token] for token in tokens])
-        else:
-            token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
-                                    for token in tokens]))
-            tokens = torch.tensor(token_ids)
+        token_ids = list(map(lambda x: vocab[x],
+                             filter(lambda x: x not in removed_tokens, tokens)))
+        tokens = torch.tensor(token_ids)
         if len(tokens) == 0:
             logging.info('Row contains no tokens.')
         data.append((cls, tokens))
@@ -135,7 +132,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
-                    include_unk=False, tokenizer=get_tokenizer("basic_english")):
+                    removed_tokens=[], tokenizer=get_tokenizer("basic_english")):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -164,7 +161,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
     else:
         _data_iterator = _csv_iterator(train_csv_path, tokenizer, ngrams, yield_cls=True)
     train_data, train_labels = _create_data_from_iterator(
-        vocab, _data_iterator, include_unk)
+        vocab, _data_iterator, removed_tokens)
 
     logging.info('Creating testing data')
     if dataset_name == 'IMDB':
@@ -173,7 +170,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
     else:
         _data_iterator = _csv_iterator(test_csv_path, tokenizer, ngrams, yield_cls=True)
     test_data, test_labels = _create_data_from_iterator(
-        vocab, _data_iterator, include_unk)
+        vocab, _data_iterator, removed_tokens)
 
     if len(train_labels ^ test_labels) > 0:
         raise ValueError("Training and test labels don't match")
@@ -199,7 +196,7 @@ def AG_NEWS(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -232,7 +229,7 @@ def SogouNews(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -274,7 +271,7 @@ def DBpedia(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -304,7 +301,7 @@ def YelpReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -333,7 +330,7 @@ def YelpReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -371,7 +368,7 @@ def YahooAnswers(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -401,7 +398,7 @@ def AmazonReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -430,7 +427,7 @@ def AmazonReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
@@ -460,7 +457,7 @@ def IMDB(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
+        removed_tokens: removed tokens from output dataset (Default: [])
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
