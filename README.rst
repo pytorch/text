@@ -132,7 +132,7 @@ See the ``test`` directory for examples of dataset usage.
 Legacy Code
 ===========
 
-We are currently retiring several datasets as legacy code ```torchtext.legacy```:
+We have currently retired several datasets and moved them under ```torchtext.legacy```:
 
 * Sentiment analysis: IMDb
 * Language modeling: abstract class + WikiText-2, WikiText103, PennTreebank
