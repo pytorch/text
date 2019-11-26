@@ -1,7 +1,6 @@
 import sentencepiece as spm
 import re
 
-
 __all__ = [
     "generate_sp_model", "load_sp_model",
     "sentencepiece_numericalizer", "sentencepiece_tokenizer"
@@ -151,3 +150,31 @@ def simple_space_split(iterator):
 
     for line in iterator:
         yield line.split()
+
+
+def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
+    r"""Yield a list of ids from an token iterator with a vocab.
+
+    Arguments:
+        vocab: the vocabulary convert token into id.
+        iterator: the iterator yield a list of tokens.
+        removed_tokens: removed tokens from output dataset (Default: None)
+
+    Examples:
+        >>> from torchtext.data.functional import simple_space_split
+        >>> from torchtext.data.functional import numericalize_tokens_from_iterator
+        >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
+        >>> ids_iter = numericalize_tokens_from_iterator(vocab,
+        >>>                               simple_space_split(["Sentencepiece as pieces",
+        >>>                                                   "as pieces"]))
+        >>> for ids in ids_iter:
+        >>>     print([num for num in ids])
+        >>> [0, 2, 3]
+        >>> [2, 3]
+    """
+    for tokens in iterator:
+        if removed_tokens is None:
+            yield iter(vocab[token] for token in tokens)
+        else:
+            yield iter(map(lambda x: vocab[x],
+                       filter(lambda x: x not in removed_tokens, tokens)))
