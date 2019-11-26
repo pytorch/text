@@ -52,21 +52,18 @@ def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
         if 'urls' in fname:
             continue
         elif key in fname:
-            tokens = []
             if 'pos' in fname:
                 with io.open(fname, encoding="utf8") as f:
-                    tokens += tokenizer(f.read())
-                if yield_cls:
-                    yield int(1), ngrams_iterator(tokens, ngrams)
-                else:
-                    yield ngrams_iterator(tokens, ngrams)
+                    if yield_cls:
+                        yield int(1), ngrams_iterator(tokenizer(f.read()), ngrams)
+                    else:
+                        yield ngrams_iterator(tokenizer(f.read()), ngrams)
             elif 'neg' in fname:
                 with io.open(fname, encoding="utf8") as f:
-                    tokens += tokenizer(f.read())
-                if yield_cls:
-                    yield int(0), ngrams_iterator(tokens, ngrams)
-                else:
-                    yield ngrams_iterator(tokens, ngrams)
+                    if yield_cls:
+                        yield int(0), ngrams_iterator(tokenizer(f.read()), ngrams)
+                    else:
+                        yield ngrams_iterator(tokenizer(f.read()), ngrams)
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
