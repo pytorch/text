@@ -67,15 +67,3 @@ PennTreebank
 
 .. autoclass:: PennTreebank
   :members: splits, iters
-
-Sentiment Analysis
-^^^^^^^^^^^^^^^^^^
-
-SST
-~~
-
-IMDb
-~~~
-
-.. autoclass:: IMDB
-  :members: splits, iters
