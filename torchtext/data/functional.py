@@ -154,27 +154,6 @@ def simple_space_split(iterator):
         yield line.split()
 
 
-def read_text_iterator(path, tokenizer):
-    r"""Read text from path and yield a list of tokens based on the tokenizer
-
-    Arguments:
-        path: the file path.
-        tokenizer: the tokenizer used to tokenize string text.
-
-    Examples:
-        >>> from torchtext.data.functional import read_text_iterator
-        >>> tokenizer = get_tokenizer("basic_english")
-        >>> list((read_text_iterator('.data/ptb.train.txt', tokenizer)))
-            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
-    """
-
-    with io.open(path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            tokens = tokenizer(' '.join(row))
-            yield tokens
-
-
 def create_data_from_iterator(vocab, iterator, removed_tokens=None):
     r"""Yield a list of ids from an token iterator with a vocab.
 
