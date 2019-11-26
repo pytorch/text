@@ -1,7 +1,5 @@
 import sentencepiece as spm
 import re
-from torchtext.utils import unicode_csv_reader
-import io
 
 __all__ = [
     "generate_sp_model", "load_sp_model",
