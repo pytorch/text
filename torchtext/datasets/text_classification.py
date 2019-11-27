@@ -51,20 +51,13 @@ def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
     for fname in extracted_files:
         if 'urls' in fname:
             continue
-        elif key in fname:
+        elif key in fname and ('pos' in fname or 'neg' in fname):
             with io.open(fname, encoding="utf8") as f:
+                label = 1 if 'pos' in fname else 0
                 if yield_cls:
-                    yield int(1), ngrams_iterator(tokenizer(f.read()), ngrams)
+                    yield label, ngrams_iterator(tokenizer(f.read()), ngrams)
                 else:
                     yield ngrams_iterator(tokenizer(f.read()), ngrams)
-
-            if 'pos' in fname or 'neg' in fname:
-                label = 1.0 if 'pos' in fname else 0.0
-                with io.open(fname, encoding="utf8") as f:
-                    if yield_cls:
-                        yield label, ngrams_iterator(tokenizer(f.read()), ngrams)
-                    else:
-                        yield ngrams_iterator(tokenizer(f.read()), ngrams)
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -120,9 +113,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
-                    removed_tokens=[], tokenizer=None,
-                    data_select=('train', 'test')):
+def generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
     if not tokenizer:
         tokenizer = get_tokenizer("basic_english")
 
@@ -141,43 +132,69 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
         if fname.endswith('test.csv') and 'test' in data_select:
             path['test'] = fname
 
+    iters_group = {}
+    if 'train' in data_select:
+        iters_group['vocab'] = _csv_iterator(path['train'], tokenizer, ngrams)
+    for item in data_select:
+        iters_group[item] = _csv_iterator(path[item], tokenizer,
+                                          ngrams, yield_cls=True)
+    return iters_group
+
+
+def generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
+    if not tokenizer:
+        tokenizer = get_tokenizer("basic_english")
+
+    if isinstance(data_select, str):
+        data_select = [data_select]
+    if not set(data_select).issubset(set(('train', 'test'))):
+        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+
+    dataset_tar = download_from_url(URLS[dataset_name], root=root)
+    extracted_files = extract_archive(dataset_tar)
+
+    iters_group = {}
+    if 'train' in data_select:
+        iters_group['vocab'] = _imdb_iterator('train', extracted_files, tokenizer, ngrams)
+    for item in data_select:
+        iters_group[item] = _imdb_iterator(item, extracted_files,
+                                           tokenizer, ngrams, yield_cls=True)
+    return iters_group
+
+
+def _setup_datasets(iters_group, vocab, removed_tokens):
+
     if vocab is None:
-        if 'train' not in data_select:
+        if 'vocab' not in iters_group.keys():
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building Vocab based on train data')
-        if dataset_name == 'IMDB':
-            data_iterator = _imdb_iterator('train', extracted_files, tokenizer, ngrams)
-        else:
-            data_iterator = _csv_iterator(path['train'], tokenizer, ngrams)
-        vocab = build_vocab_from_iterator(data_iterator)
+        vocab = build_vocab_from_iterator(iters_group['vocab'])
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
 
     data = {}
-    for item in data_select:
+    for item in iters_group.keys():
         data[item] = {}
         data[item]['data'] = []
         data[item]['labels'] = []
         logging.info('Creating {} data'.format(item))
-        if dataset_name == 'IMDB':
-            data_iterator = _imdb_iterator(item, extracted_files,
-                                           tokenizer, ngrams, yield_cls=True)
-        else:
-            data_iterator = _csv_iterator(path[item], tokenizer, ngrams, yield_cls=True)
-        data_iter = _create_data_from_iterator(vocab, data_iterator, removed_tokens)
+        data_iter = _create_data_from_iterator(vocab, iters_group[item], removed_tokens)
         for cls, tokens in data_iter:
             data[item]['data'].append((torch.tensor(cls),
                                        torch.tensor([token_id for token_id in tokens])))
             data[item]['labels'].append(cls)
         data[item]['labels'] = set(data[item]['labels'])
 
+    data_select = list(iters_group.keys())
+    data_select.remove('vocab') if 'vocab' in data_select else None
     return tuple(TextClassificationDataset(vocab, data[item]['data'],
                                            data[item]['labels']) for item in data_select)
 
 
-def AG_NEWS(*args, **kwargs):
+def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+            tokenizer=None, data_select=('train', 'test')):
     """ Defines AG_NEWS datasets.
         The labels includes:
             - 1 : World
@@ -213,10 +230,13 @@ def AG_NEWS(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('AG_NEWS', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def SogouNews(*args, **kwargs):
+def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+              tokenizer=None, data_select=('train', 'test')):
     """ Defines SogouNews datasets.
         The labels includes:
             - 1 : Sports
@@ -253,10 +273,13 @@ def SogouNews(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("SogouNews",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('SogouNews', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def DBpedia(*args, **kwargs):
+def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+            tokenizer=None, data_select=('train', 'test')):
     """ Defines DBpedia datasets.
         The labels includes:
             - 1 : Company
@@ -302,10 +325,13 @@ def DBpedia(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("DBpedia",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('DBpedia', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def YelpReviewPolarity(*args, **kwargs):
+def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+                       tokenizer=None, data_select=('train', 'test')):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity.
@@ -339,10 +365,13 @@ def YelpReviewPolarity(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('YelpReviewPolarity', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def YelpReviewFull(*args, **kwargs):
+def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+                   tokenizer=None, data_select=('train', 'test')):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
@@ -375,10 +404,13 @@ def YelpReviewFull(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('YelpReviewFull', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def YahooAnswers(*args, **kwargs):
+def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+                 tokenizer=None, data_select=('train', 'test')):
     """ Defines YahooAnswers datasets.
         The labels includes:
             - 1 : Society & Culture
@@ -420,10 +452,13 @@ def YahooAnswers(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('YahooAnswers', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def AmazonReviewPolarity(*args, **kwargs):
+def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+                         tokenizer=None, data_select=('train', 'test')):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity
@@ -457,10 +492,13 @@ def AmazonReviewPolarity(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('AmazonReviewPolarity', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def AmazonReviewFull(*args, **kwargs):
+def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+                     tokenizer=None, data_select=('train', 'test')):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
@@ -493,10 +531,13 @@ def AmazonReviewFull(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
+    return _setup_datasets(generate_data_iterators('AmazonReviewFull', root, ngrams,
+                                                   tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
-def IMDB(*args, **kwargs):
+def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
+         tokenizer=None, data_select=('train', 'test')):
     """ Defines IMDB datasets.
         The labels includes:
             - 0 : Negative
@@ -533,7 +574,9 @@ def IMDB(*args, **kwargs):
         >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
     """
 
-    return _setup_datasets(*(('IMDB',) + args), **kwargs)
+    return _setup_datasets(generate_imdb_data_iterators('IMDB', root, ngrams,
+                                                        tokenizer, data_select),
+                           vocab, removed_tokens)
 
 
 DATASETS = {
