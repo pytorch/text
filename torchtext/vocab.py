@@ -553,7 +553,9 @@ def build_vocab_from_iterator(iterator):
     """
 
     counter = Counter()
-    for tokens in iterator:
-        counter.update(tokens)
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for tokens in iterator:
+            counter.update(tokens)
+            t.update(1)
     word_vocab = Vocab(counter)
     return word_vocab
