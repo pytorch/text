@@ -209,7 +209,7 @@ def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -252,7 +252,7 @@ def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -304,7 +304,7 @@ def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -344,7 +344,7 @@ def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -383,7 +383,7 @@ def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -431,7 +431,7 @@ def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -471,7 +471,7 @@ def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -510,7 +510,7 @@ def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the dataset are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -550,7 +550,7 @@ def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
+            Default: 2
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
