@@ -200,7 +200,7 @@ def AG_NEWS(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -240,7 +240,7 @@ def SogouNews(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -289,7 +289,7 @@ def DBpedia(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -326,7 +326,7 @@ def YelpReviewPolarity(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or upel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -362,7 +362,7 @@ def YelpReviewFull(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -407,7 +407,7 @@ def YahooAnswers(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -444,7 +444,7 @@ def AmazonReviewPolarity(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -480,7 +480,7 @@ def AmazonReviewFull(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -517,7 +517,7 @@ def IMDB(*args, **kwargs):
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
