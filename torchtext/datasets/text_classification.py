@@ -52,16 +52,17 @@ def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
         if 'urls' in fname:
             continue
         elif key in fname:
-            if 'pos' in fname:
+            with io.open(fname, encoding="utf8") as f:
+                if yield_cls:
+                    yield int(1), ngrams_iterator(tokenizer(f.read()), ngrams)
+                else:
+                    yield ngrams_iterator(tokenizer(f.read()), ngrams)
+
+            if 'pos' in fname or 'neg' in fname:
+                label = 1.0 if 'pos' in fname else 0.0
                 with io.open(fname, encoding="utf8") as f:
                     if yield_cls:
-                        yield int(1), ngrams_iterator(tokenizer(f.read()), ngrams)
-                    else:
-                        yield ngrams_iterator(tokenizer(f.read()), ngrams)
-            elif 'neg' in fname:
-                with io.open(fname, encoding="utf8") as f:
-                    if yield_cls:
-                        yield int(0), ngrams_iterator(tokenizer(f.read()), ngrams)
+                        yield label, ngrams_iterator(tokenizer(f.read()), ngrams)
                     else:
                         yield ngrams_iterator(tokenizer(f.read()), ngrams)
 
