@@ -129,7 +129,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None,
     if isinstance(data_select, str):
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('data_select is not supported!')
+        raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
