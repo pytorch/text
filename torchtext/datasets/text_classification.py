@@ -218,7 +218,7 @@ def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -261,7 +261,7 @@ def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -313,7 +313,7 @@ def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -353,7 +353,7 @@ def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or upel for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -392,7 +392,7 @@ def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -440,7 +440,7 @@ def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -480,7 +480,7 @@ def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -519,7 +519,7 @@ def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -559,7 +559,7 @@ def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
+            (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
