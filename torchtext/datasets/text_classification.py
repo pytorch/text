@@ -164,6 +164,8 @@ def generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_sel
 
 def _setup_datasets(iters_group, vocab, removed_tokens, data_select):
 
+    if isinstance(data_select, str):
+        data_select = [data_select]
     if vocab is None:
         if 'vocab' not in iters_group.keys():
             raise TypeError("Must pass a vocab if train is not selected.")
