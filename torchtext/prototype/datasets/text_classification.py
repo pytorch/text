@@ -193,8 +193,20 @@ def _setup_datasets(iters_group, vocab, removed_tokens, data_select):
                                            data[item]['labels']) for item in data_select)
 
 
-def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-            tokenizer=None, data_select=('train', 'test')):
+def _initiate_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
+                       removed_tokens=[], tokenizer=None,
+                       data_select=('train', 'test')):
+    if dataset_name == 'IMDB':
+        return _setup_datasets(_generate_imdb_data_iterators(dataset_name, root, ngrams,
+                                                             tokenizer, data_select),
+                               vocab, removed_tokens, data_select)
+    else:
+        return _setup_datasets(_generate_data_iterators(dataset_name, root, ngrams,
+                                                        tokenizer, data_select),
+                               vocab, removed_tokens, data_select)
+
+
+def AG_NEWS(*args, **kwargs):
     """ Defines AG_NEWS datasets.
         The labels includes:
             - 1 : World
@@ -209,7 +221,7 @@ def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -230,13 +242,10 @@ def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('AG_NEWS', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("AG_NEWS",) + args), **kwargs)
 
 
-def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-              tokenizer=None, data_select=('train', 'test')):
+def SogouNews(*args, **kwargs):
     """ Defines SogouNews datasets.
         The labels includes:
             - 1 : Sports
@@ -252,7 +261,7 @@ def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -273,13 +282,10 @@ def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('SogouNews', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("SogouNews",) + args), **kwargs)
 
 
-def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-            tokenizer=None, data_select=('train', 'test')):
+def DBpedia(*args, **kwargs):
     """ Defines DBpedia datasets.
         The labels includes:
             - 1 : Company
@@ -304,7 +310,7 @@ def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -325,13 +331,10 @@ def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('DBpedia', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("DBpedia",) + args), **kwargs)
 
 
-def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-                       tokenizer=None, data_select=('train', 'test')):
+def YelpReviewPolarity(*args, **kwargs):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity.
@@ -344,7 +347,7 @@ def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -365,13 +368,10 @@ def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('YelpReviewPolarity', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
 
 
-def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-                   tokenizer=None, data_select=('train', 'test')):
+def YelpReviewFull(*args, **kwargs):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
@@ -383,7 +383,7 @@ def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -404,13 +404,10 @@ def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('YelpReviewFull', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("YelpReviewFull",) + args), **kwargs)
 
 
-def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-                 tokenizer=None, data_select=('train', 'test')):
+def YahooAnswers(*args, **kwargs):
     """ Defines YahooAnswers datasets.
         The labels includes:
             - 1 : Society & Culture
@@ -431,7 +428,7 @@ def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -452,13 +449,10 @@ def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('YahooAnswers', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("YahooAnswers",) + args), **kwargs)
 
 
-def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-                         tokenizer=None, data_select=('train', 'test')):
+def AmazonReviewPolarity(*args, **kwargs):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity
@@ -471,7 +465,7 @@ def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -492,13 +486,10 @@ def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('AmazonReviewPolarity', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
 
 
-def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-                     tokenizer=None, data_select=('train', 'test')):
+def AmazonReviewFull(*args, **kwargs):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
@@ -510,7 +501,7 @@ def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the dataset are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -531,13 +522,10 @@ def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(_generate_data_iterators('AmazonReviewFull', root, ngrams,
-                                                    tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("AmazonReviewFull",) + args), **kwargs)
 
 
-def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
-         tokenizer=None, data_select=('train', 'test')):
+def IMDB(*args, **kwargs):
     """ Defines IMDB datasets.
         The labels includes:
             - 0 : Negative
@@ -550,7 +538,7 @@ def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
-            Default: 2
+            Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
@@ -574,9 +562,7 @@ def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
         >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
     """
 
-    return _setup_datasets(_generate_imdb_data_iterators('IMDB', root, ngrams,
-                                                         tokenizer, data_select),
-                           vocab, removed_tokens, data_select)
+    return _initiate_datasets(*(("IMDB",) + args), **kwargs)
 
 
 DATASETS = {
