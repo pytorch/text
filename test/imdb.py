@@ -1,5 +1,5 @@
 from torchtext import data
-from torchtext.legacy import datasets
+from torchtext import datasets
 from torchtext.vocab import GloVe
 
 

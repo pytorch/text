@@ -3,23 +3,33 @@ torchtext.datasets
 
 .. currentmodule:: torchtext.datasets
 
-General use cases are as follows: ::
+All datasets are subclasses of :class:`torchtext.data.Dataset`, which
+inherits from :class:`torch.utils.data.Dataset` i.e, they have ``split`` and
+``iters`` methods implemented.
 
+General use cases are as follows:
 
-    # import datasets
-    from torchtext.datasets import IMDB
+Approach 1, ``splits``: ::
 
-    # set up tokenizer (the default on is basic_english tokenizer)
-    from torchtext.data.utils import get_tokenizer
-    tokenizer = get_tokenizer("spacy")
+    # set up fields
+    TEXT = data.Field(lower=True, include_lengths=True, batch_first=True)
+    LABEL = data.Field(sequential=False)
 
-    # obtain data and vocab with a custom tokenizer
-    train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
-    vocab = train_dataset.get_vocab()
+    # make splits for data
+    train, test = datasets.IMDB.splits(TEXT, LABEL)
 
-    # use the default tokenizer
-    train_dataset, test_dataset = IMDB()
-    vocab = train_dataset.get_vocab()
+    # build the vocabulary
+    TEXT.build_vocab(train, vectors=GloVe(name='6B', dim=300))
+    LABEL.build_vocab(train)
+
+    # make iterator for splits
+    train_iter, test_iter = data.BucketIterator.splits(
+        (train, test), batch_size=3, device=0)
+
+Approach 2, ``iters``: ::
+
+    # use default configurations
+    train_iter, test_iter = datasets.IMDB.iters(batch_size=4)
 
 The following datasets are available:
 
@@ -40,7 +50,7 @@ IMDb
 ~~~~
 
 .. autoclass:: IMDB
-  :members: __init__ 
+  :members: splits, iters
 
 
 TextClassificationDataset
