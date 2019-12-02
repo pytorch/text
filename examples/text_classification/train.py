@@ -5,7 +5,7 @@ import argparse
 import torch
 import sys
 
-from torchtext.datasets import text_classification
+from torchtext.prototype.datasets import text_classification
 from torch.utils.data import DataLoader
 
 from model import TextSentiment

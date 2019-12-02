@@ -4,7 +4,7 @@ import argparse
 
 import torch
 
-from torchtext.datasets import text_classification
+from torchtext.prototype.datasets import text_classification
 
 r"""
 Once you have the datasets, you can save them as a list of tensors

@@ -1,7 +1,7 @@
 # This is an example to create a text classification dataset and train a sentiment model. 
 
 In the basic case, users can train the sentiment model in model.py with 
-AG_NEWS dataset in torchtext.datasets.text_classification. The dataset is
+AG_NEWS dataset in torchtext.prototype.datasets.text_classification. The dataset is
 default with the ngrams number of 2.
 
 To try the example, run the following script:
