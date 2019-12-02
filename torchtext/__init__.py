@@ -11,4 +11,5 @@ __all__ = ['data',
            'datasets',
            'utils',
            'vocab',
+           'legacy',
            'prototype']
