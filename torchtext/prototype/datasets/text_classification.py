@@ -238,7 +238,7 @@ def AG_NEWS(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.AG_NEWS(ngrams=3)
 
     """
 
@@ -278,7 +278,7 @@ def SogouNews(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.SogouNews(ngrams=3)
 
     """
 
@@ -327,7 +327,7 @@ def DBpedia(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.DBpedia(ngrams=3)
 
     """
 
@@ -364,7 +364,7 @@ def YelpReviewPolarity(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.YelpReviewPolarity(ngrams=3)
 
     """
 
@@ -400,7 +400,7 @@ def YelpReviewFull(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.YelpReviewFull(ngrams=3)
 
     """
 
@@ -445,7 +445,7 @@ def YahooAnswers(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.YahooAnswers(ngrams=3)
 
     """
 
@@ -482,7 +482,7 @@ def AmazonReviewPolarity(*args, **kwargs):
             data.
 
     Examples:
-       >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
+       >>> train, test = torchtext.prototype.datasets.AmazonReviewPolarity(ngrams=3)
 
     """
 
@@ -518,7 +518,7 @@ def AmazonReviewFull(*args, **kwargs):
             data.
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
+        >>> train, test = torchtext.prototype.datasets.AmazonReviewFull(ngrams=3)
 
     """
 
@@ -555,11 +555,11 @@ def IMDB(*args, **kwargs):
             data.
 
     Examples:
-        >>> from torchtext.datasets import IMDB
+        >>> from torchtext.prototype.datasets import IMDB
         >>> from torchtext.data.utils import get_tokenizer
-        >>> train_dataset, test_dataset = IMDB(ngrams=3)
+        >>> train, test = IMDB(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
+        >>> train, test = IMDB(tokenizer=tokenizer)
     """
 
     return _initiate_datasets(*(("IMDB",) + args), **kwargs)
