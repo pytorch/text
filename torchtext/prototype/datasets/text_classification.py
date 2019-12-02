@@ -113,7 +113,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
+def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
     if not tokenizer:
         tokenizer = get_tokenizer("basic_english")
 
@@ -141,7 +141,7 @@ def generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
     return iters_group
 
 
-def generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
+def _generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
     if not tokenizer:
         tokenizer = get_tokenizer("basic_english")
 
@@ -230,8 +230,8 @@ def AG_NEWS(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('AG_NEWS', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('AG_NEWS', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -273,8 +273,8 @@ def SogouNews(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('SogouNews', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('SogouNews', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -325,8 +325,8 @@ def DBpedia(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('DBpedia', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('DBpedia', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -365,8 +365,8 @@ def YelpReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('YelpReviewPolarity', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('YelpReviewPolarity', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -404,8 +404,8 @@ def YelpReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('YelpReviewFull', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('YelpReviewFull', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -452,8 +452,8 @@ def YahooAnswers(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('YahooAnswers', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('YahooAnswers', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -492,8 +492,8 @@ def AmazonReviewPolarity(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('AmazonReviewPolarity', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('AmazonReviewPolarity', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -531,8 +531,8 @@ def AmazonReviewFull(root='.data', ngrams=2, vocab=None, removed_tokens=[],
 
     """
 
-    return _setup_datasets(generate_data_iterators('AmazonReviewFull', root, ngrams,
-                                                   tokenizer, data_select),
+    return _setup_datasets(_generate_data_iterators('AmazonReviewFull', root, ngrams,
+                                                    tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
@@ -574,8 +574,8 @@ def IMDB(root='.data', ngrams=2, vocab=None, removed_tokens=[],
         >>> train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
     """
 
-    return _setup_datasets(generate_imdb_data_iterators('IMDB', root, ngrams,
-                                                        tokenizer, data_select),
+    return _setup_datasets(_generate_imdb_data_iterators('IMDB', root, ngrams,
+                                                         tokenizer, data_select),
                            vocab, removed_tokens, data_select)
 
 
