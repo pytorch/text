@@ -117,8 +117,6 @@ def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select)
     if not tokenizer:
         tokenizer = get_tokenizer("basic_english")
 
-    if isinstance(data_select, str):
-        data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
@@ -145,8 +143,6 @@ def _generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_se
     if not tokenizer:
         tokenizer = get_tokenizer("basic_english")
 
-    if isinstance(data_select, str):
-        data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
@@ -164,8 +160,6 @@ def _generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_se
 
 def _setup_datasets(iters_group, vocab, removed_tokens, data_select):
 
-    if isinstance(data_select, str):
-        data_select = [data_select]
     if vocab is None:
         if 'vocab' not in iters_group.keys():
             raise TypeError("Must pass a vocab if train is not selected.")
@@ -196,6 +190,8 @@ def _setup_datasets(iters_group, vocab, removed_tokens, data_select):
 def _initiate_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                        removed_tokens=[], tokenizer=None,
                        data_select=('train', 'test')):
+    if isinstance(data_select, str):
+        data_select = [data_select]
     if dataset_name == 'IMDB':
         return _setup_datasets(_generate_imdb_data_iterators(dataset_name, root, ngrams,
                                                              tokenizer, data_select),
@@ -560,6 +556,7 @@ def IMDB(*args, **kwargs):
         >>> train, test = IMDB(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = IMDB(tokenizer=tokenizer)
+        >>> train, = IMDB(tokenizer=tokenizer, data_select='train')
     """
 
     return _initiate_datasets(*(("IMDB",) + args), **kwargs)
