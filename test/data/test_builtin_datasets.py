@@ -1,7 +1,7 @@
 import os
 import shutil
 import torchtext.data as data
-from torchtext.prototype.datasets import AG_NEWS
+from torchtext.experimental.datasets import AG_NEWS
 
 from ..common.test_markers import slow
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -107,7 +107,7 @@ class TestDataset(TorchtextTestCase):
 
     @slow
     def test_imdb(self):
-        from torchtext.prototype.datasets import IMDB
+        from torchtext.experimental.datasets import IMDB
         # smoke test to ensure wikitext2 works properly
         train_dataset, test_dataset = IMDB()
         self.assertEqual(len(train_dataset), 25000)
