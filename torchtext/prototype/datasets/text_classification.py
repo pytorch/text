@@ -124,37 +124,27 @@ def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select)
     extracted_files = extract_archive(dataset_tar)
 
     path = {}
-    for fname in extracted_files:
-        if fname.endswith('train.csv') and 'train' in data_select:
-            path['train'] = fname
-        if fname.endswith('test.csv') and 'test' in data_select:
-            path['test'] = fname
+    if dataset_name != 'IMDB':
+        for fname in extracted_files:
+            if fname.endswith('train.csv') and 'train' in data_select:
+                path['train'] = fname
+            if fname.endswith('test.csv') and 'test' in data_select:
+                path['test'] = fname
 
     iters_group = {}
     if 'train' in data_select:
-        iters_group['vocab'] = _csv_iterator(path['train'], tokenizer, ngrams)
+        if dataset_name == 'IMDB':
+            iters_group['vocab'] = _imdb_iterator('train', extracted_files,
+                                                  tokenizer, ngrams)
+        else:
+            iters_group['vocab'] = _csv_iterator(path['train'], tokenizer, ngrams)
     for item in data_select:
-        iters_group[item] = _csv_iterator(path[item], tokenizer,
-                                          ngrams, yield_cls=True)
-    return iters_group
-
-
-def _generate_imdb_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
-    if not tokenizer:
-        tokenizer = get_tokenizer("basic_english")
-
-    if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
-
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
-
-    iters_group = {}
-    if 'train' in data_select:
-        iters_group['vocab'] = _imdb_iterator('train', extracted_files, tokenizer, ngrams)
-    for item in data_select:
-        iters_group[item] = _imdb_iterator(item, extracted_files,
-                                           tokenizer, ngrams, yield_cls=True)
+        if dataset_name == 'IMDB':
+            iters_group[item] = _imdb_iterator(item, extracted_files,
+                                               tokenizer, ngrams, yield_cls=True)
+        else:
+            iters_group[item] = _csv_iterator(path[item], tokenizer,
+                                              ngrams, yield_cls=True)
     return iters_group
 
 
@@ -192,14 +182,9 @@ def _initiate_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                        data_select=('train', 'test')):
     if isinstance(data_select, str):
         data_select = [data_select]
-    if dataset_name == 'IMDB':
-        return _setup_datasets(_generate_imdb_data_iterators(dataset_name, root, ngrams,
-                                                             tokenizer, data_select),
-                               vocab, removed_tokens, data_select)
-    else:
-        return _setup_datasets(_generate_data_iterators(dataset_name, root, ngrams,
-                                                        tokenizer, data_select),
-                               vocab, removed_tokens, data_select)
+    return _setup_datasets(_generate_data_iterators(dataset_name, root, ngrams,
+                                                    tokenizer, data_select),
+                           vocab, removed_tokens, data_select)
 
 
 def AG_NEWS(*args, **kwargs):
