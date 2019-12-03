@@ -1,7 +1,7 @@
 import os
 import shutil
 import torchtext.data as data
-from torchtext.experimental.datasets import AG_NEWS
+from torchtext.datasets import AG_NEWS
 
 from ..common.test_markers import slow
 from ..common.torchtext_test_case import TorchtextTestCase
