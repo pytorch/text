@@ -3,10 +3,10 @@ import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from os import path
-from torchtext.prototype.datasets.text_classification import URLS
+from torchtext.datasets.text_classification import URLS
 from torchtext.data.functional import generate_sp_model, \
     load_sp_model, sentencepiece_numericalizer
-from torchtext.prototype.datasets import text_classification
+from torchtext.datasets import text_classification
 
 
 def _create_data_with_sp_transform(sp_generator, data_path):
