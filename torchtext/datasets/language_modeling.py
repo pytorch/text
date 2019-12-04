@@ -1,6 +1,5 @@
 from torchtext import data
 import io
-import warnings
 
 
 class LanguageModelingDataset(data.Dataset):
@@ -18,8 +17,6 @@ class LanguageModelingDataset(data.Dataset):
             Remaining keyword arguments: Passed to the constructor of
                 data.Dataset.
         """
-        warnings.warn("You are using a legacy code, which is not being covered "
-                      "by the PyTorch team now !")
         fields = [('text', text_field)]
         text = []
         with io.open(path, encoding=encoding) as f:
