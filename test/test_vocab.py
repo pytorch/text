@@ -145,7 +145,7 @@ class TestVocab(TorchtextTestCase):
             self.assertGreater(len(v), n_vocab)
 
             self.assertEqual(v.itos[:6], ['<unk>', '<pad>', '<bos>',
-                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
+                                          'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
             vectors = v.vectors.numpy()
 
             # The first 5 entries in each vector.
@@ -267,7 +267,7 @@ class TestVocab(TorchtextTestCase):
             conditional_remove(zip_file)
             for dim in ["25", "50", "100", "200"]:
                 conditional_remove(os.path.join(self.project_root, ".vector_cache",
-                                   "glove.twitter.27B.{}d.txt".format(dim)))
+                                                "glove.twitter.27B.{}d.txt".format(dim)))
 
     @slow
     def test_vocab_download_charngram_vectors(self):
@@ -370,3 +370,47 @@ class TestVocab(TorchtextTestCase):
         pickle.dump(v, open(pickle_path, "wb"))
         v_loaded = pickle.load(open(pickle_path, "rb"))
         assert v == v_loaded
+
+    def test_serialization_backcompat(self):
+        # Test whether loading works on models saved in which
+        #  the state was not required to have an "unk_index".
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])  # no unk special
+        # Mock old vocabulary
+        del v.__dict__["unk_index"]
+
+        pickle_path = os.path.join(self.test_dir, "vocab.pkl")
+        pickle.dump(v, open(pickle_path, "wb"))
+        v_loaded = pickle.load(open(pickle_path, "rb"))
+        assert v == v_loaded
+
+    @slow
+    def test_vectors_get_vecs(self):
+        vec = GloVe(name='twitter.27B', dim='25')
+        self.assertEqual(vec.vectors.shape[0], len(vec))
+
+        tokens = ['chip', 'baby', 'Beautiful']
+        token_vecs = vec.get_vecs_by_tokens(tokens).numpy()
+        self.assertEqual(token_vecs.shape[0], len(tokens))
+        self.assertEqual(token_vecs.shape[1], vec.dim)
+        assert_allclose(vec[tokens[0]].numpy(), token_vecs[0])
+        assert_allclose(vec[tokens[1]].numpy(), token_vecs[1])
+        assert_allclose(vec['<unk>'].numpy(), token_vecs[2])
+
+        token_one_vec = vec.get_vecs_by_tokens(tokens[0], lower_case_backup=True).numpy()
+        self.assertEqual(token_one_vec.shape[0], vec.dim)
+        assert_allclose(vec[tokens[0].lower()].numpy(), token_one_vec)
+
+        # Delete the vectors after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            zip_file = os.path.join(self.project_root, ".vector_cache",
+                                    "glove.6B.zip")
+            conditional_remove(zip_file)
+            for dim in ["50", "100", "200", "300"]:
+                conditional_remove(os.path.join(self.project_root, ".vector_cache",
+                                                "glove.6B.{}d.txt".format(dim)))
+
+    def test_has_unk(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        v = vocab.Vocab(c)
+        self.assertEqual(v['not_in_it'], 0)
