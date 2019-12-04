@@ -1,7 +1,7 @@
 .. role:: hidden
     :class: hidden-section
 
-Examples
+Examples (Deprecated)
 =========
 
 1. Ability to describe declaratively how to load a custom NLP dataset that's in a "normal" format:

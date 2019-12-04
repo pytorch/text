@@ -10,10 +10,14 @@ popular datasets for natural language.
 
    self
    torchtext.data <data>
+   data_utils
+   data_functional
+   data_metrics
    torchtext.datasets <datasets>
    torchtext.vocab <vocab>
    torchtext.utils <utils>
-   examples
+   experimental_datasets 
+   examples <examples>
 
 .. automodule:: torchtext
    :members:

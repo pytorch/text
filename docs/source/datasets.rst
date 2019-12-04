@@ -1,7 +1,9 @@
 torchtext.datasets
-====================
+==================
 
 .. currentmodule:: torchtext.datasets
+
+TorchText datasets.
 
 All datasets are subclasses of :class:`torchtext.data.Dataset`, which
 inherits from :class:`torch.utils.data.Dataset` i.e, they have ``split`` and
@@ -36,15 +38,37 @@ The following datasets are available:
 .. contents:: Datasets
     :local:
 
+Language Modeling
+^^^^^^^^^^^^^^^^^
+
+Language modeling datasets are subclasses of ``LanguageModelingDataset`` class.
+
+.. autoclass:: LanguageModelingDataset
+  :members: __init__
+
+
+WikiText-2
+~~~~~~~~~~
+
+.. autoclass:: WikiText2
+  :members: splits, iters
+
+
+WikiText103
+~~~~~~~~~~~
+
+.. autoclass:: WikiText103
+  :members: splits, iters
+
+
+PennTreebank
+~~~~~~~~~~~~
+
+.. autoclass:: PennTreebank
+  :members: splits, iters
 
 Sentiment Analysis
 ^^^^^^^^^^^^^^^^^^
-
-SST
-~~~
-
-.. autoclass:: SST
-  :members: splits, iters
 
 IMDb
 ~~~~
