@@ -6,6 +6,7 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
+from tqdm import tqdm
 
 URLS = {
     'AG_NEWS':
@@ -27,7 +28,8 @@ URLS = {
 }
 
 
-def _csv_iterator(data_path, tokenizer, ngrams, yield_cls=False):
+def _csv_iterator(data_path, ngrams, yield_cls=False):
+    tokenizer = get_tokenizer("basic_english")
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
@@ -39,10 +41,23 @@ def _csv_iterator(data_path, tokenizer, ngrams, yield_cls=False):
                 yield ngrams_iterator(tokens, ngrams)
 
 
-def _create_data_from_iterator(vocab, iterator, removed_tokens):
-    for cls, tokens in iterator:
-        yield cls, iter(map(lambda x: vocab[x],
-                        filter(lambda x: x not in removed_tokens, tokens)))
+def _create_data_from_iterator(vocab, iterator, include_unk):
+    data = []
+    labels = []
+    with tqdm(unit_scale=0, unit='lines') as t:
+        for cls, tokens in iterator:
+            if include_unk:
+                tokens = torch.tensor([vocab[token] for token in tokens])
+            else:
+                token_ids = list(filter(lambda x: x is not Vocab.UNK, [vocab[token]
+                                        for token in tokens]))
+                tokens = torch.tensor(token_ids)
+            if len(tokens) == 0:
+                logging.info('Row contains no tokens.')
+            data.append((cls, tokens))
+            labels.append(cls)
+            t.update(1)
+    return data, set(labels)
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -98,66 +113,33 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
-    if not tokenizer:
-        tokenizer = get_tokenizer("basic_english")
-
-    if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
-
+def _setup_datasets(dataset_name, root='.data', ngrams=2, vocab=None, include_unk=False):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
-    path = {}
     for fname in extracted_files:
-        if fname.endswith('train.csv') and 'train' in data_select:
-            path['train'] = fname
-        if fname.endswith('test.csv') and 'test' in data_select:
-            path['test'] = fname
-
-    iters_group = {}
-    iters_group['vocab'] = _csv_iterator(path['train'], tokenizer, ngrams)
-    for item in data_select:
-        iters_group[item] = _csv_iterator(path[item], tokenizer,
-                                          ngrams, yield_cls=True)
-    return iters_group
-
-
-def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
-                    removed_tokens=[], tokenizer=None,
-                    data_select=('train', 'test')):
-
-    if isinstance(data_select, str):
-        data_select = [data_select]
-
-    iters_group = _generate_data_iterators(dataset_name, root, ngrams,
-                                           tokenizer, data_select)
+        if fname.endswith('train.csv'):
+            train_csv_path = fname
+        if fname.endswith('test.csv'):
+            test_csv_path = fname
 
     if vocab is None:
-        if 'vocab' not in iters_group.keys():
-            raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building Vocab based on train data')
-        vocab = build_vocab_from_iterator(iters_group['vocab'])
+        logging.info('Building Vocab based on {}'.format(train_csv_path))
+        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams))
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
     logging.info('Vocab has {} entries'.format(len(vocab)))
-
-    data = {}
-    for item in iters_group.keys():
-        data[item] = {}
-        data[item]['data'] = []
-        data[item]['labels'] = []
-        logging.info('Creating {} data'.format(item))
-        data_iter = _create_data_from_iterator(vocab, iters_group[item], removed_tokens)
-        for cls, tokens in data_iter:
-            data[item]['data'].append((torch.tensor(cls),
-                                       torch.tensor([token_id for token_id in tokens])))
-            data[item]['labels'].append(cls)
-        data[item]['labels'] = set(data[item]['labels'])
-
-    return tuple(TextClassificationDataset(vocab, data[item]['data'],
-                                           data[item]['labels']) for item in data_select)
+    logging.info('Creating training data')
+    train_data, train_labels = _create_data_from_iterator(
+        vocab, _csv_iterator(train_csv_path, ngrams, yield_cls=True), include_unk)
+    logging.info('Creating testing data')
+    test_data, test_labels = _create_data_from_iterator(
+        vocab, _csv_iterator(test_csv_path, ngrams, yield_cls=True), include_unk)
+    if len(train_labels ^ test_labels) > 0:
+        raise ValueError("Training and test labels don't match")
+    return (TextClassificationDataset(vocab, train_data, train_labels),
+            TextClassificationDataset(vocab, test_data, test_labels))
 
 
 def AG_NEWS(*args, **kwargs):
@@ -178,21 +160,10 @@ def AG_NEWS(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.AG_NEWS(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
 
     """
 
@@ -218,21 +189,10 @@ def SogouNews(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.SogouNews(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
 
     """
 
@@ -267,21 +227,10 @@ def DBpedia(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.DBpedia(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
 
     """
 
@@ -304,21 +253,10 @@ def YelpReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or upel for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.YelpReviewPolarity(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
 
     """
 
@@ -340,21 +278,10 @@ def YelpReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.YelpReviewFull(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
 
     """
 
@@ -385,21 +312,10 @@ def YahooAnswers(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.YahooAnswers(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
 
     """
 
@@ -422,21 +338,10 @@ def AmazonReviewPolarity(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-       >>> train, test = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
+       >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
 
     """
 
@@ -458,21 +363,10 @@ def AmazonReviewFull(*args, **kwargs):
             Default: 1
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+        include_unk: include unknown token in the data (Default: False)
 
     Examples:
-        >>> train, test = torchtext.datasets.AmazonReviewFull(ngrams=3)
+        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
 
     """
 
