@@ -17,7 +17,7 @@ def conditional_remove(f):
 class TestDataset(TorchtextTestCase):
     @slow
     def test_wikitext2_legacy(self):
-        from torchtext.legacy.datasets import WikiText2
+        from torchtext.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
         ds = WikiText2
         TEXT = data.Field(lower=True, batch_first=True)
@@ -34,7 +34,7 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(datafile)
 
     def test_wikitext2(self):
-        from torchtext.datasets import WikiText2
+        from torchtext.experimental.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
         train_dataset, test_dataset, valid_dataset = WikiText2()
         self.assertEqual(len(train_dataset), 2049990)
@@ -53,7 +53,7 @@ class TestDataset(TorchtextTestCase):
 
     @slow
     def test_penntreebank_legacy(self):
-        from torchtext.legacy.datasets import PennTreebank
+        from torchtext.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         TEXT = data.Field(lower=True, batch_first=True)
         ds = PennTreebank
@@ -70,7 +70,7 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(datafile)
 
     def test_penntreebank(self):
-        from torchtext.datasets import PennTreebank
+        from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure wikitext2 works properly
         train_dataset, test_dataset, valid_dataset = PennTreebank()
         self.assertEqual(len(train_dataset), 924412)

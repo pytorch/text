@@ -129,15 +129,18 @@ Others are planned or a work in progress:
 
 See the ``test`` directory for examples of dataset usage.
 
-Legacy Code
-===========
+Experimental Code
+=================
 
-We have currently retired several datasets and moved them under ```torchtext.legacy```:
+We have re-written several datasets under ```torchtext.experimental.datasets```:
 
 * Sentiment analysis: IMDb
 * Language modeling: abstract class + WikiText-2, WikiText103, PennTreebank
 
-These datasets are re-written with a new pattern that is introduced in `Release v0.5.0 <https://github.com/pytorch/text/releases>`_.
+A new pattern is introduced in `Release v0.5.0 <https://github.com/pytorch/text/releases>`_. Several other datasets are also in the new pattern:
+
+* Unsupervised learning dataset: Enwik9
+* Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull
 
 Disclaimer on Datasets
 ======================
