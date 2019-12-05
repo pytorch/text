@@ -37,12 +37,7 @@ torchtext.data.functional
 
 .. autofunction:: simple_space_split 
 
-:hidden:`read_text_iterator`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:hidden:`numericalize_tokens_from_iterator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: read_text_iterator
- 
-:hidden:`create_data_from_iterator`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: create_data_from_iterator
+.. autofunction:: numericalize_tokens_from_iterator
