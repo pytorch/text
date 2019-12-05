@@ -3,7 +3,7 @@ torchtext.experimental.datasets
 
 .. currentmodule:: torchtext.experimental.datasets
 
-The following datasets are re-writed and more compatible with ``torch.utils.data``. General use cases are as follows: ::
+The following datasets have been rewritten and more compatible with ``torch.utils.data``. General use cases are as follows: ::
 
 
     # import datasets
