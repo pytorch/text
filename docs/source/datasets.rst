@@ -70,12 +70,21 @@ PennTreebank
 Sentiment Analysis
 ^^^^^^^^^^^^^^^^^^
 
+SST
+~~~
+
+.. autoclass:: SST 
+  :members: splits, iters
+
 IMDb
 ~~~~
 
 .. autoclass:: IMDB
   :members: splits, iters
 
+
+Text Classification
+^^^^^^^^^^^^^^^^^^^
 
 TextClassificationDataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~
