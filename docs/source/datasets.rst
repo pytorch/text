@@ -3,8 +3,6 @@ torchtext.datasets
 
 .. currentmodule:: torchtext.datasets
 
-TorchText datasets.
-
 All datasets are subclasses of :class:`torchtext.data.Dataset`, which
 inherits from :class:`torch.utils.data.Dataset` i.e, they have ``split`` and
 ``iters`` methods implemented.
@@ -73,7 +71,7 @@ Sentiment Analysis
 SST
 ~~~
 
-.. autoclass:: SST 
+.. autoclass:: SST
   :members: splits, iters
 
 IMDb
