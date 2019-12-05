@@ -4,7 +4,7 @@
 Examples
 =========
 
-Note: We are working on new building blocks and datasets. Some of the components in the examples (like Field) here will eventually retire. 
+Note: We are working on new building blocks and datasets. Some of the components in the examples (e.g. Field) will eventually retire. 
 
 1. Ability to describe declaratively how to load a custom NLP dataset that's in a "normal" format:
 
