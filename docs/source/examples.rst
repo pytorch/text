@@ -4,6 +4,8 @@
 Examples
 =========
 
+Note: We are working on new building blocks and datasets. Some of the components in the examples (e.g. Field) will eventually retire. See the release note 0.5.0 `here <https://github.com/pytorch/text/releases>`_. 
+
 1. Ability to describe declaratively how to load a custom NLP dataset that's in a "normal" format:
 
 .. code-block:: python
