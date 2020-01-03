@@ -31,11 +31,31 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="next" title="torchtext.experimental.datasets" href="experimental_datasets.html" />
     <link rel="prev" title="torchtext.vocab" href="vocab.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -50,11 +70,25 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/features">Features</a>
+            <div class="ecosystem-dropdown">
+              <a id="dropdownMenuButton" data-toggle="ecosystem-dropdown">
+                Ecosystem
+              </a>
+              <div class="ecosystem-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub"">
+                  <span class=dropdown-title>Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/ecosystem">
+                  <span class=dropdown-title>Tools & Libraries</span>
+                  <p>Explore the ecosystem of tools and libraries</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
-            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+            <a href="https://pytorch.org/mobile">Mobile</a>
           </li>
 
           <li>
@@ -70,7 +104,21 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/resources">Resources</a>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources"">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
@@ -139,10 +187,14 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
             
@@ -221,7 +273,7 @@
 <h2><span class="hidden-section">reporthook</span><a class="headerlink" href="#reporthook" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.utils.reporthook">
-<code class="descclassname">torchtext.utils.</code><code class="descname">reporthook</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#reporthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.reporthook" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">reporthook</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#reporthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.reporthook" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://github.com/tqdm/tqdm">https://github.com/tqdm/tqdm</a></p>
 </dd></dl>
 
@@ -230,24 +282,20 @@
 <h2><span class="hidden-section">download_from_url</span><a class="headerlink" href="#download-from-url" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.utils.download_from_url">
-<code class="descclassname">torchtext.utils.</code><code class="descname">download_from_url</code><span class="sig-paren">(</span><em>url</em>, <em>path=None</em>, <em>root='.data'</em>, <em>overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#download_from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.download_from_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">download_from_url</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">path=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#download_from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.download_from_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download file, with logic (from tensor2tensor) for Google Drive.
 Returns the path to the downloaded file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>url</strong> – the url of the file</li>
-<li><strong>path</strong> – explicitly set the filename, otherwise attempts to
-detect the file name from URL header. (None)</li>
-<li><strong>root</strong> – download folder used to store the file in (.data)</li>
-<li><strong>overwrite</strong> – overwrite existing files (False)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – the url of the file</p></li>
+<li><p><strong>path</strong> – explicitly set the filename, otherwise attempts to
+detect the file name from URL header. (None)</p></li>
+<li><p><strong>root</strong> – download folder used to store the file in (.data)</p></li>
+<li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -261,18 +309,15 @@ detect the file name from URL header. (None)</li>
 <h2><span class="hidden-section">unicode_csv_reader</span><a class="headerlink" href="#unicode-csv-reader" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.utils.unicode_csv_reader">
-<code class="descclassname">torchtext.utils.</code><code class="descname">unicode_csv_reader</code><span class="sig-paren">(</span><em>unicode_csv_data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#unicode_csv_reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.unicode_csv_reader" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">unicode_csv_reader</code><span class="sig-paren">(</span><em class="sig-param">unicode_csv_data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#unicode_csv_reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.unicode_csv_reader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
 Borrowed and slightly modified from the Python docs:
 <a class="reference external" href="https://docs.python.org/2/library/csv.html#csv-examples">https://docs.python.org/2/library/csv.html#csv-examples</a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unicode_csv_data</strong> – unicode csv data (see example below)</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>unicode_csv_data</strong> – unicode csv data (see example below)</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="k">import</span> <span class="n">unicode_csv_reader</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
@@ -287,25 +332,20 @@ Borrowed and slightly modified from the Python docs:
 <h2><span class="hidden-section">extract_archive</span><a class="headerlink" href="#extract-archive" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.utils.extract_archive">
-<code class="descclassname">torchtext.utils.</code><code class="descname">extract_archive</code><span class="sig-paren">(</span><em>from_path</em>, <em>to_path=None</em>, <em>overwrite=False</em>, <em>archive='tar'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.extract_archive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">from_path</em>, <em class="sig-param">to_path=None</em>, <em class="sig-param">overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.extract_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract archive.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>from_path</strong> – the path of the archive.</li>
-<li><strong>to_path</strong> – the root path of the extraced files (directory of from_path)</li>
-<li><strong>overwrite</strong> – overwrite existing files (False)</li>
-<li><strong>archive</strong> – the archive format to extract (tar)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_path</strong> – the path of the archive.</p></li>
+<li><p><strong>to_path</strong> – the root path of the extraced files (directory of from_path)</p></li>
+<li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of paths to extracted files even if not overwritten.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of paths to extracted files even if not overwritten.</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">from_path</span> <span class="o">=</span> <span class="s1">&#39;./validation.tar.gz&#39;</span>
@@ -327,7 +367,7 @@ Borrowed and slightly modified from the Python docs:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="experimental_datasets.html" class="btn btn-neutral float-right" title="torchtext.experimental.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="vocab.html" class="btn btn-neutral" title="torchtext.vocab" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
@@ -528,15 +568,23 @@ Borrowed and slightly modified from the Python docs:
       <div class="main-menu">
         <ul>
           <li>
-            <a href="#">Get Started</a>
+            <a href="https://pytorch.org/get-started">Get Started</a>
           </li>
 
           <li>
-            <a href="#">Features</a>
+            <a href="https://pytorch.org/features">Features</a>
           </li>
 
           <li>
-            <a href="#">Ecosystem</a>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
           </li>
 
           <li>
@@ -575,6 +623,7 @@ Borrowed and slightly modified from the Python docs:
       sideMenus.bind();
       scrollToAnchor.bind();
       highlightNavigation.bind();
+      mainMenuDropdown.bind();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

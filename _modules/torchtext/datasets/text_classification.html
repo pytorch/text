@@ -34,6 +34,26 @@
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -48,11 +68,25 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/features">Features</a>
+            <div class="ecosystem-dropdown">
+              <a id="dropdownMenuButton" data-toggle="ecosystem-dropdown">
+                Ecosystem
+              </a>
+              <div class="ecosystem-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub"">
+                  <span class=dropdown-title>Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/ecosystem">
+                  <span class=dropdown-title>Tools & Libraries</span>
+                  <p>Explore the ecosystem of tools and libraries</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
-            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+            <a href="https://pytorch.org/mobile">Mobile</a>
           </li>
 
           <li>
@@ -68,7 +102,21 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/resources">Resources</a>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources"">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
@@ -137,10 +185,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
 </ul>
 
             
@@ -255,12 +307,17 @@
                 <span class="k">yield</span> <span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_create_data_from_iterator</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_create_data_from_iterator</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">include_unk</span><span class="p">):</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
         <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
-            <span class="n">tokens</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">include_unk</span><span class="p">:</span>
+                <span class="n">tokens</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">token_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Vocab</span><span class="o">.</span><span class="n">UNK</span><span class="p">,</span> <span class="p">[</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]</span>
+                                        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]))</span>
+                <span class="n">tokens</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">token_ids</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Row contains no tokens.&#39;</span><span class="p">)</span>
             <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tokens</span><span class="p">))</span>
@@ -296,8 +353,7 @@
 <span class="sd">                {label1, label2}</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            See the examples in docs/tutorials/text_sentiment_ngrams.ipynb and</span>
-<span class="sd">                examples/text_classification/</span>
+<span class="sd">            See the examples in examples/text_classification/</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -323,7 +379,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vocab</span></div>
 
 
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_unk</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
     <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
 
@@ -342,10 +398,10 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Vocab has </span><span class="si">{}</span><span class="s1"> entries&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vocab</span><span class="p">)))</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating training data&#39;</span><span class="p">)</span>
     <span class="n">train_data</span><span class="p">,</span> <span class="n">train_labels</span> <span class="o">=</span> <span class="n">_create_data_from_iterator</span><span class="p">(</span>
-        <span class="n">vocab</span><span class="p">,</span> <span class="n">_csv_iterator</span><span class="p">(</span><span class="n">train_csv_path</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">yield_cls</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">vocab</span><span class="p">,</span> <span class="n">_csv_iterator</span><span class="p">(</span><span class="n">train_csv_path</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">yield_cls</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">include_unk</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating testing data&#39;</span><span class="p">)</span>
     <span class="n">test_data</span><span class="p">,</span> <span class="n">test_labels</span> <span class="o">=</span> <span class="n">_create_data_from_iterator</span><span class="p">(</span>
-        <span class="n">vocab</span><span class="p">,</span> <span class="n">_csv_iterator</span><span class="p">(</span><span class="n">test_csv_path</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">yield_cls</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">vocab</span><span class="p">,</span> <span class="n">_csv_iterator</span><span class="p">(</span><span class="n">test_csv_path</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">yield_cls</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">include_unk</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_labels</span> <span class="o">^</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Training and test labels don&#39;t match&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span>
@@ -370,6 +426,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)</span>
@@ -398,6 +455,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)</span>
@@ -435,6 +493,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)</span>
@@ -460,6 +519,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)</span>
@@ -484,6 +544,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)</span>
@@ -517,6 +578,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)</span>
@@ -542,6 +604,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">       &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)</span>
@@ -566,6 +629,7 @@
 <span class="sd">            Default: 1</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        include_unk: include unknown token in the data (Default: False)</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)</span>
@@ -584,6 +648,57 @@
     <span class="s1">&#39;YahooAnswers&#39;</span><span class="p">:</span> <span class="n">YahooAnswers</span><span class="p">,</span>
     <span class="s1">&#39;AmazonReviewPolarity&#39;</span><span class="p">:</span> <span class="n">AmazonReviewPolarity</span><span class="p">,</span>
     <span class="s1">&#39;AmazonReviewFull&#39;</span><span class="p">:</span> <span class="n">AmazonReviewFull</span>
+<span class="p">}</span>
+
+
+<span class="n">LABELS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;AG_NEWS&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;World&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Business&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Sci/Tech&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;SogouNews&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
+                  <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Finance&#39;</span><span class="p">,</span>
+                  <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Entertainment&#39;</span><span class="p">,</span>
+                  <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Automobile&#39;</span><span class="p">,</span>
+                  <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Technology&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;DBpedia&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Company&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;EducationalInstitution&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Artist&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Athlete&#39;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;OfficeHolder&#39;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;MeanOfTransportation&#39;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Building&#39;</span><span class="p">,</span>
+                <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;NaturalPlace&#39;</span><span class="p">,</span>
+                <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Village&#39;</span><span class="p">,</span>
+                <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Animal&#39;</span><span class="p">,</span>
+                <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;Plant&#39;</span><span class="p">,</span>
+                <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;Album&#39;</span><span class="p">,</span>
+                <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;Film&#39;</span><span class="p">,</span>
+                <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;WrittenWork&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;YelpReviewPolarity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Negative polarity&#39;</span><span class="p">,</span>
+                           <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Positive polarity&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;YelpReviewFull&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;score 1&#39;</span><span class="p">,</span>
+                       <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;score 2&#39;</span><span class="p">,</span>
+                       <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;score 3&#39;</span><span class="p">,</span>
+                       <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;score 4&#39;</span><span class="p">,</span>
+                       <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;score 5&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;YahooAnswers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Society &amp; Culture&#39;</span><span class="p">,</span>
+                     <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Science &amp; Mathematics&#39;</span><span class="p">,</span>
+                     <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Health&#39;</span><span class="p">,</span>
+                     <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Education &amp; Reference&#39;</span><span class="p">,</span>
+                     <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Computers &amp; Internet&#39;</span><span class="p">,</span>
+                     <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
+                     <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Business &amp; Finance&#39;</span><span class="p">,</span>
+                     <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;Entertainment &amp; Music&#39;</span><span class="p">,</span>
+                     <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Family &amp; Relationships&#39;</span><span class="p">,</span>
+                     <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Politics &amp; Government&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;AmazonReviewPolarity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Negative polarity&#39;</span><span class="p">,</span>
+                             <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Positive polarity&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;AmazonReviewFull&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;score 1&#39;</span><span class="p">,</span>
+                         <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;score 2&#39;</span><span class="p">,</span>
+                         <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;score 3&#39;</span><span class="p">,</span>
+                         <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;score 4&#39;</span><span class="p">,</span>
+                         <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;score 5&#39;</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -777,15 +892,23 @@
       <div class="main-menu">
         <ul>
           <li>
-            <a href="#">Get Started</a>
+            <a href="https://pytorch.org/get-started">Get Started</a>
           </li>
 
           <li>
-            <a href="#">Features</a>
+            <a href="https://pytorch.org/features">Features</a>
           </li>
 
           <li>
-            <a href="#">Ecosystem</a>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
           </li>
 
           <li>
@@ -824,6 +947,7 @@
       sideMenus.bind();
       scrollToAnchor.bind();
       highlightNavigation.bind();
+      mainMenuDropdown.bind();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

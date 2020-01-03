@@ -36,6 +36,26 @@
 
   
   <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -50,11 +70,25 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/features">Features</a>
+            <div class="ecosystem-dropdown">
+              <a id="dropdownMenuButton" data-toggle="ecosystem-dropdown">
+                Ecosystem
+              </a>
+              <div class="ecosystem-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub"">
+                  <span class=dropdown-title>Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/ecosystem">
+                  <span class=dropdown-title>Tools & Libraries</span>
+                  <p>Explore the ecosystem of tools and libraries</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
-            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+            <a href="https://pytorch.org/mobile">Mobile</a>
           </li>
 
           <li>
@@ -70,7 +104,21 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/resources">Resources</a>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources"">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
@@ -139,10 +187,14 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
             
@@ -221,66 +273,56 @@
 <h2><span class="hidden-section">Vocab</span><a class="headerlink" href="#vocab" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.Vocab">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">Vocab</code><span class="sig-paren">(</span><em>counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">Vocab</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a vocabulary object that will be used to numericalize a field.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>freqs</strong> – A collections.Counter object holding the frequencies of tokens
-in the data used to build the Vocab.</li>
-<li><strong>stoi</strong> – A collections.defaultdict instance mapping token strings to
-numerical identifiers.</li>
-<li><strong>itos</strong> – A list of token strings indexed by their numerical identifiers.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~Vocab.freqs</strong> – A collections.Counter object holding the frequencies of tokens
+in the data used to build the Vocab.</p></li>
+<li><p><strong>~Vocab.stoi</strong> – A collections.defaultdict instance mapping token strings to
+numerical identifiers.</p></li>
+<li><p><strong>~Vocab.itos</strong> – A list of token strings indexed by their numerical identifiers.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.vocab.Vocab.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Vocab object from a collections.Counter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>counter</strong> – collections.Counter object holding the frequencies of
-each value found in the data.</li>
-<li><strong>max_size</strong> – The maximum size of the vocabulary, or None for no
-maximum. Default: None.</li>
-<li><strong>min_freq</strong> – The minimum frequency needed to include a token in the
-vocabulary. Values less than 1 will be set to 1. Default: 1.</li>
-<li><strong>specials</strong> – The list of special tokens (e.g., padding or eos) that
-will be prepended to the vocabulary. Default: [‘&lt;unk’&gt;, ‘&lt;pad&gt;’]</li>
-<li><strong>vectors</strong> – One of either the available pretrained vectors
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counter</strong> – collections.Counter object holding the frequencies of
+each value found in the data.</p></li>
+<li><p><strong>max_size</strong> – The maximum size of the vocabulary, or None for no
+maximum. Default: None.</p></li>
+<li><p><strong>min_freq</strong> – The minimum frequency needed to include a token in the
+vocabulary. Values less than 1 will be set to 1. Default: 1.</p></li>
+<li><p><strong>specials</strong> – The list of special tokens (e.g., padding or eos) that
+will be prepended to the vocabulary. Default: [‘&lt;unk’&gt;, ‘&lt;pad&gt;’]</p></li>
+<li><p><strong>vectors</strong> – One of either the available pretrained vectors
 or custom pretrained vectors (see Vocab.load_vectors);
-or a list of aforementioned vectors</li>
-<li><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
+or a list of aforementioned vectors</p></li>
+<li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size. Default: <a href="#id1"><span class="problematic" id="id2">torch.Tensor.zero_</span></a></li>
-<li><strong>vectors_cache</strong> – directory for cached vectors. Default: ‘.vector_cache’</li>
-<li><strong>specials_first</strong> – Whether to add special tokens into the vocabulary at first.
+returns a Tensor of the same size. Default: <a href="#id1"><span class="problematic" id="id2">torch.Tensor.zero_</span></a></p></li>
+<li><p><strong>vectors_cache</strong> – directory for cached vectors. Default: ‘.vector_cache’</p></li>
+<li><p><strong>specials_first</strong> – Whether to add special tokens into the vocabulary at first.
 If it is False, they are added into the vocabulary at last.
-Default: True.</li>
+Default: True.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.vocab.Vocab.load_vectors">
-<code class="descname">load_vectors</code><span class="sig-paren">(</span><em>vectors</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.load_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.load_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>vectors</strong> – one of or a list containing instantiations of the
+<code class="sig-name descname">load_vectors</code><span class="sig-paren">(</span><em class="sig-param">vectors</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.load_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.load_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vectors</strong> – one of or a list containing instantiations of the
 GloVe, CharNGram, or Vectors classes. Alternatively, one
 of or a list of available pretrained vectors:
 charngram.100d
@@ -295,39 +337,33 @@ glove.twitter.27B.200d
 glove.6B.50d
 glove.6B.100d
 glove.6B.200d
-glove.6B.300d</li>
-<li><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vectors classes.</li>
+glove.6B.300d</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vectors classes.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.vocab.Vocab.set_vectors">
-<code class="descname">set_vectors</code><span class="sig-paren">(</span><em>stoi</em>, <em>vectors</em>, <em>dim</em>, <em>unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.set_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.set_vectors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_vectors</code><span class="sig-paren">(</span><em class="sig-param">stoi</em>, <em class="sig-param">vectors</em>, <em class="sig-param">dim</em>, <em class="sig-param">unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.set_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.set_vectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the vectors for the Vocab instance from a collection of Tensors.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>stoi</strong> – A dictionary of string to the index of the associated vector
-in the <cite>vectors</cite> input argument.</li>
-<li><strong>vectors</strong> – An indexed iterable (or other structure supporting __getitem__) that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stoi</strong> – A dictionary of string to the index of the associated vector
+in the <cite>vectors</cite> input argument.</p></li>
+<li><p><strong>vectors</strong> – An indexed iterable (or other structure supporting __getitem__) that
 given an input index, returns a FloatTensor representing the vector
 for the token associated with the index. For example,
-vector[stoi[“string”]] should return the vector for “string”.</li>
-<li><strong>dim</strong> – The dimensionality of the vectors.</li>
-<li><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
+vector[stoi[“string”]] should return the vector for “string”.</p></li>
+<li><p><strong>dim</strong> – The dimensionality of the vectors.</p></li>
+<li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size. Default: <a href="#id3"><span class="problematic" id="id4">torch.Tensor.zero_</span></a></li>
+returns a Tensor of the same size. Default: <a href="#id3"><span class="problematic" id="id4">torch.Tensor.zero_</span></a></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -337,34 +373,30 @@ returns a Tensor of the same size. Default: <a href="#id3"><span class="problema
 <h2><span class="hidden-section">SubwordVocab</span><a class="headerlink" href="#subwordvocab" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.SubwordVocab">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">SubwordVocab</code><span class="sig-paren">(</span><em>counter, max_size=None, specials=['&lt;pad&gt;'], vectors=None, unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">SubwordVocab</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, specials=['&lt;pad&gt;'], vectors=None, unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.vocab.SubwordVocab.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>counter, max_size=None, specials=['&lt;pad&gt;'], vectors=None, unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, specials=['&lt;pad&gt;'], vectors=None, unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a revtok subword vocabulary from a collections.Counter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>counter</strong> – collections.Counter object holding the frequencies of
-each word found in the data.</li>
-<li><strong>max_size</strong> – The maximum size of the subword vocabulary, or None for no
-maximum. Default: None.</li>
-<li><strong>specials</strong> – The list of special tokens (e.g., padding or eos) that
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counter</strong> – collections.Counter object holding the frequencies of
+each word found in the data.</p></li>
+<li><p><strong>max_size</strong> – The maximum size of the subword vocabulary, or None for no
+maximum. Default: None.</p></li>
+<li><p><strong>specials</strong> – The list of special tokens (e.g., padding or eos) that
 will be prepended to the vocabulary in addition to an &lt;unk&gt;
-token.</li>
-<li><strong>vectors</strong> – One of either the available pretrained vectors
+token.</p></li>
+<li><p><strong>vectors</strong> – One of either the available pretrained vectors
 or custom pretrained vectors (see Vocab.load_vectors);
-or a list of aforementioned vectors</li>
-<li><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
+or a list of aforementioned vectors</p></li>
+<li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size. Default: <a href="#id5"><span class="problematic" id="id6">torch.Tensor.zero_</span></a></li>
+returns a Tensor of the same size. Default: <a href="#id5"><span class="problematic" id="id6">torch.Tensor.zero_</span></a></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -374,58 +406,50 @@ returns a Tensor of the same size. Default: <a href="#id5"><span class="problema
 <h2><span class="hidden-section">Vectors</span><a class="headerlink" href="#vectors" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.Vectors">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">Vectors</code><span class="sig-paren">(</span><em>name</em>, <em>cache=None</em>, <em>url=None</em>, <em>unk_init=None</em>, <em>max_vectors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">Vectors</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">cache=None</em>, <em class="sig-param">url=None</em>, <em class="sig-param">unk_init=None</em>, <em class="sig-param">max_vectors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.vocab.Vectors.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>name</em>, <em>cache=None</em>, <em>url=None</em>, <em>unk_init=None</em>, <em>max_vectors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> – name of the file that contains the vectors</li>
-<li><strong>cache</strong> – directory for cached vectors</li>
-<li><strong>url</strong> – url for download if vectors not found in cache</li>
-<li><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">cache=None</em>, <em class="sig-param">url=None</em>, <em class="sig-param">unk_init=None</em>, <em class="sig-param">max_vectors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – name of the file that contains the vectors</p></li>
+<li><p><strong>cache</strong> – directory for cached vectors</p></li>
+<li><p><strong>url</strong> – url for download if vectors not found in cache</p></li>
+<li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</li>
-<li><strong>max_vectors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – this can be used to limit the number of
+returns a Tensor of the same size</p></li>
+<li><p><strong>max_vectors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – this can be used to limit the number of
 pre-trained vectors loaded.
 Most pre-trained vector sets are sorted
 in the descending order of word frequency.
 Thus, in situations where the entire set doesn’t fit in memory,
 or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</li>
+can limit the size of the loaded set.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.vocab.Vectors.get_vecs_by_tokens">
-<code class="descname">get_vecs_by_tokens</code><span class="sig-paren">(</span><em>tokens</em>, <em>lower_case_backup=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors.get_vecs_by_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.get_vecs_by_tokens" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_vecs_by_tokens</code><span class="sig-paren">(</span><em class="sig-param">tokens</em>, <em class="sig-param">lower_case_backup=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vectors.get_vecs_by_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.get_vecs_by_tokens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Look up embedding vectors of tokens.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>tokens</strong> – a token or a list of tokens. if <cite>tokens</cite> is a string,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tokens</strong> – a token or a list of tokens. if <cite>tokens</cite> is a string,
 returns a 1-D tensor of shape <cite>self.dim</cite>; if <cite>tokens</cite> is a
 list of strings, returns a 2-D tensor of shape=(len(tokens),
-self.dim).</li>
-<li><strong>lower_case_backup</strong> – Whether to look up the token in the lower case.
+self.dim).</p></li>
+<li><p><strong>lower_case_backup</strong> – Whether to look up the token in the lower case.
 If False, each token in the original case will be looked up;
 if True, each token in the original case will be looked up first,
 if not found in the keys of the property <cite>stoi</cite>, the token in the
-lower case will be looked up. Default: False.</li>
+lower case will be looked up. Default: False.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">examples</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chip&#39;</span><span class="p">,</span> <span class="s1">&#39;baby&#39;</span><span class="p">,</span> <span class="s1">&#39;Beautiful&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">GloVe</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;6B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
@@ -444,26 +468,27 @@ lower case will be looked up. Default: False.</li>
 <h2><span class="hidden-section">GloVe</span><a class="headerlink" href="#glove" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.GloVe">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">GloVe</code><span class="sig-paren">(</span><em>name='840B'</em>, <em>dim=300</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#GloVe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">GloVe</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#GloVe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.vocab.GloVe.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>name='840B'</em>, <em>dim=300</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#GloVe.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#GloVe.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Arguments:
 name: name of the file that contains the vectors
 cache: directory for cached vectors
 url: url for download if vectors not found in cache
 unk_init (callback): by default, initialize out-of-vocabulary word vectors</p>
 <blockquote>
-<div>to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</div></blockquote>
-<dl class="docutils">
-<dt>max_vectors (int): this can be used to limit the number of</dt>
-<dd>pre-trained vectors loaded.
+<div><p>to zero vectors; can be any function that takes in a Tensor and
+returns a Tensor of the same size</p>
+</div></blockquote>
+<dl class="simple">
+<dt>max_vectors (int): this can be used to limit the number of</dt><dd><p>pre-trained vectors loaded.
 Most pre-trained vector sets are sorted
 in the descending order of word frequency.
 Thus, in situations where the entire set doesn’t fit in memory,
 or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</dd>
+can limit the size of the loaded set.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -474,26 +499,27 @@ can limit the size of the loaded set.</dd>
 <h2><span class="hidden-section">FastText</span><a class="headerlink" href="#fasttext" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.FastText">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">FastText</code><span class="sig-paren">(</span><em>language='en'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#FastText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">FastText</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#FastText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.vocab.FastText.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>language='en'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#FastText.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#FastText.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Arguments:
 name: name of the file that contains the vectors
 cache: directory for cached vectors
 url: url for download if vectors not found in cache
 unk_init (callback): by default, initialize out-of-vocabulary word vectors</p>
 <blockquote>
-<div>to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</div></blockquote>
-<dl class="docutils">
-<dt>max_vectors (int): this can be used to limit the number of</dt>
-<dd>pre-trained vectors loaded.
+<div><p>to zero vectors; can be any function that takes in a Tensor and
+returns a Tensor of the same size</p>
+</div></blockquote>
+<dl class="simple">
+<dt>max_vectors (int): this can be used to limit the number of</dt><dd><p>pre-trained vectors loaded.
 Most pre-trained vector sets are sorted
 in the descending order of word frequency.
 Thus, in situations where the entire set doesn’t fit in memory,
 or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</dd>
+can limit the size of the loaded set.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -504,26 +530,27 @@ can limit the size of the loaded set.</dd>
 <h2><span class="hidden-section">CharNGram</span><a class="headerlink" href="#charngram" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.CharNGram">
-<em class="property">class </em><code class="descclassname">torchtext.vocab.</code><code class="descname">CharNGram</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#CharNGram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">CharNGram</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#CharNGram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.vocab.CharNGram.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#CharNGram.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#CharNGram.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Arguments:
 name: name of the file that contains the vectors
 cache: directory for cached vectors
 url: url for download if vectors not found in cache
 unk_init (callback): by default, initialize out-of-vocabulary word vectors</p>
 <blockquote>
-<div>to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</div></blockquote>
-<dl class="docutils">
-<dt>max_vectors (int): this can be used to limit the number of</dt>
-<dd>pre-trained vectors loaded.
+<div><p>to zero vectors; can be any function that takes in a Tensor and
+returns a Tensor of the same size</p>
+</div></blockquote>
+<dl class="simple">
+<dt>max_vectors (int): this can be used to limit the number of</dt><dd><p>pre-trained vectors loaded.
 Most pre-trained vector sets are sorted
 in the descending order of word frequency.
 Thus, in situations where the entire set doesn’t fit in memory,
 or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</dd>
+can limit the size of the loaded set.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -537,16 +564,13 @@ can limit the size of the loaded set.</dd>
 <h2><span class="hidden-section">build_vocab_from_iterator</span><a class="headerlink" href="#build-vocab-from-iterator" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.vocab.build_vocab_from_iterator">
-<code class="descclassname">torchtext.vocab.</code><code class="descname">build_vocab_from_iterator</code><span class="sig-paren">(</span><em>iterator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#build_vocab_from_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">build_vocab_from_iterator</code><span class="sig-paren">(</span><em class="sig-param">iterator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#build_vocab_from_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a Vocab from an iterator.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>iterator</strong> – Iterator used to build Vocab. Must yield list or iterator of tokens.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>iterator</strong> – Iterator used to build Vocab. Must yield list or iterator of tokens.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -770,15 +794,23 @@ can limit the size of the loaded set.</dd>
       <div class="main-menu">
         <ul>
           <li>
-            <a href="#">Get Started</a>
+            <a href="https://pytorch.org/get-started">Get Started</a>
           </li>
 
           <li>
-            <a href="#">Features</a>
+            <a href="https://pytorch.org/features">Features</a>
           </li>
 
           <li>
-            <a href="#">Ecosystem</a>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
           </li>
 
           <li>
@@ -817,6 +849,7 @@ can limit the size of the loaded set.</dd>
       sideMenus.bind();
       scrollToAnchor.bind();
       highlightNavigation.bind();
+      mainMenuDropdown.bind();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

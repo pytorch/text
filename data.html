@@ -31,11 +31,31 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.datasets" href="datasets.html" />
+    <link rel="next" title="torchtext.data.utils" href="data_utils.html" />
     <link rel="prev" title="torchtext" href="index.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -50,11 +70,25 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/features">Features</a>
+            <div class="ecosystem-dropdown">
+              <a id="dropdownMenuButton" data-toggle="ecosystem-dropdown">
+                Ecosystem
+              </a>
+              <div class="ecosystem-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub"">
+                  <span class=dropdown-title>Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/ecosystem">
+                  <span class=dropdown-title>Tools & Libraries</span>
+                  <p>Explore the ecosystem of tools and libraries</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
-            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+            <a href="https://pytorch.org/mobile">Mobile</a>
           </li>
 
           <li>
@@ -70,7 +104,21 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/resources">Resources</a>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources"">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
@@ -139,10 +187,14 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
             
@@ -219,10 +271,10 @@
 <h1>torchtext.data<a class="headerlink" href="#torchtext-data" title="Permalink to this headline">¶</a></h1>
 <p>The data module provides the following:</p>
 <ul class="simple">
-<li>Ability to define a preprocessing pipeline</li>
-<li>Batching, padding, and numericalizing (including building a vocabulary object)</li>
-<li>Wrapper for dataset splits (train, validation, test)</li>
-<li>Loader for a custom NLP dataset</li>
+<li><p>Ability to define a preprocessing pipeline</p></li>
+<li><p>Batching, padding, and numericalizing (including building a vocabulary object)</p></li>
+<li><p>Wrapper for dataset splits (train, validation, test)</p></li>
+<li><p>Loader for a custom NLP dataset</p></li>
 </ul>
 <span class="target" id="module-torchtext.data"></span><div class="section" id="dataset-batch-and-example">
 <h2>Dataset, Batch, and Example<a class="headerlink" href="#dataset-batch-and-example" title="Permalink to this headline">¶</a></h2>
@@ -230,153 +282,130 @@
 <h3><span class="hidden-section">Dataset</span><a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.Dataset">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">Dataset</code><span class="sig-paren">(</span><em>examples</em>, <em>fields</em>, <em>filter_pred=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param">examples</em>, <em class="sig-param">fields</em>, <em class="sig-param">filter_pred=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a dataset composed of Examples along with its Fields.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sort_key</strong> (<em>callable</em>) – A key to use for sorting dataset examples for batching
-together examples with similar lengths to minimize padding.</li>
-<li><strong>examples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference internal" href="#torchtext.data.Example" title="torchtext.data.Example"><em>Example</em></a><em>)</em>) – The examples in this dataset.</li>
-<li><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>]</em>) – Contains the name of each column or field, together
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~Dataset.sort_key</strong> (<em>callable</em>) – A key to use for sorting dataset examples for batching
+together examples with similar lengths to minimize padding.</p></li>
+<li><p><strong>~Dataset.examples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference internal" href="#torchtext.data.Example" title="torchtext.data.Example"><em>Example</em></a><em>)</em>) – The examples in this dataset.</p></li>
+<li><p><strong>~Dataset.fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>]</em>) – Contains the name of each column or field, together
 with the corresponding Field object. Two fields with the same Field object
-will have a shared vocabulary.</li>
+will have a shared vocabulary.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.Dataset.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>examples</em>, <em>fields</em>, <em>filter_pred=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">examples</em>, <em class="sig-param">fields</em>, <em class="sig-param">filter_pred=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a dataset from a list of Examples and Fields.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>examples</strong> – List of Examples.</li>
-<li><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
-string is a field name, and the Field is the associated field.</li>
-<li><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – Use only examples for which
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>examples</strong> – List of Examples.</p></li>
+<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
+string is a field name, and the Field is the associated field.</p></li>
+<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Use only examples for which
 filter_pred(example) is True, or use all examples if None.
-Default is None.</li>
+Default is None.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Dataset.download">
-<em class="property">classmethod </em><code class="descname">download</code><span class="sig-paren">(</span><em>root</em>, <em>check=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.download" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">download</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">check=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.download" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download and unzip an online archive (.zip, .gz, or .tgz).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Folder to download data to.</li>
-<li><strong>check</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – Folder whose existence indicates
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Folder to download data to.</p></li>
+<li><p><strong>check</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Folder whose existence indicates
 that the dataset has already been downloaded, or
-None to check the existence of root/{cls.name}.</li>
+None to check the existence of root/{cls.name}.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path to extracted dataset.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to extracted dataset.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Dataset.filter_examples">
-<code class="descname">filter_examples</code><span class="sig-paren">(</span><em>field_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.filter_examples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.filter_examples" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">filter_examples</code><span class="sig-paren">(</span><em class="sig-param">field_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.filter_examples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.filter_examples" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove unknown words from dataset examples with respect to given field.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>field_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>)</em>) – Within example only the parts with field names in
-field_names will have their unknown words deleted.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>field_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>)</em>) – Within example only the parts with field names in
+field_names will have their unknown words deleted.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Dataset.split">
-<code class="descname">split</code><span class="sig-paren">(</span><em>split_ratio=0.7</em>, <em>stratified=False</em>, <em>strata_field='label'</em>, <em>random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.split" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">split</code><span class="sig-paren">(</span><em class="sig-param">split_ratio=0.7</em>, <em class="sig-param">stratified=False</em>, <em class="sig-param">strata_field='label'</em>, <em class="sig-param">random_state=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.split" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create train-test(-valid?) splits from the instance’s examples.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>split_ratio</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>List of python:floats</em>) – a number [0, 1] denoting the amount
-of data to be used for the training split (rest is used for validation),
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>split_ratio</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><em>List of python:floats</em>) – a number [0, 1] denoting the amount
+of data to be used for the training split (rest is used for test),
 or a list of numbers denoting the relative sizes of train, test and valid
 splits respectively. If the relative size for valid is missing, only the
-train-test split is returned. Default is 0.7 (for the train set).</li>
-<li><strong>stratified</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – whether the sampling should be stratified.
-Default is False.</li>
-<li><strong>strata_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of the examples Field stratified over.
-Default is ‘label’ for the conventional label field.</li>
-<li><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – the random seed used for shuffling.
-A return value of <cite>random.getstate()</cite>.</li>
+train-test split is returned. Default is 0.7 (for the train set).</p></li>
+<li><p><strong>stratified</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – whether the sampling should be stratified.
+Default is False.</p></li>
+<li><p><strong>strata_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – name of the examples Field stratified over.
+Default is ‘label’ for the conventional label field.</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – the random seed used for shuffling.
+A return value of <cite>random.getstate()</cite>.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Datasets for train, validation, and
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Datasets for train, validation, and
 test splits in that order, if the splits are provided.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple[<a class="reference internal" href="#torchtext.data.Dataset" title="torchtext.data.Dataset">Dataset</a>]</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="#torchtext.data.Dataset" title="torchtext.data.Dataset">Dataset</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Dataset.splits">
-<em class="property">classmethod </em><code class="descname">splits</code><span class="sig-paren">(</span><em>path=None</em>, <em>root='.data'</em>, <em>train=None</em>, <em>validation=None</em>, <em>test=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.splits" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">splits</code><span class="sig-paren">(</span><em class="sig-param">path=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">train=None</em>, <em class="sig-param">validation=None</em>, <em class="sig-param">test=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#Dataset.splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Dataset.splits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Dataset objects for multiple splits of a dataset.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Common prefix of the splits’ file paths, or None to use
-the result of cls.download(root).</li>
-<li><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Root dataset storage directory. Default is ‘.data’.</li>
-<li><strong>train</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Suffix to add to path for the train set, or None for no
-train set. Default is None.</li>
-<li><strong>validation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Suffix to add to path for the validation set, or None
-for no validation set. Default is None.</li>
-<li><strong>test</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Suffix to add to path for the test set, or None for no test
-set. Default is None.</li>
-<li><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of the
-Dataset (sub)class being used.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Common prefix of the splits’ file paths, or None to use
+the result of cls.download(root).</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Root dataset storage directory. Default is ‘.data’.</p></li>
+<li><p><strong>train</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the train set, or None for no
+train set. Default is None.</p></li>
+<li><p><strong>validation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the validation set, or None
+for no validation set. Default is None.</p></li>
+<li><p><strong>test</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the test set, or None for no test
+set. Default is None.</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of the
+Dataset (sub)class being used.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Datasets for train, validation, and
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Datasets for train, validation, and
 test splits in that order, if provided.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple[<a class="reference internal" href="#torchtext.data.Dataset" title="torchtext.data.Dataset">Dataset</a>]</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="#torchtext.data.Dataset" title="torchtext.data.Dataset">Dataset</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -386,21 +415,19 @@ test splits in that order, if provided.</p>
 <h3><span class="hidden-section">TabularDataset</span><a class="headerlink" href="#tabulardataset" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.TabularDataset">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">TabularDataset</code><span class="sig-paren">(</span><em>path</em>, <em>format</em>, <em>fields</em>, <em>skip_header=False</em>, <em>csv_reader_params={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#TabularDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.TabularDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">TabularDataset</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">format</em>, <em class="sig-param">fields</em>, <em class="sig-param">skip_header=False</em>, <em class="sig-param">csv_reader_params={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#TabularDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.TabularDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a Dataset of columns stored in CSV, TSV, or JSON format.</p>
 <dl class="method">
 <dt id="torchtext.data.TabularDataset.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>path</em>, <em>format</em>, <em>fields</em>, <em>skip_header=False</em>, <em>csv_reader_params={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#TabularDataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.TabularDataset.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">format</em>, <em class="sig-param">fields</em>, <em class="sig-param">skip_header=False</em>, <em class="sig-param">csv_reader_params={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/dataset.html#TabularDataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.TabularDataset.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a TabularDataset given a path, file format, and field list.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the data file.</li>
-<li><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The format of the data file. One of “CSV”, “TSV”, or
-“JSON” (case-insensitive).</li>
-<li><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em>) – <p>tuple(str, Field)]:
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Path to the data file.</p></li>
+<li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The format of the data file. One of “CSV”, “TSV”, or
+“JSON” (case-insensitive).</p></li>
+<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em>) – <p>tuple(str, Field)]:
 If using a list, the format must be CSV or TSV, and the values of the list
 should be tuples of (name, field).
 The fields should be in the same order as the columns in the CSV or TSV
@@ -410,18 +437,16 @@ columns, and the values should be tuples of (name, field).
 Keys not present in the input dictionary are ignored.
 This allows the user to rename columns from their JSON/CSV/TSV key names
 and also enables selecting a subset of columns to load.</p>
-</li>
-<li><strong>skip_header</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to skip the first line of the input file.</li>
-<li><strong>csv_reader_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Parameters to pass to the csv reader.
+</p></li>
+<li><p><strong>skip_header</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to skip the first line of the input file.</p></li>
+<li><p><strong>csv_reader_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Parameters to pass to the csv reader.
 Only relevant when format is csv or tsv.
 See
 <a class="reference external" href="https://docs.python.org/3/library/csv.html#csv.reader">https://docs.python.org/3/library/csv.html#csv.reader</a>
-for more details.</li>
+for more details.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -431,36 +456,32 @@ for more details.</li>
 <h3><span class="hidden-section">Batch</span><a class="headerlink" href="#batch" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.Batch">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">Batch</code><span class="sig-paren">(</span><em>data=None</em>, <em>dataset=None</em>, <em>device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/batch.html#Batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Batch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Batch</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">dataset=None</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/batch.html#Batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a batch of examples along with its Fields.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>batch_size</strong> – Number of examples in the batch.</li>
-<li><strong>dataset</strong> – A reference to the dataset object the examples come from
-(which itself contains the dataset’s Field objects).</li>
-<li><strong>train</strong> – Deprecated: this attribute is left for backwards compatibility,
-however it is UNUSED as of the merger with pytorch 0.4.</li>
-<li><strong>input_fields</strong> – The names of the fields that are used as input for the model</li>
-<li><strong>target_fields</strong> – The names of the fields that are used as targets during
-model training</li>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~Batch.batch_size</strong> – Number of examples in the batch.</p></li>
+<li><p><strong>~Batch.dataset</strong> – A reference to the dataset object the examples come from
+(which itself contains the dataset’s Field objects).</p></li>
+<li><p><strong>~Batch.train</strong> – Deprecated: this attribute is left for backwards compatibility,
+however it is UNUSED as of the merger with pytorch 0.4.</p></li>
+<li><p><strong>~Batch.input_fields</strong> – The names of the fields that are used as input for the model</p></li>
+<li><p><strong>~Batch.target_fields</strong> – The names of the fields that are used as targets during
+model training</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Also stores the Variable for each column in the batch as an attribute.</p>
 <dl class="method">
 <dt id="torchtext.data.Batch.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>data=None</em>, <em>dataset=None</em>, <em>device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/batch.html#Batch.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Batch.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">dataset=None</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/batch.html#Batch.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Batch.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Batch from a list of examples.</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Batch.fromvars">
-<em class="property">classmethod </em><code class="descname">fromvars</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>train=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/batch.html#Batch.fromvars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Batch.fromvars" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">fromvars</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">train=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/batch.html#Batch.fromvars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Batch.fromvars" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Batch directly from a number of Variables.</p>
 </dd></dl>
 
@@ -471,32 +492,32 @@ model training</li>
 <h3><span class="hidden-section">Example</span><a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.Example">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">Example</code><a class="reference internal" href="_modules/torchtext/data/example.html#Example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Example</code><a class="reference internal" href="_modules/torchtext/data/example.html#Example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a single training or test example.</p>
 <p>Stores each column of the example as an attribute.</p>
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Example.fromCSV">
-<em class="property">classmethod </em><code class="descname">fromCSV</code><span class="sig-paren">(</span><em>data</em>, <em>fields</em>, <em>field_to_index=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromCSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromCSV" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">fromCSV</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fields</em>, <em class="sig-param">field_to_index=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromCSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromCSV" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Example.fromJSON">
-<em class="property">classmethod </em><code class="descname">fromJSON</code><span class="sig-paren">(</span><em>data</em>, <em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromJSON"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromJSON" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">fromJSON</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromJSON"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromJSON" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Example.fromdict">
-<em class="property">classmethod </em><code class="descname">fromdict</code><span class="sig-paren">(</span><em>data</em>, <em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromdict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromdict" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">fromdict</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromdict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromdict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Example.fromlist">
-<em class="property">classmethod </em><code class="descname">fromlist</code><span class="sig-paren">(</span><em>data</em>, <em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromlist" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">fromlist</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromlist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Example.fromtree">
-<em class="property">classmethod </em><code class="descname">fromtree</code><span class="sig-paren">(</span><em>data</em>, <em>fields</em>, <em>subtrees=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromtree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromtree" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">fromtree</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fields</em>, <em class="sig-param">subtrees=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/example.html#Example.fromtree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Example.fromtree" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -509,7 +530,7 @@ model training</li>
 <h3><span class="hidden-section">RawField</span><a class="headerlink" href="#rawfield" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.RawField">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">RawField</code><span class="sig-paren">(</span><em>preprocessing=None</em>, <em>postprocessing=None</em>, <em>is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">RawField</code><span class="sig-paren">(</span><em class="sig-param">preprocessing=None</em>, <em class="sig-param">postprocessing=None</em>, <em class="sig-param">is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a general datatype.</p>
 <p>Every dataset consists of one or more types of data. For instance, a text
 classification dataset contains sentences and their classes, while a
@@ -517,55 +538,50 @@ machine translation dataset contains paired examples of text in two
 languages. Each of these types of data is represented by a RawField object.
 A RawField object does not assume any property of the data type and
 it holds parameters relating to how a datatype should be processed.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>preprocessing</strong> – The Pipeline that will be applied to examples
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~RawField.preprocessing</strong> – The Pipeline that will be applied to examples
 using this field before creating an example.
-Default: None.</li>
-<li><strong>postprocessing</strong> – A Pipeline that will be applied to a list of examples
+Default: None.</p></li>
+<li><p><strong>~RawField.postprocessing</strong> – A Pipeline that will be applied to a list of examples
 using this field before assigning to a batch.
 Function signature: (batch(list)) -&gt; object
-Default: None.</li>
-<li><strong>is_target</strong> – Whether this field is a target variable.
-Affects iteration over batches. Default: False</li>
+Default: None.</p></li>
+<li><p><strong>~RawField.is_target</strong> – Whether this field is a target variable.
+Affects iteration over batches. Default: False</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.RawField.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>preprocessing=None</em>, <em>postprocessing=None</em>, <em>is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">preprocessing=None</em>, <em class="sig-param">postprocessing=None</em>, <em class="sig-param">is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.RawField.preprocess">
-<code class="descname">preprocess</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField.preprocess" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField.preprocess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preprocess an example if the <cite>preprocessing</cite> Pipeline is provided.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.RawField.process">
-<code class="descname">process</code><span class="sig-paren">(</span><em>batch</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField.process" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">process</code><span class="sig-paren">(</span><em class="sig-param">batch</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#RawField.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.RawField.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process a list of examples to create a batch.</p>
 <p>Postprocess the batch with user-provided Pipeline.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Processed object given the input and custom
-postprocessing Pipeline.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)">object</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Processed object given the input and custom
+postprocessing Pipeline.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -575,7 +591,7 @@ postprocessing Pipeline.</td>
 <h3><span class="hidden-section">Field</span><a class="headerlink" href="#field" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.Field">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">Field</code><span class="sig-paren">(</span><em>sequential=True</em>, <em>use_vocab=True</em>, <em>init_token=None</em>, <em>eos_token=None</em>, <em>fix_length=None</em>, <em>dtype=torch.int64</em>, <em>preprocessing=None</em>, <em>postprocessing=None</em>, <em>lower=False</em>, <em>tokenize=None</em>, <em>tokenizer_language='en'</em>, <em>include_lengths=False</em>, <em>batch_first=False</em>, <em>pad_token='&lt;pad&gt;'</em>, <em>unk_token='&lt;unk&gt;'</em>, <em>pad_first=False</em>, <em>truncate_first=False</em>, <em>stop_words=None</em>, <em>is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Field</code><span class="sig-paren">(</span><em class="sig-param">sequential=True</em>, <em class="sig-param">use_vocab=True</em>, <em class="sig-param">init_token=None</em>, <em class="sig-param">eos_token=None</em>, <em class="sig-param">fix_length=None</em>, <em class="sig-param">dtype=torch.int64</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">postprocessing=None</em>, <em class="sig-param">lower=False</em>, <em class="sig-param">tokenize=None</em>, <em class="sig-param">tokenizer_language='en'</em>, <em class="sig-param">include_lengths=False</em>, <em class="sig-param">batch_first=False</em>, <em class="sig-param">pad_token='&lt;pad&gt;'</em>, <em class="sig-param">unk_token='&lt;unk&gt;'</em>, <em class="sig-param">pad_first=False</em>, <em class="sig-param">truncate_first=False</em>, <em class="sig-param">stop_words=None</em>, <em class="sig-param">is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a datatype together with instructions for converting to Tensor.</p>
 <p>Field class models common text processing datatypes that can be represented
 by tensors.  It holds a Vocab object that defines the set of possible values
@@ -585,112 +601,100 @@ should be numericalized, such as a tokenization method and the kind of
 Tensor that should be produced.</p>
 <p>If a Field is shared between two columns in a dataset (e.g., question and
 answer in a QA dataset), then they will have a shared vocabulary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sequential</strong> – Whether the datatype represents sequential data. If False,
-no tokenization is applied. Default: True.</li>
-<li><strong>use_vocab</strong> – Whether to use a Vocab object. If False, the data in this
-field should already be numerical. Default: True.</li>
-<li><strong>init_token</strong> – A token that will be prepended to every example using this
-field, or None for no initial token. Default: None.</li>
-<li><strong>eos_token</strong> – A token that will be appended to every example using this
-field, or None for no end-of-sentence token. Default: None.</li>
-<li><strong>fix_length</strong> – A fixed length that all examples using this field will be
-padded to, or None for flexible sequence lengths. Default: None.</li>
-<li><strong>dtype</strong> – The torch.dtype class that represents a batch of examples
-of this kind of data. Default: torch.long.</li>
-<li><strong>preprocessing</strong> – The Pipeline that will be applied to examples
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~Field.sequential</strong> – Whether the datatype represents sequential data. If False,
+no tokenization is applied. Default: True.</p></li>
+<li><p><strong>~Field.use_vocab</strong> – Whether to use a Vocab object. If False, the data in this
+field should already be numerical. Default: True.</p></li>
+<li><p><strong>~Field.init_token</strong> – A token that will be prepended to every example using this
+field, or None for no initial token. Default: None.</p></li>
+<li><p><strong>~Field.eos_token</strong> – A token that will be appended to every example using this
+field, or None for no end-of-sentence token. Default: None.</p></li>
+<li><p><strong>~Field.fix_length</strong> – A fixed length that all examples using this field will be
+padded to, or None for flexible sequence lengths. Default: None.</p></li>
+<li><p><strong>~Field.dtype</strong> – The torch.dtype class that represents a batch of examples
+of this kind of data. Default: torch.long.</p></li>
+<li><p><strong>~Field.preprocessing</strong> – The Pipeline that will be applied to examples
 using this field after tokenizing but before numericalizing. Many
 Datasets replace this attribute with a custom preprocessor.
-Default: None.</li>
-<li><strong>postprocessing</strong> – A Pipeline that will be applied to examples using
+Default: None.</p></li>
+<li><p><strong>~Field.postprocessing</strong> – A Pipeline that will be applied to examples using
 this field after numericalizing but before the numbers are turned
 into a Tensor. The pipeline function takes the batch as a list, and
 the field’s Vocab.
-Default: None.</li>
-<li><strong>lower</strong> – Whether to lowercase the text in this field. Default: False.</li>
-<li><strong>tokenize</strong> – The function used to tokenize strings using this field into
+Default: None.</p></li>
+<li><p><strong>~Field.lower</strong> – Whether to lowercase the text in this field. Default: False.</p></li>
+<li><p><strong>~Field.tokenize</strong> – The function used to tokenize strings using this field into
 sequential examples. If “spacy”, the SpaCy tokenizer is
 used. If a non-serializable function is passed as an argument,
-the field will not be able to be serialized. Default: string.split.</li>
-<li><strong>tokenizer_language</strong> – The language of the tokenizer to be constructed.
-Various languages currently supported only in SpaCy.</li>
-<li><strong>include_lengths</strong> – Whether to return a tuple of a padded minibatch and
+the field will not be able to be serialized. Default: string.split.</p></li>
+<li><p><strong>~Field.tokenizer_language</strong> – The language of the tokenizer to be constructed.
+Various languages currently supported only in SpaCy.</p></li>
+<li><p><strong>~Field.include_lengths</strong> – Whether to return a tuple of a padded minibatch and
 a list containing the lengths of each examples, or just a padded
-minibatch. Default: False.</li>
-<li><strong>batch_first</strong> – Whether to produce tensors with the batch dimension first.
-Default: False.</li>
-<li><strong>pad_token</strong> – The string token used as padding. Default: “&lt;pad&gt;”.</li>
-<li><strong>unk_token</strong> – The string token used to represent OOV words. Default: “&lt;unk&gt;”.</li>
-<li><strong>pad_first</strong> – Do the padding of the sequence at the beginning. Default: False.</li>
-<li><strong>truncate_first</strong> – Do the truncating of the sequence at the beginning. Default: False</li>
-<li><strong>stop_words</strong> – Tokens to discard during the preprocessing step. Default: None</li>
-<li><strong>is_target</strong> – Whether this field is a target variable.
-Affects iteration over batches. Default: False</li>
+minibatch. Default: False.</p></li>
+<li><p><strong>~Field.batch_first</strong> – Whether to produce tensors with the batch dimension first.
+Default: False.</p></li>
+<li><p><strong>~Field.pad_token</strong> – The string token used as padding. Default: “&lt;pad&gt;”.</p></li>
+<li><p><strong>~Field.unk_token</strong> – The string token used to represent OOV words. Default: “&lt;unk&gt;”.</p></li>
+<li><p><strong>~Field.pad_first</strong> – Do the padding of the sequence at the beginning. Default: False.</p></li>
+<li><p><strong>~Field.truncate_first</strong> – Do the truncating of the sequence at the beginning. Default: False</p></li>
+<li><p><strong>~Field.stop_words</strong> – Tokens to discard during the preprocessing step. Default: None</p></li>
+<li><p><strong>~Field.is_target</strong> – Whether this field is a target variable.
+Affects iteration over batches. Default: False</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.Field.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>sequential=True</em>, <em>use_vocab=True</em>, <em>init_token=None</em>, <em>eos_token=None</em>, <em>fix_length=None</em>, <em>dtype=torch.int64</em>, <em>preprocessing=None</em>, <em>postprocessing=None</em>, <em>lower=False</em>, <em>tokenize=None</em>, <em>tokenizer_language='en'</em>, <em>include_lengths=False</em>, <em>batch_first=False</em>, <em>pad_token='&lt;pad&gt;'</em>, <em>unk_token='&lt;unk&gt;'</em>, <em>pad_first=False</em>, <em>truncate_first=False</em>, <em>stop_words=None</em>, <em>is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">sequential=True</em>, <em class="sig-param">use_vocab=True</em>, <em class="sig-param">init_token=None</em>, <em class="sig-param">eos_token=None</em>, <em class="sig-param">fix_length=None</em>, <em class="sig-param">dtype=torch.int64</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">postprocessing=None</em>, <em class="sig-param">lower=False</em>, <em class="sig-param">tokenize=None</em>, <em class="sig-param">tokenizer_language='en'</em>, <em class="sig-param">include_lengths=False</em>, <em class="sig-param">batch_first=False</em>, <em class="sig-param">pad_token='&lt;pad&gt;'</em>, <em class="sig-param">unk_token='&lt;unk&gt;'</em>, <em class="sig-param">pad_first=False</em>, <em class="sig-param">truncate_first=False</em>, <em class="sig-param">stop_words=None</em>, <em class="sig-param">is_target=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Field.build_vocab">
-<code class="descname">build_vocab</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.build_vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.build_vocab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_vocab</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.build_vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.build_vocab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct the Vocab object for this field from one or more datasets.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other iterable data
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other iterable data
 sources from which to construct the Vocab object that
 represents the set of possible values for this field. If
 a Dataset object is provided, all columns corresponding
 to this field are used; individual columns can also be
-provided directly.</li>
-<li><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vocab.</li>
+provided directly.</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vocab.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Field.numericalize">
-<code class="descname">numericalize</code><span class="sig-paren">(</span><em>arr</em>, <em>device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.numericalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.numericalize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">numericalize</code><span class="sig-paren">(</span><em class="sig-param">arr</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.numericalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.numericalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn a batch of examples that use this field into a Variable.</p>
 <p>If the field has include_lengths=True, a tensor of lengths will be
 included in the return value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em><em>]</em><em>, or </em><em>tuple of</em><em> (</em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>]</em><em>)</em>) – List of tokenized and padded examples, or tuple of List of
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em><em>, or </em><em>tuple of</em><em> (</em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>)</em>) – List of tokenized and padded examples, or tuple of List of
 tokenized and padded examples and List of lengths of each
-example if self.include_lengths is True.</li>
-<li><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
+example if self.include_lengths is True.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
-If left as default, the tensors will be created on cpu. Default: None.</li>
+If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Field.pad">
-<code class="descname">pad</code><span class="sig-paren">(</span><em>minibatch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.pad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param">minibatch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.pad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pad a batch of examples using this field.</p>
 <p>Pads to self.fix_length if provided, otherwise pads to the length of
 the longest example in the batch. Prepends self.init_token and appends
@@ -702,7 +706,7 @@ returns the padded list. If <cite>self.sequential</cite> is <cite>False</cite>, 
 
 <dl class="method">
 <dt id="torchtext.data.Field.preprocess">
-<code class="descname">preprocess</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.preprocess" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.preprocess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a single example using this field, tokenizing if necessary.</p>
 <p>If the input is a Python 2 <cite>str</cite>, it will be converted to Unicode
 first. If <cite>sequential=True</cite>, it will be tokenized. Then the input
@@ -712,27 +716,26 @@ will be optionally lowercased and passed to the user-provided
 
 <dl class="method">
 <dt id="torchtext.data.Field.process">
-<code class="descname">process</code><span class="sig-paren">(</span><em>batch</em>, <em>device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.process" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">process</code><span class="sig-paren">(</span><em class="sig-param">batch</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process a list of examples to create a torch.Tensor.</p>
 <p>Pad, numericalize, and postprocess a batch and create a tensor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Processed object given the input
-and custom postprocessing Pipeline.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://pytorch.org/docs/0.3.0/autograd.html#torch.autograd.Variable" title="(in PyTorch vmaster (0.3.0.post4 ))">torch.autograd.Variable</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Processed object given the input
+and custom postprocessing Pipeline.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pytorch.org/docs/0.3.0/autograd.html#torch.autograd.Variable" title="(in PyTorch vmaster (0.3.0.post4 ))">torch.autograd.Variable</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="torchtext.data.Field.vocab_cls">
-<code class="descname">vocab_cls</code><a class="headerlink" href="#torchtext.data.Field.vocab_cls" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">vocab_cls</code><a class="headerlink" href="#torchtext.data.Field.vocab_cls" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="vocab.html#torchtext.vocab.Vocab" title="torchtext.vocab.Vocab"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchtext.vocab.Vocab</span></code></a></p>
 </dd></dl>
 
@@ -743,10 +746,10 @@ and custom postprocessing Pipeline.</td>
 <h3><span class="hidden-section">ReversibleField</span><a class="headerlink" href="#reversiblefield" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.ReversibleField">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">ReversibleField</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#ReversibleField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.ReversibleField" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">ReversibleField</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#ReversibleField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.ReversibleField" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.data.ReversibleField.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#ReversibleField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.ReversibleField.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#ReversibleField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.ReversibleField.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -757,33 +760,30 @@ and custom postprocessing Pipeline.</td>
 <h3><span class="hidden-section">SubwordField</span><a class="headerlink" href="#subwordfield" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.SubwordField">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">SubwordField</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#SubwordField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.SubwordField" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">SubwordField</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#SubwordField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.SubwordField" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.data.SubwordField.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#SubwordField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.SubwordField.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#SubwordField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.SubwordField.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.SubwordField.segment">
-<code class="descname">segment</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#SubwordField.segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.SubwordField.segment" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">segment</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#SubwordField.segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.SubwordField.segment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segment one or more datasets with this subword field.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other indexable
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other indexable
 mutable sequences to segment. If a Dataset object is provided,
 all columns corresponding to this field are used; individual
-columns can also be provided directly.</td>
-</tr>
-</tbody>
-</table>
+columns can also be provided directly.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="torchtext.data.SubwordField.vocab_cls">
-<code class="descname">vocab_cls</code><a class="headerlink" href="#torchtext.data.SubwordField.vocab_cls" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">vocab_cls</code><a class="headerlink" href="#torchtext.data.SubwordField.vocab_cls" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="vocab.html#torchtext.vocab.SubwordVocab" title="torchtext.vocab.SubwordVocab"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchtext.vocab.SubwordVocab</span></code></a></p>
 </dd></dl>
 
@@ -794,7 +794,7 @@ columns can also be provided directly.</td>
 <h3><span class="hidden-section">NestedField</span><a class="headerlink" href="#nestedfield" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.NestedField">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">NestedField</code><span class="sig-paren">(</span><em>nesting_field</em>, <em>use_vocab=True</em>, <em>init_token=None</em>, <em>eos_token=None</em>, <em>fix_length=None</em>, <em>dtype=torch.int64</em>, <em>preprocessing=None</em>, <em>postprocessing=None</em>, <em>tokenize=None</em>, <em>tokenizer_language='en'</em>, <em>include_lengths=False</em>, <em>pad_token='&lt;pad&gt;'</em>, <em>pad_first=False</em>, <em>truncate_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">NestedField</code><span class="sig-paren">(</span><em class="sig-param">nesting_field</em>, <em class="sig-param">use_vocab=True</em>, <em class="sig-param">init_token=None</em>, <em class="sig-param">eos_token=None</em>, <em class="sig-param">fix_length=None</em>, <em class="sig-param">dtype=torch.int64</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">postprocessing=None</em>, <em class="sig-param">tokenize=None</em>, <em class="sig-param">tokenizer_language='en'</em>, <em class="sig-param">include_lengths=False</em>, <em class="sig-param">pad_token='&lt;pad&gt;'</em>, <em class="sig-param">pad_first=False</em>, <em class="sig-param">truncate_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField" title="Permalink to this definition">¶</a></dt>
 <dd><p>A nested field.</p>
 <p>A nested field holds another field (called <em>nesting field</em>), accepts an untokenized
 string or a list string tokens and groups and treats them as one field as described
@@ -806,102 +806,90 @@ share the same include_lengths with nesting_field, so one shouldn’t specify th
 include_lengths in the nesting_field. This field is
 primarily used to implement character embeddings. See <code class="docutils literal notranslate"><span class="pre">tests/data/test_field.py</span></code>
 for examples on how to use this field.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>nesting_field</strong> (<a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a>) – A field contained in this nested field.</li>
-<li><strong>use_vocab</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to use a Vocab object. If False, the data in this
-field should already be numerical. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
-<li><strong>init_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A token that will be prepended to every example using this
-field, or None for no initial token. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>eos_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A token that will be appended to every example using this
-field, or None for no end-of-sentence token. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>fix_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – A fixed length that all examples using this field will be
-padded to, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for flexible sequence lengths. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>dtype</strong> – The torch.dtype class that represents a batch of examples
-of this kind of data. Default: <code class="docutils literal notranslate"><span class="pre">torch.long</span></code>.</li>
-<li><strong>preprocessing</strong> (<a class="reference internal" href="#torchtext.data.Pipeline" title="torchtext.data.Pipeline"><em>Pipeline</em></a>) – The Pipeline that will be applied to examples
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nesting_field</strong> (<a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a>) – A field contained in this nested field.</p></li>
+<li><p><strong>use_vocab</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to use a Vocab object. If False, the data in this
+field should already be numerical. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>init_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A token that will be prepended to every example using this
+field, or None for no initial token. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>eos_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A token that will be appended to every example using this
+field, or None for no end-of-sentence token. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>fix_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – A fixed length that all examples using this field will be
+padded to, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for flexible sequence lengths. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>dtype</strong> – The torch.dtype class that represents a batch of examples
+of this kind of data. Default: <code class="docutils literal notranslate"><span class="pre">torch.long</span></code>.</p></li>
+<li><p><strong>preprocessing</strong> (<a class="reference internal" href="#torchtext.data.Pipeline" title="torchtext.data.Pipeline"><em>Pipeline</em></a>) – The Pipeline that will be applied to examples
 using this field after tokenizing but before numericalizing. Many
 Datasets replace this attribute with a custom preprocessor.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>postprocessing</strong> (<a class="reference internal" href="#torchtext.data.Pipeline" title="torchtext.data.Pipeline"><em>Pipeline</em></a>) – A Pipeline that will be applied to examples using
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>postprocessing</strong> (<a class="reference internal" href="#torchtext.data.Pipeline" title="torchtext.data.Pipeline"><em>Pipeline</em></a>) – A Pipeline that will be applied to examples using
 this field after numericalizing but before the numbers are turned
 into a Tensor. The pipeline function takes the batch as a list, and
-the field’s Vocab. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>include_lengths</strong> – Whether to return a tuple of a padded minibatch and
+the field’s Vocab. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>include_lengths</strong> – Whether to return a tuple of a padded minibatch and
 a list containing the lengths of each examples, or just a padded
-minibatch. Default: False.</li>
-<li><strong>tokenize</strong> – The function used to tokenize strings using this field into
+minibatch. Default: False.</p></li>
+<li><p><strong>tokenize</strong> – The function used to tokenize strings using this field into
 sequential examples. If “spacy”, the SpaCy tokenizer is
 used. If a non-serializable function is passed as an argument,
-the field will not be able to be serialized. Default: string.split.</li>
-<li><strong>tokenizer_language</strong> – The language of the tokenizer to be constructed.
-Various languages currently supported only in SpaCy.</li>
-<li><strong>pad_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The string token used as padding. If <code class="docutils literal notranslate"><span class="pre">nesting_field</span></code> is
-sequential, this will be set to its <code class="docutils literal notranslate"><span class="pre">pad_token</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;&lt;pad&gt;&quot;</span></code>.</li>
-<li><strong>pad_first</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Do the padding of the sequence at the beginning. Default:
-<code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
+the field will not be able to be serialized. Default: string.split.</p></li>
+<li><p><strong>tokenizer_language</strong> – The language of the tokenizer to be constructed.
+Various languages currently supported only in SpaCy.</p></li>
+<li><p><strong>pad_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string token used as padding. If <code class="docutils literal notranslate"><span class="pre">nesting_field</span></code> is
+sequential, this will be set to its <code class="docutils literal notranslate"><span class="pre">pad_token</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;&lt;pad&gt;&quot;</span></code>.</p></li>
+<li><p><strong>pad_first</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Do the padding of the sequence at the beginning. Default:
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.NestedField.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>nesting_field</em>, <em>use_vocab=True</em>, <em>init_token=None</em>, <em>eos_token=None</em>, <em>fix_length=None</em>, <em>dtype=torch.int64</em>, <em>preprocessing=None</em>, <em>postprocessing=None</em>, <em>tokenize=None</em>, <em>tokenizer_language='en'</em>, <em>include_lengths=False</em>, <em>pad_token='&lt;pad&gt;'</em>, <em>pad_first=False</em>, <em>truncate_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">nesting_field</em>, <em class="sig-param">use_vocab=True</em>, <em class="sig-param">init_token=None</em>, <em class="sig-param">eos_token=None</em>, <em class="sig-param">fix_length=None</em>, <em class="sig-param">dtype=torch.int64</em>, <em class="sig-param">preprocessing=None</em>, <em class="sig-param">postprocessing=None</em>, <em class="sig-param">tokenize=None</em>, <em class="sig-param">tokenizer_language='en'</em>, <em class="sig-param">include_lengths=False</em>, <em class="sig-param">pad_token='&lt;pad&gt;'</em>, <em class="sig-param">pad_first=False</em>, <em class="sig-param">truncate_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.NestedField.build_vocab">
-<code class="descname">build_vocab</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.build_vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.build_vocab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_vocab</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.build_vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.build_vocab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct the Vocab object for nesting field and combine it with this field’s vocab.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other iterable data
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arguments</strong> (<em>Positional</em>) – Dataset objects or other iterable data
 sources from which to construct the Vocab object that
 represents the set of possible values for the nesting field. If
 a Dataset object is provided, all columns corresponding
 to this field are used; individual columns can also be
-provided directly.</li>
-<li><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vocab.</li>
+provided directly.</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vocab.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.NestedField.numericalize">
-<code class="descname">numericalize</code><span class="sig-paren">(</span><em>arrs</em>, <em>device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.numericalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.numericalize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">numericalize</code><span class="sig-paren">(</span><em class="sig-param">arrs</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.numericalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.numericalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a padded minibatch into a variable tensor.</p>
 <p>Each item in the minibatch will be numericalized independently and the resulting
 tensors will be stacked at the first dimension.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em><em>]</em>) – List of tokenized and padded examples.</li>
-<li><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em>) – List of tokenized and padded examples.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
-If left as default, the tensors will be created on cpu. Default: None.</li>
+If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.NestedField.pad">
-<code class="descname">pad</code><span class="sig-paren">(</span><em>minibatch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.pad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pad</code><span class="sig-paren">(</span><em class="sig-param">minibatch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.pad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pad a batch of examples using this field.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">self.nesting_field.sequential</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, each example in the batch must
 be a list of string tokens, and pads them as if by a <code class="docutils literal notranslate"><span class="pre">Field</span></code> with
@@ -934,42 +922,40 @@ filling short examples with <code class="docutils literal notranslate"><span cla
 <span class="go">        [&#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;]]]</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>minibatch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – Each element is a list of string if
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>minibatch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – Each element is a list of string if
 <code class="docutils literal notranslate"><span class="pre">self.nesting_field.sequential</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, a list of list of string
-otherwise.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The padded minibatch. or (padded, sentence_lens, word_lengths)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
-</tr>
-</tbody>
-</table>
+otherwise.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The padded minibatch. or (padded, sentence_lens, word_lengths)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.NestedField.preprocess">
-<code class="descname">preprocess</code><span class="sig-paren">(</span><em>xs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.preprocess" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">xs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#NestedField.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.NestedField.preprocess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preprocess a single example.</p>
 <p>Firstly, tokenization and the supplied preprocessing pipeline is applied. Since
 this field is always sequential, the result is a list. Then, each element of
 the list is preprocessed using <code class="docutils literal notranslate"><span class="pre">self.nesting_field.preprocess</span></code> and the resulting
 list is returned.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The input to preprocess.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The preprocessed list.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The input to preprocess.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The preprocessed list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -982,80 +968,72 @@ list is returned.</p>
 <h3><span class="hidden-section">Iterator</span><a class="headerlink" href="#iterator" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.Iterator">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">Iterator</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>sort_key=None</em>, <em>device=None</em>, <em>batch_size_fn=None</em>, <em>train=True</em>, <em>repeat=False</em>, <em>shuffle=None</em>, <em>sort=None</em>, <em>sort_within_batch=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Iterator</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">sort_key=None</em>, <em class="sig-param">device=None</em>, <em class="sig-param">batch_size_fn=None</em>, <em class="sig-param">train=True</em>, <em class="sig-param">repeat=False</em>, <em class="sig-param">shuffle=None</em>, <em class="sig-param">sort=None</em>, <em class="sig-param">sort_within_batch=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines an iterator that loads batches of data from a Dataset.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dataset</strong> – The Dataset object to load Examples from.</li>
-<li><strong>batch_size</strong> – Batch size.</li>
-<li><strong>batch_size_fn</strong> – Function of three arguments (new example to add, current
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~Iterator.dataset</strong> – The Dataset object to load Examples from.</p></li>
+<li><p><strong>~Iterator.batch_size</strong> – Batch size.</p></li>
+<li><p><strong>~Iterator.batch_size_fn</strong> – Function of three arguments (new example to add, current
 count of examples in the batch, and current effective batch size)
 that returns the new effective batch size resulting from adding
 that example to a batch. This is useful for dynamic batching, where
 this function would add to the current effective batch size the
-number of tokens in the new example.</li>
-<li><strong>sort_key</strong> – A key to use for sorting examples in order to batch together
+number of tokens in the new example.</p></li>
+<li><p><strong>~Iterator.sort_key</strong> – A key to use for sorting examples in order to batch together
 examples with similar lengths and minimize padding. The sort_key
 provided to the Iterator constructor overrides the sort_key
-attribute of the Dataset, or defers to it if None.</li>
-<li><strong>train</strong> – Whether the iterator represents a train set.</li>
-<li><strong>repeat</strong> – Whether to repeat the iterator for multiple epochs. Default: False.</li>
-<li><strong>shuffle</strong> – Whether to shuffle examples between epochs.</li>
-<li><strong>sort</strong> – Whether to sort examples according to self.sort_key.
-Note that shuffle and sort default to train and (not train).</li>
-<li><strong>sort_within_batch</strong> – Whether to sort (in descending order according to
+attribute of the Dataset, or defers to it if None.</p></li>
+<li><p><strong>~Iterator.train</strong> – Whether the iterator represents a train set.</p></li>
+<li><p><strong>~Iterator.repeat</strong> – Whether to repeat the iterator for multiple epochs. Default: False.</p></li>
+<li><p><strong>~Iterator.shuffle</strong> – Whether to shuffle examples between epochs.</p></li>
+<li><p><strong>~Iterator.sort</strong> – Whether to sort examples according to self.sort_key.
+Note that shuffle and sort default to train and (not train).</p></li>
+<li><p><strong>~Iterator.sort_within_batch</strong> – Whether to sort (in descending order according to
 self.sort_key) within each batch. If None, defaults to self.sort.
 If self.sort is True and this is False, the batch is left in the
-original (ascending) sorted order.</li>
-<li><strong>device</strong> (str or <cite>torch.device</cite>) – A string or instance of <cite>torch.device</cite>
+original (ascending) sorted order.</p></li>
+<li><p><strong>~Iterator.device</strong> (str or <cite>torch.device</cite>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
-If left as default, the tensors will be created on cpu. Default: None.</li>
+If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.Iterator.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>sort_key=None</em>, <em>device=None</em>, <em>batch_size_fn=None</em>, <em>train=True</em>, <em>repeat=False</em>, <em>shuffle=None</em>, <em>sort=None</em>, <em>sort_within_batch=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">sort_key=None</em>, <em class="sig-param">device=None</em>, <em class="sig-param">batch_size_fn=None</em>, <em class="sig-param">train=True</em>, <em class="sig-param">repeat=False</em>, <em class="sig-param">shuffle=None</em>, <em class="sig-param">sort=None</em>, <em class="sig-param">sort_within_batch=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Iterator.data">
-<code class="descname">data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the examples in the dataset in order, sorted, or shuffled.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Iterator.init_epoch">
-<code class="descname">init_epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.init_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.init_epoch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.init_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.init_epoch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up the batch generator for a new epoch.</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="torchtext.data.Iterator.splits">
-<em class="property">classmethod </em><code class="descname">splits</code><span class="sig-paren">(</span><em>datasets</em>, <em>batch_sizes=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.splits" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">splits</code><span class="sig-paren">(</span><em class="sig-param">datasets</em>, <em class="sig-param">batch_sizes=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#Iterator.splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Iterator.splits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Iterator objects for multiple splits of a dataset.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>datasets</strong> – Tuple of Dataset objects corresponding to the splits. The
-first such object should be the train set.</li>
-<li><strong>batch_sizes</strong> – Tuple of batch sizes to use for the different splits,
-or None to use the same batch_size for all splits.</li>
-<li><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of the
-iterator class being used.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datasets</strong> – Tuple of Dataset objects corresponding to the splits. The
+first such object should be the train set.</p></li>
+<li><p><strong>batch_sizes</strong> – Tuple of batch sizes to use for the different splits,
+or None to use the same batch_size for all splits.</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of the
+iterator class being used.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1065,7 +1043,7 @@ iterator class being used.</li>
 <h3><span class="hidden-section">BucketIterator</span><a class="headerlink" href="#bucketiterator" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.BucketIterator">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">BucketIterator</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>sort_key=None</em>, <em>device=None</em>, <em>batch_size_fn=None</em>, <em>train=True</em>, <em>repeat=False</em>, <em>shuffle=None</em>, <em>sort=None</em>, <em>sort_within_batch=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#BucketIterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.BucketIterator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">BucketIterator</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">sort_key=None</em>, <em class="sig-param">device=None</em>, <em class="sig-param">batch_size_fn=None</em>, <em class="sig-param">train=True</em>, <em class="sig-param">repeat=False</em>, <em class="sig-param">shuffle=None</em>, <em class="sig-param">sort=None</em>, <em class="sig-param">sort_within_batch=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#BucketIterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.BucketIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines an iterator that batches examples of similar lengths together.</p>
 <p>Minimizes amount of padding needed while producing freshly shuffled
 batches for each new epoch. See pool for the bucketing procedure used.</p>
@@ -1076,41 +1054,37 @@ batches for each new epoch. See pool for the bucketing procedure used.</p>
 <h3><span class="hidden-section">BPTTIterator</span><a class="headerlink" href="#bpttiterator" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.BPTTIterator">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">BPTTIterator</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>bptt_len</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#BPTTIterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.BPTTIterator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">BPTTIterator</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">bptt_len</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#BPTTIterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.BPTTIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines an iterator for language modeling tasks that use BPTT.</p>
 <p>Provides contiguous streams of examples together with targets that are
 one timestep further forward, for language modeling training with
 backpropagation through time (BPTT). Expects a Dataset with a single
 example and a single field called ‘text’ and produces Batches with text and
 target attributes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dataset</strong> – The Dataset object to load Examples from.</li>
-<li><strong>batch_size</strong> – Batch size.</li>
-<li><strong>bptt_len</strong> – Length of sequences for backpropagation through time.</li>
-<li><strong>sort_key</strong> – A key to use for sorting examples in order to batch together
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~BPTTIterator.dataset</strong> – The Dataset object to load Examples from.</p></li>
+<li><p><strong>~BPTTIterator.batch_size</strong> – Batch size.</p></li>
+<li><p><strong>~BPTTIterator.bptt_len</strong> – Length of sequences for backpropagation through time.</p></li>
+<li><p><strong>~BPTTIterator.sort_key</strong> – A key to use for sorting examples in order to batch together
 examples with similar lengths and minimize padding. The sort_key
 provided to the Iterator constructor overrides the sort_key
-attribute of the Dataset, or defers to it if None.</li>
-<li><strong>train</strong> – Whether the iterator represents a train set.</li>
-<li><strong>repeat</strong> – Whether to repeat the iterator for multiple epochs. Default: False.</li>
-<li><strong>shuffle</strong> – Whether to shuffle examples between epochs.</li>
-<li><strong>sort</strong> – Whether to sort examples according to self.sort_key.
-Note that shuffle and sort default to train and (not train).</li>
-<li><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
+attribute of the Dataset, or defers to it if None.</p></li>
+<li><p><strong>~BPTTIterator.train</strong> – Whether the iterator represents a train set.</p></li>
+<li><p><strong>~BPTTIterator.repeat</strong> – Whether to repeat the iterator for multiple epochs. Default: False.</p></li>
+<li><p><strong>~BPTTIterator.shuffle</strong> – Whether to shuffle examples between epochs.</p></li>
+<li><p><strong>~BPTTIterator.sort</strong> – Whether to sort examples according to self.sort_key.
+Note that shuffle and sort default to train and (not train).</p></li>
+<li><p><strong>~BPTTIterator.device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
-If left as default, the tensors will be created on cpu. Default: None.</li>
+If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.BPTTIterator.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>dataset</em>, <em>batch_size</em>, <em>bptt_len</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#BPTTIterator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.BPTTIterator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">bptt_len</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#BPTTIterator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.BPTTIterator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -1124,93 +1098,76 @@ If left as default, the tensors will be created on cpu. Default: None.</li>
 <h3><span class="hidden-section">Pipeline</span><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.data.Pipeline">
-<em class="property">class </em><code class="descclassname">torchtext.data.</code><code class="descname">Pipeline</code><span class="sig-paren">(</span><em>convert_token=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Pipeline</code><span class="sig-paren">(</span><em class="sig-param">convert_token=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a pipeline for transforming sequence data.</p>
 <p>The input is assumed to be utf-8 encoded <cite>str</cite> (Python 3) or
 <cite>unicode</cite> (Python 2).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
-<li><strong>convert_token</strong> – The function to apply to input sequence data.</li>
-<li><strong>pipes</strong> – The Pipelines that will be applied to input sequence
-data in order.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~Pipeline.convert_token</strong> – The function to apply to input sequence data.</p></li>
+<li><p><strong>~Pipeline.pipes</strong> – The Pipelines that will be applied to input sequence
+data in order.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="torchtext.data.Pipeline.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>convert_token=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">convert_token=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pipeline.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>convert_token</strong> – The function to apply to input sequence data.
-If None, the identity function is used. Default: None</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>convert_token</strong> – The function to apply to input sequence data.
+If None, the identity function is used. Default: None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Pipeline.add_after">
-<code class="descname">add_after</code><span class="sig-paren">(</span><em>pipeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.add_after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.add_after" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_after</code><span class="sig-paren">(</span><em class="sig-param">pipeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.add_after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.add_after" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a Pipeline to be applied after this processing pipeline.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pipeline</strong> – The Pipeline or callable to apply after this
-Pipeline.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pipeline</strong> – The Pipeline or callable to apply after this
+Pipeline.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Pipeline.add_before">
-<code class="descname">add_before</code><span class="sig-paren">(</span><em>pipeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.add_before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.add_before" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_before</code><span class="sig-paren">(</span><em class="sig-param">pipeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.add_before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.add_before" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a Pipeline to be applied before this processing pipeline.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pipeline</strong> – The Pipeline or callable to apply before this
-Pipeline.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pipeline</strong> – The Pipeline or callable to apply before this
+Pipeline.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="torchtext.data.Pipeline.call">
-<code class="descname">call</code><span class="sig-paren">(</span><em>x</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply _only_ the convert_token function of the current pipeline
 to the input. If the input is a list, a list with the results of
 applying the <cite>convert_token</cite> function to all input elements is
 returned.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> – The input to apply the convert_token function to.</li>
-<li><strong>arguments</strong> (<em>Positional</em>) – Forwarded to the <cite>convert_token</cite> function
-of the current Pipeline.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – The input to apply the convert_token function to.</p></li>
+<li><p><strong>arguments</strong> (<em>Positional</em>) – Forwarded to the <cite>convert_token</cite> function
+of the current Pipeline.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="torchtext.data.Pipeline.identity">
-<em class="property">static </em><code class="descname">identity</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.identity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.identity" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">identity</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline.identity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline.identity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the input.</p>
 <p>This is here for serialization compatibility with pickle.</p>
 </dd></dl>
@@ -1225,7 +1182,7 @@ of the current Pipeline.</li>
 <h3><span class="hidden-section">batch</span><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.data.batch">
-<code class="descclassname">torchtext.data.</code><code class="descname">batch</code><span class="sig-paren">(</span><em>data</em>, <em>batch_size</em>, <em>batch_size_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.batch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">batch</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">batch_size_fn=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yield elements from data in chunks of batch_size.</p>
 </dd></dl>
 
@@ -1234,7 +1191,7 @@ of the current Pipeline.</li>
 <h3><span class="hidden-section">pool</span><a class="headerlink" href="#pool" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.data.pool">
-<code class="descclassname">torchtext.data.</code><code class="descname">pool</code><span class="sig-paren">(</span><em>data</em>, <em>batch_size</em>, <em>key</em>, <em>batch_size_fn=&lt;function &lt;lambda&gt;&gt;</em>, <em>random_shuffler=None</em>, <em>shuffle=False</em>, <em>sort_within_batch=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.pool" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">pool</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">batch_size</em>, <em class="sig-param">key</em>, <em class="sig-param">batch_size_fn=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">random_shuffler=None</em>, <em class="sig-param">shuffle=False</em>, <em class="sig-param">sort_within_batch=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/iterator.html#pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.pool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort within buckets, then batch, then shuffle batches.</p>
 <p>Partitions data into chunks of size 100*batch_size, sorts examples within
 each chunk using sort_key, then batch these examples and shuffle the
@@ -1246,26 +1203,22 @@ batches.</p>
 <h3><span class="hidden-section">get_tokenizer</span><a class="headerlink" href="#get-tokenizer" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.data.get_tokenizer">
-<code class="descclassname">torchtext.data.</code><code class="descname">get_tokenizer</code><span class="sig-paren">(</span><em>tokenizer</em>, <em>language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#get_tokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.get_tokenizer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">get_tokenizer</code><span class="sig-paren">(</span><em class="sig-param">tokenizer</em>, <em class="sig-param">language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#get_tokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.get_tokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate tokenizer function for a string sentence.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>tokenizer</strong> – the name of tokenizer function. If None, it returns split()
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tokenizer</strong> – the name of tokenizer function. If None, it returns split()
 function, which splits the string sentence by space.
 If basic_english, it returns _basic_english_normalize() function,
 which normalize the string first and split by space. If a callable
 function, it will return the function. If a tokenizer library
 (e.g. spacy, moses, toktok, revtok, subword), it returns the
-corresponding library.</li>
-<li><strong>language</strong> – Default en</li>
+corresponding library.</p></li>
+<li><p><strong>language</strong> – Default en</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchtext</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="k">import</span> <span class="n">get_tokenizer</span>
@@ -1282,7 +1235,7 @@ corresponding library.</li>
 <h3><span class="hidden-section">interleave_keys</span><a class="headerlink" href="#interleave-keys" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.data.interleave_keys">
-<code class="descclassname">torchtext.data.</code><code class="descname">interleave_keys</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#interleave_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.interleave_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">interleave_keys</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#interleave_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.interleave_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interleave bits from two sort keys to form a joint sort key.</p>
 <p>Examples that are similar in both of the provided keys will have similar
 values for the key defined by this function. Useful for tasks with two
@@ -1301,7 +1254,7 @@ text fields like machine translation or natural language inference.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="datasets.html" class="btn btn-neutral float-right" title="torchtext.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="data_utils.html" class="btn btn-neutral float-right" title="torchtext.data.utils" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="torchtext" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
@@ -1530,15 +1483,23 @@ text fields like machine translation or natural language inference.</p>
       <div class="main-menu">
         <ul>
           <li>
-            <a href="#">Get Started</a>
+            <a href="https://pytorch.org/get-started">Get Started</a>
           </li>
 
           <li>
-            <a href="#">Features</a>
+            <a href="https://pytorch.org/features">Features</a>
           </li>
 
           <li>
-            <a href="#">Ecosystem</a>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
           </li>
 
           <li>
@@ -1577,6 +1538,7 @@ text fields like machine translation or natural language inference.</p>
       sideMenus.bind();
       scrollToAnchor.bind();
       highlightNavigation.bind();
+      mainMenuDropdown.bind();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Examples &mdash; torchtext 0.4.0 documentation</title>
+  <title>torchtext.data.utils &mdash; torchtext 0.4.0 documentation</title>
   
 
   
@@ -31,7 +31,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="torchtext.experimental.datasets" href="experimental_datasets.html" /> 
+    <link rel="next" title="torchtext.data.functional" href="data_functional.html" />
+    <link rel="prev" title="torchtext.data" href="data.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -186,14 +187,14 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
             
@@ -234,13 +235,13 @@
       </li>
 
         
-      <li>Examples</li>
+      <li>torchtext.data.utils</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/examples.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+            <a href="_sources/data_utils.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -266,89 +267,62 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>Note: We are working on new building blocks and datasets. Some of the components in the examples (e.g. Field) will eventually retire. See the release note 0.5.0 <a class="reference external" href="https://github.com/pytorch/text/releases">here</a>.</p>
-<ol class="arabic simple">
-<li><p>Ability to describe declaratively how to load a custom NLP dataset that’s in a “normal” format:</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="p">(</span>
-<span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/pos/pos_wsj_train.tsv&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
-<span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()),</span>
-        <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">())])</span>
-
-<span class="n">sentiment</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/sentiment/train.json&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sentence_tokenized&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">sequential</span><span class="o">=</span><span class="bp">True</span><span class="p">)),</span>
-             <span class="s1">&#39;sentiment_gold&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">sequential</span><span class="o">=</span><span class="bp">False</span><span class="p">))})</span>
+  <div class="section" id="module-torchtext.data.utils">
+<span id="torchtext-data-utils"></span><h1>torchtext.data.utils<a class="headerlink" href="#module-torchtext.data.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-tokenizer">
+<h2><span class="hidden-section">get_tokenizer</span><a class="headerlink" href="#get-tokenizer" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchtext.data.utils.get_tokenizer">
+<code class="sig-prename descclassname">torchtext.data.utils.</code><code class="sig-name descname">get_tokenizer</code><span class="sig-paren">(</span><em class="sig-param">tokenizer</em>, <em class="sig-param">language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#get_tokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.utils.get_tokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate tokenizer function for a string sentence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tokenizer</strong> – the name of tokenizer function. If None, it returns split()
+function, which splits the string sentence by space.
+If basic_english, it returns _basic_english_normalize() function,
+which normalize the string first and split by space. If a callable
+function, it will return the function. If a tokenizer library
+(e.g. spacy, moses, toktok, revtok, subword), it returns the
+corresponding library.</p></li>
+<li><p><strong>language</strong> – Default en</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchtext</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="k">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;You can now install TorchText using pip!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;you&#39;</span><span class="p">,</span> <span class="s1">&#39;can&#39;</span><span class="p">,</span> <span class="s1">&#39;now&#39;</span><span class="p">,</span> <span class="s1">&#39;install&#39;</span><span class="p">,</span> <span class="s1">&#39;torchtext&#39;</span><span class="p">,</span> <span class="s1">&#39;using&#39;</span><span class="p">,</span> <span class="s1">&#39;pip&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li><p>Ability to parse nested keys for loading a JSON dataset</p></li>
-</ol>
-<p>2.1 sample.json</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;foods&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;fruits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="s2">&quot;Banana&quot;</span><span class="p">],</span>
-    <span class="nt">&quot;vegetables&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lettuce&quot;</span><span class="p">},</span> <span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;marrow&quot;</span><span class="p">}]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+</dd></dl>
+
+</div>
+<div class="section" id="ngrams-iterator">
+<h2><span class="hidden-section">ngrams_iterator</span><a class="headerlink" href="#ngrams-iterator" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchtext.data.utils.ngrams_iterator">
+<code class="sig-prename descclassname">torchtext.data.utils.</code><code class="sig-name descname">ngrams_iterator</code><span class="sig-paren">(</span><em class="sig-param">token_list</em>, <em class="sig-param">ngrams</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#ngrams_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.utils.ngrams_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator that yields the given tokens and their ngrams.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token_list</strong> – A list of tokens</p></li>
+<li><p><strong>ngrams</strong> – the number of ngrams.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;here we&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;we are&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>2.2 pass in nested keys to parse nested data directly</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">data</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foods.vegetables.name&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;vegs&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">())}</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;sample.json&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">vegs</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="p">[</span><span class="s1">&#39;lettuce&#39;</span><span class="p">,</span> <span class="s1">&#39;marrow&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="3">
-<li><p>Ability to define a preprocessing pipeline:</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">my_custom_tokenizer</span><span class="p">)</span>
-<span class="n">trg</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">my_custom_tokenizer</span><span class="p">)</span>
-<span class="n">mt_train</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TranslationDataset</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/mt/wmt16-ende.train&#39;</span><span class="p">,</span> <span class="n">exts</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;.en&#39;</span><span class="p">,</span> <span class="s1">&#39;.de&#39;</span><span class="p">),</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="4">
-<li><p>Batching, padding, and numericalizing (including building vocabulary object):</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># continuing from above</span>
-<span class="n">mt_dev</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TranslationDataset</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/mt/newstest2014&#39;</span><span class="p">,</span> <span class="n">exts</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;.en&#39;</span><span class="p">,</span> <span class="s1">&#39;.de&#39;</span><span class="p">),</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
-<span class="n">src</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">mt_train</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">80000</span><span class="p">)</span>
-<span class="n">trg</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">mt_train</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
-<span class="c1"># mt_dev shares the fields, so it shares their vocab objects</span>
+</dd></dl>
 
-<span class="n">train_iter</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="o">=</span><span class="n">mt_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">interleave_keys</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">src</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">trg</span><span class="p">)))</span>
-<span class="c1"># usage</span>
-<span class="o">&gt;&gt;&gt;</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">train_iter</span><span class="p">))</span>
-<span class="o">&lt;</span><span class="n">data</span><span class="o">.</span><span class="n">Batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="p">[</span><span class="n">LongTensor</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">25</span><span class="p">)],</span> <span class="n">trg</span><span class="o">=</span><span class="p">[</span><span class="n">LongTensor</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">28</span><span class="p">)])</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="5">
-<li><p>Wrapper for dataset splits (train, validation, test):</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TEXT</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="n">LABELS</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-
-<span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/data/pos_wsj/pos_wsj&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="s1">&#39;_train.tsv&#39;</span><span class="p">,</span>
-    <span class="n">validation</span><span class="o">=</span><span class="s1">&#39;_dev.tsv&#39;</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">&#39;_test.tsv&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">TEXT</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">LABELS</span><span class="p">)])</span>
-
-<span class="n">train_iter</span><span class="p">,</span> <span class="n">val_iter</span><span class="p">,</span> <span class="n">test_iter</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span><span class="p">),</span> <span class="n">batch_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
-    <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="n">TEXT</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-<span class="n">LABELS</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-</pre></div>
 </div>
 </div>
 
@@ -360,8 +334,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="data_functional.html" class="btn btn-neutral float-right" title="torchtext.data.functional" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
-        <a href="experimental_datasets.html" class="btn btn-neutral" title="torchtext.experimental.datasets" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+        <a href="data.html" class="btn btn-neutral" title="torchtext.data" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -393,7 +369,11 @@
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">Examples</a></li>
+<li><a class="reference internal" href="#">torchtext.data.utils</a><ul>
+<li><a class="reference internal" href="#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
+<li><a class="reference internal" href="#ngrams-iterator"><span class="hidden-section">ngrams_iterator</span></a></li>
+</ul>
+</li>
 </ul>
 
             </div>

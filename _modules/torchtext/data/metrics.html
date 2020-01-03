@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.imdb &mdash; torchtext 0.4.0 documentation</title>
+  <title>torchtext.data.metrics &mdash; torchtext 0.4.0 documentation</title>
   
 
   
@@ -235,7 +235,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.imdb</li>
+      <li>torchtext.data.metrics</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -263,87 +263,105 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.imdb</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">io</span>
+  <h1>Source code for torchtext.data.metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="k">import</span> <span class="n">ngrams_iterator</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">data</span>
+
+<span class="k">def</span> <span class="nf">_compute_ngram_counter</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">max_n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Create a Counter with a count of unique n-grams in the tokens list</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tokens: a list of tokens (typically a string split on whitespaces)</span>
+<span class="sd">        max_n: the maximum order of n-gram wanted</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        output: a collections.Counter object with the unique n-grams and their</span>
+<span class="sd">            associated count</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.metrics import _compute_ngram_counter</span>
+<span class="sd">        &gt;&gt;&gt; tokens = [&#39;me&#39;, &#39;me&#39;, &#39;you&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; _compute_ngram_counter(tokens, 2)</span>
+<span class="sd">            Counter({(&#39;me&#39;,): 2,</span>
+<span class="sd">             (&#39;you&#39;,): 1,</span>
+<span class="sd">             (&#39;me&#39;, &#39;me&#39;): 1,</span>
+<span class="sd">             (&#39;me&#39;, &#39;you&#39;): 1,</span>
+<span class="sd">             (&#39;me&#39;, &#39;me&#39;, &#39;you&#39;): 1})</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">max_n</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">ngrams_counter</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span>
+                                         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">max_n</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">ngrams_counter</span>
 
 
-<div class="viewcode-block" id="IMDB"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IMDB">[docs]</a><span class="k">class</span> <span class="nc">IMDB</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="bleu_score"><a class="viewcode-back" href="../../../data_metrics.html#torchtext.data.metrics.bleu_score">[docs]</a><span class="k">def</span> <span class="nf">bleu_score</span><span class="p">(</span><span class="n">candidate_corpus</span><span class="p">,</span> <span class="n">references_corpus</span><span class="p">,</span> <span class="n">max_n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the BLEU score between a candidate translation corpus and a references</span>
+<span class="sd">    translation corpus. Based on https://www.aclweb.org/anthology/P02-1040.pdf</span>
 
-    <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz&#39;</span><span class="p">]</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;imdb&#39;</span>
-    <span class="n">dirname</span> <span class="o">=</span> <span class="s1">&#39;aclImdb&#39;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        candidate_corpus: an iterable of candidate translations. Each translation is an</span>
+<span class="sd">            iterable of tokens</span>
+<span class="sd">        references_corpus: an iterable of iterables of reference translations. Each</span>
+<span class="sd">            translation is an iterable of tokens</span>
+<span class="sd">        max_n: the maximum n-gram we want to use. E.g. if max_n=3, we will use unigrams,</span>
+<span class="sd">            bigrams and trigrams</span>
+<span class="sd">        weights: a list of weights used for each n-gram category (uniform by default)</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.metrics import bleu_score</span>
+<span class="sd">        &gt;&gt;&gt; candidate_corpus = [[&#39;I&#39;, &#39;ate&#39;, &#39;the&#39;, &#39;apple&#39;], [&#39;I&#39;, &#39;did&#39;]]</span>
+<span class="sd">        &gt;&gt;&gt; references_corpus = [[[&#39;I&#39;, &#39;ate&#39;, &#39;it&#39;], [&#39;I&#39;, &#39;ate&#39;, &#39;apples&#39;]],</span>
+<span class="sd">                [[&#39;I&#39;, &#39;did&#39;]]]</span>
+<span class="sd">        &gt;&gt;&gt; bleu_score(candidate_corpus, references_corpus)</span>
+<span class="sd">            0.7598356856515925</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="IMDB.__init__"><a class="viewcode-back" href="../../../experimental_datasets.html#torchtext.datasets.IMDB.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create an IMDB dataset instance given a path and fields.</span>
+    <span class="k">assert</span> <span class="n">max_n</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span> <span class="s1">&#39;Length of the &quot;weights&quot; list has be equal to max_n&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_corpus</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">references_corpus</span><span class="p">),</span>\
+        <span class="s1">&#39;The length of candidate and reference corpus should be the same&#39;</span>
 
-<span class="sd">        Arguments:</span>
-<span class="sd">            path: Path to the dataset&#39;s highest level directory</span>
-<span class="sd">            text_field: The field that will be used for text data.</span>
-<span class="sd">            label_field: The field that will be used for label data.</span>
-<span class="sd">            Remaining keyword arguments: Passed to the constructor of</span>
-<span class="sd">                data.Dataset.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">text_field</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">label_field</span><span class="p">)]</span>
-        <span class="n">examples</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">clipped_counts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_n</span><span class="p">)</span>
+    <span class="n">total_counts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_n</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;*.txt&#39;</span><span class="p">)):</span>
-                <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-                <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Example</span><span class="o">.</span><span class="n">fromlist</span><span class="p">([</span><span class="n">text</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">fields</span><span class="p">))</span>
+    <span class="n">candidate_len</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">refs_len</span> <span class="o">=</span> <span class="mf">0.0</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">IMDB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">for</span> <span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">candidate_corpus</span><span class="p">,</span> <span class="n">references_corpus</span><span class="p">):</span>
+        <span class="n">candidate_len</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IMDB.splits"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IMDB.splits">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span>
-               <span class="n">train</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create dataset objects for splits of the IMDB dataset.</span>
+        <span class="c1"># Get the length of the reference that&#39;s closest in length to the candidate</span>
+        <span class="n">refs_len_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ref</span><span class="p">))</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span>
+        <span class="n">refs_len</span> <span class="o">+=</span> <span class="nb">min</span><span class="p">(</span><span class="n">refs_len_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span>
 
-<span class="sd">        Arguments:</span>
-<span class="sd">            text_field: The field that will be used for the sentence.</span>
-<span class="sd">            label_field: The field that will be used for label data.</span>
-<span class="sd">            root: Root dataset storage directory. Default is &#39;.data&#39;.</span>
-<span class="sd">            train: The directory that contains the training examples</span>
-<span class="sd">            test: The directory that contains the test examples</span>
-<span class="sd">            Remaining keyword arguments: Passed to the splits method of</span>
-<span class="sd">                Dataset.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">IMDB</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">text_field</span><span class="o">=</span><span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="o">=</span><span class="n">label_field</span><span class="p">,</span>
-            <span class="n">train</span><span class="o">=</span><span class="n">train</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">reference_counters</span> <span class="o">=</span> <span class="n">_compute_ngram_counter</span><span class="p">(</span><span class="n">refs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">max_n</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">reference_counters</span> <span class="o">=</span> <span class="n">reference_counters</span> <span class="o">|</span> <span class="n">_compute_ngram_counter</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">max_n</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IMDB.iters"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IMDB.iters">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">iters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create iterator objects for splits of the IMDB dataset.</span>
+        <span class="n">candidate_counter</span> <span class="o">=</span> <span class="n">_compute_ngram_counter</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">max_n</span><span class="p">)</span>
 
-<span class="sd">        Arguments:</span>
-<span class="sd">            batch_size: Batch_size</span>
-<span class="sd">            device: Device to create batches on. Use - 1 for CPU and None for</span>
-<span class="sd">                the currently active GPU device.</span>
-<span class="sd">            root: The root directory that contains the imdb dataset subdirectory</span>
-<span class="sd">            vectors: one of the available pretrained vectors or a list with each</span>
-<span class="sd">                element one of the available pretrained vectors (see Vocab.load_vectors)</span>
+        <span class="n">clipped_counter</span> <span class="o">=</span> <span class="n">candidate_counter</span> <span class="o">&amp;</span> <span class="n">reference_counters</span>
 
-<span class="sd">            Remaining keyword arguments: Passed to the splits method.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">TEXT</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-        <span class="n">LABEL</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">sequential</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="n">clipped_counter</span><span class="p">:</span>
+            <span class="n">clipped_counts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">clipped_counter</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span>
 
-        <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="n">candidate_counter</span><span class="p">:</span>  <span class="c1"># TODO: no need to loop through the whole counter</span>
+            <span class="n">total_counts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">candidate_counter</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span>
 
-        <span class="n">TEXT</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">vectors</span><span class="o">=</span><span class="n">vectors</span><span class="p">)</span>
-        <span class="n">LABEL</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">clipped_counts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pn</span> <span class="o">=</span> <span class="n">clipped_counts</span> <span class="o">/</span> <span class="n">total_counts</span>
+        <span class="n">log_pn</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">log_pn</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span></div></div>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">refs_len</span> <span class="o">/</span> <span class="n">candidate_len</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">bp</span> <span class="o">*</span> <span class="n">score</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
 </pre></div>
 
              </article>

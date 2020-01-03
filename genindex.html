@@ -35,6 +35,26 @@
 
   
   <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -49,11 +69,25 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/features">Features</a>
+            <div class="ecosystem-dropdown">
+              <a id="dropdownMenuButton" data-toggle="ecosystem-dropdown">
+                Ecosystem
+              </a>
+              <div class="ecosystem-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub"">
+                  <span class=dropdown-title>Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/ecosystem">
+                  <span class=dropdown-title>Tools & Libraries</span>
+                  <p>Explore the ecosystem of tools and libraries</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
-            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+            <a href="https://pytorch.org/mobile">Mobile</a>
           </li>
 
           <li>
@@ -69,7 +103,21 @@
           </li>
 
           <li>
-            <a href="https://pytorch.org/resources">Resources</a>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources"">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+              </div>
+            </div>
           </li>
 
           <li>
@@ -138,10 +186,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
             
@@ -258,6 +310,14 @@
 </li>
         <li><a href="datasets.html#torchtext.datasets.YelpReviewPolarity.__init__">(torchtext.datasets.YelpReviewPolarity attribute)</a>
 </li>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.IMDB.__init__">(torchtext.experimental.datasets.IMDB attribute)</a>
+</li>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.PennTreebank.__init__">(torchtext.experimental.datasets.PennTreebank attribute)</a>
+</li>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.WikiText103.__init__">(torchtext.experimental.datasets.WikiText103 attribute)</a>
+</li>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.WikiText2.__init__">(torchtext.experimental.datasets.WikiText2 attribute)</a>
+</li>
       </ul></li>
       <li><a href="data.html#torchtext.data.Batch.__init__">__init__() (torchtext.data.Batch method)</a>
 
@@ -284,13 +344,17 @@
 </li>
         <li><a href="datasets.html#torchtext.datasets.BABI20.__init__">(torchtext.datasets.BABI20 method)</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.LanguageModelingDataset.__init__">(torchtext.datasets.LanguageModelingDataset method)</a>
+        <li><a href="datasets.html#torchtext.datasets.EnWik9.__init__">(torchtext.datasets.EnWik9 method)</a>
+</li>
+        <li><a href="datasets.html#torchtext.datasets.LanguageModelingDataset.__init__">(torchtext.datasets.LanguageModelingDataset method)</a>, <a href="datasets.html#torchtext.datasets.LanguageModelingDataset.__init__">[1]</a>
 </li>
         <li><a href="datasets.html#torchtext.datasets.SequenceTaggingDataset.__init__">(torchtext.datasets.SequenceTaggingDataset method)</a>
 </li>
         <li><a href="datasets.html#torchtext.datasets.TextClassificationDataset.__init__">(torchtext.datasets.TextClassificationDataset method)</a>
 </li>
         <li><a href="datasets.html#torchtext.datasets.TranslationDataset.__init__">(torchtext.datasets.TranslationDataset method)</a>
+</li>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.LanguageModelingDataset.__init__">(torchtext.experimental.datasets.LanguageModelingDataset method)</a>
 </li>
         <li><a href="vocab.html#torchtext.vocab.CharNGram.__init__">(torchtext.vocab.CharNGram method)</a>
 </li>
@@ -335,10 +399,12 @@
 </li>
       <li><a href="data.html#torchtext.data.batch">batch() (in module torchtext.data)</a>
 </li>
-      <li><a href="data.html#torchtext.data.BPTTIterator">BPTTIterator (class in torchtext.data)</a>
+      <li><a href="data/metrics.html#torchtext.data.metrics.bleu_score">bleu_score() (in module torchtext.data.metrics)</a>, <a href="data_metrics.html#torchtext.data.metrics.bleu_score">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.BPTTIterator">BPTTIterator (class in torchtext.data)</a>
+</li>
       <li><a href="data.html#torchtext.data.BucketIterator">BucketIterator (class in torchtext.data)</a>
 </li>
       <li><a href="data.html#torchtext.data.Field.build_vocab">build_vocab() (torchtext.data.Field method)</a>
@@ -357,11 +423,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="data.html#torchtext.data.Pipeline.call">call() (torchtext.data.Pipeline method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="vocab.html#torchtext.vocab.CharNGram">CharNGram (class in torchtext.vocab)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="datasets.html#torchtext.datasets.CoNLL2000Chunking">CoNLL2000Chunking (class in torchtext.datasets)</a>
+</li>
+      <li><a href="data/functional.html#torchtext.data.functional.custom_replace">custom_replace() (in module torchtext.data.functional)</a>, <a href="data_functional.html#torchtext.data.functional.custom_replace">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -387,10 +455,12 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data.html#torchtext.data.Example">Example (class in torchtext.data)</a>
+      <li><a href="datasets.html#torchtext.datasets.EnWik9">EnWik9 (class in torchtext.datasets)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.Example">Example (class in torchtext.data)</a>
+</li>
       <li><a href="utils.html#torchtext.utils.extract_archive">extract_archive() (in module torchtext.utils)</a>
 </li>
   </ul></td>
@@ -425,8 +495,14 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data.html#torchtext.data.get_tokenizer">get_tokenizer() (in module torchtext.data)</a>
+      <li><a href="data/functional.html#torchtext.data.functional.generate_sp_model">generate_sp_model() (in module torchtext.data.functional)</a>, <a href="data_functional.html#torchtext.data.functional.generate_sp_model">[1]</a>
 </li>
+      <li><a href="data.html#torchtext.data.get_tokenizer">get_tokenizer() (in module torchtext.data)</a>
+
+      <ul>
+        <li><a href="data_utils.html#torchtext.data.utils.get_tokenizer">(in module torchtext.data.utils)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="vocab.html#torchtext.vocab.Vectors.get_vecs_by_tokens">get_vecs_by_tokens() (torchtext.vocab.Vectors method)</a>
@@ -442,7 +518,11 @@
       <li><a href="data.html#torchtext.data.Pipeline.identity">identity() (torchtext.data.Pipeline static method)</a>
 </li>
       <li><a href="datasets.html#torchtext.datasets.IMDB">IMDB (class in torchtext.datasets)</a>
+
+      <ul>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.IMDB">(class in torchtext.experimental.datasets)</a>
 </li>
+      </ul></li>
       <li><a href="data.html#torchtext.data.Iterator.init_epoch">init_epoch() (torchtext.data.Iterator method)</a>
 </li>
       <li><a href="data.html#torchtext.data.interleave_keys">interleave_keys() (in module torchtext.data)</a>
@@ -454,7 +534,7 @@
       <ul>
         <li><a href="datasets.html#torchtext.datasets.MultiNLI.iters">(torchtext.datasets.MultiNLI class method)</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.PennTreebank.iters">(torchtext.datasets.PennTreebank class method)</a>
+        <li><a href="datasets.html#torchtext.datasets.PennTreebank.iters">(torchtext.datasets.PennTreebank class method)</a>, <a href="datasets.html#torchtext.datasets.PennTreebank.iters">[1]</a>
 </li>
         <li><a href="datasets.html#torchtext.datasets.SNLI.iters">(torchtext.datasets.SNLI class method)</a>
 </li>
@@ -462,9 +542,9 @@
 </li>
         <li><a href="datasets.html#torchtext.datasets.TREC.iters">(torchtext.datasets.TREC class method)</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.WikiText103.iters">(torchtext.datasets.WikiText103 class method)</a>
+        <li><a href="datasets.html#torchtext.datasets.WikiText103.iters">(torchtext.datasets.WikiText103 class method)</a>, <a href="datasets.html#torchtext.datasets.WikiText103.iters">[1]</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.WikiText2.iters">(torchtext.datasets.WikiText2 class method)</a>
+        <li><a href="datasets.html#torchtext.datasets.WikiText2.iters">(torchtext.datasets.WikiText2 class method)</a>, <a href="datasets.html#torchtext.datasets.WikiText2.iters">[1]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -477,10 +557,16 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="datasets.html#torchtext.datasets.LanguageModelingDataset">LanguageModelingDataset (class in torchtext.datasets)</a>
+      <li><a href="datasets.html#torchtext.datasets.LanguageModelingDataset">LanguageModelingDataset (class in torchtext.datasets)</a>, <a href="datasets.html#torchtext.datasets.LanguageModelingDataset">[1]</a>
+
+      <ul>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.LanguageModelingDataset">(class in torchtext.experimental.datasets)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data/functional.html#torchtext.data.functional.load_sp_model">load_sp_model() (in module torchtext.data.functional)</a>, <a href="data_functional.html#torchtext.data.functional.load_sp_model">[1]</a>
+</li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.load_vectors">load_vectors() (torchtext.vocab.Vocab method)</a>
 </li>
   </ul></td>
@@ -503,7 +589,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="data.html#torchtext.data.NestedField">NestedField (class in torchtext.data)</a>
 </li>
-      <li><a href="data/utils.html#torchtext.data.utils.ngrams_iterator">ngrams_iterator() (in module torchtext.data.utils)</a>
+      <li><a href="data/utils.html#torchtext.data.utils.ngrams_iterator">ngrams_iterator() (in module torchtext.data.utils)</a>, <a href="data_utils.html#torchtext.data.utils.ngrams_iterator">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -513,6 +599,8 @@
         <li><a href="data.html#torchtext.data.NestedField.numericalize">(torchtext.data.NestedField method)</a>
 </li>
       </ul></li>
+      <li><a href="data_functional.html#torchtext.data.functional.numericalize_tokens_from_iterator">numericalize_tokens_from_iterator() (in module torchtext.data.functional)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -525,14 +613,18 @@
         <li><a href="data.html#torchtext.data.NestedField.pad">(torchtext.data.NestedField method)</a>
 </li>
       </ul></li>
-      <li><a href="datasets.html#torchtext.datasets.PennTreebank">PennTreebank (class in torchtext.datasets)</a>
+      <li><a href="datasets.html#torchtext.datasets.PennTreebank">PennTreebank (class in torchtext.datasets)</a>, <a href="datasets.html#torchtext.datasets.PennTreebank">[1]</a>
+
+      <ul>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.PennTreebank">(class in torchtext.experimental.datasets)</a>
 </li>
+      </ul></li>
       <li><a href="data.html#torchtext.data.Pipeline">Pipeline (class in torchtext.data)</a>
-</li>
-      <li><a href="data.html#torchtext.data.pool">pool() (in module torchtext.data)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data.html#torchtext.data.pool">pool() (in module torchtext.data)</a>
+</li>
       <li><a href="data.html#torchtext.data.Field.preprocess">preprocess() (torchtext.data.Field method)</a>
 
       <ul>
@@ -569,9 +661,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="data.html#torchtext.data.SubwordField.segment">segment() (torchtext.data.SubwordField method)</a>
 </li>
+      <li><a href="data/functional.html#torchtext.data.functional.sentencepiece_numericalizer">sentencepiece_numericalizer() (in module torchtext.data.functional)</a>, <a href="data_functional.html#torchtext.data.functional.sentencepiece_numericalizer">[1]</a>
+</li>
+      <li><a href="data/functional.html#torchtext.data.functional.sentencepiece_tokenizer">sentencepiece_tokenizer() (in module torchtext.data.functional)</a>, <a href="data_functional.html#torchtext.data.functional.sentencepiece_tokenizer">[1]</a>
+</li>
       <li><a href="datasets.html#torchtext.datasets.SequenceTaggingDataset">SequenceTaggingDataset (class in torchtext.datasets)</a>
 </li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.set_vectors">set_vectors() (torchtext.vocab.Vocab method)</a>
+</li>
+      <li><a href="data/functional.html#torchtext.data.functional.simple_space_split">simple_space_split() (in module torchtext.data.functional)</a>, <a href="data_functional.html#torchtext.data.functional.simple_space_split">[1]</a>
 </li>
       <li><a href="datasets.html#torchtext.datasets.SNLI">SNLI (class in torchtext.datasets)</a>
 </li>
@@ -596,7 +694,7 @@
 </li>
         <li><a href="datasets.html#torchtext.datasets.MultiNLI.splits">(torchtext.datasets.MultiNLI class method)</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.PennTreebank.splits">(torchtext.datasets.PennTreebank class method)</a>
+        <li><a href="datasets.html#torchtext.datasets.PennTreebank.splits">(torchtext.datasets.PennTreebank class method)</a>, <a href="datasets.html#torchtext.datasets.PennTreebank.splits">[1]</a>
 </li>
         <li><a href="datasets.html#torchtext.datasets.SNLI.splits">(torchtext.datasets.SNLI class method)</a>
 </li>
@@ -608,9 +706,9 @@
 </li>
         <li><a href="datasets.html#torchtext.datasets.WMT14.splits">(torchtext.datasets.WMT14 class method)</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.WikiText103.splits">(torchtext.datasets.WikiText103 class method)</a>
+        <li><a href="datasets.html#torchtext.datasets.WikiText103.splits">(torchtext.datasets.WikiText103 class method)</a>, <a href="datasets.html#torchtext.datasets.WikiText103.splits">[1]</a>
 </li>
-        <li><a href="datasets.html#torchtext.datasets.WikiText2.splits">(torchtext.datasets.WikiText2 class method)</a>
+        <li><a href="datasets.html#torchtext.datasets.WikiText2.splits">(torchtext.datasets.WikiText2 class method)</a>, <a href="datasets.html#torchtext.datasets.WikiText2.splits">[1]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -635,9 +733,13 @@
 </li>
       <li><a href="data.html#module-torchtext.data">torchtext.data (module)</a>
 </li>
+      <li><a href="data/functional.html#module-torchtext.data.functional">torchtext.data.functional (module)</a>, <a href="data_functional.html#module-torchtext.data.functional">[1]</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data/utils.html#module-torchtext.data.utils">torchtext.data.utils (module)</a>
+      <li><a href="data/metrics.html#module-torchtext.data.metrics">torchtext.data.metrics (module)</a>, <a href="data_metrics.html#module-torchtext.data.metrics">[1]</a>
+</li>
+      <li><a href="data/utils.html#module-torchtext.data.utils">torchtext.data.utils (module)</a>, <a href="data_utils.html#module-torchtext.data.utils">[1]</a>
 </li>
       <li><a href="utils.html#module-torchtext.utils">torchtext.utils (module)</a>
 </li>
@@ -683,12 +785,20 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="datasets.html#torchtext.datasets.WikiText103">WikiText103 (class in torchtext.datasets)</a>
+      <li><a href="datasets.html#torchtext.datasets.WikiText103">WikiText103 (class in torchtext.datasets)</a>, <a href="datasets.html#torchtext.datasets.WikiText103">[1]</a>
+
+      <ul>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.WikiText103">(class in torchtext.experimental.datasets)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="datasets.html#torchtext.datasets.WikiText2">WikiText2 (class in torchtext.datasets)</a>
+      <li><a href="datasets.html#torchtext.datasets.WikiText2">WikiText2 (class in torchtext.datasets)</a>, <a href="datasets.html#torchtext.datasets.WikiText2">[1]</a>
+
+      <ul>
+        <li><a href="experimental_datasets.html#torchtext.experimental.datasets.WikiText2">(class in torchtext.experimental.datasets)</a>
 </li>
+      </ul></li>
       <li><a href="datasets.html#torchtext.datasets.WMT14">WMT14 (class in torchtext.datasets)</a>
 </li>
   </ul></td>
@@ -900,15 +1010,23 @@
       <div class="main-menu">
         <ul>
           <li>
-            <a href="#">Get Started</a>
+            <a href="https://pytorch.org/get-started">Get Started</a>
           </li>
 
           <li>
-            <a href="#">Features</a>
+            <a href="https://pytorch.org/features">Features</a>
           </li>
 
           <li>
-            <a href="#">Ecosystem</a>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
           </li>
 
           <li>
@@ -947,6 +1065,7 @@
       sideMenus.bind();
       scrollToAnchor.bind();
       highlightNavigation.bind();
+      mainMenuDropdown.bind();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {
