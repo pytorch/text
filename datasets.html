@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets &mdash; torchtext 0.4.0 documentation</title>
+  <title>torchtext.datasets &mdash; torchtext 0.5.0 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.4.0
+                  0.5.0
                 </div>
               
             
@@ -1682,6 +1682,35 @@ test splits in that order, if provided.</p>
 <h2><a class="toc-backref" href="#id40">Unsupervised Learning</a><a class="headerlink" href="#unsupervised-learning" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="enwik9">
 <h3><a class="toc-backref" href="#id41">EnWik9</a><a class="headerlink" href="#enwik9" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.datasets.EnWik9">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">EnWik9</code><span class="sig-paren">(</span><em class="sig-param">begin_line=0</em>, <em class="sig-param">num_lines=6348957</em>, <em class="sig-param">root='.data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/unsupervised_learning.html#EnWik9"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.EnWik9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compressed size of first 10^9 bytes of enwiki-20060303-pages-articles.xml.
+It’s part of Large Text Compression Benchmark project</p>
+<dl class="method">
+<dt id="torchtext.datasets.EnWik9.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">begin_line=0</em>, <em class="sig-param">num_lines=6348957</em>, <em class="sig-param">root='.data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/unsupervised_learning.html#EnWik9.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.EnWik9.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiate EnWik9 dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>begin_line</strong> – the number of beginning line. Default: 0</p></li>
+<li><p><strong>num_lines</strong> – the number of lines to be loaded. Default: 6348957</p></li>
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>data</strong> – a list of label/tokens tuple. tokens are a tensor after</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="k">import</span> <span class="n">EnWik9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enwik9</span> <span class="o">=</span> <span class="n">EnWik9</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocab</span> <span class="o">=</span> <span class="n">enwik9</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 </div>
