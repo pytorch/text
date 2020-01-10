@@ -265,39 +265,10 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="module-torchtext.data.metrics">
-<span id="torchtext-data-metrics"></span><h1>torchtext.data.metrics<a class="headerlink" href="#module-torchtext.data.metrics" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="torchtext-data-metrics">
+<h1>torchtext.data.metrics<a class="headerlink" href="#torchtext-data-metrics" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="hidden-bleu-score">
 <h2>:hidden:<a href="#id1"><span class="problematic" id="id2">`</span></a>bleu_score `<a class="headerlink" href="#hidden-bleu-score" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.data.metrics.bleu_score">
-<code class="sig-prename descclassname">torchtext.data.metrics.</code><code class="sig-name descname">bleu_score</code><span class="sig-paren">(</span><em class="sig-param">candidate_corpus, references_corpus, max_n=4, weights=[0.25, 0.25, 0.25, 0.25]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchtext/data/metrics.html#bleu_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.metrics.bleu_score" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the BLEU score between a candidate translation corpus and a references
-translation corpus. Based on <a class="reference external" href="https://www.aclweb.org/anthology/P02-1040.pdf">https://www.aclweb.org/anthology/P02-1040.pdf</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>candidate_corpus</strong> – an iterable of candidate translations. Each translation is an
-iterable of tokens</p></li>
-<li><p><strong>references_corpus</strong> – an iterable of iterables of reference translations. Each
-translation is an iterable of tokens</p></li>
-<li><p><strong>max_n</strong> – the maximum n-gram we want to use. E.g. if max_n=3, we will use unigrams,
-bigrams and trigrams</p></li>
-<li><p><strong>weights</strong> – a list of weights used for each n-gram category (uniform by default)</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.metrics</span> <span class="k">import</span> <span class="n">bleu_score</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">candidate_corpus</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;ate&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;apple&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;did&#39;</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">references_corpus</span> <span class="o">=</span> <span class="p">[[[</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;ate&#39;</span><span class="p">,</span> <span class="s1">&#39;it&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;ate&#39;</span><span class="p">,</span> <span class="s1">&#39;apples&#39;</span><span class="p">]],</span>
-<span class="go">        [[&#39;I&#39;, &#39;did&#39;]]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bleu_score</span><span class="p">(</span><span class="n">candidate_corpus</span><span class="p">,</span> <span class="n">references_corpus</span><span class="p">)</span>
-<span class="go">    0.7598356856515925</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 </div>
 

@@ -427,32 +427,6 @@
                                            <span class="n">extra_fields</span><span class="o">=</span><span class="n">extra_fields</span><span class="p">,</span>
                                            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="n">train</span><span class="p">,</span>
                                            <span class="n">validation</span><span class="o">=</span><span class="n">validation</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span></div></div>
-
-
-<span class="k">class</span> <span class="nc">XNLI</span><span class="p">(</span><span class="n">NLIDataset</span><span class="p">):</span>
-    <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;http://www.nyu.edu/projects/bowman/xnli/XNLI-1.0.zip&#39;</span><span class="p">]</span>
-    <span class="n">dirname</span> <span class="o">=</span> <span class="s1">&#39;XNLI-1.0&#39;</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;xnli&#39;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">genre_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">language_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span>
-               <span class="n">validation</span><span class="o">=</span><span class="s1">&#39;xnli.dev.jsonl&#39;</span><span class="p">,</span>
-               <span class="n">test</span><span class="o">=</span><span class="s1">&#39;xnli.test.jsonl&#39;</span><span class="p">):</span>
-        <span class="n">extra_fields</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">genre_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">extra_fields</span><span class="p">[</span><span class="s2">&quot;genre&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;genre&quot;</span><span class="p">,</span> <span class="n">genre_field</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">language_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">extra_fields</span><span class="p">[</span><span class="s2">&quot;language&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="n">language_field</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">XNLI</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span><span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span>
-                                       <span class="n">extra_fields</span><span class="o">=</span><span class="n">extra_fields</span><span class="p">,</span>
-                                       <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                       <span class="n">validation</span><span class="o">=</span><span class="n">validation</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">iters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;XNLI dataset does not support iters&#39;</span><span class="p">)</span>
 </pre></div>
 
              </article>

@@ -332,7 +332,7 @@ Borrowed and slightly modified from the Python docs:
 <h2><span class="hidden-section">extract_archive</span><a class="headerlink" href="#extract-archive" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.utils.extract_archive">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">from_path</em>, <em class="sig-param">to_path=None</em>, <em class="sig-param">overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.extract_archive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">from_path</em>, <em class="sig-param">to_path=None</em>, <em class="sig-param">overwrite=False</em>, <em class="sig-param">archive='tar'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.extract_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract archive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -340,6 +340,7 @@ Borrowed and slightly modified from the Python docs:
 <li><p><strong>from_path</strong> – the path of the archive.</p></li>
 <li><p><strong>to_path</strong> – the root path of the extraced files (directory of from_path)</p></li>
 <li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
+<li><p><strong>archive</strong> – the archive format to extract (tar)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
