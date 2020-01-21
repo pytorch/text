@@ -149,7 +149,7 @@ def WikiText2(*args, **kwargs):
             data.
 
     Examples:
-        >>> from torchtext.datasets import WikiText2
+        >>> from torchtext.experimental.datasets import WikiText2
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
@@ -191,7 +191,7 @@ def WikiText103(*args, **kwargs):
             data.
 
     Examples:
-        >>> from torchtext.datasets import WikiText103
+        >>> from torchtext.experimental.datasets import WikiText103
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset, valid_dataset = WikiText103(tokenizer=tokenizer)
@@ -228,7 +228,7 @@ def PennTreebank(*args, **kwargs):
             data.
 
     Examples:
-        >>> from torchtext.datasets import PennTreebank
+        >>> from torchtext.experimental.datasets import PennTreebank
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
