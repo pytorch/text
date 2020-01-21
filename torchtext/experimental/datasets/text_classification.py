@@ -74,7 +74,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     logging.info('Vocab has {} entries'.format(len(vocab)))
 
     data = {}
-    for item in iters_group.keys():
+    for item in data_select:
         data[item] = {}
         data[item]['data'] = []
         data[item]['labels'] = []

@@ -108,10 +108,16 @@ class TestDataset(TorchtextTestCase):
     @slow
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
+        from torchtext.vocab import Vocab
         # smoke test to ensure wikitext2 works properly
         train_dataset, test_dataset = IMDB()
         self.assertEqual(len(train_dataset), 25000)
         self.assertEqual(len(test_dataset), 25000)
+
+        # Test API with an vocab input object
+        old_vocab = train_dataset.get_vocab()
+        new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
+        new_train_data, new_test_data = IMDB(vocab=new_vocab)
 
         # Delete the dataset after we're done to save disk space on CI
         datafile = os.path.join(self.project_root, ".data", "imdb")
