@@ -109,12 +109,12 @@ class TestDataset(TorchtextTestCase):
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab
-        # smoke test to ensure wikitext2 works properly
+        # smoke test to ensure imdb works properly
         train_dataset, test_dataset = IMDB()
         self.assertEqual(len(train_dataset), 25000)
         self.assertEqual(len(test_dataset), 25000)
 
-        # Test API with an vocab input object
+        # Test API with a vocab input object
         old_vocab = train_dataset.get_vocab()
         new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
