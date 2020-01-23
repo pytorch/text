@@ -544,7 +544,7 @@ pretrained_aliases = {
 """Mapping from string name to factory function"""
 
 
-def build_vocab_from_iterator(iterator, min_freq):
+def build_vocab_from_iterator(iterator, min_freq=1):
     """
     Build a Vocab from an iterator.
 

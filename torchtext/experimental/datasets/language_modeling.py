@@ -74,7 +74,7 @@ def _get_datafile_path(key, extracted_files):
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
-                    data_select=('train', 'test', 'valid')):
+                    data_select=('train', 'test', 'valid'), min_freq=1):
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -100,7 +100,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         logging.info('Building Vocab based on {}'.format(_path['train']))
         txt_iter = iter(tokenizer(row) for row in io.open(_path['train'],
                                                           encoding="utf8"))
-        vocab = build_vocab_from_iterator(txt_iter)
+        vocab = build_vocab_from_iterator(txt_iter, min_freq=min_freq)
         logging.info('Vocab has {} entries'.format(len(vocab)))
     else:
         if not isinstance(vocab, Vocab):
