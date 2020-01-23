@@ -113,7 +113,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self._vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_unk=False, min_freq=1):
+def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
+                    include_unk=False, min_freq=1):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
@@ -125,7 +126,8 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_un
 
     if vocab is None:
         logging.info('Building Vocab based on {}'.format(train_csv_path))
-        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams), min_freq=min_freq)
+        vocab = build_vocab_from_iterator(_csv_iterator(train_csv_path, ngrams),
+                                          min_freq=min_freq)
     else:
         if not isinstance(vocab, Vocab):
             raise TypeError("Passed vocabulary is not of type Vocab")
