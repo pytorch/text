@@ -215,3 +215,59 @@ class PennTreebank(LanguageModelingDataset):
         return data.BPTTIterator.splits(
             (train, val, test), batch_size=batch_size, bptt_len=bptt_len,
             device=device)
+
+
+class WMTNewsCrawl(LanguageModelingDataset):
+    """The WMT News Crawl.
+    """
+
+    urls = ['http://www.statmt.org/wmt11/training-monolingual-news-2011.tgz']
+    name = 'newscrawl-2011'
+    dirname = 'training-monolingual'
+
+    @classmethod
+    def splits(cls, text_field, root='.data', train='news.2011.en.shuffled',
+               validation=None, test=None, **kwargs):
+        """Create dataset objects for splits of the WMT News Crawl dataset.
+
+        Arguments:
+            text_field: The field that will be used for text data.
+            root: The root directory where the data files will be stored.
+            train: The filename of the train data. Default: 'news.2011.en.shuffled'.
+            validation: The filename of the validation data, or None to not
+                load the validation set. Default: None.
+            test: The filename of the test data, or None to not load the test
+                set. Default: None.
+        """
+        return super(WMTNewsCrawl, cls).splits(
+            root=root, train=train, validation=validation, test=test,
+            text_field=text_field, **kwargs)
+
+    @classmethod
+    def iters(cls, batch_size=32, bptt_len=35, device=0, root='.data',
+              vectors=None, **kwargs):
+        """Create iterator objects for splits of the WMT News Crawl dataset.
+
+        This is the simplest way to use the dataset, and assumes common
+        defaults for field, vocabulary, and iterator parameters.
+
+        Arguments:
+            batch_size: Batch size.
+            bptt_len: Length of sequences for backpropagation through time.
+            device: Device to create batches on. Use -1 for CPU and None for
+                the currently active GPU device.
+            root: The root directory where the data files will be stored.
+            wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
+                text field. The word vectors are accessible as
+                train.dataset.fields['text'].vocab.vectors.
+            Remaining keyword arguments: Passed to the splits method.
+        """
+        TEXT = data.Field()
+
+        train, *others = cls.splits(TEXT, root=root, **kwargs)
+
+        TEXT.build_vocab(train, vectors=vectors)
+
+        return data.BPTTIterator.splits(
+            (train, *others), batch_size=batch_size, bptt_len=bptt_len,
+            device=device)
