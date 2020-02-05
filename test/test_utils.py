@@ -25,10 +25,11 @@ class TestUtils(TorchtextTestCase):
         archive_path = utils.download_from_url(url)
         assert target_archive_path == archive_path
 
-        # extract files and ensure they are correct
-        files = utils.extract_archive(archive_path)
-        assert files == [os.path.join(root, 'val.de'),
-                         os.path.join(root, 'val.en')]
+        correct_files = ['val.de', 'val.en']
+        # extract files and ensure they are in the to_path directory
+        files = utils.extract_archive(archive_path, root)
+        assert files == ['val.de', 'val.en']
+        assert all([os.path.exists(os.path.join(root, f)) for f in correct_files])
 
         # remove files and archive
         for f in files:
@@ -85,10 +86,11 @@ class TestUtils(TorchtextTestCase):
         archive_path = utils.download_from_url(url)
         assert target_archive_path == archive_path
 
+        correct_files = ['val.de', 'val.en']
         # extract files and ensure they are in the to_path directory
         files = utils.extract_archive(archive_path, to_path)
-        assert files == [os.path.join(to_path, 'val.de'),
-                         os.path.join(to_path, 'val.en')]
+        assert files == ['val.de', 'val.en']
+        assert all([os.path.exists(os.path.join(to_path, f)) for f in correct_files])
 
         # remove files and archive
         for f in files:
