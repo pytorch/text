@@ -247,11 +247,10 @@ def WMTNewsCrawl(*args, **kwargs):
             removed_tokens: removed tokens from output dataset (Default: [])
             language: language for dataset (Default: en)
         Examples:
-            >>> from torchtext.experimental.datasets import PennTreebank
+            >>> from torchtext.experimental.datasets import WMTNewsCrawl
             >>> from torchtext.data.utils import get_tokenizer
             >>> tokenizer = get_tokenizer("spacy")
-            >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
+            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer)
             >>> vocab = train_dataset.get_vocab()
         """
     return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
-
