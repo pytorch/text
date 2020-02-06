@@ -193,23 +193,15 @@ def extract_archive(from_path, to_path=None, overwrite=False):
             files = []
             for file_ in zfile.namelist():
                 file_path = os.path.join(to_path, file_)
+                files.append(file_path)
                 if os.path.exists(file_path):
                     logging.info('{} already extracted.'.format(file_path))
                     if not overwrite:
                         continue
                 zfile.extract(file_, to_path)
-                if os.path.isfile(file_path):
-                    files.append(file_path)
+        files = [f for f in files if os.path.isfile(f)]
         return files
 
     else:
         raise NotImplementedError(
             "We currently only support tar.gz, .tgz and zip achives.")
-
-
-if __name__ == "__main__":
-    import os
-    os.makedirs(".data/")
-    download_from_url("https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip")
-    files = extract_archive(".data/wikitext-2-v1.zip")
-    print(files)

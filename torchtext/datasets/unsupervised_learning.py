@@ -106,7 +106,7 @@ class EnWik9(torch.utils.data.Dataset):
                                             path=os.path.join(root, 'enwik9.zip'),
                                             root=root)
             extracted_file = extract_archive(dataset_zip)
-            raw_file = os.path.join(root, extracted_file[0])
+            raw_file = extracted_file[0]
             preprocess_raw_enwik9(raw_file, processed_file)
 
         # Meta information
