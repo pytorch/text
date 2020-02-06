@@ -50,18 +50,18 @@ class TestUtils(TorchtextTestCase):
         archive_path = utils.download_from_url(url)
         assert target_archive_path == archive_path
 
-        # extract files and ensure they are correct
-        files = utils.extract_archive(archive_path)
-        assert files == ['en-ud-v2/',
-                         'en-ud-v2/en-ud-tag.v2.dev.txt',
+        correct_files = ['en-ud-v2/en-ud-tag.v2.dev.txt',
                          'en-ud-v2/en-ud-tag.v2.test.txt',
                          'en-ud-v2/en-ud-tag.v2.train.txt',
                          'en-ud-v2/LICENSE.txt',
                          'en-ud-v2/README.txt']
+        # extract files and ensure they are correct
+        files = utils.extract_archive(archive_path)
+        assert files == [os.path.join(root, f) for f in correct_files]
 
         # remove files and archive
         for f in files:
-            conditional_remove(os.path.join(root, f))
+            conditional_remove(f)
         os.rmdir(os.path.join(root, 'en-ud-v2'))
         conditional_remove(archive_path)
 
