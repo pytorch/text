@@ -190,16 +190,26 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         assert zipfile.is_zipfile(from_path), from_path
         logging.info('Opening zip file {}.'.format(from_path))
         with zipfile.ZipFile(from_path, 'r') as zfile:
-            files = zfile.namelist()
-            for file_ in files:
+            files = []
+            for file_ in zfile.namelist():
                 file_path = os.path.join(to_path, file_)
                 if os.path.exists(file_path):
                     logging.info('{} already extracted.'.format(file_path))
                     if not overwrite:
                         continue
                 zfile.extract(file_, to_path)
+                if os.path.isfile(file_path):
+                    files.append(file_path)
         return files
 
     else:
         raise NotImplementedError(
             "We currently only support tar.gz, .tgz and zip achives.")
+
+
+if __name__ == "__main__":
+    import os
+    os.makedirs(".data/")
+    download_from_url("https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip")
+    files = extract_archive(".data/wikitext-2-v1.zip")
+    print(files)
