@@ -154,7 +154,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
 
     Arguments:
         from_path: the path of the archive.
-        to_path: the root path of the extraced files (directory of from_path)
+        to_path: the root path of the extracted files (directory of from_path)
         overwrite: overwrite existing files (False)
 
     Returns:
@@ -166,6 +166,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         >>> to_path = './'
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
+        >>> ['.data/val.de', '.data/val.en']
     """
 
     if to_path is None:
