@@ -30,6 +30,11 @@ class TestUtils(TorchtextTestCase):
         assert files == [os.path.join(root, 'val.de'),
                          os.path.join(root, 'val.en')]
 
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, overwrite=True)
+        assert files == [os.path.join(root, 'val.de'),
+                         os.path.join(root, 'val.en')]
+
         # remove files and archive
         for f in files:
             conditional_remove(f)
@@ -57,6 +62,10 @@ class TestUtils(TorchtextTestCase):
                          'en-ud-v2/README.txt']
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
+        assert files == [os.path.join(root, f) for f in correct_files]
+
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, overwrite=True)
         assert files == [os.path.join(root, f) for f in correct_files]
 
         # remove files and archive
@@ -87,6 +96,11 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are in the to_path directory
         files = utils.extract_archive(archive_path, to_path)
+        assert files == [os.path.join(to_path, 'val.de'),
+                         os.path.join(to_path, 'val.en')]
+
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, to_path, overwrite=True)
         assert files == [os.path.join(to_path, 'val.de'),
                          os.path.join(to_path, 'val.en')]
 
