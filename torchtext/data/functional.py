@@ -3,7 +3,8 @@ import re
 
 __all__ = [
     "generate_sp_model", "load_sp_model",
-    "sentencepiece_numericalizer", "sentencepiece_tokenizer"
+    "sentencepiece_numericalizer", "sentencepiece_tokenizer",
+    "numericalize_tokens_from_iterator"
 ]
 
 
