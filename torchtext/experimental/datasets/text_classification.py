@@ -7,11 +7,22 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.vocab import Vocab
 from torchtext.datasets import TextClassificationDataset
+from torch.utils.data import IterableDataset
 
 URLS = {
     'IMDB':
         'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 }
+
+
+class TextClassificationIterableDataset(IterableDataset):
+    def __init__(self, iterator):
+        super(TextClassificationIterableDataset, self).__init__()
+        self.iterator = iterator
+
+    def __iter__(self):
+        for item in self.iterator:
+            yield item
 
 
 def _create_data_from_iterator(vocab, iterator, removed_tokens):
@@ -31,6 +42,19 @@ def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
                     yield label, ngrams_iterator(tokenizer(f.read()), ngrams)
                 else:
                     yield ngrams_iterator(tokenizer(f.read()), ngrams)
+
+
+def setup_iterable_datasets(dataset_name, root, ngrams, tokenizer, data_select):
+    if not tokenizer:
+        tokenizer = get_tokenizer("basic_english")
+
+    if not set(data_select).issubset(set(('train', 'test'))):
+        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+    dataset_tar = download_from_url(URLS[dataset_name], root=root)
+    extracted_files = extract_archive(dataset_tar)
+    return tuple(TextClassificationIterableDataset(_imdb_iterator(item, extracted_files,
+                                                   tokenizer, ngrams, yield_cls=True))
+                 for item in data_select)
 
 
 def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
@@ -55,10 +79,13 @@ def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select)
 
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                     removed_tokens=[], tokenizer=None,
-                    data_select=('train', 'test')):
+                    data_select=('train', 'test'), raw_text=False):
 
     if isinstance(data_select, str):
         data_select = [data_select]
+
+    if raw_text:
+        return setup_iterable_datasets(dataset_name, root, ngrams, tokenizer, data_select)
 
     iters_group = _generate_data_iterators(dataset_name, root, ngrams,
                                            tokenizer, data_select)
@@ -118,6 +145,7 @@ def IMDB(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+        raw_text: flag to return raw tokens as IterableDataset (Default: False)
 
     Examples:
         >>> from torchtext.experimental.datasets import IMDB
@@ -126,6 +154,7 @@ def IMDB(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = IMDB(tokenizer=tokenizer)
         >>> train, = IMDB(tokenizer=tokenizer, data_select='train')
+        >>> train, = IMDB(data_select='train', raw_text=True)
     """
 
     return _setup_datasets(*(("IMDB",) + args), **kwargs)
