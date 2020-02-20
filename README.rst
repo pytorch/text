@@ -15,6 +15,9 @@ This repository consists of:
 * `torchtext.data <#data>`_: Generic data loaders, abstractions, and iterators for text (including vocabulary and word vectors)
 * `torchtext.datasets <#datasets>`_: Pre-built loaders for common NLP datasets
 
+Note: we are currently re-designing the torchtext library to make it more compatible with pytorch (e.g. ``torch.utils.data``). Several datasets have been written with the new abstractions in `torchtext.experimental <https://github.com/pytorch/text/tree/master/torchtext/experimental>`_ folder. We also created an issue to discuss the new abstraction, and users are welcome to leave feedback `here <https://github.com/pytorch/text/issues/664>`_. 
+
+
 Installation
 ============
 
@@ -132,7 +135,7 @@ See the ``test`` directory for examples of dataset usage.
 Experimental Code
 =================
 
-We have re-written several datasets under ```torchtext.experimental.datasets```:
+We have re-written several datasets under ``torchtext.experimental.datasets``:
 
 * Sentiment analysis: IMDb
 * Language modeling: abstract class + WikiText-2, WikiText103, PennTreebank
