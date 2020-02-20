@@ -83,7 +83,8 @@ def get_tokenizer(tokenizer, language='en'):
         tokenizer: the name of tokenizer function. If None, it returns split()
             function, which splits the string sentence by space.
             If basic_english, it returns _basic_english_normalize() function,
-            which normalize the string first and split by space. If a callable
+            which normalize the string first and split by space. If empty_tokenizer,
+            it returns the raw text. If a callable
             function, it will return the function. If a tokenizer library
             (e.g. spacy, moses, toktok, revtok, subword), it returns the
             corresponding library.
