@@ -14,6 +14,10 @@ def _spacy_tokenize(x, spacy):
     return [tok.text for tok in spacy.tokenizer(x)]
 
 
+def empty_tokenizer(x):
+    return [x]
+
+
 _patterns = [r'\'',
              r'\"',
              r'\.',
@@ -103,6 +107,10 @@ def get_tokenizer(tokenizer, language='en'):
         if language != 'en':
             raise ValueError("Basic normalization is only available for Enlish(en)")
         return _basic_english_normalize
+
+    # return the original raw text
+    if tokenizer == 'empty_tokenizer':
+        return empty_tokenizer
 
     # simply return if a function is passed
     if callable(tokenizer):

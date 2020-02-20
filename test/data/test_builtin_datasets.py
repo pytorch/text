@@ -128,15 +128,12 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(datafile)
 
     @slow
-    def test_iterabledataset_imdb(self):
+    def test_raw_imdb(self):
         from torchtext.experimental.datasets import IMDB
         # smoke test to ensure imdb works properly
-        train_dataset, = IMDB(data_select='train', raw_text=True)
-        cached_dataset = list(train_dataset)
-        self.assertEqual(len(cached_dataset), 25000)
-        test_dataset, = IMDB(data_select='test', raw_text=True)
-        cached_dataset = list(test_dataset)
-        self.assertEqual(len(cached_dataset), 25000)
+        train_dataset, test_dataset = IMDB(raw_text=True)
+        self.assertEqual(len(train_dataset), 25000)
+        self.assertEqual(len(test_dataset), 25000)
 
         # Delete the dataset after we're done to save disk space on CI
         datafile = os.path.join(self.project_root, ".data", "imdb")
