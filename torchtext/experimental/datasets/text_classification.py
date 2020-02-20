@@ -19,8 +19,12 @@ def _create_data_from_iterator(vocab, iterator, removed_tokens):
         if vocab is None:
             yield cls, tokens
         else:
-            yield cls, iter(map(lambda x: vocab[x],
-                            filter(lambda x: x not in removed_tokens, tokens)))
+            if callable(vocab):
+                yield cls, iter(map(lambda x: vocab(x),
+                                filter(lambda x: x not in removed_tokens, tokens)))
+            else:
+                yield cls, iter(map(lambda x: vocab[x],
+                                filter(lambda x: x not in removed_tokens, tokens)))
 
 
 def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
@@ -58,7 +62,7 @@ def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select)
 
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                     removed_tokens=[], tokenizer=None,
-                    data_select=('train', 'test'), raw_text=False):
+                    data_select=('train', 'test')):
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -67,16 +71,14 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                                            tokenizer, data_select)
 
     if vocab is None:
-        if not raw_text:
-            if 'vocab' not in iters_group.keys():
-                raise TypeError("Must pass a vocab if train is not selected.")
-            logging.info('Building Vocab based on train data')
-            vocab = build_vocab_from_iterator(iters_group['vocab'])
-            logging.info('Vocab has {} entries'.format(len(vocab)))
-    else:
-        if not isinstance(vocab, Vocab):
-            raise TypeError("Passed vocabulary is not of type Vocab")
+        if 'vocab' not in iters_group.keys():
+            raise TypeError("Must pass a vocab if train is not selected.")
+        logging.info('Building Vocab based on train data')
+        vocab = build_vocab_from_iterator(iters_group['vocab'])
         logging.info('Vocab has {} entries'.format(len(vocab)))
+    else:
+        if not isinstance(vocab, Vocab) and not callable(vocab):
+            raise TypeError("Passed vocabulary is not of type Vocab nor a callable func")
 
     data = {}
     for item in data_select:
@@ -86,12 +88,13 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
         logging.info('Creating {} data'.format(item))
         data_iter = _create_data_from_iterator(vocab, iters_group[item], removed_tokens)
         for cls, tokens in data_iter:
-            if raw_text:
+            tok_list = [tok_id for tok_id in tokens]
+            try:
                 data[item]['data'].append((torch.tensor(cls),
-                                           [tok_id for tok_id in tokens]))
-            else:
+                                           torch.tensor(tok_list)))
+            except ValueError:
                 data[item]['data'].append((torch.tensor(cls),
-                                           torch.tensor([tok_id for tok_id in tokens])))
+                                           tok_list))
             data[item]['labels'].append(cls)
         data[item]['labels'] = set(data[item]['labels'])
 
@@ -127,8 +130,6 @@ def IMDB(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        raw_text: flag to return raw text or tokens (Default: False). To return raw text
-            sentence, set tokenizer to `get_tokenizer("empty_tokenizer")`
 
     Examples:
         >>> from torchtext.experimental.datasets import IMDB
@@ -137,7 +138,6 @@ def IMDB(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = IMDB(tokenizer=tokenizer)
         >>> train, = IMDB(tokenizer=tokenizer, data_select='train')
-        >>> train, = IMDB(raw_text=True)
     """
 
     return _setup_datasets(*(("IMDB",) + args), **kwargs)
