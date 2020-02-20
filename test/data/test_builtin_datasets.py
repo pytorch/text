@@ -129,9 +129,11 @@ class TestDataset(TorchtextTestCase):
 
     @slow
     def test_raw_imdb(self):
+        def return_same(x):
+            x
         from torchtext.experimental.datasets import IMDB
         # smoke test to ensure imdb works properly
-        train_dataset, test_dataset = IMDB(raw_text=True)
+        train_dataset, test_dataset = IMDB(vocab=return_same)
         self.assertEqual(len(train_dataset), 25000)
         self.assertEqual(len(test_dataset), 25000)
 
