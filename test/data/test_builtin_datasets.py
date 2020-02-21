@@ -130,7 +130,7 @@ class TestDataset(TorchtextTestCase):
     @slow
     def test_raw_imdb(self):
         def return_same(x):
-            x
+            return x
         from torchtext.experimental.datasets import IMDB
         # smoke test to ensure imdb works properly
         train_dataset, test_dataset = IMDB(vocab=return_same)
