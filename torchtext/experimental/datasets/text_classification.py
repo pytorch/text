@@ -1,7 +1,6 @@
 import logging
 import torch
 import io
-import os
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
@@ -43,7 +42,6 @@ def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select)
 
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
-    extracted_files = [os.path.join(root, f) for f in extracted_files]
 
     iters_group = {}
     if 'train' in data_select:

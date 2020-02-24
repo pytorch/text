@@ -179,7 +179,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
             for file_ in tar:
                 file_path = os.path.join(to_path, file_.name)
                 if file_.isfile():
-                    files.append(file_.name)
+                    files.append(file_path)
                     if os.path.exists(file_path):
                         logging.info('{} already extracted.'.format(file_path))
                         if not overwrite:

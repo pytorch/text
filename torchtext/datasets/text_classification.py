@@ -1,7 +1,6 @@
 import logging
 import torch
 import io
-import os
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
@@ -120,9 +119,9 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_un
 
     for fname in extracted_files:
         if fname.endswith('train.csv'):
-            train_csv_path = os.path.join(root, fname)
+            train_csv_path = fname
         if fname.endswith('test.csv'):
-            test_csv_path = os.path.join(root, fname)
+            test_csv_path = fname
 
     if vocab is None:
         logging.info('Building Vocab based on {}'.format(train_csv_path))
