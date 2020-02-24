@@ -82,15 +82,18 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         select_to_index = {'train': 0, 'test': 1, 'valid': 2}
         extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
                                              root=root) for key in data_select]
-    else:
+    elif dataset_name == 'WMTNewsCrawl':
+        if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
+            raise ValueError("WMTNewsCrawl only creates a training dataset. data_select should be 'train' "
+                             "or ('train',), got {}.".format(data_select))
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
-
-    if dataset_name == "WMTNewsCrawl":
-        data_select = ('train',)
         language = kwargs.get('language', 'en')
         fname = 'news.2011.{}.shuffled'.format(language)
         extracted_files = [f for f in extracted_files if fname in f]
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
 
     _path = {}
     for item in data_select:
@@ -245,6 +248,9 @@ def WMTNewsCrawl(*args, **kwargs):
                 vocabulary based on the train data set.
             removed_tokens: removed tokens from output dataset (Default: [])
             language: language for dataset (Default: en)
+            data_select: a string or tuple for the returned datasets.
+                        (Default: ('train', 'test','valid'))
+                        Only training dataset is provided for 2011.
         Examples:
             >>> from torchtext.experimental.datasets import WMTNewsCrawl
             >>> from torchtext.data.utils import get_tokenizer
@@ -252,4 +258,4 @@ def WMTNewsCrawl(*args, **kwargs):
             >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer)
             >>> vocab = train_dataset.get_vocab()
         """
-    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
+    return _setup_datasets(data_select='train', language='en', *(("WMTNewsCrawl",) + args), **kwargs)
