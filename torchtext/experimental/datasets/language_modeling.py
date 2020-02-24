@@ -1,6 +1,5 @@
 import torch
 import logging
-import os
 import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
@@ -85,7 +84,7 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                                              root=root) for key in data_select]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files = [os.path.join(root, d) for d in extract_archive(dataset_tar)]
+        extracted_files = extract_archive(dataset_tar)
 
     if dataset_name == "WMTNewsCrawl":
         data_select = ('train',)

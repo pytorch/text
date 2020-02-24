@@ -154,7 +154,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
 
     Arguments:
         from_path: the path of the archive.
-        to_path: the root path of the extraced files (directory of from_path)
+        to_path: the root path of the extracted files (directory of from_path)
         overwrite: overwrite existing files (False)
 
     Returns:
@@ -166,6 +166,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         >>> to_path = './'
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
+        >>> ['.data/val.de', '.data/val.en']
     """
 
     if to_path is None:
@@ -190,14 +191,16 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         assert zipfile.is_zipfile(from_path), from_path
         logging.info('Opening zip file {}.'.format(from_path))
         with zipfile.ZipFile(from_path, 'r') as zfile:
-            files = zfile.namelist()
-            for file_ in files:
+            files = []
+            for file_ in zfile.namelist():
                 file_path = os.path.join(to_path, file_)
+                files.append(file_path)
                 if os.path.exists(file_path):
                     logging.info('{} already extracted.'.format(file_path))
                     if not overwrite:
                         continue
                 zfile.extract(file_, to_path)
+        files = [f for f in files if os.path.isfile(f)]
         return files
 
     else:
