@@ -271,7 +271,7 @@ def WMTNewsCrawl(*args, **kwargs):
             >>> from torchtext.experimental.datasets import WMTNewsCrawl
             >>> from torchtext.data.utils import get_tokenizer
             >>> tokenizer = get_tokenizer("spacy")
-            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer)
+            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, data_select='train', language='en')
             >>> vocab = train_dataset.get_vocab()
         """
-    return _setup_datasets(data_select='train', language='en', *(("WMTNewsCrawl",) + args), **kwargs)
+    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
