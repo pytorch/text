@@ -30,6 +30,11 @@ class TestUtils(TorchtextTestCase):
         assert files == [os.path.join(root, 'val.de'),
                          os.path.join(root, 'val.en')]
 
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, overwrite=True)
+        assert files == [os.path.join(root, 'val.de'),
+                         os.path.join(root, 'val.en')]
+
         # remove files and archive
         for f in files:
             conditional_remove(f)
@@ -50,18 +55,22 @@ class TestUtils(TorchtextTestCase):
         archive_path = utils.download_from_url(url)
         assert target_archive_path == archive_path
 
-        # extract files and ensure they are correct
-        files = utils.extract_archive(archive_path)
-        assert files == ['en-ud-v2/',
-                         'en-ud-v2/en-ud-tag.v2.dev.txt',
+        correct_files = ['en-ud-v2/en-ud-tag.v2.dev.txt',
                          'en-ud-v2/en-ud-tag.v2.test.txt',
                          'en-ud-v2/en-ud-tag.v2.train.txt',
                          'en-ud-v2/LICENSE.txt',
                          'en-ud-v2/README.txt']
+        # extract files and ensure they are correct
+        files = utils.extract_archive(archive_path)
+        assert files == [os.path.join(root, f) for f in correct_files]
+
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, overwrite=True)
+        assert files == [os.path.join(root, f) for f in correct_files]
 
         # remove files and archive
         for f in files:
-            conditional_remove(os.path.join(root, f))
+            conditional_remove(f)
         os.rmdir(os.path.join(root, 'en-ud-v2'))
         conditional_remove(archive_path)
 
@@ -87,6 +96,11 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are in the to_path directory
         files = utils.extract_archive(archive_path, to_path)
+        assert files == [os.path.join(to_path, 'val.de'),
+                         os.path.join(to_path, 'val.en')]
+
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, to_path, overwrite=True)
         assert files == [os.path.join(to_path, 'val.de'),
                          os.path.join(to_path, 'val.en')]
 
