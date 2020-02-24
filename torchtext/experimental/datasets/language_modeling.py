@@ -23,6 +23,7 @@ URLS = {
 class LanguageModelingDataset(torch.utils.data.Dataset):
     """Defines a dataset for language modeling.
        Currently, we only support the following datasets:
+
              - WikiText2
              - WikiText103
              - PennTreebank
@@ -31,17 +32,20 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
     def __init__(self, data, vocab):
         """Initiate language modeling dataset.
+
         Arguments:
             data: a tensor of tokens. tokens are ids after
                 numericalizing the string tokens.
                 torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
             vocab: Vocabulary object used for dataset.
+
         Examples:
             >>> from torchtext.vocab import build_vocab_from_iterator
             >>> data = torch.tensor([token_id_1, token_id_2,
                                      token_id_3, token_id_1]).long()
             >>> vocab = build_vocab_from_iterator([['language', 'modeling']])
             >>> dataset = LanguageModelingDataset(data, vocab)
+
         """
 
         super(LanguageModelingDataset, self).__init__()
@@ -132,8 +136,10 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
 
 def WikiText2(*args, **kwargs):
     """ Defines WikiText2 datasets.
+
     Create language modeling dataset: WikiText2
     Separately returns the train/test/valid set
+
     Arguments:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
@@ -150,6 +156,7 @@ def WikiText2(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+
     Examples:
         >>> from torchtext.experimental.datasets import WikiText2
         >>> from torchtext.data.utils import get_tokenizer
@@ -158,6 +165,7 @@ def WikiText2(*args, **kwargs):
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
                                        data_select='valid')
+
     """
 
     return _setup_datasets(*(("WikiText2",) + args), **kwargs)
@@ -165,8 +173,10 @@ def WikiText2(*args, **kwargs):
 
 def WikiText103(*args, **kwargs):
     """ Defines WikiText103 datasets.
+
     Create language modeling dataset: WikiText103
     Separately returns the train/test/valid set
+
     Arguments:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
@@ -188,6 +198,7 @@ def WikiText103(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+
     Examples:
         >>> from torchtext.experimental.datasets import WikiText103
         >>> from torchtext.data.utils import get_tokenizer
@@ -196,6 +207,7 @@ def WikiText103(*args, **kwargs):
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
                                          data_select='valid')
+
     """
 
     return _setup_datasets(*(("WikiText103",) + args), **kwargs)
@@ -203,8 +215,10 @@ def WikiText103(*args, **kwargs):
 
 def PennTreebank(*args, **kwargs):
     """ Defines PennTreebank datasets.
+
     Create language modeling dataset: PennTreebank
     Separately returns the train/test/valid set
+
     Arguments:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
@@ -221,6 +235,7 @@ def PennTreebank(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+
     Examples:
         >>> from torchtext.experimental.datasets import PennTreebank
         >>> from torchtext.data.utils import get_tokenizer
@@ -229,6 +244,7 @@ def PennTreebank(*args, **kwargs):
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = PennTreebank(tokenizer=tokenizer, vocab=vocab,
                                           data_select='valid')
+
     """
 
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
@@ -249,7 +265,7 @@ def WMTNewsCrawl(*args, **kwargs):
             removed_tokens: removed tokens from output dataset (Default: [])
             language: language for dataset (Default: en)
             data_select: a string or tuple for the returned datasets.
-                        (Default: ('train', 'test','valid'))
+                        (Default: 'train')
                         Only training dataset is provided for 2011.
         Examples:
             >>> from torchtext.experimental.datasets import WMTNewsCrawl
