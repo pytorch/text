@@ -60,11 +60,6 @@ class TestUtils(TorchtextTestCase):
                          'en-ud-v2/en-ud-tag.v2.train.txt',
                          'en-ud-v2/LICENSE.txt',
                          'en-ud-v2/README.txt']
-
-        # remove files and archive
-        for f in files:
-            conditional_remove(os.path.join(root, f))
-
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
         assert files == [os.path.join(root, f) for f in correct_files]
@@ -76,7 +71,6 @@ class TestUtils(TorchtextTestCase):
         # remove files and archive
         for f in files:
             conditional_remove(f)
-
         os.rmdir(os.path.join(root, 'en-ud-v2'))
         conditional_remove(archive_path)
 
