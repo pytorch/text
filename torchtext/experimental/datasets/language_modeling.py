@@ -88,7 +88,8 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                                              root=root) for key in data_select]
     elif dataset_name == 'WMTNewsCrawl':
         if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
-            raise ValueError("WMTNewsCrawl only creates a training dataset. data_select should be 'train' "
+            raise ValueError("WMTNewsCrawl only creates a training dataset. "
+                             "data_select should be 'train' "
                              "or ('train',), got {}.".format(data_select))
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
@@ -271,7 +272,9 @@ def WMTNewsCrawl(*args, **kwargs):
             >>> from torchtext.experimental.datasets import WMTNewsCrawl
             >>> from torchtext.data.utils import get_tokenizer
             >>> tokenizer = get_tokenizer("spacy")
-            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, data_select='train', language='en')
+            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer,
+                                              data_select='train',
+                                              language='en')
             >>> vocab = train_dataset.get_vocab()
         """
     return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
