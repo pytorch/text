@@ -15,7 +15,8 @@ URLS = {
     'PennTreebank':
         ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt']
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
+    'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-2011.tgz'
 }
 
 
@@ -26,6 +27,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
              - WikiText2
              - WikiText103
              - PennTreebank
+             - WMTNewsCrawl
 
     """
 
@@ -73,7 +75,7 @@ def _get_datafile_path(key, extracted_files):
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
-                    data_select=('train', 'test', 'valid')):
+                    data_select=('train', 'test', 'valid'), **kwargs):
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -85,6 +87,15 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         select_to_index = {'train': 0, 'test': 1, 'valid': 2}
         extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
                                              root=root) for key in data_select]
+    elif dataset_name == 'WMTNewsCrawl':
+        if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
+            raise ValueError('WMTNewsCrawl only creates a training dataset. data_select should be \'train\' '
+                             'or (\'train\',), got {}.'.format(data_select))
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
+        language = kwargs.get('language', 'en')
+        fname = 'news.2011.{}.shuffled'.format(language)
+        extracted_files = [f for f in extracted_files if fname in f]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
@@ -139,7 +150,7 @@ def WikiText2(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -181,7 +192,7 @@ def WikiText103(*args, **kwargs):
             If 'train' is not in the tuple, an vocab object should be provided which will
             be used to process valid and/or test data.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -218,7 +229,7 @@ def PennTreebank(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -238,3 +249,30 @@ def PennTreebank(*args, **kwargs):
     """
 
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+
+
+def WMTNewsCrawl(*args, **kwargs):
+    """ Defines WMT News Crawl.
+        Create language modeling dataset: WMTNewsCrawl
+        Creates a training set only
+        Arguments:
+            tokenizer: the tokenizer used to preprocess raw text data.
+                The default one is basic_english tokenizer in fastText. spacy tokenizer
+                is supported as well (see example below). A custom tokenizer is callable
+                function with input of a string and output of a token list.
+            root: Directory where the datasets are saved. Default: ".data"
+            vocab: Vocabulary used for dataset. If None, it will generate a new
+                vocabulary based on the train data set.
+            removed_tokens: removed tokens from output dataset (Default: [])
+            language: language for dataset (Default: en)
+            data_select: a string or tuple for the returned datasets.
+                        (Default: ('train', 'test','valid'))
+                        Only training dataset is provided for 2011.
+        Examples:
+            >>> from torchtext.experimental.datasets import WMTNewsCrawl
+            >>> from torchtext.data.utils import get_tokenizer
+            >>> tokenizer = get_tokenizer("spacy")
+            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer)
+            >>> vocab = train_dataset.get_vocab()
+        """
+    return _setup_datasets(data_select='train', language='en', *(("WMTNewsCrawl",) + args), **kwargs)
