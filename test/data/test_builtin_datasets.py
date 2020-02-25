@@ -69,6 +69,10 @@ class TestDataset(TorchtextTestCase):
                                 "training-monolingual-news-2011.tgz")
         conditional_remove(datafile)
 
+        # Raises ValueError for incorrect option for data_select
+        with self.assertRaises(ValueError):
+            train_dataset, = WMTNewsCrawl(data_select='valid')
+
     @slow
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
