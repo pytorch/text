@@ -64,7 +64,9 @@ class TestDataset(TorchtextTestCase):
         # Delete the dataset after we're done to save disk space on CI
         datafile = os.path.join(self.project_root, ".data", "training-monolingual")
         conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "training-monolingual-news-2011.tgz")
+        datafile = os.path.join(self.project_root,
+                                ".data",
+                                "training-monolingual-news-2011.tgz")
         conditional_remove(datafile)
 
     @slow
