@@ -36,6 +36,37 @@ The following datasets are available:
 .. contents:: Datasets
     :local:
 
+
+Language Modeling
+^^^^^^^^^^^^^^^^^
+
+Language modeling datasets are subclasses of ``LanguageModelingDataset`` class.
+
+.. autoclass:: LanguageModelingDataset
+  :members: __init__
+
+
+WikiText-2
+~~~~~~~~~~
+
+.. autoclass:: WikiText2
+  :members: splits, iters
+
+
+WikiText103
+~~~~~~~~~~~
+
+.. autoclass:: WikiText103
+  :members: splits, iters
+
+
+PennTreebank
+~~~~~~~~~~~~
+
+.. autoclass:: PennTreebank
+  :members: splits, iters
+
+
 Sentiment Analysis
 ^^^^^^^^^^^^^^^^^^
 
@@ -149,36 +180,6 @@ MultiNLI
 ~~~~~~~~
 
 .. autoclass:: MultiNLI
-  :members: splits, iters
-
-
-Language Modeling
-^^^^^^^^^^^^^^^^^
-
-Language modeling datasets are subclasses of ``LanguageModelingDataset`` class.
-
-.. autoclass:: LanguageModelingDataset
-  :members: __init__
-
-
-WikiText-2
-~~~~~~~~~~
-
-.. autoclass:: WikiText2
-  :members: splits, iters
-
-
-WikiText103
-~~~~~~~~~~~
-
-.. autoclass:: WikiText103
-  :members: splits, iters
-
-
-PennTreebank
-~~~~~~~~~~~~
-
-.. autoclass:: PennTreebank
   :members: splits, iters
 
 
