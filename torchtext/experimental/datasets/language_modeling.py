@@ -16,7 +16,7 @@ URLS = {
         ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
-    'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-2011.tgz'
+    'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-{}.tgz'
 }
 
 
@@ -91,10 +91,15 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
             raise ValueError("WMTNewsCrawl only creates a training dataset. "
                              "data_select should be 'train' "
                              "or ('train',), got {}.".format(data_select))
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files = extract_archive(dataset_tar)
+
+        year = kwargs.get('year', 2011)
+        download_url = URLS[dataset_name].format(year)
+
         language = kwargs.get('language', 'en')
-        fname = 'news.2011.{}.shuffled'.format(language)
+        fname = 'news.{year}.{language}.shuffled'.format(year=year, language=language)
+
+        dataset_tar = download_from_url(download_url, root=root)
+        extracted_files = extract_archive(dataset_tar)
         extracted_files = [f for f in extracted_files if fname in f]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
@@ -264,10 +269,33 @@ def WMTNewsCrawl(*args, **kwargs):
             vocab: Vocabulary used for dataset. If None, it will generate a new
                 vocabulary based on the train data set.
             removed_tokens: removed tokens from output dataset (Default: [])
-            language: language for dataset (Default: en)
             data_select: a string or tuple for the returned datasets.
-                        (Default: 'train')
-                        Only training dataset is provided for 2011.
+                (Default: 'train')
+                Only training dataset for News Crawl Corpus datasets by year.
+            year: year of dataset to use. Choices are 2007-2011.
+                See details below for memory and token size.
+                (Default: 2011)
+            language: language for dataset. Choices are cs, de, en, es, fr.
+                (Default: 'en')
+
+        News Crawl Corpus Dataset Details from `Statistical Machine Translation`__:
+            +------+--------+--------------------+------------+----------+
+            | Year | Memory | len(train_dataset) | len(vocab) | lines    |
+            +======+========+====================+============+==========+
+            | 2007 | 1.1 GB | 338142548          | 573176     | 13984262 |
+            +------+--------+--------------------+------------+----------+
+            | 2008 | 3.4 GB |838296018           | 1091099    | 34737842 |
+            +------+--------+--------------------+------------+----------+
+            | 2009 | 3.7 GB | 1027839909         | 1236276    | 44041422 |
+            +------+--------+--------------------+------------+----------+
+            | 2010 | 1.4 GB | 399857558          |  680765    | 17676013 |
+            +------+--------+--------------------+------------+----------+
+            | 2011 | 229 MB | 54831406           | 208279     | 2466169  |
+            +------+--------+--------------------+------------+----------+
+
+            NOTE: The memory refers to size of the tar.gz file downloaded.
+            NOTE: The other metrics are for the english datasets.
+
         Examples:
             >>> from torchtext.experimental.datasets import WMTNewsCrawl
             >>> from torchtext.data.utils import get_tokenizer
@@ -276,5 +304,7 @@ def WMTNewsCrawl(*args, **kwargs):
                                               data_select='train',
                                               language='en')
             >>> vocab = train_dataset.get_vocab()
+
+        __ http://www.statmt.org/wmt11/translation-task.html#download
         """
     return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
