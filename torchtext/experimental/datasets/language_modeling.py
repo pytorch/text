@@ -298,11 +298,9 @@ def WMTNewsCrawl(*args, **kwargs):
 
         Examples:
             >>> from torchtext.experimental.datasets import WMTNewsCrawl
-            >>> from torchtext.data.utils import get_tokenizer
-            >>> tokenizer = get_tokenizer("spacy")
-            >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer,
-                                              data_select='train',
-                                              language='en')
+            >>> train_dataset, = WMTNewsCrawl(data_select='train',
+                                              language='en',
+                                              year=2011)
             >>> vocab = train_dataset.get_vocab()
 
         __ http://www.statmt.org/wmt11/translation-task.html#download
