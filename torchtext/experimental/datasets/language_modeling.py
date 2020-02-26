@@ -88,14 +88,24 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                                              root=root) for key in data_select]
     elif dataset_name == 'WMTNewsCrawl':
         if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
-            raise ValueError("WMTNewsCrawl only creates a training dataset. "
+            raise ValueError("Invalid option for data_select, got {}. "
+                             "WMTNewsCrawl only creates a training dataset. "
                              "data_select should be 'train' "
-                             "or ('train',), got {}.".format(data_select))
+                             "or ('train',).".format(data_select))
 
         year = kwargs.get('year', 2011)
-        download_url = URLS[dataset_name].format(year)
+        if str(year) not in ['2007', '2008', '2009', '2010', '2011']:
+            raise ValueError("Invalid option for year, {}. "
+                             "WMTNewsCrawl dataset is only available for "
+                             "years between 2007-2011.".format(year))
 
         language = kwargs.get('language', 'en')
+        if language not in ['cs', 'de', 'en', 'es', 'fr']:
+            raise ValueError("Invalid option for language, {}. "
+                             "WMTNewsCrawl dataset is only available for "
+                             "cs, de, en, es, fr.".format(language))
+
+        download_url = URLS[dataset_name].format(year)
         fname = 'news.{year}.{language}.shuffled'.format(year=year, language=language)
 
         dataset_tar = download_from_url(download_url, root=root)
@@ -284,7 +294,7 @@ def WMTNewsCrawl(*args, **kwargs):
             +======+========+====================+============+==========+
             | 2007 | 1.1 GB | 338142548          | 573176     | 13984262 |
             +------+--------+--------------------+------------+----------+
-            | 2008 | 3.4 GB |838296018           | 1091099    | 34737842 |
+            | 2008 | 3.4 GB | 838296018          | 1091099    | 34737842 |
             +------+--------+--------------------+------------+----------+
             | 2009 | 3.7 GB | 1027839909         | 1236276    | 44041422 |
             +------+--------+--------------------+------------+----------+

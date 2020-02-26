@@ -73,6 +73,14 @@ class TestDataset(TorchtextTestCase):
         with self.assertRaises(ValueError):
             train_dataset, = WMTNewsCrawl(data_select='valid')
 
+        # Raises ValueError for incorrect option for year
+        with self.assertRaises(ValueError):
+            train_dataset, = WMTNewsCrawl(data_select='train', year=2005)
+
+        # Raises ValueError for incorrect option for language
+        with self.assertRaises(ValueError):
+            train_dataset, = WMTNewsCrawl(data_select='train', language='jp')
+
     @slow
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
