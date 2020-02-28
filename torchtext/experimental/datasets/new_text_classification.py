@@ -53,7 +53,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def __init__(self, data, transforms):
         """Initiate text-classification dataset.
         Arguments:
-            vocab: Vocabulary object used for dataset.
         Examples:
             See the examples in examples/text_classification/
         """
