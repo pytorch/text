@@ -54,11 +54,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         """Initiate text-classification dataset.
         Arguments:
             vocab: Vocabulary object used for dataset.
-            data: a list of label/tokens tuple. tokens are a tensor after
-                numericalizing the string tokens. label is an integer.
-                [(label1, tokens1), (label2, tokens2), (label2, tokens3)]
-            label: a set of the labels.
-                {label1, label2}
         Examples:
             See the examples in examples/text_classification/
         """
@@ -105,13 +100,7 @@ def AG_NEWS(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.AG_NEWS(ngrams=3)
     """
 
     return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
@@ -129,13 +118,7 @@ def SogouNews(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.SogouNews(ngrams=3)
     """
 
     return _setup_datasets(*(("SogouNews",) + args), **kwargs)
@@ -162,13 +145,7 @@ def DBpedia(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.DBpedia(ngrams=3)
     """
 
     return _setup_datasets(*(("DBpedia",) + args), **kwargs)
@@ -183,13 +160,7 @@ def YelpReviewPolarity(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewPolarity(ngrams=3)
     """
 
     return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
@@ -203,13 +174,7 @@ def YelpReviewFull(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.YelpReviewFull(ngrams=3)
     """
 
     return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
@@ -232,13 +197,7 @@ def YahooAnswers(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.YahooAnswers(ngrams=3)
     """
 
     return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
@@ -253,13 +212,7 @@ def AmazonReviewPolarity(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-       >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewPolarity(ngrams=3)
     """
 
     return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
@@ -273,13 +226,7 @@ def AmazonReviewFull(*args, **kwargs):
     Separately returns the training and test dataset
     Arguments:
         root: Directory where the dataset are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        include_unk: include unknown token in the data (Default: False)
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.AmazonReviewFull(ngrams=3)
     """
 
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
