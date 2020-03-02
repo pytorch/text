@@ -58,7 +58,6 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         """Initiate text-classification dataset.
         Arguments:
         Examples:
-            See the examples in examples/text_classification/
         """
 
         super(TextClassificationDataset, self).__init__()
