@@ -27,7 +27,7 @@ class ToTensor(object):
         return torch.tensor(ids_list).to(self.dtype)
 
 
-#Fork from torchvision
+# Fork from torchvision
 class Compose(object):
     """Composes several transforms together.
     Args:
@@ -61,4 +61,4 @@ class ListTransform(object):
         self.transforms = transforms
 
     def __call__(self, corpus_iter):
-        return  [self.transforms(item) for item in corpus_iter]
+        return [self.transforms(item) for item in corpus_iter]
