@@ -32,8 +32,12 @@ def _create_data_from_csv(data_path):
     return data
 
 
-def build_vocab(txt_iter, transform):
-    tok_list = [transform(seq) for seq in txt_iter]
+def build_vocab(dataset, transform):
+    if not isinstance(dataset, TextClassificationDataset):
+        raise TypeError('Passed dataset is not TextClassificationDataset')
+
+    # data are saved in the form of (label, text_string)
+    tok_list = [transform(seq[1]) for seq in dataset.data]
     return build_vocab_from_iterator(tok_list)
 
 
