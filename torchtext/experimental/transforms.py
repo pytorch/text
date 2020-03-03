@@ -1,10 +1,11 @@
 import torch
 from torchtext.data.utils import get_tokenizer
+from torchtext.experimental import functional as F
 
 
 class TokenizerTransform(torch.nn.Module):
 
-    def __init__(self, tokenizer_name):
+    def __init__(self, tokenizer_name=None):
         super(TokenizerTransform, self).__init__()
         self.tokenizer = get_tokenizer(tokenizer_name)
 
