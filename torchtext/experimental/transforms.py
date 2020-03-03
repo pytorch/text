@@ -10,6 +10,7 @@ class TokenizerTransform(torch.nn.Module):
         self.tokenizer = get_tokenizer(tokenizer_name)
 
     def forward(self, str_input):
+        # type: (str) -> List[str]
         return self.tokenizer(str_input)
 
 
