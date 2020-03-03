@@ -19,7 +19,8 @@ class VocabTransform(torch.nn.Module):
         self.vocab = vocab
 
     def forward(self, tok_iter):
-        return [self.vocab[tok] for tok in tok_iter]
+        # type: (List[str]) -> List[int]
+        return [F.vocab_transform(self.vocab, tok) for tok in tok_iter]
 
 
 class ToTensor(torch.nn.Module):
