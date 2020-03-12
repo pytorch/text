@@ -2,25 +2,10 @@ import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
-
-URLS = {
-    'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
-    'SogouNews':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
-    'DBpedia':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k',
-    'YelpReviewPolarity':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg',
-    'YelpReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0',
-    'YahooAnswers':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU',
-    'AmazonReviewPolarity':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
-    'AmazonReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
-}
+from torchtext.experimental.transforms import TokenizerTransform, VocabTransform
+from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
+    RawYelpReviewPolarity, RawYelpReviewFull, RawYahooAnswers, \
+    RawAmazonReviewPolarity, RawAmazonReviewFull
 
 
 def _create_data_from_csv(data_path):
@@ -33,8 +18,8 @@ def _create_data_from_csv(data_path):
 
 
 def build_vocab(dataset, transform):
-    if not isinstance(dataset, TextClassificationDataset):
-        raise TypeError('Passed dataset is not TextClassificationDataset')
+#    if not isinstance(dataset, TextClassificationDataset):
+#        raise TypeError('Passed dataset is not TextClassificationDataset')
 
     # data are saved in the form of (label, text_string)
     tok_list = [transform(seq[1]) for seq in dataset.data]
@@ -65,8 +50,10 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         self.transforms = transforms  # (label_transforms, tokens_transforms)
 
     def __getitem__(self, i):
-        return (self.transforms[0](self.data[i][0]),
-                self.transforms[1](self.data[i][1]))
+        txt = self.data[i][1]
+        for transform in self.transforms[1]:
+            txt = transform(txt)
+        return (self.transforms[0](self.data[i][0]), txt)
 
     def __len__(self):
         return len(self.data)
@@ -75,20 +62,14 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return set([self.transforms[0](item[0]) for item in self.data])
 
 
-def _setup_datasets(dataset_name, root='.data', transforms=[int, lambda x:x]):
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
-
-    for fname in extracted_files:
-        if fname.endswith('train.csv'):
-            train_csv_path = fname
-        if fname.endswith('test.csv'):
-            test_csv_path = fname
-
-    train_data = _create_data_from_csv(train_csv_path)
-    test_data = _create_data_from_csv(test_csv_path)
-    return (TextClassificationDataset(train_data, transforms),
-            TextClassificationDataset(test_data, transforms))
+def _setup_datasets(dataset_name, root='.data',
+                    transforms=[int, TokenizerTransform('basic_english')]):
+    train, test = DATASETS[dataset_name](root=root)
+    vocab = build_vocab(train, transforms[1])
+    vocab_transform = VocabTransform(vocab)
+    text_transform = (transforms[1], vocab_transform)
+    return (TextClassificationDataset(train, (transforms[0], text_transform)),
+            TextClassificationDataset(test, (transforms[0], text_transform)))
 
 
 def AG_NEWS(*args, **kwargs):
@@ -105,7 +86,8 @@ def AG_NEWS(*args, **kwargs):
     Examples:
     """
 
-    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
+    return _setup_datasets(*(('AG_NEWS',) + args), **kwargs)
+#    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
 
 
 def SogouNews(*args, **kwargs):
@@ -235,14 +217,14 @@ def AmazonReviewFull(*args, **kwargs):
 
 
 DATASETS = {
-    'AG_NEWS': AG_NEWS,
-    'SogouNews': SogouNews,
-    'DBpedia': DBpedia,
-    'YelpReviewPolarity': YelpReviewPolarity,
-    'YelpReviewFull': YelpReviewFull,
-    'YahooAnswers': YahooAnswers,
-    'AmazonReviewPolarity': AmazonReviewPolarity,
-    'AmazonReviewFull': AmazonReviewFull
+    'AG_NEWS': RawAG_NEWS,
+    'SogouNews': RawSogouNews,
+    'DBpedia': RawDBpedia,
+    'YelpReviewPolarity': RawYelpReviewPolarity,
+    'YelpReviewFull': RawYelpReviewFull,
+    'YahooAnswers': RawYahooAnswers,
+    'AmazonReviewPolarity': RawAmazonReviewPolarity,
+    'AmazonReviewFull': RawAmazonReviewFull
 }
 
 
