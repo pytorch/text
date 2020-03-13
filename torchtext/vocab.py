@@ -34,7 +34,8 @@ class Vocab(object):
     UNK = '<unk>'
 
     def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
+                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True,
+                 unk_token=None):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -56,10 +57,14 @@ class Vocab(object):
             specials_first: Whether to add special tokens into the vocabulary at first.
                 If it is False, they are added into the vocabulary at last.
                 Default: True.
+            unk_token: The string token used to represent OOV words.
         """
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
+
+        # use Vocab.UNK as default
+        self.unk_token = Vocab.UNK if unk_token is None else unk_token
 
         self.itos = list()
         self.unk_index = None
@@ -82,8 +87,8 @@ class Vocab(object):
                 break
             self.itos.append(word)
 
-        if Vocab.UNK in specials:  # hard-coded for now
-            unk_index = specials.index(Vocab.UNK)  # position in list
+        if self.unk_token in specials:
+            unk_index = specials.index(self.unk_token)
             # account for ordering of specials, set variable
             self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
             self.stoi = defaultdict(self._default_unk_index)
@@ -106,7 +111,7 @@ class Vocab(object):
         return self.unk_index
 
     def __getitem__(self, token):
-        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
+        return self.stoi.get(token, self.stoi.get(self.unk_token))
 
     def __getstate__(self):
         # avoid picking defaultdict
@@ -223,7 +228,7 @@ class Vocab(object):
 class SubwordVocab(Vocab):
 
     def __init__(self, counter, max_size=None, specials=['<pad>'],
-                 vectors=None, unk_init=torch.Tensor.zero_):
+                 vectors=None, unk_init=torch.Tensor.zero_, unk_token=None):
         """Create a revtok subword vocabulary from a collections.Counter.
 
         Arguments:
@@ -240,6 +245,7 @@ class SubwordVocab(Vocab):
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
                 returns a Tensor of the same size. Default: torch.Tensor.zero_
+            unk_token: The string token used to represent OOV words.
         """
         try:
             import revtok
@@ -247,9 +253,11 @@ class SubwordVocab(Vocab):
             print("Please install revtok.")
             raise
 
+        self.unk_token = Vocab.UNK if unk_token is None else unk_token
+
         # Hardcode unk_index as subword_vocab has no specials_first argument
-        self.unk_index = (specials.index(SubwordVocab.UNK)
-                          if SubwordVocab.UNK in specials else None)
+        self.unk_index = (specials.index(self.unk_token)
+                          if self.unk_token in specials else None)
 
         if self.unk_index is None:
             self.stoi = defaultdict()
