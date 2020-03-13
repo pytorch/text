@@ -230,6 +230,49 @@ class TestField(TorchtextTestCase):
                                               key=lambda tup: tup[1])]
         assert question_field.vocab.itos == expected_itos
 
+    def test_unk_token(self):
+        # Set up fields
+        question_field = data.Field(sequential=True, unk_token="<cunk>")
+        label_field = data.Field(sequential=False)
+
+        # Write TSV dataset and construct a Dataset
+        self.write_test_ppid_dataset(data_format="tsv")
+        tsv_fields = [("id", None), ("q1", question_field),
+                      ("q2", question_field), ("label", label_field)]
+        tsv_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="tsv",
+            fields=tsv_fields)
+
+        # Write JSON dataset and construct a Dataset
+        self.write_test_ppid_dataset(data_format="json")
+        json_fields = {"question1": ("q1", question_field),
+                       "question2": ("q2", question_field),
+                       "label": ("label", label_field)}
+        json_dataset = data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="json",
+            fields=json_fields)
+
+        # Test build_vocab default
+        question_field.build_vocab(tsv_dataset, json_dataset, specials=['<space>'])
+        assert question_field.vocab.freqs == Counter(
+            {'When': 4, 'do': 4, 'you': 4, 'use': 4, 'instead': 4,
+             'of': 4, 'was': 4, 'Lincoln': 4, 'born?': 4, 'シ': 2,
+             'し?': 2, 'Where': 2, 'What': 2, 'is': 2, '2+2': 2,
+             '"&"': 2, '"and"?': 2, 'Which': 2, 'location': 2,
+             'Abraham': 2, '2+2=?': 2})
+        expected_stoi = {'<cunk>': 0, '<pad>': 1, '<space>': 2,
+                         'Lincoln': 3, 'When': 4,
+                         'born?': 5, 'do': 6, 'instead': 7, 'of': 8,
+                         'use': 9, 'was': 10, 'you': 11, '"&"': 12,
+                         '"and"?': 13, '2+2': 14, '2+2=?': 15, 'Abraham': 16,
+                         'What': 17, 'Where': 18, 'Which': 19, 'is': 20,
+                         'location': 21, 'し?': 22, 'シ': 23}
+        assert dict(question_field.vocab.stoi) == expected_stoi
+        # Turn the stoi dictionary into an itos list
+        expected_itos = [x[0] for x in sorted(expected_stoi.items(),
+                                              key=lambda tup: tup[1])]
+        assert question_field.vocab.itos == expected_itos
+
     def test_numericalize_basic(self):
         self.write_test_ppid_dataset(data_format="tsv")
         question_field = data.Field(sequential=True)
