@@ -89,7 +89,8 @@ class TestVocab(TorchtextTestCase):
         # check default UNK.
         v_default = vocab.Vocab(c, min_freq=3, specials=["<unk>", '<pad>'])
         expected_itos_default = ["<unk>", "<pad>", "ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T", "hello", "world"]
-        expected_stoi_default = {x: index for index, x in enumerate(expected_itos_default)}
+        expected_stoi_default = {
+            x: index for index, x in enumerate(expected_itos_default)}
         self.assertEqual(v_default.itos, expected_itos_default)
         self.assertEqual(dict(v_default.stoi), expected_stoi_default)
         self.assertNotIn(oov_word, v_default.itos)
@@ -97,7 +98,8 @@ class TestVocab(TorchtextTestCase):
         assert v_default.stoi[oov_word] == 0
 
         # check custom UNK.
-        v_custom = vocab.Vocab(c, min_freq=3, specials=["<cunk>", '<pad>'], unk_token="<cunk>")
+        v_custom = vocab.Vocab(c, min_freq=3, specials=["<cunk>", '<pad>'],
+                               unk_token="<cunk>")
         expected_itos_custom = ["<cunk>", "<pad>", "ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T", "hello", "world"]
         expected_stoi_custom = {x: index for index, x in enumerate(expected_itos_custom)}
         self.assertEqual(v_custom.itos, expected_itos_custom)
