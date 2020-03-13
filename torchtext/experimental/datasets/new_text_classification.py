@@ -1,6 +1,6 @@
 import torch
 import io
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.transforms import TokenizerTransform, VocabTransform
 from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
@@ -18,8 +18,8 @@ def _create_data_from_csv(data_path):
 
 
 def build_vocab(dataset, transform):
-#    if not isinstance(dataset, TextClassificationDataset):
-#        raise TypeError('Passed dataset is not TextClassificationDataset')
+    # if not isinstance(dataset, TextClassificationDataset):
+    #   raise TypeError('Passed dataset is not TextClassificationDataset')
 
     # data are saved in the form of (label, text_string)
     tok_list = [transform(seq[1]) for seq in dataset.data]
