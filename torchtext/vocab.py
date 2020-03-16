@@ -58,10 +58,18 @@ class Vocab(object):
                 If it is False, they are added into the vocabulary at last.
                 Default: True.
             unk_token: The string token used to represent OOV words.
+
+        Raises:
+            ValueError: If `unk_token` value is not set in `specials`.
         """
         self.freqs = counter
         counter = counter.copy()
         min_freq = max(min_freq, 1)
+
+        if unk_token is not None and unk_token not in specials:
+            raise ValueError(
+                "Got unk_token {}, but not set in specials {} .".format(
+                    unk_token, specials))
 
         # use Vocab.UNK as default
         self.unk_token = Vocab.UNK if unk_token is None else unk_token
