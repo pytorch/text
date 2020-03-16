@@ -108,6 +108,11 @@ class TestVocab(TorchtextTestCase):
         self.assertNotIn(oov_word, v_custom.stoi)
         assert v_custom.stoi[oov_word] == 0
 
+        with self.assertRaises(ValueError):
+            # `unk_token` must be included in `specials`.
+            v_custom = vocab.Vocab(c, min_freq=3, specials=["<cunk>", '<pad>'],
+                                   unk_token="<unk>")
+
     def test_vocab_set_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5,
                      'ｔｅｓｔ': 4, 'freq_too_low': 2})
