@@ -72,7 +72,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None):
     train, test = DATASETS[dataset_name](root=root)
     if not vocab:
         vocab = build_vocab(train, processing_transform)
-    label_transform = int
+    label_transform = ToTensor(dtype=torch.long)
     text_transform = Sequential(processing_transform,
                                 VocabTransform(vocab),
                                 ToTensor(dtype=torch.long))

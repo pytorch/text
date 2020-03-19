@@ -27,7 +27,7 @@ def _create_data_from_csv(data_path):
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
-            data.append((row[0], ' '.join(row[1:])))
+            data.append((int(row[0]), ' '.join(row[1:])))
     return data
 
 
@@ -37,8 +37,6 @@ class RawTextDataset(torch.utils.data.Dataset):
 
     def __init__(self, data):
         """Initiate text-classification dataset.
-        Arguments:
-        Examples:
         """
 
         super(RawTextDataset, self).__init__()
