@@ -69,6 +69,16 @@ def _setup_datasets(dataset_name, root='.data'):
 
 def RawAG_NEWS(*args, **kwargs):
     """ Defines AG_NEWS datasets.
+
+    Create supervised learning dataset: RawAG_NEWS
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawAG_NEWS()
     """
 
     return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
@@ -76,6 +86,16 @@ def RawAG_NEWS(*args, **kwargs):
 
 def RawSogouNews(*args, **kwargs):
     """ Defines SogouNews datasets.
+
+    Create supervised learning dataset: RawSogouNews
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawSogouNews()
     """
 
     return _setup_datasets(*(("SogouNews",) + args), **kwargs)
@@ -83,6 +103,16 @@ def RawSogouNews(*args, **kwargs):
 
 def RawDBpedia(*args, **kwargs):
     """ Defines DBpedia datasets.
+
+    Create supervised learning dataset: RawDBpedia
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawDBpedia()
     """
 
     return _setup_datasets(*(("DBpedia",) + args), **kwargs)
@@ -90,6 +120,16 @@ def RawDBpedia(*args, **kwargs):
 
 def RawYelpReviewPolarity(*args, **kwargs):
     """ Defines YelpReviewPolarity datasets.
+
+    Create supervised learning dataset: RawYelpReviewPolarity
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawYelpReviewPolarity()
     """
 
     return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
@@ -97,6 +137,16 @@ def RawYelpReviewPolarity(*args, **kwargs):
 
 def RawYelpReviewFull(*args, **kwargs):
     """ Defines YelpReviewFull datasets.
+
+    Create supervised learning dataset: RawYelpReviewFull
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawYelpReviewFull()
     """
 
     return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
@@ -104,6 +154,16 @@ def RawYelpReviewFull(*args, **kwargs):
 
 def RawYahooAnswers(*args, **kwargs):
     """ Defines YahooAnswers datasets.
+
+    Create supervised learning dataset: RawYahooAnswers
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawYahooAnswers()
     """
 
     return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
@@ -111,6 +171,16 @@ def RawYahooAnswers(*args, **kwargs):
 
 def RawAmazonReviewPolarity(*args, **kwargs):
     """ Defines AmazonReviewPolarity datasets.
+
+    Create supervised learning dataset: RawAmazonReviewPolarity
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawAmazonReviewPolarity()
     """
 
     return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
@@ -118,6 +188,16 @@ def RawAmazonReviewPolarity(*args, **kwargs):
 
 def RawAmazonReviewFull(*args, **kwargs):
     """ Defines AmazonReviewFull datasets.
+
+    Create supervised learning dataset: RawAmazonReviewFull
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train_dataset, test_dataset = torchtext.datasets.RawAmazonReviewFull()
     """
 
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
@@ -132,55 +212,4 @@ DATASETS = {
     'RawYahooAnswers': RawYahooAnswers,
     'RawAmazonReviewPolarity': RawAmazonReviewPolarity,
     'RawAmazonReviewFull': RawAmazonReviewFull
-}
-
-
-LABELS = {
-    'RawAG_NEWS': {1: 'World',
-                   2: 'Sports',
-                   3: 'Business',
-                   4: 'Sci/Tech'},
-    'RawSogouNews': {1: 'Sports',
-                     2: 'Finance',
-                     3: 'Entertainment',
-                     4: 'Automobile',
-                     5: 'Technology'},
-    'RawDBpedia': {1: 'Company',
-                   2: 'EducationalInstitution',
-                   3: 'Artist',
-                   4: 'Athlete',
-                   5: 'OfficeHolder',
-                   6: 'MeanOfTransportation',
-                   7: 'Building',
-                   8: 'NaturalPlace',
-                   9: 'Village',
-                   10: 'Animal',
-                   11: 'Plant',
-                   12: 'Album',
-                   13: 'Film',
-                   14: 'WrittenWork'},
-    'RawYelpReviewPolarity': {1: 'Negative polarity',
-                              2: 'Positive polarity'},
-    'RawYelpReviewFull': {1: 'score 1',
-                          2: 'score 2',
-                          3: 'score 3',
-                          4: 'score 4',
-                          5: 'score 5'},
-    'RawYahooAnswers': {1: 'Society & Culture',
-                        2: 'Science & Mathematics',
-                        3: 'Health',
-                        4: 'Education & Reference',
-                        5: 'Computers & Internet',
-                        6: 'Sports',
-                        7: 'Business & Finance',
-                        8: 'Entertainment & Music',
-                        9: 'Family & Relationships',
-                        10: 'Politics & Government'},
-    'RawAmazonReviewPolarity': {1: 'Negative polarity',
-                                2: 'Positive polarity'},
-    'RawAmazonReviewFull': {1: 'score 1',
-                            2: 'score 2',
-                            3: 'score 3',
-                            4: 'score 4',
-                            5: 'score 5'}
 }
