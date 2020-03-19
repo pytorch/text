@@ -33,6 +33,18 @@ class ToTensor(torch.nn.Module):
         return torch.tensor(ids_list).to(self.dtype)
 
 
+class NGrams(torch.nn.Module):
+    def __init__(self, ngrams):
+        super(NGrams, self).__init__()
+        self.ngrams = ngrams
+
+    def forward(self, token_list):
+        _token_list = []
+        for _i in range(self.ngrams + 1):
+            _token_list += zip(*[token_list[i:] for i in range(_i)])
+        return [' '.join(x) for x in _token_list]
+
+
 # Fork from torchvision
 class Compose(torch.nn.Module):
     """Composes several transforms together.

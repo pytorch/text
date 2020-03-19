@@ -1,8 +1,10 @@
 import torch
+from torch.nn import Sequential
 import io
 from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.transforms import TokenizerTransform, VocabTransform
+from torchtext.experimental.transforms import TokenizerTransform, NGrams, \
+    VocabTransform, ToTensor
 from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
     RawYelpReviewPolarity, RawYelpReviewFull, RawYahooAnswers, \
     RawAmazonReviewPolarity, RawAmazonReviewFull
@@ -62,14 +64,20 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return set([self.transforms[0](item[0]) for item in self.data])
 
 
-def _setup_datasets(dataset_name, root='.data',
-                    transforms=[int, TokenizerTransform('basic_english')]):
+def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None):
+    tok_transform = TokenizerTransform('basic_english')
+    ngram_transform = NGrams(ngrams)
+    processing_transform = Sequential(tok_transform, ngram_transform)
+
     train, test = DATASETS[dataset_name](root=root)
-    vocab = build_vocab(train, transforms[1])
-    vocab_transform = VocabTransform(vocab)
-    text_transform = (transforms[1], vocab_transform)
-    return (TextClassificationDataset(train, (transforms[0], text_transform)),
-            TextClassificationDataset(test, (transforms[0], text_transform)))
+    if not vocab:
+        vocab = build_vocab(train, processing_transform)
+    label_transform = int
+    text_transform = Sequential(processing_transform,
+                                VocabTransform(vocab),
+                                ToTensor(dtype=torch.long))
+    return (TextClassificationDataset(train, (label_transform, text_transform)),
+            TextClassificationDataset(test, (label_transform, text_transform)))
 
 
 def AG_NEWS(*args, **kwargs):
