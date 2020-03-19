@@ -78,7 +78,7 @@ def RawAG_NEWS(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawAG_NEWS()
+        >>> train, test = torchtext.experimental.datasets.RawAG_NEWS()
     """
 
     return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
@@ -95,7 +95,7 @@ def RawSogouNews(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawSogouNews()
+        >>> train, test = torchtext.experimental.datasets.RawSogouNews()
     """
 
     return _setup_datasets(*(("SogouNews",) + args), **kwargs)
@@ -112,7 +112,7 @@ def RawDBpedia(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawDBpedia()
+        >>> train, test = torchtext.experimental.datasets.RawDBpedia()
     """
 
     return _setup_datasets(*(("DBpedia",) + args), **kwargs)
@@ -129,7 +129,7 @@ def RawYelpReviewPolarity(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawYelpReviewPolarity()
+        >>> train, test = torchtext.experimental.datasets.RawYelpReviewPolarity()
     """
 
     return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
@@ -146,7 +146,7 @@ def RawYelpReviewFull(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawYelpReviewFull()
+        >>> train, test = torchtext.experimental.datasets.RawYelpReviewFull()
     """
 
     return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
@@ -163,7 +163,7 @@ def RawYahooAnswers(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawYahooAnswers()
+        >>> train, test = torchtext.experimental.datasets.RawYahooAnswers()
     """
 
     return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
@@ -180,7 +180,7 @@ def RawAmazonReviewPolarity(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawAmazonReviewPolarity()
+        >>> train, test = torchtext.experimental.datasets.RawAmazonReviewPolarity()
     """
 
     return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
@@ -197,7 +197,7 @@ def RawAmazonReviewFull(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train_dataset, test_dataset = torchtext.datasets.RawAmazonReviewFull()
+        >>> train, test = torchtext.experimental.datasets.RawAmazonReviewFull()
     """
 
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)

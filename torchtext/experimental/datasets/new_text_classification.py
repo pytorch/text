@@ -79,10 +79,14 @@ def AG_NEWS(*args, **kwargs):
             - 2 : Sports
             - 3 : Business
             - 4 : Sci/Tech
+
     Create supervised learning dataset: AG_NEWS
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+
     Examples:
     """
 
