@@ -1,10 +1,9 @@
 import torch
-from torch.nn import Sequential
 import io
 from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.transforms import TokenizerTransform, NGrams, \
-    VocabTransform, ToTensor
+    VocabTransform, ToTensor, TextSequential
 from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
     RawYelpReviewPolarity, RawYelpReviewFull, RawYahooAnswers, \
     RawAmazonReviewPolarity, RawAmazonReviewFull, RawIMDB
@@ -78,7 +77,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
     ngram_transform = NGrams(ngrams)
-    processing_transform = Sequential(tok_transform, ngram_transform)
+    processing_transform = TextSequential(tok_transform, ngram_transform)
 
     train, test = DATASETS[dataset_name](root=root)
     raw_data = {'train': train,
@@ -89,7 +88,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
             raise TypeError("Must pass a vocab if train is not selected.")
         vocab = build_vocab(train, processing_transform)
     label_transform = ToTensor(dtype=torch.long)
-    text_transform = Sequential(processing_transform,
+    text_transform = TextSequential(processing_transform,
                                 VocabTransform(vocab),
                                 ToTensor(dtype=torch.long))
     return tuple(TextClassificationDataset(raw_data[item],
