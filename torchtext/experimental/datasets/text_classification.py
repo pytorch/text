@@ -63,6 +63,9 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def get_labels(self):
         return set([self.transforms[0](item[0]) for item in self.data])
 
+    def get_vocab(self):
+        return self._vocab
+
 
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                     tokenizer=None, data_select=('train', 'test')):
