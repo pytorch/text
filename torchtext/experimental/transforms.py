@@ -33,6 +33,17 @@ class ToTensor(torch.nn.Module):
         return torch.tensor(ids_list).to(self.dtype)
 
 
+class TextSequential(torch.nn.Sequential):
+    def __init__(self, *inps):
+        super(TextSequential, self).__init__(*inps)
+
+    def forward(self, input):
+        # type: (str)
+        for module in self:
+            input = module(input)
+        return input
+
+
 class NGrams(torch.nn.Module):
     def __init__(self, ngrams):
         super(NGrams, self).__init__()
