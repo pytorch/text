@@ -1,13 +1,12 @@
 from .language_modeling import LanguageModelingDataset, WikiText2, WikiText103, PennTreebank  # NOQA
-from .text_classification import IMDB
-from .new_text_classification import AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
+from .text_classification import AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
     YelpReviewFull, YahooAnswers, \
-    AmazonReviewPolarity, AmazonReviewFull
+    AmazonReviewPolarity, AmazonReviewFull, IMDB
 
 # Raw text
 from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
     RawYelpReviewPolarity, RawYelpReviewFull, RawYahooAnswers, \
-    RawAmazonReviewPolarity, RawAmazonReviewFull
+    RawAmazonReviewPolarity, RawAmazonReviewFull, RawIMDB
 
 __all__ = ['LanguageModelingDataset',
            'WikiText2',
@@ -29,4 +28,5 @@ __all__ = ['LanguageModelingDataset',
            'RawYelpReviewFull',
            'RawYahooAnswers',
            'RawAmazonReviewPolarity',
-           'RawAmazonReviewFull']
+           'RawAmazonReviewFull',
+           'RawIMDB']

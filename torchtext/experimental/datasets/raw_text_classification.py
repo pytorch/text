@@ -18,7 +18,9 @@ URLS = {
     'AmazonReviewPolarity':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
     'AmazonReviewFull':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA',
+    'IMDB':
+        'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 }
 
 
@@ -201,6 +203,40 @@ def RawAmazonReviewFull(*args, **kwargs):
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
 
 
+def generate_imdb_data(key, extracted_files):
+    data_set = []
+    for fname in extracted_files:
+        if 'urls' in fname:
+            continue
+        elif key in fname and ('pos' in fname or 'neg' in fname):
+            with io.open(fname, encoding="utf8") as f:
+                label = 1 if 'pos' in fname else 0
+                data_set.append((label, f.read()))
+    return data_set
+
+
+def RawIMDB(root='.data'):
+    """ Defines RawIMDB datasets.
+
+    Create supervised learning dataset: RawIMDB
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> train, test = torchtext.experimental.datasets.RawIMDB()
+    """
+
+    dataset_tar = download_from_url(URLS['IMDB'], root=root)
+    extracted_files = extract_archive(dataset_tar)
+    train_data = generate_imdb_data('train', extracted_files)
+    test_data = generate_imdb_data('test', extracted_files)
+    return (RawTextDataset(train_data),
+            RawTextDataset(test_data))
+
+
 DATASETS = {
     'RawAG_NEWS': RawAG_NEWS,
     'RawSogouNews': RawSogouNews,
@@ -209,5 +245,6 @@ DATASETS = {
     'RawYelpReviewFull': RawYelpReviewFull,
     'RawYahooAnswers': RawYahooAnswers,
     'RawAmazonReviewPolarity': RawAmazonReviewPolarity,
-    'RawAmazonReviewFull': RawAmazonReviewFull
+    'RawAmazonReviewFull': RawAmazonReviewFull,
+    'RawIMDB': RawIMDB
 }

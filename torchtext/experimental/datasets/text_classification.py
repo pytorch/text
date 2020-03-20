@@ -1,142 +1,300 @@
-import logging
 import torch
+from torch.nn import Sequential
 import io
-from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.utils import ngrams_iterator
-from torchtext.data.utils import get_tokenizer
+from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.vocab import Vocab
-from torchtext.datasets import TextClassificationDataset
-
-URLS = {
-    'IMDB':
-        'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
-}
+from torchtext.experimental.transforms import TokenizerTransform, NGrams, \
+    VocabTransform, ToTensor
+from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
+    RawYelpReviewPolarity, RawYelpReviewFull, RawYahooAnswers, \
+    RawAmazonReviewPolarity, RawAmazonReviewFull, RawIMDB
 
 
-def _create_data_from_iterator(vocab, iterator, removed_tokens):
-    for cls, tokens in iterator:
-        yield cls, iter(map(lambda x: vocab[x],
-                        filter(lambda x: x not in removed_tokens, tokens)))
+def _create_data_from_csv(data_path):
+    data = []
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            data.append((row[0], ' '.join(row[1:])))
+    return data
 
 
-def _imdb_iterator(key, extracted_files, tokenizer, ngrams, yield_cls=False):
-    for fname in extracted_files:
-        if 'urls' in fname:
-            continue
-        elif key in fname and ('pos' in fname or 'neg' in fname):
-            with io.open(fname, encoding="utf8") as f:
-                label = 1 if 'pos' in fname else 0
-                if yield_cls:
-                    yield label, ngrams_iterator(tokenizer(f.read()), ngrams)
-                else:
-                    yield ngrams_iterator(tokenizer(f.read()), ngrams)
+def build_vocab(dataset, transform):
+    # if not isinstance(dataset, TextClassificationDataset):
+    #   raise TypeError('Passed dataset is not TextClassificationDataset')
+
+    # data are saved in the form of (label, text_string)
+    tok_list = [transform(seq[1]) for seq in dataset.data]
+    return build_vocab_from_iterator(tok_list)
 
 
-def _generate_data_iterators(dataset_name, root, ngrams, tokenizer, data_select):
-    if not tokenizer:
-        tokenizer = get_tokenizer("basic_english")
+class TextClassificationDataset(torch.utils.data.Dataset):
+    """Defines an abstract text classification datasets.
+       Currently, we only support the following datasets:
+             - AG_NEWS
+             - SogouNews
+             - DBpedia
+             - YelpReviewPolarity
+             - YelpReviewFull
+             - YahooAnswers
+             - AmazonReviewPolarity
+             - AmazonReviewFull
+    """
 
-    if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+    def __init__(self, data, transforms):
+        """Initiate text-classification dataset.
+        Arguments:
+        Examples:
+        """
 
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
+        super(TextClassificationDataset, self).__init__()
+        self.data = data
+        self.transforms = transforms  # (label_transforms, tokens_transforms)
 
-    iters_group = {}
-    if 'train' in data_select:
-        iters_group['vocab'] = _imdb_iterator('train', extracted_files,
-                                              tokenizer, ngrams)
-    for item in data_select:
-        iters_group[item] = _imdb_iterator(item, extracted_files,
-                                           tokenizer, ngrams, yield_cls=True)
-    return iters_group
+    def __getitem__(self, i):
+        txt = self.data[i][1]
+        for transform in self.transforms[1]:
+            txt = transform(txt)
+        return (self.transforms[0](self.data[i][0]), txt)
 
+    def __len__(self):
+        return len(self.data)
 
-def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
-                    removed_tokens=[], tokenizer=None,
-                    data_select=('train', 'test')):
-
-    if isinstance(data_select, str):
-        data_select = [data_select]
-
-    iters_group = _generate_data_iterators(dataset_name, root, ngrams,
-                                           tokenizer, data_select)
-
-    if vocab is None:
-        if 'vocab' not in iters_group.keys():
-            raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building Vocab based on train data')
-        vocab = build_vocab_from_iterator(iters_group['vocab'])
-    else:
-        if not isinstance(vocab, Vocab):
-            raise TypeError("Passed vocabulary is not of type Vocab")
-    logging.info('Vocab has {} entries'.format(len(vocab)))
-
-    data = {}
-    for item in data_select:
-        data[item] = {}
-        data[item]['data'] = []
-        data[item]['labels'] = []
-        logging.info('Creating {} data'.format(item))
-        data_iter = _create_data_from_iterator(vocab, iters_group[item], removed_tokens)
-        for cls, tokens in data_iter:
-            data[item]['data'].append((torch.tensor(cls),
-                                       torch.tensor([token_id for token_id in tokens])))
-            data[item]['labels'].append(cls)
-        data[item]['labels'] = set(data[item]['labels'])
-
-    return tuple(TextClassificationDataset(vocab, data[item]['data'],
-                                           data[item]['labels']) for item in data_select)
+    def get_labels(self):
+        return set([self.transforms[0](item[0]) for item in self.data])
 
 
-def IMDB(*args, **kwargs):
-    """ Defines IMDB datasets.
+def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None):
+    tok_transform = TokenizerTransform('basic_english')
+    ngram_transform = NGrams(ngrams)
+    processing_transform = Sequential(tok_transform, ngram_transform)
+
+    train, test = DATASETS[dataset_name](root=root)
+    if not vocab:
+        vocab = build_vocab(train, processing_transform)
+    label_transform = ToTensor(dtype=torch.long)
+    text_transform = Sequential(processing_transform,
+                                VocabTransform(vocab),
+                                ToTensor(dtype=torch.long))
+    return (TextClassificationDataset(train, (label_transform, text_transform)),
+            TextClassificationDataset(test, (label_transform, text_transform)))
+
+
+def AG_NEWS(*args, **kwargs):
+    """ Defines AG_NEWS datasets.
         The labels includes:
-            - 0 : Negative
-            - 1 : Positive
+            - 1 : World
+            - 2 : Sports
+            - 3 : Business
+            - 4 : Sci/Tech
 
-    Create sentiment analysis dataset: IMDB
+    Create supervised learning dataset: AG_NEWS
 
     Separately returns the training and test dataset
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        ngrams: a contiguous sequence of n items from s string text.
-            Default: 1
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
-        tokenizer: the tokenizer used to preprocess raw text data.
-            The default one is basic_english tokenizer in fastText. spacy tokenizer
-            is supported as well. A custom tokenizer is callable
-            function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
 
     Examples:
-        >>> from torchtext.experimental.datasets import IMDB
-        >>> from torchtext.data.utils import get_tokenizer
-        >>> train, test = IMDB(ngrams=3)
-        >>> tokenizer = get_tokenizer("spacy")
-        >>> train, test = IMDB(tokenizer=tokenizer)
-        >>> train, = IMDB(tokenizer=tokenizer, data_select='train')
+    """
+
+    return _setup_datasets(*(('AG_NEWS',) + args), **kwargs)
+
+
+def SogouNews(*args, **kwargs):
+    """ Defines SogouNews datasets.
+        The labels includes:
+            - 1 : Sports
+            - 2 : Finance
+            - 3 : Entertainment
+            - 4 : Automobile
+            - 5 : Technology
+    Create supervised learning dataset: SogouNews
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("SogouNews",) + args), **kwargs)
+
+
+def DBpedia(*args, **kwargs):
+    """ Defines DBpedia datasets.
+        The labels includes:
+            - 1 : Company
+            - 2 : EducationalInstitution
+            - 3 : Artist
+            - 4 : Athlete
+            - 5 : OfficeHolder
+            - 6 : MeanOfTransportation
+            - 7 : Building
+            - 8 : NaturalPlace
+            - 9 : Village
+            - 10 : Animal
+            - 11 : Plant
+            - 12 : Album
+            - 13 : Film
+            - 14 : WrittenWork
+    Create supervised learning dataset: DBpedia
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("DBpedia",) + args), **kwargs)
+
+
+def YelpReviewPolarity(*args, **kwargs):
+    """ Defines YelpReviewPolarity datasets.
+        The labels includes:
+            - 1 : Negative polarity.
+            - 2 : Positive polarity.
+    Create supervised learning dataset: YelpReviewPolarity
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
+
+
+def YelpReviewFull(*args, **kwargs):
+    """ Defines YelpReviewFull datasets.
+        The labels includes:
+            1 - 5 : rating classes (5 is highly recommended).
+    Create supervised learning dataset: YelpReviewFull
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
+
+
+def YahooAnswers(*args, **kwargs):
+    """ Defines YahooAnswers datasets.
+        The labels includes:
+            - 1 : Society & Culture
+            - 2 : Science & Mathematics
+            - 3 : Health
+            - 4 : Education & Reference
+            - 5 : Computers & Internet
+            - 6 : Sports
+            - 7 : Business & Finance
+            - 8 : Entertainment & Music
+            - 9 : Family & Relationships
+            - 10 : Politics & Government
+    Create supervised learning dataset: YahooAnswers
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
+
+
+def AmazonReviewPolarity(*args, **kwargs):
+    """ Defines AmazonReviewPolarity datasets.
+        The labels includes:
+            - 1 : Negative polarity
+            - 2 : Positive polarity
+    Create supervised learning dataset: AmazonReviewPolarity
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
+
+
+def AmazonReviewFull(*args, **kwargs):
+    """ Defines AmazonReviewFull datasets.
+        The labels includes:
+            1 - 5 : rating classes (5 is highly recommended)
+    Create supervised learning dataset: AmazonReviewFull
+    Separately returns the training and test dataset
+    Arguments:
+        root: Directory where the dataset are saved. Default: ".data"
+    Examples:
+    """
+
+    return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
+
+
+def IMDB(*args, **kwargs):
+    """ Defines IMDB datasets.
     """
 
     return _setup_datasets(*(("IMDB",) + args), **kwargs)
 
 
 DATASETS = {
-    'IMDB': IMDB
+    'AG_NEWS': RawAG_NEWS,
+    'SogouNews': RawSogouNews,
+    'DBpedia': RawDBpedia,
+    'YelpReviewPolarity': RawYelpReviewPolarity,
+    'YelpReviewFull': RawYelpReviewFull,
+    'YahooAnswers': RawYahooAnswers,
+    'AmazonReviewPolarity': RawAmazonReviewPolarity,
+    'AmazonReviewFull': RawAmazonReviewFull,
+    'IMDB': RawIMDB
 }
 
 
 LABELS = {
+    'AG_NEWS': {1: 'World',
+                2: 'Sports',
+                3: 'Business',
+                4: 'Sci/Tech'},
+    'SogouNews': {1: 'Sports',
+                  2: 'Finance',
+                  3: 'Entertainment',
+                  4: 'Automobile',
+                  5: 'Technology'},
+    'DBpedia': {1: 'Company',
+                2: 'EducationalInstitution',
+                3: 'Artist',
+                4: 'Athlete',
+                5: 'OfficeHolder',
+                6: 'MeanOfTransportation',
+                7: 'Building',
+                8: 'NaturalPlace',
+                9: 'Village',
+                10: 'Animal',
+                11: 'Plant',
+                12: 'Album',
+                13: 'Film',
+                14: 'WrittenWork'},
+    'YelpReviewPolarity': {1: 'Negative polarity',
+                           2: 'Positive polarity'},
+    'YelpReviewFull': {1: 'score 1',
+                       2: 'score 2',
+                       3: 'score 3',
+                       4: 'score 4',
+                       5: 'score 5'},
+    'YahooAnswers': {1: 'Society & Culture',
+                     2: 'Science & Mathematics',
+                     3: 'Health',
+                     4: 'Education & Reference',
+                     5: 'Computers & Internet',
+                     6: 'Sports',
+                     7: 'Business & Finance',
+                     8: 'Entertainment & Music',
+                     9: 'Family & Relationships',
+                     10: 'Politics & Government'},
+    'AmazonReviewPolarity': {1: 'Negative polarity',
+                             2: 'Positive polarity'},
+    'AmazonReviewFull': {1: 'score 1',
+                         2: 'score 2',
+                         3: 'score 3',
+                         4: 'score 4',
+                         5: 'score 5'},
     'IMDB': {0: 'Negative',
              1: 'Positive'}
 }
