@@ -5,9 +5,9 @@ from torchtext.experimental import functional as F
 
 class TokenizerTransform(torch.nn.Module):
 
-    def __init__(self, tokenizer_name=None):
+    def __init__(self, tokenizer=get_tokenizer('basic_english')):
         super(TokenizerTransform, self).__init__()
-        self.tokenizer = get_tokenizer(tokenizer_name)
+        self.tokenizer = tokenizer
 
     def forward(self, str_input):
         # type: (str) -> List[str]
