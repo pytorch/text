@@ -102,14 +102,36 @@ def AG_NEWS(*args, **kwargs):
             - 3 : Business
             - 4 : Sci/Tech
 
-    Create supervised learning dataset: AG_NEWS
+    Create text classification dataset: AG_NEWS
 
     Separately returns the training and test dataset
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
+        >>> from torchtext.experimental.datasets import AG_NEWS
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = AG_NEWS(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = AG_NEWS(tokenizer=tokenizer)
+        >>> train, = AG_NEWS(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(('AG_NEWS',) + args), **kwargs)
@@ -123,11 +145,37 @@ def SogouNews(*args, **kwargs):
             - 3 : Entertainment
             - 4 : Automobile
             - 5 : Technology
-    Create supervised learning dataset: SogouNews
+
+    Create text classification dataset: SogouNews
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import SogouNews
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = SogouNews(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = SogouNews(tokenizer=tokenizer)
+        >>> train, = SogouNews(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("SogouNews",) + args), **kwargs)
@@ -150,11 +198,37 @@ def DBpedia(*args, **kwargs):
             - 12 : Album
             - 13 : Film
             - 14 : WrittenWork
-    Create supervised learning dataset: DBpedia
+
+    Create text classification dataset: DBpedia
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import DBpedia
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = DBpedia(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = DBpedia(tokenizer=tokenizer)
+        >>> train, = DBpedia(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("DBpedia",) + args), **kwargs)
@@ -165,11 +239,37 @@ def YelpReviewPolarity(*args, **kwargs):
         The labels includes:
             - 1 : Negative polarity.
             - 2 : Positive polarity.
-    Create supervised learning dataset: YelpReviewPolarity
+
+    Create text classification dataset: YelpReviewPolarity
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import YelpReviewPolarity
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = YelpReviewPolarity(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = YelpReviewPolarity(tokenizer=tokenizer)
+        >>> train, = YelpReviewPolarity(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
@@ -179,11 +279,37 @@ def YelpReviewFull(*args, **kwargs):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
-    Create supervised learning dataset: YelpReviewFull
+
+    Create text classification dataset: YelpReviewFull
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import YelpReviewFull
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = YelpReviewFull(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = YelpReviewFull(tokenizer=tokenizer)
+        >>> train, = YelpReviewFull(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
@@ -202,11 +328,37 @@ def YahooAnswers(*args, **kwargs):
             - 8 : Entertainment & Music
             - 9 : Family & Relationships
             - 10 : Politics & Government
-    Create supervised learning dataset: YahooAnswers
+
+    Create text classification dataset: YahooAnswers
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import YahooAnswers
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = YahooAnswers(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = YahooAnswers(tokenizer=tokenizer)
+        >>> train, = YahooAnswers(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
@@ -217,11 +369,37 @@ def AmazonReviewPolarity(*args, **kwargs):
         The labels includes:
             - 1 : Negative polarity
             - 2 : Positive polarity
-    Create supervised learning dataset: AmazonReviewPolarity
+
+    Create text classification dataset: AmazonReviewPolarity
+
     Separately returns the training and test dataset
+
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import AmazonReviewPolarity
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = AmazonReviewPolarity(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = AmazonReviewPolarity(tokenizer=tokenizer)
+        >>> train, = AmazonReviewPolarity(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
@@ -231,11 +409,37 @@ def AmazonReviewFull(*args, **kwargs):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
-    Create supervised learning dataset: AmazonReviewFull
+
+    Create text classification dataset: AmazonReviewFull
+
     Separately returns the training and test dataset
+
     Arguments:
-        root: Directory where the dataset are saved. Default: ".data"
+        root: Directory where the datasets are saved. Default: ".data"
+        ngrams: a contiguous sequence of n items from s string text.
+            Default: 1
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well. A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+
     Examples:
+        >>> from torchtext.experimental.datasets import AmazonReviewFull
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> train, test = AmazonReviewFull(ngrams=3)
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train, test = AmazonReviewFull(tokenizer=tokenizer)
+        >>> train, = AmazonReviewFull(tokenizer=tokenizer, data_select='train')
+
     """
 
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
