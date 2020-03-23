@@ -4,9 +4,17 @@ from torchtext.utils import unicode_csv_reader
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.transforms import TokenizerTransform, NGrams, \
     VocabTransform, ToTensor, TextSequential
-from .raw_text_classification import RawAG_NEWS, RawSogouNews, RawDBpedia, \
-    RawYelpReviewPolarity, RawYelpReviewFull, RawYahooAnswers, \
-    RawAmazonReviewPolarity, RawAmazonReviewFull, RawIMDB
+from torchtext.experimental.raw_datasets import AG_NEWS as RawAG_NEWS
+from torchtext.experimental.raw_datasets import SogouNews as RawSogouNews
+from torchtext.experimental.raw_datasets import DBpedia as RawDBpedia
+from torchtext.experimental.raw_datasets import YelpReviewPolarity as \
+    RawYelpReviewPolarity
+from torchtext.experimental.raw_datasets import YelpReviewFull as RawYelpReviewFull
+from torchtext.experimental.raw_datasets import YahooAnswers as RawYahooAnswers
+from torchtext.experimental.raw_datasets import AmazonReviewPolarity as \
+    RawAmazonReviewPolarity
+from torchtext.experimental.raw_datasets import AmazonReviewFull as RawAmazonReviewFull
+from torchtext.experimental.raw_datasets import IMDB as RawIMDB
 
 
 def _create_data_from_csv(data_path):
