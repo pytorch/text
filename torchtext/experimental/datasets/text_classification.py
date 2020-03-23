@@ -40,14 +40,19 @@ class TextClassificationDataset(torch.utils.data.Dataset):
              - AmazonReviewFull
     """
 
-    def __init__(self, data, transforms):
+    def __init__(self, data, vocab, transforms):
         """Initiate text-classification dataset.
+
         Arguments:
-        Examples:
+            data: a list of label and text tring tuple. label is an integer.
+                [(label1, text1), (label2, text2), (label2, text3)]
+            vocab: Vocabulary object used for dataset.
+            transforms: a tuple of label and text string transforms.
         """
 
         super(TextClassificationDataset, self).__init__()
         self.data = data
+        self.vocab = vocab
         self.transforms = transforms  # (label_transforms, tokens_transforms)
 
     def __getitem__(self, i):
@@ -91,7 +96,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     text_transform = TextSequential(processing_transform,
                                     VocabTransform(vocab),
                                     ToTensor(dtype=torch.long))
-    return tuple(TextClassificationDataset(raw_data[item],
+    return tuple(TextClassificationDataset(raw_data[item], vocab,
                                            (label_transform, text_transform))
                  for item in data_select)
 
