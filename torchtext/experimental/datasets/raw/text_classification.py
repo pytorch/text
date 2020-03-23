@@ -233,8 +233,8 @@ def IMDB(root='.data'):
     extracted_files = extract_archive(dataset_tar)
     train_data = generate_imdb_data('train', extracted_files)
     test_data = generate_imdb_data('test', extracted_files)
-    return (TextDataset(train_data),
-            TextDataset(test_data))
+    return (RawTextDataset(train_data),
+            RawTextDataset(test_data))
 
 
 DATASETS = {
