@@ -16,140 +16,25 @@ from torchtext.experimental.datasets.raw import AmazonReviewFull as RawAmazonRev
 from torchtext.experimental.datasets.raw import IMDB as RawIMDB
 
 
-class TokenizerTransform(torch.nn.Module):
-    def __init__(self, tokenizer=get_tokenizer('basic_english')):
-        """Initiate Tokenizer transform.
-        Arguments:
-            tokenizer: a callable object to convert a text string
-                to a list of token. Default: 'basic_english' tokenizer
-        """
-
-        super(TokenizerTransform, self).__init__()
-        self.tokenizer = tokenizer
-
-    def forward(self, str_input):
-        """
-        Inputs:
-            str_input: a text string
-        Outputs:
-            A list of tokens
-        Examples:
-            >>> tok_transform = torchtext.experimental.transforms.TokenizerTransform()
-            >>> tok_transform('here we are')
-            >>> ['here', 'we', 'are']
-        """
-        # type: (str) -> List[str]
-        return self.tokenizer(str_input)
+def vocab_func(vocab):
+    def _forward(tok_iter):
+        return [vocab[tok] for tok in tok_iter]
+    return _forward
 
 
-class VocabTransform(torch.nn.Module):
-    def __init__(self, vocab):
-        """Initiate vocab transform.
-        Arguments:
-            vocab: a callable object to convert a token to integer.
-        """
-
-        super(VocabTransform, self).__init__()
-        self.vocab = vocab
-
-    def forward(self, tok_iter):
-        """
-        Inputs:
-            tok_iter: a iterable object for tokens
-        Outputs:
-            A list of integers
-        Examples:
-            >>> vocab = {'here': 1, 'we': 2, 'are': 3}
-            >>> vocab_transform = torchtext.experimental.transforms.VocabTransform(vocab)
-            >>> vocab_transform(['here', 'we', 'are'])
-            >>> [1, 2, 3]
-        """
-        # type: (List[str]) -> List[int]
-        return [self.vocab[tok] for tok in tok_iter]
+def totensor(dtype):
+    def _forward(ids_list):
+        return torch.tensor(ids_list).to(dtype)
+    return _forward
 
 
-class ToTensor(torch.nn.Module):
-    def __init__(self, dtype=torch.long):
-        """Initiate Tensor transform.
-        Arguments:
-            dtype: the type of output tensor. Default: `torch.long`
-        """
-
-        super(ToTensor, self).__init__()
-        self.dtype = dtype
-
-    def forward(self, ids_list):
-        """
-        Inputs:
-            ids_list: a list of numbers.
-        Outputs:
-            A torch.tensor
-        Examples:
-            >>> totensor = torchtext.experimental.transforms.ToTensor()
-            >>> totensor([1, 2, 3])
-            >>> tensor([1, 2, 3])
-        """
-        return torch.tensor(ids_list).to(self.dtype)
-
-
-class TextSequential(torch.nn.Sequential):
-    def __init__(self, *inps):
-        """Initiate Sequential modules transform.
-        Arguments:
-            Modules: nn.Module or transforms
-        """
-
-        super(TextSequential, self).__init__(*inps)
-
-    def forward(self, txt_input):
-        """
-        Inputs:
-            input: a text string
-        Outputs:
-            output defined by the last transform
-        Examples:
-            >>> from torchtext.experimental.transforms import TokenizerTransform, \
-                    VocabTransform, ToTensor, TextSequential
-            >>> vocab = {'here': 1, 'we': 2, 'are': 3}
-            >>> vocab_transform = VocabTransform(vocab)
-            >>> text_transform = TextSequential(TokenizerTransform(),
-                                                VocabTransform(vocab),
-                                                ToTensor())
-            >>> text_transform('here we are')
-            >>> tensor([1, 2, 3])
-        """
-        # type: (str)
-        for module in self:
-            txt_input = module(txt_input)
-        return txt_input
-
-
-class NGrams(torch.nn.Module):
-    def __init__(self, ngrams):
-        """Initiate ngram transform.
-        Arguments:
-            ngrams: the number of ngrams.
-        """
-
-        super(NGrams, self).__init__()
-        self.ngrams = ngrams
-
-    def forward(self, token_list):
-        """
-        Inputs:
-            token_list: A list of tokens
-        Outputs:
-            A list of ngram strings
-        Examples:
-            >>> token_list = ['here', 'we', 'are']
-            >>> ngram_transform = torchtext.experimental.transforms.NGrams(3)
-            >>> ngram_transform(token_list)
-            >>> ['here', 'we', 'are', 'here we', 'we are', 'here we are']
-        """
+def ngrams_func(ngrams):
+    def _forward(token_list):
         _token_list = []
-        for _i in range(self.ngrams + 1):
+        for _i in range(ngrams + 1):
             _token_list += zip(*[token_list[i:] for i in range(_i)])
         return [' '.join(x) for x in _token_list]
+    return _forward
 
 
 def _create_data_from_csv(data_path):
@@ -161,12 +46,13 @@ def _create_data_from_csv(data_path):
     return data
 
 
-def build_vocab(dataset, transform):
-    # if not isinstance(dataset, TextClassificationDataset):
-    #   raise TypeError('Passed dataset is not TextClassificationDataset')
-
-    # data are saved in the form of (label, text_string)
-    tok_list = [transform(seq[1]) for seq in dataset.data]
+def build_vocab(dataset, transforms_list):
+    tok_list = []
+    for seq in dataset.data:
+        txt = seq[1]
+        for transform in transforms_list:
+            txt = transform(txt)
+        tok_list.append(txt)
     return build_vocab_from_iterator(tok_list)
 
 
@@ -199,16 +85,25 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         self.transforms = transforms  # (label_transforms, tokens_transforms)
 
     def __getitem__(self, i):
+        label = self.data[i][0]
+        for transform in self.transforms[0]:
+            label = transform(label)
         txt = self.data[i][1]
         for transform in self.transforms[1]:
             txt = transform(txt)
-        return (self.transforms[0](self.data[i][0]), txt)
+        return (label, txt)
 
     def __len__(self):
         return len(self.data)
 
     def get_labels(self):
-        return set([self.transforms[0](item[0]) for item in self.data])
+        labels = []
+        for item in self.data:
+            label = item[0]
+            for transform in self.transforms[0]:
+                label = transform(label)
+            labels.apppend(label)
+        return set(labels)
 
     def get_vocab(self):
         return self.vocab
@@ -216,17 +111,17 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                     tokenizer=None, data_select=('train', 'test')):
+    text_transform = []
     if not tokenizer:
-        tok_transform = TokenizerTransform()
+        text_transform.append(get_tokenizer('basic_english'))
     else:
-        tok_transform = TokenizerTransform(tokenizer)
+        text_transform.append(tokenizer)
+    text_transform.append(ngrams_func(ngrams))
 
+    if isinstance(data_select, str):
+        data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
-
-    ngram_transform = NGrams(ngrams)
-    processing_transform = TextSequential(tok_transform, ngram_transform)
-
     train, test = DATASETS[dataset_name](root=root)
     raw_data = {'train': train,
                 'test': test}
@@ -234,11 +129,10 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     if not vocab:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(train, processing_transform)
-    label_transform = ToTensor(dtype=torch.long)
-    text_transform = TextSequential(processing_transform,
-                                    VocabTransform(vocab),
-                                    ToTensor(dtype=torch.long))
+        vocab = build_vocab(train, text_transform)
+    text_transform.append(vocab_func(vocab))
+    text_transform.append(totensor(dtype=torch.long))
+    label_transform = [totensor(dtype=torch.long)]
     return tuple(TextClassificationDataset(raw_data[item], vocab,
                                            (label_transform, text_transform))
                  for item in data_select)
