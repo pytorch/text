@@ -29,7 +29,7 @@ URLS = {
 }
 
 
-UNEXTRACT_NAMES = {
+UNEXTRACTS = {
     'AG_NEWS':
         'ag_news_csv.tar.gz',
     'SogouNews':
@@ -135,8 +135,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_unk=False):
-    if  os.path.exists(os.path.join(root, UNEXTRACT_NAMES[dataset_name])):
-        extracted_files = extract_archive(os.path.join(root, UNEXTRACT_NAMES[dataset_name]))
+    if os.path.exists(os.path.join(root, UNEXTRACTS[dataset_name])):
+        extracted_files = extract_archive(os.path.join(root, UNEXTRACTS[dataset_name]))
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
