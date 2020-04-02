@@ -27,7 +27,7 @@ class MultiheadAttentionInProjection(torch.nn.Module):
         >>> seq = torch.randn(21, 64, 10)
         >>> s = MHA_in(seq)
         >>> print(s.shape)
-        torch.Size([256, 21, 3])
+        torch.Size([320, 21, 2])
     """
     __constants__ = ['embed_dim', 'num_heads', 'head_dim']
 
@@ -35,11 +35,12 @@ class MultiheadAttentionInProjection(torch.nn.Module):
         super(MultiheadAttentionInProjection, self).__init__()
         if head_dim is None:
             assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-            head_dim = embed_dim // num_heads
-        self.head_dim = head_dim
+            self.head_dim = embed_dim // num_heads
+        else:
+            self.head_dim = head_dim
         self.embed_dim = embed_dim
         self.num_heads = num_heads
-        self.linear = torch.nn.Linear(embed_dim, head_dim)
+        self.linear = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim)
 
     def forward(self, seq):
         # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
@@ -72,9 +73,7 @@ class ScaledDotProduct(torch.nn.Module):
     in each parallel attention head.
     Args:
         num_heads (int): Number of parallel attention heads.
-        add_zero_attn (bool): Whether to add a batch of zeros to the key and
-            value sequences.
-        dropout_p (float): probability of dropping an attention weight.
+        dropout (float): probability of dropping an attention weight.
     Shape:
         - query: :math:`(N * H, L, D)`
         - key: :math:`(N * H, S, D)`
@@ -87,7 +86,7 @@ class ScaledDotProduct(torch.nn.Module):
         and D is the head dimension.
     Examples::
         >>> # S = L = 21; N = 64; E = 10; D = 3; H = 4;
-        >>> SDP = nn.ScaledDotProduct(4, False, 0.1)
+        >>> SDP = torchtext.models.ScaledDotProduct(4, 0.1)
         >>> q = torch.randn(256, 21, 3)
         >>> k = v = torch.randn(256, 21, 3)
         >>> attn_output, attn_weights = SDP(q, k, v)
@@ -218,11 +217,12 @@ class MultiheadAttentionOutProjection(torch.nn.Module):
         self.embed_dim = embed_dim
         if head_dim is None:
             assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-            head_dim = embed_dim // num_heads
+            self.head_dim = embed_dim // num_heads
+        else:
+            self.head_dim = head_dim
         self.embed_dim = embed_dim
         self.num_heads = num_heads
-        self.head_dim = head_dim
-        self.linear = torch.nn.Linear(head_dim, embed_dim)
+        self.linear = torch.nn.Linear(self.num_heads * self.head_dim, embed_dim)
 
     def forward(self, attn_output):
         # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
