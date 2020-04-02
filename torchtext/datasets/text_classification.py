@@ -1,6 +1,7 @@
 import logging
 import torch
 import io
+import os.path
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.utils import ngrams_iterator
 from torchtext.data.utils import get_tokenizer
@@ -25,6 +26,26 @@ URLS = {
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM',
     'AmazonReviewFull':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
+}
+
+
+UNEXTRACT_NAMES={
+    'AG_NEWS':
+        'ag_news_csv.tar.gz',
+    'SogouNews':
+        'sogou_news_csv.tar.gz',
+    'DBpedia':
+        'dbpedia_csv.tar.gz',
+    'YelpReviewPolarity':
+        'yelp_review_polarity_csv.tar.gz',
+    'YelpReviewFull':
+        'yelp_review_full_csv.tar.gz',
+    'YahooAnswers':
+        'yahoo_answers_csv.tar.gz',
+    'AmazonReviewPolarity':
+        'amazon_review_polarity_csv.tar.gz',
+    'AmazonReviewFull':
+        'amazon_review_full_csv.tar.gz'
 }
 
 
@@ -114,8 +135,11 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_unk=False):
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
+    if  os.path.exists(os.path.join(root, UNEXTRACT_NAMES[dataset_name])):
+        extracted_files=extract_archive(os.path.join(root, UNEXTRACT_NAMES[dataset_name]))
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
 
     for fname in extracted_files:
         if fname.endswith('train.csv'):
