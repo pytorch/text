@@ -204,25 +204,24 @@ class MultiheadAttentionOutProjection(torch.nn.Module):
             :math:`(\text{embed\_dim}, \text{head\_dim} * \text{num\_heads})`.
     Examples::
         >>> # S = 21; N = 64; E = 10; D = 3; H = 4;
-        >>> MHA_out = nn.MultiheadAttentionOutProjection(10, 4, 3)
-        >>> attn_seq = torch.randn(256, 21, 3)
+        >>> MHA_out = torchtext.models.MultiheadAttentionOutProjection(2, 5)
+        >>> attn_seq = torch.randn(320, 21, 2)
         >>> a = MHA_out(attn_seq)
         >>> print(a.shape)
         torch.Size([21, 64, 10])
     """
     __constants__ = ['embed_dim', 'num_heads', 'head_dim']
 
-    def __init__(self, embed_dim, num_heads, head_dim=None):
+    def __init__(self, head_dim, num_heads, embed_dim=None):
         super(MultiheadAttentionOutProjection, self).__init__()
-        self.embed_dim = embed_dim
-        if head_dim is None:
-            assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-            self.head_dim = embed_dim // num_heads
-        else:
-            self.head_dim = head_dim
-        self.embed_dim = embed_dim
+        self.head_dim = head_dim
         self.num_heads = num_heads
-        self.linear = torch.nn.Linear(self.num_heads * self.head_dim, embed_dim)
+        if embed_dim:
+            assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
+            self.embed_dim = embed_dim
+        else:
+            self.embed_dim = head_dim * num_heads
+        self.linear = torch.nn.Linear(self.num_heads * self.head_dim, self.embed_dim)
 
     def forward(self, attn_output):
         # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
