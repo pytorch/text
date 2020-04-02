@@ -1,5 +1,5 @@
 from . import data
-from . import models 
+from . import models
 from . import datasets
 from . import utils
 from . import vocab
