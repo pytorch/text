@@ -40,7 +40,7 @@ class MultiheadAttentionInProjection(torch.nn.Module):
             self.head_dim = head_dim
         self.embed_dim = embed_dim
         self.num_heads = num_heads
-        self.linear = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim)
+        self.linear = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
 
     def forward(self, seq):
         # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
