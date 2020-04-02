@@ -6,38 +6,24 @@ Tensor = torch.Tensor
 
 
 class MultiheadAttentionInProjection(torch.nn.Module):
-    r"""Process input using multi-head attention.
-    Args:
-        embed_dim (int): Input embedding dimension
-        num_heads (int): Number of parallel attention heads.
-        head_dim (int, optional): Dimension of embedding for each attention
-            head. If not provided, then it is set to ``embed_dim / num_heads``.
-    Shape:
-        - seq: :math:`(S, N, E)`
-        - Output: :math:`(N * H, S, D)`
-        where S is the sequence length, N is the batch size, H is the number of
-        attention heads, E is the embedding dimension, and D is the head
-        dimension.
-    Attributes:
-        weight: The learnable weights of the module of shape
-            :math:`(\text{head\_dim} * \text{num\_heads}, \text{embed\_dim})`.
-    Examples::
-        >>> # S = 21; N = 64; E = 10; D = 3; H = 4;
-        >>> MHA_in = torchtext.models.MultiheadAttentionInProjection(10, 5)
-        >>> seq = torch.randn(21, 64, 10)
-        >>> s = MHA_in(seq)
-        >>> print(s.shape)
-        torch.Size([320, 21, 2])
-    """
-    __constants__ = ['embed_dim', 'num_heads', 'head_dim']
+    __constants__ = ['embed_dim', 'num_heads']
 
-    def __init__(self, embed_dim, num_heads, head_dim=None):
+    def __init__(self, embed_dim, num_heads):
+        r"""Process input using multi-head attention.
+        Args:
+            embed_dim (int): Input embedding dimension
+            num_heads (int): Number of parallel attention heads.
+
+        Examples::
+            >>> MHA_in = torchtext.models.MultiheadAttentionInProjection(10, 5)
+            >>> seq = torch.randn(21, 64, 10)
+            >>> s = MHA_in(seq)
+            >>> print(s.shape)
+            torch.Size([320, 21, 2])
+        """
         super(MultiheadAttentionInProjection, self).__init__()
-        if head_dim is None:
-            assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-            self.head_dim = embed_dim // num_heads
-        else:
-            self.head_dim = head_dim
+        assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
+        self.head_dim = embed_dim // num_heads
         self.embed_dim = embed_dim
         self.num_heads = num_heads
         self.linear = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
@@ -47,17 +33,12 @@ class MultiheadAttentionInProjection(torch.nn.Module):
         r"""Projects an input sequence using parallel attention heads.
         Args:
             seq (Tensor): sequence to be projected
-            num_heads (int): number of parallel heads used.
-            in_proj_weight (Tensor): weight used for projection
-            in_proj_bias (Tensor, optional): bias used for projection.
+
         Shape:
             - seq: :math:`(S, N, E)`
-            - in_proj_weight: :math:`(P, E)`
-            - in_proj_bias: :math:`(P)`
-            - Output: :math:`(N * H, S, P / H)`
+            - Output: :math:`(N * H, S, E / H)`
             where S is the sequence length, H is the number of attention heads, N is the
-            batch size, P is the projection dimension, and E is the embedding
-            dimension.
+            batch size, and E is the embedding dimension.
         """
         seq_len, bsz, proj_dim = seq.size()
         assert proj_dim % self.num_heads == 0, "projection dimension must be divisible by num_heads"
@@ -69,33 +50,24 @@ class MultiheadAttentionInProjection(torch.nn.Module):
 
 
 class ScaledDotProduct(torch.nn.Module):
-    r"""Processes a projected query and key-value pair to apply attention
-    in each parallel attention head.
-    Args:
-        num_heads (int): Number of parallel attention heads.
-        dropout (float): probability of dropping an attention weight.
-    Shape:
-        - query: :math:`(N * H, L, D)`
-        - key: :math:`(N * H, S, D)`
-        - value: :math:`(N * H, S, D)`
-        - key_padding_mask: :math:`(N, S)`
-        - attn_mask: :math:`(L, S)` or :math:`(N * H, L, S)`
-        - Output: :math:`(N * H, L, D)`, :math:`(N * H, L, S)`
-        where L is the target sequence length, S is the source sequence
-        length, H is the number of attention heads, N is the batch size,
-        and D is the head dimension.
-    Examples::
-        >>> # S = L = 21; N = 64; E = 10; D = 3; H = 4;
-        >>> SDP = torchtext.models.ScaledDotProduct(4, 0.1)
-        >>> q = torch.randn(256, 21, 3)
-        >>> k = v = torch.randn(256, 21, 3)
-        >>> attn_output, attn_weights = SDP(q, k, v)
-        >>> print(attn_output.shape, attn_weights.shape)
-        torch.Size([256, 21, 3]) torch.Size([256, 21, 21])
-    """
-    __constants__ = ['num_heads', 'add_zero_attn', 'dropout_p']
+    __constants__ = ['num_heads', 'dropout']
 
     def __init__(self, num_heads, dropout=0.0):
+        r"""Processes a projected query and key-value pair to apply
+        scaled dot product attention.
+
+        Args:
+            num_heads (int): Number of parallel attention heads.
+            dropout (float): probability of dropping an attention weight.
+
+        Examples::
+            >>> SDP = torchtext.models.ScaledDotProduct(4, 0.1)
+            >>> q = torch.randn(256, 21, 3)
+            >>> k = v = torch.randn(256, 21, 3)
+            >>> attn_output, attn_weights = SDP(q, k, v)
+            >>> print(attn_output.shape, attn_weights.shape)
+            torch.Size([256, 21, 3]) torch.Size([256, 21, 21])
+        """
         super(ScaledDotProduct, self).__init__()
         self.num_heads = num_heads
         self.dropout = dropout
@@ -104,15 +76,11 @@ class ScaledDotProduct(torch.nn.Module):
         # type: (...) -> Tuple[Tensor, Tensor]
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
+
         Args:
-            q (Tensor): Projected query
-            k (Tensor): Projected key
-            v (Tensor): Projected value
-            num_heads (int): Number of parallel attention heads.
-            add_zero_attn (bool): Add a new batch of zeros to the projected key and
-                value sequences at dimension 1.
-            dropout_p (float): Probability of an element will be zeroed.
-            training (bool): Apply dropout if ``training=True``
+            query (Tensor): Projected query
+            key (Tensor): Projected key
+            value (Tensor): Projected value
             key_padding_mask (Tensor, optional): Specified padding elements in the
                 key will be ignored by the attention. This is a binary mask. When
                 the value is True, the corresponding value on the attention layer
@@ -123,15 +91,14 @@ class ScaledDotProduct(torch.nn.Module):
                 all the batches while a 3D mask allows to specify a different mask
                 for the entries of each batch.
         Shape:
-            - query: :math:`(N * H, L, P / H)`
-            - key: :math:`(N * H, S, P / H)`
-            - value: :math:`(N * H, S, P / H)`
+            - query: :math:`(N * H, L, E / H)`
+            - key: :math:`(N * H, S, E / H)`
+            - value: :math:`(N * H, S, E / H)`
             - key_padding_mask: :math:`(N, S)`
             - attn_mask: :math:`(L, S)` or :math:`(N * H, L, S)`
-            - Output: :math:`(N * H, L, P / H)`, :math:`(N * H, L, S)`
+            - Output: :math:`(N * H, L, E / H)`, :math:`(N * H, L, S)`
             where L is the target length, S is the source length, H is the number
-            of attention heads, N is the batch size, and P is the projection
-            dimension.
+            of attention heads, N is the batch size, and E is the embedding dimension.
         """
         batch_heads, tgt_len, head_dim = query.size()
         assert query.size(0) == key.size(0) == value.size(0), "Dimension 0 of query, key, value must be equal."
@@ -187,52 +154,40 @@ class ScaledDotProduct(torch.nn.Module):
 
 
 class MultiheadAttentionOutProjection(torch.nn.Module):
-    r"""Process attention output using multi-head attention.
-    Args:
-        embed_dim (int): Input projection dimension.
-        num_heads (int): Number of parallel attention heads.
-        head_dim (int, optional): Dimension of embedding for each attention
-            head. If not provided, then it is set to ``embed_dim / num_heads``.
-    Shape:
-        - attn_output: :math:`(N * H, S, D)`
-        - Output: :math:`(S, N, E)`
-        where S is the sequence length, N is the batch size, H is the number of
-        attention heads, E is the embedding dimension, and D is the head
-        dimension.
-    Attributes:
-        weight: The learnable weights of the module of shape
-            :math:`(\text{embed\_dim}, \text{head\_dim} * \text{num\_heads})`.
-    Examples::
-        >>> # S = 21; N = 64; E = 10; D = 3; H = 4;
-        >>> MHA_out = torchtext.models.MultiheadAttentionOutProjection(2, 5)
-        >>> attn_seq = torch.randn(320, 21, 2)
-        >>> a = MHA_out(attn_seq)
-        >>> print(a.shape)
-        torch.Size([21, 64, 10])
-    """
-    __constants__ = ['embed_dim', 'num_heads', 'head_dim']
+    __constants__ = ['head_dim', 'num_heads']
 
-    def __init__(self, head_dim, num_heads, embed_dim=None):
+    def __init__(self, head_dim, num_heads):
+        r"""Process attention output using multi-head attention.
+
+        Args:
+            head_dim (int): Dimension of embedding for each attention head.
+            num_heads (int): Number of parallel attention heads.
+
+        Examples::
+            >>> MHA_out = torchtext.models.MultiheadAttentionOutProjection(2, 5)
+            >>> attn_seq = torch.randn(320, 21, 2)
+            >>> a = MHA_out(attn_seq)
+            >>> print(a.shape)
+            torch.Size([21, 64, 10])
+        """
         super(MultiheadAttentionOutProjection, self).__init__()
         self.head_dim = head_dim
         self.num_heads = num_heads
-        if embed_dim:
-            assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-            self.embed_dim = embed_dim
-        else:
-            self.embed_dim = head_dim * num_heads
+        self.embed_dim = head_dim * num_heads
         self.linear = torch.nn.Linear(self.num_heads * self.head_dim, self.embed_dim)
 
     def forward(self, attn_output):
         # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
         r"""Projects an output sequence using parallel attention heads.
+
         Args:
             attn_output (Tensor): Projection to be decoded to an embedding.
+
         Shape:
-            - attn_output: :math:`(N * H, S, P / H)`
+            - attn_output: :math:`(N * H, S, E / H)`
+            - Output: :math:`(S, N, E)`
             where S is the sequence length, H is the number of attention heads, N is the
-            batch size, P is the projection dimension, and E is the embedding
-            dimension.
+            batch size, and E is the embedding dimension.
         """
         batch_heads, seq_len, head_dim = attn_output.size()
         # embed_dim = out_proj_weight.size(0)
