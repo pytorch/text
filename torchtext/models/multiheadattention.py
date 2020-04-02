@@ -23,7 +23,7 @@ class MultiheadAttentionInProjection(torch.nn.Module):
             :math:`(\text{head\_dim} * \text{num\_heads}, \text{embed\_dim})`.
     Examples::
         >>> # S = 21; N = 64; E = 10; D = 3; H = 4;
-        >>> MHA_in = nn.MultiheadAttentionInProjection(10, 4, 3)
+        >>> MHA_in = torchtext.models.MultiheadAttentionInProjection(10, 5)
         >>> seq = torch.randn(21, 64, 10)
         >>> s = MHA_in(seq)
         >>> print(s.shape)
@@ -182,8 +182,8 @@ class ScaledDotProduct(torch.nn.Module):
             attn_output_weights = attn_output_weights.reshape(batch_heads, tgt_len, src_len)
 
         attn_output_weights = torch.nn.functional.softmax(attn_output_weights, dim=-1)
-
-        attn_output = torch.matmul(self.dropout(attn_output_weights), value)
+        attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
+        attn_output = torch.matmul(attn_output_weights, value)
         return attn_output, attn_output_weights
 
 
