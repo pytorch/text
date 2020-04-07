@@ -9,7 +9,6 @@ requirements:
   build:
     - python
     - setuptools
-    - powerai::sentencepiece
 
   run:
     - python
@@ -18,6 +17,7 @@ requirements:
     - pytorch >=1.2
     - requests
     - six
+    - sentencepiece
 
 build:
   number: 1
