@@ -1,6 +1,4 @@
-from .multiheadattention import MultiheadAttentionInProjection, \
-    ScaledDotProduct, MultiheadAttentionOutProjection
+from .multiheadattention import MultiheadAttentionContainer, ScaledDotProduct
 
-__all__ = ['MultiheadAttentionInProjection',
-           'ScaledDotProduct',
-           'MultiheadAttentionOutProjection']
+__all__ = ['MultiheadAttentionContainer',
+           'ScaledDotProduct']
