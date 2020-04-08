@@ -5,6 +5,34 @@ from torch._jit_internal import Optional, Tuple
 Tensor = torch.Tensor
 
 
+class MultiheadAttentionContainer(torch.nn.Module):
+    def __init__(self, embed_dim, num_heads, attention_layer=None, dropout=0.0):
+        super(MultiheadAttentionContainer, self).__init__()
+        assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
+        self.head_dim = embed_dim // num_heads
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.query_in_proj = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
+        self.key_in_proj = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
+        self.value_in_proj = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
+        if attention_layer:
+            self.attention_layer = attention_layer
+        else:
+            self.attention_layer = ScaledDotProduct(num_heads, dropout=dropout)
+        self.out_proj = torch.nn.Linear(num_heads * self.head_dim, embed_dim)
+
+    def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
+        seq_len, bsz, proj_dim = query.size()
+        tgt_len = key.size(0)
+        q = self.query_in_proj(query).reshape(seq_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
+        k = self.key_in_proj(key).reshape(tgt_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
+        v = self.value_in_proj(value).reshape(tgt_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
+        attn_output, attn_output_weights = self.attention_layer(q, k, v, attn_mask=attn_mask,
+                                                                key_padding_mask=key_padding_mask)
+        attn_output = self.out_proj(attn_output.transpose(0, 1).reshape(seq_len, bsz, self.head_dim * self.num_heads))
+        return attn_output, attn_output_weights
+
+
 class MultiheadAttentionInProjection(torch.nn.Module):
     __constants__ = ['embed_dim', 'num_heads']
 
@@ -72,7 +100,7 @@ class ScaledDotProduct(torch.nn.Module):
         self.num_heads = num_heads
         self.dropout = dropout
 
-    def forward(self, query, key, value, key_padding_mask=None, attn_mask=None):
+    def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
         # type: (...) -> Tuple[Tensor, Tensor]
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
