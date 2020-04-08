@@ -7,6 +7,22 @@ Tensor = torch.Tensor
 
 class MultiheadAttentionContainer(torch.nn.Module):
     def __init__(self, embed_dim, num_heads, attention_layer=None, dropout=0.0):
+        r"""Process input using multi-head attention.
+        Args:
+            embed_dim (int): Input embedding dimension
+            num_heads (int): Number of parallel attention heads.
+            attention_layer: The attention layer. The default is None and scaled dot product
+                attention will be used.
+            dropout: the dropout value (default=0.1).
+
+        Examples::
+            >>> MHA = torchtext.models.MultiheadAttentionContainer(10, 5)
+            >>> query = torch.rand((21, 64, 10))
+            >>> key = value = torch.rand((16, 64, 10))
+            >>> attn_output, attn_weights = MHA(query, key, value)
+            >>> print(attn_output.shape)
+            >>> torch.Size([21, 64, 10])
+        """
         super(MultiheadAttentionContainer, self).__init__()
         assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
         self.head_dim = embed_dim // num_heads
@@ -22,6 +38,35 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.out_proj = torch.nn.Linear(num_heads * self.head_dim, embed_dim)
 
     def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
+        r"""Uses a scaled dot product with the projected key-value pair to update
+        the projected query.
+
+        Args:
+            query, key, value (Tensor): map a query and a set of key-value pairs to an output.
+                See "Attention Is All You Need" for more details.
+            key_padding_mask (Tensor, optional): if provided, specified padding elements in the key will
+                be ignored by the attention. This is an binary mask. When the value is True,
+                the corresponding value on the attention layer will be filled with -inf.
+            attn_mask (Tensor, optional): 2D or 3D mask that prevents attention to certain positions.
+                This is an additive mask (i.e. the values will be added to the attention layer). A 2D mask
+                will be broadcasted for all the batches while a 3D mask allows to specify a different mask
+                for the entries of each batch.
+
+        Shape:
+            - Inputs:
+            - query: :math:`(L, N, E)`
+            - key: :math:`(S, N, E)`
+            - value: :math:`(S, N, E)`
+            - attn_mask: 3D mask :math:`(N*num_heads, L, S)`
+            - key_padding_mask: :math:`(N, S)`
+
+            - Outputs:
+            - attn_output: :math:`(L, N, E)`
+            - attn_output_weights: :math:`(N*num_heads, L, S)`
+
+            where where L is the target length, S is the sequence length, H is the number of attention heads,
+                N is the batch size, and E is the embedding dimension.
+        """
         seq_len, bsz, proj_dim = query.size()
         tgt_len = key.size(0)
         q = self.query_in_proj(query).reshape(seq_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
