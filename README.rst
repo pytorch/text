@@ -28,8 +28,10 @@ Make sure you have Python 2.7 or 3.5+ and PyTorch 0.4.0 or newer. You can then i
     
 For PyTorch versions before 0.4.0, please use `pip install torchtext==0.2.3`.
 
+
 Or you can install torchtext using conda::
     conda install -c pytorch -c powerai torchtext sentencepiece
+
 
 Optional requirements
 ---------------------
