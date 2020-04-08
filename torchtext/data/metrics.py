@@ -47,11 +47,10 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
 
     Examples:
         >>> from torchtext.data.metrics import bleu_score
-        >>> candidate_corpus = [['I', 'ate', 'the', 'apple'], ['I', 'did']]
-        >>> references_corpus = [[['I', 'ate', 'it'], ['I', 'ate', 'apples']],
-                [['I', 'did']]]
+        >>> candidate_corpus = [['My', 'full', 'pytorch', 'test'], ['Another', 'Sentence']]
+        >>> references_corpus = [[['My', 'full', 'pytorch', 'test'], ['Completely', 'Different']], [['No', 'Match']]]
         >>> bleu_score(candidate_corpus, references_corpus)
-            0.7598356856515925
+            0.8408964276313782
     """
 
     assert max_n == len(weights), 'Length of the "weights" list has be equal to max_n'
