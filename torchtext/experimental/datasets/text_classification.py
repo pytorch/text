@@ -35,13 +35,19 @@ def ngrams_func(ngrams):
     return _forward
 
 
-def build_vocab(data, transforms_list):
+def build_vocab(data, transforms):
     tok_list = []
     for (label, txt) in data:
-        for transform in transforms_list:
-            txt = transform(txt)
-        tok_list.append(txt)
+        tok_list.append(transforms(txt))
     return build_vocab_from_iterator(tok_list)
+
+
+def squential_transforms(*transforms):
+    def _forward(txt_input):
+        for transform in transforms:
+            txt_input = transform(txt_input)
+        return txt_input
+    return _forward
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -74,12 +80,8 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, i):
         label = self.data[i][0]
-        for transform in self.transforms[0]:
-            label = transform(label)
         txt = self.data[i][1]
-        for transform in self.transforms[1]:
-            txt = transform(txt)
-        return (label, txt)
+        return (self.transforms[0](label), self.transforms[1](txt))
 
     def __len__(self):
         return len(self.data)
@@ -88,9 +90,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         labels = []
         for item in self.data:
             label = item[0]
-            for transform in self.transforms[0]:
-                label = transform(label)
-            labels.apppend(label)
+            labels.apppend(self.transforms[0](label))
         return set(labels)
 
     def get_vocab(self):
@@ -101,10 +101,8 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                     tokenizer=None, data_select=('train', 'test')):
     text_transform = []
     if not tokenizer:
-        text_transform.append(get_tokenizer('basic_english'))
-    else:
-        text_transform.append(tokenizer)
-    text_transform.append(ngrams_func(ngrams))
+        tokenizer = get_tokenizer('basic_english')
+    text_transform = squential_transforms(tokenizer, ngrams_func(ngrams))
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -119,9 +117,9 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         vocab = build_vocab(raw_data['train'], text_transform)
-    text_transform.append(vocab_func(vocab))
-    text_transform.append(totensor(dtype=torch.long))
-    label_transform = [totensor(dtype=torch.long)]
+    text_transform = squential_transforms(text_transform, vocab_func(vocab),
+                                          totensor(dtype=torch.long))
+    label_transform = squential_transforms(totensor(dtype=torch.long))
     return tuple(TextClassificationDataset(raw_data[item], vocab,
                                            (label_transform, text_transform))
                  for item in data_select)
