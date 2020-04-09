@@ -25,30 +25,25 @@ URLS = {
 
 
 def _create_data_from_csv(data_path):
-    data = []
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
-            data.append((int(row[0]), ' '.join(row[1:])))
-    return data
+            yield int(row[0]), ' '.join(row[1:])
 
 
-class RawTextDataset(torch.utils.data.Dataset):
-    """Defines an abstraction for raw text datasets.
+class RawTextIterableDataset(torch.utils.data.IterableDataset):
+    """Defines an abstraction for raw text iterable datasets.
     """
 
-    def __init__(self, data):
+    def __init__(self, iterator):
         """Initiate text-classification dataset.
         """
+        super(RawTextIterableDataset, self).__init__()
+        self._iterator = iterator
 
-        super(RawTextDataset, self).__init__()
-        self.data = data
-
-    def __getitem__(self, i):
-        return self.data[i]
-
-    def __len__(self):
-        return len(self.data)
+    def __iter__(self):
+        for item in self._iterator:
+            yield item
 
 
 def _setup_datasets(dataset_name, root='.data'):
@@ -61,10 +56,10 @@ def _setup_datasets(dataset_name, root='.data'):
         if fname.endswith('test.csv'):
             test_csv_path = fname
 
-    train_data = _create_data_from_csv(train_csv_path)
-    test_data = _create_data_from_csv(test_csv_path)
-    return (RawTextDataset(train_data),
-            RawTextDataset(test_data))
+    train_iter = _create_data_from_csv(train_csv_path)
+    test_iter = _create_data_from_csv(test_csv_path)
+    return (RawTextIterableDataset(train_iter),
+            RawTextIterableDataset(test_iter))
 
 
 def AG_NEWS(*args, **kwargs):
@@ -78,7 +73,7 @@ def AG_NEWS(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.AG_NEWS()
+        >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
 
     return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
@@ -95,7 +90,7 @@ def SogouNews(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.SogouNews()
+        >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
 
     return _setup_datasets(*(("SogouNews",) + args), **kwargs)
@@ -112,7 +107,7 @@ def DBpedia(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.DBpedia()
+        >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
 
     return _setup_datasets(*(("DBpedia",) + args), **kwargs)
@@ -129,7 +124,7 @@ def YelpReviewPolarity(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.YelpReviewPolarity()
+        >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
 
     return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
@@ -146,7 +141,7 @@ def YelpReviewFull(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.YelpReviewFull()
+        >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
 
     return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
@@ -163,7 +158,7 @@ def YahooAnswers(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.YahooAnswers()
+        >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
 
     return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
@@ -180,7 +175,7 @@ def AmazonReviewPolarity(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.AmazonReviewPolarity()
+        >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
 
     return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
@@ -197,22 +192,20 @@ def AmazonReviewFull(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.AmazonReviewFull()
+        >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
 
     return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
 
 
 def generate_imdb_data(key, extracted_files):
-    data_set = []
     for fname in extracted_files:
         if 'urls' in fname:
             continue
         elif key in fname and ('pos' in fname or 'neg' in fname):
             with io.open(fname, encoding="utf8") as f:
                 label = 1 if 'pos' in fname else 0
-                data_set.append((label, f.read()))
-    return data_set
+                yield label, f.read()
 
 
 def IMDB(root='.data'):
@@ -226,15 +219,15 @@ def IMDB(root='.data'):
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> train, test = torchtext.experimental.raw_datasets.IMDB()
+        >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
 
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
-    train_data = generate_imdb_data('train', extracted_files)
-    test_data = generate_imdb_data('test', extracted_files)
-    return (RawTextDataset(train_data),
-            RawTextDataset(test_data))
+    train_iter = generate_imdb_data('train', extracted_files)
+    test_iter = generate_imdb_data('test', extracted_files)
+    return (RawTextIterableDataset(train_iter),
+            RawTextIterableDataset(test_iter))
 
 
 DATASETS = {

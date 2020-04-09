@@ -1,6 +1,4 @@
 import torch
-import io
-from torchtext.utils import unicode_csv_reader
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import AG_NEWS as RawAG_NEWS
@@ -37,19 +35,9 @@ def ngrams_func(ngrams):
     return _forward
 
 
-def _create_data_from_csv(data_path):
-    data = []
-    with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            data.append((row[0], ' '.join(row[1:])))
-    return data
-
-
-def build_vocab(dataset, transforms_list):
+def build_vocab(data, transforms_list):
     tok_list = []
-    for seq in dataset.data:
-        txt = seq[1]
+    for (label, txt) in data:
         for transform in transforms_list:
             txt = transform(txt)
         tok_list.append(txt)
@@ -123,13 +111,14 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     if not set(data_select).issubset(set(('train', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
     train, test = DATASETS[dataset_name](root=root)
-    raw_data = {'train': train,
-                'test': test}
+    # Cache raw text iterable dataset
+    raw_data = {'train': [(label, txt) for (label, txt) in train],
+                'test': [(label, txt) for (label, txt) in test]}
 
     if not vocab:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(train, text_transform)
+        vocab = build_vocab(raw_data['train'], text_transform)
     text_transform.append(vocab_func(vocab))
     text_transform.append(totensor(dtype=torch.long))
     label_transform = [totensor(dtype=torch.long)]
