@@ -1,6 +1,7 @@
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+import sys
 
 URLS = {
     'AG_NEWS':
@@ -40,10 +41,30 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         """
         super(RawTextIterableDataset, self).__init__()
         self._iterator = iterator
+        self.has_setup = False
+        self.start = 0
+        self.num_lines = None
+
+    def setup_iter(self, start=0, num_lines=None):
+        self.start = start
+        self.num_lines = num_lines
+        self.has_setup = True
 
     def __iter__(self):
-        for item in self._iterator:
+        if not self.has_setup:
+            self.setup_iter()
+
+        for i, item in enumerate(self._iterator):
+            if i == self.start:
+                break
+
+        num_lines = self.num_lines if self.num_lines is not None else sys.maxsize
+        for _ in range(num_lines):
             yield item
+            try:
+                item = next(self._iterator)
+            except StopIteration:
+                break
 
     def get_iterator(self):
         return self._iterator
