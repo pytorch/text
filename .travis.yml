@@ -7,8 +7,8 @@ cache:
   - /home/travis/download
   - /home/travis/.cache/pip
 
-# This matrix tests that the code works on Python 2.7,
-# 3.5, 3.6 (same versions as PyTorch CI), and passes lint.
+# This matrix tests that the code works on Python 3.5,
+# 3.6 (same versions as PyTorch CI), and passes lint.
 matrix:
   fast_finish: true
   include:
