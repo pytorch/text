@@ -45,6 +45,9 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         for item in self._iterator:
             yield item
 
+    def get_iterator(self):
+        return self._iterator
+
 
 def _setup_datasets(dataset_name, root='.data'):
     dataset_tar = download_from_url(URLS[dataset_name], root=root)
