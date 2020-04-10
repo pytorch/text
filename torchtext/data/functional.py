@@ -36,8 +36,7 @@ def generate_sp_model(filename, vocab_size=20000,
     try:
         import sentencepiece as spm
     except ModuleNotFoundError:
-        print("Please install sentencepiece")
-        raise
+        raise ImportWarning("Please install sentencepiece")
     spm_training_string = "--input={} \
                            --vocab_size={} \
                            --model_prefix={} \
@@ -65,8 +64,7 @@ def load_sp_model(spm_path):
     try:
         import sentencepiece as spm
     except ModuleNotFoundError:
-        print("Please install sentencepiece")
-        raise
+        raise ImportWarning("Please install sentencepiece")
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(spm_path)
     return sp_model
