@@ -1,4 +1,3 @@
-import sentencepiece as spm
 import re
 
 __all__ = [
@@ -34,7 +33,10 @@ def generate_sp_model(filename, vocab_size=20000,
         >>> from torchtext.data.functional import generate_sp_model
         >>> generate_sp_model('test.csv', vocab_size=23456, model_prefix='spm_user')
     """
-
+    try:
+        import sentencepiece as spm
+    except ModuleNotFoundError:
+        raise ImportWarning("Please install sentencepiece")
     spm_training_string = "--input={} \
                            --vocab_size={} \
                            --model_prefix={} \
@@ -59,7 +61,10 @@ def load_sp_model(spm_path):
         >>> from torchtext.data.functional import load_sp_model
         >>> sp_model = load_sp_model("m_user.model")
     """
-
+    try:
+        import sentencepiece as spm
+    except ModuleNotFoundError:
+        raise ImportWarning("Please install sentencepiece")
     sp_model = spm.SentencePieceProcessor()
     sp_model.Load(spm_path)
     return sp_model
