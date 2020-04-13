@@ -78,50 +78,6 @@ class MultiheadAttentionContainer(torch.nn.Module):
         return attn_output, attn_output_weights
 
 
-class MultiheadAttentionInProjection(torch.nn.Module):
-    __constants__ = ['embed_dim', 'num_heads']
-
-    def __init__(self, embed_dim, num_heads):
-        r"""Process input using multi-head attention.
-        Args:
-            embed_dim (int): Input embedding dimension
-            num_heads (int): Number of parallel attention heads.
-
-        Examples::
-            >>> MHA_in = torchtext.models.MultiheadAttentionInProjection(10, 5)
-            >>> seq = torch.randn(21, 64, 10)
-            >>> s = MHA_in(seq)
-            >>> print(s.shape)
-            torch.Size([320, 21, 2])
-        """
-        super(MultiheadAttentionInProjection, self).__init__()
-        assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-        self.head_dim = embed_dim // num_heads
-        self.embed_dim = embed_dim
-        self.num_heads = num_heads
-        self.linear = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
-
-    def forward(self, seq):
-        # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
-        r"""Projects an input sequence using parallel attention heads.
-        Args:
-            seq (Tensor): sequence to be projected
-
-        Shape:
-            - seq: :math:`(S, N, E)`
-            - Output: :math:`(N * H, S, E / H)`
-            where S is the sequence length, H is the number of attention heads, N is the
-            batch size, and E is the embedding dimension.
-        """
-        seq_len, bsz, proj_dim = seq.size()
-        assert proj_dim % self.num_heads == 0, "projection dimension must be divisible by num_heads"
-        head_dim = proj_dim // self.num_heads
-        q = self.linear(seq)
-        # Shape of q: (S, N, P)
-        q = q.reshape(seq_len, bsz * self.num_heads, head_dim).transpose(0, 1)
-        return q
-
-
 class ScaledDotProduct(torch.nn.Module):
     __constants__ = ['num_heads', 'dropout']
 
@@ -224,47 +180,3 @@ class ScaledDotProduct(torch.nn.Module):
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
         return attn_output, attn_output_weights
-
-
-class MultiheadAttentionOutProjection(torch.nn.Module):
-    __constants__ = ['head_dim', 'num_heads']
-
-    def __init__(self, head_dim, num_heads):
-        r"""Process attention output using multi-head attention.
-
-        Args:
-            head_dim (int): Dimension of embedding for each attention head.
-            num_heads (int): Number of parallel attention heads.
-
-        Examples::
-            >>> MHA_out = torchtext.models.MultiheadAttentionOutProjection(2, 5)
-            >>> attn_seq = torch.randn(320, 21, 2)
-            >>> a = MHA_out(attn_seq)
-            >>> print(a.shape)
-            torch.Size([21, 64, 10])
-        """
-        super(MultiheadAttentionOutProjection, self).__init__()
-        self.head_dim = head_dim
-        self.num_heads = num_heads
-        self.embed_dim = head_dim * num_heads
-        self.linear = torch.nn.Linear(self.num_heads * self.head_dim, self.embed_dim)
-
-    def forward(self, attn_output):
-        # type: (Tensor, int, Tensor, Optional[Tensor]) -> Tensor
-        r"""Projects an output sequence using parallel attention heads.
-
-        Args:
-            attn_output (Tensor): Projection to be decoded to an embedding.
-
-        Shape:
-            - attn_output: :math:`(N * H, S, E / H)`
-            - Output: :math:`(S, N, E)`
-            where S is the sequence length, H is the number of attention heads, N is the
-            batch size, and E is the embedding dimension.
-        """
-        batch_heads, seq_len, head_dim = attn_output.size()
-        # embed_dim = out_proj_weight.size(0)
-        assert batch_heads % self.num_heads == 0, "dimension 0 of attn_output must be divisible by num_heads"
-        bsz = batch_heads // self.num_heads
-        attn_output = attn_output.transpose(0, 1).reshape(seq_len, bsz, head_dim * self.num_heads)
-        return self.linear(attn_output)
