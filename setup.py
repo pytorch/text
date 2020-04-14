@@ -37,7 +37,7 @@ setup_info = dict(
     license='BSD',
 
     install_requires=[
-        'tqdm', 'requests', 'torch', 'numpy', 'six', 'sentencepiece'
+        'tqdm', 'requests', 'torch', 'numpy', 'sentencepiece'
     ],
 
     # Package info
