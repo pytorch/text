@@ -1,17 +1,7 @@
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.datasets.raw import AG_NEWS as RawAG_NEWS
-from torchtext.experimental.datasets.raw import SogouNews as RawSogouNews
-from torchtext.experimental.datasets.raw import DBpedia as RawDBpedia
-from torchtext.experimental.datasets.raw import YelpReviewPolarity as \
-    RawYelpReviewPolarity
-from torchtext.experimental.datasets.raw import YelpReviewFull as RawYelpReviewFull
-from torchtext.experimental.datasets.raw import YahooAnswers as RawYahooAnswers
-from torchtext.experimental.datasets.raw import AmazonReviewPolarity as \
-    RawAmazonReviewPolarity
-from torchtext.experimental.datasets.raw import AmazonReviewFull as RawAmazonReviewFull
-from torchtext.experimental.datasets.raw import IMDB as RawIMDB
+from torchtext.experimental.datasets import raw
 
 
 def vocab_func(vocab):
@@ -519,15 +509,15 @@ def IMDB(*args, **kwargs):
 
 
 DATASETS = {
-    'AG_NEWS': RawAG_NEWS,
-    'SogouNews': RawSogouNews,
-    'DBpedia': RawDBpedia,
-    'YelpReviewPolarity': RawYelpReviewPolarity,
-    'YelpReviewFull': RawYelpReviewFull,
-    'YahooAnswers': RawYahooAnswers,
-    'AmazonReviewPolarity': RawAmazonReviewPolarity,
-    'AmazonReviewFull': RawAmazonReviewFull,
-    'IMDB': RawIMDB
+    'AG_NEWS': raw.AG_NEWS,
+    'SogouNews': raw.SogouNews,
+    'DBpedia': raw.DBpedia,
+    'YelpReviewPolarity': raw.YelpReviewPolarity,
+    'YelpReviewFull': raw.YelpReviewFull,
+    'YahooAnswers': raw.YahooAnswers,
+    'AmazonReviewPolarity': raw.AmazonReviewPolarity,
+    'AmazonReviewFull': raw.AmazonReviewFull,
+    'IMDB': raw.IMDB
 }
 
 
