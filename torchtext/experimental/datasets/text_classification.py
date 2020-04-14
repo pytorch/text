@@ -100,7 +100,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
 def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                     tokenizer=None, data_select=('train', 'test')):
     text_transform = []
-    if not tokenizer:
+    if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = squential_transforms(tokenizer, ngrams_func(ngrams))
 
@@ -113,7 +113,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     raw_data = {'train': [(label, txt) for (label, txt) in train],
                 'test': [(label, txt) for (label, txt) in test]}
 
-    if not vocab:
+    if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         vocab = build_vocab(raw_data['train'], text_transform)
