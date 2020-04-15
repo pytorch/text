@@ -1,41 +1,36 @@
 import torch
-from torch._jit_internal import Optional, Tuple
+from torch._jit_internal import Tuple
 
 
 Tensor = torch.Tensor
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
-    def __init__(self, embed_dim, num_heads, attention_layer=None, dropout=0.0):
+    def __init__(self, in_proj, attention_layer, out_proj):
         r"""Process input using multi-head attention.
         Args:
-            embed_dim (int): Input embedding dimension
-            num_heads (int): Number of parallel attention heads.
             attention_layer: The attention layer. The default is None and scaled dot product
                 attention will be used.
-            dropout: the dropout value (default=0.1).
 
         Examples::
-            >>> MHA = torchtext.models.MultiheadAttentionContainer(10, 5)
-            >>> query = torch.rand((21, 64, 10))
-            >>> key = value = torch.rand((16, 64, 10))
+            >>> embed_dim, num_heads, bsz = 10, 5, 64
+            >>> MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, num_heads),
+                                                   MultiheadInProject(embed_dim, num_heads),
+                                                   MultiheadInProject(embed_dim, num_heads)),
+                                                   ScaledDotProduct(num_heads),
+                                                   MultiheadOutProject(embed_dim // num_heads, num_heads))
+            >>> query = torch.rand((21, bsz, embed_dim))
+            >>> key = value = torch.rand((16, bsz, embed_dim))
             >>> attn_output, attn_weights = MHA(query, key, value)
             >>> print(attn_output.shape)
             >>> torch.Size([21, 64, 10])
         """
         super(MultiheadAttentionContainer, self).__init__()
-        assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads when head_dim=None"
-        self.head_dim = embed_dim // num_heads
-        self.embed_dim = embed_dim
-        self.num_heads = num_heads
-        self.query_in_proj = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
-        self.key_in_proj = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
-        self.value_in_proj = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
-        if attention_layer:
-            self.attention_layer = attention_layer
-        else:
-            self.attention_layer = ScaledDotProduct(num_heads, dropout=dropout)
-        self.out_proj = torch.nn.Linear(num_heads * self.head_dim, embed_dim)
+        self.query_in_proj = in_proj[0]
+        self.key_in_proj = in_proj[1]
+        self.value_in_proj = in_proj[2]
+        self.attention_layer = attention_layer
+        self.out_proj = out_proj
 
     def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
         r"""Uses a scaled dot product with the projected key-value pair to update
@@ -67,15 +62,46 @@ class MultiheadAttentionContainer(torch.nn.Module):
             where where L is the target length, S is the sequence length, H is the number of attention heads,
                 N is the batch size, and E is the embedding dimension.
         """
-        seq_len, bsz, proj_dim = query.size()
-        tgt_len = key.size(0)
-        q = self.query_in_proj(query).reshape(seq_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
-        k = self.key_in_proj(key).reshape(tgt_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
-        v = self.value_in_proj(value).reshape(tgt_len, bsz * self.num_heads, self.head_dim).transpose(0, 1)
+        q = self.query_in_proj(query)
+        k = self.key_in_proj(key)
+        v = self.value_in_proj(value)
         attn_output, attn_output_weights = self.attention_layer(q, k, v, attn_mask=attn_mask,
                                                                 key_padding_mask=key_padding_mask)
-        attn_output = self.out_proj(attn_output.transpose(0, 1).reshape(seq_len, bsz, self.head_dim * self.num_heads))
+        attn_output = self.out_proj(attn_output)
         return attn_output, attn_output_weights
+
+
+class MultiheadInProject(torch.nn.Module):
+    def __init__(self, embed_dim, num_heads):
+        super(MultiheadInProject, self).__init__()
+        assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads"
+        self.head_dim = embed_dim // num_heads
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.proj_layer = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
+
+    def forward(self, seq):
+        seq_len, bsz, proj_dim = seq.size()
+        seq = self.proj_layer(seq)
+        seq = seq.reshape(seq_len, bsz * self.num_heads, self.head_dim)
+        return seq
+
+
+class MultiheadOutProject(torch.nn.Module):
+    def __init__(self, head_dim, num_heads):
+        super(MultiheadOutProject, self).__init__()
+        self.head_dim = head_dim
+        self.num_heads = num_heads
+        self.proj_layer = torch.nn.Linear(num_heads * head_dim, num_heads * head_dim, bias=False)
+
+    def forward(self, seq):
+        seq_len, bsz_num_head, head_dim = seq.size()
+        assert bsz_num_head % self.num_heads == 0, \
+            "Dimension -2 of MultiheadOutProject input must be divisible by num_heads"
+        bsz = bsz_num_head // self.num_heads
+        seq = seq.reshape(seq_len, bsz, self.num_heads * self.head_dim)
+        seq = self.proj_layer(seq)
+        return seq
 
 
 class ScaledDotProduct(torch.nn.Module):
@@ -120,25 +146,26 @@ class ScaledDotProduct(torch.nn.Module):
                 all the batches while a 3D mask allows to specify a different mask
                 for the entries of each batch.
         Shape:
-            - query: :math:`(N * H, L, E / H)`
-            - key: :math:`(N * H, S, E / H)`
-            - value: :math:`(N * H, S, E / H)`
+            - query: :math:`(L, N * H, E / H)`
+            - key: :math:`(S, N * H, E / H)`
+            - value: :math:`(S, N * H, E / H)`
             - key_padding_mask: :math:`(N, S)`
             - attn_mask: :math:`(L, S)` or :math:`(N * H, L, S)`
-            - Output: :math:`(N * H, L, E / H)`, :math:`(N * H, L, S)`
+            - Output: :math:`(L, N * H, E / H)`, :math:`(N * H, L, S)`
             where L is the target length, S is the source length, H is the number
             of attention heads, N is the batch size, and E is the embedding dimension.
         """
-        batch_heads, tgt_len, head_dim = query.size()
-        assert query.size(0) == key.size(0) == value.size(0), "Dimension 0 of query, key, value must be equal."
+        tgt_len, batch_heads, head_dim = query.size()
+        assert query.size(1) == key.size(1) == value.size(1), "Dimension 0 of query, key, value must be equal."
         assert batch_heads % self.num_heads == 0, "Dimension 0 of query, key, value must be divisible by num_heads"
         bsz = batch_heads // self.num_heads
         assert key.size() == value.size(), "Shape of key, value must match"
         assert query.size(-1) == key.size(-1), "The head dimension of query must be equal to that of key"
 
-        src_len = key.size(1)
+        src_len = key.size(0)
 
         # Scale query
+        query, key, value = query.transpose(0, 1), key.transpose(0, 1), value.transpose(0, 1)
         query = query * (float(head_dim) ** -0.5)
         if attn_mask is not None:
             if attn_mask.dim() == 2:
@@ -154,8 +181,6 @@ class ScaledDotProduct(torch.nn.Module):
             if attn_mask.dtype == torch.bool:
                 attn_mask = torch.where(
                     attn_mask, torch.tensor(float('-inf')), torch.tensor(0.)).to(dtype=query.dtype, device=query.device)
-
-        src_len = key.size(1)
 
         if key_padding_mask is not None:
             assert key_padding_mask.size(0) == bsz
@@ -179,4 +204,4 @@ class ScaledDotProduct(torch.nn.Module):
         attn_output_weights = torch.nn.functional.softmax(attn_output_weights, dim=-1)
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
-        return attn_output, attn_output_weights
+        return attn_output.transpose(0, 1), attn_output_weights
