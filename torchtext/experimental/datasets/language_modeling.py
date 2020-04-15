@@ -15,7 +15,8 @@ URLS = {
     'PennTreebank':
         ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt']
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
+    'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-{}.tgz'
 }
 
 
@@ -26,7 +27,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
              - WikiText2
              - WikiText103
              - PennTreebank
-
+             - WMTNewsCrawl
     """
 
     def __init__(self, data, vocab):
@@ -73,7 +74,7 @@ def _get_datafile_path(key, extracted_files):
 
 def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
                     root='.data', vocab=None, removed_tokens=[],
-                    data_select=('train', 'test', 'valid')):
+                    data_select=('train', 'test', 'valid'), **kwargs):
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -85,6 +86,31 @@ def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
         select_to_index = {'train': 0, 'test': 1, 'valid': 2}
         extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
                                              root=root) for key in data_select]
+    elif dataset_name == 'WMTNewsCrawl':
+        if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
+            raise ValueError("Invalid option for data_select, got {}. "
+                             "WMTNewsCrawl only creates a training dataset. "
+                             "data_select should be 'train' "
+                             "or ('train',).".format(data_select))
+
+        year = kwargs.get('year', 2011)
+        if str(year) not in ['2007', '2008', '2009', '2010', '2011']:
+            raise ValueError("Invalid option for year, {}. "
+                             "WMTNewsCrawl dataset is only available for "
+                             "years between 2007-2011.".format(year))
+
+        language = kwargs.get('language', 'en')
+        if language not in ['cs', 'de', 'en', 'es', 'fr']:
+            raise ValueError("Invalid option for language, {}. "
+                             "WMTNewsCrawl dataset is only available for "
+                             "cs, de, en, es, fr.".format(language))
+
+        download_url = URLS[dataset_name].format(year)
+        fname = 'news.{year}.{language}.shuffled'.format(year=year, language=language)
+
+        dataset_tar = download_from_url(download_url, root=root)
+        extracted_files = extract_archive(dataset_tar)
+        extracted_files = [f for f in extracted_files if fname in f]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
@@ -139,7 +165,7 @@ def WikiText2(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -181,7 +207,7 @@ def WikiText103(*args, **kwargs):
             If 'train' is not in the tuple, an vocab object should be provided which will
             be used to process valid and/or test data.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -218,7 +244,7 @@ def PennTreebank(*args, **kwargs):
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: [])
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -238,3 +264,55 @@ def PennTreebank(*args, **kwargs):
     """
 
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+
+
+def WMTNewsCrawl(*args, **kwargs):
+    """ Defines WMT News Crawl.
+        Create language modeling dataset: WMTNewsCrawl
+        Creates a training set only
+        Arguments:
+            tokenizer: the tokenizer used to preprocess raw text data.
+                The default one is basic_english tokenizer in fastText. spacy tokenizer
+                is supported as well (see example below). A custom tokenizer is callable
+                function with input of a string and output of a token list.
+            root: Directory where the datasets are saved. Default: ".data"
+            vocab: Vocabulary used for dataset. If None, it will generate a new
+                vocabulary based on the train data set.
+            removed_tokens: removed tokens from output dataset (Default: [])
+            data_select: a string or tuple for the returned datasets.
+                (Default: 'train')
+                Only training dataset for News Crawl Corpus datasets by year.
+            year: year of dataset to use. Choices are 2007-2011.
+                See details below for memory and token size.
+                (Default: 2011)
+            language: language for dataset. Choices are cs, de, en, es, fr.
+                (Default: 'en')
+
+        News Crawl Corpus Dataset Details from `Statistical Machine Translation`__:
+            +------+--------+--------------------+------------+----------+
+            | Year | Memory | len(train_dataset) | len(vocab) | lines    |
+            +======+========+====================+============+==========+
+            | 2007 | 1.1 GB | 338142548          | 573176     | 13984262 |
+            +------+--------+--------------------+------------+----------+
+            | 2008 | 3.4 GB | 838296018          | 1091099    | 34737842 |
+            +------+--------+--------------------+------------+----------+
+            | 2009 | 3.7 GB | 1027839909         | 1236276    | 44041422 |
+            +------+--------+--------------------+------------+----------+
+            | 2010 | 1.4 GB | 399857558          |  680765    | 17676013 |
+            +------+--------+--------------------+------------+----------+
+            | 2011 | 229 MB | 54831406           | 208279     | 2466169  |
+            +------+--------+--------------------+------------+----------+
+
+            NOTE: The memory refers to size of the tar.gz file downloaded.
+            NOTE: The other metrics are for the english datasets.
+
+        Examples:
+            >>> from torchtext.experimental.datasets import WMTNewsCrawl
+            >>> train_dataset, = WMTNewsCrawl(data_select='train',
+                                              language='en',
+                                              year=2011)
+            >>> vocab = train_dataset.get_vocab()
+
+        __ http://www.statmt.org/wmt11/translation-task.html#download
+        """
+    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)

@@ -51,6 +51,36 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
         conditional_remove(datafile)
 
+    def test_wmtnewscrawl(self):
+        from torchtext.experimental.datasets import WMTNewsCrawl
+        # smoke test to ensure WMT News Crawl works properly
+        train_dataset, = WMTNewsCrawl(data_select='train')
+        self.assertEqual(len(train_dataset), 54831406)
+
+        vocab = train_dataset.get_vocab()
+        tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
+        self.assertEqual(tokens_ids, [3, 1009, 2920, 1135])
+
+        # Delete the dataset after we're done to save disk space on CI
+        datafile = os.path.join(self.project_root, ".data", "training-monolingual")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root,
+                                ".data",
+                                "training-monolingual-news-2011.tgz")
+        conditional_remove(datafile)
+
+        # Raises ValueError for incorrect option for data_select
+        with self.assertRaises(ValueError):
+            train_dataset, = WMTNewsCrawl(data_select='valid')
+
+        # Raises ValueError for incorrect option for year
+        with self.assertRaises(ValueError):
+            train_dataset, = WMTNewsCrawl(data_select='train', year=2005)
+
+        # Raises ValueError for incorrect option for language
+        with self.assertRaises(ValueError):
+            train_dataset, = WMTNewsCrawl(data_select='train', language='jp')
+
     @slow
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
