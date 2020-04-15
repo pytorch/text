@@ -23,4 +23,4 @@ class TestJit(TorchtextTestCase):
         ts_MHA = torch.jit.script(MHA)
         ts_mha_output, ts_attn_weights = ts_MHA(query, key, value)
         assert_allclose(mha_output, ts_mha_output)
-        assert_allclose(attn_weights, ts_mha_output)
+        assert_allclose(attn_weights, ts_attn_weights)
