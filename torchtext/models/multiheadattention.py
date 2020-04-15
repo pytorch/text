@@ -1,5 +1,5 @@
 import torch
-from torch._jit_internal import Tuple
+from torch._jit_internal import Tuple, Optional
 
 
 Tensor = torch.Tensor
@@ -33,6 +33,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.out_proj = out_proj
 
     def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
+        # type: (Tensor, Tensor, Tensor, Optional[Tensor], Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
 
@@ -81,6 +82,7 @@ class MultiheadInProject(torch.nn.Module):
         self.proj_layer = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
 
     def forward(self, seq):
+        # type: (Tensor) -> Tensor
         seq_len, bsz, proj_dim = seq.size()
         seq = self.proj_layer(seq)
         seq = seq.reshape(seq_len, bsz * self.num_heads, self.head_dim)
@@ -95,6 +97,7 @@ class MultiheadOutProject(torch.nn.Module):
         self.proj_layer = torch.nn.Linear(num_heads * head_dim, num_heads * head_dim, bias=False)
 
     def forward(self, seq):
+        # type: (Tensor) -> Tensor
         seq_len, bsz_num_head, head_dim = seq.size()
         assert bsz_num_head % self.num_heads == 0, \
             "Dimension -2 of MultiheadOutProject input must be divisible by num_heads"
@@ -128,7 +131,7 @@ class ScaledDotProduct(torch.nn.Module):
         self.dropout = dropout
 
     def forward(self, query, key, value, attn_mask=None, key_padding_mask=None):
-        # type: (...) -> Tuple[Tensor, Tensor]
+        # type: (Tensor, Tensor, Tensor, Optional[Tensor], Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
 

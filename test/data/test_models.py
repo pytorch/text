@@ -6,7 +6,7 @@ from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
-class TestUtils(TorchtextTestCase):
+class TestModels(TorchtextTestCase):
 
     def test_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
