@@ -15,12 +15,13 @@ class TestJit(TorchtextTestCase):
                                           MultiheadInProject(embed_dim, nhead)),
                                           ScaledDotProduct(nhead),
                                           MultiheadOutProject(embed_dim // nhead, nhead))
-
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
-        mha_output, attn_weights = MHA(query, key, value)
+        attn_mask = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)
+        attn_mask = torch.stack([attn_mask] * (bsz * nhead))
+        mha_output, attn_weights = MHA(query, key, value, attn_mask=attn_mask)
 
         ts_MHA = torch.jit.script(MHA)
-        ts_mha_output, ts_attn_weights = ts_MHA(query, key, value)
+        ts_mha_output, ts_attn_weights = ts_MHA(query, key, value, attn_mask=attn_mask)
         assert_allclose(mha_output, ts_mha_output)
         assert_allclose(attn_weights, ts_attn_weights)

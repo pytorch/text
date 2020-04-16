@@ -19,9 +19,12 @@ class TestModels(TorchtextTestCase):
 
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
-        mha_output, attn_weights = MHA(query, key, value)
+        attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)
+        mha_output, attn_weights = MHA(query, key, value,
+                                       attn_mask=torch.stack([attn_mask_2D] * (bsz * nhead)))
 
         # Use torch.nn.functional.multi_head_attention_forward
+        torch_attn_mask = torch.zeros((tgt_len, src_len)).masked_fill_(attn_mask_2D, float('-inf'))
         in_proj_weight = torch.cat([MHA.query_in_proj.proj_layer.weight,
                                     MHA.key_in_proj.proj_layer.weight,
                                     MHA.value_in_proj.proj_layer.weight])
@@ -30,7 +33,8 @@ class TestModels(TorchtextTestCase):
                                                           in_proj_weight, None,
                                                           None, None, False, 0.0,
                                                           MHA.out_proj.proj_layer.weight,
-                                                          MHA.out_proj.proj_layer.bias)
+                                                          MHA.out_proj.proj_layer.bias,
+                                                          attn_mask=torch_attn_mask)
 
         assert_allclose(mha_output, torch_mha_output)
         attn_weights = attn_weights.view(bsz, nhead, tgt_len, src_len).sum(dim=1) / nhead
