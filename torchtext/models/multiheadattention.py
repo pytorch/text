@@ -185,19 +185,21 @@ class ScaledDotProduct(torch.nn.Module):
             where L is the target length, S is the source length, H is the number
             of attention heads, N is the batch size, and E is the embedding dimension.
         """
-        tgt_len, batch_heads, head_dim = query.size()
-        assert query.size(1) == key.size(1) == value.size(1), "Dimension 0 of query, key, value must be equal."
-        assert batch_heads % self.num_heads == 0, "Dimension 0 of query, key, value must be divisible by num_heads"
+        tgt_len, head_dim = query.size(-3), query.size(-1)
+        assert query.size(-1) == key.size(-1) == value.size(-1), "The feature dim of query, key, value must be equal."
         assert key.size() == value.size(), "Shape of key, value must match"
-        assert query.size(-1) == key.size(-1), "The head dimension of query must be equal to that of key"
-        src_len = key.size(0)
+        src_len = key.size(-3)
+        batch_heads = max(query.size(-2), key.size(-2))
 
         # Scale query
-        query, key, value = query.transpose(0, 1), key.transpose(0, 1), value.transpose(0, 1)
+        query, key, value = query.transpose(-2, -3), key.transpose(-2, -3), value.transpose(-2, -3)
         query = query * (float(head_dim) ** -0.5)
         if attn_mask is not None:
-            if list(attn_mask.size()) != [batch_heads, tgt_len, src_len]:
-                raise RuntimeError('The size of the 3D attn_mask is not correct.')
+            if attn_mask.dim() != 3:
+                raise RuntimeError('attn_mask must be a 3D tensor.')
+            if (attn_mask.size(-1) != src_len) or (attn_mask.size(-2) != tgt_len) or \
+               (attn_mask.size(-3) != 1 and attn_mask.size(-3) != batch_heads):
+                raise RuntimeError('The size of the attn_mask is not correct.')
             if attn_mask.dtype != torch.bool:
                 raise RuntimeError('Only bool tensor is supported for attn_mask')
 
@@ -211,4 +213,4 @@ class ScaledDotProduct(torch.nn.Module):
         attn_output_weights = torch.nn.functional.softmax(attn_output_weights, dim=-1)
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
-        return attn_output.transpose(0, 1), attn_output_weights
+        return attn_output.transpose(-2, -3), attn_output_weights

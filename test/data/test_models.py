@@ -39,3 +39,29 @@ class TestModels(TorchtextTestCase):
         assert_allclose(mha_output, torch_mha_output)
         attn_weights = attn_weights.view(bsz, nhead, tgt_len, src_len).sum(dim=1) / nhead
         assert_allclose(attn_weights, torch_mha_weights)
+
+    def test_broadcast_scaled_dot_product(self):
+        embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
+        SDP = ScaledDotProduct(nhead)
+        query = torch.rand((tgt_len, 1, embed_dim))
+        key = value = torch.rand((src_len, 1, embed_dim))
+        attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)
+
+        sdp_attn_output_full, sdp_attn_weights_full = SDP(query.expand(tgt_len, bsz * nhead, embed_dim),
+                                                          key.expand(src_len, bsz * nhead, embed_dim),
+                                                          value.expand(src_len, bsz * nhead, embed_dim),
+                                                          attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
+
+        # query has a batch size of 1 while key/value have a batch size of bsz * nhead
+        sdp_attn_output, sdp_attn_weights = SDP(query, key.expand(src_len, bsz * nhead, embed_dim),
+                                                value.expand(src_len, bsz * nhead, embed_dim),
+                                                attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
+        assert_allclose(sdp_attn_output, sdp_attn_output_full)
+        assert_allclose(sdp_attn_weights, sdp_attn_weights_full)
+
+        # key/value have a batch size of 1 while query has a batch size of bsz * nhead
+        sdp_attn_output, sdp_attn_weights = SDP(query.expand(tgt_len, bsz * nhead, embed_dim),
+                                                key, value,
+                                                attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
+        assert_allclose(sdp_attn_output, sdp_attn_output_full)
+        assert_allclose(sdp_attn_weights, sdp_attn_weights_full)
