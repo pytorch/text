@@ -205,7 +205,9 @@ class ScaledDotProduct(torch.nn.Module):
 
         # Dot product of q, k
         attn_output_weights = torch.matmul(query, key.transpose(-2, -1))
-        assert list(attn_output_weights.size()) == [batch_heads, tgt_len, src_len]
+        assert attn_output_weights.size(-3) == batch_heads
+        assert attn_output_weights.size(-2) == tgt_len
+        assert attn_output_weights.size(-1) == src_len
 
         if attn_mask is not None:
             attn_output_weights.masked_fill_(attn_mask, float('-inf'),)

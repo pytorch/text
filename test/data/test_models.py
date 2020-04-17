@@ -65,3 +65,34 @@ class TestModels(TorchtextTestCase):
                                                 attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
         assert_allclose(sdp_attn_output, sdp_attn_output_full)
         assert_allclose(sdp_attn_weights, sdp_attn_weights_full)
+
+        # key/value have a size of (3, 3, src_len, bsz * nhead, embed_dim)
+        # while query has a size of (tgt_len, 1, embed_dim)
+        sdp_attn_output, sdp_attn_weights = SDP(query.expand(tgt_len, 1, embed_dim),
+                                                key.expand(3, 3, src_len, bsz * nhead, embed_dim),
+                                                value.expand(3, 3, src_len, bsz * nhead, embed_dim),
+                                                attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
+        assert list(sdp_attn_output.size()) == [3, 3, tgt_len, bsz * nhead, embed_dim]
+        assert list(sdp_attn_weights.size()) == [3, 3, bsz * nhead, tgt_len, embed_dim]
+        assert_allclose(sdp_attn_output[2][2], sdp_attn_output_full)
+        assert_allclose(sdp_attn_weights[2][2], sdp_attn_weights_full)
+
+        # key/value have a size of (src_len, 1, embed_dim)
+        # while query has a size of (1, 2, 3, tgt_len, bsz * nhead, embed_dim)
+        sdp_attn_output, sdp_attn_weights = SDP(query.expand(1, 2, 3, tgt_len, bsz * nhead, embed_dim),
+                                                key.expand(src_len, 1, embed_dim),
+                                                value.expand(src_len, 1, embed_dim),
+                                                attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
+        assert list(sdp_attn_output.size()) == [1, 2, 3, tgt_len, bsz * nhead, embed_dim]
+        assert list(sdp_attn_weights.size()) == [1, 2, 3, bsz * nhead, tgt_len, embed_dim]
+        assert_allclose(sdp_attn_output[0][1][2], sdp_attn_output_full)
+        assert_allclose(sdp_attn_weights[0][1][2], sdp_attn_weights_full)
+
+        # attn_mask in a size of (1, tgt_len, src_len)
+        # 2D tensor is not supported for attn_mask
+        sdp_attn_output, sdp_attn_weights = SDP(query.expand(tgt_len, bsz * nhead, embed_dim),
+                                                key.expand(src_len, bsz * nhead, embed_dim),
+                                                value.expand(src_len, bsz * nhead, embed_dim),
+                                                attn_mask=attn_mask_2D.expand(1, tgt_len, src_len))
+        assert_allclose(sdp_attn_output, sdp_attn_output_full)
+        assert_allclose(sdp_attn_weights, sdp_attn_weights_full)
