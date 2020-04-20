@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.functional &mdash; torchtext 0.5.1 documentation</title>
+  <title>torchtext.data.functional &mdash; torchtext 0.6.0 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.5.1
+                  0.6.0
                 </div>
               
             
@@ -294,7 +294,7 @@ bpe, char, word.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">generate_sp_model</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">generate_sp_model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">generate_sp_model</span><span class="p">(</span><span class="s1">&#39;test.csv&#39;</span><span class="p">,</span> <span class="n">vocab_size</span><span class="o">=</span><span class="mi">23456</span><span class="p">,</span> <span class="n">model_prefix</span><span class="o">=</span><span class="s1">&#39;spm_user&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -317,7 +317,7 @@ bpe, char, word.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">load_sp_model</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">load_sp_model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="s2">&quot;m_user.model&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -346,7 +346,7 @@ bpe, char, word.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">sentencepiece_numericalizer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">sentencepiece_numericalizer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp_id_generator</span> <span class="o">=</span> <span class="n">sentencepiece_numericalizer</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_a</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sentencepiece encode as pieces&quot;</span><span class="p">,</span> <span class="s2">&quot;examples to   try!&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">sp_id_generator</span><span class="p">(</span><span class="n">list_a</span><span class="p">))</span>
@@ -379,7 +379,7 @@ bpe, char, word.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">sentencepiece_tokenizer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">sentencepiece_tokenizer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp_tokens_generator</span> <span class="o">=</span> <span class="n">sentencepiece_tokenizer</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_a</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sentencepiece encode as pieces&quot;</span><span class="p">,</span> <span class="s2">&quot;examples to   try!&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">sp_tokens_generator</span><span class="p">(</span><span class="n">list_a</span><span class="p">))</span>
@@ -397,7 +397,7 @@ bpe, char, word.</p></li>
 <code class="sig-prename descclassname">torchtext.data.functional.</code><code class="sig-name descname">custom_replace</code><span class="sig-paren">(</span><em class="sig-param">replace_pattern</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/functional.html#custom_replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.functional.custom_replace" title="Permalink to this definition">¶</a></dt>
 <dd><p>A transform to convert text string.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">custom_replace</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">custom_replace</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">custom_replace_transform</span> <span class="o">=</span> <span class="n">custom_replace</span><span class="p">([(</span><span class="sa">r</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_a</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Sentencepiece encode  aS  pieces&quot;</span><span class="p">,</span> <span class="s2">&quot;exampleS to   try!&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">custom_replace_transform</span><span class="p">(</span><span class="n">list_a</span><span class="p">))</span>
@@ -414,7 +414,7 @@ bpe, char, word.</p></li>
 <code class="sig-prename descclassname">torchtext.data.functional.</code><code class="sig-name descname">simple_space_split</code><span class="sig-paren">(</span><em class="sig-param">iterator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/functional.html#simple_space_split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.functional.simple_space_split" title="Permalink to this definition">¶</a></dt>
 <dd><p>A transform to split text string by spaces.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">simple_space_split</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">simple_space_split</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_a</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Sentencepiece encode as pieces&quot;</span><span class="p">,</span> <span class="s2">&quot;example to try!&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">simple_space_split</span><span class="p">(</span><span class="n">list_a</span><span class="p">))</span>
 <span class="go">    [[&#39;Sentencepiece&#39;, &#39;encode&#39;, &#39;as&#39;, &#39;pieces&#39;], [&#39;example&#39;, &#39;to&#39;, &#39;try!&#39;]]</span>
@@ -439,8 +439,8 @@ bpe, char, word.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">simple_space_split</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="k">import</span> <span class="n">numericalize_tokens_from_iterator</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">simple_space_split</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">numericalize_tokens_from_iterator</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vocab</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Sentencepiece&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;encode&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;as&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;pieces&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ids_iter</span> <span class="o">=</span> <span class="n">numericalize_tokens_from_iterator</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                              <span class="n">simple_space_split</span><span class="p">([</span><span class="s2">&quot;Sentencepiece as pieces&quot;</span><span class="p">,</span>
@@ -524,16 +524,17 @@ bpe, char, word.</p></li>
 
      
        <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-         <script type="text/javascript" src="_static/jquery.js"></script>
-         <script type="text/javascript" src="_static/underscore.js"></script>
-         <script type="text/javascript" src="_static/doctools.js"></script>
-         <script type="text/javascript" src="_static/language_data.js"></script>
+         <script src="_static/jquery.js"></script>
+         <script src="_static/underscore.js"></script>
+         <script src="_static/doctools.js"></script>
+         <script src="_static/language_data.js"></script>
      
 
   
 
   <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
   <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
   <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
@@ -582,25 +583,24 @@ bpe, char, word.</p></li>
             <li><a href="https://pytorch.org/features">Features</a></li>
             <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
             <li><a href="https://pytorch.org/blog/">Blog</a></li>
-            <li><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
           </ul>
         </div>
 
         <div class="footer-links-col">
           <ul>
-            <li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
             <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
             <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
             <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
             <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
-            <li><a href="https://pytorch.slack.com" target="_blank">Slack</a></li>
-            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
           </ul>
         </div>
 
         <div class="footer-links-col follow-us-col">
           <ul>
-            <li class="list-title">Follow Us</li>
+            <li class="list-title">Stay Connected</li>
             <li>
               <div id="mc_embed_signup">
                 <form
@@ -637,6 +637,7 @@ bpe, char, word.</p></li>
           <div class="footer-social-icons">
             <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
             <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
           </div>
         </div>
       </div>
@@ -724,6 +725,10 @@ bpe, char, word.</p></li>
       scrollToAnchor.bind();
       highlightNavigation.bind();
       mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Remove any empty p tags that Sphinx adds
+      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

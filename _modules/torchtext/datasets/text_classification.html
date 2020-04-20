@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.text_classification &mdash; torchtext 0.5.1 documentation</title>
+  <title>torchtext.datasets.text_classification &mdash; torchtext 0.6.0 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.5.1
+                  0.6.0
                 </div>
               
             
@@ -267,12 +267,12 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="k">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">,</span> <span class="n">unicode_csv_reader</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="k">import</span> <span class="n">ngrams_iterator</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="k">import</span> <span class="n">get_tokenizer</span>
-<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="k">import</span> <span class="n">build_vocab_from_iterator</span>
-<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="k">import</span> <span class="n">Vocab</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">,</span> <span class="n">unicode_csv_reader</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">ngrams_iterator</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
+<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="n">URLS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;AG_NEWS&#39;</span><span class="p">:</span>
@@ -341,7 +341,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TextClassificationDataset.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+<div class="viewcode-block" id="TextClassificationDataset.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.TextClassificationDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initiate text-classification dataset.</span>
 
 <span class="sd">        Arguments:</span>
@@ -362,13 +362,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">labels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vocab</span> <span class="o">=</span> <span class="n">vocab</span></div>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">x</span>
 
@@ -411,10 +411,10 @@
 <div class="viewcode-block" id="AG_NEWS"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AG_NEWS">[docs]</a><span class="k">def</span> <span class="nf">AG_NEWS</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines AG_NEWS datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            - 1 : World</span>
-<span class="sd">            - 2 : Sports</span>
-<span class="sd">            - 3 : Business</span>
-<span class="sd">            - 4 : Sci/Tech</span>
+<span class="sd">            - 0 : World</span>
+<span class="sd">            - 1 : Sports</span>
+<span class="sd">            - 2 : Business</span>
+<span class="sd">            - 3 : Sci/Tech</span>
 
 <span class="sd">    Create supervised learning dataset: AG_NEWS</span>
 
@@ -439,11 +439,11 @@
 <div class="viewcode-block" id="SogouNews"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SogouNews">[docs]</a><span class="k">def</span> <span class="nf">SogouNews</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines SogouNews datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            - 1 : Sports</span>
-<span class="sd">            - 2 : Finance</span>
-<span class="sd">            - 3 : Entertainment</span>
-<span class="sd">            - 4 : Automobile</span>
-<span class="sd">            - 5 : Technology</span>
+<span class="sd">            - 0 : Sports</span>
+<span class="sd">            - 1 : Finance</span>
+<span class="sd">            - 2 : Entertainment</span>
+<span class="sd">            - 3 : Automobile</span>
+<span class="sd">            - 4 : Technology</span>
 
 <span class="sd">    Create supervised learning dataset: SogouNews</span>
 
@@ -468,20 +468,20 @@
 <div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia">[docs]</a><span class="k">def</span> <span class="nf">DBpedia</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines DBpedia datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            - 1 : Company</span>
-<span class="sd">            - 2 : EducationalInstitution</span>
-<span class="sd">            - 3 : Artist</span>
-<span class="sd">            - 4 : Athlete</span>
-<span class="sd">            - 5 : OfficeHolder</span>
-<span class="sd">            - 6 : MeanOfTransportation</span>
-<span class="sd">            - 7 : Building</span>
-<span class="sd">            - 8 : NaturalPlace</span>
-<span class="sd">            - 9 : Village</span>
-<span class="sd">            - 10 : Animal</span>
-<span class="sd">            - 11 : Plant</span>
-<span class="sd">            - 12 : Album</span>
-<span class="sd">            - 13 : Film</span>
-<span class="sd">            - 14 : WrittenWork</span>
+<span class="sd">            - 0 : Company</span>
+<span class="sd">            - 1 : EducationalInstitution</span>
+<span class="sd">            - 2 : Artist</span>
+<span class="sd">            - 3 : Athlete</span>
+<span class="sd">            - 4 : OfficeHolder</span>
+<span class="sd">            - 5 : MeanOfTransportation</span>
+<span class="sd">            - 6 : Building</span>
+<span class="sd">            - 7 : NaturalPlace</span>
+<span class="sd">            - 8 : Village</span>
+<span class="sd">            - 9 : Animal</span>
+<span class="sd">            - 10 : Plant</span>
+<span class="sd">            - 11 : Album</span>
+<span class="sd">            - 12 : Film</span>
+<span class="sd">            - 13 : WrittenWork</span>
 
 <span class="sd">    Create supervised learning dataset: DBpedia</span>
 
@@ -506,8 +506,8 @@
 <div class="viewcode-block" id="YelpReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewPolarity">[docs]</a><span class="k">def</span> <span class="nf">YelpReviewPolarity</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines YelpReviewPolarity datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            - 1 : Negative polarity.</span>
-<span class="sd">            - 2 : Positive polarity.</span>
+<span class="sd">            - 0 : Negative polarity.</span>
+<span class="sd">            - 1 : Positive polarity.</span>
 
 <span class="sd">    Create supervised learning dataset: YelpReviewPolarity</span>
 
@@ -532,7 +532,7 @@
 <div class="viewcode-block" id="YelpReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewFull">[docs]</a><span class="k">def</span> <span class="nf">YelpReviewFull</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines YelpReviewFull datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            1 - 5 : rating classes (5 is highly recommended).</span>
+<span class="sd">            0 - 4 : rating classes (4 is highly recommended).</span>
 
 <span class="sd">    Create supervised learning dataset: YelpReviewFull</span>
 
@@ -557,16 +557,16 @@
 <div class="viewcode-block" id="YahooAnswers"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YahooAnswers">[docs]</a><span class="k">def</span> <span class="nf">YahooAnswers</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines YahooAnswers datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            - 1 : Society &amp; Culture</span>
-<span class="sd">            - 2 : Science &amp; Mathematics</span>
-<span class="sd">            - 3 : Health</span>
-<span class="sd">            - 4 : Education &amp; Reference</span>
-<span class="sd">            - 5 : Computers &amp; Internet</span>
-<span class="sd">            - 6 : Sports</span>
-<span class="sd">            - 7 : Business &amp; Finance</span>
-<span class="sd">            - 8 : Entertainment &amp; Music</span>
-<span class="sd">            - 9 : Family &amp; Relationships</span>
-<span class="sd">            - 10 : Politics &amp; Government</span>
+<span class="sd">            - 0 : Society &amp; Culture</span>
+<span class="sd">            - 1 : Science &amp; Mathematics</span>
+<span class="sd">            - 2 : Health</span>
+<span class="sd">            - 3 : Education &amp; Reference</span>
+<span class="sd">            - 4 : Computers &amp; Internet</span>
+<span class="sd">            - 5 : Sports</span>
+<span class="sd">            - 6 : Business &amp; Finance</span>
+<span class="sd">            - 7 : Entertainment &amp; Music</span>
+<span class="sd">            - 8 : Family &amp; Relationships</span>
+<span class="sd">            - 9 : Politics &amp; Government</span>
 
 <span class="sd">    Create supervised learning dataset: YahooAnswers</span>
 
@@ -591,8 +591,8 @@
 <div class="viewcode-block" id="AmazonReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewPolarity">[docs]</a><span class="k">def</span> <span class="nf">AmazonReviewPolarity</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines AmazonReviewPolarity datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            - 1 : Negative polarity</span>
-<span class="sd">            - 2 : Positive polarity</span>
+<span class="sd">            - 0 : Negative polarity</span>
+<span class="sd">            - 1 : Positive polarity</span>
 
 <span class="sd">    Create supervised learning dataset: AmazonReviewPolarity</span>
 
@@ -617,7 +617,7 @@
 <div class="viewcode-block" id="AmazonReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewFull">[docs]</a><span class="k">def</span> <span class="nf">AmazonReviewFull</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines AmazonReviewFull datasets.</span>
 <span class="sd">        The labels includes:</span>
-<span class="sd">            1 - 5 : rating classes (5 is highly recommended)</span>
+<span class="sd">            0 - 4 : rating classes (4 is highly recommended)</span>
 
 <span class="sd">    Create supervised learning dataset: AmazonReviewFull</span>
 
@@ -652,53 +652,53 @@
 
 
 <span class="n">LABELS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;AG_NEWS&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;World&#39;</span><span class="p">,</span>
-                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
-                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Business&#39;</span><span class="p">,</span>
-                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Sci/Tech&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;SogouNews&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
-                  <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Finance&#39;</span><span class="p">,</span>
-                  <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Entertainment&#39;</span><span class="p">,</span>
-                  <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Automobile&#39;</span><span class="p">,</span>
-                  <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Technology&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;DBpedia&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Company&#39;</span><span class="p">,</span>
-                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;EducationalInstitution&#39;</span><span class="p">,</span>
-                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Artist&#39;</span><span class="p">,</span>
-                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Athlete&#39;</span><span class="p">,</span>
-                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;OfficeHolder&#39;</span><span class="p">,</span>
-                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;MeanOfTransportation&#39;</span><span class="p">,</span>
-                <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Building&#39;</span><span class="p">,</span>
-                <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;NaturalPlace&#39;</span><span class="p">,</span>
-                <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Village&#39;</span><span class="p">,</span>
-                <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Animal&#39;</span><span class="p">,</span>
-                <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;Plant&#39;</span><span class="p">,</span>
-                <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;Album&#39;</span><span class="p">,</span>
-                <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;Film&#39;</span><span class="p">,</span>
-                <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;WrittenWork&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;YelpReviewPolarity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Negative polarity&#39;</span><span class="p">,</span>
-                           <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Positive polarity&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;YelpReviewFull&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;score 1&#39;</span><span class="p">,</span>
-                       <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;score 2&#39;</span><span class="p">,</span>
-                       <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;score 3&#39;</span><span class="p">,</span>
-                       <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;score 4&#39;</span><span class="p">,</span>
-                       <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;score 5&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;YahooAnswers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Society &amp; Culture&#39;</span><span class="p">,</span>
-                     <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Science &amp; Mathematics&#39;</span><span class="p">,</span>
-                     <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Health&#39;</span><span class="p">,</span>
-                     <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Education &amp; Reference&#39;</span><span class="p">,</span>
-                     <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Computers &amp; Internet&#39;</span><span class="p">,</span>
-                     <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
-                     <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Business &amp; Finance&#39;</span><span class="p">,</span>
-                     <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;Entertainment &amp; Music&#39;</span><span class="p">,</span>
-                     <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Family &amp; Relationships&#39;</span><span class="p">,</span>
-                     <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Politics &amp; Government&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;AmazonReviewPolarity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Negative polarity&#39;</span><span class="p">,</span>
-                             <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Positive polarity&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;AmazonReviewFull&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;score 1&#39;</span><span class="p">,</span>
-                         <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;score 2&#39;</span><span class="p">,</span>
-                         <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;score 3&#39;</span><span class="p">,</span>
-                         <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;score 4&#39;</span><span class="p">,</span>
-                         <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;score 5&#39;</span><span class="p">}</span>
+    <span class="s1">&#39;AG_NEWS&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;World&#39;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Business&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Sci/Tech&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;SogouNews&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
+                  <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Finance&#39;</span><span class="p">,</span>
+                  <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Entertainment&#39;</span><span class="p">,</span>
+                  <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Automobile&#39;</span><span class="p">,</span>
+                  <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Technology&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;DBpedia&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Company&#39;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;EducationalInstitution&#39;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Artist&#39;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Athlete&#39;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;OfficeHolder&#39;</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;MeanOfTransportation&#39;</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Building&#39;</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;NaturalPlace&#39;</span><span class="p">,</span>
+                <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;Village&#39;</span><span class="p">,</span>
+                <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Animal&#39;</span><span class="p">,</span>
+                <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Plant&#39;</span><span class="p">,</span>
+                <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;Album&#39;</span><span class="p">,</span>
+                <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;Film&#39;</span><span class="p">,</span>
+                <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;WrittenWork&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;YelpReviewPolarity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Negative polarity&#39;</span><span class="p">,</span>
+                           <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Positive polarity&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;YelpReviewFull&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;score 1&#39;</span><span class="p">,</span>
+                       <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;score 2&#39;</span><span class="p">,</span>
+                       <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;score 3&#39;</span><span class="p">,</span>
+                       <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;score 4&#39;</span><span class="p">,</span>
+                       <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;score 5&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;YahooAnswers&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Society &amp; Culture&#39;</span><span class="p">,</span>
+                     <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Science &amp; Mathematics&#39;</span><span class="p">,</span>
+                     <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Health&#39;</span><span class="p">,</span>
+                     <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Education &amp; Reference&#39;</span><span class="p">,</span>
+                     <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Computers &amp; Internet&#39;</span><span class="p">,</span>
+                     <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Sports&#39;</span><span class="p">,</span>
+                     <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Business &amp; Finance&#39;</span><span class="p">,</span>
+                     <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Entertainment &amp; Music&#39;</span><span class="p">,</span>
+                     <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;Family &amp; Relationships&#39;</span><span class="p">,</span>
+                     <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Politics &amp; Government&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;AmazonReviewPolarity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Negative polarity&#39;</span><span class="p">,</span>
+                             <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Positive polarity&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;AmazonReviewFull&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;score 1&#39;</span><span class="p">,</span>
+                         <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;score 2&#39;</span><span class="p">,</span>
+                         <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;score 3&#39;</span><span class="p">,</span>
+                         <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;score 4&#39;</span><span class="p">,</span>
+                         <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;score 5&#39;</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -748,16 +748,17 @@
 
      
        <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-         <script type="text/javascript" src="../../../_static/jquery.js"></script>
-         <script type="text/javascript" src="../../../_static/underscore.js"></script>
-         <script type="text/javascript" src="../../../_static/doctools.js"></script>
-         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+         <script src="../../../_static/jquery.js"></script>
+         <script src="../../../_static/underscore.js"></script>
+         <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/language_data.js"></script>
      
 
   
 
   <script type="text/javascript" src="../../../_static/js/vendor/popper.min.js"></script>
   <script type="text/javascript" src="../../../_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
   <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
@@ -806,25 +807,24 @@
             <li><a href="https://pytorch.org/features">Features</a></li>
             <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
             <li><a href="https://pytorch.org/blog/">Blog</a></li>
-            <li><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
           </ul>
         </div>
 
         <div class="footer-links-col">
           <ul>
-            <li class="list-title"><a href="https://pytorch.org/support">Support</a></li>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
             <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
             <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
             <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
             <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
-            <li><a href="https://pytorch.slack.com" target="_blank">Slack</a></li>
-            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
           </ul>
         </div>
 
         <div class="footer-links-col follow-us-col">
           <ul>
-            <li class="list-title">Follow Us</li>
+            <li class="list-title">Stay Connected</li>
             <li>
               <div id="mc_embed_signup">
                 <form
@@ -861,6 +861,7 @@
           <div class="footer-social-icons">
             <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
             <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
           </div>
         </div>
       </div>
@@ -948,6 +949,10 @@
       scrollToAnchor.bind();
       highlightNavigation.bind();
       mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Remove any empty p tags that Sphinx adds
+      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {
