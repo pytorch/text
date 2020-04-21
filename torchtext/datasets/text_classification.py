@@ -145,10 +145,10 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_un
 def AG_NEWS(*args, **kwargs):
     """ Defines AG_NEWS datasets.
         The labels includes:
-            - 1 : World
-            - 2 : Sports
-            - 3 : Business
-            - 4 : Sci/Tech
+            - 0 : World
+            - 1 : Sports
+            - 2 : Business
+            - 3 : Sci/Tech
 
     Create supervised learning dataset: AG_NEWS
 
@@ -173,11 +173,11 @@ def AG_NEWS(*args, **kwargs):
 def SogouNews(*args, **kwargs):
     """ Defines SogouNews datasets.
         The labels includes:
-            - 1 : Sports
-            - 2 : Finance
-            - 3 : Entertainment
-            - 4 : Automobile
-            - 5 : Technology
+            - 0 : Sports
+            - 1 : Finance
+            - 2 : Entertainment
+            - 3 : Automobile
+            - 4 : Technology
 
     Create supervised learning dataset: SogouNews
 
@@ -202,20 +202,20 @@ def SogouNews(*args, **kwargs):
 def DBpedia(*args, **kwargs):
     """ Defines DBpedia datasets.
         The labels includes:
-            - 1 : Company
-            - 2 : EducationalInstitution
-            - 3 : Artist
-            - 4 : Athlete
-            - 5 : OfficeHolder
-            - 6 : MeanOfTransportation
-            - 7 : Building
-            - 8 : NaturalPlace
-            - 9 : Village
-            - 10 : Animal
-            - 11 : Plant
-            - 12 : Album
-            - 13 : Film
-            - 14 : WrittenWork
+            - 0 : Company
+            - 1 : EducationalInstitution
+            - 2 : Artist
+            - 3 : Athlete
+            - 4 : OfficeHolder
+            - 5 : MeanOfTransportation
+            - 6 : Building
+            - 7 : NaturalPlace
+            - 8 : Village
+            - 9 : Animal
+            - 10 : Plant
+            - 11 : Album
+            - 12 : Film
+            - 13 : WrittenWork
 
     Create supervised learning dataset: DBpedia
 
@@ -240,8 +240,8 @@ def DBpedia(*args, **kwargs):
 def YelpReviewPolarity(*args, **kwargs):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
-            - 1 : Negative polarity.
-            - 2 : Positive polarity.
+            - 0 : Negative polarity.
+            - 1 : Positive polarity.
 
     Create supervised learning dataset: YelpReviewPolarity
 
@@ -266,7 +266,7 @@ def YelpReviewPolarity(*args, **kwargs):
 def YelpReviewFull(*args, **kwargs):
     """ Defines YelpReviewFull datasets.
         The labels includes:
-            1 - 5 : rating classes (5 is highly recommended).
+            0 - 4 : rating classes (4 is highly recommended).
 
     Create supervised learning dataset: YelpReviewFull
 
@@ -291,16 +291,16 @@ def YelpReviewFull(*args, **kwargs):
 def YahooAnswers(*args, **kwargs):
     """ Defines YahooAnswers datasets.
         The labels includes:
-            - 1 : Society & Culture
-            - 2 : Science & Mathematics
-            - 3 : Health
-            - 4 : Education & Reference
-            - 5 : Computers & Internet
-            - 6 : Sports
-            - 7 : Business & Finance
-            - 8 : Entertainment & Music
-            - 9 : Family & Relationships
-            - 10 : Politics & Government
+            - 0 : Society & Culture
+            - 1 : Science & Mathematics
+            - 2 : Health
+            - 3 : Education & Reference
+            - 4 : Computers & Internet
+            - 5 : Sports
+            - 6 : Business & Finance
+            - 7 : Entertainment & Music
+            - 8 : Family & Relationships
+            - 9 : Politics & Government
 
     Create supervised learning dataset: YahooAnswers
 
@@ -325,8 +325,8 @@ def YahooAnswers(*args, **kwargs):
 def AmazonReviewPolarity(*args, **kwargs):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
-            - 1 : Negative polarity
-            - 2 : Positive polarity
+            - 0 : Negative polarity
+            - 1 : Positive polarity
 
     Create supervised learning dataset: AmazonReviewPolarity
 
@@ -351,7 +351,7 @@ def AmazonReviewPolarity(*args, **kwargs):
 def AmazonReviewFull(*args, **kwargs):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
-            1 - 5 : rating classes (5 is highly recommended)
+            0 - 4 : rating classes (4 is highly recommended)
 
     Create supervised learning dataset: AmazonReviewFull
 
@@ -386,51 +386,51 @@ DATASETS = {
 
 
 LABELS = {
-    'AG_NEWS': {1: 'World',
-                2: 'Sports',
-                3: 'Business',
-                4: 'Sci/Tech'},
-    'SogouNews': {1: 'Sports',
-                  2: 'Finance',
-                  3: 'Entertainment',
-                  4: 'Automobile',
-                  5: 'Technology'},
-    'DBpedia': {1: 'Company',
-                2: 'EducationalInstitution',
-                3: 'Artist',
-                4: 'Athlete',
-                5: 'OfficeHolder',
-                6: 'MeanOfTransportation',
-                7: 'Building',
-                8: 'NaturalPlace',
-                9: 'Village',
-                10: 'Animal',
-                11: 'Plant',
-                12: 'Album',
-                13: 'Film',
-                14: 'WrittenWork'},
-    'YelpReviewPolarity': {1: 'Negative polarity',
-                           2: 'Positive polarity'},
-    'YelpReviewFull': {1: 'score 1',
-                       2: 'score 2',
-                       3: 'score 3',
-                       4: 'score 4',
-                       5: 'score 5'},
-    'YahooAnswers': {1: 'Society & Culture',
-                     2: 'Science & Mathematics',
-                     3: 'Health',
-                     4: 'Education & Reference',
-                     5: 'Computers & Internet',
-                     6: 'Sports',
-                     7: 'Business & Finance',
-                     8: 'Entertainment & Music',
-                     9: 'Family & Relationships',
-                     10: 'Politics & Government'},
-    'AmazonReviewPolarity': {1: 'Negative polarity',
-                             2: 'Positive polarity'},
-    'AmazonReviewFull': {1: 'score 1',
-                         2: 'score 2',
-                         3: 'score 3',
-                         4: 'score 4',
-                         5: 'score 5'}
+    'AG_NEWS': {0: 'World',
+                1: 'Sports',
+                2: 'Business',
+                3: 'Sci/Tech'},
+    'SogouNews': {0: 'Sports',
+                  1: 'Finance',
+                  2: 'Entertainment',
+                  3: 'Automobile',
+                  4: 'Technology'},
+    'DBpedia': {0: 'Company',
+                1: 'EducationalInstitution',
+                2: 'Artist',
+                3: 'Athlete',
+                4: 'OfficeHolder',
+                5: 'MeanOfTransportation',
+                6: 'Building',
+                7: 'NaturalPlace',
+                8: 'Village',
+                9: 'Animal',
+                10: 'Plant',
+                11: 'Album',
+                12: 'Film',
+                13: 'WrittenWork'},
+    'YelpReviewPolarity': {0: 'Negative polarity',
+                           1: 'Positive polarity'},
+    'YelpReviewFull': {0: 'score 1',
+                       1: 'score 2',
+                       2: 'score 3',
+                       3: 'score 4',
+                       4: 'score 5'},
+    'YahooAnswers': {0: 'Society & Culture',
+                     1: 'Science & Mathematics',
+                     2: 'Health',
+                     3: 'Education & Reference',
+                     4: 'Computers & Internet',
+                     5: 'Sports',
+                     6: 'Business & Finance',
+                     7: 'Entertainment & Music',
+                     8: 'Family & Relationships',
+                     9: 'Politics & Government'},
+    'AmazonReviewPolarity': {0: 'Negative polarity',
+                             1: 'Positive polarity'},
+    'AmazonReviewFull': {0: 'score 1',
+                         1: 'score 2',
+                         2: 'score 3',
+                         3: 'score 4',
+                         4: 'score 5'}
 }

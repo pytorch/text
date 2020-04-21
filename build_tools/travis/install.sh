@@ -61,7 +61,7 @@ if [[ "$SKIP_TESTS" != "true" ]]; then
 #    python -m nltk.downloader perluniprops nonbreaking_prefixes
 #
     # PyTorch
-    conda install --yes pytorch -c pytorch-nightly
+    conda install --yes pytorch -c pytorch-test
 
     # Installation
     python setup.py install
