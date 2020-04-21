@@ -7,6 +7,7 @@ from functools import partial
 
 
 def _split_tokenizer(x):
+    # type: (str) -> List[str]
     return x.split()
 
 
