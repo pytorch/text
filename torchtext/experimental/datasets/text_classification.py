@@ -111,7 +111,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
                                           totensor(dtype=torch.long))
     label_transform = squential_transforms(totensor(dtype=torch.long))
     return tuple(TextClassificationDataset(raw_data[item], vocab,
-                                           (label_transform, text_transform))
+        (label_transform, lambda x: None))
                  for item in data_select)
 
 
