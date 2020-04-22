@@ -60,7 +60,6 @@ def _setup_datasets(
     tokenizer=None,
     data_select=("train", "test"),
 ):
-    text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
 
@@ -91,7 +90,7 @@ def _setup_datasets(
         return totensor(vocab[ngram_tokenizer(x)])
 
     return tuple(
-        TextClassificationDataset(raw_data[item], vocab, (totensor, text_transform))
+        TextClassificationDataset(raw_data[item], vocab, (totensor, numericalizer))
         for item in data_select
     )
 
