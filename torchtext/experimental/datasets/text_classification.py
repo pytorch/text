@@ -4,20 +4,6 @@ from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets import raw
 
 
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-
-    return _forward
-
-
-def totensor(dtype):
-    def _forward(ids_list):
-        return torch.tensor(ids_list).to(dtype)
-
-    return _forward
-
-
 def ngrams_func(ngrams):
     def _forward(token_list):
         _token_list = []
@@ -26,13 +12,6 @@ def ngrams_func(ngrams):
         return [" ".join(x) for x in _token_list]
 
     return _forward
-
-
-def build_vocab(data, transforms):
-    tok_list = []
-    for (label, txt) in data:
-        tok_list.append(transforms(txt))
-    return build_vocab_from_iterator(tok_list)
 
 
 def sequential_transforms(*transforms):
@@ -109,7 +88,7 @@ def _setup_datasets(
     if not set(data_select).issubset(set(("train", "test"))):
         raise TypeError("Given data selection {} is not supported!".format(data_select))
     train, test = DATASETS[dataset_name](root=root)
-    # Cache raw text iterable dataset
+    # Materialize and store raw text iterable dataset
     raw_data = {
         "train": [(label, txt) for (label, txt) in train],
         "test": [(label, txt) for (label, txt) in test],
@@ -118,9 +97,11 @@ def _setup_datasets(
     if vocab is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(raw_data["train"], text_transform)
+        vocab = build_vocab_from_iterator(
+            iter(ngrams_func(ngrams)(tokenizer(txt)) for (label, txt) in raw_data["train"])
+        )
     totensor = lambda x: torch.tensor(x, dtype=torch.long)
-    text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor)
+    text_transform = sequential_transforms(text_transform, lambda x: vocab[x], totensor)
     return tuple(
         TextClassificationDataset(raw_data[item], vocab, (totensor, text_transform))
         for item in data_select
