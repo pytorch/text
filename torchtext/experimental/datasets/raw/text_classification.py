@@ -1,7 +1,6 @@
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-import sys
 
 URLS = {
     'AG_NEWS':

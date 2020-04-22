@@ -63,7 +63,9 @@ def _setup_datasets(
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
-    text_transform = lambda x: ngrams_iterator(tokenizer(x), ngrams)
+
+    def ngram_tokenizer(x):
+        return ngrams_iterator(tokenizer(x), ngrams)
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -79,10 +81,15 @@ def _setup_datasets(
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         vocab = build_vocab_from_iterator(
-            iter(text_transform(txt) for (label, txt) in raw_data["train"])
+            iter(ngram_tokenizer(txt) for (label, txt) in raw_data["train"])
         )
-    totensor = lambda x: torch.tensor(x, dtype=torch.long)
-    text_transform = lambda x: totensor(vocab[ngrams_iterator(tokenizer(x), ngrams)])
+
+    def totensor(x):
+        return torch.tensor(x, dtype=torch.long)
+
+    def numericalizer(x):
+        return totensor(vocab[ngram_tokenizer(x)])
+
     return tuple(
         TextClassificationDataset(raw_data[item], vocab, (totensor, text_transform))
         for item in data_select
