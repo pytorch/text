@@ -199,7 +199,7 @@ class ScaledDotProduct(torch.nn.Module):
                 "Shape of bias_v is not supported"
             key = torch.cat([key, bias_k])
             value = torch.cat([value, bias_v])
-            torch.nn.functional.pad(attn_mask, (0, 1))
+            attn_mask = torch.nn.functional.pad(attn_mask, (0, 1))
 
         tgt_len, head_dim = query.size(-3), query.size(-1)
         assert query.size(-1) == key.size(-1) == value.size(-1), "The feature dim of query, key, value must be equal."
