@@ -19,7 +19,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
             >>> MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, num_heads),
                                                    MultiheadInProject(embed_dim, num_heads),
                                                    MultiheadInProject(embed_dim, num_heads)),
-                                                   ScaledDotProduct(num_heads),
+                                                   ScaledDotProduct(),
                                                    MultiheadOutProject(embed_dim // num_heads, num_heads))
             >>> query = torch.rand((21, bsz, embed_dim))
             >>> key = value = torch.rand((16, bsz, embed_dim))
@@ -145,18 +145,17 @@ class MultiheadOutProject(torch.nn.Module):
 
 
 class ScaledDotProduct(torch.nn.Module):
-    __constants__ = ['num_heads', 'dropout']
+    __constants__ = ['dropout']
 
-    def __init__(self, num_heads, dropout=0.0):
+    def __init__(self, dropout=0.0):
         r"""Processes a projected query and key-value pair to apply
         scaled dot product attention.
 
         Args:
-            num_heads (int): Number of parallel attention heads.
             dropout (float): probability of dropping an attention weight.
 
         Examples::
-            >>> SDP = torchtext.models.ScaledDotProduct(4, 0.1)
+            >>> SDP = torchtext.models.ScaledDotProduct(0.1)
             >>> q = torch.randn(256, 21, 3)
             >>> k = v = torch.randn(256, 21, 3)
             >>> attn_output, attn_weights = SDP(q, k, v)
@@ -164,7 +163,6 @@ class ScaledDotProduct(torch.nn.Module):
             torch.Size([256, 21, 3]) torch.Size([256, 21, 21])
         """
         super(ScaledDotProduct, self).__init__()
-        self.num_heads = num_heads
         self.dropout = dropout
 
     def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):

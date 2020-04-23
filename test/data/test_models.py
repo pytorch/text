@@ -14,7 +14,7 @@ class TestModels(TorchtextTestCase):
         MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, nhead),
                                           MultiheadInProject(embed_dim, nhead),
                                           MultiheadInProject(embed_dim, nhead)),
-                                          ScaledDotProduct(nhead),
+                                          ScaledDotProduct(),
                                           MultiheadOutProject(embed_dim // nhead, nhead))
 
         query = torch.rand((tgt_len, bsz, embed_dim))
@@ -46,7 +46,7 @@ class TestModels(TorchtextTestCase):
 
     def test_broadcast_scaled_dot_product(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
-        SDP = ScaledDotProduct(nhead)
+        SDP = ScaledDotProduct()
         query = torch.rand((tgt_len, 1, embed_dim))
         key = value = torch.rand((src_len, 1, embed_dim))
         attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)
