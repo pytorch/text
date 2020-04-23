@@ -41,7 +41,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
         Args:
             query, key, value (Tensor): map a query and a set of key-value pairs to an output.
                 See "Attention Is All You Need" for more details.
-            attn_mask (Bool Tensor, optional): 3D mask that prevents attention to certain positions.
+            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
             bias_k and bias_v:bias (Tensor, optional): one more key and value sequence to be added at
                 sequence dim (dim=-3). Those are used for incremental decoding.
 
@@ -50,7 +50,8 @@ class MultiheadAttentionContainer(torch.nn.Module):
             - query: :math:`(L, N, E)`
             - key: :math:`(S, N, E)`
             - value: :math:`(S, N, E)`
-            - attn_mask: :math:`(N * H, L, S)`
+            - attn_mask: :math:`(N * H, L, S)`, positions with ``True`` are not allowed to attend
+                while ``False`` values will be unchanged.
             - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
 
             - Outputs:
@@ -174,7 +175,7 @@ class ScaledDotProduct(torch.nn.Module):
             query (Tensor): Projected query
             key (Tensor): Projected key
             value (Tensor): Projected value
-            attn_mask (Bool Tensor, optional): 3D mask that prevents attention to certain positions.
+            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
             bias_k and bias_v:bias: the additional key and value sequence to be added at sequence dim (dim=-3).
                 Those are used for incremental decoding.
 
@@ -182,7 +183,8 @@ class ScaledDotProduct(torch.nn.Module):
             - query: :math:`(L, N * H, E / H)`
             - key: :math:`(S, N * H, E / H)`
             - value: :math:`(S, N * H, E / H)`
-            - attn_mask: :math:`(N * H, L, S)`
+            - attn_mask: :math:`(N * H, L, S)`, positions with ``True`` are not allowed to attend
+                while ``False`` values will be unchanged.
             - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
 
             - Output: :math:`(L, N * H, E / H)`, :math:`(N * H, L, S)`
@@ -197,6 +199,7 @@ class ScaledDotProduct(torch.nn.Module):
                 "Shape of bias_v is not supported"
             key = torch.cat([key, bias_k])
             value = torch.cat([value, bias_v])
+            torch.nn.functional.pad(attn_mask, (0, 1))
 
         tgt_len, head_dim = query.size(-3), query.size(-1)
         assert query.size(-1) == key.size(-1) == value.size(-1), "The feature dim of query, key, value must be equal."
