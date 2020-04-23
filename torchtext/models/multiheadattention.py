@@ -34,14 +34,16 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.attention_layer = attention_layer
         self.out_proj = out_proj
 
-    def forward(self, query, key, value, attn_mask=None):
-        # type: (Tensor, Tensor, Tensor, Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
+    def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):
+        # type: (...) -> Tuple[Tensor, Optional[Tensor]]
         r"""
 
         Args:
             query, key, value (Tensor): map a query and a set of key-value pairs to an output.
                 See "Attention Is All You Need" for more details.
             attn_mask (Bool Tensor, optional): 3D mask that prevents attention to certain positions.
+            bias_k and bias_v:bias (Tensor, optional): one more key and value sequence to be added at
+                sequence dim (dim=-3). Those are used for incremental decoding.
 
         Shape:
             - Inputs:
@@ -49,6 +51,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
             - key: :math:`(S, N, E)`
             - value: :math:`(S, N, E)`
             - attn_mask: :math:`(N * H, L, S)`
+            - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
 
             - Outputs:
             - attn_output: :math:`(L, N, E)`
@@ -60,7 +63,8 @@ class MultiheadAttentionContainer(torch.nn.Module):
         q = self.query_in_proj(query)
         k = self.key_in_proj(key)
         v = self.value_in_proj(value)
-        attn_output, attn_output_weights = self.attention_layer(q, k, v, attn_mask=attn_mask)
+        attn_output, attn_output_weights = self.attention_layer(q, k, v, attn_mask=attn_mask,
+                                                                bias_k=bias_k, bias_v=bias_v)
         attn_output = self.out_proj(attn_output)
         return attn_output, attn_output_weights
 
@@ -163,8 +167,8 @@ class ScaledDotProduct(torch.nn.Module):
         self.num_heads = num_heads
         self.dropout = dropout
 
-    def forward(self, query, key, value, attn_mask=None):
-        # type: (Tensor, Tensor, Tensor, Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
+    def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):
+        # type: (...) -> Tuple[Tensor, Optional[Tensor]]
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
 
@@ -173,18 +177,29 @@ class ScaledDotProduct(torch.nn.Module):
             key (Tensor): Projected key
             value (Tensor): Projected value
             attn_mask (Bool Tensor, optional): 3D mask that prevents attention to certain positions.
+            bias_k and bias_v:bias: the additional key and value sequence to be added at sequence dim (dim=-3).
+                Those are used for incremental decoding.
 
         Shape:
             - query: :math:`(L, N * H, E / H)`
             - key: :math:`(S, N * H, E / H)`
             - value: :math:`(S, N * H, E / H)`
             - attn_mask: :math:`(N * H, L, S)`
+            - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
 
             - Output: :math:`(L, N * H, E / H)`, :math:`(N * H, L, S)`
 
             where L is the target length, S is the source length, H is the number
             of attention heads, N is the batch size, and E is the embedding dimension.
         """
+        if bias_k is not None and bias_v is not None:
+            assert key.size(-1) == bias_k.size(-1) and key.size(-2) == bias_k.size(-2) and bias_k.size(-3) == 1, \
+                "Shape of bias_k is not supported"
+            assert value.size(-1) == bias_v.size(-1) and value.size(-2) == bias_v.size(-2) and bias_v.size(-3) == 1, \
+                "Shape of bias_v is not supported"
+            key = torch.cat([key, bias_k])
+            value = torch.cat([value, bias_v])
+
         tgt_len, head_dim = query.size(-3), query.size(-1)
         assert query.size(-1) == key.size(-1) == value.size(-1), "The feature dim of query, key, value must be equal."
         assert key.size() == value.size(), "Shape of key, value must match"
