@@ -41,7 +41,8 @@ class TestModels(TorchtextTestCase):
                                                           attn_mask=torch_attn_mask)
 
         assert_allclose(mha_output, torch_mha_output)
-        attn_weights = attn_weights.view(bsz, nhead, tgt_len, src_len).sum(dim=1) / nhead
+        # With bias_k and bias_v, src_len needs to plus 1
+        attn_weights = attn_weights.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
         assert_allclose(attn_weights, torch_mha_weights)
 
     def test_broadcast_scaled_dot_product(self):
