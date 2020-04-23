@@ -102,7 +102,7 @@ class TestDataset(TorchtextTestCase):
         assert_allclose(ag_news_train[-1][1][:10],
                         torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053]).long())
         assert_allclose(ag_news_test[-1][1][:10],
-                        torch.tensor(tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786])).long())
+                        torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786]).long())
 
         # Delete the dataset after we're done to save disk space on CI
         datafile = os.path.join(self.project_root, ".data", "ag_news_csv")
