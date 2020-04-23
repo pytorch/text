@@ -35,7 +35,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.out_proj = out_proj
 
     def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):
-        # type: (...) -> Tuple[Tensor, Optional[Tensor]]
+        # type: (Tensor, Tensor, Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
         r"""
 
         Args:
@@ -167,7 +167,7 @@ class ScaledDotProduct(torch.nn.Module):
         self.dropout = dropout
 
     def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):
-        # type: (...) -> Tuple[Tensor, Optional[Tensor]]
+        # type: (Tensor, Tensor, Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
 
