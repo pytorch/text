@@ -5,7 +5,7 @@ from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
-class TestJit(TorchtextTestCase):
+class TestJIT(TorchtextTestCase):
 
     def test_torchscript_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
@@ -13,7 +13,7 @@ class TestJit(TorchtextTestCase):
         MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, nhead),
                                           MultiheadInProject(embed_dim, nhead),
                                           MultiheadInProject(embed_dim, nhead)),
-                                          ScaledDotProduct(nhead),
+                                          ScaledDotProduct(),
                                           MultiheadOutProject(embed_dim // nhead, nhead))
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
