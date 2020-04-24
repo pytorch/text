@@ -110,7 +110,6 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
         conditional_remove(datafile)
 
-    @slow
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab

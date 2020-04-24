@@ -34,9 +34,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         self.transforms = transforms  # (label_transforms, tokens_transforms)
 
     def __getitem__(self, i):
-        label = self.data[i][0]
-        txt = self.data[i][1]
-        return (self.transforms[0](label), self.transforms[1](txt))
+        return tuple(t(d) for (t, d) in zip(self.transforms, self.data[i]))
 
     def __len__(self):
         return len(self.data)
@@ -87,7 +85,7 @@ def _setup_datasets(
         return torch.tensor(x, dtype=torch.long)
 
     def numericalizer(x):
-        return totensor(vocab[ngram_tokenizer(x)])
+        return totensor(list(vocab[xi] for xi in ngram_tokenizer(x)))
 
     return tuple(
         TextClassificationDataset(raw_data[item], vocab, (totensor, numericalizer))
