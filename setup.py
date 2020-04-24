@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import platform
 import io
 import re
 
@@ -20,11 +21,11 @@ print("DEBUG:", DEBUG, "IS_WHEEL:", IS_WHEEL, "IS_CONDA:", IS_CONDA)
 eca = []
 ela = []
 if DEBUG:
-    if platform.system() == 'Windows':
-        ela += ['/DEBUG:FULL']
+    if platform.system() == "Windows":
+        ela += ["/DEBUG:FULL"]
     else:
-        eca += ['-O0', '-g']
-        ela += ['-O0', '-g']
+        eca += ["-O0", "-g"]
+        ela += ["-O0", "-g"]
 
 
 def read(*names, **kwargs):
