@@ -31,10 +31,19 @@ class Vocab(object):
     """
 
     # TODO (@mttk): Populate classs with default values of special symbols
-    UNK = '<unk>'
+    UNK = "<unk>"
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
+    def __init__(
+        self,
+        counter,
+        max_size=None,
+        min_freq=1,
+        specials=["<unk>", "<pad>"],
+        vectors=None,
+        unk_init=None,
+        vectors_cache=None,
+        specials_first=True,
+    ):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -112,7 +121,7 @@ class Vocab(object):
         # avoid picking defaultdict
         attrs = dict(self.__dict__)
         # cast to regular dict
-        attrs['stoi'] = dict(self.stoi)
+        attrs["stoi"] = dict(self.stoi)
         return attrs
 
     def __setstate__(self, state):
@@ -120,8 +129,8 @@ class Vocab(object):
             stoi = defaultdict()
         else:
             stoi = defaultdict(self._default_unk_index)
-        stoi.update(state['stoi'])
-        state['stoi'] = stoi
+        stoi.update(state["stoi"])
+        state["stoi"] = stoi
         self.__dict__.update(state)
 
     def __eq__(self, other):
@@ -177,13 +186,14 @@ class Vocab(object):
                 if vector not in pretrained_aliases:
                     raise ValueError(
                         "Got string input vector {}, but allowed pretrained "
-                        "vectors are {}".format(
-                            vector, list(pretrained_aliases.keys())))
+                        "vectors are {}".format(vector, list(pretrained_aliases.keys()))
+                    )
                 vectors[idx] = pretrained_aliases[vector](**kwargs)
             elif not isinstance(vector, Vectors):
                 raise ValueError(
                     "Got input vectors of type {}, expected str or "
-                    "Vectors object".format(type(vector)))
+                    "Vectors object".format(type(vector))
+                )
 
         tot_dim = sum(v.dim for v in vectors)
         self.vectors = torch.Tensor(len(self), tot_dim)
@@ -193,7 +203,7 @@ class Vocab(object):
                 end_dim = start_dim + v.dim
                 self.vectors[i][start_dim:end_dim] = v[token.strip()]
                 start_dim = end_dim
-            assert(start_dim == tot_dim)
+            assert start_dim == tot_dim
 
     def set_vectors(self, stoi, vectors, dim, unk_init=torch.Tensor.zero_):
         """
@@ -221,9 +231,14 @@ class Vocab(object):
 
 
 class SubwordVocab(Vocab):
-
-    def __init__(self, counter, max_size=None, specials=['<pad>'],
-                 vectors=None, unk_init=torch.Tensor.zero_):
+    def __init__(
+        self,
+        counter,
+        max_size=None,
+        specials=["<pad>"],
+        vectors=None,
+        unk_init=torch.Tensor.zero_,
+    ):
         """Create a revtok subword vocabulary from a collections.Counter.
 
         Arguments:
@@ -248,8 +263,9 @@ class SubwordVocab(Vocab):
             raise
 
         # Hardcode unk_index as subword_vocab has no specials_first argument
-        self.unk_index = (specials.index(SubwordVocab.UNK)
-                          if SubwordVocab.UNK in specials else None)
+        self.unk_index = (
+            specials.index(SubwordVocab.UNK) if SubwordVocab.UNK in specials else None
+        )
 
         if self.unk_index is None:
             self.stoi = defaultdict()
@@ -264,8 +280,10 @@ class SubwordVocab(Vocab):
         max_size = None if max_size is None else max_size + len(self.itos)
 
         # sort by frequency/entropy, then alphabetically
-        toks = sorted(self.segment.vocab.items(),
-                      key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
+        toks = sorted(
+            self.segment.vocab.items(),
+            key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]),
+        )
 
         for tok, _ in toks:
             if len(self.itos) == max_size:
@@ -294,10 +312,115 @@ def _infer_shape(f):
     return num_lines, vector_dim
 
 
-class Vectors(object):
+def _cache_vectors(name, cache, url=None, max_vectors=None):
+    import ssl
 
-    def __init__(self, name, cache=None,
-                 url=None, unk_init=None, max_vectors=None):
+    ssl._create_default_https_context = ssl._create_unverified_context
+    if os.path.isfile(name):
+        path = name
+        if max_vectors:
+            file_suffix = "_{}.pt".format(max_vectors)
+        else:
+            file_suffix = ".pt"
+        path_pt = os.path.join(cache, os.path.basename(name)) + file_suffix
+    else:
+        path = os.path.join(cache, name)
+        if max_vectors:
+            file_suffix = "_{}.pt".format(max_vectors)
+        else:
+            file_suffix = ".pt"
+        path_pt = path + file_suffix
+
+    if not os.path.isfile(path_pt):
+        if not os.path.isfile(path) and url:
+            logger.info("Downloading vectors from {}".format(url))
+            if not os.path.exists(cache):
+                os.makedirs(cache)
+            dest = os.path.join(cache, os.path.basename(url))
+            if not os.path.isfile(dest):
+                with tqdm(unit="B", unit_scale=True, miniters=1, desc=dest) as t:
+                    try:
+                        urlretrieve(url, dest, reporthook=reporthook(t))
+                    except KeyboardInterrupt as e:  # remove the partial zip file
+                        os.remove(dest)
+                        raise e
+            logger.info("Extracting vectors into {}".format(cache))
+            ext = os.path.splitext(dest)[1][1:]
+            if ext == "zip":
+                with zipfile.ZipFile(dest, "r") as zf:
+                    zf.extractall(cache)
+            elif ext == "gz":
+                if dest.endswith(".tar.gz"):
+                    with tarfile.open(dest, "r:gz") as tar:
+                        tar.extractall(path=cache)
+        if not os.path.isfile(path):
+            raise RuntimeError("no vectors found at {}".format(path))
+
+        logger.info("Loading vectors from {}".format(path))
+        ext = os.path.splitext(path)[1][1:]
+        if ext == "gz":
+            open_file = gzip.open
+        else:
+            open_file = open
+
+        vectors_loaded = 0
+        with open_file(path, "rb") as f:
+            num_lines, dim = _infer_shape(f)
+            if not max_vectors or max_vectors > num_lines:
+                max_vectors = num_lines
+
+            itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
+
+            for line in tqdm(f, total=max_vectors):
+                # Explicitly splitting on " " is important, so we don't
+                # get rid of Unicode non-breaking spaces in the vectors.
+                entries = line.rstrip().split(b" ")
+
+                word, entries = entries[0], entries[1:]
+                if dim is None and len(entries) > 1:
+                    dim = len(entries)
+                elif len(entries) == 1:
+                    logger.warning(
+                        "Skipping token {} with 1-dimensional "
+                        "vector {}; likely a header".format(word, entries)
+                    )
+                    continue
+                elif dim != len(entries):
+                    raise RuntimeError(
+                        "Vector for token {} has {} dimensions, but previously "
+                        "read vectors have {} dimensions. All vectors must have "
+                        "the same number of dimensions.".format(word, len(entries), dim)
+                    )
+
+                try:
+                    if isinstance(word, six.binary_type):
+                        word = word.decode("utf-8")
+                except UnicodeDecodeError:
+                    logger.info("Skipping non-UTF8 token {}".format(repr(word)))
+                    continue
+
+                vectors[vectors_loaded] = torch.tensor([float(x) for x in entries])
+                vectors_loaded += 1
+                itos.append(word)
+
+                if vectors_loaded == max_vectors:
+                    break
+
+        stoi = {word: i for i, word in enumerate(itos)}
+        vectors = torch.Tensor(vectors).view(-1, dim)
+        dim = dim
+        logger.info("Saving vectors to {}".format(path_pt))
+        if not os.path.exists(cache):
+            os.makedirs(cache)
+        torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
+    else:
+        logger.info("Loading vectors from {}".format(path_pt))
+        itos, stoi, vectors, dim = torch.load(path_pt)
+    return itos, stoi, vectors, dim
+
+
+class Vectors(object):
+    def __init__(self, name, cache=None, url=None, unk_init=None, max_vectors=None):
         """
         Arguments:
            name: name of the file that contains the vectors
@@ -314,122 +437,17 @@ class Vectors(object):
                or is not needed for another reason, passing `max_vectors`
                can limit the size of the loaded set.
         """
-        cache = '.vector_cache' if cache is None else cache
-        self.itos = None
-        self.stoi = None
-        self.vectors = None
-        self.dim = None
+        cache = ".vector_cache" if cache is None else cache
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
-        self.cache(name, cache, url=url, max_vectors=max_vectors)
+        self.itos, self.stoi, self.vectors, self.dim = _cache_vectors(
+            name, cache, url=url, max_vectors=max_vectors
+        )
 
     def __getitem__(self, token):
         if token in self.stoi:
             return self.vectors[self.stoi[token]]
         else:
             return self.unk_init(torch.Tensor(self.dim))
-
-    def cache(self, name, cache, url=None, max_vectors=None):
-        import ssl
-        ssl._create_default_https_context = ssl._create_unverified_context
-        if os.path.isfile(name):
-            path = name
-            if max_vectors:
-                file_suffix = '_{}.pt'.format(max_vectors)
-            else:
-                file_suffix = '.pt'
-            path_pt = os.path.join(cache, os.path.basename(name)) + file_suffix
-        else:
-            path = os.path.join(cache, name)
-            if max_vectors:
-                file_suffix = '_{}.pt'.format(max_vectors)
-            else:
-                file_suffix = '.pt'
-            path_pt = path + file_suffix
-
-        if not os.path.isfile(path_pt):
-            if not os.path.isfile(path) and url:
-                logger.info('Downloading vectors from {}'.format(url))
-                if not os.path.exists(cache):
-                    os.makedirs(cache)
-                dest = os.path.join(cache, os.path.basename(url))
-                if not os.path.isfile(dest):
-                    with tqdm(unit='B', unit_scale=True, miniters=1, desc=dest) as t:
-                        try:
-                            urlretrieve(url, dest, reporthook=reporthook(t))
-                        except KeyboardInterrupt as e:  # remove the partial zip file
-                            os.remove(dest)
-                            raise e
-                logger.info('Extracting vectors into {}'.format(cache))
-                ext = os.path.splitext(dest)[1][1:]
-                if ext == 'zip':
-                    with zipfile.ZipFile(dest, "r") as zf:
-                        zf.extractall(cache)
-                elif ext == 'gz':
-                    if dest.endswith('.tar.gz'):
-                        with tarfile.open(dest, 'r:gz') as tar:
-                            tar.extractall(path=cache)
-            if not os.path.isfile(path):
-                raise RuntimeError('no vectors found at {}'.format(path))
-
-            logger.info("Loading vectors from {}".format(path))
-            ext = os.path.splitext(path)[1][1:]
-            if ext == 'gz':
-                open_file = gzip.open
-            else:
-                open_file = open
-
-            vectors_loaded = 0
-            with open_file(path, 'rb') as f:
-                num_lines, dim = _infer_shape(f)
-                if not max_vectors or max_vectors > num_lines:
-                    max_vectors = num_lines
-
-                itos, vectors, dim = [], torch.zeros((max_vectors, dim)), None
-
-                for line in tqdm(f, total=max_vectors):
-                    # Explicitly splitting on " " is important, so we don't
-                    # get rid of Unicode non-breaking spaces in the vectors.
-                    entries = line.rstrip().split(b" ")
-
-                    word, entries = entries[0], entries[1:]
-                    if dim is None and len(entries) > 1:
-                        dim = len(entries)
-                    elif len(entries) == 1:
-                        logger.warning("Skipping token {} with 1-dimensional "
-                                       "vector {}; likely a header".format(word, entries))
-                        continue
-                    elif dim != len(entries):
-                        raise RuntimeError(
-                            "Vector for token {} has {} dimensions, but previously "
-                            "read vectors have {} dimensions. All vectors must have "
-                            "the same number of dimensions.".format(word, len(entries),
-                                                                    dim))
-
-                    try:
-                        if isinstance(word, six.binary_type):
-                            word = word.decode('utf-8')
-                    except UnicodeDecodeError:
-                        logger.info("Skipping non-UTF8 token {}".format(repr(word)))
-                        continue
-
-                    vectors[vectors_loaded] = torch.tensor([float(x) for x in entries])
-                    vectors_loaded += 1
-                    itos.append(word)
-
-                    if vectors_loaded == max_vectors:
-                        break
-
-            self.itos = itos
-            self.stoi = {word: i for i, word in enumerate(itos)}
-            self.vectors = torch.Tensor(vectors).view(-1, dim)
-            self.dim = dim
-            logger.info('Saving vectors to {}'.format(path_pt))
-            if not os.path.exists(cache):
-                os.makedirs(cache)
-            torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
-        else:
-            logger.info('Loading vectors from {}'.format(path_pt))
-            self.itos, self.stoi, self.vectors, self.dim = torch.load(path_pt)
 
     def __len__(self):
         return len(self.vectors)
@@ -462,9 +480,10 @@ class Vectors(object):
         if not lower_case_backup:
             indices = [self[token] for token in tokens]
         else:
-            indices = [self[token] if token in self.stoi
-                       else self[token.lower()]
-                       for token in tokens]
+            indices = [
+                self[token] if token in self.stoi else self[token.lower()]
+                for token in tokens
+            ]
 
         vecs = torch.stack(indices)
         return vecs[0] if to_reduce else vecs
@@ -472,21 +491,21 @@ class Vectors(object):
 
 class GloVe(Vectors):
     url = {
-        '42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-        '840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-        'twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        '6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
+        "42B": "http://nlp.stanford.edu/data/glove.42B.300d.zip",
+        "840B": "http://nlp.stanford.edu/data/glove.840B.300d.zip",
+        "twitter.27B": "http://nlp.stanford.edu/data/glove.twitter.27B.zip",
+        "6B": "http://nlp.stanford.edu/data/glove.6B.zip",
     }
 
-    def __init__(self, name='840B', dim=300, **kwargs):
+    def __init__(self, name="840B", dim=300, **kwargs):
         url = self.url[name]
-        name = 'glove.{}.{}d.txt'.format(name, str(dim))
+        name = "glove.{}.{}d.txt".format(name, str(dim))
         super(GloVe, self).__init__(name, url=url, **kwargs)
 
 
 class FastText(Vectors):
 
-    url_base = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'
+    url_base = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec"
 
     def __init__(self, language="en", **kwargs):
         url = self.url_base.format(language)
@@ -496,9 +515,11 @@ class FastText(Vectors):
 
 class CharNGram(Vectors):
 
-    name = 'charNgram.txt'
-    url = ('http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/'
-           'jmt_pre-trained_embeddings.tar.gz')
+    name = "charNgram.txt"
+    url = (
+        "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/"
+        "jmt_pre-trained_embeddings.tar.gz"
+    )
 
     def __init__(self, **kwargs):
         super(CharNGram, self).__init__(self.name, url=self.url, **kwargs)
@@ -509,13 +530,13 @@ class CharNGram(Vectors):
             return self.unk_init(vector)
         # These literals need to be coerced to unicode for Python 2 compatibility
         # when we try to join them with read ngrams from the files.
-        chars = ['#BEGIN#'] + list(token) + ['#END#']
+        chars = ["#BEGIN#"] + list(token) + ["#END#"]
         num_vectors = 0
         for n in [2, 3, 4]:
             end = len(chars) - n + 1
-            grams = [chars[i:(i + n)] for i in range(end)]
+            grams = [chars[i : (i + n)] for i in range(end)]
             for gram in grams:
-                gram_key = '{}gram-{}'.format(n, ''.join(gram))
+                gram_key = "{}gram-{}".format(n, "".join(gram))
                 if gram_key in self.stoi:
                     vector += self.vectors[self.stoi[gram_key]]
                     num_vectors += 1
@@ -539,7 +560,7 @@ pretrained_aliases = {
     "glove.6B.50d": partial(GloVe, name="6B", dim="50"),
     "glove.6B.100d": partial(GloVe, name="6B", dim="100"),
     "glove.6B.200d": partial(GloVe, name="6B", dim="200"),
-    "glove.6B.300d": partial(GloVe, name="6B", dim="300")
+    "glove.6B.300d": partial(GloVe, name="6B", dim="300"),
 }
 """Mapping from string name to factory function"""
 
@@ -553,7 +574,7 @@ def build_vocab_from_iterator(iterator):
     """
 
     counter = Counter()
-    with tqdm(unit_scale=0, unit='lines') as t:
+    with tqdm(unit_scale=0, unit="lines") as t:
         for tokens in iterator:
             counter.update(tokens)
             t.update(1)
