@@ -33,7 +33,7 @@ binary_common: &binary_common
 smoke_test_common: &smoke_test_common
   <<: *binary_common
   docker:
-    - image: 308535385114.dkr.ecr.us-east-1.amazonaws.com/torchaudio/smoke_test:d26af7d0-8458-face-book-84239b5c75c0
+    - image: 308535385114.dkr.ecr.us-east-1.amazonaws.com/torchtext/smoke_test:d26af7d0-8458-face-book-84239b5c75c0
       aws_auth:
         aws_access_key_id: ${ECR_AWS_ACCESS_KEY}
         aws_secret_access_key: ${ECR_AWS_SECRET_ACCESS_KEY}
@@ -184,12 +184,12 @@ jobs:
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
             conda install -v -y -c pytorch-nightly pytorch
-            conda install -v -y $(ls ~/workspace/torchaudio*.tar.bz2)
+            conda install -v -y $(ls ~/workspace/torchtext*.tar.bz2)
       - run:
           name: smoke test
           command: |
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            python -c "import torchaudio"
+            python -c "import torchtext"
 
   smoke_test_linux_pip:
     <<: *smoke_test_common
@@ -201,19 +201,19 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchaudio*.whl) -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+            pip install $(ls ~/workspace/torchtext*.whl) -f https://download.pytorch.org/whl/nightly/torch_nightly.html
       - run:
           name: smoke test
           command: |
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            python -c "import torchaudio"
+            python -c "import torchtext"
 
   docker_image_build:
     machine:
       image: ubuntu-1604:201903-01
     resource_class: large
     environment:
-      image_name: torchaudio/smoke_test
+      image_name: torchtext/smoke_test
     steps:
       - checkout
       - run:
@@ -274,7 +274,7 @@ workflows:
           name: binary_macos_conda_py3.8
           python_version: '3.8'
       - binary_win_conda:
-          name: torchaudio_win_py3.6
+          name: torchtext_win_py3.6
           python_version: "3.6"
 
   nightly:
