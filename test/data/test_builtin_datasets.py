@@ -16,7 +16,6 @@ def conditional_remove(f):
 
 
 class TestDataset(TorchtextTestCase):
-    @slow
     def test_wikitext2_legacy(self):
         from torchtext.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
@@ -52,7 +51,6 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
         conditional_remove(datafile)
 
-    @slow
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
@@ -110,7 +108,6 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
         conditional_remove(datafile)
 
-    @slow
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab

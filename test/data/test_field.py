@@ -867,7 +867,6 @@ class TestNestedField(TorchtextTestCase):
 
         assert torch.all(torch.eq(original_numericalization, pickled_numericalization))
 
-    @slow
     def test_build_vocab(self):
         nesting_field = data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
 
