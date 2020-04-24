@@ -1,8 +1,5 @@
 import torch
-from torch._jit_internal import Tuple, Optional
-
-
-Tensor = torch.Tensor
+from typing import Tuple, Optional
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
@@ -34,8 +31,10 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.attention_layer = attention_layer
         self.out_proj = out_proj
 
-    def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):
-        # type: (Tensor, Tensor, Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
+                attn_mask: Optional[torch.Tensor] = None,
+                bias_k: Optional[torch.Tensor] = None,
+                bias_v: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""
 
         Args:
@@ -86,8 +85,7 @@ class MultiheadInProject(torch.nn.Module):
         self.num_heads = num_heads
         self.proj_layer = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
 
-    def forward(self, seq):
-        # type: (Tensor) -> Tensor
+    def forward(self, seq: torch.Tensor) -> torch.Tensor:
         r"""Projects an input sequence using parallel attention heads.
 
         Args:
@@ -121,8 +119,7 @@ class MultiheadOutProject(torch.nn.Module):
         self.num_heads = num_heads
         self.proj_layer = torch.nn.Linear(num_heads * head_dim, num_heads * head_dim, bias=False)
 
-    def forward(self, seq):
-        # type: (Tensor) -> Tensor
+    def forward(self, seq: torch.Tensor) -> torch.Tensor:
         r"""Projects an output sequence using parallel attention heads.
 
         Args:
@@ -146,7 +143,6 @@ class MultiheadOutProject(torch.nn.Module):
 
 
 class ScaledDotProduct(torch.nn.Module):
-    __constants__ = ['dropout']
 
     def __init__(self, dropout=0.0):
         r"""Processes a projected query and key-value pair to apply
@@ -166,8 +162,10 @@ class ScaledDotProduct(torch.nn.Module):
         super(ScaledDotProduct, self).__init__()
         self.dropout = dropout
 
-    def forward(self, query, key, value, attn_mask=None, bias_k=None, bias_v=None):
-        # type: (Tensor, Tensor, Tensor, Optional[Tensor], Optional[Tensor], Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
+                attn_mask: Optional[torch.Tensor] = None,
+                bias_k: Optional[torch.Tensor] = None,
+                bias_v: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
         r"""Uses a scaled dot product with the projected key-value pair to update
         the projected query.
 
