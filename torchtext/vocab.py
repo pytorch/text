@@ -31,8 +31,9 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
-                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
+    def __init__(self, counter, max_size=None, max_freq=float('inf'), min_freq=1,
+                 specials=['<unk>', '<pad>'], vectors=None, unk_init=None,
+                 vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
         Arguments:
@@ -57,7 +58,13 @@ class Vocab(object):
         """
         self.freqs = counter
         counter = counter.copy()
+        max_freq = min(max(max_freq, 1), float('inf'))
         min_freq = max(min_freq, 1)
+        if max_freq < min_freq:
+            raise ValueError(
+                "Got max_freq={} and min_freq={} "
+                "max_freq must be larger than min_freq".format(
+                    max_freq, min_freq))
 
         self.itos = list()
         self.unk_index = None
@@ -76,6 +83,8 @@ class Vocab(object):
         words_and_frequencies.sort(key=lambda tup: tup[1], reverse=True)
 
         for word, freq in words_and_frequencies:
+            if freq > max_freq:
+                continue
             if freq < min_freq or len(self.itos) == max_size:
                 break
             self.itos.append(word)
