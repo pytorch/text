@@ -1,5 +1,5 @@
 import torch
-from torchtext.models import MultiheadAttentionContainer, \
+from torchtext.modules import MultiheadAttentionContainer, \
     ScaledDotProduct, MultiheadInProject, MultiheadOutProject
 from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
