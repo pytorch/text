@@ -412,7 +412,7 @@ def _cache_vectors(name, cache, url=None, max_vectors=None):
         logger.info("Saving vectors to {}".format(path_pt))
         if not os.path.exists(cache):
             os.makedirs(cache)
-        torch.save((self.itos, self.stoi, self.vectors, self.dim), path_pt)
+        torch.save((itos, stoi, vectors, dim), path_pt)
     else:
         logger.info("Loading vectors from {}".format(path_pt))
         itos, stoi, vectors, dim = torch.load(path_pt)
