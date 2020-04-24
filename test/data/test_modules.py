@@ -1,5 +1,5 @@
 import torch
-from torchtext.models import MultiheadAttentionContainer, \
+from torchtext.modules import MultiheadAttentionContainer, \
     ScaledDotProduct, MultiheadInProject, MultiheadOutProject
 from torch.nn.functional import multi_head_attention_forward as mha_forward
 from torch.testing import assert_allclose
@@ -10,7 +10,7 @@ class TestModels(TorchtextTestCase):
 
     def test_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
-        # Build torchtext MultiheadAttention models
+        # Build torchtext MultiheadAttention module
         MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, nhead),
                                           MultiheadInProject(embed_dim, nhead),
                                           MultiheadInProject(embed_dim, nhead)),
