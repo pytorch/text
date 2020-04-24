@@ -5,6 +5,7 @@ To compare new version with previous:
 
     ./regenerate.sh
     meld <(git show HEAD:./config.yml | ./sort-yaml.py) <(cat config.yml | ./sort-yaml.py)
+
 """
 
 
