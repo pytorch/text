@@ -489,40 +489,29 @@ class Vectors(object):
         return vecs[0] if to_reduce else vecs
 
 
-class GloVe(Vectors):
-    url = {
-        "42B": "http://nlp.stanford.edu/data/glove.42B.300d.zip",
-        "840B": "http://nlp.stanford.edu/data/glove.840B.300d.zip",
-        "twitter.27B": "http://nlp.stanford.edu/data/glove.twitter.27B.zip",
-        "6B": "http://nlp.stanford.edu/data/glove.6B.zip",
-    }
-
-    def __init__(self, name="840B", dim=300, **kwargs):
-        url = self.url[name]
-        name = "glove.{}.{}d.txt".format(name, str(dim))
-        super(GloVe, self).__init__(name, url=url, **kwargs)
-
-
-class FastText(Vectors):
-
-    url_base = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec"
-
-    def __init__(self, language="en", **kwargs):
-        url = self.url_base.format(language)
-        name = os.path.basename(url)
-        super(FastText, self).__init__(name, url=url, **kwargs)
-
-
-class CharNGram(Vectors):
-
-    name = "charNgram.txt"
-    url = (
-        "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/"
-        "jmt_pre-trained_embeddings.tar.gz"
-    )
-
-    def __init__(self, **kwargs):
-        super(CharNGram, self).__init__(self.name, url=self.url, **kwargs)
+class CharVectors(object):
+    def __init__(self, name, cache=None, url=None, unk_init=None, max_vectors=None):
+        """
+        Arguments:
+           name: name of the file that contains the vectors
+           cache: directory for cached vectors
+           url: url for download if vectors not found in cache
+           unk_init (callback): by default, initialize out-of-vocabulary word vectors
+               to zero vectors; can be any function that takes in a Tensor and
+               returns a Tensor of the same size
+           max_vectors (int): this can be used to limit the number of
+               pre-trained vectors loaded.
+               Most pre-trained vector sets are sorted
+               in the descending order of word frequency.
+               Thus, in situations where the entire set doesn't fit in memory,
+               or is not needed for another reason, passing `max_vectors`
+               can limit the size of the loaded set.
+        """
+        cache = ".vector_cache" if cache is None else cache
+        self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
+        self.itos, self.stoi, self.vectors, self.dim = _cache_vectors(
+            name, cache, url=url, max_vectors=max_vectors
+        )
 
     def __getitem__(self, token):
         vector = torch.Tensor(1, self.dim).zero_()
@@ -545,6 +534,73 @@ class CharNGram(Vectors):
         else:
             vector = self.unk_init(vector)
         return vector
+
+    def __len__(self):
+        return len(self.vectors)
+
+    def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
+        """Look up embedding vectors of tokens.
+
+        Arguments:
+            tokens: a token or a list of tokens. if `tokens` is a string,
+                returns a 1-D tensor of shape `self.dim`; if `tokens` is a
+                list of strings, returns a 2-D tensor of shape=(len(tokens),
+                self.dim).
+            lower_case_backup : Whether to look up the token in the lower case.
+                If False, each token in the original case will be looked up;
+                if True, each token in the original case will be looked up first,
+                if not found in the keys of the property `stoi`, the token in the
+                lower case will be looked up. Default: False.
+
+        Examples:
+            >>> examples = ['chip', 'baby', 'Beautiful']
+            >>> vec = text.vocab.GloVe(name='6B', dim=50)
+            >>> ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)
+        """
+        to_reduce = False
+
+        if not isinstance(tokens, list):
+            tokens = [tokens]
+            to_reduce = True
+
+        if not lower_case_backup:
+            indices = [self[token] for token in tokens]
+        else:
+            indices = [
+                self[token] if token in self.stoi else self[token.lower()]
+                for token in tokens
+            ]
+
+        vecs = torch.stack(indices)
+        return vecs[0] if to_reduce else vecs
+
+
+def GloVe(self, name="840B", dim=300, **kwargs):
+    url = {
+        "42B": "http://nlp.stanford.edu/data/glove.42B.300d.zip",
+        "840B": "http://nlp.stanford.edu/data/glove.840B.300d.zip",
+        "twitter.27B": "http://nlp.stanford.edu/data/glove.twitter.27B.zip",
+        "6B": "http://nlp.stanford.edu/data/glove.6B.zip",
+    }
+    url = url[name]
+    name = "glove.{}.{}d.txt".format(name, str(dim))
+    return Vectors(name, url=url, **kwargs)
+
+
+def FastText(self, language="en", **kwargs):
+    url_base = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec"
+    url = url_base.format(language)
+    name = os.path.basename(url)
+    return Vectors(name, url=url, **kwargs)
+
+
+def CharNGram(CharVectors):
+    name = "charNgram.txt"
+    url = (
+        "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/"
+        "jmt_pre-trained_embeddings.tar.gz"
+    )
+    return CharVectors(name, url=url, **kwargs)
 
 
 pretrained_aliases = {
