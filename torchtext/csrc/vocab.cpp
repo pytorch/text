@@ -20,7 +20,6 @@ struct Vocab {
       index++;
     }
   }
-
   at::Tensor __getitem__(const std::string &token) {
     auto search = _map.find(token);
     if (search == _map.end()) {
@@ -37,6 +36,7 @@ struct Vocab {
     return at::stack(indices);
   }
 
+private:
   std::unordered_map<std::string, int64_t> _map;
   std::vector<at::Tensor> _vector_list;
   at::Tensor _unk_vector;
