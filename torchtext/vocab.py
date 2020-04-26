@@ -452,8 +452,7 @@ class Vectors(object):
         return self.c_vocab[token]
         # if token in self.stoi:
         #     return self.vectors[self.stoi[token]]
-        # else:
-        #     return self.unk_init(torch.Tensor(self.dim))
+        # return self.unk_init(torch.Tensor(self.dim))
 
     def __len__(self):
         return len(self.c_vocab)
@@ -483,15 +482,17 @@ class Vectors(object):
             tokens = [tokens]
             to_reduce = True
 
-        if not lower_case_backup:
-            indices = [self[token] for token in tokens]
-        else:
+        if lower_case_backup:
             indices = [
                 self[token] if token in self.stoi else self[token.lower()]
                 for token in tokens
             ]
+            vecs = torch.stack(indices)
+            return vecs[0] if to_reduce else vecs
 
-        vecs = torch.stack(indices)
+        vecs = self.c_vocab.get_vecs_by_tokens(tokens)
+        # indices = [self[token] for token in tokens]
+        # vecs = torch.stack(indices)
         return vecs[0] if to_reduce else vecs
 
 
