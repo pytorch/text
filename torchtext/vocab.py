@@ -11,6 +11,7 @@ from six.moves.urllib.request import urlretrieve
 import torch
 from tqdm import tqdm
 import tarfile
+import _torchtext
 
 from .utils import reporthook
 
@@ -189,7 +190,7 @@ class Vocab(object):
                         "vectors are {}".format(vector, list(pretrained_aliases.keys()))
                     )
                 vectors[idx] = pretrained_aliases[vector](**kwargs)
-            elif not isinstance(vector, Vectors):
+            elif not (isinstance(vector, Vectors) or isinstance(vector, CharVectors)):
                 raise ValueError(
                     "Got input vectors of type {}, expected str or "
                     "Vectors object".format(type(vector))
@@ -442,15 +443,20 @@ class Vectors(object):
         self.itos, self.stoi, self.vectors, self.dim = _cache_vectors(
             name, cache, url=url, max_vectors=max_vectors
         )
+        self.unk_vector = self.unk_init(torch.Tensor(self.dim))
+        self.c_vocab = _torchtext.Vocab(
+            self.stoi, self.vectors, self.unk_vector, self.dim
+        )
 
     def __getitem__(self, token):
-        if token in self.stoi:
-            return self.vectors[self.stoi[token]]
-        else:
-            return self.unk_init(torch.Tensor(self.dim))
+        return self.c_vocab[token]
+        # if token in self.stoi:
+        #     return self.vectors[self.stoi[token]]
+        # else:
+        #     return self.unk_init(torch.Tensor(self.dim))
 
     def __len__(self):
-        return len(self.vectors)
+        return len(self.c_vocab)
 
     def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
         """Look up embedding vectors of tokens.
@@ -575,32 +581,38 @@ class CharVectors(object):
         return vecs[0] if to_reduce else vecs
 
 
-def GloVe(self, name="840B", dim=300, **kwargs):
+class GloVe(Vectors):
     url = {
         "42B": "http://nlp.stanford.edu/data/glove.42B.300d.zip",
         "840B": "http://nlp.stanford.edu/data/glove.840B.300d.zip",
         "twitter.27B": "http://nlp.stanford.edu/data/glove.twitter.27B.zip",
         "6B": "http://nlp.stanford.edu/data/glove.6B.zip",
     }
-    url = url[name]
-    name = "glove.{}.{}d.txt".format(name, str(dim))
-    return Vectors(name, url=url, **kwargs)
+
+    def __init__(self, name="840B", dim=300, **kwargs):
+        url = self.url[name]
+        name = "glove.{}.{}d.txt".format(name, str(dim))
+        super().__init__(name, url=url, **kwargs)
 
 
-def FastText(self, language="en", **kwargs):
+class FastText(Vectors):
     url_base = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec"
-    url = url_base.format(language)
-    name = os.path.basename(url)
-    return Vectors(name, url=url, **kwargs)
+
+    def __init__(self, language="en", **kwargs):
+        url = self.url_base.format(language)
+        name = os.path.basename(url)
+        super().__init__(name, url=url, **kwargs)
 
 
-def CharNGram(CharVectors):
+class CharNGram(CharVectors):
     name = "charNgram.txt"
     url = (
         "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/"
         "jmt_pre-trained_embeddings.tar.gz"
     )
-    return CharVectors(name, url=url, **kwargs)
+
+    def __init__(self, **kwargs):
+        super().__init__(self.name, url=self.url, **kwargs)
 
 
 pretrained_aliases = {
