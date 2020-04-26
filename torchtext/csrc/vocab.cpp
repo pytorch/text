@@ -1,32 +1,34 @@
 #include <torch/extension.h>
-#include <map>
-namespace torch {
-namespace text {
-
-    std::string get_s() {
-        return "asdf";
-    }
-}
-}
+#include <unordered_map>
 
 struct Vocab {
-  Vocab(py::dict stoi, at::Tensor vectors, at::Tensor unk_vector, int64_t dim)
-      : _vectors(vectors), _unk_vector(unk_vector), _dim(dim) {
-        for (auto item :stoi) {
-          std::string k = py::cast<std::string>(item.first);
-          int64_t i = py::cast<int64_t>(item.second);
-          _map.insert({k, i});
-        }
-      }
+  Vocab(std::vector<std::string> itos, at::Tensor vectors,
+        at::Tensor unk_vector)
+      : _unk_vector(unk_vector) {
 
-  at::Tensor __getitem__(const std::string& token) {
-      py::object key = py::cast(token);
-      if (_stoi.contains(key)) {
-        return _vectors[at::Scalar(py::cast<int64_t>(_stoi[key]))];
-      }
-      return _unk_vector;
+    int64_t index = 0;
+    _map.reserve(itos.size());
+    for (const std::string & t : itos) {
+      _map.insert({t, index});
+      index++;
+    }
+
+    index = 0;
+    _vector_list.resize(vectors.size(0));
+    for (at::Tensor t : vectors.unbind(0)) {
+      _vector_list[index] = t;
+      index++;
+    }
   }
-  int64_t __len__() { return _vectors.size(0); }
+
+  at::Tensor __getitem__(const std::string &token) {
+    auto search = _map.find(token);
+    if (search == _map.end()) {
+      return _unk_vector;
+    }
+    return _vector_list[search->second];
+  }
+  int64_t __len__() { return _vector_list.size(); }
   at::Tensor get_vecs_by_tokens(const std::vector<std::string> &tokens) {
     std::vector<at::Tensor> indices;
     for (const std::string &token : tokens) {
@@ -35,8 +37,8 @@ struct Vocab {
     return at::stack(indices);
   }
 
-  std::map<std::string, int64_t> _map;
-  at::Tensor _vectors;
+  std::unordered_map<std::string, int64_t> _map;
+  std::vector<at::Tensor> _vector_list;
   at::Tensor _unk_vector;
   int64_t _dim;
 };
@@ -44,10 +46,9 @@ struct Vocab {
 PYBIND11_MODULE(_torchtext, m) { 
     auto c = py::class_<Vocab>(m, "Vocab");
     c.def(py::init<
-            py::dict, // stoi
+            const std::vector<std::string>&, // stoi
             at::Tensor, // vectors
-            at::Tensor, // unk_vector
-            int64_t>() // dim
+            at::Tensor>() // unk_vector
          );
     c.def("__getitem__", &Vocab::__getitem__);
     c.def("__len__", &Vocab::__len__);

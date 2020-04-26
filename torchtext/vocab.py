@@ -444,9 +444,7 @@ class Vectors(object):
             name, cache, url=url, max_vectors=max_vectors
         )
         self.unk_vector = self.unk_init(torch.Tensor(self.dim))
-        self.c_vocab = _torchtext.Vocab(
-            self.stoi, self.vectors, self.unk_vector, self.dim
-        )
+        self.c_vocab = _torchtext.Vocab(self.itos, self.vectors, self.unk_vector)
 
     def __getitem__(self, token):
         return self.c_vocab[token]
