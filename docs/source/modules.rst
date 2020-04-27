@@ -8,7 +8,7 @@ torchtext.models.multiheadattention
 .. currentmodule:: torchtext.models.multiheadattention
 
 :hidden:`MultiheadAttentionContainer`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: MultiheadAttentionContainer 
 
