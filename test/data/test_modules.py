@@ -1,6 +1,5 @@
 import torch
-from torchtext.modules import MultiheadAttentionContainer, \
-    ScaledDotProduct, MultiheadInProject, MultiheadOutProject
+from torchtext.modules import MultiheadAttentionContainer, ScaledDotProduct
 from torch.nn.functional import multi_head_attention_forward as mha_forward
 from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -11,11 +10,12 @@ class TestModels(TorchtextTestCase):
     def test_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
-        MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, nhead),
-                                          MultiheadInProject(embed_dim, nhead),
-                                          MultiheadInProject(embed_dim, nhead)),
+        MHA = MultiheadAttentionContainer(nhead,
+                                          (torch.nn.Linear(embed_dim, embed_dim),
+                                           torch.nn.Linear(embed_dim, embed_dim),
+                                           torch.nn.Linear(embed_dim, embed_dim),),
                                           ScaledDotProduct(),
-                                          MultiheadOutProject(embed_dim // nhead, nhead))
+                                          torch.nn.Linear(embed_dim, embed_dim))
 
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
@@ -28,9 +28,9 @@ class TestModels(TorchtextTestCase):
 
         # Use torch.nn.functional.multi_head_attention_forward
         torch_attn_mask = torch.zeros((tgt_len, src_len)).masked_fill_(attn_mask_2D, float('-inf'))
-        in_proj_weight = torch.cat([MHA.query_in_proj.proj_layer.weight,
-                                    MHA.key_in_proj.proj_layer.weight,
-                                    MHA.value_in_proj.proj_layer.weight])
+        in_proj_weight = torch.cat([MHA.query_in_proj.weight,
+                                    MHA.key_in_proj.weight,
+                                    MHA.value_in_proj.weight])
         torch_mha_output, torch_mha_weights = mha_forward(query, key, value,
                                                           embed_dim, nhead,
                                                           in_proj_weight, None,

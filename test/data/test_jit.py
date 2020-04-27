@@ -1,6 +1,5 @@
 import torch
-from torchtext.modules import MultiheadAttentionContainer, \
-    ScaledDotProduct, MultiheadInProject, MultiheadOutProject
+from torchtext.modules import MultiheadAttentionContainer, ScaledDotProduct
 from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
 
@@ -10,11 +9,12 @@ class TestJIT(TorchtextTestCase):
     def test_torchscript_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention models
-        MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, nhead),
-                                          MultiheadInProject(embed_dim, nhead),
-                                          MultiheadInProject(embed_dim, nhead)),
+        MHA = MultiheadAttentionContainer(nhead,
+                                          (torch.nn.Linear(embed_dim, embed_dim),
+                                           torch.nn.Linear(embed_dim, embed_dim),
+                                           torch.nn.Linear(embed_dim, embed_dim)),
                                           ScaledDotProduct(),
-                                          MultiheadOutProject(embed_dim // nhead, nhead))
+                                          torch.nn.Linear(embed_dim, embed_dim))
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
         attn_mask = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)

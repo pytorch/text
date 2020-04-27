@@ -3,21 +3,24 @@ from typing import Tuple, Optional
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
-    def __init__(self, in_proj_tuple, attention_layer, out_proj):
+    def __init__(self, nhead, in_proj_tuple, attention_layer, out_proj):
         r""" A multi-head attention container
 
         Args:
-            in_proj_tuple: A tuple of multi-head in-projection layers
+            nhead: the number of heads in the multiheadattention model
+            in_proj_tuple: A tuple of multi-head in-projection linear layers (a.k.a nn.Linear).
             attention_layer: The attention layer.
-            out_proj: The multi-head out-projection layer
+            out_proj: The multi-head out-projection layer (a.k.a nn.Linear).
 
         Examples::
+            >>> import torch
             >>> embed_dim, num_heads, bsz = 10, 5, 64
-            >>> MHA = MultiheadAttentionContainer((MultiheadInProject(embed_dim, num_heads),
-                                                   MultiheadInProject(embed_dim, num_heads),
-                                                   MultiheadInProject(embed_dim, num_heads)),
+            >>> MHA = MultiheadAttentionContainer(num_heads,
+                                                  (torch.nn.Linear(embed_dim, embed_dim),
+                                                   torch.nn.Linear(embed_dim, embed_dim),
+                                                   torch.nn.Linear(embed_dim, embed_dim)),
                                                    ScaledDotProduct(),
-                                                   MultiheadOutProject(embed_dim // num_heads, num_heads))
+                                                   torch.nn.Linear(embed_dim, embed_dim))
             >>> query = torch.rand((21, bsz, embed_dim))
             >>> key = value = torch.rand((16, bsz, embed_dim))
             >>> attn_output, attn_weights = MHA(query, key, value)
@@ -25,6 +28,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
             >>> torch.Size([21, 64, 10])
         """
         super(MultiheadAttentionContainer, self).__init__()
+        self.nhead = nhead
         self.query_in_proj = in_proj_tuple[0]
         self.key_in_proj = in_proj_tuple[1]
         self.value_in_proj = in_proj_tuple[2]
@@ -60,86 +64,27 @@ class MultiheadAttentionContainer(torch.nn.Module):
             where where L is the target length, S is the sequence length, H is the number of attention heads,
                 N is the batch size, and E is the embedding dimension.
         """
+        tgt_len, src_len, bsz, embed_dim = query.size(-3), key.size(-3), query.size(-2), query.size(-1)
         q = self.query_in_proj(query)
+        assert q.size(-1) % self.nhead == 0, "query's embed_dim must be divisible by the number of heads"
+        head_dim = q.size(-1) // self.nhead
+        q = q.reshape(tgt_len, bsz * self.nhead, head_dim)
+
         k = self.key_in_proj(key)
+        assert k.size(-1) % self.nhead == 0, "key's embed_dim must be divisible by the number of heads"
+        head_dim = k.size(-1) // self.nhead
+        k = k.reshape(src_len, bsz * self.nhead, head_dim)
+
         v = self.value_in_proj(value)
+        assert v.size(-1) % self.nhead == 0, "value's embed_dim must be divisible by the number of heads"
+        head_dim = v.size(-1) // self.nhead
+        v = v.reshape(src_len, bsz * self.nhead, head_dim)
+
         attn_output, attn_output_weights = self.attention_layer(q, k, v, attn_mask=attn_mask,
                                                                 bias_k=bias_k, bias_v=bias_v)
+        attn_output = attn_output.reshape(tgt_len, bsz, embed_dim)
         attn_output = self.out_proj(attn_output)
         return attn_output, attn_output_weights
-
-
-class MultiheadInProject(torch.nn.Module):
-    def __init__(self, embed_dim, num_heads):
-        r"""Process input using multi-head attention.
-
-        Args:
-            embed_dim (int): Input embedding dimension
-            num_heads (int): Number of parallel attention heads.
-        """
-
-        super(MultiheadInProject, self).__init__()
-        assert embed_dim % num_heads == 0, "embed_dim must be divisible by num_heads"
-        self.head_dim = embed_dim // num_heads
-        self.embed_dim = embed_dim
-        self.num_heads = num_heads
-        self.proj_layer = torch.nn.Linear(embed_dim, self.num_heads * self.head_dim, bias=False)
-
-    def forward(self, seq: torch.Tensor) -> torch.Tensor:
-        r"""Projects an input sequence using parallel attention heads.
-
-        Args:
-            seq (Tensor): sequence to be projected
-
-        Shape:
-            - seq: :math:`(S, N, E)`
-
-            - Output: :math:`(S, N * H, E / H)`
-
-            where S is the sequence length, H is the number of attention heads, N is the
-            batch size, and E is the embedding dimension.
-        """
-        seq_len, bsz, proj_dim = seq.size()
-        seq = self.proj_layer(seq)
-        seq = seq.reshape(seq_len, bsz * self.num_heads, self.head_dim)
-        return seq
-
-
-class MultiheadOutProject(torch.nn.Module):
-    def __init__(self, head_dim, num_heads):
-        r"""Process attention output using multi-head attention.
-
-        Args:
-            head_dim (int): Dimension of embedding for each attention head.
-            num_heads (int): Number of parallel attention heads.
-
-        """
-        super(MultiheadOutProject, self).__init__()
-        self.head_dim = head_dim
-        self.num_heads = num_heads
-        self.proj_layer = torch.nn.Linear(num_heads * head_dim, num_heads * head_dim, bias=False)
-
-    def forward(self, seq: torch.Tensor) -> torch.Tensor:
-        r"""Projects an output sequence using parallel attention heads.
-
-        Args:
-            seq (Tensor): Projection to be decoded to an embedding.
-
-        Shape:
-            - seq: :math:`(S, N * H, E / H)`
-
-            - Output: :math:`(S, N, E)`
-
-            where S is the sequence length, H is the number of attention heads, N is the
-            batch size, and E is the embedding dimension.
-        """
-        seq_len, bsz_num_head, head_dim = seq.size()
-        assert bsz_num_head % self.num_heads == 0, \
-            "Dimension -2 of MultiheadOutProject input must be divisible by num_heads"
-        bsz = bsz_num_head // self.num_heads
-        seq = seq.reshape(seq_len, bsz, self.num_heads * self.head_dim)
-        seq = self.proj_layer(seq)
-        return seq
 
 
 class ScaledDotProduct(torch.nn.Module):
