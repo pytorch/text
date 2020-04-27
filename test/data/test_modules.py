@@ -36,8 +36,8 @@ class TestModels(TorchtextTestCase):
                                                           in_proj_weight, None,
                                                           bias_k, bias_v,
                                                           False, 0.0,
-                                                          MHA.out_proj.proj_layer.weight,
-                                                          MHA.out_proj.proj_layer.bias,
+                                                          MHA.out_proj.weight,
+                                                          MHA.out_proj.bias,
                                                           attn_mask=torch_attn_mask)
 
         assert_allclose(mha_output, torch_mha_output)
