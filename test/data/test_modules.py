@@ -83,7 +83,7 @@ class TestModels(TorchtextTestCase):
         assert_allclose(sdp_attn_weights[2][2], sdp_attn_weights_full)
         # dim -2 is not equal to neither key/value's dim -2 or 1
         with self.assertRaises(RuntimeError):
-            SDP(query.expand(tgt_len, 1, embed_dim), key.expand(3, 3, src_len, bsz * nhead, embed_dim),
+            SDP(query.expand(tgt_len, 2, embed_dim), key.expand(3, 3, src_len, bsz * nhead, embed_dim),
                 value.expand(3, 3, src_len, bsz * nhead, embed_dim),
                 attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
 
