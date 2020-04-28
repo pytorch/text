@@ -85,7 +85,7 @@ class TestModels(TorchtextTestCase):
         with self.assertRaises(RuntimeError):
             SDP(query.expand(tgt_len, 1, embed_dim), key.expand(3, 3, src_len, bsz * nhead, embed_dim),
                 value.expand(3, 3, src_len, bsz * nhead, embed_dim),
-                attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len)
+                attn_mask=attn_mask_2D.expand(bsz * nhead, tgt_len, src_len))
 
         # key/value have a size of (src_len, 1, embed_dim)
         # while query has a size of (1, 2, 3, tgt_len, bsz * nhead, embed_dim)
