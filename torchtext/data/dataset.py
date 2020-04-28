@@ -89,7 +89,7 @@ class Dataset(torch.utils.data.Dataset):
 
         Arguments:
             split_ratio (float or List of floats): a number [0, 1] denoting the amount
-                of data to be used for the training split (rest is used for validation),
+                of data to be used for the training split (rest is used for test),
                 or a list of numbers denoting the relative sizes of train, test and valid
                 splits respectively. If the relative size for valid is missing, only the
                 train-test split is returned. Default is 0.7 (for the train set).
@@ -323,8 +323,22 @@ def stratify(examples, strata_field):
 
 
 def rationed_split(examples, train_ratio, test_ratio, val_ratio, rnd):
-    # Create a random permutation of examples, then split them
-    # by ratio x length slices for each of the train/test/dev? splits
+    """Create a random permutation of examples, then split them by ratios
+
+    Arguments:
+        examples: a list of data
+        train_ratio, test_ratio, val_ratio: split fractions.
+        rnd: a random shuffler
+
+    Examples:
+        >>> examples = []
+        >>> train_ratio, test_ratio, val_ratio = 0.7, 0.2, 0.1
+        >>> rnd = torchtext.data.dataset.RandomShuffler(None)
+        >>> train_examples, test_examples, valid_examples = \
+                torchtext.data.dataset.rationed_split(examples, train_ratio,
+                                                      test_ratio, val_ratio,
+                                                      rnd)
+    """
     N = len(examples)
     randperm = rnd(range(N))
     train_len = int(round(train_ratio * N))

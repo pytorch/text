@@ -1,6 +1,5 @@
 import json
-
-import six
+from functools import reduce
 
 
 class Example(object):
@@ -8,10 +7,43 @@ class Example(object):
 
     Stores each column of the example as an attribute.
     """
-
     @classmethod
     def fromJSON(cls, data, fields):
-        return cls.fromdict(json.loads(data), fields)
+        ex = cls()
+        obj = json.loads(data)
+
+        for key, vals in fields.items():
+            if vals is not None:
+                if not isinstance(vals, list):
+                    vals = [vals]
+
+                for val in vals:
+                    # for processing the key likes 'foo.bar'
+                    name, field = val
+                    ks = key.split('.')
+
+                    def reducer(obj, key):
+                        if isinstance(obj, list):
+                            results = []
+                            for data in obj:
+                                if key not in data:
+                                    # key error
+                                    raise ValueError("Specified key {} was not found in "
+                                                     "the input data".format(key))
+                                else:
+                                    results.append(data[key])
+                            return results
+                        else:
+                            # key error
+                            if key not in obj:
+                                raise ValueError("Specified key {} was not found in "
+                                                 "the input data".format(key))
+                            else:
+                                return obj[key]
+
+                    v = reduce(reducer, ks, obj)
+                    setattr(ex, name, field.preprocess(v))
+        return ex
 
     @classmethod
     def fromdict(cls, data, fields):
@@ -42,7 +74,7 @@ class Example(object):
         ex = cls()
         for (name, field), val in zip(fields, data):
             if field is not None:
-                if isinstance(val, six.string_types):
+                if isinstance(val, str):
                     val = val.rstrip('\n')
                 # Handle field tuples
                 if isinstance(name, tuple):

@@ -37,11 +37,20 @@ setup_info = dict(
     license='BSD',
 
     install_requires=[
-        'tqdm', 'requests', 'torch', 'numpy', 'six'
+        'tqdm', 'requests', 'torch', 'numpy', 'sentencepiece'
+    ],
+    python_requires='>=3.5',
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3 :: Only',
     ],
 
     # Package info
-    packages=find_packages(exclude=('test',)),
+    packages=find_packages(exclude=('test', 'test.*')),
 
     zip_safe=True,
 )

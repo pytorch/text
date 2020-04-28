@@ -19,7 +19,7 @@ print('len(train)', len(train))
 print('vars(train[0])', vars(train[0]))
 
 # build the vocabulary
-url = 'https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec'
+url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.simple.vec'
 TEXT.build_vocab(train, vectors=Vectors('wiki.simple.vec', url=url))
 LABEL.build_vocab(train)
 

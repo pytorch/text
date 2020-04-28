@@ -1,14 +1,14 @@
 class Pipeline(object):
     """Defines a pipeline for transforming sequence data.
 
-    The input is assumed to be utf-8 encoded `str` (Python 3) or
-    `unicode` (Python 2).
+    The input is assumed to be utf-8 encoded `str`.
 
     Attributes:
         convert_token: The function to apply to input sequence data.
         pipes: The Pipelines that will be applied to input sequence
             data in order.
     """
+
     def __init__(self, convert_token=None):
         """Create a pipeline.
 

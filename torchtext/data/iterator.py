@@ -1,5 +1,3 @@
-from __future__ import division
-
 import math
 import random
 
@@ -62,7 +60,7 @@ class Iterator(object):
         else:
             self.sort_key = sort_key
 
-        if type(device) == int:
+        if isinstance(device, int):
             logger.warning("The `device` argument should be set by using `torch.device`"
                            + " or passing a string as an argument. This behavior will be"
                            + " deprecated soon and currently defaults to cpu.")
