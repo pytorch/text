@@ -1,5 +1,5 @@
 import torch
-from torchtext.modules import MultiheadAttentionContainer, ScaledDotProduct
+from torchtext.modules import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
 from torch.nn.functional import multi_head_attention_forward as mha_forward
 import time
 
@@ -8,10 +8,10 @@ def benchmark_mha_block():
 
     def _run_benchmark(embed_dim, nhead, tgt_len, src_len, bsz, device):
         # Build torchtext MultiheadAttention module
-        MHA = MultiheadAttentionContainer(nhead,
-                                          (torch.nn.Linear(embed_dim, embed_dim),
-                                           torch.nn.Linear(embed_dim, embed_dim),
-                                           torch.nn.Linear(embed_dim, embed_dim),),
+        in_proj_container = InProjContainer(torch.nn.Linear(embed_dim, embed_dim),
+                                            torch.nn.Linear(embed_dim, embed_dim),
+                                            torch.nn.Linear(embed_dim, embed_dim))
+        MHA = MultiheadAttentionContainer(nhead, in_proj_container,
                                           ScaledDotProduct(),
                                           torch.nn.Linear(embed_dim, embed_dim)).to(device)
 
@@ -31,7 +31,9 @@ def benchmark_mha_block():
         # Use torch.nn.functional.multi_head_attention_forward
         torch_attn_mask = torch.zeros((tgt_len, src_len)).to(device).masked_fill_(attn_mask_2D, float('-inf'))
         print("starting torch.nn.functional.multi_head_attention_forward")
-        in_proj_weight = torch.cat([MHA.query_in_proj.weight, MHA.key_in_proj.weight, MHA.value_in_proj.weight])
+        in_proj_weight = torch.cat([MHA.in_proj_container.query_proj.weight,
+                                    MHA.in_proj_container.key_proj.weight,
+                                    MHA.in_proj_container.value_proj.weight])
         t0 = time.monotonic()
         for _ in range(100):
             torch_mha_output, torch_mha_weights = mha_forward(query, key, value,
