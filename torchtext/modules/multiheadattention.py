@@ -201,5 +201,3 @@ class InProjContainer(torch.nn.Module):
             where S is the sequence length, N is the batch size, and E is the embedding dimension.
         """
         return self.query_proj(query), self.key_proj(key), self.value_proj(value)
-
-
