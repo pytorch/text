@@ -19,43 +19,33 @@ import yaml
 import os.path
 
 
-def workflows(prefix='', upload=False, filter_branch=None, indentation=6):
+PYTHON_VERSIONS = ["3.6", "3.7", "3.8"]
+
+
+def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
     w = []
     for btype in ["wheel", "conda"]:
         for os_type in ["linux", "macos"]:
-            for python_version in ["3.6", "3.7", "3.8"]:
-                w += workflow_pair(btype, os_type, python_version, filter_branch, prefix, upload)
+            for python_version in PYTHON_VERSIONS:
+                w += build_workflow_pair(btype, os_type, python_version, filter_branch, prefix, upload)
 
     return indent(indentation, w)
 
 
-def workflow_pair(btype, os_type, python_version, filter_branch, prefix='', upload=False):
-
+def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix='', upload=False):
     w = []
-    base_workflow_name = "{prefix}binary_{os_type}_{btype}_py{python_version}".format(
-        prefix=prefix,
-        os_type=os_type,
-        btype=btype,
-        python_version=python_version,
-    )
-
+    base_workflow_name = f"{prefix}binary_{os_type}_{btype}_py{python_version}"
     w.append(generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype))
 
     if upload:
-
-        is_py3_linux = os_type == 'linux' and not python_version.startswith("2.")
-
         w.append(generate_upload_workflow(base_workflow_name, filter_branch, btype))
-
-        if filter_branch == 'nightly' and is_py3_linux:
+        if filter_branch == 'nightly' and os_type == 'linux':
             pydistro = 'pip' if btype == 'wheel' else 'conda'
             w.append(generate_smoketest_workflow(pydistro, base_workflow_name, filter_branch, python_version))
-
     return w
 
 
 def generate_base_workflow(base_workflow_name, python_version, filter_branch, os_type, btype):
-
     d = {
         "name": base_workflow_name,
         "python_version": python_version,
@@ -64,7 +54,7 @@ def generate_base_workflow(base_workflow_name, python_version, filter_branch, os
     if filter_branch:
         d["filters"] = gen_filter_branch_tree(filter_branch)
 
-    return {"binary_{os_type}_{btype}".format(os_type=os_type, btype=btype): d}
+    return {f"binary_{os_type}_{btype}": d}
 
 
 def gen_filter_branch_tree(branch_name):
@@ -73,7 +63,7 @@ def gen_filter_branch_tree(branch_name):
 
 def generate_upload_workflow(base_workflow_name, filter_branch, btype):
     d = {
-        "name": "{base_workflow_name}_upload".format(base_workflow_name=base_workflow_name),
+        "name": f"{base_workflow_name}_upload",
         "context": "org-member",
         "requires": [base_workflow_name],
     }
@@ -81,7 +71,7 @@ def generate_upload_workflow(base_workflow_name, filter_branch, btype):
     if filter_branch:
         d["filters"] = gen_filter_branch_tree(filter_branch)
 
-    return {"binary_{btype}_upload".format(btype=btype): d}
+    return {f"binary_{btype}_upload": d}
 
 
 def generate_smoketest_workflow(pydistro, base_workflow_name, filter_branch, python_version):
@@ -89,10 +79,9 @@ def generate_smoketest_workflow(pydistro, base_workflow_name, filter_branch, pyt
     required_build_suffix = "_upload"
     required_build_name = base_workflow_name + required_build_suffix
 
-    smoke_suffix = "smoke_test_{pydistro}".format(pydistro=pydistro)
+    smoke_suffix = f"smoke_test_{pydistro}"
     d = {
-        "name": "{base_workflow_name}_{smoke_suffix}".format(
-            base_workflow_name=base_workflow_name, smoke_suffix=smoke_suffix),
+        "name": f"{base_workflow_name}_{smoke_suffix}",
         "requires": [required_build_name],
         "python_version": python_version,
     }
@@ -100,11 +89,24 @@ def generate_smoketest_workflow(pydistro, base_workflow_name, filter_branch, pyt
     if filter_branch:
         d["filters"] = gen_filter_branch_tree(filter_branch)
 
-    return {"smoke_test_linux_{pydistro}".format(pydistro=pydistro): d}
+    return {f"smoke_test_linux_{pydistro}": d}
 
 
 def indent(indentation, data_list):
     return ("\n" + " " * indentation).join(yaml.dump(data_list).splitlines())
+
+
+def unittest_workflows(indentation=6):
+    w = []
+    for os_type in ["linux"]:
+        for python_version in PYTHON_VERSIONS:
+            w.append({
+                f"unittest_{os_type}": {
+                    "name": f"unittest_{os_type}_py{python_version}",
+                    "python_version": python_version,
+                }
+            })
+    return indent(indentation, w)
 
 
 if __name__ == "__main__":
@@ -116,4 +118,7 @@ if __name__ == "__main__":
     )
 
     with open(os.path.join(d, 'config.yml'), 'w') as f:
-        f.write(env.get_template('config.yml.in').render(workflows=workflows))
+        f.write(env.get_template('config.yml.in').render(
+            build_workflows=build_workflows,
+            unittest_workflows=unittest_workflows,
+        ))
