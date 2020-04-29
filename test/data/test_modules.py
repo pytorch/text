@@ -29,9 +29,9 @@ class TestModels(TorchtextTestCase):
 
         # Use torch.nn.functional.multi_head_attention_forward
         torch_attn_mask = torch.zeros((tgt_len, src_len)).masked_fill_(attn_mask_2D, float('-inf'))
-        in_proj_weight = torch.cat([MHA.in_proj_container.query_in_proj.weight,
-                                    MHA.in_proj_container.key_in_proj.weight,
-                                    MHA.in_proj_container.value_in_proj.weight])
+        in_proj_weight = torch.cat([MHA.in_proj_container.query_proj.weight,
+                                    MHA.in_proj_container.key_proj.weight,
+                                    MHA.in_proj_container.value_proj.weight])
         torch_mha_output, torch_mha_weights = mha_forward(query, key, value,
                                                           embed_dim, nhead,
                                                           in_proj_weight, None,
