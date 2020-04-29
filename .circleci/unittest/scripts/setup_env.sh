@@ -34,5 +34,5 @@ printf "* Installing dependencies (except PyTorch)\n"
 conda env update --file "${this_dir}/environment.yml" --prune
 
 # 4. Download
-printf "* SpaCy English models\n"
+printf "* Downloading SpaCy English models\n"
 python -m spacy download en
