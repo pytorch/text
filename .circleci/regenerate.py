@@ -23,6 +23,7 @@ PYTHON_VERSIONS = ["3.6", "3.7", "3.8"]
 
 
 def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
+    '''
     w = []
     for btype in ["wheel", "conda"]:
         for os_type in ["linux", "macos"]:
@@ -30,7 +31,8 @@ def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
                 w += build_workflow_pair(btype, os_type, python_version, filter_branch, prefix, upload)
 
     return indent(indentation, w)
-
+    '''
+    return ''
 
 def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix='', upload=False):
     w = []

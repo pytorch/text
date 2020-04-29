@@ -269,13 +269,13 @@ jobs:
 
 
 workflows:
-  build:
-    jobs:
-      - circleci_consistency
-      {{ build_workflows() }}
-      - binary_win_conda:
-          name: torchtext_win_py3.6
-          python_version: "3.6"
+  # build:
+  #   jobs:
+  #     - circleci_consistency
+  #     {{ build_workflows() }}
+  #     - binary_win_conda:
+  #         name: torchtext_win_py3.6
+  #         python_version: "3.6"
   unittest:
     jobs:
       {{ unittest_workflows() }}
@@ -285,7 +285,7 @@ workflows:
           filters:
             branches:
               only: nightly
-      {{ build_workflows(prefix="nightly_", filter_branch="nightly", upload=True) }}
+      # {{ build_workflows(prefix="nightly_", filter_branch="nightly", upload=True) }}
   docker_build:
     triggers:
       - schedule:
