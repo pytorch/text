@@ -3,24 +3,25 @@ from typing import Tuple, Optional
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
-    def __init__(self, nhead, in_proj_tuple, attention_layer, out_proj):
+    def __init__(self, nhead, in_proj_container, attention_layer, out_proj):
         r""" A multi-head attention container
 
         Args:
             nhead: the number of heads in the multiheadattention model
-            in_proj_tuple: A tuple of multi-head in-projection linear layers (a.k.a nn.Linear).
+            in_proj_container: A container of multi-head in-projection linear layers (a.k.a nn.Linear).
             attention_layer: The attention layer.
             out_proj: The multi-head out-projection layer (a.k.a nn.Linear).
 
         Examples::
             >>> import torch
             >>> embed_dim, num_heads, bsz = 10, 5, 64
+            >>> in_proj_container = InProjContainer(torch.nn.Linear(embed_dim, embed_dim),
+                                                    torch.nn.Linear(embed_dim, embed_dim),
+                                                    torch.nn.Linear(embed_dim, embed_dim))
             >>> MHA = MultiheadAttentionContainer(num_heads,
-                                                  (torch.nn.Linear(embed_dim, embed_dim),
-                                                   torch.nn.Linear(embed_dim, embed_dim),
-                                                   torch.nn.Linear(embed_dim, embed_dim)),
-                                                   ScaledDotProduct(),
-                                                   torch.nn.Linear(embed_dim, embed_dim))
+                                                  in_proj_container,
+                                                  ScaledDotProduct(),
+                                                  torch.nn.Linear(embed_dim, embed_dim))
             >>> query = torch.rand((21, bsz, embed_dim))
             >>> key = value = torch.rand((16, bsz, embed_dim))
             >>> attn_output, attn_weights = MHA(query, key, value)
@@ -29,9 +30,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
         """
         super(MultiheadAttentionContainer, self).__init__()
         self.nhead = nhead
-        self.query_in_proj = in_proj_tuple[0]
-        self.key_in_proj = in_proj_tuple[1]
-        self.value_in_proj = in_proj_tuple[2]
+        self.in_proj_container = in_proj_container
         self.attention_layer = attention_layer
         self.out_proj = out_proj
 
@@ -65,17 +64,15 @@ class MultiheadAttentionContainer(torch.nn.Module):
                 N is the batch size, and E is the embedding dimension.
         """
         tgt_len, src_len, bsz, embed_dim = query.size(-3), key.size(-3), query.size(-2), query.size(-1)
-        q = self.query_in_proj(query)
+        q, k, v = self.in_proj_container(query, key, value)
         assert q.size(-1) % self.nhead == 0, "query's embed_dim must be divisible by the number of heads"
         head_dim = q.size(-1) // self.nhead
         q = q.reshape(tgt_len, bsz * self.nhead, head_dim)
 
-        k = self.key_in_proj(key)
         assert k.size(-1) % self.nhead == 0, "key's embed_dim must be divisible by the number of heads"
         head_dim = k.size(-1) // self.nhead
         k = k.reshape(src_len, bsz * self.nhead, head_dim)
 
-        v = self.value_in_proj(value)
         assert v.size(-1) % self.nhead == 0, "value's embed_dim must be divisible by the number of heads"
         head_dim = v.size(-1) // self.nhead
         v = v.reshape(src_len, bsz * self.nhead, head_dim)
@@ -172,3 +169,37 @@ class ScaledDotProduct(torch.nn.Module):
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
         return attn_output.transpose(-2, -3), attn_output_weights
+
+
+class InProjContainer(torch.nn.Module):
+    def __init__(self, query_proj, key_proj, value_proj):
+        r"""A in-proj container to process inputs.
+
+        Args:
+            query_proj: a proj layer for query.
+            key_proj: a proj layer for key.
+            value_proj: a proj layer for value.
+        """
+
+        super(InProjContainer, self).__init__()
+        self.query_proj = query_proj
+        self.key_proj = key_proj
+        self.value_proj = value_proj
+
+    def forward(self,
+                query: torch.Tensor,
+                key: torch.Tensor,
+                value: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        r"""Projects the input sequences using in-proj layers.
+
+        Args:
+            query, key, value (Tensors): sequence to be projected
+
+        Shape:
+            - query, key, value: :math:`(S, N, E)`
+            - Output: :math:`(S, N, E)`
+            where S is the sequence length, N is the batch size, and E is the embedding dimension.
+        """
+        return self.query_proj(query), self.key_proj(key), self.value_proj(value)
+
+
