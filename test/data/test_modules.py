@@ -11,11 +11,11 @@ class TestModels(TorchtextTestCase):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
         MHA = MultiheadAttentionContainer(nhead,
-                                          (torch.nn.Linear(embed_dim, embed_dim),
-                                           torch.nn.Linear(embed_dim, embed_dim),
-                                           torch.nn.Linear(embed_dim, embed_dim),),
+                                          (torch.nn.Linear(embed_dim, embed_dim, bias=False),
+                                           torch.nn.Linear(embed_dim, embed_dim, bias=False),
+                                           torch.nn.Linear(embed_dim, embed_dim, bias=False),),
                                           ScaledDotProduct(),
-                                          torch.nn.Linear(embed_dim, embed_dim))
+                                          torch.nn.Linear(embed_dim, embed_dim, bias=False))
 
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
@@ -36,8 +36,7 @@ class TestModels(TorchtextTestCase):
                                                           in_proj_weight, None,
                                                           bias_k, bias_v,
                                                           False, 0.0,
-                                                          MHA.out_proj.weight,
-                                                          MHA.out_proj.bias,
+                                                          MHA.out_proj.weight, None,
                                                           attn_mask=torch_attn_mask)
 
         assert_allclose(mha_output, torch_mha_output)
