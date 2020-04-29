@@ -10,9 +10,9 @@ class TestModels(TorchtextTestCase):
     def test_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
-        in_proj = InProjContainer(torch.nn.Linear(embed_dim, embed_dim),
-                                  torch.nn.Linear(embed_dim, embed_dim),
-                                  torch.nn.Linear(embed_dim, embed_dim))
+        in_proj = InProjContainer(torch.nn.Linear(embed_dim, embed_dim, bias=False),
+                                  torch.nn.Linear(embed_dim, embed_dim, bias=False),
+                                  torch.nn.Linear(embed_dim, embed_dim, bias=False))
 
         MHA = MultiheadAttentionContainer(nhead, in_proj,
                                           ScaledDotProduct(),
