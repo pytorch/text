@@ -34,6 +34,7 @@ def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
     '''
     return ''
 
+
 def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix='', upload=False):
     w = []
     base_workflow_name = f"{prefix}binary_{os_type}_{btype}_py{python_version}"
