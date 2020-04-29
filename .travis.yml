@@ -12,7 +12,7 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - env: PYTHON_VERSION="3.6" RUN_SLOW="true" COVERAGE="true"
+    - env: PYTHON_VERSION="3.6" RUN_SLOW="false" COVERAGE="true"
       sudo: required
 
 notifications:
