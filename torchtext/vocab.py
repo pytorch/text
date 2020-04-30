@@ -186,7 +186,7 @@ class Vocab(object):
                         "vectors are {}".format(vector, list(pretrained_aliases.keys()))
                     )
                 vectors[idx] = pretrained_aliases[vector](**kwargs)
-            elif not (isinstance(vector, Vectors) or isinstance(vector, CharVectors)):
+            elif not (isinstance(vector, Vectors) or isinstance(vector, Vectors)):
                 raise ValueError(
                     "Got input vectors of type {}, expected str or "
                     "Vectors object".format(type(vector))
@@ -490,29 +490,38 @@ class Vectors(object):
         return vecs[0] if to_reduce else vecs
 
 
-class CharVectors(object):
-    def __init__(self, name, cache=None, url=None, unk_init=None, max_vectors=None):
-        """
-        Arguments:
-           name: name of the file that contains the vectors
-           cache: directory for cached vectors
-           url: url for download if vectors not found in cache
-           unk_init (callback): by default, initialize out-of-vocabulary word vectors
-               to zero vectors; can be any function that takes in a Tensor and
-               returns a Tensor of the same size
-           max_vectors (int): this can be used to limit the number of
-               pre-trained vectors loaded.
-               Most pre-trained vector sets are sorted
-               in the descending order of word frequency.
-               Thus, in situations where the entire set doesn't fit in memory,
-               or is not needed for another reason, passing `max_vectors`
-               can limit the size of the loaded set.
-        """
-        cache = ".vector_cache" if cache is None else cache
-        self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
-        self.itos, self.stoi, self.vectors, self.dim = _cache_vectors(
-            name, cache, url=url, max_vectors=max_vectors
-        )
+class GloVe(Vectors):
+    url = {
+        "42B": "http://nlp.stanford.edu/data/glove.42B.300d.zip",
+        "840B": "http://nlp.stanford.edu/data/glove.840B.300d.zip",
+        "twitter.27B": "http://nlp.stanford.edu/data/glove.twitter.27B.zip",
+        "6B": "http://nlp.stanford.edu/data/glove.6B.zip",
+    }
+
+    def __init__(self, name="840B", dim=300, **kwargs):
+        url = self.url[name]
+        name = "glove.{}.{}d.txt".format(name, str(dim))
+        super().__init__(name, url=url, **kwargs)
+
+
+class FastText(Vectors):
+    url_base = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec"
+
+    def __init__(self, language="en", **kwargs):
+        url = self.url_base.format(language)
+        name = os.path.basename(url)
+        super().__init__(name, url=url, **kwargs)
+
+
+class CharNGram(Vectors):
+    name = "charNgram.txt"
+    url = (
+        "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/"
+        "jmt_pre-trained_embeddings.tar.gz"
+    )
+
+    def __init__(self, **kwargs):
+        super().__init__(self.name, url=self.url, **kwargs)
 
     def __getitem__(self, token):
         vector = torch.Tensor(1, self.dim).zero_()
@@ -574,60 +583,6 @@ class CharVectors(object):
 
         vecs = torch.stack(indices)
         return vecs[0] if to_reduce else vecs
-
-
-class GloVe(Vectors):
-    url = {
-        "42B": "http://nlp.stanford.edu/data/glove.42B.300d.zip",
-        "840B": "http://nlp.stanford.edu/data/glove.840B.300d.zip",
-        "twitter.27B": "http://nlp.stanford.edu/data/glove.twitter.27B.zip",
-        "6B": "http://nlp.stanford.edu/data/glove.6B.zip",
-    }
-
-    def __init__(self, name="840B", dim=300, **kwargs):
-        url = self.url[name]
-        name = "glove.{}.{}d.txt".format(name, str(dim))
-        super().__init__(name, url=url, **kwargs)
-
-
-class FastText(Vectors):
-    url_base = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec"
-
-    def __init__(self, language="en", **kwargs):
-        url = self.url_base.format(language)
-        name = os.path.basename(url)
-        super().__init__(name, url=url, **kwargs)
-
-
-class CharNGram(CharVectors):
-    name = "charNgram.txt"
-    url = (
-        "http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/"
-        "jmt_pre-trained_embeddings.tar.gz"
-    )
-
-    def __init__(self, **kwargs):
-        super().__init__(self.name, url=self.url, **kwargs)
-
-    def __getitem__(self, token):
-        vector = torch.Tensor(1, self.dim).zero_()
-        if token == "<unk>":
-            return self.unk_init(vector)
-        chars = ['#BEGIN#'] + list(token) + ['#END#']
-        num_vectors = 0
-        for n in [2, 3, 4]:
-            end = len(chars) - n + 1
-            grams = [chars[i:(i + n)] for i in range(end)]
-            for gram in grams:
-                gram_key = '{}gram-{}'.format(n, ''.join(gram))
-                if gram_key in self.stoi:
-                    vector += self.vectors[self.stoi[gram_key]]
-                    num_vectors += 1
-        if num_vectors > 0:
-            vector /= num_vectors
-        else:
-            vector = self.unk_init(vector)
-        return vector
 
 
 pretrained_aliases = {
