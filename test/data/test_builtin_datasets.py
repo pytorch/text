@@ -4,7 +4,6 @@ import torchtext.data as data
 from torchtext.datasets import AG_NEWS
 import torch
 from torch.testing import assert_allclose
-from ..common.test_markers import slow
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
