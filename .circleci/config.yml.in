@@ -280,6 +280,7 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
+            - .data
       - run:
           name: Post process
           command: .circleci/unittest/scripts/post_process.sh
