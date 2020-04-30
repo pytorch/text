@@ -3,6 +3,7 @@ from torchtext import experimental
 from torchtext.data.utils import get_tokenizer
 import time
 
+
 def benchmark_fasttext():
     ft = vocab.FastText()
     train, test = experimental.datasets.raw.AG_NEWS()
