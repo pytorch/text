@@ -240,17 +240,21 @@ jobs:
     resource_class: 2xlarge+
     steps:
       - checkout
+      - run:
+          name: Generate cache key
+          # This will refresh cache on Sundays, nightly build should refresh the cache.
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly
       - restore_cache:
           {% raw %}
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
       - run:
           name: Setup
           command: .circleci/unittest/scripts/setup_env.sh
       - save_cache:
           {% raw %}
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
           paths:
             - conda
@@ -258,28 +262,21 @@ jobs:
       - run:
           name: Install torchtext
           command: .circleci/unittest/scripts/install.sh
-      - run:
-          name: Generate cache key
-          # This will refresh cache on Sundays, nightly build would refresh the cache.
-          command: echo "$(date +"%Y-%U")" > .circle-week
       - restore_cache:
           keys:
           # NOTE: remove .Branch once it's ready
           {% raw %}
-            - vector-cache-v2-{{ .Branch }}-{{ checksum ".circle-week" }}
+            - vector-cache-v2-{{ .Branch }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
           no_output_timeout: 30m
-          command: |
-              rm -rf .data
-              ls -alh .
-              .circleci/unittest/scripts/run_test.sh
+          command: .circleci/unittest/scripts/run_test.sh
       - save_cache:
           # NOTE: remove .Branch once it's ready
           {% raw %}
-          key: vector-cache-v3-{{ .Branch }}-{{ checksum ".circle-week" }}
+          key: vector-cache-v3-{{ .Branch }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
           paths:
             - .vector_cache
