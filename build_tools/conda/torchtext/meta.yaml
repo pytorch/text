@@ -16,7 +16,6 @@ requirements:
     - numpy >=1.11
     - pytorch >=1.2
     - requests
-    - six
 
 build:
   number: 1

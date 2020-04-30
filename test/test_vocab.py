@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from collections import Counter
 import os
 import pickle
@@ -100,7 +99,7 @@ class TestVocab(TorchtextTestCase):
         # to test string aliases.
         for i in range(3):
             if i == 2:
-                vectors = str("fasttext.simple.300d")  # must handle str on Py2
+                vectors = "fasttext.simple.300d"
             else:
                 vectors = FastText(language='simple')
 
