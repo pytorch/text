@@ -266,7 +266,7 @@ jobs:
           keys:
           # NOTE: remove .Branch once it's ready
 
-            - vector-cache-v2-{{ .Branch }}-{{ checksum ".circleci-weekly" }}
+            - vector-cache-v3-{{ .Branch }}-{{ checksum ".circleci-weekly" }}
 
       - run:
           name: Run tests
