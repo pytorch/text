@@ -258,9 +258,16 @@ jobs:
       - run:
           name: Install torchtext
           command: .circleci/unittest/scripts/install.sh
+      - restore_cache:
+          keys:
+            - vector-cache-v1
       - run:
           name: Run tests
           command: .circleci/unittest/scripts/run_test.sh
+      - save_cache:
+          key: vector-cache-v1
+          paths:
+            - .vector_cache
       - run:
           name: Post process
           command: .circleci/unittest/scripts/post_process.sh
