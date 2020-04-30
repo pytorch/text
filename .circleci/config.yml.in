@@ -266,7 +266,7 @@ jobs:
           keys:
           # NOTE: remove .Branch once it's ready
           {% raw %}
-            - vector-cache-v1-{{ .Branch }}-{{ checksum ".circle-week" }}
+            - vector-cache-v2-{{ .Branch }}-{{ checksum ".circle-week" }}
           {% endraw %}
       - run:
           name: Run tests
@@ -274,7 +274,7 @@ jobs:
       - save_cache:
           # NOTE: remove .Branch once it's ready
           {% raw %}
-          key: vector-cache-v1-{{ .Branch }}-{{ checksum ".circle-week" }}
+          key: vector-cache-v2-{{ .Branch }}-{{ checksum ".circle-week" }}
           {% endraw %}
           paths:
             - .vector_cache
