@@ -258,14 +258,24 @@ jobs:
       - run:
           name: Install torchtext
           command: .circleci/unittest/scripts/install.sh
+      - run:
+          name: Generate cache key
+          # This will refresh cache on Sundays, nightly build would refresh the cache.
+          command: echo "$(date +"%Y-%U")" > .circle-week
       - restore_cache:
           keys:
-            - vector-cache-v1
+          # NOTE: remove .Branch once it's ready
+          {% raw %}
+            - vector-cache-v1-{{ .Branch }}-{{ checksum ".circle-week" }}
+          {% endraw %}
       - run:
           name: Run tests
           command: .circleci/unittest/scripts/run_test.sh
       - save_cache:
-          key: vector-cache-v1
+          # NOTE: remove .Branch once it's ready
+          {% raw %}
+          key: vector-cache-v1-{{ .Branch }}-{{ checksum ".circle-week" }}
+          {% endraw %}
           paths:
             - .vector_cache
       - run:
