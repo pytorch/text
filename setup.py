@@ -6,6 +6,7 @@ import re
 
 from setuptools import setup, find_packages
 from torch.utils.cpp_extension import BuildExtension, CppExtension
+from glob import glob
 
 
 def check_env_flag(name, default=""):
@@ -53,12 +54,14 @@ pytorch_package_dep = "torch"
 if pytorch_package_version is not None:
     pytorch_package_dep += "==" + pytorch_package_version
 
+text_tp = os.path.dirname(os.path.abspath(__file__))
+text_tp = os.path.join(text_tp, 'third_party')
 ext_modules = [
     CppExtension(
         "_torchtext",
         ["torchtext/csrc/vocab.cpp"],
-        libraries=[],
-        include_dirs=[],
+        libraries=['sentencepiece'],
+        include_dirs=[os.path.join(text_tp, 'sentencepiece', 'src')],
         extra_compile_args=eca,
         extra_objects=[],
         extra_link_args=ela,

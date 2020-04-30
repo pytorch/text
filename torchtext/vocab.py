@@ -4,7 +4,6 @@ import logging
 import os
 import zipfile
 import gzip
-import _torchtext
 
 from urllib.request import urlretrieve
 import torch
@@ -318,11 +317,12 @@ class Vectors(object):
         self.dim = None
         self.unk_init = torch.Tensor.zero_ if unk_init is None else unk_init
         self.cache(name, cache, url=url, max_vectors=max_vectors)
-        self.unk_vector = self.unk_init(torch.Tensor(self.dim))
-        self.c_vocab = _torchtext.Vocab(self.itos, self.vectors, self.unk_vector)
 
     def __getitem__(self, token):
-        return self.c_vocab[token]
+        if token in self.stoi:
+            return self.vectors[self.stoi[token]]
+        else:
+            return self.unk_init(torch.Tensor(self.dim))
 
     def cache(self, name, cache, url=None, max_vectors=None):
         import ssl
@@ -428,7 +428,7 @@ class Vectors(object):
             self.itos, self.stoi, self.vectors, self.dim = torch.load(path_pt)
 
     def __len__(self):
-        return len(self.c_vocab)
+        return len(self.vectors)
 
     def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
         """Look up embedding vectors of tokens.
@@ -456,13 +456,13 @@ class Vectors(object):
             to_reduce = True
 
         if not lower_case_backup:
-            vecs = self.c_vocab.get_vecs_by_tokens(tokens)
+            indices = [self[token] for token in tokens]
         else:
             indices = [self[token] if token in self.stoi
                        else self[token.lower()]
                        for token in tokens]
-            vecs = torch.stack(indices)
 
+        vecs = torch.stack(indices)
         return vecs[0] if to_reduce else vecs
 
 
