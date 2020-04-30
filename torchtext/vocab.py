@@ -524,7 +524,7 @@ class CharVectors(object):
         num_vectors = 0
         for n in [2, 3, 4]:
             end = len(chars) - n + 1
-            grams = [chars[i : (i + n)] for i in range(end)]
+            grams = [chars[i: (i + n)] for i in range(end)]
             for gram in grams:
                 gram_key = "{}gram-{}".format(n, "".join(gram))
                 if gram_key in self.stoi:
