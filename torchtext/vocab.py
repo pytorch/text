@@ -186,7 +186,7 @@ class Vocab(object):
                         "vectors are {}".format(vector, list(pretrained_aliases.keys()))
                     )
                 vectors[idx] = pretrained_aliases[vector](**kwargs)
-            elif not (isinstance(vector, Vectors) or isinstance(vector, Vectors)):
+            elif not isinstance(vector, Vectors):
                 raise ValueError(
                     "Got input vectors of type {}, expected str or "
                     "Vectors object".format(type(vector))
