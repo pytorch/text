@@ -65,7 +65,8 @@ class Iterator(object):
             logger.warning("The `device` argument should be set by using `torch.device`"
                            + " or passing a string as an argument. This behavior will be"
                            + " deprecated soon and currently defaults to cpu.")
-            device = torch.device('cpu')
+            if device is None:
+            	device = torch.device('cpu')
         self.device = device
         self.random_shuffler = RandomShuffler()
 
