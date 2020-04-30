@@ -3,6 +3,7 @@ import random
 
 import logging
 
+import torch
 from .utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
