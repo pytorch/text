@@ -67,7 +67,7 @@ class Iterator(object):
                            + " deprecated soon and currently defaults to cpu.")
             device = None
 
-        if(device is None):
+        if device is None:
             device = torch.device('cpu')
 
         self.device = device
