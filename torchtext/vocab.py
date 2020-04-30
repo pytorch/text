@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from collections import defaultdict
 from functools import partial
 import logging
@@ -6,8 +5,7 @@ import os
 import zipfile
 import gzip
 
-import six
-from six.moves.urllib.request import urlretrieve
+from urllib.request import urlretrieve
 import torch
 from tqdm import tqdm
 import tarfile
@@ -179,9 +177,7 @@ class Vocab(object):
         if not isinstance(vectors, list):
             vectors = [vectors]
         for idx, vector in enumerate(vectors):
-            if six.PY2 and isinstance(vector, str):
-                vector = six.text_type(vector)
-            if isinstance(vector, six.string_types):
+            if isinstance(vector, str):
                 # Convert the string pretrained vector identifier
                 # to a Vectors object
                 if vector not in pretrained_aliases:
@@ -612,6 +608,27 @@ class CharNGram(CharVectors):
 
     def __init__(self, **kwargs):
         super().__init__(self.name, url=self.url, **kwargs)
+
+    def __getitem__(self, token):
+        vector = torch.Tensor(1, self.dim).zero_()
+        if token == "<unk>":
+            return self.unk_init(vector)
+        chars = ['#BEGIN#'] + list(token) + ['#END#']
+        num_vectors = 0
+        for n in [2, 3, 4]:
+            end = len(chars) - n + 1
+            grams = [chars[i:(i + n)] for i in range(end)]
+            for gram in grams:
+                gram_key = '{}gram-{}'.format(n, ''.join(gram))
+                if gram_key in self.stoi:
+                    vector += self.vectors[self.stoi[gram_key]]
+                    num_vectors += 1
+        if num_vectors > 0:
+            vector /= num_vectors
+        else:
+            vector = self.unk_init(vector)
+        return vector
+>>>>>>> master
 
 
 pretrained_aliases = {
