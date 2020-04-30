@@ -270,6 +270,7 @@ jobs:
 
       - run:
           name: Run tests
+          # Downloading embedding vector takes long time.
           no_output_timeout: 30m
           command: .circleci/unittest/scripts/run_test.sh
       - save_cache:
