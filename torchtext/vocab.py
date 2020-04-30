@@ -628,7 +628,6 @@ class CharNGram(CharVectors):
         else:
             vector = self.unk_init(vector)
         return vector
->>>>>>> master
 
 
 pretrained_aliases = {
