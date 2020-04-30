@@ -67,7 +67,7 @@ class Iterator(object):
             device = None
 
         if(device is None):
-        	device = torch.device('cpu')
+            device = torch.device('cpu')
 
         self.device = device
         self.random_shuffler = RandomShuffler()
