@@ -242,7 +242,7 @@ jobs:
       - checkout
       - run:
           name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should refresh the cache.
+          # This will refresh cache on Sundays, nightly build should generate new cache.
           command: echo "$(date +"%Y-%U")" > .circleci-weekly
       - restore_cache:
 
