@@ -1,0 +1,34 @@
+package:
+  name: torchtext
+  version: 0.4.0
+
+source:
+   url: https://github.com/pytorch/text/archive/0.4.0.zip
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - tqdm
+    - numpy >=1.11
+    - pytorch >=1.2
+    - requests
+
+build:
+  number: 1
+  noarch: python
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+test:
+   imports:
+      - torchtext
+      - torchtext.data
+
+about:
+  home: https://github.com/pytorch/text
+  license: BSD
+  license_file: LICENSE
+  summary: 'PyTorch Data loaders and abstractions for text and NLP'
