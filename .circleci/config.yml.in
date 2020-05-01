@@ -264,9 +264,8 @@ jobs:
           command: .circleci/unittest/scripts/install.sh
       - restore_cache:
           keys:
-          # NOTE: remove .Branch once it's ready
           {% raw %}
-            - data-v1-{{ .Branch }}-{{ checksum ".circleci-weekly" }}
+            - data-v1-{{ checksum ".circleci-weekly" }}
           {% endraw %}
       - run:
           name: Run tests
@@ -274,9 +273,8 @@ jobs:
           no_output_timeout: 30m
           command: .circleci/unittest/scripts/run_test.sh
       - save_cache:
-          # NOTE: remove .Branch once it's ready
           {% raw %}
-          key: data-v1-{{ .Branch }}-{{ checksum ".circleci-weekly" }}
+          key: data-v1-{{ checksum ".circleci-weekly" }}
           {% endraw %}
           paths:
             - .vector_cache
