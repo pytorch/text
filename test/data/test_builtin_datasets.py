@@ -4,7 +4,6 @@ import torchtext.data as data
 from torchtext.datasets import AG_NEWS
 import torch
 from torch.testing import assert_allclose
-from ..common.test_markers import slow
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -16,10 +15,16 @@ def conditional_remove(f):
 
 
 class TestDataset(TorchtextTestCase):
-    @slow
     def test_wikitext2_legacy(self):
         from torchtext.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
+
+        # NOTE
+        # test_wikitext2 and test_wikitext2_legacy have some cache incompatibility.
+        # Keeping one's cache make the other fail. So we need to clean up the cache dir
+        cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
+        conditional_remove(cachedir)
+
         ds = WikiText2
         TEXT = data.Field(lower=True, batch_first=True)
         train, valid, test = ds.splits(TEXT)
@@ -30,13 +35,20 @@ class TestDataset(TorchtextTestCase):
         train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
                                                      bptt_len=30)
 
-        # Delete the dataset after we're done to save disk space on CI
-        datafile = os.path.join(self.project_root, ".data", "wikitext-2")
-        conditional_remove(datafile)
+        conditional_remove(cachedir)
 
     def test_wikitext2(self):
         from torchtext.experimental.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
+
+        # NOTE
+        # test_wikitext2 and test_wikitext2_legacy have some cache incompatibility.
+        # Keeping one's cache make the other fail. So we need to clean up the cache dir
+        cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
+        conditional_remove(cachedir)
+        cachefile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
+        conditional_remove(cachefile)
+
         train_dataset, test_dataset, valid_dataset = WikiText2()
         self.assertEqual(len(train_dataset), 2049990)
         self.assertEqual(len(test_dataset), 241859)
@@ -46,13 +58,9 @@ class TestDataset(TorchtextTestCase):
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
         self.assertEqual(tokens_ids, [2, 286, 503, 700])
 
-        # Delete the dataset after we're done to save disk space on CI
-        datafile = os.path.join(self.project_root, ".data", "wikitext-2")
-        conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
-        conditional_remove(datafile)
+        conditional_remove(cachedir)
+        conditional_remove(cachefile)
 
-    @slow
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
@@ -66,10 +74,6 @@ class TestDataset(TorchtextTestCase):
         train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
                                                      bptt_len=30)
 
-        # Delete the dataset after we're done to save disk space on CI
-        datafile = os.path.join(self.project_root, ".data", "penn-treebank")
-        conditional_remove(datafile)
-
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure wikitext2 works properly
@@ -81,14 +85,6 @@ class TestDataset(TorchtextTestCase):
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
         self.assertEqual(tokens_ids, [2, 2550, 3344, 1125])
-
-        # Delete the dataset after we're done to save disk space on CI
-        datafile = os.path.join(self.project_root, ".data", 'ptb.train.txt')
-        conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", 'ptb.test.txt')
-        conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", 'ptb.valid.txt')
-        conditional_remove(datafile)
 
     def test_text_classification(self):
         # smoke test to ensure ag_news dataset works properly
@@ -104,13 +100,6 @@ class TestDataset(TorchtextTestCase):
         assert_allclose(ag_news_test[-1][1][:10],
                         torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786]).long())
 
-        # Delete the dataset after we're done to save disk space on CI
-        datafile = os.path.join(self.project_root, ".data", "ag_news_csv")
-        conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "ag_news_csv.tar.gz")
-        conditional_remove(datafile)
-
-    @slow
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab
@@ -131,11 +120,3 @@ class TestDataset(TorchtextTestCase):
         old_vocab = train_dataset.get_vocab()
         new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
-
-        # Delete the dataset after we're done to save disk space on CI
-        datafile = os.path.join(self.project_root, ".data", "imdb")
-        conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "aclImdb")
-        conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "aclImdb_v1.tar.gz")
-        conditional_remove(datafile)
