@@ -4,7 +4,6 @@ from torchtext.data.functional import generate_sp_model, load_sp_model, \
     sentencepiece_numericalizer, sentencepiece_tokenizer, \
     custom_replace, simple_space_split
 import os
-import sys
 
 
 class TestFunctional(TorchtextTestCase):
@@ -47,17 +46,10 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_tokenizer(sp_model)
 
-        # Handle byte string in Python2 and Unicode string in Python3, respectively
-        if sys.version_info < (3, 0):
-            ref_results = ['\xe2\x96\x81Sent', 'ence', 'P', 'ie', 'ce', '\xe2\x96\x81is',
-                           '\xe2\x96\x81an', '\xe2\x96\x81un', 'super', 'vis', 'ed',
-                           '\xe2\x96\x81text', '\xe2\x96\x81to', 'ken', 'izer',
-                           '\xe2\x96\x81and', '\xe2\x96\x81de', 'to', 'ken', 'izer']
-        else:
-            ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
-                           '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
-                           '\u2581to', 'ken', 'izer', '\u2581and',
-                           '\u2581de', 'to', 'ken', 'izer']
+        ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+                       '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+                       '\u2581to', 'ken', 'izer', '\u2581and',
+                       '\u2581de', 'to', 'ken', 'izer']
 
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)

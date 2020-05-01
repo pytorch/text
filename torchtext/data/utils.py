@@ -6,7 +6,8 @@ import re
 from functools import partial
 
 
-def _split_tokenizer(x):
+def _split_tokenizer(x): # noqa: F821
+    # type: (str) -> List[str]
     return x.split()
 
 

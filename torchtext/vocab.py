@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from collections import defaultdict
 from functools import partial
 import logging
@@ -6,8 +5,7 @@ import os
 import zipfile
 import gzip
 
-import six
-from six.moves.urllib.request import urlretrieve
+from urllib.request import urlretrieve
 import torch
 from tqdm import tqdm
 import tarfile
@@ -33,7 +31,7 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
+    def __init__(self, counter, max_size=None, min_freq=1, specials=('<unk>', '<pad>'),
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
@@ -169,9 +167,7 @@ class Vocab(object):
         if not isinstance(vectors, list):
             vectors = [vectors]
         for idx, vector in enumerate(vectors):
-            if six.PY2 and isinstance(vector, str):
-                vector = six.text_type(vector)
-            if isinstance(vector, six.string_types):
+            if isinstance(vector, str):
                 # Convert the string pretrained vector identifier
                 # to a Vectors object
                 if vector not in pretrained_aliases:
@@ -222,7 +218,7 @@ class Vocab(object):
 
 class SubwordVocab(Vocab):
 
-    def __init__(self, counter, max_size=None, specials=['<pad>'],
+    def __init__(self, counter, max_size=None, specials=('<pad>'),
                  vectors=None, unk_init=torch.Tensor.zero_):
         """Create a revtok subword vocabulary from a collections.Counter.
 
@@ -406,7 +402,7 @@ class Vectors(object):
                                                                     dim))
 
                     try:
-                        if isinstance(word, six.binary_type):
+                        if isinstance(word, bytes):
                             word = word.decode('utf-8')
                     except UnicodeDecodeError:
                         logger.info("Skipping non-UTF8 token {}".format(repr(word)))
@@ -507,8 +503,6 @@ class CharNGram(Vectors):
         vector = torch.Tensor(1, self.dim).zero_()
         if token == "<unk>":
             return self.unk_init(vector)
-        # These literals need to be coerced to unicode for Python 2 compatibility
-        # when we try to join them with read ngrams from the files.
         chars = ['#BEGIN#'] + list(token) + ['#END#']
         num_vectors = 0
         for n in [2, 3, 4]:
