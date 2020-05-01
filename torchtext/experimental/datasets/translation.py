@@ -19,7 +19,9 @@ URLS = {
         'mmt_task1_test2016.tar.gz'
     ],
     'WMT14':
-    'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
+    'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
+    'IWSLT':
+    'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
 }
 
 
@@ -257,11 +259,9 @@ def Multi30k(languages="de-en",
 
 
 def IWSLT(languages='de-en',
-          train_filenames=('train.de-en.de', 'train.de-en.en'),
-          valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
-                           'IWSLT16.TED.tst2013.de-en.en'),
-          test_filenames=('IWSLT16.TED.tst2014.de-en.de',
-                          'IWSLT16.TED.tst2014.de-en.en'),
+          train_filename='train.de-en',
+          valid_filename='IWSLT16.TED.tst2013.de-en',
+          test_filename='IWSLT16.TED.tst2014.de-en',
           tokenizer=(get_tokenizer("spacy", language='de'),
                      get_tokenizer("spacy", language='en')),
           root='.data',
@@ -299,17 +299,17 @@ def IWSLT(languages='de-en',
         >>> src_data, tgt_data = train_dataset[10]
     """
     src_language, tgt_language = languages.split('-')
-    base_url = 'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
-    url = base_url.format(src_language, tgt_language, languages)
+    URLS["IWSLT"] = URLS["IWSLT"].format(src_language, tgt_language, languages)
 
-    train_dataset = _setup_datasets(url, train_filenames, tokenizer, root,
-                                    vocab, removed_tokens)
-    src_vocab, tgt_vocab = train_dataset.get_vocab()
-    valid_dataset = _setup_datasets(url, valid_filenames, tokenizer, root,
-                                    (src_vocab, tgt_vocab), removed_tokens)
-    test_dataset = _setup_datasets(url, test_filenames, tokenizer, root,
-                                   (src_vocab, tgt_vocab), removed_tokens)
-    return (train_dataset, valid_dataset, test_dataset)
+    return _setup_datasets("IWSLT",
+                           languages=languages,
+                           train_filename=train_filename,
+                           valid_filename=valid_filename,
+                           test_filename=test_filename,
+                           tokenizer=tokenizer,
+                           root=root,
+                           vocab=vocab,
+                           removed_tokens=removed_tokens)
 
 
 def WMT14(languages="de-en",
@@ -410,17 +410,3 @@ def WMT14(languages="de-en",
                            root=root,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
-    # train_dataset = _setup_datasets(URLS['WMT14'], train_filenames, tokenizer,
-    #                                 root, vocab, removed_tokens)
-    # src_vocab, tgt_vocab = train_dataset.get_vocab()
-    # valid_dataset = _setup_datasets(URLS['WMT14'], valid_filenames, tokenizer,
-    #                                 root, (src_vocab, tgt_vocab),
-    #                                 removed_tokens)
-    # test_dataset = _setup_datasets(URLS['WMT14'], test_filenames, tokenizer,
-    #                                root, (src_vocab, tgt_vocab),
-    #                                removed_tokens)
-    # return (train_dataset, valid_dataset, test_dataset)
-
-
-if __name__ == "__main__":
-    WMT14()
