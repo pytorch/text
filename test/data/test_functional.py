@@ -83,11 +83,9 @@ class TestFunctional(TorchtextTestCase):
         tokenizer = get_tokenizer("basic_english")
         expected_result = [['who', 'is', 'voldemort', '?'],
                            ['i', 'really', 'do', 'not', 'know', '.'],
-                           [
-                               'i', 'am', 'rather', 'concerned', 'how', 'we',
-                               'will', 'match', 'our', 'programs', ',', 'he',
-                               'said', '.'
-                           ]]
+                           ['i', 'am', 'rather', 'concerned', 'how', 'we',
+                            'will', 'match', 'our', 'programs', ',', 'he',
+                            'said', '.']]
         res = list((read_text_iterator(data_path, tokenizer)))
         self.assertEqual(res, expected_result)
 
