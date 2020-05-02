@@ -1,19 +1,20 @@
 import re
+import io
+import logging
+from torchtext.utils import unicode_csv_reader
 
 __all__ = [
-    "generate_sp_model", "load_sp_model",
-    "sentencepiece_numericalizer", "sentencepiece_tokenizer",
-    "numericalize_tokens_from_iterator"
+    "generate_sp_model", "load_sp_model", "sentencepiece_numericalizer",
+    "sentencepiece_tokenizer", "numericalize_tokens_from_iterator"
 ]
-
-
 """
 This file contains experimental functionality.
 All of these are experimental, unstable, and subject to change or deletion.
 """
 
 
-def generate_sp_model(filename, vocab_size=20000,
+def generate_sp_model(filename,
+                      vocab_size=20000,
                       model_type="unigram",
                       model_prefix='m_user'):
     r"""Train a SentencePiece tokenizer.
@@ -40,10 +41,8 @@ def generate_sp_model(filename, vocab_size=20000,
     spm_training_string = "--input={} \
                            --vocab_size={} \
                            --model_prefix={} \
-                           --model_type={}".format(filename,
-                                                   vocab_size,
-                                                   model_prefix,
-                                                   model_type)
+                           --model_type={}".format(filename, vocab_size,
+                                                   model_prefix, model_type)
     spm.SentencePieceTrainer.train(spm_training_string)
     return None
 
@@ -89,10 +88,10 @@ def sentencepiece_numericalizer(sp_model):
             [[9858, 9249, 1629, 1305, 1809, 53, 842],
              [2347, 13, 9, 150, 37]]
     """
-
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsIds(line)
+
     return _internal_func
 
 
@@ -115,10 +114,10 @@ def sentencepiece_tokenizer(sp_model):
             [['_sentence', 'piece', '_en', 'co', 'de', '_as', '_pieces'],
              ['_example', 's', '_to', '_try', '!']]
     """
-
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsPieces(line)
+
     return _internal_func
 
 
@@ -133,14 +132,14 @@ def custom_replace(replace_pattern):
             ['sentencepiece encode as pieces', 'examples to try!']
     """
 
-    _patterns = list((re.compile(p), r)
-                     for (p, r) in replace_pattern)
+    _patterns = list((re.compile(p), r) for (p, r) in replace_pattern)
 
     def _internal_func(txt_iter):
         for line in txt_iter:
             for pattern_re, replaced_str in _patterns:
                 line = pattern_re.sub(replaced_str, line)
             yield line
+
     return _internal_func
 
 
@@ -182,5 +181,54 @@ def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
         if removed_tokens is None:
             yield iter(vocab[token] for token in tokens)
         else:
-            yield iter(map(lambda x: vocab[x],
-                       filter(lambda x: x not in removed_tokens, tokens)))
+            yield iter(
+                map(lambda x: vocab[x],
+                    filter(lambda x: x not in removed_tokens, tokens)))
+
+
+def read_text_iterator(path, tokenizer):
+    r"""Read text from path and yield a list of tokens based on the tokenizer
+    Arguments:
+        path: the file path.
+        tokenizer: the tokenizer used to tokenize string text.
+    Examples:
+        >>> from torchtext.data.functional import read_text_iterator
+        >>> tokenizer = get_tokenizer("basic_english")
+        >>> list((read_text_iterator('.data/ptb.train.txt', tokenizer)))
+            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
+    """
+
+    with io.open(path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            tokens = tokenizer(' '.join(row))
+            yield tokens
+
+
+def create_data_from_iterator(vocab, iterator, removed_tokens=None):
+    r"""Yield a list of ids from an token iterator with a vocab.
+    Arguments:
+        vocab: the vocabulary convert token into id.
+        iterator: the iterator yield a list of tokens.
+        removed_tokens: removed tokens from output dataset (Default: None)
+    Examples:
+        >>> from torchtext.data.functional import simple_space_split
+        >>> from torchtext.data.functional import create_data_from_iterator
+        >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
+        >>> list(create_data_from_iterator(vocab,
+        >>>                                simple_space_split(["Sentencepiece as pieces",
+        >>>                                                   "as pieces"]))
+        >>> [[0, 2, 3], [2, 3]]
+    """
+
+    for tokens in iterator:
+        if removed_tokens is None:
+            tokens = [vocab[token] for token in tokens]
+        else:
+            token_ids = list(
+                filter(lambda x: x not in removed_tokens,
+                       [vocab[token] for token in tokens]))
+            tokens = token_ids
+        if len(tokens) == 0:
+            logging.info('Row contains no tokens.')
+        yield tokens
