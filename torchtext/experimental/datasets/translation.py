@@ -44,7 +44,7 @@ def _clean_tags_file(f_orig):
             io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
         for l in fd_orig:
             if not any(tag in l for tag in xml_tags):
-                #[TODO] Fix utf-8 next line mark
+                # TODO: Fix utf-8 next line mark
                 #                fd_txt.write(l.strip() + '\n')
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
@@ -170,6 +170,7 @@ class TranslationDataset(torch.utils.data.Dataset):
        Currently, we only support the following datasets:
              - Multi30k
              - WMT14
+             - IWSLT
     """
     def __init__(self, data, vocab):
         """Initiate translation dataset.
@@ -221,15 +222,26 @@ def Multi30k(languages="de-en",
              vocab=(None, None),
              removed_tokens=['<unk>']):
     """ Define translation datasets: Multi30k
-        Separately returns train/valid/test datasets
+        Separately returns train/valid/test datasets as a tuple
 
     Arguments:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.de', 'train.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('val.de', 'val.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('test2016.de', 'test2016.en')
+        languages: The source and target languages for the datasets.
+            Will be used as a suffix for train_filename, valid_filename,
+            and test_filename. The first split (before -) is the source
+            and the second split is the target.
+            Default: 'de-en' for source-target languages.
+        train_filename: The source and target filenames for training
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'train'
+        valid_filename: The source and target filenames for valid
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'val'
+        test_filename: The source and target filenames for test
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'test2016'
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             Default: (torchtext.data.utils.get_tokenizer("spacy", language='de'),
                       torchtext.data.utils.get_tokenizer("spacy", language='en'))
@@ -272,14 +284,23 @@ def IWSLT(languages='de-en',
         The available datasets include:
 
     Arguments:
-        languages: the source and target languages for the datasets.
+        languages: The source and target languages for the datasets.
+            Will be used as a suffix for train_filename, valid_filename,
+            and test_filename. The first split (before -) is the source
+            and the second split is the target.
             Default: 'de-en' for source-target languages.
-        train_filenames: the source and target filenames for training.
-            Default: ('train.de-en.de', 'train.de-en.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+        train_filename: The source and target filenames for training
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'train.de-en'
+        valid_filename: The source and target filenames for valid
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'IWSLT16.TED.tst2013.de-en'
+        test_filename: The source and target filenames for test
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'IWSLT16.TED.tst2014.de-en'
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             Default: (torchtext.data.utils.get_tokenizer("spacy", language='de'),
                       torchtext.data.utils.get_tokenizer("spacy", language='en'))
@@ -376,12 +397,23 @@ def WMT14(languages="de-en",
             train.tok.clean.bpe.32000.de
 
     Arguments:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+        languages: The source and target languages for the datasets.
+            Will be used as a suffix for train_filename, valid_filename,
+            and test_filename. The first split (before -) is the source
+            and the second split is the target.
+            Default: 'de-en' for source-target languages.
+        train_filename: The source and target filenames for training
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'train.tok.clean.bpe.32000'
+        valid_filename: The source and target filenames for valid
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'newstest2013.tok.bpe.32000'
+        test_filename: The source and target filenames for test
+            without the extension since it's already handled by languages
+            parameter.
+            Default: 'newstest2014.tok.bpe.32000'
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             Default: (torchtext.data.utils.get_tokenizer("spacy", language='de'),
                       torchtext.data.utils.get_tokenizer("spacy", language='en'))
