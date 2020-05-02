@@ -170,7 +170,6 @@ class TestDataset(TorchtextTestCase):
                                 "mmt_task1_test2016.tar.gz")
         conditional_remove(datafile)
 
-    @slow
     def test_wmt14(self):
         from torchtext.experimental.datasets.translation import WMT14
         # smoke test to ensure wmt14 works properly
