@@ -27,7 +27,7 @@ def ngrams_func(ngrams):
 
 def build_vocab(data, transforms):
     tok_list = []
-    for (label, txt) in data:
+    for _, txt in data:
         tok_list.append(transforms(txt))
     return build_vocab_from_iterator(tok_list)
 
