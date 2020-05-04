@@ -132,7 +132,7 @@ class TestVocab(TorchtextTestCase):
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+        for _ in range(2):
             f = FastText(language='simple')
             v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=f)
@@ -163,7 +163,7 @@ class TestVocab(TorchtextTestCase):
     def test_vocab_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+        for _ in range(2):
             v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=Vectors('wiki.simple.vec',
                                             url=FastText.url_base.format('simple')))
