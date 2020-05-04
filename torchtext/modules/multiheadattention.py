@@ -44,8 +44,9 @@ class MultiheadAttentionContainer(torch.nn.Module):
             query, key, value (Tensor): map a query and a set of key-value pairs to an output.
                 See "Attention Is All You Need" for more details.
             attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
-            bias_k and bias_v:bias (Tensor, optional): one more key and value sequence to be added at
-                sequence dim (dim=-3). Those are used for incremental decoding.
+            bias_k and bias_v: (Tensor, optional): one more key and value sequence to be added at
+                sequence dim (dim=-3). Those are used for incremental decoding. Users should provide
+                non-None to both arguments in order to activate them.
 
         Shape:
             - Inputs:
@@ -116,8 +117,9 @@ class ScaledDotProduct(torch.nn.Module):
             key (Tensor): Projected key
             value (Tensor): Projected value
             attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
-            bias_k and bias_v:bias: the additional key and value sequence to be added at sequence dim (dim=-3).
-                Those are used for incremental decoding.
+            bias_k and bias_v: (Tensor, optional): one more key and value sequence to be added at
+                sequence dim (dim=-3). Those are used for incremental decoding. Users should provide
+                non-None to both arguments in order to activate them.
 
         Shape:
             - query: :math:`(L, N * H, E / H)`
