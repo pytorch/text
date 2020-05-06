@@ -4,7 +4,7 @@ import math
 import torch
 import torch.nn as nn
 from model import MLMTask
-from utils import setup, cleanup, run_demo, print_loss_log
+from utils import setup, cleanup, run_demo, wrap_up
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
@@ -233,27 +233,12 @@ def run_main(args, rank=None):
         ###############################################################################
         test_loss = evaluate(test_data, model, train_dataset.vocab, ntokens, criterion, args, device)
         if rank == 0:
-            wrap_up(train_loss_log, val_loss_log, test_loss, args, model)
+            wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'mlm_loss.txt', 'full_mlm_model.pt')
     else:
         with open(args.save, 'rb') as f:
             model = torch.load(f)
         test_loss = evaluate(test_data, model, train_dataset.vocab, ntokens, criterion, args, device)
-        wrap_up(train_loss_log, val_loss_log, test_loss, args, model)
-
-
-def wrap_up(train_loss_log, val_loss_log, test_loss, args, model):
-    print('=' * 89)
-    print('| End of training | test loss {:5.2f} | test ppl {:8.2f}'.format(
-          test_loss, math.exp(test_loss)))
-    print('=' * 89)
-    print_loss_log('mlm_loss.txt', train_loss_log, val_loss_log, test_loss, args)
-    ###############################################################################
-    # Save the bert model layer
-    ###############################################################################
-    with open(args.save, 'wb') as f:
-        torch.save(model.module.bert_model, f)
-    with open('mlm_model.pt', 'wb') as f:
-        torch.save(model.module, f)
+        wrap_up(train_loss_log, val_loss_log, test_loss, args, model, 'mlm_loss.txt', 'full_mlm_model.pt')
 
 
 if __name__ == "__main__":
@@ -284,9 +269,9 @@ if __name__ == "__main__":
                         help='report interval')
     parser.add_argument('--checkpoint', type=str, default='None',
                         help='path to load the checkpoint')
-    parser.add_argument('--save', type=str, default='bert_model.pt',
+    parser.add_argument('--save', type=str, default='mlm_bert.pt',
                         help='path to save the final model')
-    parser.add_argument('--save-vocab', type=str, default='squad_30k_vocab_cls_sep.pt',
+    parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')

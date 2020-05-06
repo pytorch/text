@@ -4,23 +4,19 @@ import math
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-import torchtext
 from model import NextSentenceTask
-from utils import setup, cleanup, run_demo, print_loss_log
+from utils import setup, cleanup, run_demo, wrap_up
 import torch.distributed as dist
-import os
 
 
-def generate_next_sentence_data(whole_data, args):
+def process_raw_data(whole_data, args):
     processed_data = []
-
     for item in whole_data:
         if len(item) > 1:
             # idx to split the text into two sentencd
             split_idx = torch.randint(1, len(item), size=(1, 1)).item()
             # Index 2 means same sentence label. Initial true int(1)
             processed_data.append([item[:split_idx], item[split_idx:], 1])
-
     # Random shuffle data to have args.frac_ns next sentence set up
     shuffle_idx1 = torch.randperm(len(processed_data))
     shuffle_idx2 = torch.randperm(len(processed_data))
@@ -32,7 +28,7 @@ def generate_next_sentence_data(whole_data, args):
     return processed_data
 
 
-def pad_next_sentence_data(batch, args, sep_id, pad_id):
+def collate_batch(batch, args, cls_id, sep_id, pad_id):
     # Fix sequence length to args.bptt with padding or trim
     seq_list = []
     tok_type = []
@@ -51,10 +47,12 @@ def pad_next_sentence_data(batch, args, sep_id, pad_id):
         _tok_tp[:_idx] = 0.0
         tok_type.append(_tok_tp)
         same_sentence_labels.append(item[2])
-
-    return torch.stack(seq_list).long().t().contiguous(), \
-        torch.stack(tok_type).long().t().contiguous(), \
-        torch.tensor(same_sentence_labels).long().contiguous()
+    # Add <'cls'> token id to the beginning of seq across batches
+    seq_input = torch.stack(seq_list).long().t().contiguous()
+    seq_input = torch.cat((torch.tensor([[cls_id] * seq_input.size(1)]).long(), seq_input))
+    tok_type = torch.stack(tok_type).long().t().contiguous()
+    tok_type = torch.cat((torch.tensor([[0] * tok_type.size(1)]).long(), tok_type))
+    return seq_input, tok_type, torch.tensor(same_sentence_labels).long().contiguous()
 
 
 ###############################################################################
@@ -67,15 +65,11 @@ def evaluate(data_source, model, device, criterion, sep_id, pad_id, args):
     model.eval()
     total_loss = 0.
     batch_size = args.batch_size
-    dataloader = DataLoader(data_source, batch_size=batch_size, shuffle=True,
-                            collate_fn=lambda b: pad_next_sentence_data(b, args, sep_id, pad_id))
     cls_id = data_source.vocab.stoi['<cls>']
-
+    dataloader = DataLoader(data_source, batch_size=batch_size, shuffle=True,
+                            collate_fn=lambda b: collate_batch(b, args, cls_id, sep_id, pad_id))
     with torch.no_grad():
         for idx, (seq_input, tok_type, target_ns_labels) in enumerate(dataloader):
-            # Add <'cls'> token id to the beginning of seq across batches
-            seq_input = torch.cat((torch.tensor([[cls_id] * seq_input.size(1)]).long(), seq_input))
-            tok_type = torch.cat((torch.tensor([[0] * tok_type.size(1)]).long(), tok_type))
             if args.parallel == 'DDP':
                 seq_input = seq_input.to(device[0])
                 tok_type = tok_type.to(device[0])
@@ -88,7 +82,6 @@ def evaluate(data_source, model, device, criterion, sep_id, pad_id, args):
             ns_labels = model(seq_input, token_type_input=tok_type)
             loss = criterion(ns_labels, target_ns_labels)
             total_loss += loss.item()
-
     return total_loss / (len(data_source) // batch_size)
 
 
@@ -103,15 +96,11 @@ def train(train_dataset, model, train_loss_log, device, optimizer, criterion,
     total_loss = 0.
     start_time = time.time()
     batch_size = args.batch_size
-    dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
-                            collate_fn=lambda b: pad_next_sentence_data(b, args, sep_id, pad_id))
     cls_id = train_dataset.vocab.stoi['<cls>']
+    dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                            collate_fn=lambda b: collate_batch(b, args, cls_id, sep_id, pad_id))
     train_loss_log.append(0.0)
-
     for idx, (seq_input, tok_type, target_ns_labels) in enumerate(dataloader):
-        # Add <'cls'> token id to the beginning of seq across batches
-        seq_input = torch.cat((torch.tensor([[cls_id] * seq_input.size(1)]).long(), seq_input))
-        tok_type = torch.cat((torch.tensor([[0] * tok_type.size(1)]).long(), tok_type))
         if args.parallel == 'DDP':
             seq_input = seq_input.to(device[0])
             tok_type = tok_type.to(device[0])
@@ -127,14 +116,10 @@ def train(train_dataset, model, train_loss_log, device, optimizer, criterion,
         ns_labels = model(seq_input, token_type_input=tok_type)
         loss = criterion(ns_labels, target_ns_labels)
         loss.backward()
-
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
-
         optimizer.step()
-
         total_loss += loss.item()
-
         if idx % args.log_interval == 0 and idx > 0:
             cur_loss = total_loss / args.log_interval
             elapsed = time.time() - start_time
@@ -158,7 +143,6 @@ def run_ddp(rank, args):
 
 
 def run_main(args, rank=None):
-
     # Set the random seed manually for reproducibility.
     torch.manual_seed(args.seed)
     if args.parallel == 'DDP':
@@ -186,9 +170,9 @@ def run_main(args, rank=None):
     if rank is not None:
         chunk_len = len(train_dataset.data) // args.world_size
         train_dataset.data = train_dataset.data[(rank * chunk_len):((rank + 1) * chunk_len)]
-    train_dataset.data = generate_next_sentence_data(train_dataset.data, args)
-    valid_dataset.data = generate_next_sentence_data(valid_dataset.data, args)
-    test_dataset.data = generate_next_sentence_data(test_dataset.data, args)
+    train_dataset.data = process_raw_data(train_dataset.data, args)
+    valid_dataset.data = process_raw_data(valid_dataset.data, args)
+    test_dataset.data = process_raw_data(test_dataset.data, args)
 
     ###################################################################
     # Build the model
@@ -238,7 +222,7 @@ def run_main(args, rank=None):
                 with open(args.save, 'wb') as f:
                     torch.save(model, f)
             elif rank == 0:
-                with open(os.environ['SLURM_JOB_ID'] + '_' + args.save, 'wb') as f:
+                with open(args.save, 'wb') as f:
                     torch.save(model.state_dict(), f)
             best_val_loss = val_loss
         else:
@@ -250,75 +234,58 @@ def run_main(args, rank=None):
         # [TODO] put dist.barrier() back
         # dist.barrier()
         # configure map_location properly
+#        dist.barrier()
         rank0_devices = [x - rank * len(device) for x in device]
         device_pairs = zip(rank0_devices, device)
         map_location = {'cuda:%d' % x: 'cuda:%d' % y for x, y in device_pairs}
-        model.load_state_dict(torch.load(os.environ['SLURM_JOB_ID'] + '_' + args.save, map_location=map_location))
+        model.load_state_dict(torch.load(args.save, map_location=map_location))
         test_loss = evaluate(test_dataset, model, device, criterion, sep_id, pad_id, args)
         if rank == 0:
-            print('=' * 89)
-            print('| End of training | test loss {:8.5f} | test ppl {:8.5f}'.format(
-                  test_loss, math.exp(test_loss)))
-            print('=' * 89)
-            print_loss_log(os.environ['SLURM_JOB_ID'] + '_ns_loss.txt', train_loss_log, val_loss_log, test_loss, args)
-        ###############################################################################
-        # Save the bert model layer
-        ###############################################################################
-            with open(os.environ['SLURM_JOB_ID'] + '_' + args.save, 'wb') as f:
-                torch.save(model.module.bert_model, f)
-            with open(os.environ['SLURM_JOB_ID'] + '_' + 'full_ns_model.pt', 'wb') as f:
-                torch.save(model.module, f)
+            wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'ns_loss.txt', 'ns_model.pt')
     else:
         with open(args.save, 'rb') as f:
             model = torch.load(f)
 
         test_loss = evaluate(test_dataset, model, device,
                              criterion, sep_id, pad_id)
-        print('=' * 89)
-        print('| End of training | test loss {:8.5f} | test ppl {:8.5f}'.format(
-              test_loss, math.exp(test_loss)))
-        print('=' * 89)
-        print_loss_log('ns_loss.txt', train_loss_log, val_loss_log, test_loss)
-
-        with open(args.save, 'wb') as f:
-            torch.save(model.bert_model, f)
+        wrap_up(train_loss_log, val_loss_log, test_loss, args, model, 'ns_loss.txt', 'ns_model.pt')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Question-Answer fine-tuning task')
     parser.add_argument('--dataset', type=str, default='WikiText103',
                         help='dataset used for next sentence task')
-    parser.add_argument('--lr', type=float, default=5,
+    parser.add_argument('--lr', type=float, default=0.25,
                         help='initial learning rate')
-    parser.add_argument('--clip', type=float, default=0.25,
+    parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=2,
+    parser.add_argument('--epochs', type=int, default=1,
                         help='upper epoch limit')
-    parser.add_argument('--batch_size', type=int, default=6, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=24, metavar='N',
                         help='batch size')
-    parser.add_argument('--bptt', type=int, default=35,
+    parser.add_argument('--bptt', type=int, default=128,
                         help='max. sequence length for the next-sentence pair')
-    parser.add_argument('--min_sentence_len', type=int, default=1,
+    parser.add_argument('--min_sentence_len', type=int, default=60,
                         help='min. sequence length for the raw text tokens')
-    parser.add_argument('--seed', type=int, default=1111,
+    parser.add_argument('--seed', type=int, default=312216194,
                         help='random seed')
     parser.add_argument('--cuda', action='store_true',
                         help='use CUDA')
-    parser.add_argument('--log-interval', type=int, default=1000, metavar='N',
+    parser.add_argument('--log-interval', type=int, default=600, metavar='N',
                         help='report interval')
     parser.add_argument('--checkpoint', type=str, default='None',
                         help='path to load the checkpoint')
-    parser.add_argument('--save', type=str, default='ns_model.pt',
+    parser.add_argument('--save', type=str, default='ns_bert.pt',
                         help='path to save the final model')
-    parser.add_argument('--save-vocab', type=str, default='vocab.pt',
+    parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
-    parser.add_argument('--bert-model', type=str,
+    parser.add_argument('--bert-model', type=str, default='torchtext_bert_mlm.pt',
                         help='path to save the pretrained bert')
     parser.add_argument('--frac_ns', type=float, default=0.5,
                         help='fraction of not next sentence')
-    parser.add_argument('--parallel', type=str, default='None',
+    parser.add_argument('--parallel', type=str, default='DDP',
                         help='Use DataParallel/DDP to train model')
-    parser.add_argument('--world_size', type=int, default=1,
+    parser.add_argument('--world_size', type=int, default=8,
                         help='the world size to initiate DPP')
     args = parser.parse_args()
 

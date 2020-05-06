@@ -2,6 +2,7 @@ import torch
 import torch.distributed as dist
 import os
 import torch.multiprocessing as mp
+import math
 
 
 def setup(rank, world_size, seed):
@@ -38,3 +39,14 @@ def print_loss_log(file_name, train_loss, val_loss, test_loss, args=None):
             f.write('epoch {:3d} | val loss {:8.5f}'.format(idx + 1,
                                                             val_loss[idx]) + '\n')
         f.write('test loss {:8.5f}'.format(test_loss) + '\n')
+
+
+def wrap_up(train_loss_log, val_loss_log, test_loss, args, model, ns_loss_log, model_filename):
+    print('=' * 89)
+    print('| End of training | test loss {:8.5f} | test ppl {:8.5f}'.format(test_loss, math.exp(test_loss)))
+    print('=' * 89)
+    print_loss_log(ns_loss_log, train_loss_log, val_loss_log, test_loss)
+    with open(args.save, 'wb') as f:
+        torch.save(model.bert_model, f)
+    with open(model_filename, 'wb') as f:
+        torch.save(model, f)
