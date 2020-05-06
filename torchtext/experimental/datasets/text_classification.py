@@ -40,48 +40,29 @@ def squential_transforms(*transforms):
     return _forward
 
 
-class TextClassificationDataset(torch.utils.data.Dataset):
-    """Defines an abstract text classification datasets.
-       Currently, we only support the following datasets:
-             - AG_NEWS
-             - SogouNews
-             - DBpedia
-             - YelpReviewPolarity
-             - YelpReviewFull
-             - YahooAnswers
-             - AmazonReviewPolarity
-             - AmazonReviewFull
+class MultiColumnDataset(torch.utils.data.Dataset):
+    """Defines an abstract multi-column datasets.
     """
 
     def __init__(self, data, vocab, transforms):
-        """Initiate text-classification dataset.
+        """Initiate multi-column dataset (e.g. CSV or TSV).
 
         Arguments:
-            data: a list of label and text tring tuple. label is an integer.
-                [(label1, text1), (label2, text2), (label2, text3)]
+            data: a list of data tuple (e.g. label, text data [(label1, text1), (label2, text2), (label2, text3)]).
             vocab: Vocabulary object used for dataset.
-            transforms: a tuple of label and text string transforms.
+            transforms: a tuple of transforms.
         """
 
-        super(TextClassificationDataset, self).__init__()
+        super(MultiColumnDataset, self).__init__()
         self.data = data
         self.vocab = vocab
-        self.transforms = transforms  # (label_transforms, tokens_transforms)
+        self.transforms = transforms
 
     def __getitem__(self, i):
-        label = self.data[i][0]
-        txt = self.data[i][1]
-        return (self.transforms[0](label), self.transforms[1](txt))
+        return tuple(self.transforms[j](self.data[i][j]) for j in range(len(self.data[i])))
 
     def __len__(self):
         return len(self.data)
-
-    def get_labels(self):
-        labels = []
-        for item in self.data:
-            label = item[0]
-            labels.apppend(self.transforms[0](label))
-        return set(labels)
 
     def get_vocab(self):
         return self.vocab
@@ -110,8 +91,8 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     text_transform = squential_transforms(text_transform, vocab_func(vocab),
                                           totensor(dtype=torch.long))
     label_transform = squential_transforms(totensor(dtype=torch.long))
-    return tuple(TextClassificationDataset(raw_data[item], vocab,
-                                           (label_transform, text_transform))
+    return tuple(MultiColumnDataset(raw_data[item], vocab,
+                                    (label_transform, text_transform))
                  for item in data_select)
 
 
