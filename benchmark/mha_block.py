@@ -22,14 +22,19 @@ def benchmark_mha_block():
         else:
             key = value = torch.rand((src_len, bsz, embed_dim)).to(device)
         attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool).to(device)
+        attn_mask = torch.stack([attn_mask_2D] * (bsz * nhead))
         bias_k = bias_v = torch.rand((1, 1, embed_dim)).to(device)
         print("starting torchtext.modules.MultiheadAttentionContainer")
+        if device == torch.device("cuda"):
+            torch.cuda.synchronize()
         t0 = time.monotonic()
         for _ in range(100):
             mha_output, attn_weights = MHA(query, key, value,
-                                           attn_mask=torch.stack([attn_mask_2D] * (bsz * nhead)),
+                                           attn_mask=attn_mask,
                                            bias_k=bias_k.repeat(1, bsz, 1).reshape(1, bsz * nhead, -1),
                                            bias_v=bias_v.repeat(1, bsz, 1).reshape(1, bsz * nhead, -1))
+        if device == torch.device("cuda"):
+            torch.cuda.synchronize()
         print(time.monotonic() - t0)
 
         # Use torch.nn.functional.multi_head_attention_forward
@@ -38,6 +43,8 @@ def benchmark_mha_block():
         in_proj_weight = torch.cat([MHA.in_proj_container.query_proj.weight,
                                     MHA.in_proj_container.key_proj.weight,
                                     MHA.in_proj_container.value_proj.weight])
+        if device == torch.device("cuda"):
+            torch.cuda.synchronize()
         t0 = time.monotonic()
         for _ in range(100):
             torch_mha_output, torch_mha_weights = mha_forward(query, key, value,
@@ -48,27 +55,48 @@ def benchmark_mha_block():
                                                               MHA.out_proj.weight,
                                                               MHA.out_proj.bias,
                                                               attn_mask=torch_attn_mask)
+        if device == torch.device("cuda"):
+            torch.cuda.synchronize()
         print(time.monotonic() - t0)
 
-    print("*" * 80)
-    print("test case GPU with embed_dim, nhead, tgt_len, src_len, bsz:", 768, 12, 128, 128, 72)
-    _run_benchmark(768, 12, 72, torch.device("cuda"), 128, 128)
+    # GPU test
+    device = torch.device("cuda")
+    for embed_dim in [64, 768]:
+        for nhead in [2, 16]:
+            for seq_len in [10, 128, 1000]:
+                for bsz in [2, 72]:
+                    if seq_len == 1000 and bsz == 72:
+                        continue
+                    print("*" * 80)
+                    print("test case GPU with embed_dim, nhead, seq_len, bsz:",
+                          embed_dim, nhead, seq_len, seq_len, bsz)
+                    _run_benchmark(embed_dim, nhead, bsz, device, seq_len, seq_len)
 
-    print("*" * 80)
-    print("self-attention test case GPU with embed_dim, nhead, tgt_len, src_len, bsz:", 256, 8, 1000, 1000, 2)
-    _run_benchmark(256, 8, 2, torch.device("cuda"), 1000)
+    # GPU test for self-attention
+    device = torch.device("cuda")
+    for embed_dim in [64, 256]:
+        for nhead in [2, 16]:
+            for seq_len in [10, 128, 1000]:
+                for bsz in [2, 72]:
+                    if seq_len == 1000 and bsz == 72:
+                        continue
+                    print("*" * 80)
+                    print("self-attention test case GPU with embed_dim, nhead, seq_len, bsz:",
+                          embed_dim, nhead, seq_len, seq_len, bsz)
+                    _run_benchmark(embed_dim, nhead, bsz, device, seq_len, None)
 
-    print("*" * 80)
-    print("test case GPU with embed_dim, nhead, tgt_len, src_len, bsz:", 64, 2, 10, 10, 8)
-    _run_benchmark(64, 2, 8, torch.device("cuda"), 10, 10)
-
-    print("*" * 80)
-    print("test case CPU with embed_dim, nhead, tgt_len, src_len, bsz:", 768, 12, 128, 128, 72)
-    _run_benchmark(768, 12, 72, torch.device("cpu"), 128, 128)
-
-    print("*" * 80)
-    print("test case CPU with embed_dim, nhead, tgt_len, src_len, bsz:", 64, 2, 10, 10, 8)
-    _run_benchmark(64, 2, 8, torch.device("cpu"), 10, 10)
+    # CPU test for self-attention
+    device = torch.device("cpu")
+    for embed_dim in [64, 768]:
+        for nhead in [2, 16]:
+            for seq_len in [10, 128, 1000]:
+                for bsz in [2, 72]:
+                    if seq_len == 1000 and bsz == 72:
+                        continue
+                    print("*" * 80)
+                    print("test case CPU with embed_dim, nhead, seq_len, bsz:",
+                          embed_dim, nhead, seq_len, seq_len, bsz)
+                    _run_benchmark(embed_dim, nhead, bsz, device, seq_len, None)
 
 
 if __name__ == "__main__":
