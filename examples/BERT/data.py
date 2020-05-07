@@ -11,7 +11,7 @@ from torchtext.data.functional import custom_replace
 import random
 import glob
 import os
-
+import raw_data
 
 URLS = {
     'SQuAD1':
@@ -29,6 +29,10 @@ URLS = {
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
     'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
+}
+
+DATASETS = {
+    'WikiText103': raw_data.WikiText103,
 }
 
 
@@ -158,6 +162,34 @@ def SQuAD2(*args, **kwargs):
 # Set up WMTNewsCrawl
 # Need a larger dataset to train BERT model
 ###################################################################
+class TextDataset(torch.utils.data.Dataset):
+    """Defines an abstract text datasets.
+    """
+
+    def __init__(self, data, vocab, transforms):
+        """Initiate text dataset.
+        Arguments:
+            data: a list of text string tuples.
+            vocab: Vocabulary object used for dataset.
+            transforms: a tuple of text string transforms.
+        """
+
+        super(TextDataset, self).__init__()
+        self.data = data
+        self.vocab = vocab
+        self.transforms = transforms
+
+    def __getitem__(self, i):
+        print(len(self.data[i]))
+        return tuple(self.transforms[j](self.data[i][j]) for j in range(len(self.data[i])))
+
+    def __len__(self):
+        return len(self.data)
+
+    def get_vocab(self):
+        return self.vocab
+
+
 class LanguageModelingDataset(torch.utils.data.Dataset):
     """Defines a dataset for language modeling.
        Currently, we only support the following datasets:
@@ -288,64 +320,67 @@ def WMTNewsCrawl(*args, **kwargs):
 # Set up dataset for  Next Sentence Prediction
 ###################################################################
 
+
+def vocab_func(vocab):
+    def _forward(tok_iter):
+        return [vocab[tok] for tok in tok_iter]
+    return _forward
+
+
+def totensor(dtype):
+    def _forward(ids_list):
+        return torch.tensor(ids_list).to(dtype)
+    return _forward
+
+
+def build_vocab(data, transforms):
+    tok_list = []
+    for _, txt in data:
+        tok_list.append(transforms(txt))
+    return build_vocab_from_iterator(tok_list)
+
+
+def squential_transforms(*transforms):
+    def _forward(txt_input):
+        for transform in transforms:
+            txt_input = transform(txt_input)
+        return txt_input
+    return _forward
+
+
 def _setup_ns(dataset_name, tokenizer=get_tokenizer("basic_english"),
               root='.data', vocab=None, removed_tokens=[],
               data_select=('train', 'test', 'valid'), single_line=True):
 
+    text_transform = []
+    if tokenizer is None:
+        tokenizer = get_tokenizer('basic_english')
+    text_transform = squential_transforms(tokenizer)
+
     if isinstance(data_select, str):
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test', 'valid'))):
-        raise TypeError('data_select is not supported!')
+        raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
-    if dataset_name == 'PennTreebank':
-        extracted_files = []
-        select_to_index = {'train': 0, 'test': 1, 'valid': 2}
-        extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
-                                             root=root) for key in data_select]
-    else:
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files = extract_archive(dataset_tar)
-
-    _path = {}
-    for item in data_select:
-        _path[item] = _get_datafile_path(item, extracted_files)
+    train, valid, test = DATASETS[dataset_name](root=root)
+    # Cache raw text iterable dataset
+    raw_data = {'train': [(txt,) for txt in train],
+                'valid': [(txt,) for txt in valid],
+                'test': [(txt,) for txt in test]}
+    if single_line:
+        for item in raw_data.keys():
+            raw_data[item] = ' '.join(raw_data[item])
 
     if vocab is None:
-        if 'train' not in _path.keys():
+        if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building Vocab based on {}'.format(_path['train']))
-        txt_iter = iter(tokenizer(row) for row in io.open(_path['train'],
-                                                          encoding="utf8"))
-        vocab = build_vocab_from_iterator(txt_iter)
-        logging.info('Vocab has {} entries'.format(len(vocab)))
-    else:
-        if not isinstance(vocab, Vocab):
-            raise TypeError("Passed vocabulary is not of type Vocab")
-
-    data = {}
-    for item in _path.keys():
-        data[item] = []
-        logging.info('Creating {} data'.format(item))
-        txt_iter = iter(tokenizer(row) for row in io.open(_path[item],
-                                                          encoding="utf8"))
-        _iter = numericalize_tokens_from_iterator(
-            vocab, txt_iter, removed_tokens)
-        for tokens in _iter:
-            if single_line:
-                data[item] += [token_id for token_id in tokens]
-            else:
-                data[item].append([token_id for token_id in tokens])
-
-    for key in data_select:
-        if data[key] == []:
-            raise TypeError('Dataset {} is empty!'.format(key))
-
-    if single_line:
-        return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
-                     for d in data_select)
-    else:
-        return tuple(LanguageModelingDataset(data[d], vocab)
-                     for d in data_select)
+        tok_list = []
+        for txt in raw_data['train']:
+            tok_list.append(text_transform(txt))
+        vocab = build_vocab_from_iterator(tok_list)
+    text_transform = squential_transforms(text_transform, vocab_func(vocab),
+                                          totensor(dtype=torch.long))
+    return tuple(TextDataset(raw_data[item], vocab, (text_transform,)) for item in data_select)
 
 
 def WikiText103(*args, **kwargs):
