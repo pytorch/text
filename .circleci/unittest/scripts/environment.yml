@@ -5,6 +5,7 @@ dependencies:
   - codecov
   - pip
   - pip:
+    - clang-format
     - nltk
     - requests
     - revtok
