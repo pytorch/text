@@ -14,4 +14,5 @@ printf "* Installing PyTorch nightly build\n"
 conda install -y -c pytorch-nightly pytorch cpuonly
 
 printf "* Installing torchtext\n"
+git submodule update --init --recursive
 python setup.py develop
