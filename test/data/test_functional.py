@@ -55,7 +55,7 @@ class TestFunctional(TorchtextTestCase):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = get_asset_path('spm_example.model')
         sp_model = load_sp_model(model_path)
-        self.assertEqual(sp_model.GetPieceSize(), 20000)
+        self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_numericalizer(sp_model)
 
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
@@ -68,7 +68,7 @@ class TestFunctional(TorchtextTestCase):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = get_asset_path('spm_example.model')
         sp_model = load_sp_model(model_path)
-        self.assertEqual(sp_model.GetPieceSize(), 20000)
+        self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_tokenizer(sp_model)
 
         ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
