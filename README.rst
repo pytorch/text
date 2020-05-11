@@ -49,6 +49,14 @@ Documentation
 
 Find the documentation `here <https://pytorch.org/text/>`_.
 
+
+Conventions
+-----------
+
+Transforms expect and return the following.
+
+* Tokenizer transforms like `SplitTokenizer`, `BasicEnglishTokenizer`, `SentencePieceTokenizer`, `SpacyTokenizer`: str -> List[str]
+
 Data
 ====
 
