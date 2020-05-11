@@ -1,5 +1,6 @@
 from typing import List
 import torch
+from torchtext.data.functional import load_sp_model
 
 
 class SplitTokenizer(torch.nn.Module):
@@ -40,6 +41,19 @@ class BasicEnglishTokenizer(torch.nn.Module):
                     re_tokens.append(token)
             return re_tokens
         self.tokenizer = basic_english_normalize
+
+    def forward(self, txt: str) -> List[str]:
+        return self.tokenizer(txt)
+
+
+class SentencePieceTokenizer(torch.nn.Module):
+    r""" Initiate a tokenizer transform class
+    """
+
+    def __init__(self, model_path):
+        super(SentencePieceTokenizer, self).__init__()
+        sp_model = load_sp_model(model_path)
+        self.tokenizer = sp_model.EncodeAsPieces
 
     def forward(self, txt: str) -> List[str]:
         return self.tokenizer(txt)
