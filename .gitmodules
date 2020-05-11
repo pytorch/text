@@ -1,0 +1,4 @@
+[submodule "third_party/sentencepiece"]
+	path = third_party/sentencepiece
+	url = https://github.com/google/sentencepiece
+	ignore = dirty

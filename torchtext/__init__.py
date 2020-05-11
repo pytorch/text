@@ -11,3 +11,15 @@ __all__ = ['data',
            'utils',
            'vocab',
            'experimental']
+
+
+def _init_extension():
+    import torch
+    torch.ops.load_library('torchtext/_torchtext.so')
+    torch.classes.load_library('torchtext/_torchtext.so')
+
+
+_init_extension()
+
+
+del _init_extension
