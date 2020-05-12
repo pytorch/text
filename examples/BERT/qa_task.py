@@ -143,7 +143,7 @@ if __name__ == "__main__":
                         help='path to save the final bert model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
-    parser.add_argument('--bert-model', type=str, default='torchtext_bert_ns.pt',
+    parser.add_argument('--bert-model', type=str, default='ns_bert.pt',
                         help='path to save the pretrained bert')
     args = parser.parse_args()
     torch.manual_seed(args.seed)

@@ -232,7 +232,7 @@ if __name__ == "__main__":
                         help='path to save the final model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
-    parser.add_argument('--bert-model', type=str, default='torchtext_bert_mlm.pt',
+    parser.add_argument('--bert-model', type=str, default='mlm_bert.pt',
                         help='path to save the pretrained bert')
     parser.add_argument('--frac_ns', type=float, default=0.5,
                         help='fraction of not next sentence')
