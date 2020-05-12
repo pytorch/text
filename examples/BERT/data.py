@@ -180,7 +180,6 @@ class TextDataset(torch.utils.data.Dataset):
         self.transforms = transforms
 
     def __getitem__(self, i):
-        print(len(self.data[i]))
         return tuple(self.transforms[j](self.data[i][j]) for j in range(len(self.data[i])))
 
     def __len__(self):
@@ -378,8 +377,7 @@ def _setup_ns(dataset_name, tokenizer=get_tokenizer("basic_english"),
         for txt in raw_data['train']:
             tok_list.append(text_transform(txt))
         vocab = build_vocab_from_iterator(tok_list)
-    text_transform = squential_transforms(text_transform, vocab_func(vocab),
-                                          totensor(dtype=torch.long))
+    text_transform = squential_transforms(text_transform, vocab_func(vocab))
     return tuple(TextDataset(raw_data[item], vocab, (text_transform,)) for item in data_select)
 
 

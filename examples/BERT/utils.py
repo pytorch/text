@@ -20,11 +20,17 @@ def cleanup():
     dist.destroy_process_group()
 
 
-def run_demo(demo_fn, args):
+def run_demo(demo_fn, main_fn, args):
     mp.spawn(demo_fn,
-             args=(args,),
+             args=(main_fn, args,),
              nprocs=args.world_size,
              join=True)
+
+
+def run_ddp(rank, main_fn, args):
+    setup(rank, args.world_size, args.seed)
+    main_fn(args, rank)
+    cleanup()
 
 
 def print_loss_log(file_name, train_loss, val_loss, test_loss, args=None):

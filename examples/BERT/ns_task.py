@@ -3,15 +3,15 @@ import time
 import math
 import torch
 import torch.nn as nn
+from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from model import NextSentenceTask
-from utils import setup, cleanup, run_demo, wrap_up
-import torch.distributed as dist
+from utils import run_demo, run_ddp, wrap_up
 
 
 def process_raw_data(whole_data, args):
     processed_data = []
-    for item in whole_data:
+    for item, in whole_data:
         if len(item) > 1:
             # idx to split the text into two sentencd
             split_idx = torch.randint(1, len(item), size=(1, 1)).item()
@@ -47,7 +47,6 @@ def collate_batch(batch, args, cls_id, sep_id, pad_id):
         _tok_tp[:_idx] = 0.0
         tok_type.append(_tok_tp)
         same_sentence_labels.append(item[2])
-    # Add <'cls'> token id to the beginning of seq across batches
     seq_input = torch.stack(seq_list).long().t().contiguous()
     seq_input = torch.cat((torch.tensor([[cls_id] * seq_input.size(1)]).long(), seq_input))
     tok_type = torch.stack(tok_type).long().t().contiguous()
@@ -55,17 +54,10 @@ def collate_batch(batch, args, cls_id, sep_id, pad_id):
     return seq_input, tok_type, torch.tensor(same_sentence_labels).long().contiguous()
 
 
-###############################################################################
-# Evaluating code
-###############################################################################
-
-
-def evaluate(data_source, model, device, criterion, sep_id, pad_id, args):
-    # Turn on evaluation mode which disables dropout.
+def evaluate(data_source, model, device, criterion, cls_id, sep_id, pad_id, args):
     model.eval()
     total_loss = 0.
     batch_size = args.batch_size
-    cls_id = data_source.vocab.stoi['<cls>']
     dataloader = DataLoader(data_source, batch_size=batch_size, shuffle=True,
                             collate_fn=lambda b: collate_batch(b, args, cls_id, sep_id, pad_id))
     with torch.no_grad():
@@ -85,18 +77,12 @@ def evaluate(data_source, model, device, criterion, sep_id, pad_id, args):
     return total_loss / (len(data_source) // batch_size)
 
 
-###############################################################################
-# Training code
-###############################################################################
-
 def train(train_dataset, model, train_loss_log, device, optimizer, criterion,
-          epoch, scheduler, sep_id, pad_id, args, rank=None):
-    # Turn on training mode which enables dropout.
+          epoch, scheduler, cls_id, sep_id, pad_id, args, rank=None):
     model.train()
     total_loss = 0.
     start_time = time.time()
     batch_size = args.batch_size
-    cls_id = train_dataset.vocab.stoi['<cls>']
     dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
                             collate_fn=lambda b: collate_batch(b, args, cls_id, sep_id, pad_id))
     train_loss_log.append(0.0)
@@ -109,14 +95,11 @@ def train(train_dataset, model, train_loss_log, device, optimizer, criterion,
             seq_input = seq_input.to(device)
             tok_type = tok_type.to(device)
             target_ns_labels = target_ns_labels.to(device)
-        # Starting each batch, we detach the hidden state from how it was previously produced.
-        # If we didn't, the model would try backpropagating all the way to start of the dataset.
         optimizer.zero_grad()
         seq_input = seq_input.transpose(0, 1)  # Wrap up by DDP or DataParallel
         ns_labels = model(seq_input, token_type_input=tok_type)
         loss = criterion(ns_labels, target_ns_labels)
         loss.backward()
-        # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
         optimizer.step()
         total_loss += loss.item()
@@ -136,12 +119,6 @@ def train(train_dataset, model, train_loss_log, device, optimizer, criterion,
             start_time = time.time()
 
 
-def run_ddp(rank, args):
-    setup(rank, args.world_size, args.seed)
-    run_main(args, rank)
-    cleanup()
-
-
 def run_main(args, rank=None):
     # Set the random seed manually for reproducibility.
     torch.manual_seed(args.seed)
@@ -150,11 +127,8 @@ def run_main(args, rank=None):
         device = list(range(rank * n, (rank + 1) * n))
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    ###################################################################
-    # Load data
-    ###################################################################
     vocab = torch.load(args.save_vocab)
+    cls_id = vocab.stoi['<cls>']
     pad_id = vocab.stoi['<pad>']
     sep_id = vocab.stoi['<sep>']
 
@@ -166,47 +140,33 @@ def run_main(args, rank=None):
         from data import BookCorpus
         train_dataset, valid_dataset, test_dataset = BookCorpus(vocab=vocab,
                                                                 min_sentence_len=args.min_sentence_len)
-
     if rank is not None:
         chunk_len = len(train_dataset.data) // args.world_size
         train_dataset.data = train_dataset.data[(rank * chunk_len):((rank + 1) * chunk_len)]
-    train_dataset.data = process_raw_data(train_dataset.data, args)
-    valid_dataset.data = process_raw_data(valid_dataset.data, args)
-    test_dataset.data = process_raw_data(test_dataset.data, args)
 
-    ###################################################################
-    # Build the model
-    ###################################################################
-    pretrained_bert = torch.load(args.bert_model)
-    model = NextSentenceTask(pretrained_bert)
     if args.checkpoint != 'None':
         model = torch.load(args.checkpoint)
+    else:
+        pretrained_bert = torch.load(args.bert_model)
+        model = NextSentenceTask(pretrained_bert)
 
     if args.parallel == 'DDP':
         model = model.to(device[0])
-        from torch.nn.parallel import DistributedDataParallel as DDP
         model = DDP(model, device_ids=device)
     else:
         model = model.to(device)
-
     criterion = nn.CrossEntropyLoss()
-
-    ###################################################################
-    # Loop over epochs.
-    ###################################################################
-
-    lr = args.lr
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
     best_val_loss = None
     train_loss_log, val_loss_log = [], []
 
     for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
-        train(train_dataset, model, train_loss_log, device, optimizer,
-              criterion, epoch, scheduler, sep_id, pad_id, args, rank)
-        val_loss = evaluate(valid_dataset, model, device, criterion,
-                            sep_id, pad_id, args)
+        train(process_raw_data(train_dataset, args), model, train_loss_log, device, optimizer,
+              criterion, epoch, scheduler, cls_id, sep_id, pad_id, args, rank)
+        val_loss = evaluate(process_raw_data(valid_dataset, args), model, device, criterion,
+                            cls_id, sep_id, pad_id, args)
         val_loss_log.append(val_loss)
 
         if (rank is None) or (rank == 0):
@@ -216,7 +176,6 @@ def run_main(args, rank=None):
                                                    (time.time() - epoch_start_time),
                                                    val_loss))
             print('-' * 89)
-        # Save the model if the validation loss is the best we've seen so far.
         if not best_val_loss or val_loss < best_val_loss:
             if rank is None:
                 with open(args.save, 'wb') as f:
@@ -227,19 +186,13 @@ def run_main(args, rank=None):
             best_val_loss = val_loss
         else:
             scheduler.step()
-    ###################################################################
-    # Load the best saved model and run on test data
-    ###################################################################
     if args.parallel == 'DDP':
-        # [TODO] put dist.barrier() back
-        # dist.barrier()
-        # configure map_location properly
-#        dist.barrier()
         rank0_devices = [x - rank * len(device) for x in device]
         device_pairs = zip(rank0_devices, device)
         map_location = {'cuda:%d' % x: 'cuda:%d' % y for x, y in device_pairs}
         model.load_state_dict(torch.load(args.save, map_location=map_location))
-        test_loss = evaluate(test_dataset, model, device, criterion, sep_id, pad_id, args)
+        test_loss = evaluate(process_raw_data(test_dataset, args), model, device, criterion,
+                             cls_id, sep_id, pad_id, args)
         if rank == 0:
             wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'ns_loss.txt', 'ns_model.pt')
     else:
@@ -283,13 +236,13 @@ if __name__ == "__main__":
                         help='path to save the pretrained bert')
     parser.add_argument('--frac_ns', type=float, default=0.5,
                         help='fraction of not next sentence')
-    parser.add_argument('--parallel', type=str, default='DDP',
+    parser.add_argument('--parallel', type=str, default='None',
                         help='Use DataParallel/DDP to train model')
     parser.add_argument('--world_size', type=int, default=8,
                         help='the world size to initiate DPP')
     args = parser.parse_args()
 
     if args.parallel == 'DDP':
-        run_demo(run_ddp, args)
+        run_demo(run_ddp, run_main, args)
     else:
         run_main(args)

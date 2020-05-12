@@ -4,7 +4,7 @@ import math
 import torch
 import torch.nn as nn
 from model import MLMTask
-from utils import setup, cleanup, run_demo, wrap_up
+from utils import run_demo, run_ddp, wrap_up
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
@@ -18,7 +18,6 @@ def collate_batch(batch_data, args, mask_id, cls_id):
     zeros_num = data_len - ones_num
     lm_mask = torch.cat([torch.zeros(zeros_num), torch.ones(ones_num)])
     lm_mask = lm_mask[torch.randperm(data_len)]
-    # Add <'cls'> token id to the beginning of seq across batches
     batch_data = torch.cat((torch.tensor([[cls_id] * batch_data.size(1)]).long(), batch_data))
     lm_mask = torch.cat((torch.tensor([0.0]), lm_mask))
 
@@ -28,7 +27,6 @@ def collate_batch(batch_data, args, mask_id, cls_id):
 
 
 def process_raw_data(raw_data, args):
-    # Cut the data to bptt and bsz
     _num = raw_data.size(0) // (args.batch_size * args.bptt)
     raw_data = raw_data[:(_num * args.batch_size * args.bptt)]
     return raw_data
@@ -44,17 +42,22 @@ def evaluate(data_source, model, vocab, ntokens, criterion, args, device):
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, cls_id))
     with torch.no_grad():
         for batch, (data, lm_mask, targets) in enumerate(dataloader):
-            data = data.transpose(0, 1)  # Wrap up by nn.DataParallel
+            if args.parallel == 'DDP':
+                data = data.to(device[0])
+                targets = targets.to(device[0])
+            else:
+                data = data.to(device)
+                targets = targets.to(device)
+            data = data.transpose(0, 1)  # Wrap up by DDP or DataParallel
             output = model(data)
             output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
             output_flat = output.view(-1, ntokens)
-            total_loss += criterion(output_flat, targets.to(device[0])).item()
+            total_loss += criterion(output_flat, targets).item()
     return total_loss / ((len(data_source) - 1) / args.bptt / args.batch_size)
 
 
 def train(model, vocab, train_loss_log, train_data,
           optimizer, criterion, ntokens, epoch, scheduler, args, device, rank=None):
-    # Turn on training mode which enables dropout.
     model.train()
     total_loss = 0.
     start_time = time.time()
@@ -66,12 +69,17 @@ def train(model, vocab, train_loss_log, train_data,
 
     for batch, (data, lm_mask, targets) in enumerate(dataloader):
         optimizer.zero_grad()
-        data = data.transpose(0, 1)  # Wrap up by nn.DataParallel
+        if args.parallel == 'DDP':
+            data = data.to(device[0])
+            targets = targets.to(device[0])
+        else:
+            data = data.to(device)
+            targets = targets.to(device)
+        data = data.transpose(0, 1)  # Wrap up by DDP or DataParallel
         output = model(data)
         output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
-        loss = criterion(output.view(-1, ntokens), targets.to(device[0]))
+        loss = criterion(output.view(-1, ntokens), targets)
         loss.backward()
-        # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
         optimizer.step()
         total_loss += loss.item()
@@ -90,14 +98,7 @@ def train(model, vocab, train_loss_log, train_data,
             start_time = time.time()
 
 
-def run_ddp(rank, args):
-    setup(rank, args.world_size, args.seed)
-    run_main(args, rank)
-    cleanup()
-
-
 def run_main(args, rank=None):
-    # Set the random seed manually for reproducibility.
     torch.manual_seed(args.seed)
     if args.parallel == 'DDP':
         n = torch.cuda.device_count() // args.world_size
@@ -105,9 +106,6 @@ def run_main(args, rank=None):
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    ###############################################################################
-    # Import dataset
-    ###############################################################################
     import torchtext
     if args.dataset == 'WikiText103':
         from torchtext.experimental.datasets import WikiText103 as WLMDataset
@@ -155,36 +153,25 @@ def run_main(args, rank=None):
         train_dataset, test_dataset, valid_dataset = BookCorpus(vocab)
 
     train_data = process_raw_data(train_dataset.data, args)
-
     if rank is not None:
         # Chunk training data by rank for different gpus
         chunk_len = len(train_data) // args.world_size
         train_data = train_data[(rank * chunk_len):((rank + 1) * chunk_len)]
-
     val_data = process_raw_data(valid_dataset.data, args)
     test_data = process_raw_data(test_dataset.data, args)
 
-    ###############################################################################
-    # Build the model
-    ###############################################################################
-    ntokens = len(train_dataset.get_vocab())
-    model = MLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
     if args.checkpoint != 'None':
         model.bert_model = torch.load(args.checkpoint)
-
+    else:
+        ntokens = len(train_dataset.get_vocab())
+        model = MLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
     if args.parallel == 'DDP':
         model = model.to(device[0])
-        # model = nn.DataParallel(model)  # Wrap up by nn.DataParallel
         model = DDP(model, device_ids=device)
     else:
         model = model.to(device)
     criterion = nn.CrossEntropyLoss()
-
-    ###############################################################################
-    # Loop over epochs.
-    ###############################################################################
-    lr = args.lr
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
     best_val_loss = None
     train_loss_log, val_loss_log = [], []
@@ -193,9 +180,7 @@ def run_main(args, rank=None):
         epoch_start_time = time.time()
         train(model, train_dataset.vocab, train_loss_log, train_data,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
-        # train()
         val_loss = evaluate(val_data, model, train_dataset.vocab, ntokens, criterion, args, device)
-
         if (rank is None) or (rank == 0):
             val_loss_log.append(val_loss)
             print('-' * 89)
@@ -203,8 +188,6 @@ def run_main(args, rank=None):
                   'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
                                              val_loss, math.exp(val_loss)))
             print('-' * 89)
-
-        # Save the model if the validation loss is the best we've seen so far.
         if not best_val_loss or val_loss < best_val_loss:
             if rank is None:
                 with open(args.save, 'wb') as f:
@@ -215,22 +198,13 @@ def run_main(args, rank=None):
             best_val_loss = val_loss
         else:
             scheduler.step()
-
-    ###############################################################################
-    # Load the best saved model.
-    ###############################################################################
     if args.parallel == 'DDP':
         dist.barrier()
-        # configure map_location properly
         rank0_devices = [x - rank * len(device) for x in device]
         device_pairs = zip(rank0_devices, device)
         map_location = {'cuda:%d' % x: 'cuda:%d' % y for x, y in device_pairs}
         model.load_state_dict(
             torch.load(args.save, map_location=map_location))
-
-        ###############################################################################
-        # Run on test data.
-        ###############################################################################
         test_loss = evaluate(test_data, model, train_dataset.vocab, ntokens, criterion, args, device)
         if rank == 0:
             wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'mlm_loss.txt', 'full_mlm_model.pt')
@@ -277,13 +251,13 @@ if __name__ == "__main__":
                         help='the fraction of masked tokens')
     parser.add_argument('--dataset', type=str, default='WikiText2',
                         help='dataset used for MLM task')
-    parser.add_argument('--parallel', type=str, default='DDP',
+    parser.add_argument('--parallel', type=str, default='None',
                         help='Use DataParallel to train model')
     parser.add_argument('--world_size', type=int, default=8,
                         help='the world size to initiate DPP')
     args = parser.parse_args()
 
     if args.parallel == 'DDP':
-        run_demo(run_ddp, args)
+        run_demo(run_ddp, run_main, args)
     else:
         run_main(args)
