@@ -103,10 +103,13 @@ jobs:
     steps:
       - checkout
       - run:
-          # Cannot easily deduplicate this as source'ing activate
-          # will set environment variables which we need to propagate
-          # to build_wheel.sh
+          # Installing cmake with `brew install cmake` takes 30 mins, so we use binary distribution.
           command: |
+            curl -o cmake.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2-Darwin-x86_64.tar.gz
+            tar -xzf cmake.tar.gz
+            cp cmake-3.17.2-Darwin-x86_64/CMake.app/Contents/bin/* /usr/local/bin/
+            cp -r cmake-3.17.2-Darwin-x86_64/CMake.app/Contents/share/* /usr/local/share/
+            export PATH="${PATH}:/usr/local/bin"
             curl -o conda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
             sh conda.sh -b
             source $HOME/miniconda3/bin/activate
@@ -316,13 +319,13 @@ jobs:
           command: .circleci/unittest/scripts/run_style_checks.sh
 
 workflows:
-  # build:
-  #   jobs:
-  #     - circleci_consistency
-  #     {{ build_workflows() }}
-  #     - binary_win_conda:
-  #         name: torchtext_win_py3.6
-  #         python_version: "3.6"
+  build:
+    jobs:
+      - circleci_consistency
+      {{ build_workflows() }}
+      #  - binary_win_conda:
+      #     name: torchtext_win_py3.6
+      #     python_version: "3.6"
   unittest:
     jobs:
       {{ unittest_workflows() }}
@@ -332,7 +335,7 @@ workflows:
           filters:
             branches:
               only: nightly
-      # {{ build_workflows(prefix="nightly_", filter_branch="nightly", upload=True) }}
+      {{ build_workflows(prefix="nightly_", filter_branch="nightly", upload=True) }}
   docker_build:
     triggers:
       - schedule:

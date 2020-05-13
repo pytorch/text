@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import io
-import re
+import os
 import shutil
+import subprocess
 from pathlib import Path
 import distutils.command.clean
 from setuptools import setup, find_packages
@@ -16,17 +17,37 @@ def read(*names, **kwargs):
         return fp.read()
 
 
-def find_version(*file_paths):
-    version_file = read(*file_paths)
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
-    if version_match:
-        return version_match.group(1)
-    raise RuntimeError("Unable to find version string.")
+def _get_version():
+    version = '0.6.0a0'
+    sha = None
+
+    try:
+        cmd = ['git', 'rev-parse', 'HEAD']
+        sha = subprocess.check_output(cmd, cwd=str(ROOT_DIR)).decode('ascii').strip()
+    except Exception:
+        pass
+
+    if os.getenv('BUILD_VERSION'):
+        version = os.getenv('BUILD_VERSION')
+    elif sha is not None:
+        version += '+' + sha[:7]
+
+    if sha is None:
+        sha = 'Unknown'
+    return version, sha
 
 
-VERSION = find_version('torchtext', '__init__.py')
-long_description = read('README.rst')
+def _export_version(version, sha):
+    version_path = ROOT_DIR / 'torchtext' / 'version.py'
+    with open(version_path, 'w') as fileobj:
+        fileobj.write("__version__ = '{}'\n".format(version))
+        fileobj.write("git_version = {}\n".format(repr(sha)))
+
+
+VERSION, SHA = _get_version()
+_export_version(VERSION, SHA)
+
+print('-- Building version ' + VERSION)
 
 
 class clean(distutils.command.clean.clean):
@@ -57,7 +78,7 @@ setup_info = dict(
     author_email='jekbradbury@gmail.com',
     url='https://github.com/pytorch/text',
     description='Text utilities and datasets for PyTorch',
-    long_description=long_description,
+    long_description=read('README.rst'),
     license='BSD',
 
     install_requires=[
