@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/pytorch/text.svg?branch=master
-    :target: https://travis-ci.org/pytorch/text
+.. image:: https://circleci.com/gh/pytorch/text.svg?style=svg
+    :target: https://circleci.com/gh/pytorch/text
 
 .. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
