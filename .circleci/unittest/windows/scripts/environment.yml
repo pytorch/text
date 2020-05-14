@@ -16,3 +16,5 @@ dependencies:
     - sphinx
     - sphinx-rtd-theme
     - tqdm
+    - sentencepiece
+    - future
