@@ -85,9 +85,11 @@ def _build_sentence_piece(debug):
     build_dir = _TP_BASE_DIR / 'sentencepiece' / 'build'
     build_dir.mkdir(exist_ok=True)
     build_env = os.environ.copy()
+    config = 'Debug' if debug else 'Release'
+    print(config)
     if platform.system() == 'Windows':
         shared = 'OFF'
-        extra_args = ['-GNinja']
+        extra_args = ['-GNinja', f'-DCMAKE_BUILD_TYPE={config}']
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
     else:
@@ -99,8 +101,6 @@ def _build_sentence_piece(debug):
         check=True,
         env=build_env,
     )
-    config = 'Debug' if debug else 'Release'
-    print(config)
     subprocess.run(
         args=['cmake', '--build', '.', '--target', 'install', '--config', config],
         cwd=str(build_dir),
