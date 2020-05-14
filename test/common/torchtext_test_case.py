@@ -56,7 +56,7 @@ class TorchtextTestCase(TestCase):
              "question2": "2+2=?",
              "label": "1"},
         ]
-        with open(self.test_ppid_dataset_path, "w") as test_ppid_dataset_file:
+        with open(self.test_ppid_dataset_path, "w", encoding="utf-8") as test_ppid_dataset_file:
             for example in dict_dataset:
                 if data_format == "json":
                     test_ppid_dataset_file.write(json.dumps(example) + "\n")

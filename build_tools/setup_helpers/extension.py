@@ -1,3 +1,4 @@
+import os
 import platform
 import subprocess
 from pathlib import Path
@@ -20,10 +21,15 @@ _TP_INSTALL_DIR = _TP_BASE_DIR / 'build'
 
 def _get_eca(debug):
     eca = []
+    if platform.system() == "Windows":
+        eca += ['/MT']
     if debug:
         eca += ["-O0", "-g"]
     else:
-        eca += ["-O3"]
+        if platform.system() == "Windows":
+            eca += ['-O2']
+        else:
+            eca += ["-O3"]
     return eca
 
 
@@ -35,7 +41,8 @@ def _get_ela(debug):
         else:
             ela += ["-O0", "-g"]
     else:
-        ela += ["-O3"]
+        if platform.system() != "Windows":
+            ela += ["-O3"]
     return ela
 
 
@@ -74,23 +81,34 @@ def _get_libraries():
     ]
 
 
-def _build_sentence_piece():
+def _build_sentence_piece(debug):
     build_dir = _TP_BASE_DIR / 'sentencepiece' / 'build'
     build_dir.mkdir(exist_ok=True)
+    build_env = os.environ.copy()
+    config = 'Debug' if debug else 'Release'
+    if platform.system() == 'Windows':
+        extra_args = ['-GNinja']
+        build_env.setdefault('CC', 'cl')
+        build_env.setdefault('CXX', 'cl')
+    else:
+        extra_args = []
     subprocess.run(
-        args=['cmake', '-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}', '..'],
+        args=['cmake', f'-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
+              f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
+        env=build_env,
     )
     subprocess.run(
-        args=['make', 'install'],
+        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
         cwd=str(build_dir),
         check=True,
+        env=build_env,
     )
 
 
-def _configure_third_party():
-    _build_sentence_piece()
+def _configure_third_party(debug):
+    _build_sentence_piece(debug)
 
 
 _EXT_NAME = 'torchtext._torchtext'
@@ -113,5 +131,5 @@ def get_ext_modules(debug=False):
 class BuildExtension(TorchBuildExtension):
     def build_extension(self, ext):
         if ext.name == _EXT_NAME:
-            _configure_third_party()
+            _configure_third_party(self.debug)
         super().build_extension(ext)
