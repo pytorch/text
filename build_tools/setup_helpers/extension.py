@@ -74,7 +74,7 @@ def _get_libraries():
     ]
 
 
-def _build_sentence_piece():
+def _build_sentence_piece(debug):
     build_dir = _TP_BASE_DIR / 'sentencepiece' / 'build'
     build_dir.mkdir(exist_ok=True)
     subprocess.run(
@@ -82,15 +82,21 @@ def _build_sentence_piece():
         cwd=str(build_dir),
         check=True,
     )
+    config = 'Debug' if debug else 'Release'
     subprocess.run(
-        args=['make', 'install'],
+        args=['cmake', '--build', '.', '--config', config],
+        cwd=str(build_dir),
+        check=True,
+    )
+    subprocess.run(
+        args=['cmake', '--install', '.'],
         cwd=str(build_dir),
         check=True,
     )
 
 
-def _configure_third_party():
-    _build_sentence_piece()
+def _configure_third_party(debug):
+    _build_sentence_piece(debug)
 
 
 _EXT_NAME = 'torchtext._torchtext'
@@ -113,5 +119,5 @@ def get_ext_modules(debug=False):
 class BuildExtension(TorchBuildExtension):
     def build_extension(self, ext):
         if ext.name == _EXT_NAME:
-            _configure_third_party()
+            _configure_third_party(self.debug)
         super().build_extension(ext)
