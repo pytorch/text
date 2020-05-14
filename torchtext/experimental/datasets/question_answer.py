@@ -2,37 +2,7 @@ import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets import raw
-
-
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-    return _forward
-
-
-def totensor(dtype):
-    def _forward(ids_list):
-        return torch.tensor(ids_list).to(dtype)
-    return _forward
-
-
-def build_vocab(data, transform):
-    tok_list = []
-    for processed in data:
-        ans_token = []
-        for item in processed['answers']:
-            ans_token += transform(item)
-        tok_list.append(transform(processed['context']) +
-                        transform(processed['question']) + ans_token)
-    return build_vocab_from_iterator(tok_list)
-
-
-def squential_transforms(*transforms):
-    def _forward(txt_input):
-        for transform in transforms:
-            txt_input = transform(txt_input)
-        return txt_input
-    return _forward
+from torchtext.experimental.datasets.text_classification import vocab_func, totensor, squential_transforms
 
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
@@ -49,7 +19,6 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
             data: a dictionary of data.
                 For example {'context': context_data, 'answers': answers_data,
                              'question': question_data, 'ans_pos': ans_pos_data}
-                [(label1, text1), (label2, text2), (label2, text3)]
             vocab: Vocabulary object used for dataset.
             transforms: a dictionary of transforms.
                 For example {'context': context_transform, 'answers': answers_transform,
@@ -100,12 +69,17 @@ def _setup_datasets(dataset_name, root='.data', vocab=None,
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(raw_data['train'], text_transform)
+        tok_list = []
+        for raw_dict in raw_data['train']:
+            tok_ans = []
+            for item in raw_dict['answers']:
+                tok_ans += text_transform(item)
+            tok_list.append(text_transform(raw_dict['context']) +
+                            text_transform(raw_dict['question']) + tok_ans)
+        vocab = build_vocab_from_iterator(tok_list)
     text_transform = squential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
-    transforms = {'context': text_transform,
-                  'question': text_transform,
-                  'answers': text_transform,
-                  'ans_pos': totensor(dtype=torch.long)}
+    transforms = {'context': text_transform, 'question': text_transform,
+                  'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 
