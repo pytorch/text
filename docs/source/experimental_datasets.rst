@@ -139,3 +139,26 @@ PennTreebank
 
 .. autoclass:: PennTreebank
   :members: __init__ 
+
+
+Question Answer
+^^^^^^^^^^^^^^^
+
+Question answer datasets are subclasses of ``QuestionAnswerDataset`` class.
+
+.. autoclass:: QuestionAnswerDataset 
+  :members: __init__
+
+
+SQuAD 1.0
+~~~~~~~~~
+
+.. autoclass:: SQuAD1
+  :members: __init__ 
+
+
+SQuAD 2.0
+~~~~~~~~~
+
+.. autoclass:: SQuAD2
+  :members: __init__ 
