@@ -1,22 +1,38 @@
 import torch
-import logging
-import io
-from torchtext.utils import download_from_url, extract_archive
-from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import Vocab
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.functional import numericalize_tokens_from_iterator
+from torchtext.experimental.datasets import raw
 
-URLS = {
-    'WikiText2':
-        'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip',
-    'WikiText103':
-        'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip',
-    'PennTreebank':
-        ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt']
-}
+
+def vocab_func(vocab):
+    def _forward(tok_iter):
+        return [vocab[tok] for tok in tok_iter]
+
+    return _forward
+
+
+def totensor(dtype):
+    def _forward(ids_list):
+        return torch.tensor(ids_list).to(dtype)
+
+    return _forward
+
+
+def build_vocab(data, transforms):
+    tok_list = []
+    for txt in data:
+        tok_list.append(transforms(txt))
+    return build_vocab_from_iterator(tok_list)
+
+
+def sequential_transforms(*transforms):
+    def _forward(txt_input):
+        for transform in transforms:
+            txt_input = transform(txt_input)
+        return txt_input
+
+    return _forward
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):
@@ -29,7 +45,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, data, vocab):
+    def __init__(self, data, vocab, transforms):
         """Initiate language modeling dataset.
 
         Arguments:
@@ -37,19 +53,14 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
                 numericalizing the string tokens.
                 torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
             vocab: Vocabulary object used for dataset.
-
-        Examples:
-            >>> from torchtext.vocab import build_vocab_from_iterator
-            >>> data = torch.tensor([token_id_1, token_id_2,
-                                     token_id_3, token_id_1]).long()
-            >>> vocab = build_vocab_from_iterator([['language', 'modeling']])
-            >>> dataset = LanguageModelingDataset(data, vocab)
+            transforms: Text string transforms.
 
         """
 
         super(LanguageModelingDataset, self).__init__()
-        self.data = data
         self.vocab = vocab
+        self.transforms = transforms
+        self.data = torch.cat(tuple(transforms(row) for row in data), axis=0)
 
     def __getitem__(self, i):
         return self.data[i]
@@ -65,63 +76,31 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _get_datafile_path(key, extracted_files):
-    for fname in extracted_files:
-        if key in fname:
-            return fname
-
-
-def _setup_datasets(dataset_name, tokenizer=get_tokenizer("basic_english"),
-                    root='.data', vocab=None, removed_tokens=[],
-                    data_select=('train', 'test', 'valid')):
+def _setup_datasets(dataset_name, root='.data', vocab=None,
+                    tokenizer=None, data_select=('train', 'test', 'valid')):
+    if tokenizer is None:
+        tokenizer = get_tokenizer('basic_english')
+    text_transform = sequential_transforms(tokenizer)
 
     if isinstance(data_select, str):
         data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test', 'valid'))):
-        raise TypeError('data_select is not supported!')
+    if not set(data_select).issubset(set(('train', 'valid', 'test'))):
+        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+    train, valid, test = DATASETS[dataset_name](root=root)
 
-    if dataset_name == 'PennTreebank':
-        extracted_files = []
-        select_to_index = {'train': 0, 'test': 1, 'valid': 2}
-        extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
-                                             root=root) for key in data_select]
-    else:
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files = extract_archive(dataset_tar)
-
-    _path = {}
-    for item in data_select:
-        _path[item] = _get_datafile_path(item, extracted_files)
+    # Cache raw text iterable dataset
+    raw_data = {'train': [txt for txt in train],
+                'valid': [txt for txt in valid],
+                'test': [txt for txt in test]}
 
     if vocab is None:
-        if 'train' not in _path.keys():
+        if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building Vocab based on {}'.format(_path['train']))
-        txt_iter = iter(tokenizer(row) for row in io.open(_path['train'],
-                                                          encoding="utf8"))
-        vocab = build_vocab_from_iterator(txt_iter)
-        logging.info('Vocab has {} entries'.format(len(vocab)))
-    else:
-        if not isinstance(vocab, Vocab):
-            raise TypeError("Passed vocabulary is not of type Vocab")
-
-    data = {}
-    for item in _path.keys():
-        data[item] = []
-        logging.info('Creating {} data'.format(item))
-        txt_iter = iter(tokenizer(row) for row in io.open(_path[item],
-                                                          encoding="utf8"))
-        _iter = numericalize_tokens_from_iterator(
-            vocab, txt_iter, removed_tokens)
-        for tokens in _iter:
-            data[item] += [token_id for token_id in tokens]
-
-    for key in data_select:
-        if data[key] == []:
-            raise TypeError('Dataset {} is empty!'.format(key))
-
-    return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
-                 for d in data_select)
+        vocab = build_vocab(raw_data['train'], text_transform)
+    text_transform = sequential_transforms(text_transform, vocab_func(vocab),
+                                           totensor(dtype=torch.long))
+    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform)
+                 for item in data_select)
 
 
 def WikiText2(*args, **kwargs):
@@ -131,14 +110,13 @@ def WikiText2(*args, **kwargs):
     Separately returns the train/test/valid set
 
     Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
         data_select: a string or tupel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -168,19 +146,13 @@ def WikiText103(*args, **kwargs):
     Separately returns the train/test/valid set
 
     Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        data_select: the returned datasets (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test').
-            If 'train' is not in the tuple, an vocab object should be provided which will
-            be used to process valid and/or test data.
-        removed_tokens: removed tokens from output dataset (Default: [])
         data_select: a string or tupel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -210,14 +182,13 @@ def PennTreebank(*args, **kwargs):
     Separately returns the train/test/valid set
 
     Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
-        removed_tokens: removed tokens from output dataset (Default: [])
         data_select: a string or tupel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -238,3 +209,10 @@ def PennTreebank(*args, **kwargs):
     """
 
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+
+
+DATASETS = {
+    'WikiText2': raw.WikiText2,
+    'WikiText103': raw.WikiText103,
+    'PennTreebank': raw.PennTreebank
+}
