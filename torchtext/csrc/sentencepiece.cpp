@@ -1,6 +1,23 @@
 #include <sentencepiece_trainer.h>
 #include <torch/script.h>
 
+#ifdef _WIN32
+#include <Python.h>
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC init_torchtext(void) {
+  // No need to do anything.
+  // extension.py will run on load
+  return NULL;
+}
+#else
+PyMODINIT_FUNC PyInit__torchtext(void) {
+  // No need to do anything.
+  // extension.py will run on load
+  return NULL;
+}
+#endif
+#endif
+
 namespace torchtext {
 namespace {
 
