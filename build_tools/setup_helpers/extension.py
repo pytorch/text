@@ -1,3 +1,4 @@
+import os
 import platform
 import subprocess
 from pathlib import Path
@@ -20,6 +21,8 @@ _TP_INSTALL_DIR = _TP_BASE_DIR / 'build'
 
 def _get_eca(debug):
     eca = []
+    if platform.system() == "Windows":
+        eca += ['/MT']
     if debug:
         eca += ["-O0", "-g"]
     else:
@@ -81,22 +84,28 @@ def _get_libraries():
 def _build_sentence_piece(debug):
     build_dir = _TP_BASE_DIR / 'sentencepiece' / 'build'
     build_dir.mkdir(exist_ok=True)
-    shared = 'ON' if platform.system() == 'Windows' else 'OFF'
+    build_env = os.environ.copy()
+    if platform.system() == 'Windows':
+        shared = 'OFF'
+        extra_args = ['-GNinja']
+        build_env.setdefault('CC', 'cl')
+        build_env.setdefault('CXX', 'cl')
+    else:
+        shared = 'OFF'
+        extra_args = []
     subprocess.run(
-        args=['cmake', f'-DSPM_ENABLE_SHARED={shared}', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}', '..'],
+        args=['cmake', f'-DSPM_ENABLE_SHARED={shared}', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}'] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
+        env=build_env,
     )
     config = 'Debug' if debug else 'Release'
+    print(config)
     subprocess.run(
-        args=['cmake', '--build', '.', '--config', config],
+        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
         cwd=str(build_dir),
         check=True,
-    )
-    subprocess.run(
-        args=['cmake', '--install', '.'],
-        cwd=str(build_dir),
-        check=True,
+        env=build_env,
     )
 
 
@@ -124,5 +133,6 @@ def get_ext_modules(debug=False):
 class BuildExtension(TorchBuildExtension):
     def build_extension(self, ext):
         if ext.name == _EXT_NAME:
+            print(self.debug)
             _configure_third_party(self.debug)
         super().build_extension(ext)
