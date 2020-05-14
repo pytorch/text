@@ -9,6 +9,13 @@ version: 2.1
 orbs:
   win: circleci/windows@2.0.0
 
+executors:
+  windows-cpu:
+    machine:
+      resource_class: windows.xlarge
+      image: windows-server-2019-vs2019:stable
+      shell: bash.exe
+
 binary_common: &binary_common
   parameters:
     # Edit these defaults to do a release
@@ -250,41 +257,92 @@ jobs:
       - restore_cache:
           {% raw %}
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
       - run:
           name: Setup
-          command: .circleci/unittest/scripts/setup_env.sh
+          command: .circleci/unittest/linux/scripts/setup_env.sh
       - save_cache:
           {% raw %}
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
           paths:
             - conda
             - env
       - run:
           name: Install torchtext
-          command: .circleci/unittest/scripts/install.sh
+          command: .circleci/unittest/linux/scripts/install.sh
       - restore_cache:
           keys:
           {% raw %}
-            - data-v1-{{ checksum ".circleci-weekly" }}
+            - data-linux-v1-{{ checksum ".circleci-weekly" }}
           {% endraw %}
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
           no_output_timeout: 30m
-          command: .circleci/unittest/scripts/run_test.sh
+          command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
           {% raw %}
-          key: data-v1-{{ checksum ".circleci-weekly" }}
+          key: data-linux-v1-{{ checksum ".circleci-weekly" }}
           {% endraw %}
           paths:
             - .vector_cache
             - .data
       - run:
           name: Post process
-          command: .circleci/unittest/scripts/post_process.sh
+          command: .circleci/unittest/linux/scripts/post_process.sh
+      - store_test_results:
+          path: test-results
+
+  unittest_windows:
+    <<: *binary_common
+    executor:
+      name: windows-cpu
+    steps:
+      - checkout
+      - run:
+          name: Generate cache key
+          # This will refresh cache on Sundays, nightly build should generate new cache.
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+      - restore_cache:
+          {% raw %}
+          keys:
+            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          {% endraw %}
+      - run:
+          name: Setup
+          command: .circleci/unittest/windows/scripts/setup_env.sh
+      - save_cache:
+          {% raw %}
+          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          {% endraw %}
+          paths:
+            - conda
+            - env
+      - run:
+          name: Install torchtext
+          command: .circleci/unittest/windows/scripts/install.sh
+      - restore_cache:
+          keys:
+          {% raw %}
+            - data-windows-v1-{{ checksum ".circleci-weekly" }}
+          {% endraw %}
+      - run:
+          name: Run tests
+          # Downloading embedding vector takes long time.
+          no_output_timeout: 30m
+          command: .circleci/unittest/windows/scripts/run_test.sh
+      - save_cache:
+          {% raw %}
+          key: data-windows-v1-{{ checksum ".circleci-weekly" }}
+          {% endraw %}
+          paths:
+            - .vector_cache
+            - .data
+      - run:
+          name: Post process
+          command: .circleci/unittest/windows/scripts/post_process.sh
       - store_test_results:
           path: test-results
 
@@ -302,30 +360,27 @@ jobs:
       - restore_cache:
           {% raw %}
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
       - run:
           name: Setup
-          command: .circleci/unittest/scripts/setup_env.sh
+          command: .circleci/unittest/linux/scripts/setup_env.sh
       - save_cache:
           {% raw %}
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
           {% endraw %}
           paths:
             - conda
             - env
       - run:
           name: Run style check
-          command: .circleci/unittest/scripts/run_style_checks.sh
+          command: .circleci/unittest/linux/scripts/run_style_checks.sh
 
 workflows:
   build:
     jobs:
       - circleci_consistency
       {{ build_workflows() }}
-      #  - binary_win_conda:
-      #     name: torchtext_win_py3.6
-      #     python_version: "3.6"
   unittest:
     jobs:
       {{ unittest_workflows() }}

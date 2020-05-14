@@ -1,0 +1,20 @@
+channels:
+  - defaults
+dependencies:
+  - flake8==3.7.9
+  - codecov
+  - pip
+  - pip:
+    - nltk
+    - requests
+    - revtok
+    - pytest
+    - pytest-cov
+    - pytest-pythonpath
+    - sacremoses
+    - spacy
+    - sphinx
+    - sphinx-rtd-theme
+    - tqdm
+    - sentencepiece
+    - future
