@@ -59,9 +59,9 @@ static auto sentencepiece =
               return c10::make_intrusive<SentencePiece>(std::move(state));
             });
 
-void generate_sp_model(const std::string filename, const int64_t vocab_size,
-                       const std::string model_type,
-                       const std::string model_prefix) {
+void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
+                       const std::string &model_type,
+                       const std::string &model_prefix) {
   const auto status = ::sentencepiece::SentencePieceTrainer::Train(
       "--input=" + filename + " --model_prefix=" + model_prefix +
       " --vocab_size=" + std::to_string(vocab_size) +
@@ -77,8 +77,8 @@ c10::intrusive_ptr<SentencePiece> load_sp_model(const std::string &path) {
   if (!file) {
     throw std::runtime_error("Failed to open file :" + path);
   }
-  const std::string content((std::istreambuf_iterator<char>(file)),
-                            std::istreambuf_iterator<char>());
+  std::string content((std::istreambuf_iterator<char>(file)),
+                      std::istreambuf_iterator<char>());
   return c10::make_intrusive<SentencePiece>(std::move(content));
 }
 
