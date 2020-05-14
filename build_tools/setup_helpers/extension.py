@@ -23,7 +23,10 @@ def _get_eca(debug):
     if debug:
         eca += ["-O0", "-g"]
     else:
-        eca += ["-O3"]
+        if platform.system() == "Windows":
+            eca += ['-O2']
+        else:
+            eca += ["-O3"]
     return eca
 
 
@@ -35,7 +38,8 @@ def _get_ela(debug):
         else:
             ela += ["-O0", "-g"]
     else:
-        ela += ["-O3"]
+        if platform.system() != "Windows":
+            ela += ["-O3"]
     return ela
 
 
@@ -77,8 +81,9 @@ def _get_libraries():
 def _build_sentence_piece(debug):
     build_dir = _TP_BASE_DIR / 'sentencepiece' / 'build'
     build_dir.mkdir(exist_ok=True)
+    shared = 'ON' if platform.system() == 'Windows' else 'OFF'
     subprocess.run(
-        args=['cmake', '-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}', '..'],
+        args=['cmake', f'-DSPM_ENABLE_SHARED={shared}', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}', '..'],
         cwd=str(build_dir),
         check=True,
     )
