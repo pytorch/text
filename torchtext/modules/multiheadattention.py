@@ -204,3 +204,15 @@ class InProjContainer(torch.nn.Module):
             where S is the sequence length, N is the batch size, and E is the embedding dimension.
         """
         return self.query_proj(query), self.key_proj(key), self.value_proj(value)
+
+
+def generate_square_subsequent_mask(nbatch, sz):
+    r"""Generate a square mask for the sequence. The masked positions are filled with True.
+        Unmasked positions are filled with False.
+
+    Args:
+        nbatch: the number of batch size
+        sz: the size of square mask
+    """
+    mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1).repeat(nbatch, 1, 1)
+    return mask
