@@ -1,7 +1,7 @@
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.datasets import raw
+from torchtext.experimental.datasets.raw import text_classification as raw
 
 
 def vocab_func(vocab):
@@ -98,7 +98,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, test = DATASETS[dataset_name](root=root)
+    train, test = raw.DATASETS[dataset_name](root=root)
     # Cache raw text iterable dataset
     raw_data = {'train': [(label, txt) for (label, txt) in train],
                 'test': [(label, txt) for (label, txt) in test]}
@@ -509,15 +509,15 @@ def IMDB(*args, **kwargs):
 
 
 DATASETS = {
-    'AG_NEWS': raw.AG_NEWS,
-    'SogouNews': raw.SogouNews,
-    'DBpedia': raw.DBpedia,
-    'YelpReviewPolarity': raw.YelpReviewPolarity,
-    'YelpReviewFull': raw.YelpReviewFull,
-    'YahooAnswers': raw.YahooAnswers,
-    'AmazonReviewPolarity': raw.AmazonReviewPolarity,
-    'AmazonReviewFull': raw.AmazonReviewFull,
-    'IMDB': raw.IMDB
+    'AG_NEWS': AG_NEWS,
+    'SogouNews': SogouNews,
+    'DBpedia': DBpedia,
+    'YelpReviewPolarity': YelpReviewPolarity,
+    'YelpReviewFull': YelpReviewFull,
+    'YahooAnswers': YahooAnswers,
+    'AmazonReviewPolarity': AmazonReviewPolarity,
+    'AmazonReviewFull': AmazonReviewFull,
+    'IMDB': IMDB
 }
 
 
