@@ -85,3 +85,9 @@ def SQuAD2(*args, **kwargs):
     """
 
     return _setup_datasets(*(("SQuAD2",) + args), **kwargs)
+
+
+DATASETS = {
+    'SQuAD1': SQuAD1,
+    'SQuAD2': SQuAD2
+}
