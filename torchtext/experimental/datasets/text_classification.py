@@ -2,42 +2,9 @@ import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
+from torchtext.experimental.functional import vocab_func, totensor, ngrams_func, build_vocab, sequential_transforms
 
 
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-    return _forward
-
-
-def totensor(dtype):
-    def _forward(ids_list):
-        return torch.tensor(ids_list).to(dtype)
-    return _forward
-
-
-def ngrams_func(ngrams):
-    def _forward(token_list):
-        _token_list = []
-        for _i in range(ngrams + 1):
-            _token_list += zip(*[token_list[i:] for i in range(_i)])
-        return [' '.join(x) for x in _token_list]
-    return _forward
-
-
-def build_vocab(data, transforms):
-    tok_list = []
-    for _, txt in data:
-        tok_list.append(transforms(txt))
-    return build_vocab_from_iterator(tok_list)
-
-
-def squential_transforms(*transforms):
-    def _forward(txt_input):
-        for transform in transforms:
-            txt_input = transform(txt_input)
-        return txt_input
-    return _forward
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -92,7 +59,7 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
-    text_transform = squential_transforms(tokenizer, ngrams_func(ngrams))
+    text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
 
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -107,9 +74,9 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         vocab = build_vocab(raw_data['train'], text_transform)
-    text_transform = squential_transforms(text_transform, vocab_func(vocab),
+    text_transform = sequential_transforms(text_transform, vocab_func(vocab),
                                           totensor(dtype=torch.long))
-    label_transform = squential_transforms(totensor(dtype=torch.long))
+    label_transform = sequential_transforms(totensor(dtype=torch.long))
     return tuple(TextClassificationDataset(raw_data[item], vocab,
                                            (label_transform, text_transform))
                  for item in data_select)
