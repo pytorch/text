@@ -106,6 +106,9 @@ class Vocab(object):
     def __getitem__(self, token):
         return self.stoi.get(token, self.stoi.get(Vocab.UNK))
 
+    def __call__(self, token):
+        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
+
     def __getstate__(self):
         # avoid picking defaultdict
         attrs = dict(self.__dict__)

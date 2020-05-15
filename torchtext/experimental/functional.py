@@ -1,13 +1,6 @@
 import torch
 
 
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-
-    return _forward
-
-
 def totensor(dtype):
     def _forward(ids_list):
         return torch.tensor(ids_list).to(dtype)
