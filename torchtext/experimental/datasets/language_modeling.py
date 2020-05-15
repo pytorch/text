@@ -1,22 +1,8 @@
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.data.functional import numericalize_tokens_from_iterator
 from torchtext.experimental.datasets import raw
-
-
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-
-    return _forward
-
-
-def totensor(dtype):
-    def _forward(ids_list):
-        return torch.tensor(ids_list).to(dtype)
-
-    return _forward
+from .text_classification import vocab_func, totensor
 
 
 def build_vocab(data, transforms):
