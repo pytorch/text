@@ -25,13 +25,6 @@ def ngrams_func(ngrams):
     return _forward
 
 
-def build_vocab(data, transforms):
-    tok_list = []
-    for _, txt in data:
-        tok_list.append(transforms(txt))
-    return build_vocab_from_iterator(tok_list)
-
-
 def sequential_transforms(*transforms):
     def _forward(txt_input):
         for transform in transforms:

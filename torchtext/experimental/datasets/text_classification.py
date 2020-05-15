@@ -1,13 +1,19 @@
 import torch
 from torchtext.data.utils import get_tokenizer
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
     ngrams_func,
-    build_vocab,
     sequential_transforms,
 )
+
+def _build_vocab(data, transforms):
+    tok_list = []
+    for _, txt in data:
+        tok_list.append(transforms(txt))
+    return build_vocab_from_iterator(tok_list)
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -84,7 +90,7 @@ def _setup_datasets(
     if vocab is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(raw_data["train"], text_transform)
+        vocab = _build_vocab(raw_data["train"], text_transform)
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
