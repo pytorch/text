@@ -1,8 +1,11 @@
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.datasets import raw
-from torchtext.experimental.datasets.text_classification import vocab_func, totensor, squential_transforms
+from torchtext.experimental.datasets.raw import question_answer as raw
+from torchtext.experimental.functional import (
+    totensor,
+    sequential_transforms,
+)
 
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
@@ -53,17 +56,20 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, root='.data', vocab=None,
-                    tokenizer=None, data_select=('train', 'dev')):
+def _setup_datasets(dataset_name,
+                    root='.data',
+                    vocab=None,
+                    tokenizer=None,
+                    data_select=('train', 'dev')):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
-    text_transform = squential_transforms(tokenizer)
+    text_transform = sequential_transforms(tokenizer)
     if isinstance(data_select, str):
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'dev'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, dev = DATASETS[dataset_name](root=root)
+    train, dev = raw.DATASETS[dataset_name](root=root)
     raw_data = {'train': [item for item in train],
                 'dev': [item for item in dev]}
     if vocab is None:
@@ -77,7 +83,7 @@ def _setup_datasets(dataset_name, root='.data', vocab=None,
             tok_list.append(text_transform(raw_dict['context']) +
                             text_transform(raw_dict['question']) + tok_ans)
         vocab = build_vocab_from_iterator(tok_list)
-    text_transform = squential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
+    text_transform = sequential_transforms(text_transform, vocab, totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
@@ -151,6 +157,6 @@ def SQuAD2(*args, **kwargs):
 
 
 DATASETS = {
-    'SQuAD1': raw.SQuAD1,
-    'SQuAD2': raw.SQuAD2
+    'SQuAD1': SQuAD1,
+    'SQuAD2': SQuAD2
 }
