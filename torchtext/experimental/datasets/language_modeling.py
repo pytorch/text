@@ -72,7 +72,7 @@ def _setup_datasets(dataset_name, root='.data', vocab=None,
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'valid', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, valid, test = DATASETS[dataset_name](root=root)
+    train, test, valid = DATASETS[dataset_name](root=root)
 
     # Cache raw text iterable dataset
     raw_data = {'train': [txt for txt in train],
