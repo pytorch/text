@@ -1,7 +1,6 @@
 # coding: utf8
 from collections import Counter, OrderedDict
 from itertools import chain
-import six
 import torch
 from tqdm import tqdm
 
@@ -204,17 +203,13 @@ class Field(RawField):
     def preprocess(self, x):
         """Load a single example using this field, tokenizing if necessary.
 
-        If the input is a Python 2 `str`, it will be converted to Unicode
-        first. If `sequential=True`, it will be tokenized. Then the input
+        If `sequential=True`, the input will be tokenized. Then the input
         will be optionally lowercased and passed to the user-provided
         `preprocessing` Pipeline."""
-        if (six.PY2 and isinstance(x, six.string_types)
-                and not isinstance(x, six.text_type)):
-            x = Pipeline(lambda s: six.text_type(s, encoding='utf-8'))(x)
-        if self.sequential and isinstance(x, six.text_type):
+        if self.sequential and isinstance(x, str):
             x = self.tokenize(x.rstrip('\n'))
         if self.lower:
-            x = Pipeline(six.text_type.lower)(x)
+            x = Pipeline(str.lower)(x)
         if self.sequential and self.use_vocab and self.stop_words is not None:
             x = [w for w in x if w not in self.stop_words]
         if self.preprocessing is not None:
@@ -351,7 +346,7 @@ class Field(RawField):
             # the data is sequential, since it's unclear how to coerce padding tokens
             # to a numeric type.
             if not self.sequential:
-                arr = [numericalization_func(x) if isinstance(x, six.string_types)
+                arr = [numericalization_func(x) if isinstance(x, str)
                        else x for x in arr]
             if self.postprocessing is not None:
                 arr = self.postprocessing(arr, None)

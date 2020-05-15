@@ -47,7 +47,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         for i, item in enumerate(self._iterator):
             if i >= self.start:
                 yield item
-            if self.num_lines is not None and i == (self.start + num_lines):
+            if self.num_lines is not None and i == (self.start + self.num_lines):
                 break
 
     def get_iterator(self):

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from collections import Counter
 import os
 import pickle
@@ -11,7 +10,6 @@ import torch
 from torchtext import vocab
 from torchtext.vocab import Vectors, FastText, GloVe, CharNGram
 
-from .common.test_markers import slow
 from .common.torchtext_test_case import TorchtextTestCase
 
 
@@ -94,14 +92,13 @@ class TestVocab(TorchtextTestCase):
                                      [0.3, 0.4]])
         assert_allclose(v.vectors.numpy(), expected_vectors)
 
-    @slow
     def test_vocab_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching, then once more
         # to test string aliases.
         for i in range(3):
             if i == 2:
-                vectors = str("fasttext.simple.300d")  # must handle str on Py2
+                vectors = "fasttext.simple.300d"
             else:
                 vectors = FastText(language='simple')
 
@@ -132,11 +129,10 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
-    @slow
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+        for _ in range(2):
             f = FastText(language='simple')
             v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=f)
@@ -164,11 +160,10 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
-    @slow
     def test_vocab_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
-        for i in range(2):
+        for _ in range(2):
             v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                             vectors=Vectors('wiki.simple.vec',
                                             url=FastText.url_base.format('simple')))
@@ -193,7 +188,6 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
             conditional_remove(vec_file)
 
-    @slow
     def test_vocab_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')
@@ -226,7 +220,6 @@ class TestVocab(TorchtextTestCase):
             vec_file = os.path.join(vector_cache, "wiki.simple.vec")
             conditional_remove(vec_file)
 
-    @slow
     def test_vocab_download_glove_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
 
@@ -269,7 +262,6 @@ class TestVocab(TorchtextTestCase):
                 conditional_remove(os.path.join(self.project_root, ".vector_cache",
                                                 "glove.twitter.27B.{}d.txt".format(dim)))
 
-    @slow
     def test_vocab_download_charngram_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching, then once more
@@ -344,7 +336,6 @@ class TestVocab(TorchtextTestCase):
         v_loaded = pickle.load(open(pickle_path, "rb"))
         assert v == v_loaded
 
-    @slow
     def test_vectors_get_vecs(self):
         vec = GloVe(name='twitter.27B', dim='25')
         self.assertEqual(vec.vectors.shape[0], len(vec))

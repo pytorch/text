@@ -1,10 +1,9 @@
-from __future__ import division
-
 import math
 import random
 
 import logging
 
+import torch
 from .utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
@@ -67,6 +66,12 @@ class Iterator(object):
                            + " or passing a string as an argument. This behavior will be"
                            + " deprecated soon and currently defaults to cpu.")
             device = None
+
+        if device is None:
+            device = torch.device('cpu')
+        elif isinstance(device, str):
+            device = torch.device(device)
+
         self.device = device
         self.random_shuffler = RandomShuffler()
 

@@ -1,8 +1,7 @@
 class Pipeline(object):
     """Defines a pipeline for transforming sequence data.
 
-    The input is assumed to be utf-8 encoded `str` (Python 3) or
-    `unicode` (Python 2).
+    The input is assumed to be utf-8 encoded `str`.
 
     Attributes:
         convert_token: The function to apply to input sequence data.
