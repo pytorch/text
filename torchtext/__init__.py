@@ -5,7 +5,11 @@ from . import utils
 from . import vocab
 from . import experimental
 
-__version__ = '0.6.0'
+
+try:
+    from .version import __version__, git_version  # noqa: F401
+except ImportError:
+    pass
 
 __all__ = ['data',
            'modules',

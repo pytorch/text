@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import torchtext.data as data
+import os
+import sys
 import tempfile
+import unittest
 
 import pytest
 
 from ..common.torchtext_test_case import TorchtextTestCase
-import os
 
 
 class TestDataset(TorchtextTestCase):
@@ -235,6 +237,7 @@ class TestDataset(TorchtextTestCase):
         # 6 Fields including None for ids
         assert len(dataset.fields) == 6
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_csv_dataset_quotechar(self):
         # Based on issue #349
         example_data = [("text", "label"),
