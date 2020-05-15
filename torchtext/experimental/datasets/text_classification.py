@@ -9,6 +9,7 @@ from torchtext.experimental.functional import (
     sequential_transforms,
 )
 
+
 def _build_vocab(data, transforms):
     tok_list = []
     for _, txt in data:
