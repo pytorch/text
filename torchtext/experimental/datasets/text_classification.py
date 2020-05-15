@@ -4,6 +4,7 @@ from torchtext.data.utils import ngrams_iterator
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
 
+
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
        Currently, we only support the following datasets:
@@ -486,15 +487,15 @@ def IMDB(*args, **kwargs):
 
 
 DATASETS = {
-    'AG_NEWS': AG_NEWS,
-    'SogouNews': SogouNews,
-    'DBpedia': DBpedia,
-    'YelpReviewPolarity': YelpReviewPolarity,
-    'YelpReviewFull': YelpReviewFull,
-    'YahooAnswers': YahooAnswers,
-    'AmazonReviewPolarity': AmazonReviewPolarity,
-    'AmazonReviewFull': AmazonReviewFull,
-    'IMDB': IMDB
+    "AG_NEWS": AG_NEWS,
+    "SogouNews": SogouNews,
+    "DBpedia": DBpedia,
+    "YelpReviewPolarity": YelpReviewPolarity,
+    "YelpReviewFull": YelpReviewFull,
+    "YahooAnswers": YahooAnswers,
+    "AmazonReviewPolarity": AmazonReviewPolarity,
+    "AmazonReviewFull": AmazonReviewFull,
+    "IMDB": IMDB,
 }
 
 
