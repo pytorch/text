@@ -1,10 +1,11 @@
 channels:
   - defaults
 dependencies:
-  - flake8
+  - flake8==3.7.9
   - codecov
   - pip
   - pip:
+    - clang-format
     - nltk
     - requests
     - revtok

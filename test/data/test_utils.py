@@ -1,8 +1,11 @@
-import torchtext.data as data
-import pytest
-from ..common.torchtext_test_case import TorchtextTestCase
-from torchtext.utils import unicode_csv_reader
 import io
+import unittest
+
+import torchtext.data as data
+from torchtext.utils import unicode_csv_reader
+
+from ..common.torchtext_test_case import TorchtextTestCase
+from ..common.assets import get_asset_path
 
 
 class TestUtils(TorchtextTestCase):
@@ -21,8 +24,7 @@ class TestUtils(TorchtextTestCase):
 
     # TODO: Remove this once issue was been resolved.
     # TODO# Add nltk data back in build_tools/travis/install.sh.
-    @pytest.mark.skip(reason=("Impractically slow! "
-                              "https://github.com/alvations/sacremoses/issues/61"))
+    @unittest.skip("Impractically slow! https://github.com/alvations/sacremoses/issues/61")
     def test_get_tokenizer_moses(self):
         # Test Moses option.
         # Note that internally, MosesTokenizer converts to unicode if applicable
@@ -54,13 +56,13 @@ class TestUtils(TorchtextTestCase):
         test_lines = []
 
         tokenizer = data.get_tokenizer("basic_english")
-        data_path = 'test/asset/text_normalization_ag_news_test.csv'
+        data_path = get_asset_path('text_normalization_ag_news_test.csv')
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
                 test_lines.append(tokenizer(' , '.join(row)))
 
-        data_path = 'test/asset/text_normalization_ag_news_ref_results.test'
+        data_path = get_asset_path('text_normalization_ag_news_ref_results.test')
         with io.open(data_path, encoding="utf8") as ref_data:
             for line in ref_data:
                 line = line.split()
