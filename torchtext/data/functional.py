@@ -1,20 +1,19 @@
 import re
-import io
-import logging
-from torchtext.utils import unicode_csv_reader
 
 __all__ = [
-    "generate_sp_model", "load_sp_model", "sentencepiece_numericalizer",
-    "sentencepiece_tokenizer", "numericalize_tokens_from_iterator"
+    "generate_sp_model", "load_sp_model",
+    "sentencepiece_numericalizer", "sentencepiece_tokenizer",
+    "numericalize_tokens_from_iterator"
 ]
+
+
 """
 This file contains experimental functionality.
 All of these are experimental, unstable, and subject to change or deletion.
 """
 
 
-def generate_sp_model(filename,
-                      vocab_size=20000,
+def generate_sp_model(filename, vocab_size=20000,
                       model_type="unigram",
                       model_prefix='m_user'):
     r"""Train a SentencePiece tokenizer.
@@ -41,8 +40,10 @@ def generate_sp_model(filename,
     spm_training_string = "--input={} \
                            --vocab_size={} \
                            --model_prefix={} \
-                           --model_type={}".format(filename, vocab_size,
-                                                   model_prefix, model_type)
+                           --model_type={}".format(filename,
+                                                   vocab_size,
+                                                   model_prefix,
+                                                   model_type)
     spm.SentencePieceTrainer.train(spm_training_string)
     return None
 
@@ -88,10 +89,10 @@ def sentencepiece_numericalizer(sp_model):
             [[9858, 9249, 1629, 1305, 1809, 53, 842],
              [2347, 13, 9, 150, 37]]
     """
+
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsIds(line)
-
     return _internal_func
 
 
@@ -114,10 +115,10 @@ def sentencepiece_tokenizer(sp_model):
             [['_sentence', 'piece', '_en', 'co', 'de', '_as', '_pieces'],
              ['_example', 's', '_to', '_try', '!']]
     """
+
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsPieces(line)
-
     return _internal_func
 
 
@@ -132,14 +133,14 @@ def custom_replace(replace_pattern):
             ['sentencepiece encode as pieces', 'examples to try!']
     """
 
-    _patterns = list((re.compile(p), r) for (p, r) in replace_pattern)
+    _patterns = list((re.compile(p), r)
+                     for (p, r) in replace_pattern)
 
     def _internal_func(txt_iter):
         for line in txt_iter:
             for pattern_re, replaced_str in _patterns:
                 line = pattern_re.sub(replaced_str, line)
             yield line
-
     return _internal_func
 
 
@@ -181,9 +182,9 @@ def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
         if removed_tokens is None:
             yield iter(vocab[token] for token in tokens)
         else:
-            yield iter(
-                map(lambda x: vocab[x],
-                    filter(lambda x: x not in removed_tokens, tokens)))
+            yield iter(map(lambda x: vocab[x],
+                       filter(lambda x: x not in removed_tokens, tokens)))
+
 
 
 def read_text_iterator(path, tokenizer):
