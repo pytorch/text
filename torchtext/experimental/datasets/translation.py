@@ -4,7 +4,6 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import Vocab
-from torchtext.data.functional import read_text_iterator, create_data_from_iterator
 import os
 import io
 import codecs
@@ -23,6 +22,54 @@ URLS = {
     'IWSLT':
     'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
 }
+
+
+def _read_text_iterator(path, tokenizer):
+    r"""Read text from path and yield a list of tokens based on the tokenizer
+    Arguments:
+        path: the file path.
+        tokenizer: the tokenizer used to tokenize string text.
+    Examples:
+        >>> from torchtext.data.functional import read_text_iterator
+        >>> tokenizer = get_tokenizer("basic_english")
+        >>> list((read_text_iterator('.data/ptb.train.txt', tokenizer)))
+            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
+    """
+
+    with io.open(path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            tokens = tokenizer(' '.join(row))
+            yield tokens
+
+
+def _create_data_from_iterator(vocab, iterator, removed_tokens=None):
+    r"""Yield a list of ids from an token iterator with a vocab.
+    Arguments:
+        vocab: the vocabulary convert token into id.
+        iterator: the iterator yield a list of tokens.
+        removed_tokens: removed tokens from output dataset (Default: None)
+    Examples:
+        >>> from torchtext.data.functional import simple_space_split
+        >>> from torchtext.data.functional import create_data_from_iterator
+        >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
+        >>> list(create_data_from_iterator(vocab,
+        >>>                                simple_space_split(["Sentencepiece as pieces",
+        >>>                                                   "as pieces"]))
+        >>> [[0, 2, 3], [2, 3]]
+    """
+
+    for tokens in iterator:
+        if removed_tokens is None:
+            tokens = [vocab[token] for token in tokens]
+        else:
+            token_ids = list(
+                filter(lambda x: x not in removed_tokens,
+                       [vocab[token] for token in tokens]))
+            tokens = token_ids
+        if len(tokens) == 0:
+            logging.info('Row contains no tokens.')
+        yield tokens
 
 
 def _clean_xml_file(f_xml):
@@ -128,7 +175,7 @@ def _setup_datasets(dataset_name,
     if src_vocab is None:
         logging.info('Building src Vocab based on train data')
         src_vocab = build_vocab_from_iterator(
-            read_text_iterator(data_filenames["train"][0], src_tokenizer))
+            _read_text_iterator(data_filenames["train"][0], src_tokenizer))
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
@@ -137,7 +184,7 @@ def _setup_datasets(dataset_name,
     if tgt_vocab is None:
         logging.info('Building tgt Vocab based on train data')
         tgt_vocab = build_vocab_from_iterator(
-            read_text_iterator(data_filenames["train"][1], tgt_tokenizer))
+            _read_text_iterator(data_filenames["train"][1], tgt_tokenizer))
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
@@ -149,14 +196,14 @@ def _setup_datasets(dataset_name,
         if key not in data_select:
             continue
 
-        src_data_iter = create_data_from_iterator(
-            src_vocab, read_text_iterator(data_filenames[key][0],
-                                          src_tokenizer), removed_tokens)
+        src_data_iter = _create_data_from_iterator(
+            src_vocab, _read_text_iterator(data_filenames[key][0],
+                                           src_tokenizer), removed_tokens)
         src_data = [torch.tensor(t).long() for t in src_data_iter]
 
-        tgt_data_iter = create_data_from_iterator(
-            tgt_vocab, read_text_iterator(data_filenames[key][1],
-                                          tgt_tokenizer), removed_tokens)
+        tgt_data_iter = _create_data_from_iterator(
+            tgt_vocab, _read_text_iterator(data_filenames[key][1],
+                                           tgt_tokenizer), removed_tokens)
         tgt_data = [torch.tensor(t).long() for t in tgt_data_iter]
         datasets.append(
             TranslationDataset(list(zip(src_data, tgt_data)),
@@ -165,7 +212,7 @@ def _setup_datasets(dataset_name,
     return tuple(datasets)
 
 
-class TranslationDataset(torch.utils.data.Dataset):
+class TranslationDataset(torch.utils.data.IterableDataset):
     """Defines a dataset for translation.
        Currently, we only support the following datasets:
              - Multi30k
