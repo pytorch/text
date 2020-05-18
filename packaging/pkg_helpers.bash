@@ -122,7 +122,7 @@ retry () {
 #
 # Precondition: If Linux, you are in a soumith/manylinux-cuda* Docker image
 setup_wheel_python() {
-  if [[ "$(uname)" == Darwin ]]; then
+  if [[ "$(uname)" == Darwin || "$OSTYPE" == "msys" ]]; then
     eval "$(conda shell.bash hook)"
     conda env remove -n "env$PYTHON_VERSION" || true
     conda create -yn "env$PYTHON_VERSION" python="$PYTHON_VERSION"
@@ -217,5 +217,15 @@ setup_conda_cudatoolkit_constraint() {
         exit 1
         ;;
     esac
+  fi
+}
+
+# Build the proper compiler package before building the final package
+setup_visual_studio_constraint() {
+  if [[ "$OSTYPE" == "msys" ]]; then
+      export VSTOOLCHAIN_PACKAGE=vs2019
+      export VSDEVCMD_ARGS=''
+      conda build $CONDA_CHANNEL_FLAGS --no-anaconda-upload packaging/$VSTOOLCHAIN_PACKAGE
+      cp packaging/$VSTOOLCHAIN_PACKAGE/conda_build_config.yaml packaging/torchaudio/conda_build_config.yaml
   fi
 }
