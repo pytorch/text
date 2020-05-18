@@ -226,6 +226,6 @@ setup_visual_studio_constraint() {
       export VSTOOLCHAIN_PACKAGE=vs2019
       export VSDEVCMD_ARGS=''
       conda build $CONDA_CHANNEL_FLAGS --no-anaconda-upload packaging/$VSTOOLCHAIN_PACKAGE
-      cp packaging/$VSTOOLCHAIN_PACKAGE/conda_build_config.yaml packaging/torchaudio/conda_build_config.yaml
+      cp packaging/$VSTOOLCHAIN_PACKAGE/conda_build_config.yaml packaging/torchtext/conda_build_config.yaml
   fi
 }

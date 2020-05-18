@@ -12,4 +12,8 @@ pip_install numpy future
 setup_pip_pytorch_version
 git submodule update --init --recursive
 python setup.py clean
-python setup.py bdist_wheel
+if [[ "$OSTYPE" == "msys" ]]; then
+    "$script_dir/build_wheel.bat"
+else
+    python setup.py bdist_wheel
+fi
