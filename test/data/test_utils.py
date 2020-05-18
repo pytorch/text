@@ -1,5 +1,4 @@
 import io
-import unittest
 
 import torchtext.data as data
 from torchtext.utils import unicode_csv_reader
@@ -22,9 +21,6 @@ class TestUtils(TorchtextTestCase):
             "A", "string", ",", "particularly", "one", "with", "slightly",
             "complex", "punctuation", "."]
 
-    # TODO: Remove this once issue was been resolved.
-    # TODO# Add nltk data back in build_tools/travis/install.sh.
-    @unittest.skip("Impractically slow! https://github.com/alvations/sacremoses/issues/61")
     def test_get_tokenizer_moses(self):
         # Test Moses option.
         # Note that internally, MosesTokenizer converts to unicode if applicable
