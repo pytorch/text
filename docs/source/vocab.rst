@@ -38,6 +38,13 @@ Pretrained Word Embeddings
     :members:
     :special-members: __init__
 
+:hidden:`Word2Vec`
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: Word2Vec
+    :members:
+    :special-members: __init__
+
 :hidden:`FastText`
 ~~~~~~~~~~~~~~~~~~
 

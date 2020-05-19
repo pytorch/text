@@ -8,7 +8,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 import torch
 from torchtext import vocab
-from torchtext.vocab import Vectors, FastText, GloVe, CharNGram
+from torchtext.vocab import Vectors, FastText, GloVe, CharNGram, Word2Vec
 
 from .common.torchtext_test_case import TorchtextTestCase
 
@@ -300,6 +300,46 @@ class TestVocab(TorchtextTestCase):
             conditional_remove(
                 os.path.join(self.project_root, ".vector_cache",
                              "jmt_pre-trained_embeddings.tar.gz"))
+
+    @slow
+    def test_vocab_download_word2vec_vectors(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+        # Build a vocab and get vectors twice to test caching, then once more
+        # to test string aliases.
+        for i in range(3):
+            if i == 2:
+                vectors = "googlenews.300d"
+            else:
+                vectors = Word2Vec()
+            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
+                            vectors=vectors)
+            expected_itos = ['<unk>', '<pad>', '<bos>',
+                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.itos, expected_itos)
+            self.assertEqual(dict(v.stoi), expected_stoi)
+            vectors = v.vectors.numpy()
+
+            # The first 5 entries in each vector.
+            expected_googlenews = {
+                'hello': [-0.05419922, 0.01708984, -0.00527954, 0.33203125, -0.25],
+                'world': [-0.06396484, 0.06835938, 0.22460938, 0.13183594, -0.05957031],
+            }
+
+            for word in expected_googlenews:
+                assert_allclose(vectors[v.stoi[word], :5],
+                                expected_googlenews[word])
+
+            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
+        # Delete the vectors after we're done to save disk space on CI
+        if os.environ.get("TRAVIS") == "true":
+            conditional_remove(
+                os.path.join(self.project_root, ".vector_cache",
+                             "GoogleNews-vectors-negative300.bin"))
+            conditional_remove(
+                os.path.join(self.project_root, ".vector_cache",
+                             "GoogleNews-vectors-negative300.bin.gz"))
 
     def test_errors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})

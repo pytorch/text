@@ -28,7 +28,7 @@ class Vocab(object):
         itos: A list of token strings indexed by their numerical identifiers.
     """
 
-    # TODO (@mttk): Populate classs with default values of special symbols
+    # TODO (@mttk): Populate class with default values of special symbols
     UNK = '<unk>'
 
     def __init__(self, counter, max_size=None, min_freq=1, specials=('<unk>', '<pad>'),
@@ -162,6 +162,7 @@ class Vocab(object):
                 glove.6B.100d
                 glove.6B.200d
                 glove.6B.300d
+                word2vec.googlenews.300d
             Remaining keyword arguments: Passed to the constructor of Vectors classes.
         """
         if not isinstance(vectors, list):
@@ -274,17 +275,22 @@ class SubwordVocab(Vocab):
 
 
 def _infer_shape(f):
-    num_lines, vector_dim = 0, None
-    for line in f:
-        if vector_dim is None:
-            row = line.rstrip().split(b" ")
-            vector = row[1:]
-            # Assuming word, [vector] format
-            if len(vector) > 2:
-                # The header present in some (w2v) formats contains two elements.
-                vector_dim = len(vector)
-                num_lines += 1  # First element read
-        else:
+    num_lines, vector_dim = 1, None
+
+    # Read the first line (it may be a header of word2vec/fasttext format)
+    line = f.readline()
+    row = line.rstrip().split(b" ")
+
+    # Assuming word, [vector] format
+    if len(row) == 2:
+        # The header provides the size of vocab and the dim.
+        num_lines, vector_dim = list(map(int, row))
+    else:
+        # glove format: no header
+        vector = row[1:]
+        vector_dim = len(vector)
+
+        for _ in f:
             num_lines += 1
     f.seek(0)
     return num_lines, vector_dim
@@ -480,6 +486,20 @@ class GloVe(Vectors):
         super(GloVe, self).__init__(name, url=url, **kwargs)
 
 
+class Word2Vec(Vectors):
+    """
+    Load pretrained word2vec's skip-gram word vectors as a Vector instance.
+    """
+    url = {
+        'googlenews': 'https://s3.amazonaws.com/dl4j-distribution/'
+                      'GoogleNews-vectors-negative300.bin.gz'
+    }
+
+    def __init__(self, name='googlenews', **kwargs):
+        url = self.url[name]
+        super(Word2Vec, self).__init__(name, url=url, **kwargs)
+
+
 class FastText(Vectors):
 
     url_base = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'
@@ -533,7 +553,8 @@ pretrained_aliases = {
     "glove.6B.50d": partial(GloVe, name="6B", dim="50"),
     "glove.6B.100d": partial(GloVe, name="6B", dim="100"),
     "glove.6B.200d": partial(GloVe, name="6B", dim="200"),
-    "glove.6B.300d": partial(GloVe, name="6B", dim="300")
+    "glove.6B.300d": partial(GloVe, name="6B", dim="300"),
+    "word2vec.googlenews.300d": partial(Word2Vec, name="googlenews", dim="300"),
 }
 """Mapping from string name to factory function"""
 
