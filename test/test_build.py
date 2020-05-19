@@ -64,3 +64,37 @@ class TestDataset(TorchtextTestCase):
 
         # 6 Fields including None for ids
         assert len(dataset.fields) == 6
+
+    def test_json_dataset_one_key_multiple_fields(self):
+        self.write_test_ppid_dataset(data_format="json")
+
+        question_field = torchtext.data.Field(sequential=True)
+        spacy_tok_question_field = torchtext.data.Field(sequential=True, tokenize="spacy")
+        label_field = torchtext.data.Field(sequential=False)
+        fields = {"question1": [("q1", question_field),
+                                ("q1_spacy", spacy_tok_question_field)],
+                  "question2": [("q2", question_field),
+                                ("q2_spacy", spacy_tok_question_field)],
+                  "label": ("label", label_field)}
+        dataset = torchtext.data.TabularDataset(
+            path=self.test_ppid_dataset_path, format="json", fields=fields)
+        expected_examples = [
+            (["When", "do", "you", "use", "シ", "instead", "of", "し?"],
+             ["When", "do", "you", "use", "シ", "instead", "of", "し", "?"],
+             ["When", "do", "you", "use", "\"&\"",
+              "instead", "of", "\"and\"?"],
+             ["When", "do", "you", "use", "\"", "&", "\"",
+              "instead", "of", "\"", "and", "\"", "?"], "0"),
+            (["Where", "was", "Lincoln", "born?"],
+             ["Where", "was", "Lincoln", "born", "?"],
+             ["Which", "location", "was", "Abraham", "Lincoln", "born?"],
+             ["Which", "location", "was", "Abraham", "Lincoln", "born", "?"],
+             "1"),
+            (["What", "is", "2+2"], ["What", "is", "2", "+", "2"],
+             ["2+2=?"], ["2", "+", "2=", "?"], "1")]
+        for i, example in enumerate(dataset):
+            self.assertEqual(example.q1, expected_examples[i][0])
+            self.assertEqual(example.q1_spacy, expected_examples[i][1])
+            self.assertEqual(example.q2, expected_examples[i][2])
+            self.assertEqual(example.q2_spacy, expected_examples[i][3])
+            self.assertEqual(example.label, expected_examples[i][4])
