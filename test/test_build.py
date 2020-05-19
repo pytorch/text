@@ -108,3 +108,21 @@ class TestDataUtils(TorchtextTestCase):
         assert torchtext.data.get_tokenizer("spacy")(str(self.TEST_STR)) == [
             "A", "string", ",", "particularly", "one", "with", "slightly",
             "complex", "punctuation", "."]
+
+
+class TestVocab(TorchtextTestCase):
+    def test_vectors_get_vecs(self):
+        vec = torchtext.vocab.GloVe(name='twitter.27B', dim='25')
+        self.assertEqual(vec.vectors.shape[0], len(vec))
+
+        tokens = ['chip', 'baby', 'Beautiful']
+        token_vecs = vec.get_vecs_by_tokens(tokens).numpy()
+        self.assertEqual(token_vecs.shape[0], len(tokens))
+        self.assertEqual(token_vecs.shape[1], vec.dim)
+        torch.testing.assert_allclose(vec[tokens[0]].numpy(), token_vecs[0])
+        torch.testing.assert_allclose(vec[tokens[1]].numpy(), token_vecs[1])
+        torch.testing.assert_allclose(vec['<unk>'].numpy(), token_vecs[2])
+
+        token_one_vec = vec.get_vecs_by_tokens(tokens[0], lower_case_backup=True).numpy()
+        self.assertEqual(token_one_vec.shape[0], vec.dim)
+        torch.testing.assert_allclose(vec[tokens[0].lower()].numpy(), token_one_vec)
