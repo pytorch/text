@@ -92,43 +92,6 @@ class TestVocab(TorchtextTestCase):
                                      [0.3, 0.4]])
         assert_allclose(v.vectors.numpy(), expected_vectors)
 
-    def test_vocab_download_fasttext_vectors(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        # Build a vocab and get vectors twice to test caching, then once more
-        # to test string aliases.
-        for i in range(3):
-            if i == 2:
-                vectors = "fasttext.simple.300d"
-            else:
-                vectors = FastText(language='simple')
-
-            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                            vectors=vectors)
-
-            expected_itos = ['<unk>', '<pad>', '<bos>',
-                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.itos, expected_itos)
-            self.assertEqual(dict(v.stoi), expected_stoi)
-            vectors = v.vectors.numpy()
-
-            # The first 5 entries in each vector.
-            expected_fasttext_simple_en = {
-                'hello': [0.39567, 0.21454, -0.035389, -0.24299, -0.095645],
-                'world': [0.10444, -0.10858, 0.27212, 0.13299, -0.33165],
-            }
-
-            for word in expected_fasttext_simple_en:
-                assert_allclose(vectors[v.stoi[word], :5],
-                                expected_fasttext_simple_en[word])
-
-            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
-            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
-        # Delete the vectors after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            vec_file = os.path.join(self.project_root, ".vector_cache", "wiki.simple.vec")
-            conditional_remove(vec_file)
-
     def test_vocab_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
