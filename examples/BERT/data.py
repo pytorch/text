@@ -7,10 +7,8 @@ from torchtext.vocab import Vocab
 import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.functional import numericalize_tokens_from_iterator
-from torchtext.data.functional import custom_replace
 import random
 import glob
-import os
 import raw_data
 
 URLS = {
@@ -419,140 +417,6 @@ def WikiText103(*args, **kwargs):
     """
 
     return _setup_ns(*(("WikiText103",) + args), **kwargs)
-
-
-###################################################################
-# Set up dataset for  Next Sentence Prediction
-###################################################################
-
-
-_patterns = [(r'<.*>', ''),
-             (r'&amp;', '&'),
-             (r'&lt;', '<'),
-             (r'&gt;', '>'),
-             (r'<ref[^<]*<\/ref>', ''),
-             (r'<[^>]*>', ''),
-             (r'\[http:[^] ]*', '['),
-             (r'\|thumb', ''),
-             (r'\|left', ''),
-             (r'\|right', ''),
-             (r'\|\d+px', ''),
-             (r'\[\[image:[^\[\]]*\|', ''),
-             (r'\[\[category:([^|\]]*)[^]]*\]\]', '[[$1]]'),
-             (r'\[\[[a-z\-]*:[^\]]*\]\]', ''),
-             (r'\[\[[^\|\]]*\|', '[['),
-             (r'\{\{[^\}]*\}\}', ''),
-             (r'\{[^\}]*\}', ''),
-             (r'\[', ''),
-             (r'\]', ''),
-             (r'&[^;]*;', ' '),
-             (r'A', 'a'), (r'B', 'b'), (r'C', 'c'),
-             (r'D', 'd'), (r'E', 'e'), (r'F', 'f'),
-             (r'G', 'g'), (r'H', 'h'), (r'I', 'i'),
-             (r'J', 'j'), (r'K', 'k'), (r'L', 'l'),
-             (r'M', 'm'), (r'N', 'n'), (r'O', 'o'),
-             (r'P', 'p'), (r'Q', 'q'), (r'R', 'r'),
-             (r'S', 's'), (r'T', 't'), (r'U', 'u'),
-             (r'V', 'v'), (r'W', 'w'), (r'X', 'x'),
-             (r'Y', 'y'), (r'Z', 'z'),
-             (r'0', ' zero '), (r'1', ' one '), (r'2', ' two '),
-             (r'3', ' three '), (r'4', ' four '), (r'5', ' five '),
-             (r'6', ' six '), (r'7', ' seven '), (r'8', ' eight '),
-             (r'9', ' nine '),
-             (r'[^a-z\n]+', ' '),
-             (r'\n ', ''),
-             (r'\s+', ' '),
-             (r'\n\s*\n', r'\n')
-             ]
-enwik9_norm_transform = custom_replace(_patterns)
-
-
-def generate_offsets(filename):
-    offsets = []
-    with open(filename) as f:
-        offsets.append(f.tell())
-        while f.readline():
-            offsets.append(f.tell())
-    return offsets
-
-
-def read_lines_from_iterator(data_path, offsets, begin_line, num_lines):
-    with open(data_path) as f:
-        f.seek(offsets[begin_line])
-        for i in range(num_lines):
-            yield f.tell(), f.readline()
-
-
-def preprocess_raw_enwik9(input_filename, output_filename):
-    with open(input_filename, 'r') as f1:
-        with open(output_filename, 'w') as f2:
-            while True:
-                line = f1.readline()
-                if not line:
-                    break
-                line = list(enwik9_norm_transform([line]))[0]
-                if line != ' ' and line != '':
-                    if line[0] == ' ':
-                        line = line[1:]
-                    f2.writelines(line + '\n')
-
-
-class EnWik9(torch.utils.data.Dataset):
-    r"""Compressed size of first 10^9 bytes of enwiki-20060303-pages-articles.xml.
-        It's part of Large Text Compression Benchmark project
-    """
-
-    def __init__(self, begin_line=0, num_lines=6348957, root='.data'):
-        """Initiate EnWik9 dataset.
-        Arguments:
-            begin_line: the number of beginning line. Default: 0
-            num_lines: the number of lines to be loaded. Default: 6348957
-            root: Directory where the datasets are saved. Default: ".data"
-            data: a list of label/tokens tuple. tokens are a tensor after
-        """
-
-        super(EnWik9, self).__init__()
-
-        processed_file = os.path.join(root, 'norm_enwik9')
-        if not os.path.exists(processed_file):
-            url = 'http://mattmahoney.net/dc/enwik9.zip'
-            dataset_zip = download_from_url(url,
-                                            path=os.path.join(root, 'enwik9.zip'),
-                                            root=root)
-            extracted_file = extract_archive(dataset_zip)
-            raw_file = extracted_file[0]
-            preprocess_raw_enwik9(raw_file, processed_file)
-
-        # Meta information
-        offsets = generate_offsets(processed_file)
-        read_lines = read_lines_from_iterator(processed_file,
-                                              offsets, begin_line, num_lines)
-
-        self.file_f = open(processed_file)
-        self.start_offsets = []
-        self.end_offsets = []
-        for (line_num, line_str) in read_lines:
-            _idx = line_num
-            for item in line_str.split():
-                self.start_offsets.append(_idx)
-                self.end_offsets.append(_idx + len(item))
-                _idx += len(item) + 1
-
-        self._vocab = None
-
-    def __getitem__(self, index):
-        def _get_item(i):
-            start_idx = self.start_offsets[i]
-            end_idx = self.end_offsets[i]
-            self.file_f.seek(start_idx)
-            return self.file_f.read(end_idx - start_idx)
-        if isinstance(index, slice):
-            return [_get_item(ii) for ii in range(*index.indices(len(self)))]
-        elif isinstance(index, int):
-            return _get_item(index)
-
-    def __len__(self):
-        return len(self.start_offsets)
 
 
 ###################################################################
