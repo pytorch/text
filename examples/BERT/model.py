@@ -9,9 +9,6 @@ class PositionalEncoding(nn.Module):
         super(PositionalEncoding, self).__init__()
         self.pos_embedding = nn.Embedding(max_len, d_model)
 
-    def init_weights(self):
-        self.pos_embedding.weight.data.normal_(mean=0.0, std=0.02)
-
     def forward(self, x):
         S, N = x.size()
         pos = torch.arange(S,
@@ -24,9 +21,6 @@ class TokenTypeEncoding(nn.Module):
     def __init__(self, type_token_num, d_model):
         super(TokenTypeEncoding, self).__init__()
         self.token_type_embeddings = nn.Embedding(type_token_num, d_model)
-
-    def init_weights(self):
-        self.token_type_embeddings.weight.data.normal_(mean=0.0, std=0.02)
 
     def forward(self, seq_input, token_type_input):
         S, N = seq_input.size()
@@ -48,11 +42,6 @@ class BertEmbedding(nn.Module):
         self.norm = LayerNorm(ninp)
         self.dropout = Dropout(dropout)
 
-    def init_weights(self):
-        self.embed.weight.data.normal_(mean=0.0, std=0.02)
-        self.pos_embed.init_weights()
-        self.tok_type_embed.init_weights()
-
     def forward(self, src, token_type_input):
         src = self.embed(src) + self.pos_embed(src) \
             + self.tok_type_embed(src, token_type_input)
@@ -69,10 +58,6 @@ class BertModel(nn.Module):
         encoder_layers = TransformerEncoderLayer(ninp, nhead, nhid, dropout)
         self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
         self.ninp = ninp
-        self.init_weights()
-
-    def init_weights(self):
-        self.bert_embed.init_weights()
 
     def forward(self, src, token_type_input):
         src = self.bert_embed(src, token_type_input)
