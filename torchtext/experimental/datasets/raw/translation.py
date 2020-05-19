@@ -207,12 +207,7 @@ def Multi30k(languages="de-en",
 
     Examples:
         >>> from torchtext.datasets import Multi30k
-        >>> from torchtext.data.utils import get_tokenizer
-        >>> tokenizer = (get_tokenizer("spacy", language='de'),
-                         get_tokenizer("basic_english"))
-        >>> train_dataset, valid_dataset, test_dataset = Multi30k(tokenizer=tokenizer)
-        >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
-        >>> src_data, tgt_data = train_dataset[10]
+        >>> train_dataset, valid_dataset, test_dataset = Multi30k()
     """
     return _setup_datasets("Multi30k",
                            languages=languages,
@@ -260,14 +255,8 @@ def IWSLT(languages='de-en',
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets import IWSLT
-        >>> from torchtext.data.utils import get_tokenizer
-        >>> src_tokenizer = get_tokenizer("spacy", language='de')
-        >>> tgt_tokenizer = get_tokenizer("basic_english")
-        >>> train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer,
-                                                                          tgt_tokenizer))
-        >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
-        >>> src_data, tgt_data = train_dataset[10]
+        >>> from torchtext.datasets.raw import IWSLT
+        >>> train_dataset, valid_dataset, test_dataset = IWSLT()
     """
     src_language, tgt_language = languages.split('-')
     URLS["IWSLT"] = URLS["IWSLT"].format(src_language, tgt_language, languages)
@@ -371,13 +360,7 @@ def WMT14(languages="de-en",
 
     Examples:
         >>> from torchtext.datasets import WMT14
-        >>> from torchtext.data.utils import get_tokenizer
-        >>> src_tokenizer = get_tokenizer("spacy", language='de')
-        >>> tgt_tokenizer = get_tokenizer("basic_english")
-        >>> train_dataset, valid_dataset, test_dataset = WMT14(tokenizer=(src_tokenizer,
-                                                                          tgt_tokenizer))
-        >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
-        >>> src_data, tgt_data = train_dataset[10]
+        >>> train_dataset, valid_dataset, test_dataset = WMT14()
     """
 
     return _setup_datasets("WMT14",
