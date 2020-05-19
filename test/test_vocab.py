@@ -8,7 +8,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 import torch
 from torchtext import vocab
-from torchtext.vocab import Vectors, FastText, GloVe, CharNGram
+from torchtext.vocab import Vectors, FastText, GloVe
 
 from .common.torchtext_test_case import TorchtextTestCase
 
@@ -261,45 +261,6 @@ class TestVocab(TorchtextTestCase):
             for dim in ["25", "50", "100", "200"]:
                 conditional_remove(os.path.join(self.project_root, ".vector_cache",
                                                 "glove.twitter.27B.{}d.txt".format(dim)))
-
-    def test_vocab_download_charngram_vectors(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        # Build a vocab and get vectors twice to test caching, then once more
-        # to test string aliases.
-        for i in range(3):
-            if i == 2:
-                vectors = "charngram.100d"
-            else:
-                vectors = CharNGram()
-            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                            vectors=vectors)
-            expected_itos = ['<unk>', '<pad>', '<bos>',
-                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.itos, expected_itos)
-            self.assertEqual(dict(v.stoi), expected_stoi)
-            vectors = v.vectors.numpy()
-
-            # The first 5 entries in each vector.
-            expected_charngram = {
-                'hello': [-0.44782442, -0.08937783, -0.34227219,
-                          -0.16233221, -0.39343098],
-                'world': [-0.29590717, -0.05275926, -0.37334684, 0.27117205, -0.3868292],
-            }
-
-            for word in expected_charngram:
-                assert_allclose(vectors[v.stoi[word], :5],
-                                expected_charngram[word])
-
-            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
-            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(100))
-        # Delete the vectors after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            conditional_remove(
-                os.path.join(self.project_root, ".vector_cache", "charNgram.txt"))
-            conditional_remove(
-                os.path.join(self.project_root, ".vector_cache",
-                             "jmt_pre-trained_embeddings.tar.gz"))
 
     def test_errors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
