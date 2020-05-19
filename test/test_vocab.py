@@ -8,7 +8,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 import torch
 from torchtext import vocab
-from torchtext.vocab import Vectors, FastText, GloVe
+from torchtext.vocab import Vectors, FastText
 
 from .common.torchtext_test_case import TorchtextTestCase
 
@@ -154,48 +154,6 @@ class TestVocab(TorchtextTestCase):
         if os.environ.get("TRAVIS") == "true":
             vec_file = os.path.join(vector_cache, "wiki.simple.vec")
             conditional_remove(vec_file)
-
-    def test_vocab_download_glove_vectors(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-
-        # Build a vocab and get vectors twice to test caching, then once more
-        # to test string aliases.
-        for i in range(3):
-            if i == 2:
-                vectors = "glove.twitter.27B.25d"
-            else:
-                vectors = GloVe(name='twitter.27B', dim='25')
-            v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                            vectors=vectors)
-
-            expected_itos = ['<unk>', '<pad>', '<bos>',
-                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.itos, expected_itos)
-            self.assertEqual(dict(v.stoi), expected_stoi)
-
-            vectors = v.vectors.numpy()
-
-            # The first 5 entries in each vector.
-            expected_twitter = {
-                'hello': [-0.77069, 0.12827, 0.33137, 0.0050893, -0.47605],
-                'world': [0.10301, 0.095666, -0.14789, -0.22383, -0.14775],
-            }
-
-            for word in expected_twitter:
-                assert_allclose(vectors[v.stoi[word], :5],
-                                expected_twitter[word])
-
-            assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
-            assert_allclose(vectors[v.stoi['OOV token']], np.zeros(25))
-        # Delete the vectors after we're done to save disk space on CI
-        if os.environ.get("TRAVIS") == "true":
-            zip_file = os.path.join(self.project_root, ".vector_cache",
-                                    "glove.twitter.27B.zip")
-            conditional_remove(zip_file)
-            for dim in ["25", "50", "100", "200"]:
-                conditional_remove(os.path.join(self.project_root, ".vector_cache",
-                                                "glove.twitter.27B.{}d.txt".format(dim)))
 
     def test_errors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})

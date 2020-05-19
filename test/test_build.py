@@ -222,3 +222,37 @@ class TestVocab(TorchtextTestCase):
 
             torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
             torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
+
+    def test_vocab_download_glove_vectors(self):
+        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
+
+        # Build a vocab and get vectors twice to test caching, then once more
+        # to test string aliases.
+        for i in range(3):
+            if i == 2:
+                vectors = "glove.twitter.27B.25d"
+            else:
+                vectors = torchtext.vocab.GloVe(name='twitter.27B', dim='25')
+            v = torchtext.vocab.Vocab(
+                c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
+
+            expected_itos = ['<unk>', '<pad>', '<bos>',
+                             'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.itos, expected_itos)
+            self.assertEqual(dict(v.stoi), expected_stoi)
+
+            vectors = v.vectors.numpy()
+
+            # The first 5 entries in each vector.
+            expected_twitter = {
+                'hello': [-0.77069, 0.12827, 0.33137, 0.0050893, -0.47605],
+                'world': [0.10301, 0.095666, -0.14789, -0.22383, -0.14775],
+            }
+
+            for word in expected_twitter:
+                torch.testing.assert_allclose(
+                    vectors[v.stoi[word], :5], expected_twitter[word])
+
+            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
+            torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(25))
