@@ -15,12 +15,6 @@ class TestUtils(TorchtextTestCase):
         assert data.get_tokenizer(str.split) == str.split
         assert data.get_tokenizer(str.split)(self.TEST_STR) == str.split(self.TEST_STR)
 
-    def test_get_tokenizer_spacy(self):
-        # Test SpaCy option, and verify it properly handles punctuation.
-        assert data.get_tokenizer("spacy")(str(self.TEST_STR)) == [
-            "A", "string", ",", "particularly", "one", "with", "slightly",
-            "complex", "punctuation", "."]
-
     def test_get_tokenizer_moses(self):
         # Test Moses option.
         # Note that internally, MosesTokenizer converts to unicode if applicable
