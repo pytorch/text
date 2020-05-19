@@ -120,3 +120,5 @@ venv.bak/
 # vim
 *.swp
 *.swo
+
+torchtext/version.py

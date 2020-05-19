@@ -23,16 +23,12 @@ PYTHON_VERSIONS = ["3.6", "3.7", "3.8"]
 
 
 def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
-    '''
     w = []
     for btype in ["wheel", "conda"]:
-        for os_type in ["linux", "macos"]:
+        for os_type in ["linux", "macos", "windows"]:
             for python_version in PYTHON_VERSIONS:
                 w += build_workflow_pair(btype, os_type, python_version, filter_branch, prefix, upload)
-
     return indent(indentation, w)
-    '''
-    return ''
 
 
 def build_workflow_pair(btype, os_type, python_version, filter_branch, prefix='', upload=False):
@@ -101,14 +97,22 @@ def indent(indentation, data_list):
 
 def unittest_workflows(indentation=6):
     w = []
-    for os_type in ["linux"]:
-        for python_version in PYTHON_VERSIONS:
+    for os_type in ["linux", "windows"]:
+        for i, python_version in enumerate(PYTHON_VERSIONS):
             w.append({
                 f"unittest_{os_type}": {
                     "name": f"unittest_{os_type}_py{python_version}",
                     "python_version": python_version,
                 }
             })
+
+            if i == 0 and os_type == "linux":
+                w.append({
+                    f"stylecheck": {
+                        "name": f"stylecheck_py{python_version}",
+                        "python_version": python_version,
+                    }
+                })
     return indent(indentation, w)
 
 

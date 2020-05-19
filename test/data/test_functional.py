@@ -1,5 +1,6 @@
 import os
 import unittest
+import sys
 import tempfile
 
 import sentencepiece as spm
@@ -14,13 +15,19 @@ from torchtext.data.functional import (
 )
 
 from ..common.torchtext_test_case import TorchtextTestCase
+from ..common.assets import get_asset_path
 
 
 class TestFunctional(TorchtextTestCase):
     def test_generate_sp_model(self):
         # Test the function to train a sentencepiece tokenizer
 
-        data_path = 'test/asset/text_normalization_ag_news_test.csv'
+        # buck (fb internal) generates test environment which contains ',' in its path.
+        # SentencePieceTrainer considers such path as comma-delimited file list.
+        # So as workaround we copy the asset data to temporary directory and load it from there.
+        data_path = get_asset_path(
+            'text_normalization_ag_news_test.csv',
+            use_temp_dir=True)
         generate_sp_model(data_path,
                           vocab_size=23456,
                           model_prefix='spm_user')
@@ -37,7 +44,7 @@ class TestFunctional(TorchtextTestCase):
 
     def test_sentencepiece_numericalizer(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        model_path = 'test/asset/spm_example.model'
+        model_path = get_asset_path('spm_example.model')
         sp_model = load_sp_model(model_path)
         self.assertEqual(sp_model.GetPieceSize(), 20000)
         spm_generator = sentencepiece_numericalizer(sp_model)
@@ -51,7 +58,7 @@ class TestFunctional(TorchtextTestCase):
     def test_sentencepiece_tokenizer(self):
 
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        model_path = 'test/asset/spm_example.model'
+        model_path = get_asset_path('spm_example.model')
         sp_model = load_sp_model(model_path)
         self.assertEqual(sp_model.GetPieceSize(), 20000)
         spm_generator = sentencepiece_tokenizer(sp_model)
@@ -98,11 +105,12 @@ class ScriptableSP(torch.jit.ScriptModule):
 
 class TestScriptableSP(unittest.TestCase):
     def setUp(self):
-        model_path = 'test/asset/spm_example.model'
+        model_path = get_asset_path('spm_example.model')
         with tempfile.NamedTemporaryFile() as file:
             torch.jit.script(ScriptableSP(model_path)).save(file.name)
             self.model = torch.jit.load(file.name)
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
@@ -114,6 +122,7 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode(input)
         self.assertEqual(expected, output)
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode_as_ids(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
@@ -122,6 +131,7 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode_as_ids(input)
         self.assertEqual(expected, output)
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode_as_pieces(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
