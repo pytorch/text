@@ -328,7 +328,7 @@ class Field(RawField):
 
         if self.use_vocab:
             if self.sequential:
-                arr = [[self.vocab.stoi[x] for x in ex] for ex in arr]
+                arr = [[self.vocab.stoi[x] if x in self.vocab else self.vocab.stoi[self.unk_token] for x in ex] for ex in arr]
             else:
                 arr = [self.vocab.stoi[x] for x in arr]
 
