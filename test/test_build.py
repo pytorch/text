@@ -98,3 +98,13 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(example.q2, expected_examples[i][2])
             self.assertEqual(example.q2_spacy, expected_examples[i][3])
             self.assertEqual(example.label, expected_examples[i][4])
+
+
+class TestDataUtils(TorchtextTestCase):
+    TEST_STR = "A string, particularly one with slightly complex punctuation."
+
+    def test_get_tokenizer_spacy(self):
+        # Test SpaCy option, and verify it properly handles punctuation.
+        assert torchtext.data.get_tokenizer("spacy")(str(self.TEST_STR)) == [
+            "A", "string", ",", "particularly", "one", "with", "slightly",
+            "complex", "punctuation", "."]
