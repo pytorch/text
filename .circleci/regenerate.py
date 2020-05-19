@@ -25,7 +25,7 @@ PYTHON_VERSIONS = ["3.6", "3.7", "3.8"]
 def build_workflows(prefix='', upload=False, filter_branch=None, indentation=6):
     w = []
     for btype in ["wheel", "conda"]:
-        for os_type in ["linux", "macos"]:
+        for os_type in ["linux", "macos", "windows"]:
             for python_version in PYTHON_VERSIONS:
                 w += build_workflow_pair(btype, os_type, python_version, filter_branch, prefix, upload)
     return indent(indentation, w)
