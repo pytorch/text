@@ -112,6 +112,17 @@ class TestDataUtils(TorchtextTestCase):
             "A", "string", ",", "particularly", "one", "with", "slightly",
             "complex", "punctuation", "."]
 
+    def test_get_tokenizer_moses(self):
+        # Test Moses option.
+        # Note that internally, MosesTokenizer converts to unicode if applicable
+        moses_tokenizer = torchtext.data.get_tokenizer("moses")
+        assert moses_tokenizer(self.TEST_STR) == [
+            "A", "string", ",", "particularly", "one", "with", "slightly",
+            "complex", "punctuation", "."]
+
+        # Nonbreaking prefixes should tokenize the final period.
+        assert moses_tokenizer("abc def.") == ["abc", "def", "."]
+
 
 class TestVocab(TorchtextTestCase):
     def test_vectors_get_vecs(self):
