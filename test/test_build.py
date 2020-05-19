@@ -130,8 +130,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(token_one_vec.shape[0], vec.dim)
         torch.testing.assert_allclose(vec[tokens[0].lower()].numpy(), token_one_vec)
 
-
-    def test_vocab_download_charngram_vectors(self):
+    def test_download_charngram_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching, then once more
         # to test string aliases.
@@ -163,7 +162,7 @@ class TestVocab(TorchtextTestCase):
             torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
             torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(100))
 
-    def test_vocab_download_custom_vectors(self):
+    def test_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
@@ -191,7 +190,7 @@ class TestVocab(TorchtextTestCase):
 
             torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
 
-    def test_vocab_download_fasttext_vectors(self):
+    def test_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching, then once more
         # to test string aliases.
@@ -224,7 +223,7 @@ class TestVocab(TorchtextTestCase):
             torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
             torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
 
-    def test_vocab_download_glove_vectors(self):
+    def test_download_glove_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
 
         # Build a vocab and get vectors twice to test caching, then once more
@@ -258,7 +257,7 @@ class TestVocab(TorchtextTestCase):
             torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
             torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(25))
 
-    def test_vocab_extend(self):
+    def test_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
@@ -285,7 +284,7 @@ class TestVocab(TorchtextTestCase):
 
             torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
 
-    def test_vocab_vectors_custom_cache(self):
+    def test_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')
         # Build a vocab and get vectors twice to test caching.
