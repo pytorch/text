@@ -360,19 +360,20 @@ def _setup_ns(dataset_name, tokenizer=get_tokenizer("basic_english"),
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
     train, valid, test = DATASETS[dataset_name](root=root)
-    # Cache raw text iterable dataset
-    raw_data = {'train': [(txt,) for txt in train],
-                'valid': [(txt,) for txt in valid],
-                'test': [(txt,) for txt in test]}
     if single_line:
-        for item in raw_data.keys():
-            raw_data[item] = ' '.join(raw_data[item])
+        raw_data = {'train': [(' '.join([txt for txt in train]),)],
+                    'valid': [(' '.join([txt for txt in valid]),)],
+                    'test': [(' '.join([txt for txt in test]),)]}
+    else:
+        raw_data = {'train': [(txt,) for txt in train],
+                    'valid': [(txt,) for txt in valid],
+                    'test': [(txt,) for txt in test]}
 
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         tok_list = []
-        for txt in raw_data['train']:
+        for (txt,) in raw_data['train']:
             tok_list.append(text_transform(txt))
         vocab = build_vocab_from_iterator(tok_list)
     text_transform = squential_transforms(text_transform, vocab_func(vocab))
