@@ -131,8 +131,7 @@ def _setup_datasets(dataset_name,
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
-        datasets.append(
-            RawTextIterableDataset(list(zip(src_data_iter, tgt_data_iter))))
+        datasets.append(RawTextIterableDataset(src_data_iter, tgt_data_iter))
 
     return tuple(datasets)
 
@@ -140,11 +139,12 @@ def _setup_datasets(dataset_name,
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
-    def __init__(self, iterator):
+    def __init__(self, src_iterator, tgt_iterator):
         """Initiate text-classification dataset.
         """
         super(RawTextIterableDataset, self).__init__()
-        self._iterator = iterator
+        self._src_iterator = src_iterator
+        self._tgt_iterator = tgt_iterator
         self.has_setup = False
         self.start = 0
         self.num_lines = None
@@ -158,7 +158,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         if not self.has_setup:
             self.setup_iter()
 
-        for i, item in enumerate(self._iterator):
+        for i, item in enumerate(zip(self._src_iterator, self._tgt_iterator)):
             if i >= self.start:
                 yield item
             if (self.num_lines is not None) and (i == (self.start +
