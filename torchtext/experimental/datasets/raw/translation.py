@@ -1,12 +1,12 @@
 import torch
-import logging
 import os
 import io
 import codecs
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 
-from torchtext.utils import download_from_url, extract_archive
+from torchtext.utils import (download_from_url, extract_archive,
+                             unicode_csv_reader)
 
 URLS = {
     'Multi30k': [
@@ -76,7 +76,6 @@ def _setup_datasets(dataset_name,
                     train_filename,
                     valid_filename,
                     test_filename,
-                    data_select=('train', 'test', 'valid'),
                     root='.data'):
     src_ext, tgt_ext = languages.split("-")
     src_train, tgt_train = _construct_filenames(train_filename,
@@ -123,11 +122,8 @@ def _setup_datasets(dataset_name,
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
-    logging.info('Building datasets for {}'.format(data_select))
     datasets = []
     for key in data_filenames.keys():
-        if key not in data_select:
-            continue
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
@@ -173,7 +169,6 @@ def Multi30k(languages="de-en",
              train_filename="train",
              valid_filename="val",
              test_filename="test2016",
-             data_select=('train', 'test', 'valid'),
              root='.data'):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
@@ -196,13 +191,6 @@ def Multi30k(languages="de-en",
             without the extension since it's already handled by languages
             parameter.
             Default: 'test2016'
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
@@ -221,7 +209,6 @@ def IWSLT(languages='de-en',
           train_filename='train.de-en',
           valid_filename='IWSLT16.TED.tst2013.de-en',
           test_filename='IWSLT16.TED.tst2014.de-en',
-          data_select=('train', 'test', 'valid'),
           root='.data'):
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
@@ -245,13 +232,6 @@ def IWSLT(languages='de-en',
             without the extension since it's already handled by languages
             parameter.
             Default: 'IWSLT16.TED.tst2014.de-en'
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
@@ -275,7 +255,6 @@ def WMT14(languages="de-en",
           train_filename='train.tok.clean.bpe.32000',
           valid_filename='newstest2013.tok.bpe.32000',
           test_filename='newstest2014.tok.bpe.32000',
-          data_select=('train', 'test', 'valid'),
           root='.data'):
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
@@ -349,13 +328,6 @@ def WMT14(languages="de-en",
             without the extension since it's already handled by languages
             parameter.
             Default: 'newstest2014.tok.bpe.32000'
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
