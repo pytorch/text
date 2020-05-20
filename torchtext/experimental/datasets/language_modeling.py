@@ -2,7 +2,7 @@ import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets import raw
-from .text_classification import vocab_func, totensor
+from torchtext.experimental.functional import vocab_func, totensor, sequential_transforms
 
 
 def build_vocab(data, transforms):
@@ -10,15 +10,6 @@ def build_vocab(data, transforms):
     for txt in data:
         tok_list.append(transforms(txt))
     return build_vocab_from_iterator(tok_list)
-
-
-def sequential_transforms(*transforms):
-    def _forward(txt_input):
-        for transform in transforms:
-            txt_input = transform(txt_input)
-        return txt_input
-
-    return _forward
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):
