@@ -78,7 +78,9 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building src Vocab based on train data')
-        src_vocab = build_vocab(train, src_text_vocab_transform, index=0)
+        src_vocab = build_vocab(raw_data["train"],
+                                src_text_vocab_transform,
+                                index=0)
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
@@ -88,7 +90,9 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building tgt Vocab based on train data')
-        tgt_vocab = build_vocab(train, tgt_text_vocab_transform, index=1)
+        tgt_vocab = build_vocab(raw_data["train"],
+                                tgt_text_vocab_transform,
+                                index=1)
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
@@ -152,10 +156,6 @@ class TranslationDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.data)
-
-    def __iter__(self):
-        for x in self.data:
-            yield x
 
     def get_vocab(self):
         return self.vocab
