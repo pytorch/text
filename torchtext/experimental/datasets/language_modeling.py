@@ -53,8 +53,8 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, root='.data', vocab=None,
-                    tokenizer=None, data_select=('train', 'test', 'valid')):
+def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
+                    data_select=('train', 'test', 'valid')):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
