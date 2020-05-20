@@ -44,39 +44,36 @@ class TestFunctional(TorchtextTestCase):
 
     def test_sentencepiece_numericalizer(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        model_path = get_asset_path('spm_example.model')
+        model_path = 'test/asset/spm_example.model'
         sp_model = load_sp_model(model_path)
-        self.assertEqual(sp_model.GetPieceSize(), 20000)
+        self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_numericalizer(sp_model)
 
-        ref_results = [
-            15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366, 144, 3689,
-            9, 5602, 12114, 6, 560, 649, 5602, 12114
-        ]
+        ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
+                       144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
 
-        self.assertEqual(list(spm_generator([test_sample]))[0], ref_results)
+        self.assertEqual(list(spm_generator([test_sample]))[0],
+                         ref_results)
 
     def test_sentencepiece_tokenizer(self):
 
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        model_path = get_asset_path('spm_example.model')
+        model_path = 'test/asset/spm_example.model'
         sp_model = load_sp_model(model_path)
-        self.assertEqual(sp_model.GetPieceSize(), 20000)
+        self.assertEqual(len(sp_model), 20000)
         spm_generator = sentencepiece_tokenizer(sp_model)
 
-        ref_results = [
-            '\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is', '\u2581an',
-            '\u2581un', 'super', 'vis', 'ed', '\u2581text', '\u2581to', 'ken',
-            'izer', '\u2581and', '\u2581de', 'to', 'ken', 'izer'
-        ]
+        ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+                       '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+                       '\u2581to', 'ken', 'izer', '\u2581and',
+                       '\u2581de', 'to', 'ken', 'izer']
 
-        self.assertEqual(list(spm_generator([test_sample]))[0], ref_results)
+        self.assertEqual(list(spm_generator([test_sample]))[0],
+                         ref_results)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
-        test_sample = [
-            'test     cuStom   replace', 'with   uSer   instruction'
-        ]
+        test_sample = ['test     cuStom   replace', 'with   uSer   instruction']
         ref_results = ['test custom replace', 'with user instruction']
         self.assertEqual(list(custom_replace_transform(test_sample)),
                          ref_results)
