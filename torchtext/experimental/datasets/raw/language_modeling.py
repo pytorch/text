@@ -144,3 +144,10 @@ def PennTreebank(*args, **kwargs):
     """
 
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+
+
+DATASETS = {
+    'WikiText2': WikiText2,
+    'WikiText103': WikiText103,
+    'PennTreebank': PennTreebank
+}
