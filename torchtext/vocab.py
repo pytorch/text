@@ -31,7 +31,7 @@ class Vocab(object):
     # TODO (@mttk): Populate classs with default values of special symbols
     UNK = '<unk>'
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=['<unk>', '<pad>'],
+    def __init__(self, counter, max_size=None, min_freq=1, specials=('<unk>', '<pad>'),
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
@@ -218,7 +218,7 @@ class Vocab(object):
 
 class SubwordVocab(Vocab):
 
-    def __init__(self, counter, max_size=None, specials=['<pad>'],
+    def __init__(self, counter, max_size=None, specials=('<pad>'),
                  vectors=None, unk_init=torch.Tensor.zero_):
         """Create a revtok subword vocabulary from a collections.Counter.
 

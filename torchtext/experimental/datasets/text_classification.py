@@ -1,43 +1,20 @@
 import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.datasets import raw
+from torchtext.experimental.datasets.raw import text_classification as raw
+from torchtext.experimental.functional import (
+    vocab_func,
+    totensor,
+    ngrams_func,
+    sequential_transforms,
+)
 
 
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-    return _forward
-
-
-def totensor(dtype):
-    def _forward(ids_list):
-        return torch.tensor(ids_list).to(dtype)
-    return _forward
-
-
-def ngrams_func(ngrams):
-    def _forward(token_list):
-        _token_list = []
-        for _i in range(ngrams + 1):
-            _token_list += zip(*[token_list[i:] for i in range(_i)])
-        return [' '.join(x) for x in _token_list]
-    return _forward
-
-
-def build_vocab(data, transforms):
+def _build_vocab(data, transforms):
     tok_list = []
-    for (label, txt) in data:
+    for _, txt in data:
         tok_list.append(transforms(txt))
     return build_vocab_from_iterator(tok_list)
-
-
-def squential_transforms(*transforms):
-    def _forward(txt_input):
-        for transform in transforms:
-            txt_input = transform(txt_input)
-        return txt_input
-    return _forward
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -87,32 +64,44 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None,
-                    tokenizer=None, data_select=('train', 'test')):
+def _setup_datasets(
+    dataset_name,
+    root=".data",
+    ngrams=1,
+    vocab=None,
+    tokenizer=None,
+    data_select=("train", "test"),
+):
     text_transform = []
     if tokenizer is None:
-        tokenizer = get_tokenizer('basic_english')
-    text_transform = squential_transforms(tokenizer, ngrams_func(ngrams))
+        tokenizer = get_tokenizer("basic_english")
+    text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
 
     if isinstance(data_select, str):
         data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, test = DATASETS[dataset_name](root=root)
+    if not set(data_select).issubset(set(("train", "test"))):
+        raise TypeError("Given data selection {} is not supported!".format(data_select))
+    train, test = raw.DATASETS[dataset_name](root=root)
     # Cache raw text iterable dataset
-    raw_data = {'train': [(label, txt) for (label, txt) in train],
-                'test': [(label, txt) for (label, txt) in test]}
+    raw_data = {
+        "train": [(label, txt) for (label, txt) in train],
+        "test": [(label, txt) for (label, txt) in test],
+    }
 
     if vocab is None:
-        if 'train' not in data_select:
+        if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(raw_data['train'], text_transform)
-    text_transform = squential_transforms(text_transform, vocab_func(vocab),
-                                          totensor(dtype=torch.long))
-    label_transform = squential_transforms(totensor(dtype=torch.long))
-    return tuple(TextClassificationDataset(raw_data[item], vocab,
-                                           (label_transform, text_transform))
-                 for item in data_select)
+        vocab = _build_vocab(raw_data["train"], text_transform)
+    text_transform = sequential_transforms(
+        text_transform, vocab_func(vocab), totensor(dtype=torch.long)
+    )
+    label_transform = sequential_transforms(totensor(dtype=torch.long))
+    return tuple(
+        TextClassificationDataset(
+            raw_data[item], vocab, (label_transform, text_transform)
+        )
+        for item in data_select
+    )
 
 
 def AG_NEWS(*args, **kwargs):
@@ -155,7 +144,7 @@ def AG_NEWS(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(('AG_NEWS',) + args), **kwargs)
+    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
 
 
 def SogouNews(*args, **kwargs):
@@ -509,66 +498,70 @@ def IMDB(*args, **kwargs):
 
 
 DATASETS = {
-    'AG_NEWS': raw.AG_NEWS,
-    'SogouNews': raw.SogouNews,
-    'DBpedia': raw.DBpedia,
-    'YelpReviewPolarity': raw.YelpReviewPolarity,
-    'YelpReviewFull': raw.YelpReviewFull,
-    'YahooAnswers': raw.YahooAnswers,
-    'AmazonReviewPolarity': raw.AmazonReviewPolarity,
-    'AmazonReviewFull': raw.AmazonReviewFull,
-    'IMDB': raw.IMDB
+    "AG_NEWS": AG_NEWS,
+    "SogouNews": SogouNews,
+    "DBpedia": DBpedia,
+    "YelpReviewPolarity": YelpReviewPolarity,
+    "YelpReviewFull": YelpReviewFull,
+    "YahooAnswers": YahooAnswers,
+    "AmazonReviewPolarity": AmazonReviewPolarity,
+    "AmazonReviewFull": AmazonReviewFull,
+    "IMDB": IMDB,
 }
 
 
 LABELS = {
-    'AG_NEWS': {1: 'World',
-                2: 'Sports',
-                3: 'Business',
-                4: 'Sci/Tech'},
-    'SogouNews': {1: 'Sports',
-                  2: 'Finance',
-                  3: 'Entertainment',
-                  4: 'Automobile',
-                  5: 'Technology'},
-    'DBpedia': {1: 'Company',
-                2: 'EducationalInstitution',
-                3: 'Artist',
-                4: 'Athlete',
-                5: 'OfficeHolder',
-                6: 'MeanOfTransportation',
-                7: 'Building',
-                8: 'NaturalPlace',
-                9: 'Village',
-                10: 'Animal',
-                11: 'Plant',
-                12: 'Album',
-                13: 'Film',
-                14: 'WrittenWork'},
-    'YelpReviewPolarity': {1: 'Negative polarity',
-                           2: 'Positive polarity'},
-    'YelpReviewFull': {1: 'score 1',
-                       2: 'score 2',
-                       3: 'score 3',
-                       4: 'score 4',
-                       5: 'score 5'},
-    'YahooAnswers': {1: 'Society & Culture',
-                     2: 'Science & Mathematics',
-                     3: 'Health',
-                     4: 'Education & Reference',
-                     5: 'Computers & Internet',
-                     6: 'Sports',
-                     7: 'Business & Finance',
-                     8: 'Entertainment & Music',
-                     9: 'Family & Relationships',
-                     10: 'Politics & Government'},
-    'AmazonReviewPolarity': {1: 'Negative polarity',
-                             2: 'Positive polarity'},
-    'AmazonReviewFull': {1: 'score 1',
-                         2: 'score 2',
-                         3: 'score 3',
-                         4: 'score 4',
-                         5: 'score 5'},
-    'IMDB': {0: 'Negative',
-             1: 'Positive'}
+    "AG_NEWS": {1: "World", 2: "Sports", 3: "Business", 4: "Sci/Tech"},
+    "SogouNews": {
+        1: "Sports",
+        2: "Finance",
+        3: "Entertainment",
+        4: "Automobile",
+        5: "Technology",
+    },
+    "DBpedia": {
+        1: "Company",
+        2: "EducationalInstitution",
+        3: "Artist",
+        4: "Athlete",
+        5: "OfficeHolder",
+        6: "MeanOfTransportation",
+        7: "Building",
+        8: "NaturalPlace",
+        9: "Village",
+        10: "Animal",
+        11: "Plant",
+        12: "Album",
+        13: "Film",
+        14: "WrittenWork",
+    },
+    "YelpReviewPolarity": {1: "Negative polarity", 2: "Positive polarity"},
+    "YelpReviewFull": {
+        1: "score 1",
+        2: "score 2",
+        3: "score 3",
+        4: "score 4",
+        5: "score 5",
+    },
+    "YahooAnswers": {
+        1: "Society & Culture",
+        2: "Science & Mathematics",
+        3: "Health",
+        4: "Education & Reference",
+        5: "Computers & Internet",
+        6: "Sports",
+        7: "Business & Finance",
+        8: "Entertainment & Music",
+        9: "Family & Relationships",
+        10: "Politics & Government",
+    },
+    "AmazonReviewPolarity": {1: "Negative polarity", 2: "Positive polarity"},
+    "AmazonReviewFull": {
+        1: "score 1",
+        2: "score 2",
+        3: "score 3",
+        4: "score 4",
+        5: "score 5",
+    },
+    "IMDB": {0: "Negative", 1: "Positive"},
 }
