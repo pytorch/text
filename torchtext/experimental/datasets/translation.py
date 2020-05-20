@@ -1,117 +1,39 @@
 import torch
 import logging
-from torchtext.utils import download_from_url, extract_archive
+
+from torchtext.experimental.datasets import raw
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import Vocab
-import os
-import io
-import codecs
-import xml.etree.ElementTree as ET
-from collections import defaultdict
-
-URLS = {
-    'Multi30k': [
-        'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
-        'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
-        'http://www.quest.dcs.shef.ac.uk/wmt17_files_mmt/'
-        'mmt_task1_test2016.tar.gz'
-    ],
-    'WMT14':
-    'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
-    'IWSLT':
-    'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
-}
 
 
-def _read_text_iterator(path, tokenizer):
-    r"""Read text from path and yield a list of tokens based on the tokenizer
-    Arguments:
-        path: the file path.
-        tokenizer: the tokenizer used to tokenize string text.
-    Examples:
-        >>> from torchtext.data.functional import read_text_iterator
-        >>> tokenizer = get_tokenizer("basic_english")
-        >>> list((read_text_iterator('.data/ptb.train.txt', tokenizer)))
-            [['Sentencepiece', 'encode', 'as', 'pieces'], ['example', 'to', 'try!']]
-    """
+def vocab_func(vocab):
+    def _forward(tok_iter):
+        return [vocab[tok] for tok in tok_iter]
 
-    with io.open(path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            tokens = tokenizer(' '.join(row))
-            yield tokens
+    return _forward
 
 
-def _create_data_from_iterator(vocab, iterator, removed_tokens=None):
-    r"""Yield a list of ids from an token iterator with a vocab.
-    Arguments:
-        vocab: the vocabulary convert token into id.
-        iterator: the iterator yield a list of tokens.
-        removed_tokens: removed tokens from output dataset (Default: None)
-    Examples:
-        >>> from torchtext.data.functional import simple_space_split
-        >>> from torchtext.data.functional import create_data_from_iterator
-        >>> vocab = {'Sentencepiece' : 0, 'encode' : 1, 'as' : 2, 'pieces' : 3}
-        >>> list(create_data_from_iterator(vocab,
-        >>>                                simple_space_split(["Sentencepiece as pieces",
-        >>>                                                   "as pieces"]))
-        >>> [[0, 2, 3], [2, 3]]
-    """
+def totensor(dtype):
+    def _forward(ids_list):
+        return torch.tensor(ids_list).to(dtype)
 
-    for tokens in iterator:
-        if removed_tokens is None:
-            tokens = [vocab[token] for token in tokens]
-        else:
-            token_ids = list(
-                filter(lambda x: x not in removed_tokens,
-                       [vocab[token] for token in tokens]))
-            tokens = token_ids
-        if len(tokens) == 0:
-            logging.info('Row contains no tokens.')
-        yield tokens
+    return _forward
 
 
-def _clean_xml_file(f_xml):
-    f_txt = os.path.splitext(f_xml)[0]
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
-        root = ET.parse(f_xml).getroot()[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
+def build_vocab(data, transforms, index):
+    tok_list = []
+    for line in data:
+        tok_list.append(transforms(line[index]))
+    return build_vocab_from_iterator(tok_list)
 
 
-def _clean_tags_file(f_orig):
-    xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker'
-    ]
-    f_txt = f_orig.replace('.tags', '')
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
-            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for l in fd_orig:
-            if not any(tag in l for tag in xml_tags):
-                # TODO: Fix utf-8 next line mark
-                #                fd_txt.write(l.strip() + '\n')
-                #                fd_txt.write(l.strip() + u"\u0085")
-                #                fd_txt.write(l.lstrip())
-                fd_txt.write(l.strip() + '\n')
+def sequential_transforms(*transforms):
+    def _forward(txt_input):
+        for transform in transforms:
+            txt_input = transform(txt_input)
+        return txt_input
 
-
-def _construct_filenames(filename, languages):
-    filenames = []
-    for lang in languages:
-        filenames.append(filename + "." + lang)
-    return filenames
-
-
-def _construct_filepaths(paths, src_filename, tgt_filename):
-    src_path = None
-    tgt_path = None
-    for p in paths:
-        src_path = p if src_filename in p else src_path
-        tgt_path = p if tgt_filename in p else tgt_path
-    return (src_path, tgt_path)
+    return _forward
 
 
 def _setup_datasets(dataset_name,
@@ -120,71 +42,53 @@ def _setup_datasets(dataset_name,
                     valid_filename,
                     test_filename,
                     data_select=('train', 'test', 'valid'),
-                    tokenizer=(get_tokenizer("spacy", language='de_core_news_sm'),
-                               get_tokenizer("spacy", language='en_core_web_sm')),
                     root='.data',
                     vocab=(None, None),
+                    tokenizer=None,
                     removed_tokens=['<unk>']):
     src_ext, tgt_ext = languages.split("-")
     src_vocab, tgt_vocab = vocab
-    src_tokenizer, tgt_tokenizer = tokenizer
-    src_train, tgt_train = _construct_filenames(train_filename,
-                                                (src_ext, tgt_ext))
-    src_eval, tgt_eval = _construct_filenames(valid_filename,
-                                              (src_ext, tgt_ext))
-    src_test, tgt_test = _construct_filenames(test_filename,
-                                              (src_ext, tgt_ext))
-
-    extracted_files = []
-    if isinstance(URLS[dataset_name], list):
-        for f in URLS[dataset_name]:
-            dataset_tar = download_from_url(f, root=root)
-            extracted_files.extend(extract_archive(dataset_tar))
-    elif isinstance(URLS[dataset_name], str):
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files.extend(extract_archive(dataset_tar))
+    if tokenizer is None:
+        src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
+        tgt_tokenizer = get_tokenizer("spacy", language='en_core_web_sm')
+    elif isinstance(tokenizer, tuple):
+        if len(tokenizer) == 2:
+            src_tokenizer, tgt_tokenizer = tokenizer
+        else:
+            raise ValueError("tokenizer must have length of two for"
+                             "source and target")
     else:
         raise ValueError(
-            "URLS for {} has to be in a form or list or string".format(
-                dataset_name))
-
-    # Clean the xml and tag file in the archives
-    file_archives = []
-    for fname in extracted_files:
-        if 'xml' in fname:
-            _clean_xml_file(fname)
-            file_archives.append(os.path.splitext(fname)[0])
-        elif "tags" in fname:
-            _clean_tags_file(fname)
-            file_archives.append(fname.replace('.tags', ''))
-        else:
-            file_archives.append(fname)
-
-    data_filenames = defaultdict(dict)
-    data_filenames = {
-        "train": _construct_filepaths(file_archives, src_train, tgt_train),
-        "valid": _construct_filepaths(file_archives, src_eval, tgt_eval),
-        "test": _construct_filepaths(file_archives, src_test, tgt_test)
+            "tokenizer must be an instance of tuple with length two"
+            "or None")
+    train, val, test = DATASETS[dataset_name](languages=languages,
+                                              train_filename=train_filename,
+                                              valid_filename=valid_filename,
+                                              test_filename=test_filename,
+                                              root=root)
+    raw_data = {
+        "train": [line for line in train],
+        "valid": [line for line in val],
+        "test": [line for line in test]
     }
-
-    for key in data_filenames.keys():
-        if len(data_filenames[key]) == 0 or data_filenames[key] is None:
-            raise FileNotFoundError(
-                "Files are not found for data type {}".format(key))
+    src_text_vocab_transform = sequential_transforms(src_tokenizer)
+    tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
 
     if src_vocab is None:
+        if 'train' not in data_select:
+            raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building src Vocab based on train data')
-        src_vocab = build_vocab_from_iterator(
-            _read_text_iterator(data_filenames["train"][0], src_tokenizer))
+        src_vocab = build_vocab(train, src_text_vocab_transform, index=0)
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
     logging.info('src Vocab has {} entries'.format(len(src_vocab)))
 
     if tgt_vocab is None:
+        if 'train' not in data_select:
+            raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building tgt Vocab based on train data')
-        tgt_vocab = build_vocab_from_iterator(
-            _read_text_iterator(data_filenames["train"][1], tgt_tokenizer))
+        tgt_vocab = build_vocab(train, tgt_text_vocab_transform, index=1)
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
@@ -192,34 +96,28 @@ def _setup_datasets(dataset_name,
 
     logging.info('Building datasets for {}'.format(data_select))
     datasets = []
-    for key in data_filenames.keys():
-        if key not in data_select:
-            continue
-
-        src_data_iter = _create_data_from_iterator(
-            src_vocab, _read_text_iterator(data_filenames[key][0],
-                                           src_tokenizer), removed_tokens)
-        src_data = [torch.tensor(t).long() for t in src_data_iter]
-
-        tgt_data_iter = _create_data_from_iterator(
-            tgt_vocab, _read_text_iterator(data_filenames[key][1],
-                                           tgt_tokenizer), removed_tokens)
-        tgt_data = [torch.tensor(t).long() for t in tgt_data_iter]
+    for key in data_select:
+        src_text_transform = sequential_transforms(src_text_vocab_transform,
+                                                   vocab_func(src_vocab),
+                                                   totensor(dtype=torch.long))
+        tgt_text_transform = sequential_transforms(tgt_text_vocab_transform,
+                                                   vocab_func(tgt_vocab),
+                                                   totensor(dtype=torch.long))
         datasets.append(
-            TranslationDataset(list(zip(src_data, tgt_data)),
-                               (src_vocab, tgt_vocab)))
+            TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
+                               (src_text_transform, tgt_text_transform)))
 
     return tuple(datasets)
 
 
-class TranslationDataset(torch.utils.data.IterableDataset):
+class TranslationDataset(torch.utils.data.Dataset):
     """Defines a dataset for translation.
        Currently, we only support the following datasets:
              - Multi30k
              - WMT14
              - IWSLT
     """
-    def __init__(self, data, vocab):
+    def __init__(self, data, vocab, transforms):
         """Initiate translation dataset.
 
         Arguments:
@@ -228,6 +126,7 @@ class TranslationDataset(torch.utils.data.IterableDataset):
                 [(src_tensor0, tgt_tensor0), (src_tensor1, tgt_tensor1)]
             vocab: source and target Vocabulary object used for dataset.
                 (src_vocab, tgt_vocab)
+            transforms: a tuple of source and target string transforms.
 
         Examples:
             >>> from torchtext.vocab import build_vocab_from_iterator
@@ -242,21 +141,24 @@ class TranslationDataset(torch.utils.data.IterableDataset):
         """
 
         super(TranslationDataset, self).__init__()
-        self._data = data
-        self._vocab = vocab
+        self.data = data
+        self.vocab = vocab
+        self.transforms = transforms
 
     def __getitem__(self, i):
-        return self._data[i]
+        source = self.transforms[0](self.data[i][0])
+        target = self.transforms[1](self.data[i][1])
+        return (source, target)
 
     def __len__(self):
-        return len(self._data)
+        return len(self.data)
 
     def __iter__(self):
-        for x in self._data:
+        for x in self.data:
             yield x
 
     def get_vocab(self):
-        return self._vocab
+        return self.vocab
 
 
 def Multi30k(languages="de-en",
@@ -489,3 +391,6 @@ def WMT14(languages="de-en",
                            root=root,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
+
+
+DATASETS = {'Multi30k': raw.Multi30k, 'IWSLT': raw.IWSLT, 'WMT14': raw.WMT14}
