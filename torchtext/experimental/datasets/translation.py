@@ -165,8 +165,7 @@ def Multi30k(languages="de-en",
              train_filename="train",
              valid_filename="val",
              test_filename="test2016",
-             tokenizer=(get_tokenizer("spacy", language='de_core_news_sm'),
-                        get_tokenizer("spacy", language='en_core_web_sm')),
+             tokenizer=None,
              root='.data',
              vocab=(None, None),
              removed_tokens=['<unk>']):
@@ -192,8 +191,7 @@ def Multi30k(languages="de-en",
             parameter.
             Default: 'test2016'
         tokenizer: the tokenizer used to preprocess source and target raw text data.
-            Default: (torchtext.data.utils.get_tokenizer("spacy", language='de'),
-                      torchtext.data.utils.get_tokenizer("spacy", language='en'))
+            Default: None
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
@@ -223,8 +221,7 @@ def IWSLT(languages='de-en',
           train_filename='train.de-en',
           valid_filename='IWSLT16.TED.tst2013.de-en',
           test_filename='IWSLT16.TED.tst2014.de-en',
-          tokenizer=(get_tokenizer("spacy", language='de_core_news_sm'),
-                     get_tokenizer("spacy", language='en_core_web_sm')),
+          tokenizer=None,
           root='.data',
           vocab=(None, None),
           removed_tokens=['<unk>']):
@@ -251,8 +248,7 @@ def IWSLT(languages='de-en',
             parameter.
             Default: 'IWSLT16.TED.tst2014.de-en'
         tokenizer: the tokenizer used to preprocess source and target raw text data.
-            Default: (torchtext.data.utils.get_tokenizer("spacy", language='de'),
-                      torchtext.data.utils.get_tokenizer("spacy", language='en'))
+            Default: None
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
@@ -286,8 +282,7 @@ def WMT14(languages="de-en",
           train_filename='train.tok.clean.bpe.32000',
           valid_filename='newstest2013.tok.bpe.32000',
           test_filename='newstest2014.tok.bpe.32000',
-          tokenizer=(get_tokenizer("spacy", language='de_core_news_sm'),
-                     get_tokenizer("spacy", language='en_core_web_sm')),
+          tokenizer=None,
           root='.data',
           vocab=(None, None),
           removed_tokens=['<unk>']):
@@ -364,8 +359,7 @@ def WMT14(languages="de-en",
             parameter.
             Default: 'newstest2014.tok.bpe.32000'
         tokenizer: the tokenizer used to preprocess source and target raw text data.
-            Default: (torchtext.data.utils.get_tokenizer("spacy", language='de'),
-                      torchtext.data.utils.get_tokenizer("spacy", language='en'))
+            Default: None
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
