@@ -11,7 +11,8 @@ URLS = {
     'PennTreebank':
         ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
          'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt']
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
+    'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
 }
 
 
@@ -55,7 +56,9 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'v
 
     _path = {}
     for item in data_select:
-        _path[item] = [f_name for f_name in extracted_files if item in f_name]
+        for fname in extracted_files:
+            if item in fname:
+                _path[item] = fname
 
     data = {}
     for item in _path.keys():
@@ -138,6 +141,12 @@ def PennTreebank(*args, **kwargs):
     """
 
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+
+
+def WMTNewsCrawl(*args, **kwargs):
+    """ Defines WMT News Crawl.
+    """
+    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
 
 
 DATASETS = {
