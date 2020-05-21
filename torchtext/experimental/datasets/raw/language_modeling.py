@@ -38,12 +38,6 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         return self._iterator
 
 
-def _get_datafile_path(key, extracted_files):
-    for fname in extracted_files:
-        if key in fname:
-            return fname
-
-
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid')):
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -61,7 +55,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'v
 
     _path = {}
     for item in data_select:
-        _path[item] = _get_datafile_path(item, extracted_files)
+        _path[item] = [f_name for f_name in extracted_files if item in f_name]
 
     data = {}
     for item in _path.keys():
