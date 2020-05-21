@@ -43,24 +43,19 @@ class MultiheadAttentionContainer(torch.nn.Module):
         Args:
             query, key, value (Tensor): map a query and a set of key-value pairs to an output.
                 See "Attention Is All You Need" for more details.
-            attn_mask (Tensor, optional): 3D mask that prevents attention to certain positions. The type of attn_mask
-                should be same with that of attn_mask in the attention layer.
-            bias_k and bias_v: (Tensor, optional): one more key and value sequence to be added at
-                sequence dim (dim=-3). Those are used for incremental decoding. Users should provide
-                non-None to both arguments in order to activate them.
+            attn_mask, bias_k and bias_v (Tensor, optional): keyword arguments passed to the attention layer.
+                See the definitions in the attention.
 
         Shape:
             - Inputs:
             - query: :math:`(L, N, E)`
             - key: :math:`(S, N, E)`
             - value: :math:`(S, N, E)`
-            - attn_mask: :math:`(N * H, L, S)`, positions with ``True`` are not allowed to attend
-                while ``False`` values will be unchanged.
-            - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
+            - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.
 
             - Outputs:
             - attn_output: :math:`(L, N, E)`
-            - attn_output_weights: :math:`(N*num_heads, L, S)`
+            - attn_output_weights: :math:`(N * H, L, S)`
 
             where where L is the target length, S is the sequence length, H is the number of attention heads,
                 N is the batch size, and E is the embedding dimension.
