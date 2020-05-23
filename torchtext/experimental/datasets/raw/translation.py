@@ -10,10 +10,8 @@ from torchtext.utils import (download_from_url, extract_archive,
 
 URLS = {
     'Multi30k': [
-        'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz',
-        'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz',
-        'http://www.quest.dcs.shef.ac.uk/wmt17_files_mmt/'
-        'mmt_task1_test2016.tar.gz'
+        "https://drive.google.com/uc?export=download&id=1I6OJBRr2UForrT4ZMe3yuDklb_9toGHs",
+        "https://drive.google.com/uc?export=download&id=1oklC2pNNbPAWjMYO3x6ok6o3Wn_w4ebe"
     ],
     'WMT14':
     'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
@@ -168,7 +166,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 def Multi30k(languages="de-en",
              train_filename="train",
              valid_filename="val",
-             test_filename="test2016",
+             test_filename="test_2016_flickr",
              root='.data'):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple

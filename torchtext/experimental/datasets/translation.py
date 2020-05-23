@@ -164,7 +164,7 @@ class TranslationDataset(torch.utils.data.Dataset):
 def Multi30k(languages="de-en",
              train_filename="train",
              valid_filename="val",
-             test_filename="test2016",
+             test_filename="test_2016_flickr",
              tokenizer=None,
              root='.data',
              vocab=(None, None),
