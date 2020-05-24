@@ -19,6 +19,14 @@ from ..common.assets import get_asset_path
 
 
 class TestFunctional(TorchtextTestCase):
+    def test_TextVocab(self):
+        from torchtext.experimental import TextVocab
+        vocab = TextVocab(['here', 'is', 'tokens', 'for', 'test', 'vocab', '<unk>', '<pad>'])
+        jit_vocab = torch.jit.script(vocab)
+        test_tokens = ['here', 'tokens', 'vocab', 'is', 'test', '<unk>', '<pad>']
+        self.assertEqual([jit_vocab.stoi(item) for item in test_tokens],
+                         [vocab.stoi(item) for item in test_tokens])
+
     def test_generate_sp_model(self):
         # Test the function to train a sentencepiece tokenizer
 
