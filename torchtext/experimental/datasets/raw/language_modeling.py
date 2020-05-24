@@ -39,7 +39,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         return self._iterator
 
 
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid')):
+def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), **kwargs):
     if isinstance(data_select, str):
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test', 'valid'))):
@@ -50,6 +50,17 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'v
         select_to_index = {'train': 0, 'test': 1, 'valid': 2}
         extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
                                              root=root) for key in data_select]
+    elif dataset_name == 'WMTNewsCrawl':
+        if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
+            raise ValueError("WMTNewsCrawl only creates a training dataset. "
+                             "data_select should be 'train' "
+                             "or ('train',), got {}.".format(data_select))
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
+        year = kwargs.get('year', 2010)
+        language = kwargs.get('language', 'en')
+        file_name = 'news.{}.{}.shuffled'.format(year, language)
+        extracted_files = [f for f in extracted_files if file_name in f]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
@@ -125,7 +136,7 @@ def PennTreebank(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -135,7 +146,7 @@ def PennTreebank(*args, **kwargs):
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import PennTreebank
-        >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
+        >>> train_dataset, test_dataset, valid_dataset = PennTreebank()
         >>> valid_dataset, = PennTreebank(data_select='valid')
 
     """
@@ -145,12 +156,21 @@ def PennTreebank(*args, **kwargs):
 
 def WMTNewsCrawl(*args, **kwargs):
     """ Defines WMT News Crawl.
+
+    Create language modeling dataset: WMTNewsCrawl
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets.
+            (Default: 'train')
     """
+
     return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
 
 
 DATASETS = {
     'WikiText2': WikiText2,
     'WikiText103': WikiText103,
-    'PennTreebank': PennTreebank
+    'PennTreebank': PennTreebank,
+    'WMTNewsCrawl': WMTNewsCrawl
 }

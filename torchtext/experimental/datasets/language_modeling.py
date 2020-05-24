@@ -19,6 +19,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
              - WikiText2
              - WikiText103
              - PennTreebank
+             - WMTNewsCrawl
 
     """
 
@@ -63,12 +64,16 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'valid', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, test, valid = raw.DATASETS[dataset_name](root=root, data_select=('train', 'test', 'valid'))
 
-    # Cache raw text iterable dataset
-    raw_data = {'train': [txt for txt in train],
-                'valid': [txt for txt in valid],
-                'test': [txt for txt in test]}
+    if dataset_name == 'WMTNewsCrawl':
+        train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
+        raw_data = {'train': [txt for txt in train]}
+    else:
+        train, test, valid = raw.DATASETS[dataset_name](root=root, data_select=('train', 'test', 'valid'))
+        # Cache raw text iterable dataset
+        raw_data = {'train': [txt for txt in train],
+                    'valid': [txt for txt in valid],
+                    'test': [txt for txt in test]}
 
     if vocab is None:
         if 'train' not in data_select:
@@ -188,8 +193,37 @@ def PennTreebank(*args, **kwargs):
     return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
 
 
+def WMTNewsCrawl(*args, **kwargs):
+    """ Defines WMTNewsCrawl datasets.
+
+    Create language modeling dataset: WMTNewsCrawl
+    returns the train set
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
+        tokenizer: the tokenizer used to preprocess raw text data.
+            The default one is basic_english tokenizer in fastText. spacy tokenizer
+            is supported as well (see example below). A custom tokenizer is callable
+            function with input of a string and output of a token list.
+        data_select: a string or tupel for the returned datasets
+            (Default: ('train',))
+
+    Examples:
+        >>> from torchtext.experimental.datasets import WMTNewsCrawl
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> tokenizer = get_tokenizer("spacy")
+        >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, data_select='train')
+
+    """
+
+    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
+
+
 DATASETS = {
     'WikiText2': WikiText2,
     'WikiText103': WikiText103,
-    'PennTreebank': PennTreebank
+    'PennTreebank': PennTreebank,
+    'WMTNewsCrawl': WMTNewsCrawl
 }
