@@ -7,6 +7,7 @@ import logging
 import re
 import sys
 import zipfile
+import gzip
 
 
 def reporthook(t):
@@ -195,6 +196,21 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         files = [f for f in files if os.path.isfile(f)]
         return files
 
+    elif from_path.endswith('.gz'):
+        default_block_size = 65536
+        filename = from_path[:-3]
+        files = [filename]
+        with gzip.open(from_path, 'rb') as gzfile, \
+                open(filename, 'wb') as d_file:
+            while True:
+                block = gzfile.read(default_block_size)
+                if not block:
+                    break
+                else:
+                    d_file.write(block)
+            d_file.write(block)
+        return files
+
     else:
         raise NotImplementedError(
-            "We currently only support tar.gz, .tgz and zip achives.")
+            "We currently only support tar.gz, .tgz, .gz and zip achives.")
