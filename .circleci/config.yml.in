@@ -251,6 +251,8 @@ jobs:
           name: Build and push Docker image
           no_output_timeout: "1h"
           command: |
+            set +x
+            echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
             set -x
             cd .circleci/smoke_test/docker && docker build . -t ${image_name}:${CIRCLE_WORKFLOW_ID}
             docker tag ${image_name}:${CIRCLE_WORKFLOW_ID} ${image_name}:latest
