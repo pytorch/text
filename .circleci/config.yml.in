@@ -416,4 +416,5 @@ workflows:
               only:
                 - master
     jobs:
-      - smoke_test_docker_image_build
+      - smoke_test_docker_image_build:
+          context: org-member
