@@ -13,7 +13,7 @@ executors:
   windows-cpu:
     machine:
       resource_class: windows.xlarge
-      image: windows-server-2019-vs2019:stable
+      image: windows-server-2019-vs2019:temporary
       shell: bash.exe
 
 binary_common: &binary_common
@@ -87,21 +87,45 @@ jobs:
           paths:
             - "*"
 
-  binary_win_conda:
+  binary_windows_wheel:
     <<: *binary_common
     executor:
-      name: win/default
-      shell: bash.exe
+      name: windows-cpu
     steps:
       - checkout
       - run:
+          name: build
           command: |
-            choco install miniconda3
-            (& "C:\tools\miniconda3\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
+            conda activate base
+            bash packaging/build_wheel.sh
+      - store_artifacts:
+          path: dist
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - "*"
+
+  binary_windows_conda:
+    <<: *binary_common
+    executor:
+      name: windows-cpu
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: |
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
             conda activate base
             conda install -yq conda-build "conda-package-handling!=1.5.0"
             bash packaging/build_conda.sh
-          shell: powershell.exe
+            rm /C/tools/miniconda3/conda-bld/win-64/vs2019*.tar.bz2
+      - store_artifacts:
+          path: C:/tools/miniconda3/conda-bld/win-64
+      - persist_to_workspace:
+          root: C:/tools/miniconda3/conda-bld/win-64
+          paths:
+            - "*"
 
   binary_macos_wheel:
     <<: *binary_common

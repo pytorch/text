@@ -1,3 +1,5 @@
+#!/user/bin/env python3
+# Note that all the tests in this module require dataset (either network access or cached)
 import os
 import glob
 import shutil

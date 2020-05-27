@@ -13,7 +13,7 @@ executors:
   windows-cpu:
     machine:
       resource_class: windows.xlarge
-      image: windows-server-2019-vs2019:stable
+      image: windows-server-2019-vs2019:temporary
       shell: bash.exe
 
 binary_common: &binary_common
@@ -87,21 +87,45 @@ jobs:
           paths:
             - "*"
 
-  binary_win_conda:
+  binary_windows_wheel:
     <<: *binary_common
     executor:
-      name: win/default
-      shell: bash.exe
+      name: windows-cpu
     steps:
       - checkout
       - run:
+          name: build
           command: |
-            choco install miniconda3
-            (& "C:\tools\miniconda3\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | Invoke-Expression
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
+            conda activate base
+            bash packaging/build_wheel.sh
+      - store_artifacts:
+          path: dist
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - "*"
+
+  binary_windows_conda:
+    <<: *binary_common
+    executor:
+      name: windows-cpu
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: |
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
             conda activate base
             conda install -yq conda-build "conda-package-handling!=1.5.0"
             bash packaging/build_conda.sh
-          shell: powershell.exe
+            rm /C/tools/miniconda3/conda-bld/win-64/vs2019*.tar.bz2
+      - store_artifacts:
+          path: C:/tools/miniconda3/conda-bld/win-64
+      - persist_to_workspace:
+          root: C:/tools/miniconda3/conda-bld/win-64
+          paths:
+            - "*"
 
   binary_macos_wheel:
     <<: *binary_common
@@ -398,6 +422,15 @@ workflows:
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.8
           python_version: '3.8'
+      - binary_windows_wheel:
+          name: binary_windows_wheel_py3.6
+          python_version: '3.6'
+      - binary_windows_wheel:
+          name: binary_windows_wheel_py3.7
+          python_version: '3.7'
+      - binary_windows_wheel:
+          name: binary_windows_wheel_py3.8
+          python_version: '3.8'
       - binary_linux_conda:
           name: binary_linux_conda_py3.6
           python_version: '3.6'
@@ -415,6 +448,15 @@ workflows:
           python_version: '3.7'
       - binary_macos_conda:
           name: binary_macos_conda_py3.8
+          python_version: '3.8'
+      - binary_windows_conda:
+          name: binary_windows_conda_py3.6
+          python_version: '3.6'
+      - binary_windows_conda:
+          name: binary_windows_conda_py3.7
+          python_version: '3.7'
+      - binary_windows_conda:
+          name: binary_windows_conda_py3.8
           python_version: '3.8'
   unittest:
     jobs:
@@ -553,6 +595,48 @@ workflows:
           name: nightly_binary_macos_wheel_py3.8_upload
           requires:
           - nightly_binary_macos_wheel_py3.8
+      - binary_windows_wheel:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.6
+          python_version: '3.6'
+      - binary_wheel_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.6_upload
+          requires:
+          - nightly_binary_windows_wheel_py3.6
+      - binary_windows_wheel:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.7
+          python_version: '3.7'
+      - binary_wheel_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.7_upload
+          requires:
+          - nightly_binary_windows_wheel_py3.7
+      - binary_windows_wheel:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.8
+          python_version: '3.8'
+      - binary_wheel_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.8_upload
+          requires:
+          - nightly_binary_windows_wheel_py3.8
       - binary_linux_conda:
           filters:
             branches:
@@ -661,6 +745,48 @@ workflows:
           name: nightly_binary_macos_conda_py3.8_upload
           requires:
           - nightly_binary_macos_conda_py3.8
+      - binary_windows_conda:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.6
+          python_version: '3.6'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.6_upload
+          requires:
+          - nightly_binary_windows_conda_py3.6
+      - binary_windows_conda:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.7
+          python_version: '3.7'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.7_upload
+          requires:
+          - nightly_binary_windows_conda_py3.7
+      - binary_windows_conda:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.8
+          python_version: '3.8'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.8_upload
+          requires:
+          - nightly_binary_windows_conda_py3.8
   docker_build:
     triggers:
       - schedule:
