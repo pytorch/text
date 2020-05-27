@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # A set of useful bash functions for common functionality we need to do in
 # many build scripts
 
