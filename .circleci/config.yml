@@ -13,7 +13,7 @@ executors:
   windows-cpu:
     machine:
       resource_class: windows.xlarge
-      image: windows-server-2019-vs2019:temporary
+      image: windows-server-2019-vs2019:stable
       shell: bash.exe
 
 binary_common: &binary_common
