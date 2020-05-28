@@ -80,9 +80,9 @@ jobs:
       - store_artifacts:
           path: /opt/conda/conda-bld/linux-64
       - persist_to_workspace:
-          root: /opt/conda/conda-bld/linux-64
+          root: /opt/conda
           paths:
-            - "*"
+            - "conda-bld/*"
 
   binary_windows_wheel:
     <<: *binary_common
@@ -120,9 +120,9 @@ jobs:
       - store_artifacts:
           path: C:/tools/miniconda3/conda-bld/win-64
       - persist_to_workspace:
-          root: C:/tools/miniconda3/conda-bld/win-64
+          root: C:/tools/miniconda3
           paths:
-            - "*"
+            - "conda-bld/*"
 
   binary_macos_wheel:
     <<: *binary_common
@@ -165,9 +165,9 @@ jobs:
       - store_artifacts:
           path: /Users/distiller/miniconda3/conda-bld/osx-64
       - persist_to_workspace:
-          root: /Users/distiller/miniconda3/conda-bld/osx-64
+          root: /Users/distiller/miniconda3
           paths:
-            - "*"
+            - "conda-bld/*"
 
   # Requires org-member context
   binary_conda_upload:
@@ -181,7 +181,7 @@ jobs:
             # Prevent credential from leaking
             conda install -yq anaconda-client
             set -x
-            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/*.tar.bz2 -u pytorch-nightly --label main --no-progress --force
+            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u pytorch-nightly --label main --no-progress --force
 
   # Requires org-member context
   binary_wheel_upload:
@@ -214,8 +214,7 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-nightly pytorch
-            conda install -v -y $(ls ~/workspace/torchtext*.tar.bz2)
+            conda install -v -y -c pytorch-nightly pytorch file://$HOME/workspace/conda-bld
       - run:
           name: smoke test
           command: |
