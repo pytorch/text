@@ -214,7 +214,8 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-nightly pytorch file://$HOME/workspace/conda-bld
+            conda install -v -y -c pytorch-nightly pytorch
+            conda install -v -y -c file://$HOME/workspace/conda-bld torchtext
       - run:
           name: smoke test
           command: |
