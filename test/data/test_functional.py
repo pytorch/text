@@ -1,8 +1,7 @@
 import os
-import unittest
-import sys
 import uuid
 import shutil
+import unittest
 import tempfile
 
 import sentencepiece as spm
@@ -109,11 +108,11 @@ class ScriptableSP(torch.jit.ScriptModule):
 class TestScriptableSP(unittest.TestCase):
     def setUp(self):
         model_path = get_asset_path('spm_example.model')
-        with tempfile.NamedTemporaryFile() as file:
-            torch.jit.script(ScriptableSP(model_path)).save(file.name)
-            self.model = torch.jit.load(file.name)
+        with tempfile.TemporaryDirectory() as dir_name:
+            jit_model_path = os.path.join(dir_name, 'spm_example.model')
+            torch.jit.script(ScriptableSP(model_path)).save(jit_model_path)
+            self.model = torch.jit.load(jit_model_path)
 
-    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
@@ -125,7 +124,6 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode(input)
         self.assertEqual(expected, output)
 
-    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode_as_ids(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
@@ -134,7 +132,6 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode_as_ids(input)
         self.assertEqual(expected, output)
 
-    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode_as_pieces(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
