@@ -1,6 +1,8 @@
 import os
 import unittest
 import sys
+import uuid
+import shutil
 import tempfile
 
 import sentencepiece as spm
@@ -20,27 +22,28 @@ from ..common.assets import get_asset_path
 
 class TestFunctional(TorchtextTestCase):
     def test_generate_sp_model(self):
-        # Test the function to train a sentencepiece tokenizer
+        """Test the function to train a sentencepiece tokenizer"""
 
-        # buck (fb internal) generates test environment which contains ',' in its path.
-        # SentencePieceTrainer considers such path as comma-delimited file list.
-        # So as workaround we copy the asset data to temporary directory and load it from there.
-        data_path = get_asset_path(
-            'text_normalization_ag_news_test.csv',
-            use_temp_dir=True)
-        generate_sp_model(data_path,
-                          vocab_size=23456,
-                          model_prefix='spm_user')
+        asset_name = 'text_normalization_ag_news_test.csv'
+        asset_path = get_asset_path(asset_name)
+        # We use temporary directory for two reasons:
+        # 1. buck (fb internal) generates test environment which contains ',' in its path.
+        #    SentencePieceTrainer considers such path as comma-delimited file list.
+        #    So as workaround we copy the asset data to temporary directory and load it from there.
+        # 2. when fb infra performs stress tests, multiple instances of this test run.
+        #    The name of the generated models have to be unique and they need to be cleaned up.
+        with tempfile.TemporaryDirectory() as dir_name:
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
 
-        sp_user = spm.SentencePieceProcessor()
-        sp_user.Load('spm_user.model')
+            model_prefix = os.path.join(dir_name, f'spm_user_{uuid.uuid4()}')
+            model_file = f'{model_prefix}.model'
+            generate_sp_model(data_path, vocab_size=23456, model_prefix=model_prefix)
 
-        self.assertEqual(len(sp_user), 23456)
+            sp_user = spm.SentencePieceProcessor()
+            sp_user.Load(model_file)
 
-        if os.path.isfile('spm_user.model'):
-            os.remove('spm_user.model')
-        if os.path.isfile('spm_user.vocab'):
-            os.remove('spm_user.vocab')
+            self.assertEqual(len(sp_user), 23456)
 
     def test_sentencepiece_numericalizer(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
