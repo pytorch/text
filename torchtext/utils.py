@@ -80,9 +80,9 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
     if not os.path.exists(root):
         try:
             os.makedirs(root)
-        except:
-            raise RuntimeError(
-                "Can't create the download directory {}.".format(root))
+        except OSError:
+            print("Can't create the download directory {}.".format(root))
+            raise
 
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
