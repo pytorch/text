@@ -17,4 +17,6 @@ if "%VSDEVCMD_ARGS%" == "" (
 
 @echo on
 
+set DISTUTILS_USE_SDK=1
+
 python setup.py bdist_wheel || exit /b 1
