@@ -1,6 +1,6 @@
-#include <torch/script.h>
 #include <regex>
 #include <string>
+#include <torch/script.h>
 
 namespace torchtext {
 namespace {
@@ -8,17 +8,20 @@ namespace {
 struct Regex : torch::CustomClassHolder {
 private:
   std::regex re_;
+
 public:
   // re_str_ holds the serialized regex string passed at the initialization.
-  // We need this because we need to be able to serialize the model so that we can save the scripted object. pickle will get the
+  // We need this because we need to be able to serialize the model so that we
+  // can save the scripted object. pickle will get the
   // serialized model from this re_str_ member, thus it needs to be public.
   const std::string re_str_;
 
   Regex(const std::string &re_str) : re_str_(re_str) {
-      self.re_ = std::regex(re_str_);
+    re_ = std::regex(re_str_);
   }
 
-  std::string ReplaceFirstMatch(const std::string &str, const std::string &repl) const {
+  std::string ReplaceFirstMatch(const std::string &str,
+                                const std::string &repl) const {
     return std::regex_replace(str, re_, repl);
   }
 };
