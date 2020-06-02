@@ -264,8 +264,6 @@ def IWSLT(languages='de-en',
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-    src_language, tgt_language = languages.split('-')
-    URLS["IWSLT"] = URLS["IWSLT"].format(src_language, tgt_language, languages)
 
     return _setup_datasets("IWSLT",
                            languages=languages,
