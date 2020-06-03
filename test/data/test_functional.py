@@ -17,9 +17,9 @@ from torchtext.data.functional import (
     custom_replace,
     simple_space_split,
 )
-from torchtext.experimental.functional import (
+from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
-    regex_tokenizer
+    RegexTokenizer
 )
 from torchtext.utils import unicode_csv_reader
 
@@ -30,7 +30,9 @@ from ..common.assets import get_asset_path
 
 class TestFunctional(TorchtextTestCase):
     def test_generate_sp_model(self):
-        """Test the function to train a sentencepiece tokenizer"""
+        """
+        Test the function to train a sentencepiece tokenizer.
+        """
 
         asset_name = 'text_normalization_ag_news_test.csv'
         asset_path = get_asset_path(asset_name)
@@ -87,35 +89,36 @@ class TestFunctional(TorchtextTestCase):
                        'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
         basic_english_normalize = BasicEnglishNormalize()
-        # jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-        tokens = basic_english_normalize.basic_english_normalize(test_sample)
+        experimental_tokens = basic_english_normalize.forward(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
-        tokens2 = basic_english_tokenizer(test_sample)
+        tokens = basic_english_tokenizer(test_sample)
 
-        self.assertEqual(tokens, tokens2)
+        self.assertEqual(experimental_tokens, ref_results)
+        self.assertEqual(experimental_tokens, tokens)
 
-        # Test text_nomalize function in torchtext.datasets.text_classification
-        # ref_lines = []
-        # test_lines = []
+    def test_RegexTokenizer(self):
+        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
+        patterns_list = [
+            (r'\'', ' \'  '),
+            (r'\"', ''),
+            (r'\.', ' . '),
+            (r'<br \/>', ' '),
+            (r',', ' , '),
+            (r'\(', ' ( '),
+            (r'\)', ' ) '),
+            (r'\!', ' ! '),
+            (r'\?', ' ? '),
+            (r'\;', ' '),
+            (r'\:', ' '),
+            (r'\s+', ' ')]
 
-        # basic_english_normalize = BasicEnglishNormalize()
+        regex_tokenizer = RegexTokenizer(patterns_list)
+        tokens = regex_tokenizer.forward(test_sample)
 
-        # data_path = get_asset_path('text_normalization_ag_news_test.csv')
-        # with io.open(data_path, encoding="utf8") as f:
-        #     reader = unicode_csv_reader(f)
-        #     for row in reader:
-        #         test_lines.append(basic_english_normalize.basic_english_normalize(' , '.join(row)))
-
-        # data_path = get_asset_path('text_normalization_ag_news_ref_results.test')
-        # with io.open(data_path, encoding="utf8") as ref_data:
-        #     for line in ref_data:
-        #         line = line.split()
-        #         self.assertEqual(line[0][:9], '__label__')
-        #         line[0] = line[0][9:]  # remove '__label__'
-        #         ref_lines.append(line)
-
-        # self.assertEqual(ref_lines, test_lines)
+        self.assertEqual(tokens, ref_results)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
