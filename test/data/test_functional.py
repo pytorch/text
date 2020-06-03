@@ -131,24 +131,6 @@ class TestFunctional(TorchtextTestCase):
                          ref_results)
 
 
-class ScriptableBasicEnglishNormalize(torch.jit.ScriptModule):
-    def __init__(self, model_path):
-        super().__init__()
-        self.spm = load_sp_model(model_path)
-
-    @ torch.jit.script_method
-    def encode(self, input: str):
-        return self.spm.Encode(input)
-
-    @ torch.jit.script_method
-    def encode_as_ids(self, input: str):
-        return self.spm.EncodeAsIds(input)
-
-    @ torch.jit.script_method
-    def encode_as_pieces(self, input: str):
-        return self.spm.EncodeAsPieces(input)
-
-
 class ScriptableSP(torch.jit.ScriptModule):
     def __init__(self, model_path):
         super().__init__()
