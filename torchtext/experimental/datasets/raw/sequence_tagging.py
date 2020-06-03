@@ -28,6 +28,15 @@ def _create_data_from_iob(data_path, separator="\t"):
                     columns[i].append(column)
 
 
+def _construct_filepath(paths, filename):
+    if filename:
+        path = None
+        for p in paths:
+            path = p if filename in p else path
+        return path
+    return None
+
+
 def _setup_datasets(dataset_name,
                     train_filename,
                     valid_filename,
@@ -48,22 +57,11 @@ def _setup_datasets(dataset_name,
             "URLS for {} has to be in a form or list or string".format(
                 dataset_name))
 
-    data_filenames = dict()
-    for fname in extracted_files:
-        if train_filename and train_filename in fname:
-            data_filenames["train"] = fname
-        else:
-            data_filenames["train"] = None
-
-        if valid_filename and valid_filename in fname:
-            data_filenames["valid"] = fname
-        else:
-            data_filenames["valid"] = None
-
-        if test_filename and test_filename in fname:
-            data_filenames["test"] = fname
-        else:
-            data_filenames["test"] = None
+    data_filenames = {
+        "train": _construct_filepath(extracted_files, train_filename),
+        "valid": _construct_filepath(extracted_files, valid_filename),
+        "test": _construct_filepath(extracted_files, test_filename)
+    }
 
     datasets = []
     for key in data_filenames.keys():
@@ -71,6 +69,8 @@ def _setup_datasets(dataset_name,
             datasets.append(
                 RawSequenceTaggingIterableDataset(
                     _create_data_from_iob(data_filenames[key], separator)))
+        else:
+            datasets.append(None)
 
     return datasets
 
