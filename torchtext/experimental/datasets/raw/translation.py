@@ -171,7 +171,8 @@ def _setup_datasets(dataset_name,
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
-        datasets.append(RawTranslationIterableDataset(src_data_iter, tgt_data_iter))
+        datasets.append(
+            RawTranslationIterableDataset(src_data_iter, tgt_data_iter))
 
     return tuple(datasets)
 
@@ -206,7 +207,7 @@ class RawTranslationIterableDataset(torch.utils.data.IterableDataset):
                 break
 
     def get_iterator(self):
-        return self._iterator
+        return (self._src_iterator, self._tgt_iterator)
 
 
 def Multi30k(train_filenames=("train.de", "train.en"),
@@ -286,8 +287,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            root=root)
 
 
-def IWSLT(train_filenames=('train.de-en.de',
-                           'train.de-en.en'),
+def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
