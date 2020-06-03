@@ -39,7 +39,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         self.vocab = vocab
         self.transforms = transforms
         self.single_line = single_line
-        if single_line == True:
+        if single_line:
             self.data = torch.cat(tuple(transforms(row) for row in data), axis=0)
         else:
             self.data = data
