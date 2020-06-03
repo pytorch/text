@@ -4,20 +4,7 @@ import logging
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
-
-
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-
-    return _forward
-
-
-def totensor(dtype):
-    def _forward(ids_list):
-        return torch.tensor(ids_list).to(dtype)
-
-    return _forward
+from ..functional import vocab_func, totensor, sequential_transforms
 
 
 def build_vocab(data, transforms, index):
@@ -27,26 +14,15 @@ def build_vocab(data, transforms, index):
     return build_vocab_from_iterator(tok_list)
 
 
-def sequential_transforms(*transforms):
-    def _forward(txt_input):
-        for transform in transforms:
-            txt_input = transform(txt_input)
-        return txt_input
-
-    return _forward
-
-
 def _setup_datasets(dataset_name,
-                    languages,
-                    train_filename,
-                    valid_filename,
-                    test_filename,
+                    train_filenames,
+                    valid_filenames,
+                    test_filenames,
                     data_select=('train', 'test', 'valid'),
                     root='.data',
                     vocab=(None, None),
                     tokenizer=None,
                     removed_tokens=['<unk>']):
-    src_ext, tgt_ext = languages.split("-")
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
@@ -61,10 +37,9 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    train, val, test = DATASETS[dataset_name](languages=languages,
-                                              train_filename=train_filename,
-                                              valid_filename=valid_filename,
-                                              test_filename=test_filename,
+    train, val, test = DATASETS[dataset_name](train_filenames=train_filenames,
+                                              valid_filenames=valid_filenames,
+                                              test_filenames=test_filenames,
                                               root=root)
     raw_data = {
         "train": [line for line in train],
@@ -161,10 +136,9 @@ class TranslationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def Multi30k(languages="de-en",
-             train_filename="train",
-             valid_filename="val",
-             test_filename="test_2016_flickr",
+def Multi30k(train_filenames=("train.de", "train.en"),
+             valid_filenames=("val.de", "val.en"),
+             test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
              tokenizer=None,
              root='.data',
              vocab=(None, None),
@@ -173,29 +147,68 @@ def Multi30k(languages="de-en",
         Separately returns train/valid/test datasets as a tuple
 
     Arguments:
-        languages: The source and target languages for the datasets.
-            Will be used as a suffix for train_filename, valid_filename,
-            and test_filename. The first split (before -) is the source
-            and the second split is the target.
-            Default: 'de-en' for source-target languages.
-        train_filename: The source and target filenames for training
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'train'
-        valid_filename: The source and target filenames for valid
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'val'
-        test_filename: The source and target filenames for test
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'test2016'
+        train_filenames: the source and target filenames for training.
+            Default: ('train.de', 'train.en')
+        valid_filenames: the source and target filenames for valid.
+            Default: ('val.de', 'val.en')
+        test_filenames: the source and target filenames for test.
+            Default: ('test2016.de', 'test2016.en')
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             Default: None
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        The available dataset include:
+            test_2016_flickr.cs
+            test_2016_flickr.de
+            test_2016_flickr.en
+            test_2016_flickr.fr
+            test_2017_flickr.de
+            test_2017_flickr.en
+            test_2017_flickr.fr
+            test_2017_mscoco.de
+            test_2017_mscoco.en
+            test_2017_mscoco.fr
+            test_2018_flickr.en
+            train.cs
+            train.de
+            train.en
+            train.fr
+            val.cs
+            val.de
+            val.en
+            val.fr
+            test_2016.1.de
+            test_2016.1.en
+            test_2016.2.de
+            test_2016.2.en
+            test_2016.3.de
+            test_2016.3.en
+            test_2016.4.de
+            test_2016.4.en
+            test_2016.5.de
+            test_2016.5.en
+            train.1.de
+            train.1.en
+            train.2.de
+            train.2.en
+            train.3.de
+            train.3.en
+            train.4.de
+            train.4.en
+            train.5.de
+            train.5.en
+            val.1.de
+            val.1.en
+            val.2.de
+            val.2.en
+            val.3.de
+            val.3.en
+            val.4.de
+            val.4.en
+            val.5.de
+            val.5.en
 
     Examples:
         >>> from torchtext.datasets import Multi30k
@@ -207,20 +220,21 @@ def Multi30k(languages="de-en",
         >>> src_data, tgt_data = train_dataset[10]
     """
     return _setup_datasets("Multi30k",
-                           languages=languages,
-                           train_filename=train_filename,
-                           valid_filename=valid_filename,
-                           test_filename=test_filename,
+                           train_filenames=train_filenames,
+                           valid_filenames=valid_filenames,
+                           test_filenames=test_filenames,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
 
 
-def IWSLT(languages='de-en',
-          train_filename='train.de-en',
-          valid_filename='IWSLT16.TED.tst2013.de-en',
-          test_filename='IWSLT16.TED.tst2014.de-en',
+def IWSLT(train_filenames=('train.de-en.de',
+                           'train.de-en.en'),
+          valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
+                           'IWSLT16.TED.tst2013.de-en.en'),
+          test_filenames=('IWSLT16.TED.tst2014.de-en.de',
+                          'IWSLT16.TED.tst2014.de-en.en'),
           tokenizer=None,
           root='.data',
           vocab=(None, None),
@@ -230,29 +244,154 @@ def IWSLT(languages='de-en',
         The available datasets include:
 
     Arguments:
-        languages: The source and target languages for the datasets.
-            Will be used as a suffix for train_filename, valid_filename,
-            and test_filename. The first split (before -) is the source
-            and the second split is the target.
-            Default: 'de-en' for source-target languages.
-        train_filename: The source and target filenames for training
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'train.de-en'
-        valid_filename: The source and target filenames for valid
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'IWSLT16.TED.tst2013.de-en'
-        test_filename: The source and target filenames for test
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'IWSLT16.TED.tst2014.de-en'
+        train_filenames: the source and target filenames for training.
+            Default: ('train.de-en.de', 'train.de-en.en')
+        valid_filenames: the source and target filenames for valid.
+            Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
+        test_filenames: the source and target filenames for test.
+            Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             Default: None
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
+        The available datasets include:
+            IWSLT16.TED.dev2010.ar-en.ar
+            IWSLT16.TED.dev2010.ar-en.en
+            IWSLT16.TED.dev2010.cs-en.cs
+            IWSLT16.TED.dev2010.cs-en.en
+            IWSLT16.TED.dev2010.de-en.de
+            IWSLT16.TED.dev2010.de-en.en
+            IWSLT16.TED.dev2010.en-ar.ar
+            IWSLT16.TED.dev2010.en-ar.en
+            IWSLT16.TED.dev2010.en-cs.cs
+            IWSLT16.TED.dev2010.en-cs.en
+            IWSLT16.TED.dev2010.en-de.de
+            IWSLT16.TED.dev2010.en-de.en
+            IWSLT16.TED.dev2010.en-fr.en
+            IWSLT16.TED.dev2010.en-fr.fr
+            IWSLT16.TED.dev2010.fr-en.en
+            IWSLT16.TED.dev2010.fr-en.fr
+            IWSLT16.TED.tst2010.ar-en.ar
+            IWSLT16.TED.tst2010.ar-en.en
+            IWSLT16.TED.tst2010.cs-en.cs
+            IWSLT16.TED.tst2010.cs-en.en
+            IWSLT16.TED.tst2010.de-en.de
+            IWSLT16.TED.tst2010.de-en.en
+            IWSLT16.TED.tst2010.en-ar.ar
+            IWSLT16.TED.tst2010.en-ar.en
+            IWSLT16.TED.tst2010.en-cs.cs
+            IWSLT16.TED.tst2010.en-cs.en
+            IWSLT16.TED.tst2010.en-de.de
+            IWSLT16.TED.tst2010.en-de.en
+            IWSLT16.TED.tst2010.en-fr.en
+            IWSLT16.TED.tst2010.en-fr.fr
+            IWSLT16.TED.tst2010.fr-en.en
+            IWSLT16.TED.tst2010.fr-en.fr
+            IWSLT16.TED.tst2011.ar-en.ar
+            IWSLT16.TED.tst2011.ar-en.en
+            IWSLT16.TED.tst2011.cs-en.cs
+            IWSLT16.TED.tst2011.cs-en.en
+            IWSLT16.TED.tst2011.de-en.de
+            IWSLT16.TED.tst2011.de-en.en
+            IWSLT16.TED.tst2011.en-ar.ar
+            IWSLT16.TED.tst2011.en-ar.en
+            IWSLT16.TED.tst2011.en-cs.cs
+            IWSLT16.TED.tst2011.en-cs.en
+            IWSLT16.TED.tst2011.en-de.de
+            IWSLT16.TED.tst2011.en-de.en
+            IWSLT16.TED.tst2011.en-fr.en
+            IWSLT16.TED.tst2011.en-fr.fr
+            IWSLT16.TED.tst2011.fr-en.en
+            IWSLT16.TED.tst2011.fr-en.fr
+            IWSLT16.TED.tst2012.ar-en.ar
+            IWSLT16.TED.tst2012.ar-en.en
+            IWSLT16.TED.tst2012.cs-en.cs
+            IWSLT16.TED.tst2012.cs-en.en
+            IWSLT16.TED.tst2012.de-en.de
+            IWSLT16.TED.tst2012.de-en.en
+            IWSLT16.TED.tst2012.en-ar.ar
+            IWSLT16.TED.tst2012.en-ar.en
+            IWSLT16.TED.tst2012.en-cs.cs
+            IWSLT16.TED.tst2012.en-cs.en
+            IWSLT16.TED.tst2012.en-de.de
+            IWSLT16.TED.tst2012.en-de.en
+            IWSLT16.TED.tst2012.en-fr.en
+            IWSLT16.TED.tst2012.en-fr.fr
+            IWSLT16.TED.tst2012.fr-en.en
+            IWSLT16.TED.tst2012.fr-en.fr
+            IWSLT16.TED.tst2013.ar-en.ar
+            IWSLT16.TED.tst2013.ar-en.en
+            IWSLT16.TED.tst2013.cs-en.cs
+            IWSLT16.TED.tst2013.cs-en.en
+            IWSLT16.TED.tst2013.de-en.de
+            IWSLT16.TED.tst2013.de-en.en
+            IWSLT16.TED.tst2013.en-ar.ar
+            IWSLT16.TED.tst2013.en-ar.en
+            IWSLT16.TED.tst2013.en-cs.cs
+            IWSLT16.TED.tst2013.en-cs.en
+            IWSLT16.TED.tst2013.en-de.de
+            IWSLT16.TED.tst2013.en-de.en
+            IWSLT16.TED.tst2013.en-fr.en
+            IWSLT16.TED.tst2013.en-fr.fr
+            IWSLT16.TED.tst2013.fr-en.en
+            IWSLT16.TED.tst2013.fr-en.fr
+            IWSLT16.TED.tst2014.ar-en.ar
+            IWSLT16.TED.tst2014.ar-en.en
+            IWSLT16.TED.tst2014.de-en.de
+            IWSLT16.TED.tst2014.de-en.en
+            IWSLT16.TED.tst2014.en-ar.ar
+            IWSLT16.TED.tst2014.en-ar.en
+            IWSLT16.TED.tst2014.en-de.de
+            IWSLT16.TED.tst2014.en-de.en
+            IWSLT16.TED.tst2014.en-fr.en
+            IWSLT16.TED.tst2014.en-fr.fr
+            IWSLT16.TED.tst2014.fr-en.en
+            IWSLT16.TED.tst2014.fr-en.fr
+            IWSLT16.TEDX.dev2012.de-en.de
+            IWSLT16.TEDX.dev2012.de-en.en
+            IWSLT16.TEDX.tst2013.de-en.de
+            IWSLT16.TEDX.tst2013.de-en.en
+            IWSLT16.TEDX.tst2014.de-en.de
+            IWSLT16.TEDX.tst2014.de-en.en
+            train.ar
+            train.ar-en.ar
+            train.ar-en.en
+            train.cs
+            train.cs-en.cs
+            train.cs-en.en
+            train.de
+            train.de-en.de
+            train.de-en.en
+            train.en
+            train.en-ar.ar
+            train.en-ar.en
+            train.en-cs.cs
+            train.en-cs.en
+            train.en-de.de
+            train.en-de.en
+            train.en-fr.en
+            train.en-fr.fr
+            train.fr
+            train.fr-en.en
+            train.fr-en.fr
+            train.tags.ar-en.ar
+            train.tags.ar-en.en
+            train.tags.cs-en.cs
+            train.tags.cs-en.en
+            train.tags.de-en.de
+            train.tags.de-en.en
+            train.tags.en-ar.ar
+            train.tags.en-ar.en
+            train.tags.en-cs.cs
+            train.tags.en-cs.en
+            train.tags.en-de.de
+            train.tags.en-de.en
+            train.tags.en-fr.en
+            train.tags.en-fr.fr
+            train.tags.fr-en.en
+            train.tags.fr-en.fr
 
     Examples:
         >>> from torchtext.datasets import IWSLT
@@ -266,20 +405,21 @@ def IWSLT(languages='de-en',
     """
 
     return _setup_datasets("IWSLT",
-                           languages=languages,
-                           train_filename=train_filename,
-                           valid_filename=valid_filename,
-                           test_filename=test_filename,
+                           train_filenames=train_filenames,
+                           valid_filenames=valid_filenames,
+                           test_filenames=test_filenames,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
 
 
-def WMT14(languages="de-en",
-          train_filename='train.tok.clean.bpe.32000',
-          valid_filename='newstest2013.tok.bpe.32000',
-          test_filename='newstest2014.tok.bpe.32000',
+def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
+                           'train.tok.clean.bpe.32000.en'),
+          valid_filenames=('newstest2013.tok.bpe.32000.de',
+                           'newstest2013.tok.bpe.32000.en'),
+          test_filenames=('newstest2014.tok.bpe.32000.de',
+                          'newstest2014.tok.bpe.32000.en'),
           tokenizer=None,
           root='.data',
           vocab=(None, None),
@@ -339,23 +479,12 @@ def WMT14(languages="de-en",
             train.tok.clean.bpe.32000.de
 
     Arguments:
-        languages: The source and target languages for the datasets.
-            Will be used as a suffix for train_filename, valid_filename,
-            and test_filename. The first split (before -) is the source
-            and the second split is the target.
-            Default: 'de-en' for source-target languages.
-        train_filename: The source and target filenames for training
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'train.tok.clean.bpe.32000'
-        valid_filename: The source and target filenames for valid
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'newstest2013.tok.bpe.32000'
-        test_filename: The source and target filenames for test
-            without the extension since it's already handled by languages
-            parameter.
-            Default: 'newstest2014.tok.bpe.32000'
+        train_filenames: the source and target filenames for training.
+            Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
+        valid_filenames: the source and target filenames for valid.
+            Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
+        test_filenames: the source and target filenames for test.
+            Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             Default: None
         root: Directory where the datasets are saved. Default: ".data"
@@ -375,10 +504,9 @@ def WMT14(languages="de-en",
     """
 
     return _setup_datasets("WMT14",
-                           languages=languages,
-                           train_filename=train_filename,
-                           valid_filename=valid_filename,
-                           test_filename=test_filename,
+                           train_filenames=train_filenames,
+                           valid_filenames=valid_filenames,
+                           test_filenames=test_filenames,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
