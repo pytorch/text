@@ -142,6 +142,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              tokenizer=None,
              root='.data',
              vocab=(None, None),
+             data_select=('train', 'valid', 'test'),
              removed_tokens=['<unk>']):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
@@ -158,6 +159,13 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'valid', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
         The available dataset include:
             test_2016_flickr.cs
@@ -229,8 +237,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            removed_tokens=removed_tokens)
 
 
-def IWSLT(train_filenames=('train.de-en.de',
-                           'train.de-en.en'),
+def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
@@ -238,6 +245,7 @@ def IWSLT(train_filenames=('train.de-en.de',
           tokenizer=None,
           root='.data',
           vocab=(None, None),
+          data_select=('train', 'valid', 'test'),
           removed_tokens=['<unk>']):
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
@@ -255,6 +263,13 @@ def IWSLT(train_filenames=('train.de-en.de',
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'valid', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
         The available datasets include:
             IWSLT16.TED.dev2010.ar-en.ar
@@ -423,6 +438,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           tokenizer=None,
           root='.data',
           vocab=(None, None),
+          data_select=('train', 'valid', 'test'),
           removed_tokens=['<unk>']):
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
@@ -490,6 +506,13 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
             will generate a new vocabulary based on the train data set.
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'valid', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
