@@ -82,56 +82,40 @@ class TestFunctional(TorchtextTestCase):
                          ref_results)
 
     def test_BasicEnglishNormalize(self):
-        # test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
-        # ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-        #                'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
-
-        # basic_english_normalize = BasicEnglishNormalize(test_sample)
-        # jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-        # jit_tokens = jit_basic_english_normalize.basic_english_normalize(test_sample)
-
-        # basic_english_tokenizer = data.get_tokenizer("basic_english")
-        # tokens = basic_english_tokenizer(test_sample)
-
-        # print('tokens')
-        # print(tokens)
-
-        # print('jit_tokens')
-        # print(jit_tokens)
-
-        # # self.assertEqual(jit_tokens, ref_results)
-        # self.assertEqual(jit_tokens, ref_results)
-
-        # Test text_nomalize function in torchtext.datasets.text_classification
-        ref_lines = []
-        test_lines = []
+        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
         basic_english_normalize = BasicEnglishNormalize()
+        # jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
+        tokens = basic_english_normalize.basic_english_normalize(test_sample)
 
-        data_path = get_asset_path('text_normalization_ag_news_test.csv')
-        with io.open(data_path, encoding="utf8") as f:
-            reader = unicode_csv_reader(f)
-            for row in reader:
-                test_lines.append(basic_english_normalize.basic_english_normalize(' , '.join(row)))
+        basic_english_tokenizer = data.get_tokenizer("basic_english")
+        tokens2 = basic_english_tokenizer(test_sample)
 
-        data_path = get_asset_path('text_normalization_ag_news_ref_results.test')
-        with io.open(data_path, encoding="utf8") as ref_data:
-            for line in ref_data:
-                line = line.split()
-                self.assertEqual(line[0][:9], '__label__')
-                line[0] = line[0][9:]  # remove '__label__'
-                ref_lines.append(line)
+        self.assertEqual(tokens, tokens2)
 
-        self.assertEqual(ref_lines, test_lines)
+        # Test text_nomalize function in torchtext.datasets.text_classification
+        # ref_lines = []
+        # test_lines = []
 
-    # def test_regex_tokenizer(self):
-    #     test_sample = '\'".<br \/>,()!?;:   Regex  for a Line of Text   \'".<br \/>,()!?;:'
+        # basic_english_normalize = BasicEnglishNormalize()
 
-    #     ref_results = ["'", '.', '<br', '\\/>', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-    #                    'for', 'a', 'line', 'of', 'text', "'", '.', '<br', '\\/>', ',', '(', ')', '!', '?']
+        # data_path = get_asset_path('text_normalization_ag_news_test.csv')
+        # with io.open(data_path, encoding="utf8") as f:
+        #     reader = unicode_csv_reader(f)
+        #     for row in reader:
+        #         test_lines.append(basic_english_normalize.basic_english_normalize(' , '.join(row)))
 
-    #     tokens = basic_english_normalize(test_sample)
-    #     self.assertEqual(tokens, ref_results)
+        # data_path = get_asset_path('text_normalization_ag_news_ref_results.test')
+        # with io.open(data_path, encoding="utf8") as ref_data:
+        #     for line in ref_data:
+        #         line = line.split()
+        #         self.assertEqual(line[0][:9], '__label__')
+        #         line[0] = line[0][9:]  # remove '__label__'
+        #         ref_lines.append(line)
+
+        # self.assertEqual(ref_lines, test_lines)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
