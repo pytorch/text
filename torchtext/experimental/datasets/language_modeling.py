@@ -23,7 +23,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, data, vocab, transforms):
+    def __init__(self, data, vocab, transforms, single_line):
         """Initiate language modeling dataset.
 
         Arguments:
@@ -38,10 +38,17 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         super(LanguageModelingDataset, self).__init__()
         self.vocab = vocab
         self.transforms = transforms
-        self.data = torch.cat(tuple(transforms(row) for row in data), axis=0)
+        self.single_line = single_line
+        if single_line == True:
+            self.data = torch.cat(tuple(transforms(row) for row in data), axis=0)
+        else:
+            self.data = data
 
     def __getitem__(self, i):
-        return self.data[i]
+        if self.single_line:
+            return self.data[i]
+        else:
+            return self.transforms(self.data[i])
 
     def __len__(self):
         return len(self.data)
@@ -55,7 +62,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
-                    data_select=('train', 'test', 'valid')):
+                    data_select=('train', 'test', 'valid'), single_line=True):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
@@ -71,9 +78,14 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     else:
         train, test, valid = raw.DATASETS[dataset_name](root=root, data_select=('train', 'test', 'valid'))
         # Cache raw text iterable dataset
-        raw_data = {'train': [txt for txt in train],
-                    'valid': [txt for txt in valid],
-                    'test': [txt for txt in test]}
+        if single_line:
+            raw_data = {'train': [" ".join([txt for txt in train]), ],
+                        'valid': [" ".join(txt for txt in valid), ],
+                        'test': [" ".join(txt for txt in test), ]}
+        else:
+            raw_data = {'train': [txt for txt in train],
+                        'valid': [txt for txt in valid],
+                        'test': [txt for txt in test]}
 
     if vocab is None:
         if 'train' not in data_select:
@@ -81,7 +93,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
         vocab = build_vocab(raw_data['train'], text_transform)
     text_transform = sequential_transforms(text_transform, vocab_func(vocab),
                                            totensor(dtype=torch.long))
-    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform)
+    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
                  for item in data_select)
 
 
