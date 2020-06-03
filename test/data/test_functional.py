@@ -136,15 +136,15 @@ class ScriptableSP(torch.jit.ScriptModule):
         super().__init__()
         self.spm = load_sp_model(model_path)
 
-    @ torch.jit.script_method
+    @torch.jit.script_method
     def encode(self, input: str):
         return self.spm.Encode(input)
 
-    @ torch.jit.script_method
+    @torch.jit.script_method
     def encode_as_ids(self, input: str):
         return self.spm.EncodeAsIds(input)
 
-    @ torch.jit.script_method
+    @torch.jit.script_method
     def encode_as_pieces(self, input: str):
         return self.spm.EncodeAsPieces(input)
 
@@ -156,7 +156,7 @@ class TestScriptableSP(unittest.TestCase):
             torch.jit.script(ScriptableSP(model_path)).save(file.name)
             self.model = torch.jit.load(file.name)
 
-    @ unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
