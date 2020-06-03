@@ -1,62 +1,94 @@
 import torch
 
 from torchtext.experimental.datasets import raw
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
     sequential_transforms,
 )
 
-def _build_vocab(data):
-    
+
+def _build_vocab(data, word_transform):
+    total_columns = len(data[0])
+    data_list = [[] for _ in range(total_columns)]
+    vocabs = []
+
     for line in data:
-        for col in line:
+        for idx, col in enumerate(line):
+            if idx == 0:
+                col = word_transform(col) if word_transform else col
+                data_list[idx].append(col)
+            else:
+                data_list[idx].append(col)
+
+    for it in data_list:
+        vocabs.append(build_vocab_from_iterator(it))
+
+    return vocabs
 
 
-
-def _setup_datasets(
-        dataset_name,
-        train_filename,
-        valid_filename,
-        test_filename,
-        separator,
-        data_select=("train", "valid", "test"),
-        root=".data",
-        vocab=(None, None),
-        tokenizer=None,
-):
-
-    text_transform = []
-    if tokenizer is None:
-        tokenizer = get_tokenizer("basic_english")
+def _setup_datasets(dataset_name,
+                    train_filename,
+                    valid_filename,
+                    test_filename,
+                    separator,
+                    data_select=("train", "valid", "test"),
+                    root=".data",
+                    vocabs=None,
+                    word_tokenizer=None):
     train, val, test = DATASETS[dataset_name](train_filename=train_filename,
                                               valid_filename=valid_filename,
                                               test_filename=test_filename,
                                               root=root)
     raw_data = {
-        "train": [line for line in train],
+        "train": [line for line in train] if train else None,
         "valid": [line for line in val] if val else None,
         "test": [line for line in test] if test else None
     }
 
-    text_transform = sequential_transforms(tokenizer)
+    word_transform = None
+    if word_tokenizer:
+        word_transform = sequential_transforms(word_tokenizer)
 
+    if vocabs is None:
+        if "train" not in data_select:
+            raise TypeError("Must pass a vocab if train is not selected.")
+        vocabs = _build_vocab(raw_data["train"], word_transform)
+    else:
+        if not isinstance(vocabs, list):
+            raise TypeError("vocabs must be an instance of list")
 
-    data_filenames = dict()
-    for fname in extracted_files:
-        if train_filename and train_filename in fname:
-            data_filenames["train"] = fname
-        if valid_filename and valid_filename in fname:
-            data_filenames["valid"] = fname
-        if test_filename and test_filename in fname:
-            data_filenames["test"] = fname
+        # Find data that's not None
+        notnone_data = None
+        for key in raw_data.keys():
+            if raw_data[key] is not None:
+                notnone_data = raw_data[key]
+                break
+        if len(vocabs) != len(notnone_data[0]):
+            raise ValueError(
+                "Number of vocabs must match the number of columns "
+                "in the data")
+
+    if word_transform:
+        word_transform = sequential_transforms(word_transform,
+                                               vocab_func(vocabs[0]),
+                                               totensor(dtype=torch.long))
+    else:
+        word_transform = sequential_transforms(vocab_func(vocabs[0]),
+                                               totensor(dtype=torch.long))
+    labels_transforms = [
+        sequential_transforms(vocab_func(vocabs[idx + 1]),
+                              totensor(dtype=torch.long))
+        for idx in range(len(vocabs) - 1)
+    ]
+    transformers = [word_transform, *labels_transforms]
 
     datasets = []
-    for key in data_filenames.keys():
-        if data_filenames[key] is not None:
+    for item in data_select:
+        if raw_data[item] is not None:
             datasets.append(
-                RawSequenceTaggingIterableDataset(
-                    _create_data_from_iob(data_filenames[key], separator)))
+                SequenceTaggingDataset(raw_data[item], vocabs, transformers))
 
     return datasets
 
@@ -86,7 +118,10 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
 def UDPOS(train_filename="en-ud-tag.v2.train.txt",
           valid_filename="en-ud-tag.v2.dev.txt",
           test_filename="en-ud-tag.v2.test.txt",
-          root=".data"):
+          data_select=("train", "valid", "test"),
+          root=".data",
+          vocabs=None,
+          word_tokenizer=None):
     """ Universal Dependencies English Web Treebank.
     """
     return _setup_datasets(dataset_name="UDPOS",
@@ -94,12 +129,18 @@ def UDPOS(train_filename="en-ud-tag.v2.train.txt",
                            train_filename=train_filename,
                            valid_filename=valid_filename,
                            test_filename=test_filename,
-                           separator="\t")
+                           separator="\t",
+                           data_select=data_select,
+                           vocabs=vocabs,
+                           word_tokenizer=word_tokenizer)
 
 
 def CoNLL2000Chunking(train_filename="train.txt",
                       test_filename="test.txt",
-                      root=".data"):
+                      data_select=("train", "valid", "test"),
+                      root=".data",
+                      vocabs=None,
+                      word_tokenizer=None):
     """ CoNLL 2000 Chunking Dataset
     """
     return _setup_datasets(dataset_name="CoNLL2000Chunking",
@@ -107,7 +148,10 @@ def CoNLL2000Chunking(train_filename="train.txt",
                            train_filename=train_filename,
                            valid_filename=None,
                            test_filename=test_filename,
-                           separator=' ')
+                           separator=' ',
+                           data_select=data_select,
+                           vocabs=vocabs,
+                           word_tokenizer=word_tokenizer)
 
 
 DATASETS = {"UDPOS": raw.UDPOS, "CoNLL2000Chunking": raw.CoNLL2000Chunking}
