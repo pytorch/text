@@ -23,8 +23,7 @@ public:
     re_ = std::regex(re_str_);
   }
 
-  std::string ReplaceFirstMatch(const std::string &str,
-                                const std::string &repl) const {
+  std::string Sub(const std::string &str, const std::string &repl) const {
     return std::regex_replace(str, re_, repl);
   }
 };
@@ -34,7 +33,7 @@ static auto regex =
     torch::class_<Regex>("torchtext", "Regex")
         .def(torch::init<std::string>())
         .def("UpdateRe", &Regex::UpdateRe)
-        .def("ReplaceFirstMatch", &Regex::ReplaceFirstMatch)
+        .def("Sub", &Regex::Sub)
         .def_pickle(
             // __getstate__
             [](const c10::intrusive_ptr<Regex> &self) -> std::string {

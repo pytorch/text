@@ -122,3 +122,6 @@ venv.bak/
 *.swo
 
 torchtext/version.py
+
+# deleted files
+torchtext/.nfs*

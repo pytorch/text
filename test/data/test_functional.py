@@ -1,3 +1,4 @@
+import io
 import os
 import unittest
 import sys
@@ -7,6 +8,7 @@ import tempfile
 
 import sentencepiece as spm
 import torch
+import torchtext.data as data
 from torchtext.data.functional import (
     generate_sp_model,
     load_sp_model,
@@ -15,6 +17,12 @@ from torchtext.data.functional import (
     custom_replace,
     simple_space_split,
 )
+from torchtext.experimental.functional import (
+    BasicEnglishNormalize,
+    regex_tokenizer
+)
+from torchtext.utils import unicode_csv_reader
+
 
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
@@ -59,7 +67,6 @@ class TestFunctional(TorchtextTestCase):
                          ref_results)
 
     def test_sentencepiece_tokenizer(self):
-
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = get_asset_path('spm_example.model')
         sp_model = load_sp_model(model_path)
@@ -73,6 +80,58 @@ class TestFunctional(TorchtextTestCase):
 
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
+
+    def test_BasicEnglishNormalize(self):
+        # test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        # ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+        #                'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
+
+        # basic_english_normalize = BasicEnglishNormalize(test_sample)
+        # jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
+        # jit_tokens = jit_basic_english_normalize.basic_english_normalize(test_sample)
+
+        # basic_english_tokenizer = data.get_tokenizer("basic_english")
+        # tokens = basic_english_tokenizer(test_sample)
+
+        # print('tokens')
+        # print(tokens)
+
+        # print('jit_tokens')
+        # print(jit_tokens)
+
+        # # self.assertEqual(jit_tokens, ref_results)
+        # self.assertEqual(jit_tokens, ref_results)
+
+        # Test text_nomalize function in torchtext.datasets.text_classification
+        ref_lines = []
+        test_lines = []
+
+        basic_english_normalize = BasicEnglishNormalize()
+
+        data_path = get_asset_path('text_normalization_ag_news_test.csv')
+        with io.open(data_path, encoding="utf8") as f:
+            reader = unicode_csv_reader(f)
+            for row in reader:
+                test_lines.append(basic_english_normalize.basic_english_normalize(' , '.join(row)))
+
+        data_path = get_asset_path('text_normalization_ag_news_ref_results.test')
+        with io.open(data_path, encoding="utf8") as ref_data:
+            for line in ref_data:
+                line = line.split()
+                self.assertEqual(line[0][:9], '__label__')
+                line[0] = line[0][9:]  # remove '__label__'
+                ref_lines.append(line)
+
+        self.assertEqual(ref_lines, test_lines)
+
+    # def test_regex_tokenizer(self):
+    #     test_sample = '\'".<br \/>,()!?;:   Regex  for a Line of Text   \'".<br \/>,()!?;:'
+
+    #     ref_results = ["'", '.', '<br', '\\/>', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+    #                    'for', 'a', 'line', 'of', 'text', "'", '.', '<br', '\\/>', ',', '(', ')', '!', '?']
+
+    #     tokens = basic_english_normalize(test_sample)
+    #     self.assertEqual(tokens, ref_results)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
@@ -88,20 +147,38 @@ class TestFunctional(TorchtextTestCase):
                          ref_results)
 
 
+class ScriptableBasicEnglishNormalize(torch.jit.ScriptModule):
+    def __init__(self, model_path):
+        super().__init__()
+        self.spm = load_sp_model(model_path)
+
+    @ torch.jit.script_method
+    def encode(self, input: str):
+        return self.spm.Encode(input)
+
+    @ torch.jit.script_method
+    def encode_as_ids(self, input: str):
+        return self.spm.EncodeAsIds(input)
+
+    @ torch.jit.script_method
+    def encode_as_pieces(self, input: str):
+        return self.spm.EncodeAsPieces(input)
+
+
 class ScriptableSP(torch.jit.ScriptModule):
     def __init__(self, model_path):
         super().__init__()
         self.spm = load_sp_model(model_path)
 
-    @torch.jit.script_method
+    @ torch.jit.script_method
     def encode(self, input: str):
         return self.spm.Encode(input)
 
-    @torch.jit.script_method
+    @ torch.jit.script_method
     def encode_as_ids(self, input: str):
         return self.spm.EncodeAsIds(input)
 
-    @torch.jit.script_method
+    @ torch.jit.script_method
     def encode_as_pieces(self, input: str):
         return self.spm.EncodeAsPieces(input)
 
@@ -113,7 +190,7 @@ class TestScriptableSP(unittest.TestCase):
             torch.jit.script(ScriptableSP(model_path)).save(file.name)
             self.model = torch.jit.load(file.name)
 
-    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
+    @ unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
