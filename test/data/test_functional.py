@@ -1,4 +1,3 @@
-import io
 import os
 import unittest
 import sys
@@ -21,8 +20,6 @@ from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
     RegexTokenizer
 )
-from torchtext.utils import unicode_csv_reader
-
 
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
