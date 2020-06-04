@@ -78,7 +78,7 @@ class TestDataset(TorchtextTestCase):
 
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
-        # smoke test to ensure wikitext2 works properly
+        # smoke test to ensure penn treebank works properly
         train_dataset, test_dataset, valid_dataset = PennTreebank()
         self.assertEqual(len(train_dataset), 924412)
         self.assertEqual(len(test_dataset), 82114)
