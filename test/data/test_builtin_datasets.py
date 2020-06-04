@@ -138,7 +138,7 @@ class TestDataset(TorchtextTestCase):
         assert_allclose(train_dataset[0][2][:10],
                         torch.tensor([5, 34, 5, 27, 7, 11, 14, 5, 5, 5]).long())
         assert_allclose(train_dataset[-1][0][:10],
-                        torch.tensor([9, 32, 169, 436, 59, 192, 30,  6, 117, 17]).long())
+                        torch.tensor([9, 32, 169, 436, 59, 192, 30, 6, 117, 17]).long())
         assert_allclose(train_dataset[-1][1][:10],
                         torch.tensor([5, 10, 11, 4, 11, 11, 3, 12, 11, 4]).long())
         assert_allclose(train_dataset[-1][2][:10],
