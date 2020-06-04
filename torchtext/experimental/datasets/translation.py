@@ -155,10 +155,14 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
         tokenizer: the tokenizer used to preprocess source and target raw text data.
-            Default: None
+            It has to be in a form of tuple.
+            Default: (get_tokenizer("spacy", language='de_core_news_sm'),
+                      get_tokenizer("spacy", language='en_core_web_sm'))
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
-            will generate a new vocabulary based on the train data set.
+            will generate a new vocabulary based on the train data set. It has to be
+            in a form of tuple.
+            Default: (None, None)
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'valid', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -259,10 +263,14 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
         tokenizer: the tokenizer used to preprocess source and target raw text data.
-            Default: None
+            It has to be in a form of tuple.
+            Default: (get_tokenizer("spacy", language='de_core_news_sm'),
+                      get_tokenizer("spacy", language='en_core_web_sm'))
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
-            will generate a new vocabulary based on the train data set.
+            will generate a new vocabulary based on the train data set. It has to be
+            in a form of tuple.
+            Default: (None, None)
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'valid', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -502,10 +510,14 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
         tokenizer: the tokenizer used to preprocess source and target raw text data.
-            Default: None
+            It has to be in a form of tuple.
+            Default: (get_tokenizer("spacy", language='de_core_news_sm'),
+                      get_tokenizer("spacy", language='en_core_web_sm'))
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Source and target Vocabulary objects used for dataset. If None, it
-            will generate a new vocabulary based on the train data set.
+            will generate a new vocabulary based on the train data set. It has to be
+            in a form of tuple.
+            Default: (None, None)
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'valid', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
