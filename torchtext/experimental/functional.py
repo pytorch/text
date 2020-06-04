@@ -1,8 +1,8 @@
 import torch
-import torchtext
-from typing import List, Tuple, Type
+from typing import List, Tuple
 
-def regex_tokenizer(line, patterns_list, regex, lowercase = False):
+
+def regex_tokenizer(line, patterns_list, regex, lowercase=False):
     # type: (str, List[Tuple[str, str]], torch.classes.torchtext.Regex, bool) -> List[str]
     r"""Regex tokenizer for a string sentence.
 
@@ -12,7 +12,8 @@ def regex_tokenizer(line, patterns_list, regex, lowercase = False):
 
     Args:
         line (str): a line of text to tokenize.
-        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string as the first element and the replacement string as the second element.
+        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
+            as the first element and the replacement string as the second element.
         regex (torch.classes.torchtext.Regex): a custom c++ Regex object.
         lowercase (bool, optional): a flag to determine whether to lowercase the input text.
     Returns:

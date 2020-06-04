@@ -1,5 +1,4 @@
 import torch
-import torchtext
 import torch.nn as nn
 from torchtext.experimental import functional as F
 from typing import List, Tuple
@@ -73,7 +72,8 @@ class RegexTokenizer(nn.Module):
     r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
 
     Args:
-        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string as the first element and the replacement string as the second element.
+        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
+        as the first element and the replacement string as the second element.
 
     Examples:
         >>> import torch

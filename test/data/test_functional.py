@@ -80,7 +80,8 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-    # TODO(Nayef211): uncomment and replace the test below with this once once https://github.com/pytorch/pytorch/issues/38207 is closed
+    # TODO(Nayef211): uncomment and replace the test below with this once once
+    # https://github.com/pytorch/pytorch/issues/38207 is closed
     # def test_BasicEnglishNormalize(self):
     #     test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
     #     ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
@@ -113,7 +114,8 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(experimental_eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, tokens_eager)
 
-    # TODO(Nayef211): uncomment and replace the test below with this once once https://github.com/pytorch/pytorch/issues/38207 is closed
+    # TODO(Nayef211): uncomment and replace the test below with this once once
+    # https://github.com/pytorch/pytorch/issues/38207 is closed
     # def test_RegexTokenizer(self):
     #     test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
     #     ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
