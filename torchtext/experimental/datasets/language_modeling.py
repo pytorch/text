@@ -72,6 +72,8 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if not set(data_select).issubset(set(('train', 'valid', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
+    if not single_line and dataset_name != 'WikiText103':
+        raise TypeError('single_line must be True except for WikiText103')
     if dataset_name == 'WMTNewsCrawl':
         train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
         if single_line:
