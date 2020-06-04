@@ -95,8 +95,19 @@ def _setup_datasets(dataset_name,
 
 class SequenceTaggingDataset(torch.utils.data.Dataset):
     """Defines an abstraction for raw text sequence tagging iterable datasets.
+    Currently, we only support the following datasets:
+        - UDPOS
+        - CoNLL2000Chunking
     """
     def __init__(self, data, vocab, transforms):
+        """Initiate sequence tagging dataset.
+        Arguments:
+            data: a list of word and its respective tags. Example:
+                [[word, POS, dep_parsing label, ...]]
+            vocab: Vocabulary object used for dataset.
+            transforms: a list of string transforms for words and tags.
+        """
+
         super(SequenceTaggingDataset, self).__init__()
         self.data = data
         self.vocab = vocab
@@ -122,7 +133,34 @@ def UDPOS(train_filename="en-ud-tag.v2.train.txt",
           root=".data",
           vocabs=None,
           word_tokenizer=None):
-    """ Universal Dependencies English Web Treebank.
+    """ Universal Dependencies English Web Treebank
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        train_filename: Filename for training dataset.
+            Default: en-ud-tag.v2.train.txt
+        valid_filename: Filename for validation dataset.
+            Default: en-ud-tag.v2.dev.txt
+        test_filename: Filename for test dataset.
+            Default: en-ud-tag.v2.test.txt
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'valid', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocabs: A list of voabularies for each columns in the dataset. Must be in an
+            instance of List
+            Default: None
+        word_tokenizer: The tokenizer used to preprocess word column in raw text data
+            Default: None
+
+    Examples:
+        >>> from torchtext.datasets.raw import UDPOS
+        >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
     return _setup_datasets(dataset_name="UDPOS",
                            root=root,
@@ -142,6 +180,31 @@ def CoNLL2000Chunking(train_filename="train.txt",
                       vocabs=None,
                       word_tokenizer=None):
     """ CoNLL 2000 Chunking Dataset
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        train_filename: Filename for training dataset.
+            Default: train.txt
+        test_filename: Filename for test dataset.
+            Default: test.txt
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'valid', 'test'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocabs: A list of voabularies for each columns in the dataset. Must be in an
+            instance of List
+            Default: None
+        word_tokenizer: The tokenizer used to preprocess word column in raw text data
+            Default: None
+
+    Examples:
+        >>> from torchtext.datasets.raw import CoNLL2000Chunking
+        >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
     """
     return _setup_datasets(dataset_name="CoNLL2000Chunking",
                            root=root,

@@ -110,7 +110,22 @@ def UDPOS(train_filename="en-ud-tag.v2.train.txt",
           valid_filename="en-ud-tag.v2.dev.txt",
           test_filename="en-ud-tag.v2.test.txt",
           root=".data"):
-    """ Universal Dependencies English Web Treebank.
+    """ Universal Dependencies English Web Treebank
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        train_filename: Filename for training dataset.
+            Default: en-ud-tag.v2.train.txt
+        valid_filename: Filename for validation dataset.
+            Default: en-ud-tag.v2.dev.txt
+        test_filename: Filename for test dataset.
+            Default: en-ud-tag.v2.test.txt
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> from torchtext.datasets.raw import UDPOS
+        >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
     return _setup_datasets(dataset_name="UDPOS",
                            root=root,
@@ -125,6 +140,19 @@ def CoNLL2000Chunking(train_filename="train.txt",
                       test_filename="test.txt",
                       root=".data"):
     """ CoNLL 2000 Chunking Dataset
+
+    Separately returns the training and test dataset
+
+    Arguments:
+        train_filename: Filename for training dataset.
+            Default: train.txt
+        test_filename: Filename for test dataset.
+            Default: test.txt
+        root: Directory where the datasets are saved. Default: ".data"
+
+    Examples:
+        >>> from torchtext.datasets.raw import CoNLL2000Chunking
+        >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
     """
     return _setup_datasets(dataset_name="CoNLL2000Chunking",
                            root=root,
