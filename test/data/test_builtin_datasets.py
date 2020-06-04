@@ -88,16 +88,6 @@ class TestDataset(TorchtextTestCase):
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
         self.assertEqual(tokens_ids, [2, 2550, 3344, 1125])
 
-    def test_wmtnewscrawl(self):
-        from torchtext.experimental.datasets import WMTNewsCrawl
-        # smoke test to ensure WMTNewsCrawl works properly
-        train_dataset, = WMTNewsCrawl()
-        self.assertEqual(len(train_dataset), 399857558)
-
-        vocab = train_dataset.get_vocab()
-        tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
-        self.assertEqual(tokens_ids, [3, 1075, 3572, 1134])
-
     def test_text_classification(self):
         # smoke test to ensure ag_news dataset works properly
 
