@@ -80,7 +80,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-    # TODO(Nayef211): uncomment and replace the test below with this once once
+    # TODO(Nayef211): uncomment and replace the test below with this once
     # https://github.com/pytorch/pytorch/issues/38207 is closed
     # def test_BasicEnglishNormalize(self):
     #     test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
@@ -114,7 +114,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(experimental_eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, tokens_eager)
 
-    # TODO(Nayef211): uncomment and replace the test below with this once once
+    # TODO(Nayef211): uncomment and replace the test below with this once
     # https://github.com/pytorch/pytorch/issues/38207 is closed
     # def test_RegexTokenizer(self):
     #     test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
@@ -144,21 +144,12 @@ class TestFunctional(TorchtextTestCase):
     #     self.assertEqual(jit_tokens, eager_tokens)
 
     def test_RegexTokenizer(self):
-        test_sample = 'Basic Regex Tokenization for a Line of Text'
-        ref_results = ['Basic', 'Regex', 'Tokenization',
-                       'for', 'a', 'Line', 'of', 'Text']
+        test_sample = '"Basic Regex Tokenization". For a Line of Text'
+        ref_results = ['Basic', 'Regex', 'Tokenization', '.',
+                       'For', 'a', 'Line', 'of', 'Text']
         patterns_list = [
-            (r'\'', ' \'  '),
             (r'\"', ''),
             (r'\.', ' . '),
-            (r'<br \/>', ' '),
-            (r',', ' , '),
-            (r'\(', ' ( '),
-            (r'\)', ' ) '),
-            (r'\!', ' ! '),
-            (r'\?', ' ? '),
-            (r'\;', ' '),
-            (r'\:', ' '),
             (r'\s+', ' ')]
 
         regex_tokenizer = RegexTokenizer(patterns_list)

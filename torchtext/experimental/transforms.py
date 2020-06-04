@@ -34,7 +34,7 @@ class BasicEnglishNormalize(nn.Module):
         >>> test_sample = 'Basic English Normalization for a Line of Text'
         >>> basic_english_normalize = BasicEnglishNormalize()
         >>> jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-        >>> tokens = jit_basic_english_normalize.forward(test_sample)
+        >>> tokens = jit_basic_english_normalize(test_sample)
     """
 
     regex_and_replacement_string_pairs: List[Tuple[torch.classes.torchtext.Regex, str]]
@@ -89,7 +89,7 @@ class RegexTokenizer(nn.Module):
             (r'\"', '')]
         >>> regex_tokenizer = RegexTokenizer(patterns_list)
         >>> jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-        >>> tokens = jit_regex_tokenizer.forward(test_sample)
+        >>> tokens = jit_regex_tokenizer(test_sample)
     """
 
     regex_and_replacement_string_pairs: List[Tuple[torch.classes.torchtext.Regex, str]]
