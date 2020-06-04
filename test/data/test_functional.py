@@ -88,10 +88,10 @@ class TestFunctional(TorchtextTestCase):
     #                    'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
     #     basic_english_normalize = BasicEnglishNormalize()
-    #     experimental_eager_tokens = basic_english_normalize.forward(test_sample)
+    #     experimental_eager_tokens = basic_english_normalize(test_sample)
 
     #     jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-    #     experimental_jit_tokens = jit_basic_english_normalize.forward(test_sample)
+    #     experimental_jit_tokens = jit_basic_english_normalize(test_sample)
 
     #     basic_english_tokenizer = data.get_tokenizer("basic_english")
     #     eager_tokens = basic_english_tokenizer(test_sample)
@@ -106,7 +106,7 @@ class TestFunctional(TorchtextTestCase):
                        'for', 'a', 'line', 'of', 'text']
 
         basic_english_normalize = BasicEnglishNormalize()
-        experimental_eager_tokens = basic_english_normalize.forward(test_sample)
+        experimental_eager_tokens = basic_english_normalize(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
         tokens_eager = basic_english_tokenizer(test_sample)
@@ -135,10 +135,10 @@ class TestFunctional(TorchtextTestCase):
     #         (r'\s+', ' ')]
 
     #     regex_tokenizer = RegexTokenizer(patterns_list)
-    #     eager_tokens = regex_tokenizer.forward(test_sample)
+    #     eager_tokens = regex_tokenizer(test_sample)
 
     #     jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-    #     jit_tokens = jit_regex_tokenizer.forward(test_sample)
+    #     jit_tokens = jit_regex_tokenizer(test_sample)
 
     #     self.assertEqual(jit_tokens, ref_results)
     #     self.assertEqual(jit_tokens, eager_tokens)
@@ -162,10 +162,10 @@ class TestFunctional(TorchtextTestCase):
             (r'\s+', ' ')]
 
         regex_tokenizer = RegexTokenizer(patterns_list)
-        eager_tokens = regex_tokenizer.forward(test_sample)
+        eager_tokens = regex_tokenizer(test_sample)
 
         jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-        jit_tokens = jit_regex_tokenizer.forward(test_sample)
+        jit_tokens = jit_regex_tokenizer(test_sample)
 
         self.assertEqual(jit_tokens, eager_tokens)
         self.assertEqual(jit_tokens, ref_results)
