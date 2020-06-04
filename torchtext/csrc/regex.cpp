@@ -16,10 +16,7 @@ public:
   // serialized model from this re_str_ member, thus it needs to be public.
   std::string re_str_;
 
-  Regex(const std::string &re_str) { UpdateRe(re_str_); }
-
-  void UpdateRe(const std::string &re_str) {
-    re_str_ = re_str;
+  Regex(const std::string &re_str) : re_str_(re_str) {
     re_ = std::regex(re_str_);
   }
 
@@ -32,7 +29,6 @@ public:
 static auto regex =
     torch::class_<Regex>("torchtext", "Regex")
         .def(torch::init<std::string>())
-        .def("UpdateRe", &Regex::UpdateRe)
         .def("Sub", &Regex::Sub)
         .def_pickle(
             // __getstate__
