@@ -74,7 +74,10 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
 
     if dataset_name == 'WMTNewsCrawl':
         train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
-        raw_data = {'train': [txt for txt in train]}
+        if single_line:
+            raw_data = {'train': [" ".join([txt for txt in train]), ]}
+        else:
+            raw_data = {'train': [txt for txt in train]}
     else:
         train, test, valid = raw.DATASETS[dataset_name](root=root, data_select=('train', 'test', 'valid'))
         # Cache raw text iterable dataset
