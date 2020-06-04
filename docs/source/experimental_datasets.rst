@@ -151,21 +151,21 @@ Language modeling datasets are subclasses of ``TranslationDataset`` class.
 
 
 Multi30k
-~~~~~~~~~~
+~~~~~~~~
 
 .. autoclass:: Multi30k
   :members: __init__
 
 
 IWSLT
-~~~~~~~~~~~
+~~~~~
 
 .. autoclass:: IWSLT
   :members: __init__
 
 
 WMT14
-~~~~~~~~~~~~
+~~~~~
 
 .. autoclass:: WMT14
   :members: __init__
