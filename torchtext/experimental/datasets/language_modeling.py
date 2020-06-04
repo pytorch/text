@@ -104,13 +104,13 @@ def WikiText2(*args, **kwargs):
     Separately returns the train/test/valid set
 
     Arguments:
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         data_select: a string or tupel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -118,6 +118,10 @@ def WikiText2(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+        single_line: whether to return all tokens in a single line.
+            (Default: True)
+            By default, all lines in raw text file are concatenated into a single line.
+            Use `single_line = False` if one wants to get data line by line.
 
     Examples:
         >>> from torchtext.experimental.datasets import WikiText2
@@ -140,13 +144,13 @@ def WikiText103(*args, **kwargs):
     Separately returns the train/test/valid set
 
     Arguments:
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         data_select: a string or tupel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -154,6 +158,10 @@ def WikiText103(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+        single_line: whether to return all tokens in a single line.
+            (Default: True)
+            By default, all lines in raw text file are concatenated into a single line.
+            Use `single_line = False` if one wants to get data line by line.
 
     Examples:
         >>> from torchtext.experimental.datasets import WikiText103
@@ -176,13 +184,13 @@ def PennTreebank(*args, **kwargs):
     Separately returns the train/test/valid set
 
     Arguments:
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         data_select: a string or tupel for the returned datasets
             (Default: ('train', 'test','valid'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -190,6 +198,10 @@ def PennTreebank(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+        single_line: whether to return all tokens in a single line.
+            (Default: True)
+            By default, all lines in raw text file are concatenated into a single line.
+            Use `single_line = False` if one wants to get data line by line.
 
     Examples:
         >>> from torchtext.experimental.datasets import PennTreebank
@@ -212,16 +224,19 @@ def WMTNewsCrawl(*args, **kwargs):
     returns the train set
 
     Arguments:
-        root: Directory where the datasets are saved. Default: ".data"
-        vocab: Vocabulary used for dataset. If None, it will generate a new
-            vocabulary based on the train data set.
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
             function with input of a string and output of a token list.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Vocabulary used for dataset. If None, it will generate a new
+            vocabulary based on the train data set.
         data_select: a string or tupel for the returned datasets
             (Default: ('train',))
-
+        single_line: whether to return all tokens in a single line.
+            (Default: True)
+            By default, all lines in raw text file are concatenated into a single line.
+            Use `single_line = False` if one wants to get data line by line.
     Examples:
         >>> from torchtext.experimental.datasets import WMTNewsCrawl
         >>> from torchtext.data.utils import get_tokenizer
