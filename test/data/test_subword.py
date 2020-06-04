@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# Note that all the tests in this module require dataset (either network access or cached)
 import unittest
 
 from torchtext import data

@@ -19,4 +19,4 @@ if "%VSDEVCMD_ARGS%" == "" (
 
 set DISTUTILS_USE_SDK=1
 
-python setup.py develop || exit /b 1
+python setup.py bdist_wheel || exit /b 1
