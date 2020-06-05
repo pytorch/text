@@ -20,4 +20,4 @@ conda install -y -c pytorch-nightly pytorch cpuonly
 
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
-"$this_dir/install.bat"
+"$root_dir/packaging/vc_env_helper.bat" python setup.py develop
