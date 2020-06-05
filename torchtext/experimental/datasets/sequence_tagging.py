@@ -9,18 +9,14 @@ from torchtext.experimental.functional import (
 )
 
 
-def _build_vocab(data, text_transform):
+def _build_vocab(data):
     total_columns = len(data[0])
     data_list = [[] for _ in range(total_columns)]
     vocabs = []
 
     for line in data:
         for idx, col in enumerate(line):
-            if idx == 0:
-                col = text_transform(col) if text_transform else col
-                data_list[idx].append(col)
-            else:
-                data_list[idx].append(col)
+            data_list[idx].append(col)
 
     for it in data_list:
         vocabs.append(build_vocab_from_iterator(it))
@@ -31,7 +27,6 @@ def _build_vocab(data, text_transform):
 def _setup_datasets(dataset_name,
                     root=".data",
                     vocabs=None,
-                    tokenizer=None,
                     data_select=("train", "valid", "test")):
     train, val, test = DATASETS[dataset_name](root=root)
     raw_data = {
@@ -40,14 +35,10 @@ def _setup_datasets(dataset_name,
         "test": [line for line in test] if test else None
     }
 
-    text_transform = None
-    if tokenizer:
-        text_transform = sequential_transforms(tokenizer)
-
     if vocabs is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocabs = _build_vocab(raw_data["train"], text_transform)
+        vocabs = _build_vocab(raw_data["train"])
     else:
         if not isinstance(vocabs, list):
             raise TypeError("vocabs must be an instance of list")
@@ -63,19 +54,11 @@ def _setup_datasets(dataset_name,
                 "Number of vocabs must match the number of columns "
                 "in the data")
 
-    if text_transform:
-        text_transform = sequential_transforms(text_transform,
-                                               vocab_func(vocabs[0]),
-                                               totensor(dtype=torch.long))
-    else:
-        text_transform = sequential_transforms(vocab_func(vocabs[0]),
-                                               totensor(dtype=torch.long))
-    labels_transforms = [
-        sequential_transforms(vocab_func(vocabs[idx + 1]),
+    transformers = [
+        sequential_transforms(vocab_func(vocabs[idx]),
                               totensor(dtype=torch.long))
-        for idx in range(len(vocabs) - 1)
+        for idx in range(len(vocabs))
     ]
-    transformers = [text_transform, *labels_transforms]
 
     datasets = []
     for item in data_select:
@@ -129,8 +112,6 @@ def UDPOS(*args, **kwargs):
         vocabs: A list of voabularies for each columns in the dataset. Must be in an
             instance of List
             Default: None
-        tokenizer: The tokenizer used to preprocess word column in raw text data
-            Default: None
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'valid', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -155,8 +136,6 @@ def CoNLL2000Chunking(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocabs: A list of voabularies for each columns in the dataset. Must be in an
             instance of List
-            Default: None
-        tokenizer: The tokenizer used to preprocess word column in raw text data
             Default: None
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'valid', 'test'))
