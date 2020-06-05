@@ -1,6 +1,7 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
+import glob
 import shutil
 import torchtext.data as data
 from torchtext.datasets import AG_NEWS
@@ -10,10 +11,11 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 
 def conditional_remove(f):
-    if os.path.isfile(f):
-        os.remove(f)
-    elif os.path.isdir(f):
-        shutil.rmtree(f)
+    for path in glob.glob(f):
+        if os.path.isfile(path):
+            os.remove(path)
+        elif os.path.isdir(path):
+            shutil.rmtree(path)
 
 
 class TestDataset(TorchtextTestCase):
@@ -78,7 +80,7 @@ class TestDataset(TorchtextTestCase):
 
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
-        # smoke test to ensure wikitext2 works properly
+        # smoke test to ensure penn treebank works properly
         train_dataset, test_dataset, valid_dataset = PennTreebank()
         self.assertEqual(len(train_dataset), 924412)
         self.assertEqual(len(test_dataset), 82114)
@@ -238,3 +240,34 @@ class TestDataset(TorchtextTestCase):
         word_vocab = train_dataset.get_vocab()[0]
         tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
         self.assertEqual(tokens_ids, [1206, 8, 69, 60, 157, 452])
+    def test_multi30k(self):
+        from torchtext.experimental.datasets.translation import Multi30k
+        # smoke test to ensure multi30k works properly
+        train_dataset, valid_dataset, test_dataset = Multi30k()
+        self.assertEqual(len(train_dataset), 29000)
+        self.assertEqual(len(valid_dataset), 1000)
+        self.assertEqual(len(test_dataset), 1014)
+
+        de_vocab, en_vocab = train_dataset.get_vocab()
+        de_tokens_ids = [
+            de_vocab[token] for token in
+            'Zwei Männer verpacken Donuts in Kunststofffolie'.split()
+        ]
+        self.assertEqual(de_tokens_ids, [19, 29, 18703, 4448, 5, 6240])
+
+        en_tokens_ids = [
+            en_vocab[token] for token in
+            'Two young White males are outside near many bushes'.split()
+        ]
+        self.assertEqual(en_tokens_ids,
+                         [17, 23, 1167, 806, 15, 55, 82, 334, 1337])
+
+        datafile = os.path.join(self.project_root, ".data", "train*")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "val*")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data", "test*")
+        conditional_remove(datafile)
+        datafile = os.path.join(self.project_root, ".data",
+                                "multi30k_task*.tar.gz")
+        conditional_remove(datafile)
