@@ -139,3 +139,31 @@ PennTreebank
 
 .. autoclass:: PennTreebank
   :members: __init__ 
+
+
+Machine Translation
+^^^^^^^^^^^^^^^^^^^
+
+Language modeling datasets are subclasses of ``TranslationDataset`` class.
+
+.. autoclass:: TranslationDataset
+  :members: __init__
+
+Multi30k
+~~~~~~~~
+
+.. autoclass:: Multi30k
+  :members: __init__
+
+IWSLT
+~~~~~
+
+.. autoclass:: IWSLT
+  :members: __init__
+
+WMT14
+~~~~~
+
+.. autoclass:: WMT14
+  :members: __init__
+
