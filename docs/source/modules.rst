@@ -12,6 +12,11 @@ torchtext.models.multiheadattention
 
 .. autofunction:: MultiheadAttentionContainer 
 
+:hidden:`InProjContainer`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: InProjContainer 
+
 :hidden:`ScaledDotProduct`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
