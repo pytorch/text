@@ -28,21 +28,16 @@ def _create_data_from_iob(data_path, separator="\t"):
                     columns[i].append(column)
 
 
-def _construct_filepath(paths, filename):
-    if filename:
+def _construct_filepath(paths, file_suffix):
+    if file_suffix:
         path = None
         for p in paths:
-            path = p if filename in p else path
+            path = p if p.endswith(file_suffix) else path
         return path
     return None
 
 
-def _setup_datasets(dataset_name,
-                    train_filename,
-                    valid_filename,
-                    test_filename,
-                    separator,
-                    root=".data"):
+def _setup_datasets(dataset_name, separator, root=".data"):
 
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
@@ -58,9 +53,9 @@ def _setup_datasets(dataset_name,
                 dataset_name))
 
     data_filenames = {
-        "train": _construct_filepath(extracted_files, train_filename),
-        "valid": _construct_filepath(extracted_files, valid_filename),
-        "test": _construct_filepath(extracted_files, test_filename)
+        "train": _construct_filepath(extracted_files, "train.txt"),
+        "valid": _construct_filepath(extracted_files, "dev.txt"),
+        "test": _construct_filepath(extracted_files, "test.txt")
     }
 
     datasets = []
@@ -106,60 +101,34 @@ class RawSequenceTaggingIterableDataset(torch.utils.data.IterableDataset):
         return self._iterator
 
 
-def UDPOS(train_filename="en-ud-tag.v2.train.txt",
-          valid_filename="en-ud-tag.v2.dev.txt",
-          test_filename="en-ud-tag.v2.test.txt",
-          root=".data"):
+def UDPOS(*args, **kwargs):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training and test dataset
 
     Arguments:
-        train_filename: Filename for training dataset.
-            Default: en-ud-tag.v2.train.txt
-        valid_filename: Filename for validation dataset.
-            Default: en-ud-tag.v2.dev.txt
-        test_filename: Filename for test dataset.
-            Default: en-ud-tag.v2.test.txt
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
         >>> from torchtext.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets(dataset_name="UDPOS",
-                           root=root,
-                           train_filename=train_filename,
-                           valid_filename=valid_filename,
-                           test_filename=test_filename,
-                           separator="\t")
+    return _setup_datasets(*(("UDPOS", "\t") + args), **kwargs)
 
 
-def CoNLL2000Chunking(train_filename="train.txt",
-                      valid_filename=None,
-                      test_filename="test.txt",
-                      root=".data"):
+def CoNLL2000Chunking(*args, **kwargs):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
 
     Arguments:
-        train_filename: Filename for training dataset.
-            Default: train.txt
-        test_filename: Filename for test dataset.
-            Default: test.txt
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
         >>> from torchtext.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets(dataset_name="CoNLL2000Chunking",
-                           root=root,
-                           train_filename=train_filename,
-                           valid_filename=valid_filename,
-                           test_filename=test_filename,
-                           separator=' ')
+    return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
 
 
 DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
