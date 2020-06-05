@@ -13,7 +13,7 @@ setup_pip_pytorch_version
 git submodule update --init --recursive
 python setup.py clean
 if [[ "$OSTYPE" == "msys" ]]; then
-    "$script_dir/build_wheel.bat"
+    "$script_dir/vc_env_helper.bat" python setup.py bdist_wheel
 else
     python setup.py bdist_wheel
 fi
