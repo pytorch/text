@@ -42,6 +42,34 @@ class TestUtils(TorchtextTestCase):
             conditional_remove(f)
         conditional_remove(archive_path)
 
+    def test_download_extract_gz(self):
+        # create root directory for downloading data
+        root = '.data'
+        if not os.path.exists(root):
+            os.makedirs(root)
+
+        # ensure archive is not already downloaded, if it is then delete
+        url = 'https://raw.githubusercontent.com/multi30k/dataset/master/data/task2/raw/val.5.en.gz'
+        target_archive_path = os.path.join(root, 'val.5.en.gz')
+        conditional_remove(target_archive_path)
+
+        # download archive and ensure is in correct location
+        archive_path = utils.download_from_url(url)
+        assert target_archive_path == archive_path
+
+        # extract files and ensure they are correct
+        files = utils.extract_archive(archive_path)
+        assert files == [os.path.join(root, 'val.5.en')]
+
+        # extract files with overwrite option True
+        files = utils.extract_archive(archive_path, overwrite=True)
+        assert files == [os.path.join(root, 'val.5.en')]
+
+        # remove files and archive
+        for f in files:
+            conditional_remove(f)
+        conditional_remove(archive_path)
+
     def test_download_extract_zip(self):
         # create root directory for downloading data
         root = '.data'
