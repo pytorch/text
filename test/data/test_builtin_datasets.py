@@ -258,4 +258,3 @@ class TestDataset(TorchtextTestCase):
         word_vocab = train_dataset.get_vocab()[0]
         tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
         self.assertEqual(tokens_ids, [970, 5, 135, 43, 214, 690])
-        
