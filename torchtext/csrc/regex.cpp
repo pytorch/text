@@ -14,7 +14,7 @@ public:
   // We need this because we need to be able to serialize the model so that we
   // can save the scripted object. pickle will get the
   // serialized model from this re_str_ member, thus it needs to be public.
-  const std::string re_str_;
+  std::string re_str_;
 
   Regex(const std::string &re_str) : re_str_(re_str) {
     re_ = std::regex(re_str_);
