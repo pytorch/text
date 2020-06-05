@@ -123,11 +123,69 @@ class TestDataset(TorchtextTestCase):
         new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
 
-    def test_sequence_tagging(self):
+    def test_udpos_sequence_tagging(self):
         from torchtext.experimental.datasets import UDPOS
 
         # smoke test to ensure imdb works properly
         train_dataset, valid_dataset, test_dataset = UDPOS()
+        self.assertEqual(len(train_dataset), 12543)
+        self.assertEqual(len(valid_dataset), 2002)
+        self.assertEqual(len(test_dataset), 2077)
+        assert_allclose(train_dataset[0][0][:10],
+                        torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585]).long())
+        assert_allclose(train_dataset[0][1][:10],
+                        torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8]).long())
+        assert_allclose(train_dataset[0][2][:10],
+                        torch.tensor([5, 34, 5, 27, 7, 11, 14, 5, 5, 5]).long())
+        assert_allclose(train_dataset[-1][0][:10],
+                        torch.tensor([9, 32, 169, 436, 59, 192, 30, 6, 117, 17]).long())
+        assert_allclose(train_dataset[-1][1][:10],
+                        torch.tensor([5, 10, 11, 4, 11, 11, 3, 12, 11, 4]).long())
+        assert_allclose(train_dataset[-1][2][:10],
+                        torch.tensor([6, 20, 8, 10, 8, 8, 24, 13, 8, 15]).long())
+
+        assert_allclose(valid_dataset[0][0][:10],
+                        torch.tensor([746, 3, 10633, 656, 25, 1334, 45]).long())
+        assert_allclose(valid_dataset[0][1][:10],
+                        torch.tensor([6, 7, 8, 4, 7, 2, 3]).long())
+        assert_allclose(valid_dataset[0][2][:10],
+                        torch.tensor([3, 4, 5, 16, 4, 2, 27]).long())
+        assert_allclose(valid_dataset[-1][0][:10],
+                        torch.tensor([354, 4, 31, 17, 141, 421, 148, 6, 7, 78]).long())
+        assert_allclose(valid_dataset[-1][1][:10],
+                        torch.tensor([11, 3, 5, 4, 9, 2, 2, 12, 7, 11]).long())
+        assert_allclose(valid_dataset[-1][2][:10],
+                        torch.tensor([8, 12, 6, 15, 7, 2, 2, 13, 4, 8]).long())
+
+        assert_allclose(test_dataset[0][0][:10],
+                        torch.tensor([210, 54, 3115, 0, 12229, 0, 33]).long())
+        assert_allclose(test_dataset[0][1][:10],
+                        torch.tensor([5, 15, 8, 4, 6, 8, 3]).long())
+        assert_allclose(test_dataset[0][2][:10],
+                        torch.tensor([30, 3, 5, 14, 3, 5, 9]).long())
+        assert_allclose(test_dataset[-1][0][:10],
+                        torch.tensor([116, 0, 6, 11, 412, 10, 0, 4, 0, 6]).long())
+        assert_allclose(test_dataset[-1][1][:10],
+                        torch.tensor([5, 4, 12, 10, 9, 15, 4, 3, 4, 12]).long())
+        assert_allclose(test_dataset[-1][2][:10],
+                        torch.tensor([6, 16, 13, 16, 7, 3, 19, 12, 19, 13]).long())
+
+        # Assert vocabs
+        self.assertEqual(len(train_dataset.get_vocab()), 3)
+        self.assertEqual(len(train_dataset.get_vocab()[0]), 19674)
+        self.assertEqual(len(train_dataset.get_vocab()[1]), 19)
+        self.assertEqual(len(train_dataset.get_vocab()[2]), 52)
+
+        # Assert token ids
+        word_vocab = train_dataset.get_vocab()[0]
+        tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
+        self.assertEqual(tokens_ids, [1206, 8, 69, 60, 157, 452])
+
+    def test_conll_sequence_tagging(self):
+        from torchtext.experimental.datasets import CoNLL2000Chunking
+
+        # smoke test to ensure imdb works properly
+        train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
         self.assertEqual(len(train_dataset), 12543)
         self.assertEqual(len(valid_dataset), 2002)
         self.assertEqual(len(test_dataset), 2077)
