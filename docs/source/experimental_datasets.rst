@@ -34,9 +34,9 @@ IMDb
 ~~~~
 
 .. autoclass:: IMDB
-  :members: __init__ 
- 
- 
+  :members: __init__
+
+
 Text Classification
 ^^^^^^^^^^^^^^^^^^^
 
@@ -109,8 +109,8 @@ AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
 .. autoclass:: AmazonReviewFull
   :members: __init__
- 
- 
+
+
 Language Modeling
 ^^^^^^^^^^^^^^^^^
 
@@ -124,21 +124,21 @@ WikiText-2
 ~~~~~~~~~~
 
 .. autoclass:: WikiText2
-  :members: __init__ 
+  :members: __init__
 
 
 WikiText103
 ~~~~~~~~~~~
 
 .. autoclass:: WikiText103
-  :members: __init__ 
+  :members: __init__
 
 
 PennTreebank
 ~~~~~~~~~~~~
 
 .. autoclass:: PennTreebank
-  :members: __init__ 
+  :members: __init__
 
 
 Machine Translation
@@ -167,3 +167,23 @@ WMT14
 .. autoclass:: WMT14
   :members: __init__
 
+
+Sequence Tagging
+^^^^^^^^^^^^^^^^
+
+Language modeling datasets are subclasses of ``SequenceTaggingDataset`` class.
+
+.. autoclass:: SequenceTaggingDataset
+  :members: __init__
+
+UDPOS
+~~~~~
+
+.. autoclass:: UDPOS
+  :members: __init__
+
+CoNLL2000Chunking
+~~~~~
+
+.. autoclass:: CoNLL2000Chunking
+  :members: __init__
