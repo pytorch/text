@@ -2,7 +2,7 @@ import io
 
 import torchtext.data as data
 from torchtext.utils import unicode_csv_reader
-
+from torchtext.experimental.functional import ngrams_func
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
 
@@ -50,3 +50,7 @@ class TestUtils(TorchtextTestCase):
                 ref_lines.append(line)
 
         self.assertEqual(ref_lines, test_lines)
+
+    def test_ngrams_func(self):
+        func = ngrams_func(2)
+        assert func(['here', 'we', 'are']) == ['here', 'we', 'are', 'here we', 'we are']
