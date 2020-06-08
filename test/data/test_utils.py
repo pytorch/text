@@ -52,5 +52,15 @@ class TestUtils(TorchtextTestCase):
         self.assertEqual(ref_lines, test_lines)
 
     def test_ngrams_func(self):
+        func = ngrams_func(1)
+        assert func(['A', 'string', 'particularly', 'one', 'with', 'slightly']) == \
+            ['A', 'string', 'particularly', 'one', 'with', 'slightly']
         func = ngrams_func(2)
-        assert func(['here', 'we', 'are']) == ['here', 'we', 'are', 'here we', 'we are']
+        assert func(['A', 'string', 'particularly', 'one', 'with', 'slightly']) == \
+            ['A', 'string', 'particularly', 'one', 'with', 'slightly', 'A string', 'string particularly',
+             'particularly one', 'one with', 'with slightly']
+        func = ngrams_func(3)
+        assert func(['A', 'string', 'particularly', 'one', 'with', 'slightly']) == \
+            ['A', 'string', 'particularly', 'one', 'with', 'slightly', 'A string', 'string particularly',
+             'particularly one', 'one with', 'with slightly', 'A string particularly',
+             'string particularly one', 'particularly one with', 'one with slightly']
