@@ -103,6 +103,8 @@ public:
 
   bool IsUnused(const int64_t id) const { return processor_.IsUnused(id); }
 
+  bool IsControl(const int64_t id) const { return processor_.IsControl(id); }
+
   int64_t unk_id() const { return processor_.unk_id(); }
 
   int64_t bos_id() const { return processor_.bos_id(); }
@@ -170,6 +172,7 @@ static auto sentencepiece =
         .def("GetScore", &SentencePiece::GetScore)
         .def("IsUnknown", &SentencePiece::IsUnknown)
         .def("IsUnused", &SentencePiece::IsUnused)
+        .def("IsControl", &SentencePiece::IsControl)
         .def("unk_id", &SentencePiece::unk_id)
         .def("bos_id", &SentencePiece::bos_id)
         .def("eos_id", &SentencePiece::eos_id)
