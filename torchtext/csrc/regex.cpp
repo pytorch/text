@@ -1,4 +1,4 @@
-#include <regex>
+#include <re2/re2.h>
 #include <string>
 #include <torch/script.h>
 
@@ -6,9 +6,6 @@ namespace torchtext {
 namespace {
 
 struct Regex : torch::CustomClassHolder {
-private:
-  std::regex re_;
-
 public:
   // re_str_ holds the serialized regex string passed at the initialization.
   // We need this because we need to be able to serialize the model so that we
@@ -16,12 +13,12 @@ public:
   // serialized model from this re_str_ member, thus it needs to be public.
   std::string re_str_;
 
-  Regex(const std::string &re_str) : re_str_(re_str) {
-    re_ = std::regex(re_str_);
-  }
+  Regex(const std::string &re_str) : re_str_(re_str) {}
 
   std::string Sub(const std::string &str, const std::string &repl) const {
-    return std::regex_replace(str, re_, repl);
+    std::string mutable_str = str;
+    RE2::GlobalReplace(&mutable_str, re_str_, repl);
+    return mutable_str;
   }
 };
 

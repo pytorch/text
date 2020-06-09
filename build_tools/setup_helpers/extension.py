@@ -78,6 +78,7 @@ def _get_libraries():
     return [
         'sentencepiece_train',
         'sentencepiece',
+        're2'
     ]
 
 
@@ -107,8 +108,36 @@ def _build_sentence_piece(debug):
     )
 
 
+def _build_re2(debug):
+    build_dir = _TP_BASE_DIR / 're2' / 'build'
+    build_dir.mkdir(exist_ok=True)
+    build_env = os.environ.copy()
+    config = 'Debug' if debug else 'Release'
+    if platform.system() == 'Windows':
+        extra_args = ['-GNinja']
+        build_env.setdefault('CC', 'cl')
+        build_env.setdefault('CXX', 'cl')
+    else:
+        extra_args = []
+    subprocess.run(
+        args=['cmake', f'-DCMAKE_CXX_FLAGS=-fPIC', f'-DBUILD_SHARED_LIBS=OFF',
+              f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
+              f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
+        cwd=str(build_dir),
+        check=True,
+        env=build_env,
+    )
+    subprocess.run(
+        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
+        cwd=str(build_dir),
+        check=True,
+        env=build_env,
+    )
+
+
 def _configure_third_party(debug):
     _build_sentence_piece(debug)
+    _build_re2(debug)
 
 
 _EXT_NAME = 'torchtext._torchtext'
