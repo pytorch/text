@@ -2,3 +2,6 @@
 	path = third_party/sentencepiece
 	url = https://github.com/google/sentencepiece
 	ignore = dirty
+[submodule "third_party/re2"]
+	path = third_party/re2
+	url = https://github.com/google/re2
