@@ -60,6 +60,7 @@ def _get_include_dirs():
 def _get_library_dirs():
     return [
         str(_TP_INSTALL_DIR / 'lib'),
+        str(_TP_INSTALL_DIR / 'lib64')
     ]
 
 
