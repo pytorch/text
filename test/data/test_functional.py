@@ -3,6 +3,7 @@ import uuid
 import shutil
 import unittest
 import tempfile
+from typing import List
 
 import sentencepiece as spm
 import torch
@@ -191,6 +192,22 @@ class ScriptableSP(torch.jit.ScriptModule):
     def encode_as_pieces(self, input: str):
         return self.spm.EncodeAsPieces(input)
 
+    @torch.jit.script_method
+    def piece_to_id(self, input: str):
+        return self.spm.PieceToId(input)
+
+    @torch.jit.script_method
+    def id_to_piece(self, input: int):
+        return self.spm.IdToPiece(input)
+
+    @torch.jit.script_method
+    def decode_pieces(self, input: List[str]) -> str:
+        return self.spm.DecodePieces(input)
+
+    @torch.jit.script_method
+    def decode_ids(self, input: List[int]) -> str:
+        return self.spm.DecodeIds(input)
+
 
 class TestScriptableSP(unittest.TestCase):
     def setUp(self):
@@ -200,8 +217,40 @@ class TestScriptableSP(unittest.TestCase):
             torch.jit.script(ScriptableSP(model_path)).save(jit_model_path)
             self.model = torch.jit.load(jit_model_path)
 
+        self.raw_text = (
+            'SentencePiece '
+            'is '
+            'an '
+            'unsupervised '
+            'text '
+            'tokenizer '
+            'and '
+            'detokenizer'
+        )
+
+        self.ids = [
+            15340, 4286, 981, 1207, 1681,
+            17,
+            84,
+            684, 8896, 5366, 144,
+            3689,
+            9, 5602, 12114,
+            6,
+            560, 649, 5602, 12114,
+        ]
+
+        self.pieces = [
+            '\u2581Sent', 'ence', 'P', 'ie', 'ce',
+            '\u2581is',
+            '\u2581an',
+            '\u2581un', 'super', 'vis', 'ed',
+            '\u2581text',
+            '\u2581to', 'ken', 'izer',
+            '\u2581and',
+            '\u2581de', 'to', 'ken', 'izer',
+        ]
+
     def test_encode(self):
-        input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
             '▁Sent', 'ence', 'P', 'ie', 'ce', '▁is',
             '▁an', '▁un', 'super', 'vis', 'ed', '▁text',
@@ -212,20 +261,56 @@ class TestScriptableSP(unittest.TestCase):
         self.assertEqual(expected, output)
 
     def test_encode_as_ids(self):
-        input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        expected = [
-            15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
-            144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
-        output = self.model.encode_as_ids(input)
-        self.assertEqual(expected, output)
+        output = self.model.encode_as_ids(self.raw_text)
+        self.assertEqual(self.ids, output)
 
     def test_encode_as_pieces(self):
-        input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
-        expected = [
+        output = self.model.encode_as_pieces(self.raw_text)
+        self.assertEqual(self.pieces, output)
+
+    def test_piece_to_id(self):
+        inputs = [
             '\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
             '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
             '\u2581to', 'ken', 'izer', '\u2581and',
             '\u2581de', 'to', 'ken', 'izer',
         ]
-        output = self.model.encode_as_pieces(input)
+        expecteds = [
+            15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
+            144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
+        for input, expected in zip(inputs, expecteds):
+            output = self.model.piece_to_id(input)
+            self.assertEqual(expected, output)
+
+    def test_id_to_piece(self):
+        inputs = [
+            15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
+            144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
+        expecteds = [
+            '\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+            '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+            '\u2581to', 'ken', 'izer', '\u2581and',
+            '\u2581de', 'to', 'ken', 'izer',
+        ]
+        for input, expected in zip(inputs, expecteds):
+            output = self.model.id_to_piece(input)
+            self.assertEqual(expected, output)
+
+    def test_decode_pieces(self):
+        input = [
+            '\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+            '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+            '\u2581to', 'ken', 'izer', '\u2581and',
+            '\u2581de', 'to', 'ken', 'izer',
+        ]
+        expected = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        output = self.model.decode_pieces(input)
+        self.assertEqual(expected, output)
+
+    def test_decode_ids(self):
+        input = [
+            15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
+            144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
+        expected = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        output = self.model.decode_ids(input)
         self.assertEqual(expected, output)
