@@ -112,8 +112,8 @@ def _build_sentence_piece(debug):
 def _build_re2(debug):
     build_dir = _TP_BASE_DIR / 're2' / 'build'
     # simply calling 'build_dir.mkdir(exist_ok=True)' fails on Windows CI Job
-    if not os.path.exists(str(build_dir)):
-        os.mkdir(str(build_dir))
+    if not build_dir.exists():
+        build_dir.mkdir()
     build_env = os.environ.copy()
     config = 'Debug' if debug else 'Release'
     if platform.system() == 'Windows':
