@@ -156,3 +156,45 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data",
                                 "multi30k_task*.tar.gz")
         conditional_remove(datafile)
+
+    def test_squad1(self):
+        from torchtext.experimental.datasets import SQuAD1
+        from torchtext.vocab import Vocab
+        # smoke test to ensure imdb works properly
+        train_dataset, dev_dataset = SQuAD1()
+        self.assertEqual(len(train_dataset), 87599)
+        self.assertEqual(len(dev_dataset), 10570)
+        assert_allclose(train_dataset[100]['question'],
+                        torch.tensor([7, 24, 86, 52, 2, 373, 887, 18, 12797, 11090, 1356, 2, 1788, 3273, 16]).long())
+        assert_allclose(train_dataset[100]['ans_pos'][0],
+                        torch.tensor([72, 72]).long())
+        assert_allclose(dev_dataset[100]['question'],
+                        torch.tensor([42, 27, 669, 7438, 17, 2, 1950, 3273, 17252, 389, 16]).long())
+        assert_allclose(dev_dataset[100]['ans_pos'][0],
+                        torch.tensor([45, 48]).long())
+
+        # Test API with a vocab input object
+        old_vocab = train_dataset.get_vocab()
+        new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
+        new_train_data, new_test_data = SQuAD1(vocab=new_vocab)
+
+    def test_squad2(self):
+        from torchtext.experimental.datasets import SQuAD2
+        from torchtext.vocab import Vocab
+        # smoke test to ensure imdb works properly
+        train_dataset, dev_dataset = SQuAD2()
+        self.assertEqual(len(train_dataset), 130319)
+        self.assertEqual(len(dev_dataset), 11873)
+        assert_allclose(train_dataset[200]['question'],
+                        torch.tensor([84, 50, 1421, 12, 5439, 4569, 17, 30, 2, 15202, 4754, 1421, 16]).long())
+        assert_allclose(train_dataset[200]['ans_pos'][0],
+                        torch.tensor([9, 9]).long())
+        assert_allclose(dev_dataset[200]['question'],
+                        torch.tensor([41, 29, 2, 66, 17016, 30, 0, 1955, 16]).long())
+        assert_allclose(dev_dataset[200]['ans_pos'][0],
+                        torch.tensor([40, 46]).long())
+
+        # Test API with a vocab input object
+        old_vocab = train_dataset.get_vocab()
+        new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
+        new_train_data, new_test_data = SQuAD2(vocab=new_vocab)
