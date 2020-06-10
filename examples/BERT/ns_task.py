@@ -195,8 +195,8 @@ def run_main(args, rank=None):
         with open(args.save, 'rb') as f:
             model = torch.load(f)
 
-        test_loss = evaluate(test_dataset, model, device,
-                             criterion, sep_id, pad_id)
+        test_loss = evaluate(process_raw_data(test_dataset, args), model, device, criterion,
+                             cls_id, sep_id, pad_id, args)
         wrap_up(train_loss_log, val_loss_log, test_loss, args, model, 'ns_loss.txt', 'ns_model.pt')
 
 
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     parser.add_argument('--checkpoint', type=str, default='None',
                         help='path to load the checkpoint')
     parser.add_argument('--save', type=str, default='ns_bert.pt',
-                        help='path to save the final model')
+                        help='path to save the bert model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
     parser.add_argument('--bert-model', type=str, default='mlm_bert.pt',

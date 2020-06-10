@@ -50,14 +50,13 @@ def collate_batch(batch):
         torch.stack(tok_type).long().t().contiguous().to(device)
 
 
-def evaluate(data_source):
+def evaluate(data_source, vocab):
     model.eval()
     total_loss = 0.
     batch_size = args.batch_size
     dataloader = DataLoader(data_source, batch_size=batch_size, shuffle=True,
                             collate_fn=collate_batch)
     ans_pred_tokens_samples = []
-    vocab = data_source.vocab
     with torch.no_grad():
         for idx, (seq_input, ans_pos_list, tok_type) in enumerate(dataloader):
             start_pos, end_pos = model(seq_input, token_type_input=tok_type)
@@ -175,7 +174,7 @@ if __name__ == "__main__":
     for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
         train()
-        val_loss, val_exact, val_f1 = evaluate(dev_dataset)
+        val_loss, val_exact, val_f1 = evaluate(dev_dataset, vocab)
         val_loss_log.append(val_loss)
         print('-' * 89)
         print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
@@ -192,7 +191,7 @@ if __name__ == "__main__":
 
     with open(args.save, 'rb') as f:
         model = torch.load(f)
-    test_loss, test_exact, test_f1 = evaluate(dev_dataset)
+    test_loss, test_exact, test_f1 = evaluate(dev_dataset, vocab)
     print('=' * 89)
     print('| End of training | test loss {:5.2f} | exact {:8.3f}% | f1 {:8.3f}%'.format(
         test_loss, test_exact, test_f1))
