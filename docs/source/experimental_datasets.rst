@@ -1,5 +1,5 @@
 torchtext.experimental.datasets
-================================
+===============================
 
 .. currentmodule:: torchtext.experimental.datasets
 
@@ -41,13 +41,13 @@ Text Classification
 ^^^^^^^^^^^^^^^^^^^
 
 TextClassificationDataset
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: TextClassificationDataset
   :members: __init__
 
 AG_NEWS
-~~~~~~
+~~~~~~~
 
 AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -55,7 +55,7 @@ AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 SogouNews
-~~~~~~~~
+~~~~~~~~~
 
 SogouNews dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -63,7 +63,7 @@ SogouNews dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 DBpedia
-~~~~~~
+~~~~~~~
 
 DBpedia dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -71,7 +71,7 @@ DBpedia dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 YelpReviewPolarity
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 YelpReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -79,7 +79,7 @@ YelpReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 YelpReviewFull
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 YelpReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -87,7 +87,7 @@ YelpReviewFull dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 YahooAnswers
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 YahooAnswers dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -95,7 +95,7 @@ YahooAnswers dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 AmazonReviewPolarity
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 AmazonReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -103,7 +103,7 @@ AmazonReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
   :members: __init__
 
 AmazonReviewFull
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
@@ -141,6 +141,13 @@ PennTreebank
   :members: __init__ 
 
 
+WMTNewsCrawl
+~~~~~~~~~~~~
+
+.. autoclass:: WMTNewsCrawl 
+  :members: __init__ 
+
+
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
@@ -149,11 +156,13 @@ Language modeling datasets are subclasses of ``TranslationDataset`` class.
 .. autoclass:: TranslationDataset
   :members: __init__
 
+
 Multi30k
 ~~~~~~~~
 
 .. autoclass:: Multi30k
   :members: __init__
+
 
 IWSLT
 ~~~~~
@@ -161,9 +170,31 @@ IWSLT
 .. autoclass:: IWSLT
   :members: __init__
 
+
 WMT14
 ~~~~~
 
 .. autoclass:: WMT14
   :members: __init__
 
+Question Answer
+^^^^^^^^^^^^^^^
+
+Question answer datasets are subclasses of ``QuestionAnswerDataset`` class.
+
+.. autoclass:: QuestionAnswerDataset 
+  :members: __init__
+
+
+SQuAD 1.0
+~~~~~~~~~
+
+.. autoclass:: SQuAD1
+  :members: __init__ 
+
+
+SQuAD 2.0
+~~~~~~~~~
+
+.. autoclass:: SQuAD2
+  :members: __init__ 
