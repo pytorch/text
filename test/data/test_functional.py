@@ -1,12 +1,12 @@
 import os
+import unittest
+import sys
 import uuid
 import shutil
-import unittest
 import tempfile
 
 import sentencepiece as spm
 import torch
-import torchtext.data as data
 from torchtext.data.functional import (
     generate_sp_model,
     load_sp_model,
@@ -15,10 +15,6 @@ from torchtext.data.functional import (
     custom_replace,
     simple_space_split,
 )
-from torchtext.experimental.transforms import (
-    BasicEnglishNormalize,
-    RegexTokenizer
-)
 
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
@@ -26,9 +22,7 @@ from ..common.assets import get_asset_path
 
 class TestFunctional(TorchtextTestCase):
     def test_generate_sp_model(self):
-        """
-        Test the function to train a sentencepiece tokenizer.
-        """
+        """Test the function to train a sentencepiece tokenizer"""
 
         asset_name = 'text_normalization_ag_news_test.csv'
         asset_path = get_asset_path(asset_name)
@@ -65,6 +59,7 @@ class TestFunctional(TorchtextTestCase):
                          ref_results)
 
     def test_sentencepiece_tokenizer(self):
+
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = get_asset_path('spm_example.model')
         sp_model = load_sp_model(model_path)
@@ -78,87 +73,6 @@ class TestFunctional(TorchtextTestCase):
 
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
-
-    # TODO(Nayef211): uncomment and replace the test below with this once
-    # https://github.com/pytorch/pytorch/issues/38207 is closed
-    # def test_BasicEnglishNormalize(self):
-    #     test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
-    #     ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-    #                    'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
-
-    #     basic_english_normalize = BasicEnglishNormalize()
-    #     experimental_eager_tokens = basic_english_normalize(test_sample)
-
-    #     jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-    #     experimental_jit_tokens = jit_basic_english_normalize(test_sample)
-
-    #     basic_english_tokenizer = data.get_tokenizer("basic_english")
-    #     eager_tokens = basic_english_tokenizer(test_sample)
-
-    #     self.assertEqual(experimental_jit_tokens, ref_results)
-    #     self.assertEqual(experimental_jit_tokens, eager_tokens)
-    #     self.assertEqual(experimental_jit_tokens, experimental_eager_tokens)
-
-    def test_BasicEnglishNormalize(self):
-        test_sample = 'Basic English Normalization for a Line of Text'
-        ref_results = ['basic', 'english', 'normalization',
-                       'for', 'a', 'line', 'of', 'text']
-
-        basic_english_normalize = BasicEnglishNormalize()
-        experimental_eager_tokens = basic_english_normalize(test_sample)
-
-        basic_english_tokenizer = data.get_tokenizer("basic_english")
-        tokens_eager = basic_english_tokenizer(test_sample)
-
-        self.assertEqual(experimental_eager_tokens, ref_results)
-        self.assertEqual(experimental_eager_tokens, tokens_eager)
-
-    # TODO(Nayef211): uncomment and replace the test below with this once
-    # https://github.com/pytorch/pytorch/issues/38207 is closed
-    # def test_RegexTokenizer(self):
-    #     test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
-    #     ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
-    #                    'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
-    #     patterns_list = [
-    #         (r'\'', ' \'  '),
-    #         (r'\"', ''),
-    #         (r'\.', ' . '),
-    #         (r'<br \/>', ' '),
-    #         (r',', ' , '),
-    #         (r'\(', ' ( '),
-    #         (r'\)', ' ) '),
-    #         (r'\!', ' ! '),
-    #         (r'\?', ' ? '),
-    #         (r'\;', ' '),
-    #         (r'\:', ' '),
-    #         (r'\s+', ' ')]
-
-    #     regex_tokenizer = RegexTokenizer(patterns_list)
-    #     eager_tokens = regex_tokenizer(test_sample)
-
-    #     jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-    #     jit_tokens = jit_regex_tokenizer(test_sample)
-
-    #     self.assertEqual(jit_tokens, ref_results)
-    #     self.assertEqual(jit_tokens, eager_tokens)
-
-    def test_RegexTokenizer(self):
-        test_sample = '"Basic Regex Tokenization". For a Line of Text'
-        ref_results = ['Basic', 'Regex', 'Tokenization', '.',
-                       'For', 'a', 'Line', 'of', 'Text']
-        patterns_list = [
-            (r'\"', ''),
-            (r'\.', ' . '),
-            (r'\s+', ' ')]
-
-        regex_tokenizer = RegexTokenizer(patterns_list)
-        eager_tokens = regex_tokenizer(test_sample)
-
-        jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-        jit_tokens = jit_regex_tokenizer(test_sample)
-
-        self.assertEqual(jit_tokens, eager_tokens)
-        self.assertEqual(jit_tokens, ref_results)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
@@ -195,11 +109,11 @@ class ScriptableSP(torch.jit.ScriptModule):
 class TestScriptableSP(unittest.TestCase):
     def setUp(self):
         model_path = get_asset_path('spm_example.model')
-        with tempfile.TemporaryDirectory() as dir_name:
-            jit_model_path = os.path.join(dir_name, 'spm_example.model')
-            torch.jit.script(ScriptableSP(model_path)).save(jit_model_path)
-            self.model = torch.jit.load(jit_model_path)
+        with tempfile.NamedTemporaryFile() as file:
+            torch.jit.script(ScriptableSP(model_path)).save(file.name)
+            self.model = torch.jit.load(file.name)
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
@@ -211,6 +125,7 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode(input)
         self.assertEqual(expected, output)
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode_as_ids(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
@@ -219,6 +134,7 @@ class TestScriptableSP(unittest.TestCase):
         output = self.model.encode_as_ids(input)
         self.assertEqual(expected, output)
 
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_encode_as_pieces(self):
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
