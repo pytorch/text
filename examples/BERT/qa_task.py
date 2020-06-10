@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchtext
-from data import SQuAD1
+from torchtext.experimental.datasets import SQuAD1
 from model import QuestionAnswerTask
 from metrics import compute_qa_exact, compute_qa_f1
 from utils import print_loss_log
@@ -161,8 +161,8 @@ if __name__ == "__main__":
     sep_id = vocab.stoi['<sep>']
     cls_id = vocab.stoi['<cls>']
     train_dataset, dev_dataset = SQuAD1(vocab=vocab)
-    train_dataset.data = process_raw_data(train_dataset.data)
-    dev_dataset.data = process_raw_data(dev_dataset.data)
+    train_dataset = process_raw_data(train_dataset)
+    dev_dataset = process_raw_data(dev_dataset)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     pretrained_bert = torch.load(args.bert_model)
     model = QuestionAnswerTask(pretrained_bert).to(device)
