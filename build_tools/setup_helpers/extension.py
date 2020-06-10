@@ -110,28 +110,41 @@ def _build_sentence_piece(debug):
 
 
 def _build_re2(debug):
-    build_dir = _TP_BASE_DIR / 're2' / 'build'
-    # simply calling 'build_dir.mkdir(exist_ok=True)' fails on Windows CI Job
-    if not build_dir.exists():
-        build_dir.mkdir()
+    build_dir = _TP_BASE_DIR / 're2' / 'build_dir'
+    build_dir.mkdir(exist_ok=True)
     build_env = os.environ.copy()
     config = 'Debug' if debug else 'Release'
     if platform.system() == 'Windows':
-        extra_args = ['-GNinja']
+        extra_args = [
+            '-GNinja',
+            '-DCMAKE_CXX_FLAGS=/MT',
+        ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
+        build_env.setdefault('CXXFLAGS', '/MT')
     else:
-        extra_args = []
+        extra_args = [
+            '-DCMAKE_CXX_FLAGS=-fPIC',
+        ]
     subprocess.run(
-        args=['cmake', f'-DCMAKE_CXX_FLAGS=-fPIC', f'-DBUILD_SHARED_LIBS=OFF',
-              f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
-              f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
+        args=[
+            'cmake',
+            '-DBUILD_SHARED_LIBS=OFF',
+            '-DRE2_BUILD_TESTING=OFF',
+            '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
+            f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
+            f'-DCMAKE_BUILD_TYPE={config}',
+        ] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
         env=build_env,
     )
+    print('*** Command list ***')
+    with open(build_dir / 'compile_commands.json', 'r') as fileobj:
+        print(fileobj.read())
+    print(f'running cmake --build', flush=True)
     subprocess.run(
-        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
+        args=['cmake', '--build', '.', '-v', '--target', 'install', '--config', config],
         cwd=str(build_dir),
         check=True,
         env=build_env,
