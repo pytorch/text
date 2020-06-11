@@ -121,7 +121,7 @@ def _build_re2(debug):
         ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
-        build_env.setdefault('CXXFLAGS', '/MT')
+        # build_env.setdefault('CXXFLAGS', '/MT')
     else:
         extra_args = [
             '-DCMAKE_CXX_FLAGS=-fPIC',
