@@ -42,17 +42,18 @@ static auto vectors =
         .def("TokenExists", &Vectors::TokenExists)
         .def_pickle(
             // __getstate__
-            [](const c10::intrusive_ptr<Vectors> &self) -> std::pair<
+            [](const c10::intrusive_ptr<Vectors> &self) -> std::tuple<
                 std::vector<std::string>, std::vector<torch::Tensor>> {
-              std::pair<std::vector<std::string>, std::vector<torch::Tensor>>
-                  pair(self->tokens_, self->vectors_);
-              return pair;
+              std::tuple<std::vector<std::string>, std::vector<torch::Tensor>>
+                  states(self->tokens_, self->vectors_);
+              return states;
             },
             // __setstate__
-            [](std::pair<std::vector<std::string>, std::vector<torch::Tensor>>
+            [](std::tuple<std::vector<std::string>, std::vector<torch::Tensor>>
                    states) -> c10::intrusive_ptr<Vectors> {
-              return c10::make_intrusive<Vectors>(std::move(states.first),
-                                                  std::move(states.second));
+              return c10::make_intrusive<Vectors>(
+                  std::move(std::get<0>(states)),
+                  std::move(std::get<1>(states)));
             });
 
 } // namespace

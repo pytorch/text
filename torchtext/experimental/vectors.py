@@ -1,4 +1,5 @@
 import torch
+import torchtext
 
 
 class Vectors(object):
@@ -20,4 +21,3 @@ class Vectors(object):
             return self.vectors.GetItem(token)
         else:
             return self.unk_tensor
-
