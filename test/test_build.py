@@ -133,13 +133,13 @@ class TestVocab(TorchtextTestCase):
         token_vecs = vec.get_vecs_by_tokens(tokens).numpy()
         self.assertEqual(token_vecs.shape[0], len(tokens))
         self.assertEqual(token_vecs.shape[1], vec.dim)
-        torch.testing.assert_allclose(vec[tokens[0]].numpy(), token_vecs[0])
-        torch.testing.assert_allclose(vec[tokens[1]].numpy(), token_vecs[1])
-        torch.testing.assert_allclose(vec['<unk>'].numpy(), token_vecs[2])
+        self.assertEqual(vec[tokens[0]].numpy(), token_vecs[0])
+        self.assertEqual(vec[tokens[1]].numpy(), token_vecs[1])
+        self.assertEqual(vec['<unk>'].numpy(), token_vecs[2])
 
         token_one_vec = vec.get_vecs_by_tokens(tokens[0], lower_case_backup=True).numpy()
         self.assertEqual(token_one_vec.shape[0], vec.dim)
-        torch.testing.assert_allclose(vec[tokens[0].lower()].numpy(), token_one_vec)
+        self.assertEqual(vec[tokens[0].lower()].numpy(), token_one_vec)
 
     def test_download_charngram_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -167,11 +167,11 @@ class TestVocab(TorchtextTestCase):
             }
 
             for word in expected_charngram:
-                torch.testing.assert_allclose(
+                self.assertEqual(
                     vectors[v.stoi[word], :5], expected_charngram[word])
 
-            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(100))
-            torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(100))
+            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(100))
+            self.assertEqual(vectors[v.stoi['OOV token']], np.zeros(100))
 
     def test_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -196,10 +196,10 @@ class TestVocab(TorchtextTestCase):
             }
 
             for word in expected_fasttext_simple_en:
-                torch.testing.assert_allclose(
+                self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
 
     def test_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -228,11 +228,11 @@ class TestVocab(TorchtextTestCase):
             }
 
             for word in expected_fasttext_simple_en:
-                torch.testing.assert_allclose(
+                self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
-            torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['OOV token']], np.zeros(300))
 
     def test_download_glove_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -262,11 +262,11 @@ class TestVocab(TorchtextTestCase):
             }
 
             for word in expected_twitter:
-                torch.testing.assert_allclose(
+                self.assertEqual(
                     vectors[v.stoi[word], :5], expected_twitter[word])
 
-            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(25))
-            torch.testing.assert_allclose(vectors[v.stoi['OOV token']], np.zeros(25))
+            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(25))
+            self.assertEqual(vectors[v.stoi['OOV token']], np.zeros(25))
 
     def test_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -290,10 +290,10 @@ class TestVocab(TorchtextTestCase):
             }
 
             for word in expected_fasttext_simple_en:
-                torch.testing.assert_allclose(
+                self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
 
     def test_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -321,7 +321,7 @@ class TestVocab(TorchtextTestCase):
             }
 
             for word in expected_fasttext_simple_en:
-                torch.testing.assert_allclose(
+                self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            torch.testing.assert_allclose(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
