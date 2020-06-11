@@ -1,5 +1,4 @@
 import torch
-import torchtext
 
 
 class Vectors(object):
@@ -16,7 +15,6 @@ class Vectors(object):
         self.vectors = torch.classes.torchtext.Vectors(tokens, vectors)
 
     def __getitem__(self, token):
-
         if self.vectors.TokenExists(token):
             return self.vectors.GetItem(token)
         else:

@@ -6,7 +6,7 @@ namespace {
 
 struct Vectors : torch::CustomClassHolder {
 private:
-  std::unordered_map<std::string, int> stoi_;
+  std::unordered_map<std::string, torch::Tensor> stovectors_;
 
 public:
   // tokens_ and vectors_ holds the serialized params passed in during
@@ -20,16 +20,16 @@ public:
                    std::vector<torch::Tensor> vectors)
       : tokens_(tokens), vectors_(vectors) {
     for (std::size_t i = 0; i < tokens.size(); i++) {
-      stoi_[tokens[i]] = static_cast<int>(i);
+      stovectors_[tokens[i]] = vectors_[i];
     }
   }
 
   torch::Tensor GetItem(const std::string &token) const {
-    return vectors_.at(stoi_.at(token));
+    return stovectors_.at(token);
   }
 
   bool TokenExists(const std::string &token) const {
-    return stoi_.find(token) != stoi_.end();
+    return stovectors_.find(token) != stovectors_.end();
   }
 };
 
