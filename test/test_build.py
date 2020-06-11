@@ -170,8 +170,8 @@ class TestVocab(TorchtextTestCase):
                 self.assertEqual(
                     vectors[v.stoi[word], :5], expected_charngram[word])
 
-            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(100))
-            self.assertEqual(vectors[v.stoi['OOV token']], np.zeros(100))
+            self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(100))
+            self.assertEqual(vectors[v.stoi['OOV token']], torch.zeros(100))
 
     def test_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -199,7 +199,7 @@ class TestVocab(TorchtextTestCase):
                 self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(300))
 
     def test_download_fasttext_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -231,8 +231,8 @@ class TestVocab(TorchtextTestCase):
                 self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
-            self.assertEqual(vectors[v.stoi['OOV token']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(300))
+            self.assertEqual(vectors[v.stoi['OOV token']], torch.zeros(300))
 
     def test_download_glove_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -265,8 +265,8 @@ class TestVocab(TorchtextTestCase):
                 self.assertEqual(
                     vectors[v.stoi[word], :5], expected_twitter[word])
 
-            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(25))
-            self.assertEqual(vectors[v.stoi['OOV token']], np.zeros(25))
+            self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(25))
+            self.assertEqual(vectors[v.stoi['OOV token']], torch.zeros(25))
 
     def test_extend(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -293,7 +293,7 @@ class TestVocab(TorchtextTestCase):
                 self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(300))
 
     def test_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -324,4 +324,4 @@ class TestVocab(TorchtextTestCase):
                 self.assertEqual(
                     vectors[v.stoi[word], :5], expected_fasttext_simple_en[word])
 
-            self.assertEqual(vectors[v.stoi['<unk>']], np.zeros(300))
+            self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(300))
