@@ -118,7 +118,7 @@ def _build_re2(debug):
         extra_args = [
             '-GNinja',
             '-DCMAKE_CXX_FLAGS=/MT',
-            '-DMSVC_RUNTIME_LIBRARY="foo"',
+            '-DCMAKE_MSVC_RUNTIME_LIBRARY="foo"',
         ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
