@@ -6,7 +6,6 @@ import shutil
 import torchtext.data as data
 from torchtext.datasets import AG_NEWS
 import torch
-from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -99,9 +98,9 @@ class TestDataset(TorchtextTestCase):
         ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
         self.assertEqual(len(ag_news_train), 120000)
         self.assertEqual(len(ag_news_test), 7600)
-        assert_allclose(ag_news_train[-1][1][:10],
+        self.assertEqual(ag_news_train[-1][1][:10],
                         torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053]).long())
-        assert_allclose(ag_news_test[-1][1][:10],
+        self.assertEqual(ag_news_test[-1][1][:10],
                         torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786]).long())
 
     def test_imdb(self):
@@ -111,13 +110,13 @@ class TestDataset(TorchtextTestCase):
         train_dataset, test_dataset = IMDB()
         self.assertEqual(len(train_dataset), 25000)
         self.assertEqual(len(test_dataset), 25000)
-        assert_allclose(train_dataset[0][1][:10],
+        self.assertEqual(train_dataset[0][1][:10],
                         torch.tensor([13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92]).long())
-        assert_allclose(train_dataset[-1][1][:10],
+        self.assertEqual(train_dataset[-1][1][:10],
                         torch.tensor([2, 71, 4555, 194, 3328, 15144, 42, 227, 148, 8]).long())
-        assert_allclose(test_dataset[0][1][:10],
+        self.assertEqual(test_dataset[0][1][:10],
                         torch.tensor([13, 125, 1051, 5, 246, 1652, 8, 277, 66, 20]).long())
-        assert_allclose(test_dataset[-1][1][:10],
+        self.assertEqual(test_dataset[-1][1][:10],
                         torch.tensor([13, 1035, 14, 21, 28, 2, 1051, 1275, 1008, 3]).long())
 
         # Test API with a vocab input object
@@ -164,13 +163,13 @@ class TestDataset(TorchtextTestCase):
         train_dataset, dev_dataset = SQuAD1()
         self.assertEqual(len(train_dataset), 87599)
         self.assertEqual(len(dev_dataset), 10570)
-        assert_allclose(train_dataset[100]['question'],
+        self.assertEqual(train_dataset[100]['question'],
                         torch.tensor([7, 24, 86, 52, 2, 373, 887, 18, 12797, 11090, 1356, 2, 1788, 3273, 16]).long())
-        assert_allclose(train_dataset[100]['ans_pos'][0],
+        self.assertEqual(train_dataset[100]['ans_pos'][0],
                         torch.tensor([72, 72]).long())
-        assert_allclose(dev_dataset[100]['question'],
+        self.assertEqual(dev_dataset[100]['question'],
                         torch.tensor([42, 27, 669, 7438, 17, 2, 1950, 3273, 17252, 389, 16]).long())
-        assert_allclose(dev_dataset[100]['ans_pos'][0],
+        self.assertEqual(dev_dataset[100]['ans_pos'][0],
                         torch.tensor([45, 48]).long())
 
         # Test API with a vocab input object
@@ -185,13 +184,13 @@ class TestDataset(TorchtextTestCase):
         train_dataset, dev_dataset = SQuAD2()
         self.assertEqual(len(train_dataset), 130319)
         self.assertEqual(len(dev_dataset), 11873)
-        assert_allclose(train_dataset[200]['question'],
+        self.assertEqual(train_dataset[200]['question'],
                         torch.tensor([84, 50, 1421, 12, 5439, 4569, 17, 30, 2, 15202, 4754, 1421, 16]).long())
-        assert_allclose(train_dataset[200]['ans_pos'][0],
+        self.assertEqual(train_dataset[200]['ans_pos'][0],
                         torch.tensor([9, 9]).long())
-        assert_allclose(dev_dataset[200]['question'],
+        self.assertEqual(dev_dataset[200]['question'],
                         torch.tensor([41, 29, 2, 66, 17016, 30, 0, 1955, 16]).long())
-        assert_allclose(dev_dataset[200]['ans_pos'][0],
+        self.assertEqual(dev_dataset[200]['ans_pos'][0],
                         torch.tensor([40, 46]).long())
 
         # Test API with a vocab input object
