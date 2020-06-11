@@ -24,7 +24,7 @@ class TestUtils(TorchtextTestCase):
         candidate = [['My', 'pytorch', 'test']]
         refs = [[['My', 'full', 'pytorch', 'test'], ['Different']]]
         self.assertEqual(bleu_score(candidate, refs, max_n=2,
-                                   weights=[0.5, 0.5]), 0.5066641)
+                                    weights=[0.5, 0.5]), 0.5066641)
 
         # Multi-sentence corpus
         candidate = [['My', 'full', 'pytorch', 'test'], ['Another', 'Sentence']]
@@ -54,10 +54,10 @@ class TestUtils(TorchtextTestCase):
         self.assertEqual(bleu_score(candidate, refs), 0.4573199)
         # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[0.33]*3)
         self.assertEqual(bleu_score(candidate, refs, 3,
-                        weights=[0.33, 0.33, 0.33]), 0.4901113)
+                         weights=[0.33, 0.33, 0.33]), 0.4901113)
         # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[0.5]*2)
         self.assertEqual(bleu_score(candidate, refs, 2,
-                        weights=[0.5, 0.5]), 0.5119535)
+                         weights=[0.5, 0.5]), 0.5119535)
         # nltk.translate.bleu_score.corpus_bleu(refs, candidate, weights=[1])
         self.assertEqual(bleu_score(candidate, refs, 1,
-                        weights=[1]), 0.5515605)
+                         weights=[1]), 0.5515605)
