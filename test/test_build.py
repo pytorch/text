@@ -130,16 +130,16 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(vec.vectors.shape[0], len(vec))
 
         tokens = ['chip', 'baby', 'Beautiful']
-        token_vecs = vec.get_vecs_by_tokens(tokens).numpy()
+        token_vecs = vec.get_vecs_by_tokens(tokens)
         self.assertEqual(token_vecs.shape[0], len(tokens))
         self.assertEqual(token_vecs.shape[1], vec.dim)
-        self.assertEqual(vec[tokens[0]].numpy(), token_vecs[0])
-        self.assertEqual(vec[tokens[1]].numpy(), token_vecs[1])
-        self.assertEqual(vec['<unk>'].numpy(), token_vecs[2])
+        self.assertEqual(vec[tokens[0]], token_vecs[0])
+        self.assertEqual(vec[tokens[1]], token_vecs[1])
+        self.assertEqual(vec['<unk>'], token_vecs[2])
 
-        token_one_vec = vec.get_vecs_by_tokens(tokens[0], lower_case_backup=True).numpy()
+        token_one_vec = vec.get_vecs_by_tokens(tokens[0], lower_case_backup=True)
         self.assertEqual(token_one_vec.shape[0], vec.dim)
-        self.assertEqual(vec[tokens[0].lower()].numpy(), token_one_vec)
+        self.assertEqual(vec[tokens[0].lower()], token_one_vec)
 
     def test_download_charngram_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
@@ -157,7 +157,7 @@ class TestVocab(TorchtextTestCase):
             expected_stoi = {x: index for index, x in enumerate(expected_itos)}
             self.assertEqual(v.itos, expected_itos)
             self.assertEqual(dict(v.stoi), expected_stoi)
-            vectors = v.vectors.numpy()
+            vectors = v.vectors
 
             # The first 5 entries in each vector.
             expected_charngram = {
@@ -187,7 +187,7 @@ class TestVocab(TorchtextTestCase):
 
             self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
                                       'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
-            vectors = v.vectors.numpy()
+            vectors = v.vectors
 
             # The first 5 entries in each vector.
             expected_fasttext_simple_en = {
@@ -219,7 +219,7 @@ class TestVocab(TorchtextTestCase):
             expected_stoi = {x: index for index, x in enumerate(expected_itos)}
             self.assertEqual(v.itos, expected_itos)
             self.assertEqual(dict(v.stoi), expected_stoi)
-            vectors = v.vectors.numpy()
+            vectors = v.vectors
 
             # The first 5 entries in each vector.
             expected_fasttext_simple_en = {
@@ -253,7 +253,7 @@ class TestVocab(TorchtextTestCase):
             self.assertEqual(v.itos, expected_itos)
             self.assertEqual(dict(v.stoi), expected_stoi)
 
-            vectors = v.vectors.numpy()
+            vectors = v.vectors
 
             # The first 5 entries in each vector.
             expected_twitter = {
@@ -281,7 +281,7 @@ class TestVocab(TorchtextTestCase):
 
             self.assertEqual(v.itos[:6], ['<unk>', '<pad>', '<bos>',
                                           'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
-            vectors = v.vectors.numpy()
+            vectors = v.vectors
 
             # The first 5 entries in each vector.
             expected_fasttext_simple_en = {
@@ -312,7 +312,7 @@ class TestVocab(TorchtextTestCase):
 
             self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
                                       'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world'])
-            vectors = v.vectors.numpy()
+            vectors = v.vectors
 
             # The first 5 entries in each vector.
             expected_fasttext_simple_en = {
