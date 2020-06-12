@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <string>
 #include <torch/script.h>
 
@@ -20,12 +21,21 @@ public:
   explicit Vectors(std::vector<std::string> tokens,
                    std::vector<torch::Tensor> vectors, torch::Tensor unk_tensor)
       : tokens_(tokens), vectors_(vectors), unk_tensor_(unk_tensor) {
-    for (std::size_t i = 0; i < tokens.size(); i++) {
-      // guarding against size mismatch of vectors and tokens
-      if (i >= vectors.size()) {
-        break;
-      }
+    // guarding against size mismatch of vectors and tokens
+    if (tokens.size() != vectors.size()) {
+      throw std::runtime_error(
+          "Mismatching sizes for tokens and vectors. Size of tokens: " +
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size()) + ".");
+    }
 
+    stovectors_.reserve(tokens.size());
+    for (std::size_t i = 0; i < tokens.size(); i++) {
+      // tokens should not have any duplicates
+      if (stovectors_.find(tokens[i]) != stovectors_.end()) {
+        throw std::runtime_error("Duplicate token found in tokens list: " +
+                                 tokens[i]);
+      }
       stovectors_[tokens[i]] = vectors_[i];
     }
   }

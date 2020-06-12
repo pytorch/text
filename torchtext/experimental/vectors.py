@@ -13,24 +13,29 @@ def vectors_from_csv_file(file_like_object, unk_tensor=None):
     """
     readCSV = csv.reader(file_like_object, delimiter=',')
 
-    tuples = list(map(lambda x: (x[0], torch.tensor([float(c) for c in x[1].split()], dtype=torch.float)), readCSV))
-    words = [pair[0] for pair in tuples]
-    vectors = [pair[1] for pair in tuples]
+    tokens = []
+    vectors = []
+    for row in readCSV:
+        tokens.append(row[0])
+        vectors.append(torch.tensor([float(c) for c in row[1].split()]))
 
-    return Vectors(words, vectors, unk_tensor=unk_tensor)
+    return Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
 
 class Vectors(object):
     r"""Creates a vectors object which maps tokens to vectors.
 
     Arguments:
-        tokens (List[str]):: a list of tokens.
+        tokens (List[str]): a list of tokens.
         vectors (List[torch.Tensor]): a list of 1d tensors representing the vector associated with each token.
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
 
     """
 
     def __init__(self, tokens, vectors, unk_tensor=None):
+        if unk_tensor is None and not vectors:
+            raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
+
         unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size())
         self.vectors = torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor)
 
