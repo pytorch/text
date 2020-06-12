@@ -18,8 +18,9 @@ public:
   std::vector<torch::Tensor> vectors_;
   torch::Tensor unk_tensor_;
 
-  explicit Vectors(std::vector<std::string> tokens,
-                   std::vector<torch::Tensor> vectors, torch::Tensor unk_tensor)
+  explicit Vectors(const std::vector<std::string> &tokens,
+                   const std::vector<torch::Tensor> &vectors,
+                   const torch::Tensor &unk_tensor)
       : tokens_(tokens), vectors_(vectors), unk_tensor_(unk_tensor) {
     // guarding against size mismatch of vectors and tokens
     if (tokens.size() != vectors.size()) {
@@ -46,6 +47,10 @@ public:
     }
     return unk_tensor_;
   }
+
+  void AddItem(const std::string &token, const torch::Tensor &vector) {
+    stovectors_[token] = vector;
+  }
 };
 
 // Registers our custom class with torch.
@@ -54,6 +59,7 @@ static auto vectors =
         .def(torch::init<std::vector<std::string>, std::vector<torch::Tensor>,
                          torch::Tensor>())
         .def("GetItem", &Vectors::GetItem)
+        .def("AddItem", &Vectors::AddItem)
         .def_pickle(
             // __getstate__
             [](const c10::intrusive_ptr<Vectors> &self)

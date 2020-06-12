@@ -17,7 +17,7 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.Tensor([0])
 
         vectorsObj = Vectors(tokens, vectors, unk_tensor)
-        self.assertEqual(vectorsObj['not_in_it'].tolist(), unk_tensor.tolist())
+        self.assertEqual(vectorsObj['not_in_it'].long().tolist(), unk_tensor.tolist())
 
     def test_empty_unk(self):
         tensorA = torch.Tensor([1, 0])
@@ -27,20 +27,35 @@ class TestVectors(TorchtextTestCase):
         vectors = [tensorA]
         vectorsObj = Vectors(tokens, vectors)
 
-        self.assertEqual(vectorsObj['not_in_it'].tolist(), expected_unk_tensor.tolist())
+        self.assertEqual(vectorsObj['not_in_it'].long().tolist(), expected_unk_tensor.tolist())
 
     def test_vectors_basic(self):
         tensorA = torch.Tensor([1, 0])
         tensorB = torch.Tensor([0, 1])
-        unk_tensor = torch.Tensor([0, 0])
 
+        unk_tensor = torch.Tensor([0, 0])
         tokens = ['a', 'b']
         vectors = [tensorA, tensorB]
         vectorsObj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
-        self.assertEqual(vectorsObj['a'].tolist(), tensorA.tolist())
-        self.assertEqual(vectorsObj['b'].tolist(), tensorB.tolist())
-        self.assertEqual(vectorsObj['not_in_it'].tolist(), unk_tensor.tolist())
+        self.assertEqual(vectorsObj['a'].long().tolist(), tensorA.tolist())
+        self.assertEqual(vectorsObj['b'].long().tolist(), tensorB.tolist())
+        self.assertEqual(vectorsObj['not_in_it'].long().tolist(), unk_tensor.tolist())
+
+    def test_vectors_add_item(self):
+        tensorA = torch.Tensor([1, 0])
+        unk_tensor = torch.Tensor([0, 0])
+
+        tokens = ['a']
+        vectors = [tensorA]
+        vectorsObj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+
+        tensorB = torch.Tensor([0, 1])
+        vectorsObj['b'] = tensorB
+
+        self.assertEqual(vectorsObj['a'].long().tolist(), tensorA.tolist())
+        self.assertEqual(vectorsObj['b'].long().tolist(), tensorB.tolist())
+        self.assertEqual(vectorsObj['not_in_it'].long().tolist(), unk_tensor.tolist())
 
     def test_errors(self):
         tokens = []
@@ -80,6 +95,6 @@ class TestVectors(TorchtextTestCase):
         expected_tensorB = torch.Tensor([0, 1, 0])
         expected_unk_tensor = torch.Tensor([0, 0, 0])
 
-        self.assertEqual(vectorsObj['a'].tolist(), expected_tensorA.tolist())
-        self.assertEqual(vectorsObj['b'].tolist(), expected_tensorB.tolist())
-        self.assertEqual(vectorsObj['not_in_it'].tolist(), expected_unk_tensor.tolist())
+        self.assertEqual(vectorsObj['a'].long().tolist(), expected_tensorA.tolist())
+        self.assertEqual(vectorsObj['b'].long().tolist(), expected_tensorB.tolist())
+        self.assertEqual(vectorsObj['not_in_it'].long().tolist(), expected_unk_tensor.tolist())
