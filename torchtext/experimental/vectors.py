@@ -8,8 +8,10 @@ def vectors_from_csv_file(file_like_object, unk_tensor=None):
     Args:
         file_like_object (FileObject): a file like object to read data from.
         unk_tensor (int): a 1d tensors representing the vector associated with an unknown token
+    
     Returns:
         Vectors: a Vectors object.
+
     """
     readCSV = csv.reader(file_like_object, delimiter=',')
 
@@ -29,6 +31,11 @@ class Vectors(object):
         tokens (List[str]): a list of tokens.
         vectors (List[torch.Tensor]): a list of 1d tensors representing the vector associated with each token.
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
+
+    Raises:
+
+        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
+        RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
 
     """
 
