@@ -3,6 +3,7 @@ from .text_classification import AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity
     YelpReviewFull, YahooAnswers, \
     AmazonReviewPolarity, AmazonReviewFull, IMDB
 from .sequence_tagging import UDPOS, CoNLL2000Chunking
+from .question_answer import SQuAD1, SQuAD2
 
 __all__ = ['LanguageModelingDataset',
            'WikiText2',
@@ -19,4 +20,5 @@ __all__ = ['LanguageModelingDataset',
            'AmazonReviewPolarity',
            'AmazonReviewFull',
            'UDPOS',
-           'CoNLL2000Chunking']
+           'CoNLL2000Chunking',
+           'SQuAD1', 'SQuAD2']
