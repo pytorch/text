@@ -447,7 +447,7 @@ class Vectors(object):
         Examples:
             >>> examples = ['chip', 'baby', 'Beautiful']
             >>> vec = text.vocab.GloVe(name='6B', dim=50)
-            >>> ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)
+            >>> ret = vec.get_vecs_by_tokens(examples, lower_case_backup=True)
         """
         to_reduce = False
 
