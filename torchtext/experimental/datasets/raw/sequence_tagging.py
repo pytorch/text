@@ -26,6 +26,8 @@ def _create_data_from_iob(data_path, separator="\t"):
                     if len(columns) < i + 1:
                         columns.append([])
                     columns[i].append(column)
+        if len(columns) > 0:
+            yield columns
 
 
 def _construct_filepath(paths, file_suffix):
