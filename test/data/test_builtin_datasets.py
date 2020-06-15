@@ -205,13 +205,13 @@ class TestDataset(TorchtextTestCase):
                         torch.tensor([6, 16, 13, 16, 7, 3, 19, 12, 19, 13]).long())
 
         # Assert vocabs
-        self.assertEqual(len(train_dataset.get_vocab()), 3)
-        self.assertEqual(len(train_dataset.get_vocab()[0]), 19674)
-        self.assertEqual(len(train_dataset.get_vocab()[1]), 19)
-        self.assertEqual(len(train_dataset.get_vocab()[2]), 52)
+        self.assertEqual(len(train_dataset.get_vocabs()), 3)
+        self.assertEqual(len(train_dataset.get_vocabs()[0]), 19674)
+        self.assertEqual(len(train_dataset.get_vocabs()[1]), 19)
+        self.assertEqual(len(train_dataset.get_vocabs()[2]), 52)
 
         # Assert token ids
-        word_vocab = train_dataset.get_vocab()[0]
+        word_vocab = train_dataset.get_vocabs()[0]
         tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
         self.assertEqual(tokens_ids, [1206, 8, 69, 60, 157, 452])
 
@@ -249,13 +249,13 @@ class TestDataset(TorchtextTestCase):
                         torch.tensor([6, 3, 2, 4, 6, 3, 4, 3, 5, 7]).long())
 
         # Assert vocabs
-        self.assertEqual(len(train_dataset.get_vocab()), 3)
-        self.assertEqual(len(train_dataset.get_vocab()[0]), 19124)
-        self.assertEqual(len(train_dataset.get_vocab()[1]), 46)
-        self.assertEqual(len(train_dataset.get_vocab()[2]), 24)
+        self.assertEqual(len(train_dataset.get_vocabs()), 3)
+        self.assertEqual(len(train_dataset.get_vocabs()[0]), 19124)
+        self.assertEqual(len(train_dataset.get_vocabs()[1]), 46)
+        self.assertEqual(len(train_dataset.get_vocabs()[2]), 24)
 
         # Assert token ids
-        word_vocab = train_dataset.get_vocab()[0]
+        word_vocab = train_dataset.get_vocabs()[0]
         tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
         self.assertEqual(tokens_ids, [970, 5, 135, 43, 214, 690])
 
