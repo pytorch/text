@@ -30,7 +30,7 @@ def _setup_datasets(dataset_name,
                     data_select=("train", "valid", "test")):
     if isinstance(data_select, str):
         data_select = [data_select]
-    if not set(data_select).issubset(set(("train", "test"))):
+    if not set(data_select).issubset(set(("train", "valid", "test"))):
         raise TypeError("Given data selection {} is not supported!".format(data_select))
 
     train, val, test = DATASETS[dataset_name](root=root)
@@ -111,7 +111,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         if len(curr_data) != len(self.transforms):
             raise ValueError("data must have the same number of columns "
                              "with transforms function")
-        return [self.transforms[idx](curr_data[idx]) for idx in range(self.transforms)]
+        return [self.transforms[idx](curr_data[idx]) for idx in range(len(self.transforms))]
 
     def __len__(self):
         return len(self.data)
