@@ -28,6 +28,11 @@ def _setup_datasets(dataset_name,
                     root=".data",
                     vocabs=None,
                     data_select=("train", "valid", "test")):
+    if isinstance(data_select, str):
+        data_select = [data_select]
+    if not set(data_select).issubset(set(("train", "test"))):
+        raise TypeError("Given data selection {} is not supported!".format(data_select))
+
     train, val, test = DATASETS[dataset_name](root=root)
     raw_data = {
         "train": [line for line in train] if train else None,
@@ -75,31 +80,44 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         - UDPOS
         - CoNLL2000Chunking
     """
-    def __init__(self, data, vocab, transforms):
+    def __init__(self, data, vocabs, transforms):
         """Initiate sequence tagging dataset.
         Arguments:
             data: a list of word and its respective tags. Example:
                 [[word, POS, dep_parsing label, ...]]
-            vocab: Vocabulary object used for dataset.
+            vocabs: a list of vocabularies for its respective tags.
+                The number of vocabs must be the same as the number of columns
+                found in the data.
             transforms: a list of string transforms for words and tags.
+                The number of transforms must be the same as the number of columns
+                    found in the data.
         """
 
         super(SequenceTaggingDataset, self).__init__()
         self.data = data
-        self.vocab = vocab
+        self.vocabs = vocabs
         self.transforms = transforms
 
+        if len(self.data[0]) != len(self.vocabs):
+            raise ValueError("vocabs must hahve the same number of columns "
+                             "as the data")
+
+        if len(self.data[0]) != len(self.transforms):
+            raise ValueError("vocabs must hahve the same number of columns "
+                             "as the data")
+
     def __getitem__(self, i):
-        line = []
-        for idx, transform in enumerate(self.transforms):
-            line.append(transform(self.data[i][idx]))
-        return line
+        curr_data = self.data[i]
+        if len(curr_data) != len(self.transforms):
+            raise ValueError("data must have the same number of columns "
+                             "with transforms function")
+        return [self.transforms[idx](curr_data[idx]) for idx in range(self.transforms)]
 
     def __len__(self):
         return len(self.data)
 
-    def get_vocab(self):
-        return self.vocab
+    def get_vocabs(self):
+        return self.vocabs
 
 
 def UDPOS(*args, **kwargs):
