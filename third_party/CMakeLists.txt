@@ -3,6 +3,6 @@ if(POLICY CMP0091)
 endif()
 
 project(thirdparty CXX)
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 
 add_subdirectory(re2)
