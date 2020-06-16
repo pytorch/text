@@ -52,11 +52,9 @@ class TestVectors(TorchtextTestCase):
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj)
 
-        jit_vectors_obj['a']
-        jit_vectors_obj['b']
-        # self.assertEqual(vectors_obj['a'].long().tolist(), jit_vectors_obj['a'].long().tolist())
-        # self.assertEqual(vectors_obj['b'].long().tolist(), jit_vectors_obj['b'].long().tolist())
-        # self.assertEqual(vectors_obj['not_in_it'].long().tolist(), jit_vectors_obj['not_in_it'].long().tolist())
+        self.assertEqual(vectors_obj['a'].long().tolist(), jit_vectors_obj['a'].long().tolist())
+        self.assertEqual(vectors_obj['b'].long().tolist(), jit_vectors_obj['b'].long().tolist())
+        self.assertEqual(vectors_obj['not_in_it'].long().tolist(), jit_vectors_obj['not_in_it'].long().tolist())
 
     def test_vectors_add_item(self):
         tensorA = torch.Tensor([1, 0])

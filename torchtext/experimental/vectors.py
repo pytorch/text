@@ -8,7 +8,7 @@ def vectors_from_csv_file(file_like_object, unk_tensor=None):
     Args:
         file_like_object (FileObject): a file like object to read data from.
         unk_tensor (int): a 1d tensors representing the vector associated with an unknown token
-    
+
     Returns:
         Vectors: a Vectors object.
 
