@@ -125,7 +125,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
 
     def test_multi30k(self):
-        from torchtext.experimental.datasets.translation import Multi30k
+        from torchtext.experimental.datasets import Multi30k
         # smoke test to ensure multi30k works properly
         train_dataset, valid_dataset, test_dataset = Multi30k()
         self.assertEqual(len(train_dataset), 29000)
