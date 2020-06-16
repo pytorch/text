@@ -4,8 +4,10 @@ from torch import Tensor
 import torch.nn as nn
 
 
-def vectors_from_csv_file(file_like_object, unk_tensor=None):
+def vectors_from_file_object(file_like_object, unk_tensor=None):
     r"""Create a Vectors object from a csv file like object.
+
+    Note that the tensor corresponding to each vector is of type `torch.float`.
 
     Args:
         file_like_object (FileObject): a file like object to read data from.
@@ -35,26 +37,47 @@ class Vectors(nn.Module):
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
 
     Raises:
-
         ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
-
+        TypeError: if all tensors within`vectors` are not of data type `torch.float`.
     """
 
     def __init__(self, tokens, vectors, unk_tensor=None):
         super(Vectors, self).__init__()
 
+        # print("dtype", vectors[0].type())
+
         if unk_tensor is None and not vectors:
             raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
 
+        if not all(vector.dtype == torch.float for vector in vectors):
+            raise TypeError("All tensors within `vectors` should be of data type `torch.float`.")
+
         unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-        float_vectors = [vector.float() for vector in vectors]
-        self.vectors = torch.classes.torchtext.Vectors(tokens, float_vectors, unk_tensor)
+
+        self.vectors = torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor)
 
     @torch.jit.export
-    def __getitem__(self, token: str):
+    def __getitem__(self, token: str) -> Tensor:
+        r"""
+        Args:
+            token (str): the token used to lookup the corresponding vector.
+        Returns:
+            vector (Tensor): a tensor (the vector) corresponding to the associated token.
+        """
         return self.vectors.GetItem(token)
 
     @torch.jit.export
     def __setitem__(self, token: str, vector: Tensor):
+        r"""
+        Args:
+            token (str): the token used to lookup the corresponding vector.
+            vector (Tensor): a 1d tensor representing a vector associated with the token.
+
+        Raises:
+            TypeError: if `vector` is not of data type `torch.float`.
+        """
+        if vector.dtype != torch.float:
+            raise TypeError("`vector` should be of data type `torch.float` but it's of type " + vector.dtype)
+
         self.vectors.AddItem(token, vector.float())

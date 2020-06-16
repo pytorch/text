@@ -5,7 +5,7 @@ from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
     Vectors,
-    vectors_from_csv_file
+    vectors_from_file_object
 )
 
 
@@ -14,14 +14,16 @@ class TestVectors(TorchtextTestCase):
     def test_empty_vector(self):
         tokens = []
         vectors = []
-        unk_tensor = torch.Tensor([0])
+        unk_tensor = torch.tensor([0], dtype=torch.float)
 
         vectors_obj = Vectors(tokens, vectors, unk_tensor)
         self.assertEqual(vectors_obj['not_in_it'].long().tolist(), unk_tensor.tolist())
 
     def test_empty_unk(self):
-        tensorA = torch.Tensor([1, 0])
-        expected_unk_tensor = torch.Tensor([0, 0])
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+
+        print(tensorA.type())
 
         tokens = ['a']
         vectors = [tensorA]
@@ -30,10 +32,10 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['not_in_it'].long().tolist(), expected_unk_tensor.tolist())
 
     def test_vectors_basic(self):
-        tensorA = torch.Tensor([1, 0])
-        tensorB = torch.Tensor([0, 1])
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
 
-        unk_tensor = torch.Tensor([0, 0])
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vectors = [tensorA, tensorB]
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
@@ -43,10 +45,10 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['not_in_it'].long().tolist(), unk_tensor.tolist())
 
     def test_vectors_jit(self):
-        tensorA = torch.Tensor([1, 0])
-        tensorB = torch.Tensor([0, 1])
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
 
-        unk_tensor = torch.Tensor([0, 0])
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vectors = [tensorA, tensorB]
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
@@ -57,14 +59,14 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['not_in_it'].long().tolist(), jit_vectors_obj['not_in_it'].long().tolist())
 
     def test_vectors_add_item(self):
-        tensorA = torch.Tensor([1, 0])
-        unk_tensor = torch.Tensor([0, 0])
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
         tokens = ['a']
         vectors = [tensorA]
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
-        tensorB = torch.Tensor([0, 1])
+        tensorB = torch.tensor([0., 1])
         vectors_obj['b'] = tensorB
 
         self.assertEqual(vectors_obj['a'].long().tolist(), tensorA.tolist())
@@ -80,8 +82,8 @@ class TestVectors(TorchtextTestCase):
             # not passing in a user defined unk_tensor
             Vectors(tokens, vectors)
 
-        tensorA = torch.Tensor([1, 0, 0])
-        tensorB = torch.Tensor([0, 1, 0])
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
         tokens = ['a', 'b', 'c']
         vectors = [tensorA, tensorB]
 
@@ -89,7 +91,7 @@ class TestVectors(TorchtextTestCase):
             # Test proper error raised when tokens and vectors have different sizes
             Vectors(tokens, vectors)
 
-        tensorC = torch.Tensor([0, 0, 1])
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
         tokens = ['a', 'a', 'c']
         vectors = [tensorA, tensorB, tensorC]
 
@@ -99,15 +101,22 @@ class TestVectors(TorchtextTestCase):
             # the key of the duplicate token in the error message
             Vectors(tokens, vectors)
 
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.int8)
+        vectors = [tensorA, tensorB, tensorC]
+
+        with self.assertRaises(TypeError):
+            # Test proper error raised when vectors are not of type torch.float
+            Vectors(tokens, vectors)
+
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
         f = open(asset_path, 'r')
-        vectors_obj = vectors_from_csv_file(f)
+        vectors_obj = vectors_from_file_object(f)
 
-        expected_tensorA = torch.Tensor([1, 0, 0])
-        expected_tensorB = torch.Tensor([0, 1, 0])
-        expected_unk_tensor = torch.Tensor([0, 0, 0])
+        expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
 
         self.assertEqual(vectors_obj['a'].long().tolist(), expected_tensorA.tolist())
         self.assertEqual(vectors_obj['b'].long().tolist(), expected_tensorB.tolist())
