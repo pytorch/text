@@ -1,5 +1,7 @@
 import csv
 import torch
+from torch import Tensor
+import torch.nn as nn
 
 
 def vectors_from_csv_file(file_like_object, unk_tensor=None):
@@ -24,7 +26,7 @@ def vectors_from_csv_file(file_like_object, unk_tensor=None):
     return Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
 
-class Vectors(object):
+class Vectors(nn.Module):
     r"""Creates a vectors object which maps tokens to vectors.
 
     Arguments:
@@ -40,6 +42,8 @@ class Vectors(object):
     """
 
     def __init__(self, tokens, vectors, unk_tensor=None):
+        super(Vectors, self).__init__()
+
         if unk_tensor is None and not vectors:
             raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
 
@@ -47,8 +51,10 @@ class Vectors(object):
         float_vectors = [vector.float() for vector in vectors]
         self.vectors = torch.classes.torchtext.Vectors(tokens, float_vectors, unk_tensor)
 
-    def __getitem__(self, token):
+    @torch.jit.export
+    def __getitem__(self, token: str):
         return self.vectors.GetItem(token)
 
-    def __setitem__(self, token, vector):
+    @torch.jit.export
+    def __setitem__(self, token: str, vector: Tensor):
         self.vectors.AddItem(token, vector.float())
