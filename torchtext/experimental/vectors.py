@@ -1,7 +1,57 @@
 import csv
+import os
+
 import torch
 from torch import Tensor
 import torch.nn as nn
+
+from torchtext.utils import (
+    download_from_url,
+    extract_archive
+)
+
+def fast_text(language="en", unk_tensor=None):
+    r"""Create a fast text Vectors object.
+
+    Args:
+        language (str): the language to use for FastText.
+        unk_tensor (int): a 1d tensors representing the vector associated with an unknown token
+
+    Returns:
+        Vectors: a Vectors object.
+
+    """
+    url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
+    downloaded_file_path = download_from_url(url)
+    csv_file_name, _ext = os.path.splitext(downloaded_file_path)
+    csv_file_path = csv_file_name + '.csv'
+
+    # skip if csv file already exists 
+    if not os.path.exists(csv_file_path):
+        with open(downloaded_file_path, 'r') as f1:
+            with open(csv_file_path, "w") as f2:
+                cnt = 0
+                for line in f1:
+                    print(line)
+                    # f2.write(line)
+                    if cnt == 4:
+                        break
+                    cnt += 1
+
+            f2.close()
+        f1.close()
+
+    # file_object = open(csv_file_path, 'r')
+    # return vectors_from_file_object(csv_file_path)
+
+    # print(csv_file_name, _ext)
+    # extracted_paths = extract_archive(downloaded_file_path)
+    # print(downloaded_file_path)
+
+
+
+    # for path in extracted_paths:
+    #     print(path)
 
 
 def vectors_from_file_object(file_like_object, unk_tensor=None):

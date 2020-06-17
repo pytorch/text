@@ -5,6 +5,7 @@ import os
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
+    fast_text,
     Vectors,
     vectors_from_file_object
 )
@@ -135,3 +136,16 @@ class TestVectors(TorchtextTestCase):
         torch.testing.assert_allclose(vectors_obj['a'], expected_tensorA)
         torch.testing.assert_allclose(vectors_obj['b'], expected_tensorB)
         torch.testing.assert_allclose(vectors_obj['not_in_it'], expected_unk_tensor)
+
+    def test_fast_text(self):
+        vectors_obj = fast_text()
+
+        # The first 5 entries in each vector.
+        expected_fasttext_simple_en = {
+            'hello': [0.39567, 0.21454, -0.035389, -0.24299, -0.095645],
+            'world': [0.10444, -0.10858, 0.27212, 0.13299, -0.33165],
+        }
+
+        # self.assertEqual(vectors_obj['a'].long().tolist(), expected_tensorA.tolist())
+        # self.assertEqual(vectors_obj['b'].long().tolist(), expected_tensorB.tolist())
+        # self.assertEqual(vectors_obj['not_in_it'].long().tolist(), expected_unk_tensor.tolist())
