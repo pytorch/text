@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import torch
+import os
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -22,8 +23,6 @@ class TestVectors(TorchtextTestCase):
     def test_empty_unk(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-
-        print(tensorA.type())
 
         tokens = ['a']
         vectors = [tensorA]
@@ -72,6 +71,21 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['a'].long().tolist(), tensorA.tolist())
         self.assertEqual(vectors_obj['b'].long().tolist(), tensorB.tolist())
         self.assertEqual(vectors_obj['not_in_it'].long().tolist(), unk_tensor.tolist())
+
+    def test_vectors_load_and_save(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+
+        tokens = ['a']
+        vectors = [tensorA]
+        vectors_obj = Vectors(tokens, vectors)
+
+        vector_path = os.path.join(self.test_dir, 'vector.pt')
+        torch.save(vectors_obj, vector_path)
+        loaded_vectors_obj = torch.load(vector_path)
+
+        self.assertEqual(loaded_vectors_obj['a'].long().tolist(), tensorA.tolist())
+        self.assertEqual(loaded_vectors_obj['not_in_it'].long().tolist(), expected_unk_tensor.tolist())
 
     def test_errors(self):
         tokens = []

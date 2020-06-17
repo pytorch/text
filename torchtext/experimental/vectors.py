@@ -9,6 +9,12 @@ def vectors_from_file_object(file_like_object, unk_tensor=None):
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
 
+    Format for csv file:
+        token1,num1 num2 num3
+        token2,num4 num5 num6
+        ...
+        token_n,num_m num_j num_k
+
     Args:
         file_like_object (FileObject): a file like object to read data from.
         unk_tensor (int): a 1d tensors representing the vector associated with an unknown token
@@ -44,8 +50,6 @@ class Vectors(nn.Module):
 
     def __init__(self, tokens, vectors, unk_tensor=None):
         super(Vectors, self).__init__()
-
-        # print("dtype", vectors[0].type())
 
         if unk_tensor is None and not vectors:
             raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
