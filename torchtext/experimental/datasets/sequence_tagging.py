@@ -99,11 +99,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         self.transforms = transforms
 
         if len(self.data[0]) != len(self.vocabs):
-            raise ValueError("vocabs must hahve the same number of columns "
-                             "as the data")
-
-        if len(self.data[0]) != len(self.transforms):
-            raise ValueError("vocabs must hahve the same number of columns "
+            raise ValueError("vocabs must have the same number of columns "
                              "as the data")
 
     def __getitem__(self, i):
