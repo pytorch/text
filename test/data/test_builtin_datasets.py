@@ -165,6 +165,8 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(len(train_dataset), 12543)
         self.assertEqual(len(valid_dataset), 2002)
         self.assertEqual(len(test_dataset), 2077)
+        # TODO: replace assert_allclose with self.assertEqual once
+        # https://github.com/pytorch/text/pull/822 has been landed
         assert_allclose(train_dataset[0][0][:10],
                         torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585]).long())
         assert_allclose(train_dataset[0][1][:10],
@@ -222,6 +224,8 @@ class TestDataset(TorchtextTestCase):
         train_dataset, test_dataset = CoNLL2000Chunking()
         self.assertEqual(len(train_dataset), 8936)
         self.assertEqual(len(test_dataset), 2012)
+        # TODO: replace assert_allclose with self.assertEqual once
+        # https://github.com/pytorch/text/pull/822 has been landed
         assert_allclose(train_dataset[0][0][:10],
                         torch.tensor([11556, 9, 3, 1775, 17, 1164, 177, 6, 212, 317]).long())
         assert_allclose(train_dataset[0][1][:10],
