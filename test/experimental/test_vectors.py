@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import io
 import os
+import shutil
+import tempfile
 
 import numpy as np
 import torch
@@ -10,8 +11,6 @@ from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
     fast_text,
     glo_ve,
-    load_vectors,
-    save_vectors,
     Vectors,
     vectors_from_file_object
 )
@@ -144,29 +143,42 @@ class TestVectors(TorchtextTestCase):
         torch.testing.assert_allclose(vectors_obj['not_in_it'], expected_unk_tensor)
 
     def test_fast_text(self):
-        vectors_obj = fast_text()
+        # copy the asset file into the expected download location
+        asset_name = 'wiki.en.vec'
+        asset_path = get_asset_path(asset_name)
 
-        # The first 3 entries in each vector.
-        expected_fasttext_simple_en = {
-            'hello': [-0.15945, -0.18259, 0.033443],
-            'world': [-0.32423, -0.098845, -0.0073467],
-        }
+        with tempfile.TemporaryDirectory() as dir_name:
+            dir_name = ".tmp"
+            if not os.path.exists(dir_name):
+                os.makedirs(dir_name)
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
 
-        for word in expected_fasttext_simple_en.keys():
-            torch.testing.assert_allclose(vectors_obj[word][:3].tolist(), expected_fasttext_simple_en[word])
+            print(asset_path)
+            print(data_path)
+            vectors_obj = fast_text(root=dir_name)
 
-    def test_glo_ve(self):
-        vectors_obj = glo_ve()
+            # The first 3 entries in each vector.
+            expected_fasttext_simple_en = {
+                'the': [-0.065334, -0.093031, -0.017571],
+                'world': [-0.32423, -0.098845, -0.0073467],
+            }
 
-        # # The first 3 entries in each vector.
-        # expected_twitter = {
-        #     'hello': [-0.15945, -0.18259, 0.033443],
-        #     'world': [-0.32423, -0.098845, -0.0073467],
-        # }
+            for word in expected_fasttext_simple_en.keys():
+                torch.testing.assert_allclose(vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
-        # for word in expected_twitter.keys():
-        #     print(vectors_obj[word][:3])
-        #     torch.testing.assert_allclose(vectors_obj[word][:3].tolist(), expected_twitter[word])
+            def test_glo_ve(self):
+                vectors_obj = glo_ve()
 
-        # print(vectors_obj['hello'][:3])
-        # print(vectors_obj['world'][:3])
+            # # The first 3 entries in each vector.
+            # expected_twitter = {
+            #     'hello': [-0.15945, -0.18259, 0.033443],
+            #     'world': [-0.32423, -0.098845, -0.0073467],
+            # }
+
+            # for word in expected_twitter.keys():
+            #     print(vectors_obj[word][:3])
+            #     torch.testing.assert_allclose(vectors_obj[word][:3].tolist(), expected_twitter[word])
+
+            # print(vectors_obj['hello'][:3])
+            # print(vectors_obj['world'][:3])

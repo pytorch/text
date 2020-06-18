@@ -12,52 +12,71 @@ from torchtext.utils import (
 )
 
 
-def fast_text(language="en", unk_tensor=None):
+def fast_text(language="en", unk_tensor=None, root='.data'):
     r"""Create a fast text Vectors object.
 
     Args:
         language (str): the language to use for FastText.
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token
+        root: folder used to store downloaded files in (.data)
 
     Returns:
         Vectors: a Vectors object.
 
     """
     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
+    vectors_file_path = os.path.join(root, os.path.basename(url) + '.pt')
+    if os.path.isfile(vectors_file_path):
+        return(torch.load(vectors_file_path))
 
-    vectors_file_name = os.path.join('.data', os.path.basename(url) + '.pt')
-    saved_vectors = load_vectors(vectors_file_name)
-    if saved_vectors:
-        return saved_vectors
+    downloaded_file_path = download_from_url(url, root=root)
 
-    downloaded_file_path = download_from_url(url)
-    csv_file_name, _ext = os.path.splitext(downloaded_file_path)
-    csv_file_path = '{}.csv'.format(csv_file_name)
+    print(csv_file_name)
+    print(csv_file_path)
 
-    # skip if csv file already exists
-    if not os.path.exists(csv_file_path):
-        # format downloaded file into csv format expected by `vectors_from_file_object()`
-        with open(downloaded_file_path, 'r') as f1:
-            with open(csv_file_path, "w") as f2:
-                csvWriter = csv.writer(f2)
-                for line in f1:
-                    csvWriter.writerow(line.split(' ', 1))
-            f2.close()
-        f1.close()
+    tokens = []
+    vectors = []
+    # format downloaded file into csv format expected by `vectors_from_file_object()`
+    with open(downloaded_file_path, 'r') as f1:
+        for line in f1:
+            tokens.append(line.split(' ', 1)[0])
+            vectors.append(torch.tensor([float(c) for c in line.split(' ', 1)[1].split()], dtype=torch.float))
+            csvWriter.writerow()
 
-    file_obj = open(csv_file_path, 'r')
-    vectors_obj = vectors_from_file_object(file_obj)
-    save_vectors(vectors_obj, vectors_file_name)
+    for row in readCSV:
+        tokens.append(row[0])
+        vectors.append(torch.tensor([float(c) for c in row[1].split()], dtype=torch.float))
+
+    vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+    torch.save(vectors_obj, vectors_file_path)
 
     return vectors_obj
 
+    # # skip if csv file already exists
+    # if not os.path.exists(csv_file_path):
+    #     # format downloaded file into csv format expected by `vectors_from_file_object()`
+    #     with open(downloaded_file_path, 'r') as f1:
+    #         with open(csv_file_path, "w") as f2:
+    #             csvWriter = csv.writer(f2)
+    #             for line in f1:
+    #                 csvWriter.writerow(line.split(' ', 1))
+    #         f2.close()
+    #     f1.close()
 
-def glo_ve(name="840B", dim=300, unk_tensor=None):
+    # file_obj = open(csv_file_path, 'r')
+    # vectors_obj = vectors_from_file_object(file_obj)
+    # torch.save(vectors_obj, vectors_file_path)
+
+    # return vectors_obj
+
+
+def glo_ve(name="840B", dim=300, unk_tensor=None, root='.data'):
     r"""Create a GloVe Vectors object.
 
     Args:
         name (str): the language to use for FastText.
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
+        root: folder used to store downloaded files in (.data)
 
     Returns:
         Vectors: a Vectors object.
@@ -71,13 +90,11 @@ def glo_ve(name="840B", dim=300, unk_tensor=None):
     }
 
     url = urls[name]
+    vectors_file_path = os.path.join(root, 'glove.{}.{}d.pt'.format(name, str(dim)))
+    if os.path.isfile(vectors_file_path):
+        return(torch.load(path_pt))
 
-    vectors_file_name = os.path.join('.data', 'glove.{}.{}d.pt'.format(name, str(dim)))
-    saved_vectors = load_vectors(vectors_file_name)
-    if saved_vectors:
-        return saved_vectors
-
-    downloaded_file_path = download_from_url(url)
+    downloaded_file_path = download_from_url(url, root=root)
     extracted_file_path = extract_archive(downloaded_file_path)[0]
 
     csv_file_name, _ext = os.path.splitext(extracted_file_path)
@@ -97,7 +114,7 @@ def glo_ve(name="840B", dim=300, unk_tensor=None):
 
     file_obj = open(csv_file_path, 'r')
     vectors_obj = vectors_from_file_object(file_obj)
-    save_vectors(vectors_obj, vectors_file_name)
+    torch.save(vectors_obj, vectors_file_path)
 
     return vectors_obj
 
@@ -130,32 +147,6 @@ def vectors_from_file_object(file_like_object, unk_tensor=None):
         vectors.append(torch.tensor([float(c) for c in row[1].split()], dtype=torch.float))
 
     return Vectors(tokens, vectors, unk_tensor=unk_tensor)
-
-
-def save_vectors(vector_obj, path_pt):
-    r"""Save a Vector object using `torch.save()`.
-
-    Args:
-        vector_obj (Vector): the language to use for FastText.
-        path_pt (str): the path to save the Vector to.
-    """
-    torch.save(vector_obj, path_pt)
-
-
-def load_vectors(path_pt):
-    r"""Load a Vector object using `torch.load()`.
-
-    Args:
-        path_pt (str): the path to save the Vector to.
-
-    Returns:
-        Vectors: a Vectors object.
-
-    """
-    if not os.path.isfile(path_pt):
-        return None
-
-    return(torch.load(path_pt))
 
 
 class Vectors(nn.Module):

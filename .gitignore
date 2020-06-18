@@ -81,6 +81,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# thirdparty dirs
+third_party/*/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -109,6 +112,9 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
+# VSCode project settings
+.vscode
+
 # mkdocs documentation
 /site
 
@@ -120,5 +126,7 @@ venv.bak/
 # vim
 *.swp
 *.swo
+
+
 
 torchtext/version.py
