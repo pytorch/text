@@ -18,7 +18,7 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0], dtype=torch.float)
 
         vectors_obj = Vectors(tokens, vectors, unk_tensor)
-        torch.testing.assert_allclose(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
     def test_empty_unk(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -28,7 +28,7 @@ class TestVectors(TorchtextTestCase):
         vectors = [tensorA]
         vectors_obj = Vectors(tokens, vectors)
 
-        torch.testing.assert_allclose(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
     def test_vectors_basic(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -39,9 +39,9 @@ class TestVectors(TorchtextTestCase):
         vectors = [tensorA, tensorB]
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
-        torch.testing.assert_allclose(vectors_obj['a'], tensorA)
-        torch.testing.assert_allclose(vectors_obj['b'], tensorB)
-        torch.testing.assert_allclose(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj['a'], tensorA)
+        self.assertEqual(vectors_obj['b'], tensorB)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
     def test_vectors_jit(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -53,9 +53,9 @@ class TestVectors(TorchtextTestCase):
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj)
 
-        torch.testing.assert_allclose(vectors_obj['a'], jit_vectors_obj['a'])
-        torch.testing.assert_allclose(vectors_obj['b'], jit_vectors_obj['b'])
-        torch.testing.assert_allclose(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
+        self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
+        self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
+        self.assertEqual(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
 
     def test_vectors_add_item(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -68,9 +68,9 @@ class TestVectors(TorchtextTestCase):
         tensorB = torch.tensor([0., 1])
         vectors_obj['b'] = tensorB
 
-        torch.testing.assert_allclose(vectors_obj['a'], tensorA)
-        torch.testing.assert_allclose(vectors_obj['b'], tensorB)
-        torch.testing.assert_allclose(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj['a'], tensorA)
+        self.assertEqual(vectors_obj['b'], tensorB)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
     def test_vectors_load_and_save(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -84,8 +84,8 @@ class TestVectors(TorchtextTestCase):
         torch.save(vectors_obj, vector_path)
         loaded_vectors_obj = torch.load(vector_path)
 
-        torch.testing.assert_allclose(loaded_vectors_obj['a'], tensorA)
-        torch.testing.assert_allclose(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(loaded_vectors_obj['a'], tensorA)
+        self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
     def test_errors(self):
         tokens = []
@@ -132,6 +132,6 @@ class TestVectors(TorchtextTestCase):
         expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
 
-        torch.testing.assert_allclose(vectors_obj['a'], expected_tensorA)
-        torch.testing.assert_allclose(vectors_obj['b'], expected_tensorB)
-        torch.testing.assert_allclose(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj['a'], expected_tensorA)
+        self.assertEqual(vectors_obj['b'], expected_tensorB)
+        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
