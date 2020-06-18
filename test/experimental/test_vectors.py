@@ -148,14 +148,8 @@ class TestVectors(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
 
         with tempfile.TemporaryDirectory() as dir_name:
-            dir_name = ".tmp"
-            if not os.path.exists(dir_name):
-                os.makedirs(dir_name)
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
-
-            print(asset_path)
-            print(data_path)
             vectors_obj = fast_text(root=dir_name)
 
             # The first 3 entries in each vector.
@@ -167,18 +161,23 @@ class TestVectors(TorchtextTestCase):
             for word in expected_fasttext_simple_en.keys():
                 torch.testing.assert_allclose(vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
-            def test_glo_ve(self):
-                vectors_obj = glo_ve()
+    def test_glo_ve(self):
+        # glo_ve()
 
-            # # The first 3 entries in each vector.
-            # expected_twitter = {
-            #     'hello': [-0.15945, -0.18259, 0.033443],
-            #     'world': [-0.32423, -0.098845, -0.0073467],
-            # }
+        # copy the asset file into the expected download location
+        asset_name = 'glove.840B.300d.zip'
+        asset_path = get_asset_path(asset_name)
 
-            # for word in expected_twitter.keys():
-            #     print(vectors_obj[word][:3])
-            #     torch.testing.assert_allclose(vectors_obj[word][:3].tolist(), expected_twitter[word])
+        with tempfile.TemporaryDirectory() as dir_name:
+            data_path = os.path.join(dir_name, asset_name)
 
-            # print(vectors_obj['hello'][:3])
-            # print(vectors_obj['world'][:3])
+            shutil.copy(asset_path, data_path)
+            vectors_obj = glo_ve(root=dir_name)
+
+            expected_twitter = {
+                'the': [0.27204, -0.06203, -0.1884],
+                'people': [-0.19686, 0.11579, -0.41091],
+            }
+
+            for word in expected_twitter.keys():
+                torch.testing.assert_allclose(vectors_obj[word][:3], expected_twitter[word])

@@ -31,43 +31,16 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
 
     downloaded_file_path = download_from_url(url, root=root)
 
-    print(csv_file_name)
-    print(csv_file_path)
-
     tokens = []
     vectors = []
-    # format downloaded file into csv format expected by `vectors_from_file_object()`
     with open(downloaded_file_path, 'r') as f1:
         for line in f1:
             tokens.append(line.split(' ', 1)[0])
             vectors.append(torch.tensor([float(c) for c in line.split(' ', 1)[1].split()], dtype=torch.float))
-            csvWriter.writerow()
-
-    for row in readCSV:
-        tokens.append(row[0])
-        vectors.append(torch.tensor([float(c) for c in row[1].split()], dtype=torch.float))
-
+    
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, vectors_file_path)
-
     return vectors_obj
-
-    # # skip if csv file already exists
-    # if not os.path.exists(csv_file_path):
-    #     # format downloaded file into csv format expected by `vectors_from_file_object()`
-    #     with open(downloaded_file_path, 'r') as f1:
-    #         with open(csv_file_path, "w") as f2:
-    #             csvWriter = csv.writer(f2)
-    #             for line in f1:
-    #                 csvWriter.writerow(line.split(' ', 1))
-    #         f2.close()
-    #     f1.close()
-
-    # file_obj = open(csv_file_path, 'r')
-    # vectors_obj = vectors_from_file_object(file_obj)
-    # torch.save(vectors_obj, vectors_file_path)
-
-    # return vectors_obj
 
 
 def glo_ve(name="840B", dim=300, unk_tensor=None, root='.data'):
@@ -92,32 +65,47 @@ def glo_ve(name="840B", dim=300, unk_tensor=None, root='.data'):
     url = urls[name]
     vectors_file_path = os.path.join(root, 'glove.{}.{}d.pt'.format(name, str(dim)))
     if os.path.isfile(vectors_file_path):
-        return(torch.load(path_pt))
+        # print('loading from cache')
+        return(torch.load(vectors_file_path))
 
     downloaded_file_path = download_from_url(url, root=root)
+    # print('downloaded_file_path', downloaded_file_path)
     extracted_file_path = extract_archive(downloaded_file_path)[0]
+    # print('extracted_file_path', extracted_file_path)
 
-    csv_file_name, _ext = os.path.splitext(extracted_file_path)
-    csv_file_path = '{}.csv'.format(csv_file_name)
+    stovec = {}
+    tokens = []
+    vectors = []
+    with io.open(extracted_file_path, encoding="utf8") as f1:
+    # with open(extracted_file_path, 'r') as f1:
+        for line in f1:
+            token = line.split(' ', 1)[0]
+            vector = torch.tensor([float(c) for c in line.split(' ', 1)[1].split()], dtype=torch.float)
+            
+            # try:
+            #     if isinstance(token, bytes):
+            #         token = token.decode('utf-8')
+            # except UnicodeDecodeError:
+            #     logger.info("Skipping non-UTF8 token {}".format(repr(word)))
+            #     print("Current line:", len(vectors))
+            #     continue
 
-    # skip if csv file already exists
-    if not os.path.exists(csv_file_path):
-        # format downloaded file into csv format expected by `vectors_from_file_object()`
-        with io.open(extracted_file_path, encoding="utf8") as f1:
-            with open(csv_file_path, "w") as f2:
-                csvWriter = csv.writer(f2)
-                cnt = 0
-                for line in f1:
-                    csvWriter.writerow(line.split(' ', 1))
-            f2.close()
-        f1.close()
+            if token in stovec:
+                print("Existing vector:", stovec[token][1][:20])
+                print("New vector:", line.split(' ', 1)[1][:20])
+                print("Found dupe for token:", token)
+                print("Past line:", stovec[token][0])
+                print("Current line:", len(vectors))
+                continue
 
-    file_obj = open(csv_file_path, 'r')
-    vectors_obj = vectors_from_file_object(file_obj)
+            stovec[token] = (len(vectors), line.split(' ', 1)[1])
+            tokens.append(token)
+            vectors.append(vector)
+
+    vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, vectors_file_path)
-
     return vectors_obj
-
+    
 
 def vectors_from_file_object(file_like_object, unk_tensor=None):
     r"""Create a Vectors object from a csv file like object.
