@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from unittest import TestCase
+from torch.testing._internal.common_utils import TestCase
 import json
 import logging
 import os
