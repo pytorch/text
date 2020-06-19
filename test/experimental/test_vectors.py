@@ -167,10 +167,10 @@ class TestVectors(TorchtextTestCase):
 
         with tempfile.TemporaryDirectory() as dir_name:
             data_path = os.path.join(dir_name, asset_name)
-
             shutil.copy(asset_path, data_path)
             vectors_obj = glo_ve(root=dir_name)
 
+            # The first 3 entries in each vector.
             expected_twitter = {
                 'the': [0.27204, -0.06203, -0.1884],
                 'people': [-0.19686, 0.11579, -0.41091],

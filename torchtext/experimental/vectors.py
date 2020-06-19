@@ -45,7 +45,8 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
     r"""Create a fast text Vectors object.
 
     Args:
-        language (str): the language to use for FastText.
+        language (str): the language to use for FastText. The list of supported languages options
+                        can be found at https://fasttext.cc/docs/en/language-identification.html
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token
         root: folder used to store downloaded files in (.data)
 
@@ -57,7 +58,7 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
 
     """
     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
-    vectors_file_path = os.path.join(root, os.path.basename(url) + '.pt')
+    vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
     if os.path.isfile(vectors_file_path):
         return(torch.load(vectors_file_path))
 
@@ -72,11 +73,15 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
     return vectors_obj
 
 
-def glo_ve(name="840B", dim=300, unk_tensor=None, root='.data'):
+def glo_ve(name="840B", unk_tensor=None, root='.data'):
     r"""Create a GloVe Vectors object.
 
     Args:
-        name (str): the language to use for FastText.
+        name (str): the name of the GloVe dataset to use. Options are:
+            - 42B
+            - 840B
+            - twitter.27B
+            - 6B
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         root: folder used to store downloaded files in (.data)
 
@@ -92,7 +97,7 @@ def glo_ve(name="840B", dim=300, unk_tensor=None, root='.data'):
     }
 
     url = urls[name]
-    vectors_file_path = os.path.join(root, 'glove.{}.{}d.pt'.format(name, str(dim)))
+    vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
     if os.path.isfile(vectors_file_path):
         return(torch.load(vectors_file_path))
 
