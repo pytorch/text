@@ -1,15 +1,44 @@
 import csv
-import io
+import logging
 import os
 
 import torch
 from torch import Tensor
 import torch.nn as nn
+from tqdm import tqdm
 
 from torchtext.utils import (
     download_from_url,
     extract_archive
 )
+
+logger = logging.getLogger(__name__)
+
+
+def _load_token_and_vectors_from_file(file_path):
+    stoi, tokens, vectors, dup_tokens = {}, [], [], []
+    with open(file_path, 'rb') as f:
+        for line in tqdm(f):
+            token, entries = line.rstrip().split(b" ", 1)
+            vector = torch.tensor([float(c) for c in entries.split(b" ")], dtype=torch.float)
+
+            try:
+                if isinstance(token, bytes):
+                    token = token.decode('utf-8')
+            except UnicodeDecodeError:
+                logger.info("Skipping non-UTF8 token {}".format(repr(token)))
+                continue
+
+            if token in stoi:
+                logger.info("Found duplicate entries for token {} on line {}.".format(repr(token), len(vectors) + 1))
+                dup_tokens.append(token)
+                continue
+
+            stoi[token] = len(vectors)
+            tokens.append(token)
+            vectors.append(vector)
+
+    return tokens, vectors, dup_tokens
 
 
 def fast_text(language="en", unk_tensor=None, root='.data'):
@@ -23,6 +52,9 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
     Returns:
         Vectors: a Vectors object.
 
+    Raises:
+        ValueError: if duplicate tokens are found in fasttext file.
+
     """
     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
     vectors_file_path = os.path.join(root, os.path.basename(url) + '.pt')
@@ -30,14 +62,11 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
         return(torch.load(vectors_file_path))
 
     downloaded_file_path = download_from_url(url, root=root)
+    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path)
 
-    tokens = []
-    vectors = []
-    with open(downloaded_file_path, 'r') as f1:
-        for line in f1:
-            tokens.append(line.split(' ', 1)[0])
-            vectors.append(torch.tensor([float(c) for c in line.split(' ', 1)[1].split()], dtype=torch.float))
-    
+    if dup_tokens:
+        raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
+
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, vectors_file_path)
     return vectors_obj
@@ -65,47 +94,16 @@ def glo_ve(name="840B", dim=300, unk_tensor=None, root='.data'):
     url = urls[name]
     vectors_file_path = os.path.join(root, 'glove.{}.{}d.pt'.format(name, str(dim)))
     if os.path.isfile(vectors_file_path):
-        # print('loading from cache')
         return(torch.load(vectors_file_path))
 
     downloaded_file_path = download_from_url(url, root=root)
-    # print('downloaded_file_path', downloaded_file_path)
     extracted_file_path = extract_archive(downloaded_file_path)[0]
-    # print('extracted_file_path', extracted_file_path)
-
-    stovec = {}
-    tokens = []
-    vectors = []
-    with io.open(extracted_file_path, encoding="utf8") as f1:
-    # with open(extracted_file_path, 'r') as f1:
-        for line in f1:
-            token = line.split(' ', 1)[0]
-            vector = torch.tensor([float(c) for c in line.split(' ', 1)[1].split()], dtype=torch.float)
-            
-            # try:
-            #     if isinstance(token, bytes):
-            #         token = token.decode('utf-8')
-            # except UnicodeDecodeError:
-            #     logger.info("Skipping non-UTF8 token {}".format(repr(word)))
-            #     print("Current line:", len(vectors))
-            #     continue
-
-            if token in stovec:
-                print("Existing vector:", stovec[token][1][:20])
-                print("New vector:", line.split(' ', 1)[1][:20])
-                print("Found dupe for token:", token)
-                print("Past line:", stovec[token][0])
-                print("Current line:", len(vectors))
-                continue
-
-            stovec[token] = (len(vectors), line.split(' ', 1)[1])
-            tokens.append(token)
-            vectors.append(vector)
+    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path)
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, vectors_file_path)
     return vectors_obj
-    
+
 
 def vectors_from_file_object(file_like_object, unk_tensor=None):
     r"""Create a Vectors object from a csv file like object.

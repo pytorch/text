@@ -3,7 +3,6 @@ import os
 import shutil
 import tempfile
 
-import numpy as np
 import torch
 
 from test.common.assets import get_asset_path
@@ -162,8 +161,6 @@ class TestVectors(TorchtextTestCase):
                 torch.testing.assert_allclose(vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
     def test_glo_ve(self):
-        # glo_ve()
-
         # copy the asset file into the expected download location
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)
