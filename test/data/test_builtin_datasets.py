@@ -164,46 +164,44 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(len(train_dataset), 12543)
         self.assertEqual(len(valid_dataset), 2002)
         self.assertEqual(len(test_dataset), 2077)
-        # TODO: replace assert_allclose with self.assertEqual once
-        # https://github.com/pytorch/text/pull/822 has been landed
-        assert_allclose(train_dataset[0][0][:10],
-                        torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585]).long())
-        assert_allclose(train_dataset[0][1][:10],
-                        torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8]).long())
-        assert_allclose(train_dataset[0][2][:10],
-                        torch.tensor([5, 34, 5, 27, 7, 11, 14, 5, 5, 5]).long())
-        assert_allclose(train_dataset[-1][0][:10],
-                        torch.tensor([9, 32, 169, 436, 59, 192, 30, 6, 117, 17]).long())
-        assert_allclose(train_dataset[-1][1][:10],
-                        torch.tensor([5, 10, 11, 4, 11, 11, 3, 12, 11, 4]).long())
-        assert_allclose(train_dataset[-1][2][:10],
-                        torch.tensor([6, 20, 8, 10, 8, 8, 24, 13, 8, 15]).long())
+        self.assertEqual(train_dataset[0][0][:10],
+                         torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585]).long())
+        self.assertEqual(train_dataset[0][1][:10],
+                         torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8]).long())
+        self.assertEqual(train_dataset[0][2][:10],
+                         torch.tensor([5, 34, 5, 27, 7, 11, 14, 5, 5, 5]).long())
+        self.assertEqual(train_dataset[-1][0][:10],
+                         torch.tensor([9, 32, 169, 436, 59, 192, 30, 6, 117, 17]).long())
+        self.assertEqual(train_dataset[-1][1][:10],
+                         torch.tensor([5, 10, 11, 4, 11, 11, 3, 12, 11, 4]).long())
+        self.assertEqual(train_dataset[-1][2][:10],
+                         torch.tensor([6, 20, 8, 10, 8, 8, 24, 13, 8, 15]).long())
 
-        assert_allclose(valid_dataset[0][0][:10],
-                        torch.tensor([746, 3, 10633, 656, 25, 1334, 45]).long())
-        assert_allclose(valid_dataset[0][1][:10],
-                        torch.tensor([6, 7, 8, 4, 7, 2, 3]).long())
-        assert_allclose(valid_dataset[0][2][:10],
-                        torch.tensor([3, 4, 5, 16, 4, 2, 27]).long())
-        assert_allclose(valid_dataset[-1][0][:10],
-                        torch.tensor([354, 4, 31, 17, 141, 421, 148, 6, 7, 78]).long())
-        assert_allclose(valid_dataset[-1][1][:10],
-                        torch.tensor([11, 3, 5, 4, 9, 2, 2, 12, 7, 11]).long())
-        assert_allclose(valid_dataset[-1][2][:10],
-                        torch.tensor([8, 12, 6, 15, 7, 2, 2, 13, 4, 8]).long())
+        self.assertEqual(valid_dataset[0][0][:10],
+                         torch.tensor([746, 3, 10633, 656, 25, 1334, 45]).long())
+        self.assertEqual(valid_dataset[0][1][:10],
+                         torch.tensor([6, 7, 8, 4, 7, 2, 3]).long())
+        self.assertEqual(valid_dataset[0][2][:10],
+                         torch.tensor([3, 4, 5, 16, 4, 2, 27]).long())
+        self.assertEqual(valid_dataset[-1][0][:10],
+                         torch.tensor([354, 4, 31, 17, 141, 421, 148, 6, 7, 78]).long())
+        self.assertEqual(valid_dataset[-1][1][:10],
+                         torch.tensor([11, 3, 5, 4, 9, 2, 2, 12, 7, 11]).long())
+        self.assertEqual(valid_dataset[-1][2][:10],
+                         torch.tensor([8, 12, 6, 15, 7, 2, 2, 13, 4, 8]).long())
 
-        assert_allclose(test_dataset[0][0][:10],
-                        torch.tensor([210, 54, 3115, 0, 12229, 0, 33]).long())
-        assert_allclose(test_dataset[0][1][:10],
-                        torch.tensor([5, 15, 8, 4, 6, 8, 3]).long())
-        assert_allclose(test_dataset[0][2][:10],
-                        torch.tensor([30, 3, 5, 14, 3, 5, 9]).long())
-        assert_allclose(test_dataset[-1][0][:10],
-                        torch.tensor([116, 0, 6, 11, 412, 10, 0, 4, 0, 6]).long())
-        assert_allclose(test_dataset[-1][1][:10],
-                        torch.tensor([5, 4, 12, 10, 9, 15, 4, 3, 4, 12]).long())
-        assert_allclose(test_dataset[-1][2][:10],
-                        torch.tensor([6, 16, 13, 16, 7, 3, 19, 12, 19, 13]).long())
+        self.assertEqual(test_dataset[0][0][:10],
+                         torch.tensor([210, 54, 3115, 0, 12229, 0, 33]).long())
+        self.assertEqual(test_dataset[0][1][:10],
+                         torch.tensor([5, 15, 8, 4, 6, 8, 3]).long())
+        self.assertEqual(test_dataset[0][2][:10],
+                         torch.tensor([30, 3, 5, 14, 3, 5, 9]).long())
+        self.assertEqual(test_dataset[-1][0][:10],
+                         torch.tensor([116, 0, 6, 11, 412, 10, 0, 4, 0, 6]).long())
+        self.assertEqual(test_dataset[-1][1][:10],
+                         torch.tensor([5, 4, 12, 10, 9, 15, 4, 3, 4, 12]).long())
+        self.assertEqual(test_dataset[-1][2][:10],
+                         torch.tensor([6, 16, 13, 16, 7, 3, 19, 12, 19, 13]).long())
 
         # Assert vocabs
         self.assertEqual(len(train_dataset.get_vocabs()), 3)
@@ -223,33 +221,31 @@ class TestDataset(TorchtextTestCase):
         train_dataset, test_dataset = CoNLL2000Chunking()
         self.assertEqual(len(train_dataset), 8936)
         self.assertEqual(len(test_dataset), 2012)
-        # TODO: replace assert_allclose with self.assertEqual once
-        # https://github.com/pytorch/text/pull/822 has been landed
-        assert_allclose(train_dataset[0][0][:10],
-                        torch.tensor([11556, 9, 3, 1775, 17, 1164, 177, 6, 212, 317]).long())
-        assert_allclose(train_dataset[0][1][:10],
-                        torch.tensor([2, 3, 5, 2, 17, 12, 16, 15, 13, 5]).long())
-        assert_allclose(train_dataset[0][2][:10],
-                        torch.tensor([3, 6, 3, 2, 5, 7, 7, 7, 7, 3]).long())
-        assert_allclose(train_dataset[-1][0][:10],
-                        torch.tensor([85, 17, 59, 6473, 288, 115, 72, 5, 2294, 2502]).long())
-        assert_allclose(train_dataset[-1][1][:10],
-                        torch.tensor([18, 17, 12, 19, 10, 6, 3, 3, 4, 4]).long())
-        assert_allclose(train_dataset[-1][2][:10],
-                        torch.tensor([3, 5, 7, 7, 3, 2, 6, 6, 3, 2]).long())
+        self.assertEqual(train_dataset[0][0][:10],
+                         torch.tensor([11556, 9, 3, 1775, 17, 1164, 177, 6, 212, 317]).long())
+        self.assertEqual(train_dataset[0][1][:10],
+                         torch.tensor([2, 3, 5, 2, 17, 12, 16, 15, 13, 5]).long())
+        self.assertEqual(train_dataset[0][2][:10],
+                         torch.tensor([3, 6, 3, 2, 5, 7, 7, 7, 7, 3]).long())
+        self.assertEqual(train_dataset[-1][0][:10],
+                         torch.tensor([85, 17, 59, 6473, 288, 115, 72, 5, 2294, 2502]).long())
+        self.assertEqual(train_dataset[-1][1][:10],
+                         torch.tensor([18, 17, 12, 19, 10, 6, 3, 3, 4, 4]).long())
+        self.assertEqual(train_dataset[-1][2][:10],
+                         torch.tensor([3, 5, 7, 7, 3, 2, 6, 6, 3, 2]).long())
 
-        assert_allclose(test_dataset[0][0][:10],
-                        torch.tensor([0, 294, 73, 10, 13582, 194, 18, 24, 2414, 7]).long())
-        assert_allclose(test_dataset[0][1][:10],
-                        torch.tensor([4, 4, 4, 23, 4, 2, 11, 18, 11, 5]).long())
-        assert_allclose(test_dataset[0][2][:10],
-                        torch.tensor([3, 2, 2, 3, 2, 2, 5, 3, 5, 3]).long())
-        assert_allclose(test_dataset[-1][0][:10],
-                        torch.tensor([51, 456, 560, 2, 11, 465, 2, 1413, 36, 60]).long())
-        assert_allclose(test_dataset[-1][1][:10],
-                        torch.tensor([3, 4, 4, 8, 3, 2, 8, 4, 17, 16]).long())
-        assert_allclose(test_dataset[-1][2][:10],
-                        torch.tensor([6, 3, 2, 4, 6, 3, 4, 3, 5, 7]).long())
+        self.assertEqual(test_dataset[0][0][:10],
+                         torch.tensor([0, 294, 73, 10, 13582, 194, 18, 24, 2414, 7]).long())
+        self.assertEqual(test_dataset[0][1][:10],
+                         torch.tensor([4, 4, 4, 23, 4, 2, 11, 18, 11, 5]).long())
+        self.assertEqual(test_dataset[0][2][:10],
+                         torch.tensor([3, 2, 2, 3, 2, 2, 5, 3, 5, 3]).long())
+        self.assertEqual(test_dataset[-1][0][:10],
+                         torch.tensor([51, 456, 560, 2, 11, 465, 2, 1413, 36, 60]).long())
+        self.assertEqual(test_dataset[-1][1][:10],
+                         torch.tensor([3, 4, 4, 8, 3, 2, 8, 4, 17, 16]).long())
+        self.assertEqual(test_dataset[-1][2][:10],
+                         torch.tensor([6, 3, 2, 4, 6, 3, 4, 3, 5, 7]).long())
 
         # Assert vocabs
         self.assertEqual(len(train_dataset.get_vocabs()), 3)
