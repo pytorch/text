@@ -259,6 +259,53 @@ jobs:
             docker push ${image_name}:${CIRCLE_WORKFLOW_ID}
             docker push ${image_name}:latest
 
+  smoke_test_windows_conda:
+    <<: *binary_common
+    executor:
+      name: windows-cpu
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: install binaries
+          command: |
+            set -x
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
+            conda env remove -n python${PYTHON_VERSION} || true
+            conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
+            conda activate python${PYTHON_VERSION}
+            conda install -v -y -c pytorch-nightly pytorch
+            conda install -v -y -c ~/workspace/conda-bld torchtext
+      - run:
+          name: smoke test
+          command: |
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
+            conda activate python${PYTHON_VERSION}
+            python -c "import torchtext"
+
+  smoke_test_windows_pip:
+    <<: *binary_common
+    executor:
+      name: windows-cpu
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: install binaries
+          command: |
+            set -x
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
+            conda env remove -n python${PYTHON_VERSION} || true
+            conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
+            conda activate python${PYTHON_VERSION}
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+      - run:
+          name: smoke test
+          command: |
+            eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
+            conda activate python${PYTHON_VERSION}
+            python -c "import torchtext"
+
   unittest_linux:
     <<: *binary_common
     docker:
@@ -601,6 +648,14 @@ workflows:
           name: nightly_binary_windows_wheel_py3.6_upload
           requires:
           - nightly_binary_windows_wheel_py3.6
+      - smoke_test_windows_pip:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.6_smoke_test_pip
+          python_version: '3.6'
+          requires:
+          - nightly_binary_windows_wheel_py3.6_upload
       - binary_windows_wheel:
           filters:
             branches:
@@ -615,6 +670,14 @@ workflows:
           name: nightly_binary_windows_wheel_py3.7_upload
           requires:
           - nightly_binary_windows_wheel_py3.7
+      - smoke_test_windows_pip:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.7_smoke_test_pip
+          python_version: '3.7'
+          requires:
+          - nightly_binary_windows_wheel_py3.7_upload
       - binary_windows_wheel:
           filters:
             branches:
@@ -629,6 +692,14 @@ workflows:
           name: nightly_binary_windows_wheel_py3.8_upload
           requires:
           - nightly_binary_windows_wheel_py3.8
+      - smoke_test_windows_pip:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_wheel_py3.8_smoke_test_pip
+          python_version: '3.8'
+          requires:
+          - nightly_binary_windows_wheel_py3.8_upload
       - binary_linux_conda:
           filters:
             branches:
@@ -751,6 +822,14 @@ workflows:
           name: nightly_binary_windows_conda_py3.6_upload
           requires:
           - nightly_binary_windows_conda_py3.6
+      - smoke_test_windows_conda:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.6_smoke_test_conda
+          python_version: '3.6'
+          requires:
+          - nightly_binary_windows_conda_py3.6_upload
       - binary_windows_conda:
           filters:
             branches:
@@ -765,6 +844,14 @@ workflows:
           name: nightly_binary_windows_conda_py3.7_upload
           requires:
           - nightly_binary_windows_conda_py3.7
+      - smoke_test_windows_conda:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.7_smoke_test_conda
+          python_version: '3.7'
+          requires:
+          - nightly_binary_windows_conda_py3.7_upload
       - binary_windows_conda:
           filters:
             branches:
@@ -779,6 +866,14 @@ workflows:
           name: nightly_binary_windows_conda_py3.8_upload
           requires:
           - nightly_binary_windows_conda_py3.8
+      - smoke_test_windows_conda:
+          filters:
+            branches:
+              only: nightly
+          name: nightly_binary_windows_conda_py3.8_smoke_test_conda
+          python_version: '3.8'
+          requires:
+          - nightly_binary_windows_conda_py3.8_upload
   docker_build:
     triggers:
       - schedule:
