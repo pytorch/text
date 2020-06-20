@@ -8,8 +8,8 @@ import torch
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
-    fast_text,
-    glo_ve,
+    FastText,
+    GloVe,
     Vectors,
     vectors_from_file_object
 )
@@ -149,7 +149,7 @@ class TestVectors(TorchtextTestCase):
         with tempfile.TemporaryDirectory() as dir_name:
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
-            vectors_obj = fast_text(root=dir_name)
+            vectors_obj = FastText(root=dir_name, validate_file=False)
 
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = {
@@ -160,7 +160,7 @@ class TestVectors(TorchtextTestCase):
             for word in expected_fasttext_simple_en.keys():
                 self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
-    def test_glo_ve(self):
+    def test_glove(self):
         # copy the asset file into the expected download location
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)
@@ -168,7 +168,7 @@ class TestVectors(TorchtextTestCase):
         with tempfile.TemporaryDirectory() as dir_name:
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
-            vectors_obj = glo_ve(root=dir_name)
+            vectors_obj = GloVe(root=dir_name, validate_file=False)
 
             # The first 3 entries in each vector.
             expected_twitter = {

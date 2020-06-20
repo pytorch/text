@@ -1,0 +1,6 @@
+{
+    "https://nlp.stanford.edu/data/glove.42B.300d.zip": "03d5d7fa28e58762ace4b85fb71fe86a345ef0b5ff39f5390c14869da0fc1970",
+    "https://nlp.stanford.edu/data/glove.840B.300d.zip": "c06db255e65095393609f19a4cfca20bf3a71e20cc53e892aafa490347e3849f",
+    "https://nlp.stanford.edu/data/glove.twitter.27B.zip": "792af52f795d1a32c9842a3240f5f3fe5e941a8ff6df5eb0f9d668092ebc019c",
+    "https://nlp.stanford.edu/data/glove.6B.zip": "617afb2fe6cbd085c235baf7a465b96f4112bd7f7ccb2b2cbd649fed9cbcf2fb"
+}

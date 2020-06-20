@@ -1,4 +1,5 @@
 import csv
+import json
 import logging
 import os
 
@@ -30,25 +31,26 @@ def _load_token_and_vectors_from_file(file_path):
                 continue
 
             if token in stoi:
-                logger.info("Found duplicate entries for token {} on line {}.".format(repr(token), len(vectors) + 1))
+                print("Found dup token {} on line {}".format(repr(token), str(len(vectors) + 1)))
                 dup_tokens.append(token)
                 continue
 
             stoi[token] = len(vectors)
             tokens.append(token)
             vectors.append(vector)
-
     return tokens, vectors, dup_tokens
 
 
-def fast_text(language="en", unk_tensor=None, root='.data'):
+def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
     r"""Create a fast text Vectors object.
 
     Args:
         language (str): the language to use for FastText. The list of supported languages options
                         can be found at https://fasttext.cc/docs/en/language-identification.html
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token
-        root: folder used to store downloaded files in (.data)
+        root (str): folder used to store downloaded files in (.data)
+        validate_file (bool): flag to determine whether to validate the downloaded files checksum.
+                              Should be `False` when running tests with a local asset.
 
     Returns:
         Vectors: a Vectors object.
@@ -58,22 +60,29 @@ def fast_text(language="en", unk_tensor=None, root='.data'):
 
     """
     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
-    vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
-    if os.path.isfile(vectors_file_path):
-        return(torch.load(vectors_file_path))
+    cached_vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
+    if os.path.isfile(cached_vectors_file_path):
+        return(torch.load(cached_vectors_file_path))
 
-    downloaded_file_path = download_from_url(url, root=root)
+    # TODO(Nayef211): determine how to specify a relative file path
+    checksum = None
+    if validate_file:
+        with open("/private/home/nayef211/torchtext/torchtext/experimental/checksums_fast_text.json", 'r') as f:
+            checksums = json.loads(f.read())
+        checksum = checksums.get(url, None)
+
+    downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
     tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-    torch.save(vectors_obj, vectors_file_path)
+    torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 
-def glo_ve(name="840B", unk_tensor=None, root='.data'):
+def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
     r"""Create a GloVe Vectors object.
 
     Args:
@@ -83,30 +92,38 @@ def glo_ve(name="840B", unk_tensor=None, root='.data'):
             - twitter.27B
             - 6B
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
-        root: folder used to store downloaded files in (.data)
-
+        root (str): folder used to store downloaded files in (.data)
+        validate_file (bool): flag to determine whether to validate the downloaded files checksum.
+                              Should be `False` when running tests with a local asset.
     Returns:
         Vectors: a Vectors object.
 
     """
     urls = {
-        '42B': 'http://nlp.stanford.edu/data/glove.42B.300d.zip',
-        '840B': 'http://nlp.stanford.edu/data/glove.840B.300d.zip',
-        'twitter.27B': 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        '6B': 'http://nlp.stanford.edu/data/glove.6B.zip',
+        '42B': 'https://nlp.stanford.edu/data/glove.42B.300d.zip',
+        '840B': 'https://nlp.stanford.edu/data/glove.840B.300d.zip',
+        'twitter.27B': 'https://nlp.stanford.edu/data/glove.twitter.27B.zip',
+        '6B': 'https://nlp.stanford.edu/data/glove.6B.zip',
     }
 
     url = urls[name]
-    vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
-    if os.path.isfile(vectors_file_path):
-        return(torch.load(vectors_file_path))
+    cached_vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
+    if os.path.isfile(cached_vectors_file_path):
+        return(torch.load(cached_vectors_file_path))
 
-    downloaded_file_path = download_from_url(url, root=root)
+    # TODO(Nayef211): determine how to specify a relative file path
+    checksum = None
+    if validate_file:
+        with open("/private/home/nayef211/torchtext/torchtext/experimental/checksums_fast_text.json", 'r') as f:
+            checksums = json.loads(f.read())
+        checksum = checksums.get(url, None)
+
+    downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
     extracted_file_path = extract_archive(downloaded_file_path)[0]
     tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path)
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-    torch.save(vectors_obj, vectors_file_path)
+    torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 
