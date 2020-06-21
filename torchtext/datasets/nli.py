@@ -17,6 +17,7 @@ class ParsedTextField(data.Field):
         Expensive tokenization could be omitted from the pipeline as
         the parse tree annotations are already in tokenized form.
     """
+
     def __init__(self, eos_token='<pad>', lower=False, reverse=False):
         if reverse:
             super(ParsedTextField, self).__init__(
@@ -160,3 +161,29 @@ class MultiNLI(NLIDataset):
                                            extra_fields=extra_fields,
                                            root=root, train=train,
                                            validation=validation, test=test)
+
+
+class XNLI(NLIDataset):
+    urls = ['http://www.nyu.edu/projects/bowman/xnli/XNLI-1.0.zip']
+    dirname = 'XNLI-1.0'
+    name = 'xnli'
+
+    @classmethod
+    def splits(cls, text_field, label_field, genre_field=None, language_field=None,
+               root='.data',
+               validation='xnli.dev.jsonl',
+               test='xnli.test.jsonl'):
+        extra_fields = {}
+        if genre_field is not None:
+            extra_fields["genre"] = ("genre", genre_field)
+        if language_field is not None:
+            extra_fields["language"] = ("language", language_field)
+
+        return super(XNLI, cls).splits(text_field, label_field,
+                                       extra_fields=extra_fields,
+                                       root=root, train=None,
+                                       validation=validation, test=test)
+
+    @classmethod
+    def iters(cls, *args, **kwargs):
+        raise NotImplementedError('XNLI dataset does not support iters')

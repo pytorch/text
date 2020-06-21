@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from collections import Counter
 import os
 
-from numpy.testing import assert_allclose
 import torch
 import torchtext.data as data
 import pytest
-from torch.nn import init
 
 from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
-from ..common.test_markers import slow
 
 
 class TestField(TorchtextTestCase):
@@ -379,9 +375,9 @@ class TestField(TorchtextTestCase):
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
         numericalized_int = int_field.numericalize(test_int_data)
-        assert_allclose(numericalized_int.data.numpy(), [1, 0, 1, 3, 19])
+        self.assertEqual(numericalized_int.data, [1, 0, 1, 3, 19])
         numericalized_float = float_field.numericalize(test_float_data)
-        assert_allclose(numericalized_float.data.numpy(), [1.1, 0.1, 3.91, 0.2, 10.2])
+        self.assertEqual(numericalized_float.data, [1.1, 0.1, 3.91, 0.2, 10.2])
 
         # Test with postprocessing applied
         int_field = data.Field(sequential=False, use_vocab=False,
@@ -399,9 +395,9 @@ class TestField(TorchtextTestCase):
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
         numericalized_int = int_field.numericalize(test_int_data)
-        assert_allclose(numericalized_int.data.numpy(), [2, 1, 2, 4, 20])
+        self.assertEqual(numericalized_int.data, [2, 1, 2, 4, 20])
         numericalized_float = float_field.numericalize(test_float_data)
-        assert_allclose(numericalized_float.data.numpy(), [0.55, 0.05, 1.955, 0.1, 5.1])
+        self.assertEqual(numericalized_float.data, [0.55, 0.05, 1.955, 0.1, 5.1])
 
     def test_errors(self):
         # Test that passing a non-tuple (of data and length) to numericalize
@@ -866,23 +862,6 @@ class TestNestedField(TorchtextTestCase):
         pickled_numericalization = loaded_field.numericalize(examples_data)
 
         assert torch.all(torch.eq(original_numericalization, pickled_numericalization))
-
-    @slow
-    def test_build_vocab(self):
-        nesting_field = data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
-
-        field = data.NestedField(nesting_field, init_token='<s>', eos_token='</s>',
-                                 include_lengths=True,
-                                 pad_first=True)
-
-        sources = [[['a'], ['s', 'e', 'n', 't', 'e', 'n', 'c', 'e'], ['o', 'f'],
-                    ['d', 'a', 't', 'a'], ['.']],
-                   [['y', 'e', 't'], ['a', 'n', 'o', 't', 'h', 'e', 'r']],
-                   [['o', 'n', 'e'], ['l', 'a', 's', 't'], ['s', 'e', 'n', 't']]]
-
-        field.build_vocab(sources, vectors='glove.6B.50d',
-                          unk_init=init.normal_,
-                          vectors_cache=".vector_cache")
 
 
 class TestLabelField(TorchtextTestCase):

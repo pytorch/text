@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import torchtext.data as data
+import os
+import sys
 import tempfile
-import six
+import unittest
 
 import pytest
 
 from ..common.torchtext_test_case import TorchtextTestCase
-import os
 
 
 class TestDataset(TorchtextTestCase):
@@ -59,39 +59,34 @@ class TestDataset(TorchtextTestCase):
                 self.assertEqual(example.q2, expected_examples[i][1])
                 self.assertEqual(example.label, expected_examples[i][2])
 
-    def test_json_dataset_one_key_multiple_fields(self):
-        self.write_test_ppid_dataset(data_format="json")
+    def test_json_valid_and_invalid_nested_key(self):
+        self.write_test_nested_key_json_dataset()
+        valid_fields = {'foods.vegetables.name': ('vegs', data.Field()),
+                        'foods.fruits': ('fruits', data.Field())}
+        invalid_fields = {'foods.vegetables.color': ('vegs', data.Field())}
 
-        question_field = data.Field(sequential=True)
-        spacy_tok_question_field = data.Field(sequential=True, tokenize="spacy")
-        label_field = data.Field(sequential=False)
-        fields = {"question1": [("q1", question_field),
-                                ("q1_spacy", spacy_tok_question_field)],
-                  "question2": [("q2", question_field),
-                                ("q2_spacy", spacy_tok_question_field)],
-                  "label": ("label", label_field)}
-        dataset = data.TabularDataset(
-            path=self.test_ppid_dataset_path, format="json", fields=fields)
         expected_examples = [
-            (["When", "do", "you", "use", "シ", "instead", "of", "し?"],
-             ["When", "do", "you", "use", "シ", "instead", "of", "し", "?"],
-             ["When", "do", "you", "use", "\"&\"",
-              "instead", "of", "\"and\"?"],
-             ["When", "do", "you", "use", "\"", "&", "\"",
-              "instead", "of", "\"", "and", "\"", "?"], "0"),
-            (["Where", "was", "Lincoln", "born?"],
-             ["Where", "was", "Lincoln", "born", "?"],
-             ["Which", "location", "was", "Abraham", "Lincoln", "born?"],
-             ["Which", "location", "was", "Abraham", "Lincoln", "born", "?"],
-             "1"),
-            (["What", "is", "2+2"], ["What", "is", "2", "+", "2"],
-             ["2+2=?"], ["2", "+", "2=", "?"], "1")]
-        for i, example in enumerate(dataset):
-            self.assertEqual(example.q1, expected_examples[i][0])
-            self.assertEqual(example.q1_spacy, expected_examples[i][1])
-            self.assertEqual(example.q2, expected_examples[i][2])
-            self.assertEqual(example.q2_spacy, expected_examples[i][3])
-            self.assertEqual(example.label, expected_examples[i][4])
+            {"fruits": ["Apple", "Banana"],
+             "vegs": ["Broccoli", "Cabbage"]},
+            {"fruits": ["Cherry", "Grape", "Lemon"],
+             "vegs": ["Cucumber", "Lettuce"]},
+            {"fruits": ["Orange", "Pear", "Strawberry"],
+             "vegs": ["Marrow", "Spinach"]}
+        ]
+        dataset = data.TabularDataset(
+            path=self.test_nested_key_json_dataset_path,
+            format="json",
+            fields=valid_fields)
+        # check results
+        for example, expect in zip(dataset.examples, expected_examples):
+            self.assertEqual(example.vegs, expect['vegs'])
+            self.assertEqual(example.fruits, expect['fruits'])
+
+        with self.assertRaises(ValueError):
+            data.TabularDataset(
+                path=self.test_nested_key_json_dataset_path,
+                format="json",
+                fields=invalid_fields)
 
     def test_errors(self):
         # Ensure that trying to retrieve a key not in JSON data errors
@@ -171,43 +166,7 @@ class TestDataset(TorchtextTestCase):
                                       sort_within_batch=False, repeat=False)
             next(data_iter.__iter__())
 
-    def test_csv_file_no_header_one_col_multiple_fields(self):
-        self.write_test_ppid_dataset(data_format="csv")
-
-        question_field = data.Field(sequential=True)
-        spacy_tok_question_field = data.Field(sequential=True, tokenize="spacy")
-        label_field = data.Field(sequential=False)
-        # Field name/value as nested tuples
-        fields = [("ids", None),
-                  (("q1", "q1_spacy"), (question_field, spacy_tok_question_field)),
-                  (("q2", "q2_spacy"), (question_field, spacy_tok_question_field)),
-                  ("label", label_field)]
-        dataset = data.TabularDataset(
-            path=self.test_ppid_dataset_path, format="csv", fields=fields)
-        expected_examples = [
-            (["When", "do", "you", "use", "シ", "instead", "of", "し?"],
-             ["When", "do", "you", "use", "シ", "instead", "of", "し", "?"],
-             ["When", "do", "you", "use", "\"&\"",
-              "instead", "of", "\"and\"?"],
-             ["When", "do", "you", "use", "\"", "&", "\"",
-              "instead", "of", "\"", "and", "\"", "?"], "0"),
-            (["Where", "was", "Lincoln", "born?"],
-             ["Where", "was", "Lincoln", "born", "?"],
-             ["Which", "location", "was", "Abraham", "Lincoln", "born?"],
-             ["Which", "location", "was", "Abraham", "Lincoln", "born", "?"],
-             "1"),
-            (["What", "is", "2+2"], ["What", "is", "2", "+", "2"],
-             ["2+2=?"], ["2", "+", "2=", "?"], "1")]
-        for i, example in enumerate(dataset):
-            self.assertEqual(example.q1, expected_examples[i][0])
-            self.assertEqual(example.q1_spacy, expected_examples[i][1])
-            self.assertEqual(example.q2, expected_examples[i][2])
-            self.assertEqual(example.q2_spacy, expected_examples[i][3])
-            self.assertEqual(example.label, expected_examples[i][4])
-
-        # 6 Fields including None for ids
-        assert len(dataset.fields) == 6
-
+    @unittest.skipIf(sys.platform == "win32", "FIXME: tempfile could not be opened twice on Windows")
     def test_csv_dataset_quotechar(self):
         # Based on issue #349
         example_data = [("text", "label"),
@@ -217,7 +176,7 @@ class TestDataset(TorchtextTestCase):
 
         with tempfile.NamedTemporaryFile(dir=self.test_dir) as f:
             for example in example_data:
-                f.write(six.b("{}\n".format(",".join(example))))
+                f.write("{}\n".format(",".join(example)).encode("latin-1"))
 
             TEXT = data.Field(lower=True, tokenize=lambda x: x.split())
             fields = {

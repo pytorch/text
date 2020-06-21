@@ -1,14 +1,12 @@
+#!/usr/bin/env python3
+# Note that all the tests in this module require dataset (either network access or cached)
 import unittest
-import pytest
-import sys
 
 from torchtext import data
 from torchtext.datasets import TREC
 
 
 class TestSubword(unittest.TestCase):
-    @pytest.mark.skipif(sys.version_info < (3, 0),
-                        reason="revtok currently breaks for python 2.7")
     def test_subword_trec(self):
         TEXT = data.SubwordField()
         LABEL = data.Field(sequential=False)

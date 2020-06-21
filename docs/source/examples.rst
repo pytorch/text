@@ -4,7 +4,9 @@
 Examples
 =========
 
-Ability to describe declaratively how to load a custom NLP dataset that's in a "normal" format:
+Note: We are working on new building blocks and datasets. Some of the components in the examples (e.g. Field) will eventually retire. See the release note 0.5.0 `here <https://github.com/pytorch/text/releases>`_. 
+
+1. Ability to describe declaratively how to load a custom NLP dataset that's in a "normal" format:
 
 .. code-block:: python
 
@@ -18,7 +20,29 @@ Ability to describe declaratively how to load a custom NLP dataset that's in a "
         fields={'sentence_tokenized': ('text', data.Field(sequential=True)),
                  'sentiment_gold': ('labels', data.Field(sequential=False))})
 
-Ability to define a preprocessing pipeline:
+2. Ability to parse nested keys for loading a JSON dataset
+
+2.1 sample.json
+
+.. code-block:: json
+
+    {"foods": {
+        "fruits": ["Apple", "Banana"], 
+        "vegetables": [{"name": "lettuce"}, {"name": "marrow"}]
+        }
+    }
+
+2.2 pass in nested keys to parse nested data directly
+
+.. code-block:: python
+
+    In [1]: from torchtext import data
+    In [2]: fields = {'foods.vegetables.name': ('vegs', data.Field())}
+    In [3]: dataset = data.TabularDataset(path='sample.json', format='json', fields=fields)
+    In [4]: dataset.examples[0].vegs
+    Out[4]: ['lettuce', 'marrow']
+
+3. Ability to define a preprocessing pipeline:
 
 .. code-block:: python
 
@@ -28,7 +52,7 @@ Ability to define a preprocessing pipeline:
         path='data/mt/wmt16-ende.train', exts=('.en', '.de'),
         fields=(src, trg))
 
-Batching, padding, and numericalizing (including building vocabulary object):
+4. Batching, padding, and numericalizing (including building vocabulary object):
 
 .. code-block:: python
 
@@ -47,7 +71,7 @@ Batching, padding, and numericalizing (including building vocabulary object):
     >>>next(iter(train_iter))
     <data.Batch(batch_size=32, src=[LongTensor (32, 25)], trg=[LongTensor (32, 28)])>
 
-Wrapper for dataset splits (train, validation, test):
+5. Wrapper for dataset splits (train, validation, test):
 
 .. code-block:: python
 

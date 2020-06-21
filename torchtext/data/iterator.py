@@ -1,10 +1,9 @@
-from __future__ import division
-
 import math
 import random
 
 import logging
 
+import torch
 from .utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
@@ -62,11 +61,17 @@ class Iterator(object):
         else:
             self.sort_key = sort_key
 
-        if type(device) == int:
+        if isinstance(device, int):
             logger.warning("The `device` argument should be set by using `torch.device`"
                            + " or passing a string as an argument. This behavior will be"
                            + " deprecated soon and currently defaults to cpu.")
             device = None
+
+        if device is None:
+            device = torch.device('cpu')
+        elif isinstance(device, str):
+            device = torch.device(device)
+
         self.device = device
         self.random_shuffler = RandomShuffler()
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from unittest import TestCase
+from torch.testing._internal.common_utils import TestCase
 import json
 import logging
 import os
@@ -30,6 +30,8 @@ class TorchtextTestCase(TestCase):
                                                             "test_msg_field_dst")
         self.test_dataset_splitting_path = os.path.join(self.test_dir,
                                                         "test_dataset_split")
+        self.test_nested_key_json_dataset_path = os.path.join(self.test_dir,
+                                                              "test_nested_key_json")
 
     def tearDown(self):
         try:
@@ -54,7 +56,7 @@ class TorchtextTestCase(TestCase):
              "question2": "2+2=?",
              "label": "1"},
         ]
-        with open(self.test_ppid_dataset_path, "w") as test_ppid_dataset_file:
+        with open(self.test_ppid_dataset_path, "w", encoding="utf-8") as test_ppid_dataset_file:
             for example in dict_dataset:
                 if data_format == "json":
                     test_ppid_dataset_file.write(json.dumps(example) + "\n")
@@ -64,6 +66,32 @@ class TorchtextTestCase(TestCase):
                                     example["question2"], example["label"]])))
                 else:
                     raise ValueError("Invalid format {}".format(data_format))
+
+    def write_test_nested_key_json_dataset(self):
+        """
+        Used only to test nested key parsing of Example.fromJSON()
+        """
+        dict_dataset = [
+            {"foods":
+                {"fruits": ["Apple", "Banana"],
+                 "vegetables": [
+                    {"name": "Broccoli"},
+                    {"name": "Cabbage"}]}},
+            {"foods":
+                {"fruits": ["Cherry", "Grape", "Lemon"],
+                 "vegetables": [
+                    {"name": "Cucumber"},
+                    {"name": "Lettuce"}]}},
+            {"foods":
+                {"fruits": ["Orange", "Pear", "Strawberry"],
+                 "vegetables": [
+                    {"name": "Marrow"},
+                    {"name": "Spinach"}]}},
+        ]
+        with open(self.test_nested_key_json_dataset_path,
+                  "w") as test_nested_key_json_dataset_file:
+            for example in dict_dataset:
+                test_nested_key_json_dataset_file.write(json.dumps(example) + "\n")
 
     def write_test_numerical_features_dataset(self):
         with open(self.test_numerical_features_dataset_path,
@@ -109,7 +137,7 @@ def verify_numericalized_example(field, test_example_data,
         test_example_numericalized, lengths = test_example_numericalized
         assert test_example_lengths == lengths.tolist()
     if batch_first:
-        test_example_numericalized.data.t_()
+        test_example_numericalized.t_()
     # Transpose numericalized example so we can compare over batches
     for example_idx, numericalized_single_example in enumerate(
             test_example_numericalized.t()):
