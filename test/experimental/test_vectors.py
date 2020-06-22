@@ -16,7 +16,6 @@ from torchtext.experimental.vectors import (
 
 
 class TestVectors(TorchtextTestCase):
-
     def test_empty_vectors(self):
         tokens = []
         vectors = []
@@ -171,10 +170,10 @@ class TestVectors(TorchtextTestCase):
             vectors_obj = GloVe(root=dir_name, validate_file=False)
 
             # The first 3 entries in each vector.
-            expected_twitter = {
+            expected_glove = {
                 'the': [0.27204, -0.06203, -0.1884],
                 'people': [-0.19686, 0.11579, -0.41091],
             }
 
-            for word in expected_twitter.keys():
-                self.assertEqual(vectors_obj[word][:3], expected_twitter[word])
+            for word in expected_glove.keys():
+                self.assertEqual(vectors_obj[word][:3], expected_glove[word])
