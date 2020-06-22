@@ -84,6 +84,9 @@ target/
 # thirdparty dirs
 third_party/*/
 
+# computed checksum files
+torchtext/experimental/asset/.checksums/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 

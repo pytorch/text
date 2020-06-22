@@ -445,11 +445,8 @@ def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
     if os.path.isfile(cached_vectors_file_path):
         return(torch.load(cached_vectors_file_path))
 
-    # TODO(Nayef211): determine how to specify a relative file path
     checksum = None
     if validate_file:
-        # with open("/private/home/nayef211/torchtext/torchtext/experimental/checksums_fast_text.json", 'r') as f:
-        #     checksums = json.loads(f.read())
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
@@ -500,11 +497,8 @@ def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
     if os.path.isfile(cached_vectors_file_path):
         return(torch.load(cached_vectors_file_path))
 
-    # TODO(Nayef211): determine how to specify a relative file path
     checksum = None
     if validate_file:
-        # with open("/private/home/nayef211/torchtext/torchtext/experimental/checksums_fast_text.json", 'r') as f:
-        #     checksums = json.loads(f.read())
         checksum = CHECKSUMS_GLOVE.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
