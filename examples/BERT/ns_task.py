@@ -208,7 +208,7 @@ if __name__ == "__main__":
                         help='initial learning rate')
     parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=1,
+    parser.add_argument('--epochs', type=int, default=5,
                         help='upper epoch limit')
     parser.add_argument('--batch_size', type=int, default=24, metavar='N',
                         help='batch size')
