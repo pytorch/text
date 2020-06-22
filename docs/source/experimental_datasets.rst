@@ -141,6 +141,13 @@ PennTreebank
   :members: __init__ 
 
 
+WMTNewsCrawl
+~~~~~~~~~~~~
+
+.. autoclass:: WMTNewsCrawl 
+  :members: __init__ 
+
+
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
@@ -149,11 +156,13 @@ Language modeling datasets are subclasses of ``TranslationDataset`` class.
 .. autoclass:: TranslationDataset
   :members: __init__
 
+
 Multi30k
 ~~~~~~~~
 
 .. autoclass:: Multi30k
   :members: __init__
+
 
 IWSLT
 ~~~~~
@@ -161,9 +170,31 @@ IWSLT
 .. autoclass:: IWSLT
   :members: __init__
 
+
 WMT14
 ~~~~~
 
 .. autoclass:: WMT14
   :members: __init__
 
+Question Answer
+^^^^^^^^^^^^^^^
+
+Question answer datasets are subclasses of ``QuestionAnswerDataset`` class.
+
+.. autoclass:: QuestionAnswerDataset 
+  :members: __init__
+
+
+SQuAD 1.0
+~~~~~~~~~
+
+.. autoclass:: SQuAD1
+  :members: __init__ 
+
+
+SQuAD 2.0
+~~~~~~~~~
+
+.. autoclass:: SQuAD2
+  :members: __init__ 
