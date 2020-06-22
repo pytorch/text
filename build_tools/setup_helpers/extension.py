@@ -91,8 +91,6 @@ def _build_third_party(debug):
     if platform.system() == 'Windows':
         extra_args = [
             '-GNinja',
-            '-DCMAKE_CXX_FLAGS=/MT',
-            '-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"',
         ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
