@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 def _load_token_and_vectors_from_file(file_path):
+    dup_token_glove = ("����������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������", 140649)
     stoi, tokens, vectors, dup_tokens = {}, [], [], []
     with open(file_path, 'rb') as f:
         for line in tqdm(f):
             token, entries = line.rstrip().split(b" ", 1)
             vector = torch.tensor([float(c) for c in entries.split(b" ")], dtype=torch.float)
-
             try:
                 if isinstance(token, bytes):
                     token = token.decode('utf-8')
@@ -31,7 +31,10 @@ def _load_token_and_vectors_from_file(file_path):
                 continue
 
             if token in stoi:
-                print("Found dup token {} on line {}".format(repr(token), str(len(vectors) + 1)))
+                if token == dup_token_glove[0] and len(vectors) + 1 == dup_token_glove[1]:
+                    print("Found dup token {} on line {}".format(token, str(len(vectors) + 1)))
+                else:
+                    print("Error")
                 dup_tokens.append(token)
                 continue
 
