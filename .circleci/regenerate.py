@@ -57,7 +57,16 @@ def generate_base_workflow(base_workflow_name, python_version, filter_branch, os
 
 
 def gen_filter_branch_tree(branch_name):
-    return {"branches": {"only": branch_name}}
+    return {
+        "branches": {
+            "only": branch_name
+        },
+        "tags": {
+            # Using a raw string here to avoid having to escape
+            # anything
+            "only": r"/v[0-9]+(\.[0-9]+)*-rc[0-9]+/"
+        }
+    }
 
 
 def generate_upload_workflow(base_workflow_name, filter_branch, btype):
