@@ -161,10 +161,6 @@ class TestVectors(TorchtextTestCase):
                 self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
     def test_glove(self):
-        GloVe("42B")
-        GloVe("840B")
-        GloVe("twitter.27B")
-        GloVe("6B")
         # copy the asset file into the expected download location
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)

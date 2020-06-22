@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 def _load_token_and_vectors_from_file(file_path):
-    dup_token_glove = ("����������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������������", 140649)
     stoi, tokens, vectors, dup_tokens = {}, [], [], []
     with open(file_path, 'rb') as f:
         for line in tqdm(f):
@@ -31,11 +30,7 @@ def _load_token_and_vectors_from_file(file_path):
                 continue
 
             if token in stoi:
-                if token == dup_token_glove[0] and len(vectors) + 1 == dup_token_glove[1]:
-                    print("Found dup token {} on line {}".format(token, str(len(vectors) + 1)))
-                else:
-                    print("Error")
-                dup_tokens.append(token)
+                dup_tokens.append(token, len(vectors) + 1)
                 continue
 
             stoi[token] = len(vectors)
@@ -45,7 +40,7 @@ def _load_token_and_vectors_from_file(file_path):
 
 
 def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
-    r"""Create a fast text Vectors object.
+    r"""Create a FastText Vectors object.
 
     Args:
         language (str): the language to use for FastText. The list of supported languages options
@@ -59,7 +54,7 @@ def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
         Vectors: a Vectors object.
 
     Raises:
-        ValueError: if duplicate tokens are found in fasttext file.
+        ValueError: if duplicate tokens are found in FastText file.
 
     """
     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
@@ -101,7 +96,15 @@ def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
     Returns:
         Vectors: a Vectors object.
 
+    Raises:
+        ValueError: if unexpected duplicate tokens are found in GloVe file.
+
     """
+    dup_token_glove_840b = ("����������������������������������������������������������������������"
+                            "����������������������������������������������������������������������"
+                            "����������������������������������������������������������������������"
+                            "����������������������������������������������������������������������"
+                            "������������������������������������������������������", 140649)
     urls = {
         '42B': 'https://nlp.stanford.edu/data/glove.42B.300d.zip',
         '840B': 'https://nlp.stanford.edu/data/glove.840B.300d.zip',
@@ -124,6 +127,11 @@ def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
     extracted_file_path = extract_archive(downloaded_file_path)[0]
     tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path)
+
+    # Ensure there is only 1 expected duplicate token present
+    if not (len(dup_tokens) == 1 and dup_tokens[0] == dup_token_glove_840b[0] and
+       dup_tokens[1] == dup_token_glove_840b[1]):
+        raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, cached_vectors_file_path)
