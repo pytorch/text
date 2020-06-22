@@ -28,9 +28,9 @@ size_t str_hash(const std::string &str) {
 
 struct Vectors : torch::CustomClassHolder {
 private:
-  std::unordered_map<std::string, torch::Tensor, decltype(&str_hash)> stoi_;
+  // std::unordered_map<std::string, torch::Tensor, decltype(&str_hash)> stoi_;
 
-  // std::unordered_map<std::string, torch::Tensor> stoi_;
+  std::unordered_map<std::string, torch::Tensor> stoi_;
 
   // std::unordered_map<std::string, int, stoi_hash_fn> stoi_;
 
