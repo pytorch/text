@@ -1,4 +1,5 @@
 import torch
+from torch.nn import Linear
 from torchtext.modules import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
 from torch.nn.functional import multi_head_attention_forward as mha_forward
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -9,13 +10,13 @@ class TestModels(TorchtextTestCase):
     def test_multiheadattention(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
-        in_proj = InProjContainer(torch.nn.Linear(embed_dim, embed_dim, bias=False),
-                                  torch.nn.Linear(embed_dim, embed_dim, bias=False),
-                                  torch.nn.Linear(embed_dim, embed_dim, bias=False))
+        in_proj = InProjContainer(Linear(embed_dim, embed_dim, bias=False),
+                                  Linear(embed_dim, embed_dim, bias=False),
+                                  Linear(embed_dim, embed_dim, bias=False))
 
         MHA = MultiheadAttentionContainer(nhead, in_proj,
                                           ScaledDotProduct(),
-                                          torch.nn.Linear(embed_dim, embed_dim, bias=False))
+                                          Linear(embed_dim, embed_dim, bias=False))
 
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
@@ -47,32 +48,41 @@ class TestModels(TorchtextTestCase):
     def test_mha_batch_first(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
         # Build torchtext MultiheadAttention module
-        in_proj = InProjContainer(torch.nn.Linear(embed_dim, embed_dim, bias=False),
-                                  torch.nn.Linear(embed_dim, embed_dim, bias=False),
-                                  torch.nn.Linear(embed_dim, embed_dim, bias=False))
+        in_proj = InProjContainer(Linear(embed_dim, embed_dim, bias=False),
+                                  Linear(embed_dim, embed_dim, bias=False),
+                                  Linear(embed_dim, embed_dim, bias=False))
 
         MHA_batch_1st = MultiheadAttentionContainer(nhead, in_proj,
                                                     ScaledDotProduct(),
-                                                    torch.nn.Linear(embed_dim, embed_dim, bias=False), batch_first=True)
-        MHA_batch_2nd = MultiheadAttentionContainer(nhead, in_proj,
-                                                    ScaledDotProduct(),
-                                                    torch.nn.Linear(embed_dim, embed_dim, bias=False))
+                                                    Linear(embed_dim, embed_dim, bias=False),
+                                                    batch_first=True)
 
         query = torch.rand((tgt_len, bsz, embed_dim))
         key = value = torch.rand((src_len, bsz, embed_dim))
         attn_mask_2D = torch.randint(0, 2, (tgt_len, src_len)).to(torch.bool)
         bias_k = bias_v = torch.rand((1, 1, embed_dim))
-        mha_output_2nd, attn_weights_2nd = MHA_batch_2nd(query, key, value,
-                                                         attn_mask=torch.stack([attn_mask_2D] * (bsz * nhead)),
-                                                         bias_k=bias_k.repeat(1, bsz, 1).reshape(1, bsz * nhead, -1),
-                                                         bias_v=bias_v.repeat(1, bsz, 1).reshape(1, bsz * nhead, -1))
         mha_output_1st, attn_weights_1st = MHA_batch_1st(query.transpose(0, 1), key.transpose(0, 1), value.transpose(0, 1),
                                                          attn_mask=torch.stack([attn_mask_2D] * (bsz * nhead)),
                                                          bias_k=bias_k.repeat(1, bsz, 1).reshape(1, bsz * nhead, -1),
                                                          bias_v=bias_v.repeat(1, bsz, 1).reshape(1, bsz * nhead, -1))
 
-        self.assertEqual(mha_output_1st, mha_output_2nd.transpose(0, 1))
-        self.assertEqual(attn_weights_1st, attn_weights_2nd)
+        # Use torch.nn.functional.multi_head_attention_forward
+        torch_attn_mask = torch.zeros((tgt_len, src_len)).masked_fill_(attn_mask_2D, float('-inf'))
+        in_proj_weight = torch.cat([MHA_batch_1st.in_proj_container.query_proj.weight,
+                                    MHA_batch_1st.in_proj_container.key_proj.weight,
+                                    MHA_batch_1st.in_proj_container.value_proj.weight])
+        torch_mha_output, torch_mha_weights = mha_forward(query, key, value,
+                                                          embed_dim, nhead,
+                                                          in_proj_weight, None,
+                                                          bias_k, bias_v,
+                                                          False, 0.0,
+                                                          MHA_batch_1st.out_proj.weight, None,
+                                                          attn_mask=torch_attn_mask)
+
+        self.assertEqual(mha_output_1st.tranpose(0, 1), torch_mha_output)
+        # With bias_k and bias_v, src_len needs to plus 1
+        attn_weights_ist = attn_weights_ist.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
+        self.assertEqual(attn_weights_ist, torch_mha_weights)
 
     def test_broadcast_scaled_dot_product(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64

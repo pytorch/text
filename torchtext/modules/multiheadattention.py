@@ -186,7 +186,7 @@ class ScaledDotProduct(torch.nn.Module):
         if self.batch_first:
             return attn_output, attn_output_weights
         else:
-            return attn_output.transpose(-2, -3), attn_output_weights
+            return attn_output.transpose(-3, -2), attn_output_weights
 
 
 class InProjContainer(torch.nn.Module):
