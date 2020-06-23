@@ -142,6 +142,7 @@ class TestVectors(TorchtextTestCase):
 
     def test_fast_text(self):
         # copy the asset file into the expected download location
+        # note that this is just a file with the first 100 entries of the FastText english dataset
         asset_name = 'wiki.en.vec'
         asset_path = get_asset_path(asset_name)
 
@@ -163,6 +164,7 @@ class TestVectors(TorchtextTestCase):
 
     def test_glove(self):
         # copy the asset file into the expected download location
+        # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)
 
