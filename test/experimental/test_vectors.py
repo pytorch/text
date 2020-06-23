@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
-import torch
 import os
+import shutil
+import tempfile
+
+import torch
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
+    FastText,
+    GloVe,
     Vectors,
     vectors_from_file_object
 )
 
 
 class TestVectors(TorchtextTestCase):
-
     def test_empty_vectors(self):
         tokens = []
         vectors = []
@@ -135,3 +139,47 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['a'], expected_tensorA)
         self.assertEqual(vectors_obj['b'], expected_tensorB)
         self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+
+    def test_fast_text(self):
+        # copy the asset file into the expected download location
+        # note that this is just a file with the first 100 entries of the FastText english dataset
+        asset_name = 'wiki.en.vec'
+        asset_path = get_asset_path(asset_name)
+
+        with tempfile.TemporaryDirectory() as dir_name:
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
+            vectors_obj = FastText(root=dir_name, validate_file=False)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
+
+            # The first 3 entries in each vector.
+            expected_fasttext_simple_en = {
+                'the': [-0.065334, -0.093031, -0.017571],
+                'world': [-0.32423, -0.098845, -0.0073467],
+            }
+
+            for word in expected_fasttext_simple_en.keys():
+                self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
+
+    def test_glove(self):
+        # copy the asset file into the expected download location
+        # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
+        asset_name = 'glove.840B.300d.zip'
+        asset_path = get_asset_path(asset_name)
+
+        with tempfile.TemporaryDirectory() as dir_name:
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
+            vectors_obj = GloVe(root=dir_name, validate_file=False)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
+
+            # The first 3 entries in each vector.
+            expected_glove = {
+                'the': [0.27204, -0.06203, -0.1884],
+                'people': [-0.19686, 0.11579, -0.41091],
+            }
+
+            for word in expected_glove.keys():
+                self.assertEqual(vectors_obj[word][:3], expected_glove[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
