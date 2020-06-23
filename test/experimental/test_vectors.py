@@ -149,6 +149,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = FastText(root=dir_name, validate_file=False)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
 
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = {
@@ -158,6 +159,7 @@ class TestVectors(TorchtextTestCase):
 
             for word in expected_fasttext_simple_en.keys():
                 self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
     def test_glove(self):
         # copy the asset file into the expected download location
@@ -168,6 +170,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = GloVe(root=dir_name, validate_file=False)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
 
             # The first 3 entries in each vector.
             expected_glove = {
@@ -177,3 +180,4 @@ class TestVectors(TorchtextTestCase):
 
             for word in expected_glove.keys():
                 self.assertEqual(vectors_obj[word][:3], expected_glove[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
