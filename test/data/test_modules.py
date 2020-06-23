@@ -79,7 +79,7 @@ class TestModels(TorchtextTestCase):
                                                           MHA_batch_1st.out_proj.weight, None,
                                                           attn_mask=torch_attn_mask)
 
-        self.assertEqual(mha_output_1st.tranpose(0, 1), torch_mha_output)
+        self.assertEqual(mha_output_1st.transpose(0, 1), torch_mha_output)
         # With bias_k and bias_v, src_len needs to plus 1
         attn_weights_ist = attn_weights_ist.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
         self.assertEqual(attn_weights_ist, torch_mha_weights)
