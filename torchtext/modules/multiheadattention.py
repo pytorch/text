@@ -3,7 +3,7 @@ from typing import Tuple, Optional
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
-    def __init__(self, nhead, in_proj_container, attention_layer, out_proj):
+    def __init__(self, nhead, in_proj_container, attention_layer, out_proj, batch_first=False):
         r""" A multi-head attention container
 
         Args:
@@ -11,6 +11,8 @@ class MultiheadAttentionContainer(torch.nn.Module):
             in_proj_container: A container of multi-head in-projection linear layers (a.k.a nn.Linear).
             attention_layer: The attention layer.
             out_proj: The multi-head out-projection layer (a.k.a nn.Linear).
+            batch_first: If ``True``, then the input and output tensors are provided
+                as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
             >>> import torch
@@ -33,6 +35,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.in_proj_container = in_proj_container
         self.attention_layer = attention_layer
         self.out_proj = out_proj
+        self.batch_first = batch_first
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
                 attn_mask: Optional[torch.Tensor] = None,
@@ -60,6 +63,9 @@ class MultiheadAttentionContainer(torch.nn.Module):
             where where L is the target length, S is the sequence length, H is the number of attention heads,
                 N is the batch size, and E is the embedding dimension.
         """
+        if self.batch_first:
+            query, key, value = query.transpose(-3, -2), key.transpose(-3, -2), value.transpose(-3, -2)
+
         tgt_len, src_len, bsz, embed_dim = query.size(-3), key.size(-3), query.size(-2), query.size(-1)
         q, k, v = self.in_proj_container(query, key, value)
         assert q.size(-1) % self.nhead == 0, "query's embed_dim must be divisible by the number of heads"
@@ -78,17 +84,23 @@ class MultiheadAttentionContainer(torch.nn.Module):
                                                                 bias_k=bias_k, bias_v=bias_v)
         attn_output = attn_output.reshape(tgt_len, bsz, embed_dim)
         attn_output = self.out_proj(attn_output)
+
+        if self.batch_first:
+            attn_output = attn_output.transpose(-3, -2)
+
         return attn_output, attn_output_weights
 
 
 class ScaledDotProduct(torch.nn.Module):
 
-    def __init__(self, dropout=0.0):
+    def __init__(self, dropout=0.0, batch_first=False):
         r"""Processes a projected query and key-value pair to apply
         scaled dot product attention.
 
         Args:
             dropout (float): probability of dropping an attention weight.
+            batch_first: If ``True``, then the input and output tensors are provided
+                as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
             >>> SDP = torchtext.models.ScaledDotProduct(0.1)
@@ -100,6 +112,7 @@ class ScaledDotProduct(torch.nn.Module):
         """
         super(ScaledDotProduct, self).__init__()
         self.dropout = dropout
+        self.batch_first = batch_first
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
                 attn_mask: Optional[torch.Tensor] = None,
@@ -130,6 +143,9 @@ class ScaledDotProduct(torch.nn.Module):
             where L is the target length, S is the source length, H is the number
             of attention heads, N is the batch size, and E is the embedding dimension.
         """
+        if self.batch_first:
+            query, key, value = query.transpose(-3, -2), key.transpose(-3, -2), value.transpose(-3, -2)
+
         if bias_k is not None and bias_v is not None:
             assert key.size(-1) == bias_k.size(-1) and key.size(-2) == bias_k.size(-2) and bias_k.size(-3) == 1, \
                 "Shape of bias_k is not supported"
@@ -166,7 +182,11 @@ class ScaledDotProduct(torch.nn.Module):
         attn_output_weights = torch.nn.functional.softmax(attn_output_weights, dim=-1)
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
-        return attn_output.transpose(-2, -3), attn_output_weights
+
+        if self.batch_first:
+            return attn_output, attn_output_weights
+        else:
+            return attn_output.transpose(-2, -3), attn_output_weights
 
 
 class InProjContainer(torch.nn.Module):
