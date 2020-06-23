@@ -19,6 +19,7 @@ torchtext.experimental.vectors
 
 .. autofunction:: vectors_from_file_object
 
+<<<<<<< HEAD
 :hidden:`fast_text`
 ~~~~~~~~~~~~~~~~~~~
 
@@ -28,3 +29,14 @@ torchtext.experimental.vectors
 ~~~~~~~~~~~~~~~~
 
 .. autofunction:: glo_ve
+=======
+:hidden:`FastText`
+~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: FastText
+
+:hidden:`GloVe`
+~~~~~~~~~~~~~~~~
+
+.. autofunction:: GloVe
+>>>>>>> master
