@@ -60,6 +60,7 @@ def _get_include_dirs():
 def _get_library_dirs():
     return [
         str(_TP_INSTALL_DIR / 'lib'),
+        str(_TP_INSTALL_DIR / 'lib64')
     ]
 
 
@@ -78,7 +79,46 @@ def _get_libraries():
     return [
         'sentencepiece_train',
         'sentencepiece',
+        're2'
     ]
+
+
+def _build_third_party(debug):
+    build_dir = _TP_BASE_DIR / 'build'
+    build_dir.mkdir(exist_ok=True)
+    build_env = os.environ.copy()
+    config = 'Debug' if debug else 'Release'
+    if platform.system() == 'Windows':
+        extra_args = [
+            '-GNinja',
+        ]
+        build_env.setdefault('CC', 'cl')
+        build_env.setdefault('CXX', 'cl')
+    else:
+        extra_args = ['-DCMAKE_CXX_FLAGS=-fPIC']
+    subprocess.run(
+        args=[
+            'cmake',
+            '-DBUILD_SHARED_LIBS=OFF',
+            '-DRE2_BUILD_TESTING=OFF',
+            '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
+            f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
+            f'-DCMAKE_BUILD_TYPE={config}',
+        ] + extra_args + ['..'],
+        cwd=str(build_dir),
+        check=True,
+        env=build_env,
+    )
+    print('*** Command list Thirdparty ***')
+    with open(build_dir / 'compile_commands.json', 'r') as fileobj:
+        print(fileobj.read())
+    print(f'running cmake --build', flush=True)
+    subprocess.run(
+        args=['cmake', '--build', '.', '--target', 'install', '--config', config],
+        cwd=str(build_dir),
+        check=True,
+        env=build_env,
+    )
 
 
 def _build_sentence_piece(debug):
@@ -108,6 +148,7 @@ def _build_sentence_piece(debug):
 
 
 def _configure_third_party(debug):
+    _build_third_party(debug)
     _build_sentence_piece(debug)
 
 

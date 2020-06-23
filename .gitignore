@@ -130,6 +130,7 @@ venv.bak/
 *.swp
 *.swo
 
-
-
 torchtext/version.py
+
+# Thirdparty directories
+third_party/*/
