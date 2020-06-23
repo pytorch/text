@@ -27,8 +27,9 @@ def benchmark_experimental_vectors():
 
     # experimental FastText
     fast_text_experimental = FastTextExperimental(root="/private/home/nayef211/torchtext/test/experimental/.data")
+    jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
     print("FastText Experimental")
-    _run_benchmark(tokens, fast_text_experimental)
+    _run_benchmark(tokens, jit_fast_text_experimental)
 
     print("Done")
 
