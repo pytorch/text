@@ -81,8 +81,8 @@ class TestModels(TorchtextTestCase):
 
         self.assertEqual(mha_output_1st.transpose(0, 1), torch_mha_output)
         # With bias_k and bias_v, src_len needs to plus 1
-        attn_weights_ist = attn_weights_ist.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
-        self.assertEqual(attn_weights_ist, torch_mha_weights)
+        attn_weights_1st = attn_weights_1st.view(bsz, nhead, tgt_len, src_len + 1).sum(dim=1) / nhead
+        self.assertEqual(attn_weights_1st, torch_mha_weights)
 
     def test_broadcast_scaled_dot_product(self):
         embed_dim, nhead, tgt_len, src_len, bsz = 10, 5, 6, 10, 64
