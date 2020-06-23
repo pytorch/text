@@ -81,9 +81,6 @@ docs/_build/
 # PyBuilder
 target/
 
-# thirdparty dirs
-third_party/*/
-
 # computed checksum files
 torchtext/experimental/asset/.checksums/
 
@@ -130,6 +127,7 @@ venv.bak/
 *.swp
 *.swo
 
-
-
 torchtext/version.py
+
+# Thirdparty directories
+third_party/*/
