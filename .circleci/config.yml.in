@@ -230,7 +230,7 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-nightly pytorch
+            conda install -v -y -c pytorch-nightly -c pytorch-test pytorch
             conda install -v -y -c file://$HOME/workspace/conda-bld torchtext
       - run:
           name: smoke test
@@ -248,7 +248,7 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html -f https://download.pytorch.org/whl/test/torch_test.html
       - run:
           name: smoke test
           command: |
@@ -290,7 +290,7 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-nightly pytorch
+            conda install -v -y -c pytorch-nightly -c pytorch-test pytorch
             conda install -v -y -c ~/workspace/conda-bld torchtext
       - run:
           name: smoke test
@@ -314,7 +314,7 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html -f https://download.pytorch.org/whl/test/torch_test.html
       - run:
           name: smoke test
           command: |
