@@ -34,14 +34,14 @@ def _infer_shape(f):
 
 def _load_token_and_vectors_from_file(file_path):
     stoi, tokens, vectors, dup_tokens = {}, [], [], []
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         num_lines, _ = _infer_shape(f)
-        for line in tqdm(f, unit_scale=0, unit='lines', total=num_lines):
+        for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
             token, entries = line.rstrip().split(b" ", 1)
             vector = torch.tensor([float(c) for c in entries.split(b" ")], dtype=torch.float)
             try:
                 if isinstance(token, bytes):
-                    token = token.decode('utf-8')
+                    token = token.decode("utf-8")
             except UnicodeDecodeError:
                 logger.info("Skipping non-UTF8 token {}".format(repr(token)))
                 continue
@@ -56,7 +56,7 @@ def _load_token_and_vectors_from_file(file_path):
     return tokens, vectors, dup_tokens
 
 
-def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
+def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
     r"""Create a FastText Vectors object.
 
     Args:
@@ -74,8 +74,10 @@ def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
         ValueError: if duplicate tokens are found in FastText file.
 
     """
-    url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
-    cached_vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
+    url = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec".format(language)
+    file_name = os.path.basename(url)
+
+    cached_vectors_file_path = os.path.join(root, file_name + ".pt")
     if os.path.isfile(cached_vectors_file_path):
         return(torch.load(cached_vectors_file_path))
 
@@ -94,7 +96,7 @@ def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
     return vectors_obj
 
 
-def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
+def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True):
     r"""Create a GloVe Vectors object.
 
     Args:
@@ -103,6 +105,7 @@ def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
             - 840B
             - twitter.27B
             - 6B
+        dim (int): the dimension for the GloVe dataset to load.
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         root (str): folder used to store downloaded files in (.data)
         validate_file (bool): flag to determine whether to validate the downloaded files checksum.
@@ -120,14 +123,16 @@ def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
                             "����������������������������������������������������������������������"
                             "������������������������������������������������������", 140649)
     urls = {
-        '42B': 'https://nlp.stanford.edu/data/glove.42B.300d.zip',
-        '840B': 'https://nlp.stanford.edu/data/glove.840B.300d.zip',
-        'twitter.27B': 'https://nlp.stanford.edu/data/glove.twitter.27B.zip',
-        '6B': 'https://nlp.stanford.edu/data/glove.6B.zip',
+        "42B": "https://nlp.stanford.edu/data/glove.42B.300d.zip",
+        "840B": "https://nlp.stanford.edu/data/glove.840B.300d.zip",
+        "twitter.27B": "https://nlp.stanford.edu/data/glove.twitter.27B.zip",
+        "6B": "https://nlp.stanford.edu/data/glove.6B.zip",
     }
 
     url = urls[name]
-    cached_vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
+    file_name = "glove.{}.{}d.txt".format(name, str(dim))
+
+    cached_vectors_file_path = os.path.join(root, file_name + '.pt')
     if os.path.isfile(cached_vectors_file_path):
         return(torch.load(cached_vectors_file_path))
 
@@ -136,8 +141,10 @@ def GloVe(name="840B", unk_tensor=None, root='.data', validate_file=True):
         checksum = CHECKSUMS_GLOVE.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    extracted_file_path = extract_archive(downloaded_file_path)[0]
-    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path)
+    extracted_file_paths = extract_archive(downloaded_file_path)
+    # need to get the full path to the correct file in the case when multiple files are extracted with different dims
+    extracted_file_path_with_correct_dim = [path for path in extracted_file_paths if file_name in path][0]
+    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens:
@@ -169,7 +176,7 @@ def vectors_from_file_object(file_like_object, unk_tensor=None):
         Vectors: a Vectors object.
 
     """
-    readCSV = csv.reader(file_like_object, delimiter=',')
+    readCSV = csv.reader(file_like_object, delimiter=",")
 
     tokens = []
     vectors = []
@@ -189,7 +196,7 @@ class Vectors(nn.Module):
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
 
     Raises:
-        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
+        ValueError: if `vectors` is empty and a default `unk_tensor` isn"t provided.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
     """
