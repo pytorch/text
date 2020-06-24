@@ -76,8 +76,8 @@ def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
     """
     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec'.format(language)
     cached_vectors_file_path = os.path.join(root, os.path.splitext(os.path.basename(url))[0] + '.pt')
-    if os.path.isfile(cached_vectors_file_path):
-        return(torch.load(cached_vectors_file_path))
+    # if os.path.isfile(cached_vectors_file_path):
+    #     return(torch.load(cached_vectors_file_path))
 
     checksum = None
     if validate_file:
@@ -90,7 +90,7 @@ def FastText(language="en", unk_tensor=None, root='.data', validate_file=True):
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-    torch.save(vectors_obj, cached_vectors_file_path)
+    # torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 

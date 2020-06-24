@@ -20,15 +20,20 @@ def benchmark_experimental_vectors():
         for id in text.tolist():
             tokens.append(vocab.itos[id])
 
-    # # existing FastText
+    # existing FastText
     # fast_text = FastText()
-    # print("FastText")
+    # print("FastText Not Jit Mode")
     # _run_benchmark(tokens, fast_text)
 
     # experimental FastText
     fast_text_experimental = FastTextExperimental(root="/private/home/nayef211/torchtext/test/experimental/.data")
     jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
     print("FastText Experimental")
+    
+    print("Not Jit Mode")
+    _run_benchmark(tokens, fast_text_experimental)
+    
+    print("Jit Mode")
     _run_benchmark(tokens, jit_fast_text_experimental)
 
     print("Done")

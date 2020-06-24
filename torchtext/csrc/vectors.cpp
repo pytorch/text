@@ -28,11 +28,21 @@ size_t str_hash(const std::string &str) {
 
 struct Vectors : torch::CustomClassHolder {
 private:
-  // std::unordered_map<std::string, torch::Tensor, decltype(&str_hash)> stoi_;
-
+  // Using unordered_map stovec
   std::unordered_map<std::string, torch::Tensor> stoi_;
 
-  // std::unordered_map<std::string, int, stoi_hash_fn> stoi_;
+  // Using unordered_map stovec and custom hash function
+  // std::unordered_map<std::string, torch::Tensor, decltype(&str_hash)> stoi_;
+
+  // Using unordered_map stoi and std::vector of vectors
+  // std::unordered_map<std::string, int> stoi_;
+
+  // Using map stoi and std::vector of vectors
+  // std::map<std::string, int> stoi_;
+
+  // Using unordered_map stoi and std::vector of vectors and custom hash
+  // function
+  // std::unordered_map<std::string, int, decltype(&str_hash)> stoi_;
 
 public:
   // tokens_, vectors_, and unk_tensor_ holds the serialized params passed in
@@ -76,7 +86,7 @@ public:
   }
 
   void AddItem(const std::string &token, const torch::Tensor &vector) {
-    stoi_[token] = vector;
+    // stoi_[token] = vector;
     // stoi_[token] = vectors_.size();
     // vectors_.push_back(vector);
   }
