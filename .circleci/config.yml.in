@@ -196,7 +196,7 @@ jobs:
             # Prevent credential from leaking
             conda install -yq anaconda-client
             set -x
-            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u pytorch-nightly --label main --no-progress --force
+            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u pytorch-${UPLOAD_CHANNEL} --label main --no-progress --force
 
   # Requires org-member context
   binary_wheel_upload:
@@ -217,7 +217,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY="${PYTORCH_BINARY_AWS_SECRET_ACCESS_KEY}"
             set -x
             for pkg in ~/workspace/*.whl; do
-              aws s3 cp "$pkg" "s3://pytorch/whl/nightly/" --acl public-read
+              aws s3 cp "$pkg" "s3://pytorch/whl/${UPLOAD_CHANNEL}/" --acl public-read
             done
 
   smoke_test_linux_conda:
