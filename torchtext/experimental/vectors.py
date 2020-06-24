@@ -196,7 +196,7 @@ class Vectors(nn.Module):
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
 
     Raises:
-        ValueError: if `vectors` is empty and a default `unk_tensor` isn"t provided.
+        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
     """
