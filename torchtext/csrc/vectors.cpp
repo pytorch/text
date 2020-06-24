@@ -27,8 +27,7 @@ public:
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
           std::to_string(tokens.size()) +
-          ", size of vectors: " +
-          std::to_string(vectors.size()) + ".");
+          ", size of vectors: " + std::to_string(vectors.size()) + ".");
     }
 
     stovectors_.reserve(tokens.size());
