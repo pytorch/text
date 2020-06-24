@@ -29,7 +29,7 @@ size_t str_hash(const std::string &str) {
 struct Vectors : torch::CustomClassHolder {
 private:
   // Using unordered_map stovec
-  std::unordered_map<std::string, torch::Tensor> stoi_;
+  // std::unordered_map<std::string, torch::Tensor> stoi_;
 
   // Using unordered_map stovec and custom hash function
   // std::unordered_map<std::string, torch::Tensor, decltype(&str_hash)> stoi_;
@@ -38,7 +38,7 @@ private:
   // std::unordered_map<std::string, int> stoi_;
 
   // Using map stoi and std::vector of vectors
-  // std::map<std::string, int> stoi_;
+  std::map<std::string, int> stoi_;
 
   // Using unordered_map stoi and std::vector of vectors and custom hash
   // function
@@ -65,22 +65,22 @@ public:
           std::to_string(vectors.size()) + ".");
     }
 
-    stoi_.reserve(tokens.size());
+    // stoi_.reserve(tokens.size());
     for (std::size_t i = 0; i < tokens.size(); i++) {
       // tokens should not have any duplicates
       if (stoi_.find(tokens[i]) != stoi_.end()) {
         throw std::runtime_error("Duplicate token found in tokens list: " +
                                  tokens[i]);
       }
-      stoi_[tokens[i]] = vectors_[i];
-      // stoi_[tokens[i]] = i;
+      // stoi_[tokens[i]] = vectors_[i];
+      stoi_[tokens[i]] = i;
     }
   }
 
   torch::Tensor GetItem(const std::string &token) const {
     if (stoi_.find(token) != stoi_.end()) {
-      return stoi_.at(token);
-      // return vectors_.at(stoi_.at(token));
+      // return stoi_.at(token);
+      return vectors_.at(stoi_.at(token));
     }
     return unk_tensor_;
   }
