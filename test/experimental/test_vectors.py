@@ -126,6 +126,21 @@ class TestVectors(TorchtextTestCase):
             # Test proper error raised when vectors are not of type torch.float
             Vectors(tokens, vectors)
 
+        with tempfile.TemporaryDirectory() as dir_name:
+            # Test proper error raised when incorrect filename or dim passed into GloVe
+            asset_name = 'glove.6B.zip'
+            asset_path = get_asset_path(asset_name)
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
+
+            with self.assertRaises(ValueError):
+                # incorrect name
+                GloVe(name='UNK', dim=50, root=dir_name, validate_file=False)
+
+            with self.assertRaises(ValueError):
+                # incorrect dim
+                GloVe(name='6B', dim=500, root=dir_name, validate_file=False)
+
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)

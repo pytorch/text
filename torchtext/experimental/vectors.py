@@ -105,7 +105,21 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
             - 840B
             - twitter.27B
             - 6B
-        dim (int): the dimension for the GloVe dataset to load.
+        dim (int): the dimension for the GloVe dataset to load. Options are:
+            42B:
+                - 300
+            840B:
+                - 300
+            twitter.27B:
+                - 25
+                - 50
+                - 100
+                - 200
+            6B:
+                - 50
+                - 100
+                - 200
+                - 300
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         root (str): folder used to store downloaded files in (.data)
         validate_file (bool): flag to determine whether to validate the downloaded files checksum.
@@ -128,10 +142,25 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
         "twitter.27B": "https://nlp.stanford.edu/data/glove.twitter.27B.zip",
         "6B": "https://nlp.stanford.edu/data/glove.6B.zip",
     }
+    valid_glove_file_names = {
+        "glove.42B.300d.txt",
+        "glove.840B.300d.txt",
+        "glove.twitter.27B.25d.txt",
+        "glove.twitter.27B.50d.txt",
+        "glove.twitter.27B.100d.txt",
+        "glove.twitter.27B.200d.txt",
+        "glove.6B.50d.txt",
+        "glove.6B.100d.txt",
+        "glove.6B.200d.txt",
+        "glove.6B.300d.txt"
+    }
+
+    file_name = "glove.{}.{}d.txt".format(name, str(dim))
+    if file_name not in valid_glove_file_names:
+        raise ValueError("Could not find GloVe file with name {}. Please check that `name` and `dim`"
+                         "are valid.".format(str(file_name)))
 
     url = urls[name]
-    file_name = "glove.{}.{}d.txt".format(name, str(dim))
-
     cached_vectors_file_path = os.path.join(root, file_name + '.pt')
     if os.path.isfile(cached_vectors_file_path):
         return(torch.load(cached_vectors_file_path))
