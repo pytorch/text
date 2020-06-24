@@ -1,5 +1,6 @@
 import requests
 import csv
+import hashlib
 from tqdm import tqdm
 import os
 import tarfile
@@ -11,7 +12,9 @@ import gzip
 
 
 def reporthook(t):
-    """https://github.com/tqdm/tqdm"""
+    """
+    https://github.com/tqdm/tqdm.
+    """
     last_b = [0]
 
     def inner(b=1, bsize=1, tsize=None):
@@ -30,22 +33,31 @@ def reporthook(t):
     return inner
 
 
-def download_from_url(url, path=None, root='.data', overwrite=False):
-    """Download file, with logic (from tensor2tensor) for Google Drive.
-    Returns the path to the downloaded file.
+def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=None,
+                      hash_type="sha256"):
+    """Download file, with logic (from tensor2tensor) for Google Drive. Returns
+    the path to the downloaded file.
 
     Arguments:
-        url: the url of the file
-        path: explicitly set the filename, otherwise attempts to
-            detect the file name from URL header. (None)
+        url: the url of the file from URL header. (None)
         root: download folder used to store the file in (.data)
         overwrite: overwrite existing files (False)
+        hash_value (str, optional): hash for url (Default: ``None``).
+        hash_type (str, optional): hash type, among "sha256" and "md5" (Default: ``"sha256"``).
 
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
+        >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
+        >>> torchtext.utils.download_from_url(url)
         >>> '.data/validation.tar.gz'
+
     """
+    def _check_hash(path):
+        if hash_value:
+            with open(path, "rb") as file_obj:
+                if not validate_file(file_obj, hash_value, hash_type):
+                    raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(path))
 
     def _process_response(r, root, filename):
         chunk_size = 16 * 1024
@@ -60,6 +72,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
         if os.path.exists(path):
             logging.info('File %s already exists.' % path)
             if not overwrite:
+                _check_hash(path)
                 return path
             logging.info('Overwriting file %s.' % path)
         logging.info('Downloading file {} to {}.'.format(filename, path))
@@ -71,6 +84,8 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
                         file.write(chunk)
                         t.update(len(chunk))
         logging.info('File {} downloaded.'.format(path))
+
+        _check_hash(path)
         return path
 
     if path is None:
@@ -162,6 +177,10 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
         >>> ['.data/val.de', '.data/val.en']
+        >>> torchtext.utils.download_from_url(url, from_path)
+        >>> torchtext.utils.extract_archive(from_path, to_path)
+        >>> ['.data/val.de', '.data/val.en']
+
     """
 
     if to_path is None:
@@ -216,3 +235,31 @@ def extract_archive(from_path, to_path=None, overwrite=False):
     else:
         raise NotImplementedError(
             "We currently only support tar.gz, .tgz, .gz and zip achives.")
+
+
+def validate_file(file_obj, hash_value, hash_type="sha256"):
+    """Validate a given file object with its hash.
+
+    Args:
+        file_obj: File object to read from.
+        hash_value (str): Hash for url.
+        hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
+    Returns:
+        bool: return True if its a valid file, else False.
+
+    """
+
+    if hash_type == "sha256":
+        hash_func = hashlib.sha256()
+    elif hash_type == "md5":
+        hash_func = hashlib.md5()
+    else:
+        raise ValueError
+
+    while True:
+        # Read by chunk to avoid filling memory
+        chunk = file_obj.read(1024 ** 2)
+        if not chunk:
+            break
+        hash_func.update(chunk)
+    return hash_func.hexdigest() == hash_value
