@@ -194,7 +194,7 @@ class TestVectors(TorchtextTestCase):
         with tempfile.TemporaryDirectory() as dir_name:
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
-    
+
             glove_50d = GloVe(name='6B', dim=50, root=dir_name, validate_file=False)
             glove_100d = GloVe(name='6B', dim=100, root=dir_name, validate_file=False)
             glove_200d = GloVe(name='6B', dim=200, root=dir_name, validate_file=False)
