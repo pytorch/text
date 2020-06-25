@@ -163,6 +163,7 @@ class TestVectors(TorchtextTestCase):
                 self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
     def test_glove(self):
+        GloVe(name='42B', dim=300)
         # copy the asset file into the expected download location
         # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
         asset_name = 'glove.840B.300d.zip'

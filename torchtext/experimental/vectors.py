@@ -34,10 +34,25 @@ def _infer_shape(f):
 
 def _load_token_and_vectors_from_file(file_path):
     stoi, tokens, vectors, dup_tokens = {}, [], [], []
+    dim = None
     with open(file_path, 'rb') as f:
         num_lines, _ = _infer_shape(f)
         for line in tqdm(f, unit_scale=0, unit='lines', total=num_lines):
             token, entries = line.rstrip().split(b" ", 1)
+
+            if dim is None and len(entries) > 1:
+                dim = len(entries)
+            elif len(entries) == 1:
+                logger.warning("Skipping token {} with 1-dimensional "
+                               "vector {}; likely a header".format(token, entries))
+                continue
+            elif dim != len(entries):
+                raise RuntimeError(
+                    "Vector for token {} has {} dimensions, but previously "
+                    "read vectors have {} dimensions. All vectors must have "
+                    "the same number of dimensions.".format(token, len(entries),
+                                                            dim))
+ 
             vector = torch.tensor([float(c) for c in entries.split(b" ")], dtype=torch.float)
             try:
                 if isinstance(token, bytes):
