@@ -276,7 +276,7 @@ class Vectors(nn.Module):
         Returns:
             length (int): the length of the vectors.
         """
-        return len(vectors)
+        return len(self.vectors)
 
 
 CHECKSUMS_GLOVE = {
