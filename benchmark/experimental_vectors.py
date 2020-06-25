@@ -1,10 +1,10 @@
 import time
 
 import torch
-from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.datasets import AG_NEWS
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.vocab import FastText
+
 
 def benchmark_experimental_vectors():
     def _run_benchmark(tokens, vector):
@@ -21,22 +21,19 @@ def benchmark_experimental_vectors():
             tokens.append(vocab.itos[id])
 
     # existing FastText
-    # fast_text = FastText()
-    # print("FastText Not Jit Mode")
-    # _run_benchmark(tokens, fast_text)
+    fast_text = FastText()
+
+    print("FastText - Not Jit Mode")
+    _run_benchmark(tokens, fast_text)
 
     # experimental FastText
-    fast_text_experimental = FastTextExperimental(root="/private/home/nayef211/torchtext/test/experimental/.data")
+    fast_text_experimental = FastTextExperimental()
     jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
-    print("FastText Experimental")
-    
-    print("Not Jit Mode")
-    _run_benchmark(tokens, fast_text_experimental)
-    
-    print("Jit Mode")
-    _run_benchmark(tokens, jit_fast_text_experimental)
 
-    print("Done")
+    print("FastText Experimental - Not Jit Mode")
+    _run_benchmark(tokens, fast_text_experimental)
+    print("FastText Experimental - Jit Mode")
+    _run_benchmark(tokens, jit_fast_text_experimental)
 
 
 if __name__ == "__main__":
