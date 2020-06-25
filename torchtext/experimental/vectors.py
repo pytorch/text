@@ -251,7 +251,7 @@ class Vectors(nn.Module):
         Returns:
             vector (Tensor): a tensor (the vector) corresponding to the associated token.
         """
-        return self.vectors.GetItem(token)
+        return self.vectors[token]
 
     @torch.jit.export
     def __setitem__(self, token: str, vector: Tensor):
@@ -266,7 +266,17 @@ class Vectors(nn.Module):
         if vector.dtype != torch.float:
             raise TypeError("`vector` should be of data type `torch.float` but it's of type " + vector.dtype)
 
-        self.vectors.AddItem(token, vector.float())
+        self.vectors[token] = vector.float()
+
+    
+    @torch.jit.export
+    def __len__(self):
+        r"""Get length of vectors object.
+
+        Returns:
+            length (int): the length of the vectors.
+        """
+        return len(vectors)
 
 
 CHECKSUMS_GLOVE = {
