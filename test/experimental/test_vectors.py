@@ -15,253 +15,222 @@ from torchtext.experimental.vectors import (
 )
 
 
-from torchtext.vocab import (
-    FastText as FastTextOld,
-    GloVe as GloVeOld
-)
-
-
 class TestVectors(TorchtextTestCase):
-    # def test_empty_vectors(self):
-    #     tokens = []
-    #     vectors = []
-    #     unk_tensor = torch.tensor([0], dtype=torch.float)
+    def test_empty_vectors(self):
+        tokens = []
+        vectors = []
+        unk_tensor = torch.tensor([0], dtype=torch.float)
 
-    #     vectors_obj = Vectors(tokens, vectors, unk_tensor)
-    #     self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        vectors_obj = Vectors(tokens, vectors, unk_tensor)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
-    # def test_empty_unk(self):
-    #     tensorA = torch.tensor([1, 0], dtype=torch.float)
-    #     expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+    def test_empty_unk(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-    #     tokens = ['a']
-    #     vectors = [tensorA]
-    #     vectors_obj = Vectors(tokens, vectors)
+        tokens = ['a']
+        vectors = [tensorA]
+        vectors_obj = Vectors(tokens, vectors)
 
-    #     self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
-    # def test_vectors_basic(self):
-    #     tensorA = torch.tensor([1, 0], dtype=torch.float)
-    #     tensorB = torch.tensor([0, 1], dtype=torch.float)
+    def test_vectors_basic(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
 
-    #     unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-    #     tokens = ['a', 'b']
-    #     vectors = [tensorA, tensorB]
-    #     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tokens = ['a', 'b']
+        vectors = [tensorA, tensorB]
+        vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
-    #     self.assertEqual(vectors_obj['a'], tensorA)
-    #     self.assertEqual(vectors_obj['b'], tensorB)
-    #     self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj['a'], tensorA)
+        self.assertEqual(vectors_obj['b'], tensorB)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
-    # def test_vectors_jit(self):
-    #     tensorA = torch.tensor([1, 0], dtype=torch.float)
-    #     tensorB = torch.tensor([0, 1], dtype=torch.float)
+    def test_vectors_jit(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
 
-    #     unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-    #     tokens = ['a', 'b']
-    #     vectors = [tensorA, tensorB]
-    #     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-    #     jit_vectors_obj = torch.jit.script(vectors_obj)
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tokens = ['a', 'b']
+        vectors = [tensorA, tensorB]
+        vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+        jit_vectors_obj = torch.jit.script(vectors_obj)
 
-    #     self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
-    #     self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
-    #     self.assertEqual(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
+        self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
+        self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
+        self.assertEqual(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
 
-    # def test_vectors_add_item(self):
-    #     tensorA = torch.tensor([1, 0], dtype=torch.float)
-    #     unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+    def test_vectors_add_item(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-    #     tokens = ['a']
-    #     vectors = [tensorA]
-    #     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+        tokens = ['a']
+        vectors = [tensorA]
+        vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
-    #     tensorB = torch.tensor([0., 1])
-    #     vectors_obj['b'] = tensorB
+        tensorB = torch.tensor([0., 1])
+        vectors_obj['b'] = tensorB
 
-    #     self.assertEqual(vectors_obj['a'], tensorA)
-    #     self.assertEqual(vectors_obj['b'], tensorB)
-    #     self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        self.assertEqual(vectors_obj['a'], tensorA)
+        self.assertEqual(vectors_obj['b'], tensorB)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
-    # def test_vectors_load_and_save(self):
-    #     tensorA = torch.tensor([1, 0], dtype=torch.float)
-    #     expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+    def test_vectors_load_and_save(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-    #     tokens = ['a']
-    #     vectors = [tensorA]
-    #     vectors_obj = Vectors(tokens, vectors)
+        tokens = ['a']
+        vectors = [tensorA]
+        vectors_obj = Vectors(tokens, vectors)
 
-    #     vector_path = os.path.join(self.test_dir, 'vectors.pt')
-    #     torch.save(vectors_obj, vector_path)
-    #     loaded_vectors_obj = torch.load(vector_path)
+        vector_path = os.path.join(self.test_dir, 'vectors.pt')
+        torch.save(vectors_obj, vector_path)
+        loaded_vectors_obj = torch.load(vector_path)
 
-    #     self.assertEqual(loaded_vectors_obj['a'], tensorA)
-    #     self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(loaded_vectors_obj['a'], tensorA)
+        self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
-    # def test_errors(self):
-    #     tokens = []
-    #     vectors = []
+    def test_errors(self):
+        tokens = []
+        vectors = []
 
-    #     with self.assertRaises(ValueError):
-    #         # Test proper error raised when passing in empty tokens and vectors and
-    #         # not passing in a user defined unk_tensor
-    #         Vectors(tokens, vectors)
+        with self.assertRaises(ValueError):
+            # Test proper error raised when passing in empty tokens and vectors and
+            # not passing in a user defined unk_tensor
+            Vectors(tokens, vectors)
 
-    #     tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-    #     tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-    #     tokens = ['a', 'b', 'c']
-    #     vectors = [tensorA, tensorB]
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+        tokens = ['a', 'b', 'c']
+        vectors = [tensorA, tensorB]
 
-    #     with self.assertRaises(RuntimeError):
-    #         # Test proper error raised when tokens and vectors have different sizes
-    #         Vectors(tokens, vectors)
+        with self.assertRaises(RuntimeError):
+            # Test proper error raised when tokens and vectors have different sizes
+            Vectors(tokens, vectors)
 
-    #     tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
-    #     tokens = ['a', 'a', 'c']
-    #     vectors = [tensorA, tensorB, tensorC]
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
+        tokens = ['a', 'a', 'c']
+        vectors = [tensorA, tensorB, tensorC]
 
-    #     with self.assertRaises(RuntimeError):
-    #         # Test proper error raised when tokens have duplicates
-    #         # TODO (Nayef211): use self.assertRaisesRegex() to check
-    #         # the key of the duplicate token in the error message
-    #         Vectors(tokens, vectors)
+        with self.assertRaises(RuntimeError):
+            # Test proper error raised when tokens have duplicates
+            # TODO (Nayef211): use self.assertRaisesRegex() to check
+            # the key of the duplicate token in the error message
+            Vectors(tokens, vectors)
 
-    #     tensorC = torch.tensor([0, 0, 1], dtype=torch.int8)
-    #     vectors = [tensorA, tensorB, tensorC]
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.int8)
+        vectors = [tensorA, tensorB, tensorC]
 
-    #     with self.assertRaises(TypeError):
-    #         # Test proper error raised when vectors are not of type torch.float
-    #         Vectors(tokens, vectors)
+        with self.assertRaises(TypeError):
+            # Test proper error raised when vectors are not of type torch.float
+            Vectors(tokens, vectors)
 
-    #     with tempfile.TemporaryDirectory() as dir_name:
-    #         # Test proper error raised when incorrect filename or dim passed into GloVe
-    #         asset_name = 'glove.6B.zip'
-    #         asset_path = get_asset_path(asset_name)
-    #         data_path = os.path.join(dir_name, asset_name)
-    #         shutil.copy(asset_path, data_path)
+        with tempfile.TemporaryDirectory() as dir_name:
+            # Test proper error raised when incorrect filename or dim passed into GloVe
+            asset_name = 'glove.6B.zip'
+            asset_path = get_asset_path(asset_name)
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
 
-    #         with self.assertRaises(ValueError):
-    #             # incorrect name
-    #             GloVe(name='UNK', dim=50, root=dir_name, validate_file=False)
+            with self.assertRaises(ValueError):
+                # incorrect name
+                GloVe(name='UNK', dim=50, root=dir_name, validate_file=False)
 
-    #         with self.assertRaises(ValueError):
-    #             # incorrect dim
-    #             GloVe(name='6B', dim=500, root=dir_name, validate_file=False)
+            with self.assertRaises(ValueError):
+                # incorrect dim
+                GloVe(name='6B', dim=500, root=dir_name, validate_file=False)
 
-    # def test_vectors_from_file(self):
-    #     asset_name = 'vectors_test.csv'
-    #     asset_path = get_asset_path(asset_name)
-    #     f = open(asset_path, 'r')
-    #     vectors_obj = vectors_from_file_object(f)
+    def test_vectors_from_file(self):
+        asset_name = 'vectors_test.csv'
+        asset_path = get_asset_path(asset_name)
+        f = open(asset_path, 'r')
+        vectors_obj = vectors_from_file_object(f)
 
-    #     expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-    #     expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-    #     expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
+        expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
 
-    #     self.assertEqual(vectors_obj['a'], expected_tensorA)
-    #     self.assertEqual(vectors_obj['b'], expected_tensorB)
-    #     self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj['a'], expected_tensorA)
+        self.assertEqual(vectors_obj['b'], expected_tensorB)
+        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
-    # def test_fast_text(self):
-    #     # copy the asset file into the expected download location
-    #     # note that this is just a file with the first 100 entries of the FastText english dataset
-    #     asset_name = 'wiki.en.vec'
-    #     asset_path = get_asset_path(asset_name)
+    def test_fast_text(self):
+        # copy the asset file into the expected download location
+        # note that this is just a file with the first 100 entries of the FastText english dataset
+        asset_name = 'wiki.en.vec'
+        asset_path = get_asset_path(asset_name)
 
-    #     with tempfile.TemporaryDirectory() as dir_name:
-    #         data_path = os.path.join(dir_name, asset_name)
-    #         shutil.copy(asset_path, data_path)
-    #         vectors_obj = FastText(root=dir_name, validate_file=False)
-    #         jit_vectors_obj = torch.jit.script(vectors_obj)
+        with tempfile.TemporaryDirectory() as dir_name:
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
+            vectors_obj = FastText(root=dir_name, validate_file=False)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
 
-    #         # The first 3 entries in each vector.
-    #         expected_fasttext_simple_en = {
-    #             'the': [-0.065334, -0.093031, -0.017571],
-    #             'world': [-0.32423, -0.098845, -0.0073467],
-    #         }
+            # The first 3 entries in each vector.
+            expected_fasttext_simple_en = {
+                'the': [-0.065334, -0.093031, -0.017571],
+                'world': [-0.32423, -0.098845, -0.0073467],
+            }
 
-    #         for word in expected_fasttext_simple_en.keys():
-    #             self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
-    #             self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
+            for word in expected_fasttext_simple_en.keys():
+                self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
-    # def test_glove(self):
-    #     # copy the asset file into the expected download location
-    #     # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
-    #     asset_name = 'glove.840B.300d.zip'
-    #     asset_path = get_asset_path(asset_name)
-
-    #     with tempfile.TemporaryDirectory() as dir_name:
-    #         data_path = os.path.join(dir_name, asset_name)
-    #         shutil.copy(asset_path, data_path)
-    #         vectors_obj = GloVe(root=dir_name, validate_file=False)
-    #         jit_vectors_obj = torch.jit.script(vectors_obj)
-
-    #         # The first 3 entries in each vector.
-    #         expected_glove = {
-    #             'the': [0.27204, -0.06203, -0.1884],
-    #             'people': [-0.19686, 0.11579, -0.41091],
-    #         }
-
-    #         for word in expected_glove.keys():
-    #             self.assertEqual(vectors_obj[word][:3], expected_glove[word])
-    #             self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
-
-    # def test_glove_different_dims(self):
-    #     # copy the asset file into the expected download location
-    #     # note that this is just a zip file with 1 line txt files used to test that the
-    #     # correct files are being loaded
-    #     asset_name = 'glove.6B.zip'
-    #     asset_path = get_asset_path(asset_name)
-
-    #     with tempfile.TemporaryDirectory() as dir_name:
-    #         data_path = os.path.join(dir_name, asset_name)
-    #         shutil.copy(asset_path, data_path)
-
-    #         glove_50d = GloVe(name='6B', dim=50, root=dir_name, validate_file=False)
-    #         glove_100d = GloVe(name='6B', dim=100, root=dir_name, validate_file=False)
-    #         glove_200d = GloVe(name='6B', dim=200, root=dir_name, validate_file=False)
-    #         glove_300d = GloVe(name='6B', dim=300, root=dir_name, validate_file=False)
-    #         vectors_objects = [glove_50d, glove_100d, glove_200d, glove_300d]
-
-    #         # The first 3 entries in each vector.
-    #         expected_glove_50d = {
-    #             'the': [0.418, 0.24968, -0.41242],
-    #         }
-    #         expected_glove_100d = {
-    #             'the': [-0.038194, -0.24487, 0.72812],
-    #         }
-    #         expected_glove_200d = {
-    #             'the': [-0.071549, 0.093459, 0.023738],
-    #         }
-    #         expected_glove_300d = {
-    #             'the': [0.04656, 0.21318, -0.0074364],
-    #         }
-    #         expected_gloves = [expected_glove_50d, expected_glove_100d, expected_glove_200d, expected_glove_300d]
-
-    #         for vectors_obj, expected_glove in zip(vectors_objects, expected_gloves):
-    #             for word in expected_glove.keys():
-    #                 self.assertEqual(vectors_obj[word][:3], expected_glove[word])
-
-    def test_factory_methods(self):
+    def test_glove(self):
+        # copy the asset file into the expected download location
+        # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)
+
+        with tempfile.TemporaryDirectory() as dir_name:
+            data_path = os.path.join(dir_name, asset_name)
+            shutil.copy(asset_path, data_path)
+            vectors_obj = GloVe(root=dir_name, validate_file=False)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
+
+            # The first 3 entries in each vector.
+            expected_glove = {
+                'the': [0.27204, -0.06203, -0.1884],
+                'people': [-0.19686, 0.11579, -0.41091],
+            }
+
+            for word in expected_glove.keys():
+                self.assertEqual(vectors_obj[word][:3], expected_glove[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
+
+    def test_glove_different_dims(self):
+        # copy the asset file into the expected download location
+        # note that this is just a zip file with 1 line txt files used to test that the
+        # correct files are being loaded
+        asset_name = 'glove.6B.zip'
+        asset_path = get_asset_path(asset_name)
+
         with tempfile.TemporaryDirectory() as dir_name:
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
 
-            # GloVeOld(name='840B', dim=300, cache=dir_name)
-            # GloVe(name='840B', dim=300, root=dir_name, validate_file=False)
+            glove_50d = GloVe(name='6B', dim=50, root=dir_name, validate_file=False)
+            glove_100d = GloVe(name='6B', dim=100, root=dir_name, validate_file=False)
+            glove_200d = GloVe(name='6B', dim=200, root=dir_name, validate_file=False)
+            glove_300d = GloVe(name='6B', dim=300, root=dir_name, validate_file=False)
+            vectors_objects = [glove_50d, glove_100d, glove_200d, glove_300d]
 
-            # GloVeOld(name='twitter.27B', dim=25)
+            # The first 3 entries in each vector.
+            expected_glove_50d = {
+                'the': [0.418, 0.24968, -0.41242],
+            }
+            expected_glove_100d = {
+                'the': [-0.038194, -0.24487, 0.72812],
+            }
+            expected_glove_200d = {
+                'the': [-0.071549, 0.093459, 0.023738],
+            }
+            expected_glove_300d = {
+                'the': [0.04656, 0.21318, -0.0074364],
+            }
+            expected_gloves = [expected_glove_50d, expected_glove_100d, expected_glove_200d, expected_glove_300d]
 
-
-            # GloVe(name='twitter.27B', dim=25)
-            # GloVe(name='twitter.27B', dim=50)
-            # GloVe(name='twitter.27B', dim=100)
-            # GloVe(name='twitter.27B', dim=200)
-
-            # GloVe(name='6B', dim=50)
-            # GloVe(name='6B', dim=100)
-            # GloVe(name='6B', dim=200)
-            GloVe(name='6B', dim=300)
-            GloVe(name='42B', dim=300)
-            GloVe(name='840B', dim=300)
+            for vectors_obj, expected_glove in zip(vectors_objects, expected_gloves):
+                for word in expected_glove.keys():
+                    self.assertEqual(vectors_obj[word][:3], expected_glove[word])

@@ -1,4 +1,3 @@
-import csv
 import logging
 import os
 
@@ -53,7 +52,7 @@ def _load_token_and_vectors_from_file(file_path):
                     "read vectors have {} dimensions. All vectors must have "
                     "the same number of dimensions.".format(token, len(entries),
                                                             dim))
- 
+
             vector = torch.tensor([float(c) for c in entries], dtype=torch.float)
             try:
                 if isinstance(token, bytes):
