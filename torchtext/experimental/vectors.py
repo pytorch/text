@@ -185,8 +185,8 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens:
-        if not (len(dup_tokens) == 1 and dup_tokens[0] == dup_token_glove_840b[0] and
-           dup_tokens[1] == dup_token_glove_840b[1]):
+        if not (len(dup_tokens) == 1 and dup_tokens[0][0] == dup_token_glove_840b[0][0] and
+           dup_tokens[0][1] == dup_token_glove_840b[0][1]):
             raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
