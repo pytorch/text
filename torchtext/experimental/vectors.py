@@ -63,7 +63,7 @@ def _load_token_and_vectors_from_file(file_path):
                 continue
 
             if token in stoi:
-                dup_tokens.append(token, len(vectors) + 1)
+                dup_tokens.append((token, len(vectors) + 1))
                 continue
 
             stoi[token] = len(vectors)

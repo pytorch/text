@@ -147,19 +147,19 @@ class TestVectors(TorchtextTestCase):
     #             # incorrect dim
     #             GloVe(name='6B', dim=500, root=dir_name, validate_file=False)
 
-    def test_vectors_from_file(self):
-        asset_name = 'vectors_test.csv'
-        asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        vectors_obj = vectors_from_file_object(f)
+    # def test_vectors_from_file(self):
+    #     asset_name = 'vectors_test.csv'
+    #     asset_path = get_asset_path(asset_name)
+    #     f = open(asset_path, 'r')
+    #     vectors_obj = vectors_from_file_object(f)
 
-        expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-        expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-        expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
+    #     expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+    #     expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+    #     expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
 
-        self.assertEqual(vectors_obj['a'], expected_tensorA)
-        self.assertEqual(vectors_obj['b'], expected_tensorB)
-        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+    #     self.assertEqual(vectors_obj['a'], expected_tensorA)
+    #     self.assertEqual(vectors_obj['b'], expected_tensorB)
+    #     self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
     # def test_fast_text(self):
     #     # copy the asset file into the expected download location
@@ -262,6 +262,6 @@ class TestVectors(TorchtextTestCase):
             # GloVe(name='6B', dim=50)
             # GloVe(name='6B', dim=100)
             # GloVe(name='6B', dim=200)
-            # GloVe(name='6B', dim=300)
-            # GloVe(name='42B', dim=300)
-            # GloVe(name='840B', dim=300)
+            GloVe(name='6B', dim=300)
+            GloVe(name='42B', dim=300)
+            GloVe(name='840B', dim=300)
