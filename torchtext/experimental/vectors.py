@@ -139,11 +139,11 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
         ValueError: if unexpected duplicate tokens are found in GloVe file.
 
     """
-    dup_token_glove_840b = ("����������������������������������������������������������������������"
-                            "����������������������������������������������������������������������"
-                            "����������������������������������������������������������������������"
-                            "����������������������������������������������������������������������"
-                            "������������������������������������������������������", 140649)
+    dup_token_glove_840b = [("����������������������������������������������������������������������"
+                             "����������������������������������������������������������������������"
+                             "����������������������������������������������������������������������"
+                             "����������������������������������������������������������������������"
+                             "������������������������������������������������������", 140649)]
     urls = {
         "42B": "https://nlp.stanford.edu/data/glove.42B.300d.zip",
         "840B": "https://nlp.stanford.edu/data/glove.840B.300d.zip",
@@ -184,10 +184,8 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
-    if dup_tokens:
-        if not (len(dup_tokens) == 1 and dup_tokens[0][0] == dup_token_glove_840b[0][0] and
-           dup_tokens[0][1] == dup_token_glove_840b[0][1]):
-            raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
+    if dup_tokens and dup_tokens != dup_token_glove_840b:
+        raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, cached_vectors_file_path)
