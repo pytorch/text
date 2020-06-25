@@ -2,7 +2,7 @@ import torch
 import logging
 
 from torchtext.experimental.datasets import raw
-from torchtext.vocab import build_vocab_from_iterator
+from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
 
