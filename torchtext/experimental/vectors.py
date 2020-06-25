@@ -15,30 +15,23 @@ logger = logging.getLogger(__name__)
 
 
 def _infer_shape(f):
-    num_lines, vector_dim = 0, None
+    num_lines = 0
     for line in f:
-        if vector_dim is None:
-            row = line.rstrip().split(b" ")
-            vector = row[1:]
-            # Assuming word, [vector] format
-            if len(vector) > 2:
-                # The header present in some (w2v) formats contains two elements.
-                vector_dim = len(vector)
-                num_lines += 1  # First element read
-        else:
-            num_lines += 1
+        num_lines += 1
     f.seek(0)
-    return num_lines, vector_dim
+    return num_lines
 
 
-def _load_token_and_vectors_from_file(file_path):
+def _load_token_and_vectors_from_file(file_path, delimiter=" "):
     stoi, tokens, vectors, dup_tokens = {}, [], [], []
     dim = None
     with open(file_path, "rb") as f:
-        num_lines, _ = _infer_shape(f)
+        num_lines = _infer_shape(f)
         for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
-            entries = line.rstrip().split(b" ")
-            token, entries = entries[0], entries[1:]
+            # token and entries are seperated by delimeter
+            token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
+            # we assume entries are always seperated by " "
+            entries = entries.split(b" ")
 
             if dim is None and len(entries) > 1:
                 dim = len(entries)
@@ -201,19 +194,20 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     return vectors_obj
 
 
-def vectors_from_file_object(file_like_object, unk_tensor=None):
+def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None):
     r"""Create a Vectors object from a csv file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
 
     Format for csv file:
-        token1 num1 num2 num3
-        token2 num4 num5 num6
+        token1<delimiter>num1 num2 num3
+        token2<delimiter>num4 num5 num6
         ...
-        token_n num_m num_j num_k
+        token_n<delimiter>num_m num_j num_k
 
     Args:
         file_like_object (FileObject): a file like object to read data from.
+        delimiter (char): a character to delimit between the token and the vector. Default value is ","
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
 
     Returns:
@@ -223,7 +217,7 @@ def vectors_from_file_object(file_like_object, unk_tensor=None):
         ValueError: if duplicate tokens are found in FastText file.
 
     """
-    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name)
+    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name, delimiter=delimiter)
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     return Vectors(tokens, vectors, unk_tensor=unk_tensor)
