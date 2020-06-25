@@ -160,10 +160,10 @@ def run_main(args, rank=None):
     val_data = process_raw_data(valid_dataset.data, args)
     test_data = process_raw_data(test_dataset.data, args)
 
+    ntokens = len(train_dataset.get_vocab())
     if args.checkpoint != 'None':
-        model.bert_model = torch.load(args.checkpoint)
+        model = torch.load(args.checkpoint)
     else:
-        ntokens = len(train_dataset.get_vocab())
         model = MLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
     if args.parallel == 'DDP':
         model = model.to(device[0])
@@ -229,7 +229,7 @@ if __name__ == "__main__":
                         help='initial learning rate')
     parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=15,
+    parser.add_argument('--epochs', type=int, default=8,
                         help='upper epoch limit')
     parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size')

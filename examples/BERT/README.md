@@ -14,7 +14,10 @@ Train the BERT model with masked language modeling task and next-sentence task. 
 or run the tasks on a SLURM powered cluster with Distributed Data Parallel (DDP):
 
     srun --label --ntasks-per-node=1 --time=4000 --mem-per-cpu=5120 --gres=gpu:8 --cpus-per-task 80 --nodes=1 --pty python mlm_task.py --parallel DDP  --log-interval 600  --dataset BookCorpus
-    srun --label --ntasks-per-node=1 --time=4000 --mem-per-cpu=5120 --gres=gpu:8 --cpus-per-task 80 --nodes=1 --pty python ns_task.py --parallel DDP
+    srun --label --ntasks-per-node=1 --time=4000 --mem-per-cpu=5120 --gres=gpu:8 --cpus-per-task 80 --nodes=1 --pty python ns_task.py --parallel DDP --bert-model bookcorpus_mlm_bert.pt --dataset BookCorpus
+
+The result ppl of mlm_task is 18.97899 for the test set.
+The result loss of ns_task is 0.05446 for the test set.
 
 Fine-tune pre-trained BERT for question-answer task
 ---------------------------------------------------

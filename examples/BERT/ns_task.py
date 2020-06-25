@@ -13,6 +13,8 @@ def process_raw_data(whole_data, args):
     processed_data = []
     for _idx in range(len(whole_data)):
         item = whole_data[_idx]
+        if isinstance(item, list):
+            item = torch.tensor(item)
         if len(item) > 1:
             # idx to split the text into two sentencd
             split_idx = torch.randint(1, len(item), size=(1, 1)).item()
@@ -133,9 +135,14 @@ def run_main(args, rank=None):
     pad_id = vocab.stoi['<pad>']
     sep_id = vocab.stoi['<sep>']
 
-    from torchtext.experimental.datasets import WikiText103
-    train_dataset, valid_dataset, test_dataset = WikiText103(vocab=vocab,
-                                                             single_line=False)
+    if args.dataset == 'WikiText103':
+        from torchtext.experimental.datasets import WikiText103
+        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=vocab,
+                                                                 single_line=False)
+    elif args.dataset == 'BookCorpus':
+        from data import BookCorpus
+        train_dataset, test_dataset, valid_dataset = BookCorpus(vocab, min_sentence_len=60)
+
     if rank is not None:
         chunk_len = len(train_dataset.data) // args.world_size
         train_dataset.data = train_dataset.data[(rank * chunk_len):((rank + 1) * chunk_len)]
