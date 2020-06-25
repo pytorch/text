@@ -16,6 +16,20 @@ executors:
       image: windows-server-2019-vs2019:stable
       shell: bash.exe
 
+commands:
+  designate_upload_channel:
+    description: "inserts the correct upload channel into ${BASH_ENV}"
+    steps:
+      - run:
+          name: adding UPLOAD_CHANNEL to BASH_ENV
+          command: |
+            our_upload_channel=nightly
+            # On tags upload to test instead
+            if [[ -n "${CIRCLE_TAG}" ]]; then
+              our_upload_channel=test
+            fi
+            echo "export UPLOAD_CHANNEL=${our_upload_channel}" >> ${BASH_ENV}
+
 binary_common: &binary_common
   parameters:
     # Edit these defaults to do a release
@@ -176,6 +190,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workspace
+      - designate_upload_channel
       - run:
           command: |
             # Prevent credential from leaking
@@ -191,6 +206,7 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - checkout
+      - designate_upload_channel
       - run:
           command: |
             pip install --user awscli

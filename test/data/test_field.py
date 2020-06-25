@@ -2,7 +2,6 @@
 from collections import Counter
 import os
 
-from numpy.testing import assert_allclose
 import torch
 import torchtext.data as data
 import pytest
@@ -376,9 +375,9 @@ class TestField(TorchtextTestCase):
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
         numericalized_int = int_field.numericalize(test_int_data)
-        assert_allclose(numericalized_int.data.numpy(), [1, 0, 1, 3, 19])
+        self.assertEqual(numericalized_int.data, [1, 0, 1, 3, 19])
         numericalized_float = float_field.numericalize(test_float_data)
-        assert_allclose(numericalized_float.data.numpy(), [1.1, 0.1, 3.91, 0.2, 10.2])
+        self.assertEqual(numericalized_float.data, [1.1, 0.1, 3.91, 0.2, 10.2])
 
         # Test with postprocessing applied
         int_field = data.Field(sequential=False, use_vocab=False,
@@ -396,9 +395,9 @@ class TestField(TorchtextTestCase):
         test_float_data = ["1.1", "0.1", "3.91", "0.2", "10.2"]
 
         numericalized_int = int_field.numericalize(test_int_data)
-        assert_allclose(numericalized_int.data.numpy(), [2, 1, 2, 4, 20])
+        self.assertEqual(numericalized_int.data, [2, 1, 2, 4, 20])
         numericalized_float = float_field.numericalize(test_float_data)
-        assert_allclose(numericalized_float.data.numpy(), [0.55, 0.05, 1.955, 0.1, 5.1])
+        self.assertEqual(numericalized_float.data, [0.55, 0.05, 1.955, 0.1, 5.1])
 
     def test_errors(self):
         # Test that passing a non-tuple (of data and length) to numericalize
