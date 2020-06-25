@@ -5,26 +5,14 @@
 namespace torchtext {
 namespace {
 
-// // Custom hash function for stoi unordered_map
-// struct StrHashFn {
-//   size_t operator()(const std::string &str) {
-//     size_t h = 2166136261;
-//     for (size_t i = 0; i < str.size(); i++) {
-//       h = h ^ uint32_t(uint8_t(str[i]));
-//       h = h * 16777619;
-//     }
-//     return h;
+// size_t str_hash(const std::string &str) {
+//   size_t h = 2166136261;
+//   for (size_t i = 0; i < str.size(); i++) {
+//     h = h ^ uint32_t(uint8_t(str[i]));
+//     h = h * 16777619;
 //   }
-// };
-
-size_t str_hash(const std::string &str) {
-  size_t h = 2166136261;
-  for (size_t i = 0; i < str.size(); i++) {
-    h = h ^ uint32_t(uint8_t(str[i]));
-    h = h * 16777619;
-  }
-  return h;
-}
+//   return h;
+// }
 
 struct Vectors : torch::CustomClassHolder {
 private:
@@ -79,14 +67,14 @@ public:
 
   torch::Tensor GetItem(const std::string &token) const {
     if (stoi_.find(token) != stoi_.end()) {
-      // return stoi_.at(token);
-      return vectors_.at(stoi_.at(token));
+      return stoi_.at(token);
+      // return vectors_.at(stoi_.at(token));
     }
     return unk_tensor_;
   }
 
   void AddItem(const std::string &token, const torch::Tensor &vector) {
-    // stoi_[token] = vector;
+    stoi_[token] = vector;
     // stoi_[token] = vectors_.size();
     // vectors_.push_back(vector);
   }

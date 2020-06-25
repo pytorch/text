@@ -34,10 +34,12 @@ def _infer_shape(f):
 
 def _load_token_and_vectors_from_file(file_path):
     stoi, tokens, vectors, dup_tokens = {}, [], [], []
+    dim = None
     with open(file_path, "rb") as f:
         num_lines, _ = _infer_shape(f)
         for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
-            token, entries = line.rstrip().split(b" ", 1)
+            entries = line.rstrip().split(b" ")
+            token, entries = entries[0], entries[1:]
 
             if dim is None and len(entries) > 1:
                 dim = len(entries)
@@ -52,7 +54,7 @@ def _load_token_and_vectors_from_file(file_path):
                     "the same number of dimensions.".format(token, len(entries),
                                                             dim))
  
-            vector = torch.tensor([float(c) for c in entries.split(b" ")], dtype=torch.float)
+            vector = torch.tensor([float(c) for c in entries], dtype=torch.float)
             try:
                 if isinstance(token, bytes):
                     token = token.decode("utf-8")
@@ -170,6 +172,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     }
 
     file_name = "glove.{}.{}d.txt".format(name, str(dim))
+    print(file_name)
     if file_name not in valid_glove_file_names:
         raise ValueError("Could not find GloVe file with name {}. Please check that `name` and `dim`"
                          "are valid.".format(str(file_name)))
@@ -191,6 +194,8 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens:
+        print("Found duplicate tokens in file: {}".format(str(dup_tokens)))
+
         if not (len(dup_tokens) == 1 and dup_tokens[0] == dup_token_glove_840b[0] and
            dup_tokens[1] == dup_token_glove_840b[1]):
             raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
@@ -206,10 +211,10 @@ def vectors_from_file_object(file_like_object, unk_tensor=None):
     Note that the tensor corresponding to each vector is of type `torch.float`.
 
     Format for csv file:
-        token1,num1 num2 num3
-        token2,num4 num5 num6
+        token1 num1 num2 num3
+        token2 num4 num5 num6
         ...
-        token_n,num_m num_j num_k
+        token_n num_m num_j num_k
 
     Args:
         file_like_object (FileObject): a file like object to read data from.
@@ -218,15 +223,13 @@ def vectors_from_file_object(file_like_object, unk_tensor=None):
     Returns:
         Vectors: a Vectors object.
 
+     Raises:
+        ValueError: if duplicate tokens are found in FastText file.
+
     """
-    readCSV = csv.reader(file_like_object, delimiter=",")
-
-    tokens = []
-    vectors = []
-    for row in readCSV:
-        tokens.append(row[0])
-        vectors.append(torch.tensor([float(c) for c in row[1].split()], dtype=torch.float))
-
+    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name)
+    if dup_tokens:
+        raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     return Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
 
