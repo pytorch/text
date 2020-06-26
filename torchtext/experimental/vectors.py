@@ -268,7 +268,6 @@ class Vectors(nn.Module):
 
         self.vectors[token] = vector.float()
 
-    
     @torch.jit.export
     def __len__(self):
         r"""Get length of vectors object.

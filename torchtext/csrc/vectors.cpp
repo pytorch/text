@@ -62,6 +62,7 @@ static auto vectors =
                          torch::Tensor>())
         .def("__getitem__", &Vectors::__getitem__)
         .def("__setitem__", &Vectors::__setitem__)
+        .def("__len__", &Vectors::__len__)
         .def_pickle(
             // __getstate__
             [](const c10::intrusive_ptr<Vectors> &self)
