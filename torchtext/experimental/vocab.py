@@ -15,28 +15,11 @@ from torchtext.utils import (
 logger = logging.getLogger(__name__)
 
 
-# def _infer_shape(f):
-#     num_lines, vector_dim = 0, None
-#     for line in f:
-#         if vector_dim is None:
-#             row = line.rstrip().split(b" ")
-#             vector = row[1:]
-#             # Assuming word, [vector] format
-#             if len(vector) > 2:
-#                 # The header present in some (w2v) formats contains two elements.
-#                 vector_dim = len(vector)
-#                 num_lines += 1  # First element read
-#         else:
-#             num_lines += 1
-#     f.seek(0)
-#     return num_lines, vector_dim
-
-
 class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
     Arguments:
-        counter (collections.Counter): object holding the frequencies of each token found in the data.
+        ordered_dict (collections.Counter): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         specials: The tuple of special tokens (e.g., padding or eos) that will be prepended to the vocabulary.
