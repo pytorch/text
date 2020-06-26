@@ -1,16 +1,7 @@
-import csv
 import logging
-import os
 
 import torch
-from torch import Tensor
 import torch.nn as nn
-from tqdm import tqdm
-
-from torchtext.utils import (
-    download_from_url,
-    extract_archive
-)
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +10,7 @@ class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
     Arguments:
-        ordered_dict (collections.Counter): object holding the frequencies of each token found in the data.
+        ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         specials: The tuple of special tokens (e.g., padding or eos) that will be prepended to the vocabulary.
@@ -28,40 +19,79 @@ class Vocab(nn.Module):
             they are added into the vocabulary at last. Default: True.
 
     Raises:
-        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
-        RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
-        TypeError: if all tensors within`vectors` are not of data type `torch.float`.
+        ValueError: if a default `unk_token` isn't provided.
     """
 
-    def __init__(self, counter, min_freq=1, specials=('<unk>', '<pad>'), specials_first=True):
+    def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<pad>'), specials_first=True):
         super(Vocab, self).__init__()
 
-        if specials is None:
-            raise ValueError("The specials list is empty and a default unk token wasn't provided.")
+        if not unk_token:
+            raise ValueError("A default unk token wasn't provided.")
 
-        # self.vectors = torch.classes.torchtext.Vocab(tokens, vectors, unk_tensor)
+        tokens = []
+        for token, freq in ordered_dict.items():
+            if freq >= min_freq:
+                tokens.append(token)
+
+        # assume unk_token and special tokens dont appear in ordered_dict
+        if specials_first:
+            tokens = [unk_token] + list(specials) + tokens
+        else:
+            tokens += [unk_token] + list(specials)
+
+        self.vocab = torch.classes.torchtext.Vocab(tokens, unk_token)
+
+    @torch.jit.export
+    def __len__(self) -> int:
+        r"""Returns:
+            length (int): the length of the vocab
+        """
+        return len(self.vocab)
 
     @torch.jit.export
     def __getitem__(self, token: str) -> int:
         r"""
         Args:
             token (str): the token used to lookup the corresponding vector.
+
         Returns:
-            idx (Tensor): the index corresponding to the associated token.
+            index (int): the index corresponding to the associated token.
         """
-        return self.vectors.GetItem(token)
+        return self.vocab[token]
 
     @torch.jit.export
-    def __setitem__(self, token: str, idx: int):
+    def __setitem__(self, token: str, index: int):
         r"""
         Args:
             token (str): the token used to lookup the corresponding vector.
-            vector (Tensor): a 1d tensor representing a vector associated with the token.
+            index (int): the index corresponding to the associated token.
 
         Raises:
-            TypeError: if `vector` is not of data type `torch.float`.
+            RuntimeError: if `index` not between [0, Vocab.size()].
         """
-        if vector.dtype != torch.float:
-            raise TypeError("`vector` should be of data type `torch.float` but it's of type " + vector.dtype)
+        self.vocab[token] = index
 
-        self.vectors.AddItem(token, vector.float())
+    @torch.jit.export
+    def addToken(self, token: str):
+        r"""
+        Args:
+            token (str): the token used to lookup the corresponding vector.
+            index (int): the index corresponding to the associated token.
+        """
+        self.vocab.addToken(token)
+
+    @torch.jit.export
+    def getStoi(self):
+        r"""
+        Returns:
+            stoi (dict): dictionary mapping token to index.
+        """
+        return self.vocab.getStoi()
+
+    @torch.jit.export
+    def getItos(self):
+        r"""
+        Returns:
+            stoi (dict): dictionary mapping token to index.
+        """
+        return self.vocab.getItos()
