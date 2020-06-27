@@ -7,11 +7,11 @@ from torchtext.vocab import FastText
 
 
 def benchmark_experimental_vectors():
-    def _run_benchmark(tokens, vector):
+    def _run_benchmark_lookup(tokens, vector):
         t0 = time.monotonic()
         for token in tokens:
             vector[token]
-        print("Time:", time.monotonic() - t0)
+        print("Lookup time:", time.monotonic() - t0)
 
     train, = AG_NEWS(data_select='train')
     vocab = train.get_vocab()
@@ -21,19 +21,24 @@ def benchmark_experimental_vectors():
             tokens.append(vocab.itos[id])
 
     # existing FastText
+    print("Existing FastText - Not Jit Mode")
+    t0 = time.monotonic()
     fast_text = FastText()
+    print("Construction time:", time.monotonic() - t0)
 
-    print("FastText - Not Jit Mode")
-    _run_benchmark(tokens, fast_text)
+    # _run_benchmark_lookup(tokens, fast_text)
 
     # experimental FastText
+    print("FastText Experimental")
+    t0 = time.monotonic()
     fast_text_experimental = FastTextExperimental()
-    jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
+    print("Construction time:", time.monotonic() - t0)
 
     print("FastText Experimental - Not Jit Mode")
-    _run_benchmark(tokens, fast_text_experimental)
+    _run_benchmark_lookup(tokens, fast_text_experimental)
     print("FastText Experimental - Jit Mode")
-    _run_benchmark(tokens, jit_fast_text_experimental)
+    jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
+    _run_benchmark_lookup(tokens, jit_fast_text_experimental)
 
 
 if __name__ == "__main__":

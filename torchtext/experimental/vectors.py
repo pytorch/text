@@ -87,6 +87,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
 
     cached_vectors_file_path = os.path.join(root, file_name + ".pt")
     if os.path.isfile(cached_vectors_file_path):
+        logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
         return(torch.load(cached_vectors_file_path))
 
     checksum = None
@@ -171,6 +172,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     url = urls[name]
     cached_vectors_file_path = os.path.join(root, file_name + '.pt')
     if os.path.isfile(cached_vectors_file_path):
+        logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
         return(torch.load(cached_vectors_file_path))
 
     checksum = None
