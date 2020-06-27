@@ -41,16 +41,18 @@ public:
     }
   }
 
-  torch::Tensor GetItem(const std::string &token) const {
+  torch::Tensor __getitem__(const std::string &token) const {
     if (stovectors_.find(token) != stovectors_.end()) {
       return stovectors_.at(token);
     }
     return unk_tensor_;
   }
 
-  void AddItem(const std::string &token, const torch::Tensor &vector) {
+  void __setitem__(const std::string &token, const torch::Tensor &vector) {
     stovectors_[token] = vector;
   }
+
+  int64_t __len__() { return stovectors_.size(); }
 };
 
 // Registers our custom class with torch.
@@ -58,8 +60,9 @@ static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
         .def(torch::init<std::vector<std::string>, std::vector<torch::Tensor>,
                          torch::Tensor>())
-        .def("GetItem", &Vectors::GetItem)
-        .def("AddItem", &Vectors::AddItem)
+        .def("__getitem__", &Vectors::__getitem__)
+        .def("__setitem__", &Vectors::__setitem__)
+        .def("__len__", &Vectors::__len__)
         .def_pickle(
             // __getstate__
             [](const c10::intrusive_ptr<Vectors> &self)
