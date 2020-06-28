@@ -9,7 +9,7 @@ from torchtext.vocab import FastText
 def benchmark_experimental_vectors():
     def _run_benchmark_lookup(tokens, vector):
         t0 = time.monotonic()
-        for token in tokens:
+        for token in tokens[:100]:
             vector[token]
         print("Lookup time:", time.monotonic() - t0)
 
