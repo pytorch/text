@@ -1,12 +1,12 @@
+import os
+import sys
 import requests
 import csv
 import hashlib
 from tqdm import tqdm
-import os
 import tarfile
 import logging
 import re
-import sys
 import zipfile
 import gzip
 
