@@ -2,7 +2,7 @@ from itertools import combinations
 
 import torch
 
-from torchtext.experimental.datasets.samplers import BucketByLengthBatchSampler
+from torchtext.experimental.utils import BucketByLengthBatchSampler
 
 from ..common.torchtext_test_case import TorchtextTestCase
 
