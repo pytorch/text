@@ -1,8 +1,8 @@
+from typing import List
+
 import numpy as np
 from torch.utils.data import Dataset, IterableDataset
-from torch.utils.data.sampler import Sampler, RandomSampler, SequentialSampler
-
-from typing import List
+from torch.utils.data.sampler import RandomSampler, Sampler, SequentialSampler
 
 
 class BucketByLengthBatchSampler(Sampler):
