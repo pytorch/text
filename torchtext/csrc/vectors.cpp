@@ -9,14 +9,16 @@ namespace {
 
 struct Vectors : torch::CustomClassHolder {
 public:
-  Dict<std::string, int64_t> stoi_;
+  Dict<std::string, torch::Tensor> stovec_;
+  std::vector<std::string> tokens_;
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
 
   explicit Vectors(const std::vector<std::string> &tokens,
                    const torch::Tensor &vectors,
                    const torch::Tensor &unk_tensor)
-      : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
+      : tokens_(std::move(tokens)), vectors_(std::move(vectors)),
+        unk_tensor_(std::move(unk_tensor)) {
     // guarding against size mismatch of vectors and tokens
     if (tokens.size() != vectors.size(0)) {
       throw std::runtime_error(
@@ -25,43 +27,37 @@ public:
           std::to_string(vectors.size(0)) + ".");
     }
 
-    stoi_.reserve(tokens.size());
+    stovec_.reserve(tokens.size());
     for (std::size_t i = 0; i < tokens.size(); i++) {
       // tokens should not have any duplicates
-      if (stoi_.find(tokens[i]) != stoi_.end()) {
+      if (stovec_.find(tokens[i]) != stovec_.end()) {
         throw std::runtime_error("Duplicate token found in tokens list: " +
                                  tokens[i]);
       }
-      stoi_.insert(std::move(tokens[i]), i);
+      stovec_.insert(std::move(tokens[i]), vectors_.select(0, i));
     }
   }
 
-  // constructor for loading serialized object
-  explicit Vectors(const Dict<std::string, int64_t> &stoi,
-                   const torch::Tensor &vectors,
-                   const torch::Tensor &unk_tensor)
-      : stoi_(std::move(stoi)), vectors_(std::move(vectors)),
-        unk_tensor_(std::move(unk_tensor)){};
-
   torch::Tensor __getitem__(const std::string &token) const {
-    const auto &item = stoi_.find(token);
-    if (item != stoi_.end()) {
-      return vectors_[item->value()];
+    const auto &item = stovec_.find(token);
+    if (item != stovec_.end()) {
+      return item->value();
     }
     return unk_tensor_;
   }
 
   void __setitem__(const std::string &token, const torch::Tensor &vector) {
-    const auto &item = stoi_.find(token);
-    if (item != stoi_.end()) {
-      vectors_[item->value()] = vector;
+    const auto &item = stovec_.find(token);
+    if (item != stovec_.end()) {
+      item->value() = vector;
     } else {
-      stoi_.insert(token, stoi_.size());
+      tokens_.push_back(token);
       vectors_ = torch::cat({vectors_, vector}, /*dim=*/0);
+      stovec_.insert(token, vectors_.select(0, stovec_.size()));
     }
   }
 
-  int64_t __len__() { return stoi_.size(); }
+  int64_t __len__() { return stovec_.size(); }
 };
 
 // Registers our custom class with torch.
@@ -75,14 +71,13 @@ static auto vectors =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vectors> &self) -> std::tuple<
-                Dict<std::string, int64_t>, torch::Tensor, torch::Tensor> {
-              std::tuple<Dict<std::string, int64_t>, torch::Tensor,
-                         torch::Tensor>
-                  states(self->stoi_, self->vectors_, self->unk_tensor_);
+                std::vector<std::string>, torch::Tensor, torch::Tensor> {
+              std::tuple<std::vector<std::string>, torch::Tensor, torch::Tensor>
+                  states(self->tokens_, self->vectors_, self->unk_tensor_);
               return states;
             },
             // __getstate__
-            [](std::tuple<Dict<std::string, int64_t>, torch::Tensor,
+            [](std::tuple<std::vector<std::string>, torch::Tensor,
                           torch::Tensor>
                    states) -> c10::intrusive_ptr<Vectors> {
               return c10::make_intrusive<Vectors>(
