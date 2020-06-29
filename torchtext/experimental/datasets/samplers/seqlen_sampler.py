@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 from torch.utils.data import Dataset, IterableDataset
 from torch.utils.data.sampler import Sampler, RandomSampler, SequentialSampler
