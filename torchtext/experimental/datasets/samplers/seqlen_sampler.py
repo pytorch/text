@@ -7,10 +7,8 @@ from typing import List
 
 
 class BucketByLengthBatchSampler(Sampler):
-    """Defines a batch sampler that batches examples of similar lengths together.
-
-    Minimizes amount of padding needed while producing freshly shuffled
-    batches for each new epoch. See pool for the bucketing procedure used.
+    """Defines a batch sampler that batches examples of similar lengths together and
+    minimizes amount of padding needed.
     Arguments:
         data_source: data source to sample from.
         bucket_boundaries: upper length boundaries to merge sentences with length
