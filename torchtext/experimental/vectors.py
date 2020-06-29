@@ -107,10 +107,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
         logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
         print("Loading from cached file {}".format(str(cached_vectors_file_path)))
         t0 = time.monotonic()
-        # loaded_v = torch.load(cached_vectors_file_path)
-        loaded_tokens, loaded_vectors, loaded_unk_tensor = torch.load(cached_vectors_file_path)
-        print("Torch load() time:", time.monotonic() - t0)
-        loaded_v = Vectors(loaded_tokens, loaded_vectors, unk_tensor=loaded_unk_tensor)
+        loaded_v = torch.load(cached_vectors_file_path)
         print("Total load time including construction:", time.monotonic() - t0)
 
         return(loaded_v)
@@ -125,13 +122,11 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
-
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
     print("Saving vectors obj")
     t0 = time.monotonic()
-    # torch.save(vectors_obj, cached_vectors_file_path)
-    torch.save((tokens, vectors, unk_tensor), cached_vectors_file_path)
+    torch.save(vectors_obj, cached_vectors_file_path)
     print("Saving time:", time.monotonic() - t0)
     return vectors_obj
 
@@ -285,10 +280,9 @@ class Vectors(nn.Module):
         #     temp_vector.append(vector)
 
         unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-        print("Constructing cpp vectors obj")
         t0 = time.monotonic()
         self.vectors = torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor)
-        print("Constructing time:", time.monotonic() - t0)
+        print("CPP vector instatiation time:", time.monotonic() - t0)
 
     @torch.jit.export
     def __getitem__(self, token: str) -> Tensor:
