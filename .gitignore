@@ -81,6 +81,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# computed checksum files
+torchtext/experimental/asset/.checksums/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -108,6 +111,9 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
+
+# VSCode project settings
+.vscode
 
 # mkdocs documentation
 /site

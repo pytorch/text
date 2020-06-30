@@ -18,7 +18,7 @@ def read(*names, **kwargs):
 
 
 def _get_version():
-    version = '0.6.0a0'
+    version = '0.8.0a0'
     sha = None
 
     try:
