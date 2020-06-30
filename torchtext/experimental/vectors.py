@@ -105,8 +105,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
     cached_vectors_file_path = os.path.join(root, file_name + ".pt")
     if os.path.isfile(cached_vectors_file_path):
         logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
-        loaded_v = torch.load(cached_vectors_file_path)
-        return(loaded_v)
+        return torch.load(cached_vectors_file_path)
 
     checksum = None
     if validate_file:
@@ -191,7 +190,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     cached_vectors_file_path = os.path.join(root, file_name + '.pt')
     if os.path.isfile(cached_vectors_file_path):
         logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
-        return(torch.load(cached_vectors_file_path))
+        return torch.load(cached_vectors_file_path)
 
     checksum = None
     if validate_file:
@@ -265,9 +264,7 @@ class Vectors(nn.Module):
             raise TypeError("`vectors` should be of data type `torch.float`.")
 
         unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-        t0 = time.monotonic()
         self.vectors = torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor)
-        print("CPP vector instatiation time:", time.monotonic() - t0)
 
     @torch.jit.export
     def __getitem__(self, token: str) -> Tensor:
