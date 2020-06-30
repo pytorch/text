@@ -1,7 +1,5 @@
 import logging
 import os
-import time
-
 
 import torch
 from torch import Tensor
@@ -77,7 +75,7 @@ def _load_token_and_vectors_from_file(file_path, delimiter=" "):
             tokens.append(token)
             vectors[vectors_loaded] = torch.tensor([float(c) for c in entries], dtype=torch.float)
             vectors_loaded += 1
-        vectors = vectors[:vectors_loaded].view(vectors_loaded, dim)
+        vectors = vectors[:vectors_loaded]
     return tokens, vectors, dup_tokens
 
 
@@ -257,7 +255,7 @@ class Vectors(nn.Module):
     def __init__(self, tokens, vectors, unk_tensor=None):
         super(Vectors, self).__init__()
 
-        if unk_tensor is None and vectors is None:
+        if unk_tensor is None and (vectors is None or not len(vectors)):
             raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
 
         if not vectors.dtype == torch.float:

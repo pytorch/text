@@ -52,7 +52,8 @@ public:
       item->value() = vector;
     } else {
       tokens_.push_back(token);
-      vectors_ = torch::cat({vectors_, vector}, /*dim=*/0);
+      vectors_ = torch::cat({vectors_, torch::unsqueeze(vector, /*dim=*/0)},
+                            /*dim=*/0);
       stovec_.insert(token, vectors_.select(0, stovec_.size()));
     }
   }
