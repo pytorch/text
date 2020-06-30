@@ -1,6 +1,8 @@
 from itertools import combinations
 
 import torch
+from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import DataLoader, Dataset
 
 from torchtext.experimental.utils import BucketBatchSampler
 
@@ -30,13 +32,10 @@ class TestSampler(TorchtextTestCase):
                 self.assertLess(abs(max_diff[0] - max_diff[1]), 5)
 
     def test_full_pipeline_bucket_sampler(self):
-        from torch.utils.data import Dataset, DataLoader
-        from torch.nn.utils.rnn import pad_sequence
-
         class MyDataset(Dataset):
             def __init__(self):
                 self.data = []
-                for num in range(150):
+                for num in range(20):
                     max_length = torch.randint(2, 11, (1,))[0]
                     self.data.append(torch.tensor(range(1, max_length)))
 
@@ -53,5 +52,12 @@ class TestSampler(TorchtextTestCase):
         batch_sampler = BucketBatchSampler(dataset, [3, 5, 10], 5)
         iterator = DataLoader(dataset, batch_sampler=batch_sampler, collate_fn=collate_fn)
 
+        result = []
         for x in iterator:
-            print(x)
+            mask = x.ne(0)
+            seq_lens = mask.sum(-1)
+            max_seq_length = seq_lens.max().item()
+            min_seq_length = seq_lens.min().item()
+            diff = max_seq_length - min_seq_length
+
+            self.assertTrue(diff <= 2 or diff <= 5)
