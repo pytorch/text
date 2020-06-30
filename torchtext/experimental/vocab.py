@@ -13,8 +13,8 @@ class Vocab(nn.Module):
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        specials: The tuple of special tokens (e.g., padding or eos) that will be prepended to the vocabulary.
-            The first value should always be the unknown token Default: ['<unk'>, '<pad>']
+        specials: The tuple of special tokens (e.g., padding or eos) that will be prepended/postpended to the vocabulary.
+            based on the `specials_first` flag. The ordering of the tuple will be preserved. Default: [<pad>']
         specials_first: Whether to add special tokens into the vocabulary at first. If it is False,
             they are added into the vocabulary at last. Default: True.
 
