@@ -5,7 +5,7 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from tqdm import tqdm
-from typing import List, Tuple
+from typing import List
 
 from torchtext.utils import (
     download_from_url,
@@ -304,7 +304,7 @@ class Vectors(nn.Module):
         """Look up embedding vectors of tokens.
         Arguments:
             tokens: a list of tokens
-            
+
         Returns:
             vectors (Tenosr): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
 
