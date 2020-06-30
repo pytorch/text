@@ -2,7 +2,7 @@ from itertools import combinations
 
 import torch
 
-from torchtext.experimental.utils import BucketByLengthBatchSampler
+from torchtext.experimental.utils import BucketBatchSampler
 
 from ..common.torchtext_test_case import TorchtextTestCase
 
@@ -10,7 +10,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 class TestSampler(TorchtextTestCase):
     def test_bucket_by_length_batch_sampler(self):
         dummy = [torch.tensor(range(1, torch.randint(2, 11, (1,))[0])) for num in range(15)]
-        sampler = BucketByLengthBatchSampler(dummy, [5, 10], batch_size=5)
+        sampler = BucketBatchSampler(dummy, [5, 10], batch_size=5)
 
         # Ensure all indexes are available from the sampler
         indexes = [idx for row in sampler for idx in row]
@@ -50,7 +50,7 @@ class TestSampler(TorchtextTestCase):
             return pad_sequence(batch, batch_first=True)
 
         dataset = MyDataset()
-        batch_sampler = BucketByLengthBatchSampler(dataset, [3, 5, 10], 5)
+        batch_sampler = BucketBatchSampler(dataset, [3, 5, 10], 5)
         iterator = DataLoader(dataset, batch_sampler=batch_sampler, collate_fn=collate_fn)
 
         for x in iterator:

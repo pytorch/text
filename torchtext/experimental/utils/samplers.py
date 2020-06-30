@@ -5,7 +5,7 @@ from torch.utils.data import Dataset, IterableDataset
 from torch.utils.data.sampler import RandomSampler, Sampler, SequentialSampler
 
 
-class BucketByLengthBatchSampler(Sampler):
+class BucketBatchSampler(Sampler):
     """Defines a batch sampler that batches examples of similar lengths together and
     minimizes amount of padding needed.
     Arguments:
@@ -22,9 +22,9 @@ class BucketByLengthBatchSampler(Sampler):
         >>> dummy = [
             torch.tensor(range(1, torch.randint(2, 11, (1,))[0])) for num in range(10)
         ]
-        >>> list(BucketByLengthBatchSampler(dummy, [5, 10], batch_size=5, shuffle=False))
+        >>> list(BucketBatchSampler(dummy, [5, 10], batch_size=5, shuffle=False))
         [[0, 1, 2, 3, 4], [5, 6, 7, 8], [9]]
-        >>> list(BucketByLengthBatchSampler(dummy, [5, 10], batch_size=5))
+        >>> list(BucketBatchSampler(dummy, [5, 10], batch_size=5))
         [[9, 2, 4, 3, 1], [8, 7, 5, 6], [0]]
     """
 

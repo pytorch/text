@@ -1,5 +1,5 @@
-from .samplers import BucketByLengthBatchSampler
+from .samplers import BucketBatchSampler
 
 __all__ = [
-    "BucketByLengthBatchSampler",
+    "BucketBatchSampler",
 ]
