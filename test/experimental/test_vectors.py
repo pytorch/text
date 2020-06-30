@@ -66,6 +66,21 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
         self.assertEqual(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
 
+    def test_vectors_get_vectors_by_tokens(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
+
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tokens = ['a', 'b']
+        vectors = torch.stack((tensorA, tensorB), 0)
+        vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+
+        tokens_to_lookup = ['a', 'b', 'c']
+        expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
+        vectors_by_tokens = vectors_obj.get_vectors_by_tokens(tokens_to_lookup)
+
+        self.assertEqual(expected_vectors, vectors_by_tokens)
+
     def test_vectors_add_item(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
@@ -162,49 +177,49 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['b'], expected_tensorB)
         self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
-    def test_fast_text(self):
-        # copy the asset file into the expected download location
-        # note that this is just a file with the first 100 entries of the FastText english dataset
-        asset_name = 'wiki.en.vec'
-        asset_path = get_asset_path(asset_name)
+    # def test_fast_text(self):
+    #     # copy the asset file into the expected download location
+    #     # note that this is just a file with the first 100 entries of the FastText english dataset
+    #     asset_name = 'wiki.en.vec'
+    #     asset_path = get_asset_path(asset_name)
 
-        with tempfile.TemporaryDirectory() as dir_name:
-            data_path = os.path.join(dir_name, asset_name)
-            shutil.copy(asset_path, data_path)
-            vectors_obj = FastText(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+    #     with tempfile.TemporaryDirectory() as dir_name:
+    #         data_path = os.path.join(dir_name, asset_name)
+    #         shutil.copy(asset_path, data_path)
+    #         vectors_obj = FastText(root=dir_name, validate_file=False)
+    #         jit_vectors_obj = torch.jit.script(vectors_obj)
 
-            # The first 3 entries in each vector.
-            expected_fasttext_simple_en = {
-                'the': [-0.065334, -0.093031, -0.017571],
-                'world': [-0.32423, -0.098845, -0.0073467],
-            }
+    #         # The first 3 entries in each vector.
+    #         expected_fasttext_simple_en = {
+    #             'the': [-0.065334, -0.093031, -0.017571],
+    #             'world': [-0.32423, -0.098845, -0.0073467],
+    #         }
 
-            for word in expected_fasttext_simple_en.keys():
-                self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
-                self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
+    #         for word in expected_fasttext_simple_en.keys():
+    #             self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
+    #             self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
-    def test_glove(self):
-        # copy the asset file into the expected download location
-        # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
-        asset_name = 'glove.840B.300d.zip'
-        asset_path = get_asset_path(asset_name)
+    # def test_glove(self):
+    #     # copy the asset file into the expected download location
+    #     # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
+    #     asset_name = 'glove.840B.300d.zip'
+    #     asset_path = get_asset_path(asset_name)
 
-        with tempfile.TemporaryDirectory() as dir_name:
-            data_path = os.path.join(dir_name, asset_name)
-            shutil.copy(asset_path, data_path)
-            vectors_obj = GloVe(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+    #     with tempfile.TemporaryDirectory() as dir_name:
+    #         data_path = os.path.join(dir_name, asset_name)
+    #         shutil.copy(asset_path, data_path)
+    #         vectors_obj = GloVe(root=dir_name, validate_file=False)
+    #         jit_vectors_obj = torch.jit.script(vectors_obj)
 
-            # The first 3 entries in each vector.
-            expected_glove = {
-                'the': [0.27204, -0.06203, -0.1884],
-                'people': [-0.19686, 0.11579, -0.41091],
-            }
+    #         # The first 3 entries in each vector.
+    #         expected_glove = {
+    #             'the': [0.27204, -0.06203, -0.1884],
+    #             'people': [-0.19686, 0.11579, -0.41091],
+    #         }
 
-            for word in expected_glove.keys():
-                self.assertEqual(vectors_obj[word][:3], expected_glove[word])
-                self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
+    #         for word in expected_glove.keys():
+    #             self.assertEqual(vectors_obj[word][:3], expected_glove[word])
+    #             self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
 
     def test_glove_different_dims(self):
         # copy the asset file into the expected download location
