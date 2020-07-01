@@ -8,7 +8,7 @@ from torch.utils.data.sampler import RandomSampler, Sampler, SequentialSampler
 class BucketBatchSampler(Sampler):
     """Defines a batch sampler that batches examples of similar lengths together and
     minimizes amount of padding needed. This BatchSampler works by categorizing each
-    raw data by putting them in a bucket whose lengtsh are in the upperbound range of
+    raw data by putting them in a bucket whose lengths are in the upperbound range of
     ``bucket_boundaries``. For ``bucket_boundaries`` = [5, 10], there will be three
     different buckets that will consist of sentences whose lengths are less than 5,
     between 5 and 10, and more than 10.
