@@ -1,6 +1,6 @@
+import math
 from typing import List
 
-import numpy as np
 from torch.utils.data import Dataset, IterableDataset
 from torch.utils.data.sampler import RandomSampler, Sampler, SequentialSampler
 
@@ -45,7 +45,7 @@ class BucketBatchSampler(Sampler):
 
         self.data_source = data_source
         self.seq_dim = seq_dim
-        self.bucket_boundaries = bucket_boundaries + [np.inf]
+        self.bucket_boundaries = bucket_boundaries + [math.inf]
         self.batch_size = batch_size
         if shuffle:
             self.sampler = RandomSampler(data_source)
