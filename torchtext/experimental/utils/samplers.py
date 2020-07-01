@@ -45,7 +45,7 @@ class BucketBatchSampler(Sampler):
 
         self.data_source = data_source
         self.seq_dim = seq_dim
-        self.bucket_boundaries = bucket_boundaries + [math.inf]
+        self.bucket_boundaries = bucket_boundaries + [float("inf")]
         self.batch_size = batch_size
         if shuffle:
             self.sampler = RandomSampler(data_source)
