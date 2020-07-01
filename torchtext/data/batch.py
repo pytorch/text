@@ -1,4 +1,5 @@
 import torch
+import warnings
 
 
 class Batch(object):
@@ -19,6 +20,7 @@ class Batch(object):
 
     def __init__(self, data=None, dataset=None, device=None):
         """Create a Batch from a list of examples."""
+        warnings.warn('Batch class will retire in 0.8.0 release', RuntimeWarning)
         if data is not None:
             self.batch_size = len(data)
             self.dataset = dataset
