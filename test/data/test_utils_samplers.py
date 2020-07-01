@@ -52,7 +52,6 @@ class TestSampler(TorchtextTestCase):
         batch_sampler = BucketBatchSampler(dataset, [3, 5, 10], 5)
         iterator = DataLoader(dataset, batch_sampler=batch_sampler, collate_fn=collate_fn)
 
-        result = []
         for x in iterator:
             mask = x.ne(0)
             seq_lens = mask.sum(-1)
