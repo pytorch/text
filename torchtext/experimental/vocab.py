@@ -52,7 +52,7 @@ class Vocab(nn.Module):
     def __getitem__(self, token: str) -> int:
         r"""
         Args:
-            token (str): the token used to lookup the corresponding vector.
+            token (str): the token used to lookup the corresponding index.
 
         Returns:
             index (int): the index corresponding to the associated token.
@@ -63,11 +63,11 @@ class Vocab(nn.Module):
     def __setitem__(self, token: str, index: int):
         r"""
         Args:
-            token (str): the token used to lookup the corresponding vector.
+            token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
 
         Raises:
-            RuntimeError: if `index` not between [0, Vocab.size()].
+            RuntimeError: if `index` not between [0, Vocab.size()] or if token already exists in the vocab.
         """
         self.vocab[token] = index
 
@@ -75,10 +75,50 @@ class Vocab(nn.Module):
     def addToken(self, token: str):
         r"""
         Args:
-            token (str): the token used to lookup the corresponding vector.
+            token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
         """
         self.vocab.addToken(token)
+
+    @torch.jit.export
+    def lookupToken(self, index: int):
+        r"""
+        Args:
+            index (int): the index corresponding to the associated token.
+        
+        Returns:
+            token (str): the token used to lookup the corresponding index.
+
+        Raises:
+            RuntimeError: if `index` not between [0, itos.size()].
+        """
+        self.vocab.lookupToken(token)
+
+
+    @torch.jit.export
+    def lookupTokens(self, indices: List[int]):
+        r"""
+        Args:
+            indices (List[int]): the `indices` used to lookup their corresponding`tokens`.
+
+        Returns:
+            tokens (List[str]): the `tokens` associated with `indices`.
+
+        Raises:
+            RuntimeError: if an index within `indices` is not between [0, itos.size()].
+        """
+        self.vocab.lookupTokens(token)
+
+    @torch.jit.export
+    def lookupIndices(self, tokens: List[str]):
+        r"""
+        Args:
+            tokens (List[str]): the tokens used to lookup their corresponding `indices`.
+
+        Returns:
+            indices (List[int]): the 'indices` associated with `tokens`.
+        """
+        self.vocab.lookupIndices(token)
 
     @torch.jit.export
     def getStoi(self):
