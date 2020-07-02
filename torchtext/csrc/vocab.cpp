@@ -38,7 +38,7 @@ namespace torchtext
           }
           stoi_.insert(std::move(tokens[i]), i);
         }
-        unk_index_ = stoi_[unk_token];
+        unk_index_ = stoi_.find(unk_token)->value();
       }
 
       int64_t __len__() const { return stoi_.size(); }
@@ -55,7 +55,7 @@ namespace torchtext
 
       void __setitem__(const std::string &token, const int64_t &index)
       {
-        if (index < 0 || index > stoi_.size())
+        if (index < 0 || index > static_cast<int64_t>(stoi_.size()))
         {
           throw std::runtime_error(
               "Specified index " + std::to_string(index) +
@@ -69,22 +69,22 @@ namespace torchtext
         {
           throw std::runtime_error("Token " + token +
                                    " already exists in the Vocab with index: " +
-                                   std::to_string(item->second) + ".");
+                                   std::to_string(item->value()) + ".");
         }
 
         // need to offset all tokens greater than or equal index by 1
         for (auto &entry : stoi_)
         {
-          if (entry.second >= index)
+          if (entry.value() >= index)
           {
-            entry.second++;
+            stoi_.insert_or_assign(entry.key(), std::move(entry.value()+1));
           }
         }
-        stoi_.insert_or_assign(std::move(token), std::move(index));
+        stoi_.insert(std::move(token), std::move(index));
 
         // need to update unk_index in case token equals unk_token or token inserted
         // before unk_token
-        unk_index_ = stoi_[unk_token_];
+        unk_index_ = stoi_.find(unk_token_)->value();
       }
 
       void addToken(const std::string &token)
@@ -105,13 +105,13 @@ namespace torchtext
               std::to_string(itos_.size()) + ".");
         }
 
-        return itos_.find(index)->value();
+        return itos_[index];
       }
 
       std::vector<std::string> lookupTokens(const std::vector<int64_t> &indices)
       {
-        std::vector<int64_t> tokens(indices.size());
-        for (int64_t i = 0; i < indices.size(); i++)
+        std::vector<std::string> tokens(indices.size());
+        for (int64_t i = 0; i < static_cast<int64_t>(indices.size()); i++)
         {
           tokens[i] = lookupToken(indices[i]);
         }
@@ -121,14 +121,14 @@ namespace torchtext
       std::vector<int64_t> lookupIndices(const std::vector<std::string> &tokens)
       {
         std::vector<int64_t> indices(tokens.size());
-        for (int64_t i = 0; i < tokens.size(); i++)
+        for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++)
         {
           indices[i] = __getitem__(tokens[i]);
         }
         return indices;
       }
 
-      std::unordered_map<std::string, int64_t> getStoi() const { return stoi_; }
+      Dict<std::string, int64_t> getStoi() const { return stoi_; }
       std::vector<std::string> getItos() const { return itos_; }
     };
 

@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import torch
 import torch.nn as nn
@@ -85,15 +86,14 @@ class Vocab(nn.Module):
         r"""
         Args:
             index (int): the index corresponding to the associated token.
-        
+
         Returns:
             token (str): the token used to lookup the corresponding index.
 
         Raises:
             RuntimeError: if `index` not between [0, itos.size()].
         """
-        self.vocab.lookupToken(token)
-
+        return self.vocab.lookupToken(index)
 
     @torch.jit.export
     def lookupTokens(self, indices: List[int]):
@@ -107,7 +107,7 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if an index within `indices` is not between [0, itos.size()].
         """
-        self.vocab.lookupTokens(token)
+        return self.vocab.lookupTokens(indices)
 
     @torch.jit.export
     def lookupIndices(self, tokens: List[str]):
@@ -118,7 +118,7 @@ class Vocab(nn.Module):
         Returns:
             indices (List[int]): the 'indices` associated with `tokens`.
         """
-        self.vocab.lookupIndices(token)
+        return self.vocab.lookupIndices(tokens)
 
     @torch.jit.export
     def getStoi(self):
