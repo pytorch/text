@@ -23,7 +23,7 @@ class Vocab(nn.Module):
         ValueError: if a default `unk_token` isn't provided.
     """
 
-    def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<pad>'), specials_first=True):
+    def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<pad>',), specials_first=True):
         super(Vocab, self).__init__()
 
         if not unk_token:
