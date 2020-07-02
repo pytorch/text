@@ -4,9 +4,16 @@ import torch
 from torch.utils.data import DataLoader
 
 from torchtext.data.utils import get_tokenizer
-from torchtext.experimental.datasets.translation import DATASETS
-from torchtext.experimental.functional import sequential_transforms
+from torchtext.experimental.datasets.translation import DATASETS, TranslationDataset
+from torchtext.experimental.functional import sequential_transforms, vocab_func
 from torchtext.vocab import build_vocab_from_iterator
+
+
+def build_word_vocab(data, transforms, index, init_token="<w>", eos_token="</w>"):
+    tok_list = [[init_token], [eos_token]]
+    for line in data:
+        tok_list.append(transforms(line[index]))
+    return build_vocab_from_iterator(tok_list)
 
 
 def build_char_vocab(
@@ -43,23 +50,21 @@ def special_char_tokens_func(
     return func
 
 
-class TranslationDataset(torch.utils.data.Dataset):
-    def __init__(self, data, vocab, transforms):
-        super(TranslationDataset, self).__init__()
-        self.data = data
-        self.vocab = vocab
-        self.transforms = transforms
+def special_word_token_func(init_word_token="<w>", eos_word_token="</w>"):
+    def func(tok_iter):
+        return [init_word_token] + tok_iter + [eos_word_token]
 
-    def __getitem__(self, i):
-        source = self.transforms[0](self.data[i][0])
-        target = self.transforms[1](self.data[i][1])
-        return (source, target)
+    return func
 
-    def __len__(self):
-        return len(self.data)
 
-    def get_vocab(self):
-        return self.vocab
+def parallel_transforms(*transforms):
+    def func(txt_input):
+        result = []
+        for transform in transforms:
+            result.append(transform(txt_input))
+        return tuple(result)
+
+    return func
 
 
 def get_dataset():
@@ -68,6 +73,8 @@ def get_dataset():
     train, test, val = DATASETS["Multi30k"]()
     # Cache training data for vocabulary construction
     train_data = [line for line in train]
+    val_data = [line for line in val]
+    test_data = [line for line in test]
     # Setup word tokenizer
     src_tokenizer = get_tokenizer("spacy", language="de_core_news_sm")
     tgt_tokenizer = get_tokenizer("spacy", language="en_core_web_sm")
@@ -78,10 +85,12 @@ def get_dataset():
 
     src_char_transform = sequential_transforms(src_tokenizer, char_tokenizer)
     tgt_char_transform = sequential_transforms(tgt_tokenizer, char_tokenizer)
+    tgt_word_transform = sequential_transforms(tgt_tokenizer)
 
     # Setup vocabularies (both words and chars)
     src_char_vocab = build_char_vocab(train_data, src_char_transform, index=0)
     tgt_char_vocab = build_char_vocab(train_data, tgt_char_transform, index=1)
+    tgt_word_vocab = build_word_vocab(train_data, tgt_word_transform, index=1)
 
     # Building the dataset with character level tokenization
     src_char_transform = sequential_transforms(
@@ -90,10 +99,18 @@ def get_dataset():
     tgt_char_transform = sequential_transforms(
         tgt_char_transform, special_char_tokens_func(), char_vocab_func(tgt_char_vocab)
     )
-    train_dataset = TranslationDataset(
-        train_data, (src_char_vocab, tgt_char_vocab), (src_char_transform, tgt_char_transform)
+    tgt_word_transform = sequential_transforms(
+        tgt_word_transform, special_word_token_func(), vocab_func(tgt_word_vocab)
     )
-    val_dataset = TranslationDataset(val, (src_char_vocab, tgt_char_vocab), (src_char_transform, tgt_char_transform))
-    test_dataset = TranslationDataset(test, (src_char_vocab, tgt_char_vocab), (src_char_transform, tgt_char_transform))
+    tgt_transform = parallel_transforms(tgt_char_transform, tgt_word_transform)
+    train_dataset = TranslationDataset(
+        train_data, (src_char_vocab, tgt_char_vocab), (src_char_transform, tgt_transform)
+    )
+    val_dataset = TranslationDataset(
+        val_data, (src_char_vocab, tgt_char_vocab, tgt_word_vocab), (src_char_transform, tgt_transform)
+    )
+    test_dataset = TranslationDataset(
+        test_data, (src_char_vocab, tgt_char_vocab, tgt_word_vocab), (src_char_transform, tgt_transform)
+    )
 
     return train_dataset, val_dataset, test_dataset

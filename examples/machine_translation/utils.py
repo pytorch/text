@@ -31,8 +31,15 @@ def pad_chars(input, pad_idx=1):
     return final_padding
 
 
-def collate_char_fn(batch):
+def pad_words(input, pad_idx=1):
+    txt = list(map(torch.tensor, input))
+    return pad_sequence(txt, True, pad_idx)
+
+
+def collate_fn(batch):
     src_batch, tgt_batch = zip(*batch)
+    char_tgt_batch, word_tgt_batch = zip(*tgt_batch)
     padded_src_batch = pad_chars(src_batch)
-    padded_tgt_batch = pad_chars(tgt_batch)
-    return (padded_src_batch, padded_tgt_batch)
+    padded_tgt_char_batch = pad_chars(char_tgt_batch)
+    padded_tgt_word_batch = pad_words(word_tgt_batch)
+    return (padded_src_batch, (padded_tgt_char_batch, padded_tgt_word_batch))
