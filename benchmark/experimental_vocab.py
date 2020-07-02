@@ -12,7 +12,7 @@ def benchmark_experimental_vocab():
         t0 = time.monotonic()
         for token in tokens:
             vocab[token]
-        print("Time:", time.monotonic() - t0)
+        print("Lookup time:", time.monotonic() - t0)
 
     train, = AG_NEWS(data_select='train')
     vocab = train.get_vocab()
@@ -20,29 +20,36 @@ def benchmark_experimental_vocab():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
-        if len(tokens) > 100:
-            break
 
     counter = Counter(tokens)
-    print(counter)
     sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
-    print(sorted_by_freq_tuples)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
 
-    # existing Vocab
-    v = Vocab(counter)
+    # existing Vocab construction
+    print("Vocab")
+    t0 = time.monotonic()
+    v_existing = Vocab(counter)
+    print("Construction time:", time.monotonic() - t0)
 
+    # experimental Vocab construction
+    print("Vocab Experimental")
+    t0 = time.monotonic()
+    v_experimental = VocabExperimental(ordered_dict)
+    print("Construction time:", time.monotonic() - t0)
+    jit_v_experimental = torch.jit.script(v_experimental)
+
+    # existing Vocab not jit lookup
     print("Vocab - Not Jit Mode")
-    _run_benchmark_lookup(tokens, v)
+    _run_benchmark_lookup(tokens, v_existing)
 
-    # experimental Vocab
-    v = VocabExperimental(ordered_dict)
-    jit_v = torch.jit.script(v)
-
+    # experimental Vocab not jit lookup
     print("Vocab Experimental - Not Jit Mode")
-    _run_benchmark_lookup(tokens, v)
+    _run_benchmark_lookup(tokens, v_experimental)
+
+    # experimental Vocab jit lookup
     print("Vocab Experimental - Jit Mode")
-    _run_benchmark_lookup(tokens, jit_v)
+    _run_benchmark_lookup(tokens, jit_v_experimental)
+
 
 if __name__ == "__main__":
     benchmark_experimental_vocab()
