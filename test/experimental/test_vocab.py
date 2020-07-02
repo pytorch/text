@@ -3,9 +3,11 @@ from collections import OrderedDict
 import os
 import torch
 
+from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vocab import (
-    Vocab
+    Vocab,
+    vocab_from_file_object
 )
 
 
@@ -121,6 +123,7 @@ class TestVocab(TorchtextTestCase):
         expected_itos = ['<unk>', '<pad>', '<eos>', 'a', 'b', 'c']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
+        self.assertEqual(v.getItos(), expected_itos)
         self.assertEqual(dict(v.getStoi()), expected_stoi)
 
         # add specials into vocabulary at last
@@ -128,6 +131,7 @@ class TestVocab(TorchtextTestCase):
         expected_itos = ['a', 'b', 'c', '<unk>', '<pad>', '<eos>']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
+        self.assertEqual(v.getItos(), expected_itos)
         self.assertEqual(dict(v.getStoi()), expected_stoi)
 
     def test_vocab_lookup_token(self):
@@ -204,3 +208,15 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.getItos(), expected_itos)
         self.assertEqual(dict(loaded_v.getStoi()), expected_stoi)
+
+    def test_vocab_from_file(self):
+        asset_name = 'vocab_test.csv'
+        asset_path = get_asset_path(asset_name)
+        f = open(asset_path, 'r')
+        v = vocab_from_file_object(f, specials=('<pad>', '<eos>'), specials_first=False)
+
+        expected_itos = ['a', 'b', 'c', '<unk>', '<pad>', '<eos>']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.getItos(), expected_itos)
+        self.assertEqual(dict(v.getStoi()), expected_stoi)
