@@ -104,7 +104,7 @@ def get_dataset():
     )
     tgt_transform = parallel_transforms(tgt_char_transform, tgt_word_transform)
     train_dataset = TranslationDataset(
-        train_data, (src_char_vocab, tgt_char_vocab), (src_char_transform, tgt_transform)
+        train_data, (src_char_vocab, tgt_char_vocab, tgt_word_vocab), (src_char_transform, tgt_transform)
     )
     val_dataset = TranslationDataset(
         val_data, (src_char_vocab, tgt_char_vocab, tgt_word_vocab), (src_char_transform, tgt_transform)
