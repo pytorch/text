@@ -53,4 +53,17 @@ def build_fairseq_vocab(
 
 
 class ScriptVocab(Vocab):
-    pass
+    def __init__(unk_token='<unk>', **kwargs):
+        super().__init__(unk_token=unk_token, **kwargs)
+        torch.jit.Attribute(self.unk_token) = unk_token
+
+    @torch.jit.script_method
+    def lookup_indices_1d(self, values: List[str]) -> List[int]:
+        return super().lookupIndices
+
+    @torch.jit.script_method
+    def lookup_word(self, idx: int, possible_unk_token: Optional[str] = None):
+        word = super().lookupToken(idx)
+        if word != self.unk_token or not possible_unk_token:
+            return word
+        return possible_unk_token
