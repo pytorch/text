@@ -74,13 +74,13 @@ public:
     unk_index_ = stoi_.find(unk_token_)->value();
   }
 
-  void addToken(const std::string &token) {
+  void add_token(const std::string &token) {
     if (stoi_.find(token) == stoi_.end()) {
       stoi_.insert(std::move(token), stoi_.size());
     }
   }
 
-  std::string lookupToken(const int64_t &index) {
+  std::string lookup_token(const int64_t &index) {
     if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
       throw std::runtime_error(
           "Specified index " + std::to_string(index) +
@@ -91,15 +91,15 @@ public:
     return itos_[index];
   }
 
-  std::vector<std::string> lookupTokens(const std::vector<int64_t> &indices) {
+  std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices) {
     std::vector<std::string> tokens(indices.size());
     for (int64_t i = 0; i < static_cast<int64_t>(indices.size()); i++) {
-      tokens[i] = lookupToken(indices[i]);
+      tokens[i] = lookup_token(indices[i]);
     }
     return tokens;
   }
 
-  std::vector<int64_t> lookupIndices(const std::vector<std::string> &tokens) {
+  std::vector<int64_t> lookup_indices(const std::vector<std::string> &tokens) {
     std::vector<int64_t> indices(tokens.size());
     for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
       indices[i] = __getitem__(tokens[i]);
@@ -107,8 +107,8 @@ public:
     return indices;
   }
 
-  Dict<std::string, int64_t> getStoi() const { return stoi_; }
-  std::vector<std::string> getItos() const { return itos_; }
+  Dict<std::string, int64_t> get_stoi() const { return stoi_; }
+  std::vector<std::string> get_itos() const { return itos_; }
 };
 
 // Registers our custom class with torch.
@@ -118,12 +118,12 @@ static auto vocab =
         .def("__getitem__", &Vocab::__getitem__)
         .def("__len__", &Vocab::__len__)
         .def("__setitem__", &Vocab::__setitem__)
-        .def("addToken", &Vocab::addToken)
-        .def("lookupToken", &Vocab::lookupToken)
-        .def("lookupTokens", &Vocab::lookupTokens)
-        .def("lookupIndices", &Vocab::lookupIndices)
-        .def("getStoi", &Vocab::getStoi)
-        .def("getItos", &Vocab::getItos)
+        .def("add_token", &Vocab::add_token)
+        .def("lookup_token", &Vocab::lookup_token)
+        .def("lookup_tokens", &Vocab::lookup_tokens)
+        .def("lookup_indices", &Vocab::lookup_indices)
+        .def("get_stoi", &Vocab::get_stoi)
+        .def("get_itos", &Vocab::get_itos)
         .def_pickle(
             // __getstate__
             [](const c10::intrusive_ptr<Vocab> &self)

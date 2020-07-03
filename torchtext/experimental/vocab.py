@@ -73,16 +73,16 @@ class Vocab(nn.Module):
         self.vocab[token] = index
 
     @torch.jit.export
-    def addToken(self, token: str) -> None:
+    def add_token(self, token: str) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
         """
-        self.vocab.addToken(token)
+        self.vocab.add_token(token)
 
     @torch.jit.export
-    def lookupToken(self, index: int) -> str:
+    def lookup_token(self, index: int) -> str:
         r"""
         Args:
             index (int): the index corresponding to the associated token.
@@ -93,10 +93,10 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if `index` not between [0, itos.size()].
         """
-        return self.vocab.lookupToken(index)
+        return self.vocab.lookup_token(index)
 
     @torch.jit.export
-    def lookupTokens(self, indices: List[int]) -> List[str]:
+    def lookup_tokens(self, indices: List[int]) -> List[str]:
         r"""
         Args:
             indices (List[int]): the `indices` used to lookup their corresponding`tokens`.
@@ -107,10 +107,10 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if an index within `indices` is not between [0, itos.size()].
         """
-        return self.vocab.lookupTokens(indices)
+        return self.vocab.lookup_tokens(indices)
 
     @torch.jit.export
-    def lookupIndices(self, tokens: List[str]) -> List[int]:
+    def lookup_indices(self, tokens: List[str]) -> List[int]:
         r"""
         Args:
             tokens (List[str]): the tokens used to lookup their corresponding `indices`.
@@ -118,20 +118,20 @@ class Vocab(nn.Module):
         Returns:
             indices (List[int]): the 'indices` associated with `tokens`.
         """
-        return self.vocab.lookupIndices(tokens)
+        return self.vocab.lookup_indices(tokens)
 
     @torch.jit.export
-    def getStoi(self) -> Dict[str, int]:
+    def get_stoi(self) -> Dict[str, int]:
         r"""
         Returns:
             stoi (dict): dictionary mapping tokens to indices.
         """
-        return self.vocab.getStoi()
+        return self.vocab.get_stoi()
 
     @torch.jit.export
-    def getItos(self) -> List[str]:
+    def get_itos(self) -> List[str]:
         r"""
         Returns:
             stoi (dict): dictionary mapping indices to tokens.
         """
-        return self.vocab.getItos()
+        return self.vocab.get_itos()
