@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Dict, List
 
 import torch
 import torch.nn as nn
@@ -61,7 +61,7 @@ class Vocab(nn.Module):
         return self.vocab[token]
 
     @torch.jit.export
-    def __setitem__(self, token: str, index: int):
+    def __setitem__(self, token: str, index: int) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
@@ -73,7 +73,7 @@ class Vocab(nn.Module):
         self.vocab[token] = index
 
     @torch.jit.export
-    def addToken(self, token: str):
+    def addToken(self, token: str) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
@@ -82,7 +82,7 @@ class Vocab(nn.Module):
         self.vocab.addToken(token)
 
     @torch.jit.export
-    def lookupToken(self, index: int):
+    def lookupToken(self, index: int) -> str:
         r"""
         Args:
             index (int): the index corresponding to the associated token.
@@ -96,7 +96,7 @@ class Vocab(nn.Module):
         return self.vocab.lookupToken(index)
 
     @torch.jit.export
-    def lookupTokens(self, indices: List[int]):
+    def lookupTokens(self, indices: List[int]) -> List[str]:
         r"""
         Args:
             indices (List[int]): the `indices` used to lookup their corresponding`tokens`.
@@ -110,7 +110,7 @@ class Vocab(nn.Module):
         return self.vocab.lookupTokens(indices)
 
     @torch.jit.export
-    def lookupIndices(self, tokens: List[str]):
+    def lookupIndices(self, tokens: List[str]) -> List[int]:
         r"""
         Args:
             tokens (List[str]): the tokens used to lookup their corresponding `indices`.
@@ -121,17 +121,17 @@ class Vocab(nn.Module):
         return self.vocab.lookupIndices(tokens)
 
     @torch.jit.export
-    def getStoi(self):
+    def getStoi(self) -> Dict[str, int]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping token to index.
+            stoi (dict): dictionary mapping tokens to indices.
         """
         return self.vocab.getStoi()
 
     @torch.jit.export
-    def getItos(self):
+    def getItos(self) -> List[str]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping token to index.
+            stoi (dict): dictionary mapping indices to tokens.
         """
         return self.vocab.getItos()

@@ -1,5 +1,5 @@
-from collections import OrderedDict
 from fairseq.data.dictionary import Dictionary
+from collections import OrderedDict
 from torchtext.experimental.vocab import Vocab
 
 
@@ -12,10 +12,12 @@ def build_fairseq_vocab(
     min_count: int = -1,
     tokens_to_add: Optional[List[str]] = None,
 ):
-    """
-    Function builds a torchtext Vocab for models pre-trained using Fairseq
-    modules. The dictionary class can take any Fairseq Dictionary class
-    and is used to load the vocab file.
+    """Function builds a torchtext Vocab for models pre-trained using Fairseq
+    modules.
+
+    The dictionary class can take any Fairseq Dictionary class and is
+    used to load the vocab file.
+
     """
     if not special_token_replacements:
         special_token_replacements = {
@@ -50,20 +52,3 @@ def build_fairseq_vocab(
                 del ordered_dict[s]
 
         return Vocab(dictionary_items, unk_token=unk_replacement, specials=specials)
-
-
-class ScriptVocab(Vocab):
-    def __init__(unk_token='<unk>', **kwargs):
-        super().__init__(unk_token=unk_token, **kwargs)
-        torch.jit.Attribute(self.unk_token) = unk_token
-
-    @torch.jit.script_method
-    def lookup_indices_1d(self, values: List[str]) -> List[int]:
-        return super().lookupIndices
-
-    @torch.jit.script_method
-    def lookup_word(self, idx: int, possible_unk_token: Optional[str] = None):
-        word = super().lookupToken(idx)
-        if word != self.unk_token or not possible_unk_token:
-            return word
-        return possible_unk_token
