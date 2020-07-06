@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data.dataloader import DataLoader
+from tqdm import tqdm
 
 from dataset import get_dataset
 from embedding import WordCharCNNEmbedding
@@ -27,7 +28,7 @@ def train(
 
     epoch_loss = 0
     bleu = 0.0
-    for idx, batch in enumerate(iterator):
+    for _, batch in tqdm(enumerate(iterator), total=len(iterator)):
         # Need to convert to [seq_len x batch x ...] size
         src = batch[0].transpose(0, 1).to(device)
         trg_char = batch[1][0].transpose(0, 1).to(device)
@@ -61,7 +62,7 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
     epoch_loss = 0
     bleu = 0.0
     with torch.no_grad():
-        for _, batch in enumerate(iterator):
+        for _, batch in tqdm(enumerate(iterator), total=len(iterator)):
             # Need to convert to [seq_len x batch x ...] size
             src = batch[0].transpose(0, 1).to(device)
             trg_char = batch[1][0].transpose(0, 1).to(device)
