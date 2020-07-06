@@ -33,8 +33,6 @@ def build_fairseq_vocab(
         unk_replacement = special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
         special_tokens_to_remove = [special_pair[0] for special_pair in special_token_replacements]
         specials = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
-        # special_tokens_to_remove = ('<pad>', "<s>", "</s>", "<unk>", "<mask>")
-        # specials = ('__PAD__', '__BEGIN_OF_SENTENCE__', '__END_OF_SENTENCE__', '__MASK__')
 
     with open(vocab_file) as f:
         dictionary = dictionary_class.load(f)
@@ -173,6 +171,4 @@ print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
 print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
 print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
 print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
-# v = ScriptVocab(c)
-# jit_v = torch.jit.script(v)
-# print(v.lookup_word('test'))
+
