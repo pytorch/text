@@ -1,14 +1,79 @@
 from collections import OrderedDict
+
+from fairseq.data.dictionary import Dictionary
 import torch
 from torchtext.experimental.vocab import Vocab
 from typing import List, Optional
 
 
+def build_fairseq_vocab(
+    vocab_file: str,
+    dictionary_class: Dictionary = Dictionary,
+    special_token_replacements: Dict[str, SpecialToken] = None,
+    unk_token: str = "<unk>",
+    max_vocab: int = -1,
+    min_count: int = -1,
+    tokens_to_add: Optional[List[str]] = None,
+):
+    """Function builds a torchtext Vocab for models pre-trained using Fairseq
+    modules.
+
+    The dictionary class can take any Fairseq Dictionary class and is
+    used to load the vocab file.
+
+    """
+    if not special_token_replacements:
+        special_token_replacements = {
+            "<pad>": "__PAD__",
+            "<s>": "__BEGIN_OF_SENTENCE__",
+            "</s>": "__END_OF_SENTENCE__",
+            "<unk>": "__UNKNOWN__",
+            "<mask>": "__MASK__",
+        }
+        unk_replacement = special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
+        special_tokens_to_remove = [special_pair[0] for special_pair in special_token_replacements]
+        specials = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
+        # special_tokens_to_remove = ('<pad>', "<s>", "</s>", "<unk>", "<mask>")
+        # specials = ('__PAD__', '__BEGIN_OF_SENTENCE__', '__END_OF_SENTENCE__', '__MASK__')
+
+    with open(vocab_file) as f:
+        dictionary = dictionary_class.load(f)
+        # finalize will sort the dict based on frequency so only do this if
+        # a min_count or max_vocab size is specified
+        if min_count > 0 or max_vocab > 0:
+            dictionary.finalize(threshold=min_count, nwords=max_vocab, padding_factor=1)
+        if tokens_to_add:
+            for token in tokens_to_add:
+                dictionary.add_symbol(token)
+
+        dictionary_items = list(zip(dictionary.symbols, dictionary.count))
+        ordered_dict = OrderedDict(dictionary_items)
+
+        # remove specials from dict since Vocab expects a seperate tuple of special tokens
+        for s in special_tokens_to_remove:
+            if s in ordered_dict:
+                del ordered_dict[s]
+
+        return Vocab(dictionary_items, unk_token=unk_replacement, specials=specials)
+
+
 class ScriptVocab(Vocab):
-    def __init__(self, ordered_dict, **kwargs):
+    def __init__(self,
+                 ordered_dict,
+                 pad_token=None,
+                 bos_token=None,
+                 eos_token=None,
+                 mask_token=None,
+                 **kwargs):
         super(ScriptVocab, self).__init__(ordered_dict, **kwargs)
         self.unk_token: str = kwargs.get('unk_token', '<unk>')
+
+        # init all special token indices
         self.unk_idx: int = self.vocab[self.unk_token]
+        self.pad_idx: int = self.vocab[pad_token] if pad_token and self.vocab[pad_token] != self.unk_idx else -1
+        self.bos_idx: int = self.vocab[bos_token] if bos_token and self.vocab[bos_token] != self.unk_idx else -1
+        self.eos_idx: int = self.vocab[eos_token] if eos_token and self.vocab[eos_token] != self.unk_idx else -1
+        self.mask_idx: int = self.vocab[mask_token] if mask_token and self.vocab[mask_token] != self.unk_idx else -1
 
     @torch.jit.export
     def lookup_indices_1d(self, values: List[str]) -> List[int]:
@@ -107,7 +172,7 @@ print(v.lookup_indices_1d(['not_present', 'world', 'hello']))
 print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
 print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
 print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
-
+print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
 # v = ScriptVocab(c)
 # jit_v = torch.jit.script(v)
 # print(v.lookup_word('test'))
