@@ -1,4 +1,7 @@
 import itertools
+import os
+import random
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -43,3 +46,17 @@ def collate_fn(batch):
     padded_tgt_char_batch = pad_chars(char_tgt_batch)
     padded_tgt_word_batch = pad_words(word_tgt_batch)
     return (padded_src_batch, (padded_tgt_char_batch, padded_tgt_word_batch))
+
+
+def seed_everything(seed: Optional[int] = None) -> int:
+    """Function that sets seed for pseudo-random number generators  in:
+        pytorch, python.random and sets PYTHONHASHSEED environment variable.
+        Imported from pytorch-lightning module
+    """
+
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False

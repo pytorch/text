@@ -12,7 +12,10 @@ from embedding import WordCharCNNEmbedding
 from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.vocab import Vocab
-from utils import collate_fn, count_parameters, epoch_time
+from utils import collate_fn, count_parameters, epoch_time, seed_everything
+
+# Ensure reproducibility
+seed_everything(42)
 
 
 def train(
