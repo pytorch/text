@@ -1,4 +1,5 @@
 import itertools
+import re
 
 import torch
 from torch.utils.data import DataLoader
@@ -83,9 +84,12 @@ def get_dataset():
     def char_tokenizer(words):
         return [list(word) for word in words]
 
-    src_char_transform = sequential_transforms(src_tokenizer, char_tokenizer)
-    tgt_char_transform = sequential_transforms(tgt_tokenizer, char_tokenizer)
-    tgt_word_transform = sequential_transforms(tgt_tokenizer)
+    def remove_extra_whitespace(line):
+        return re.sub(" {2,}", " ", line)
+
+    src_char_transform = sequential_transforms(remove_extra_whitespace, src_tokenizer, char_tokenizer)
+    tgt_char_transform = sequential_transforms(remove_extra_whitespace, tgt_tokenizer, char_tokenizer)
+    tgt_word_transform = sequential_transforms(remove_extra_whitespace, tgt_tokenizer)
 
     # Setup vocabularies (both words and chars)
     src_char_vocab = build_char_vocab(train_data, src_char_transform, index=0)
