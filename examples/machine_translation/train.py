@@ -4,19 +4,29 @@ import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
+from torch.utils.data.dataloader import DataLoader
 
 from dataset import get_dataset
 from embedding import WordCharCNNEmbedding
 from model import Attention, Decoder, Encoder, Seq2Seq
+from torchtext.data.metrics import bleu_score
+from torchtext.vocab import Vocab
 from utils import collate_fn, count_parameters, epoch_time
 
 
-def train(model: nn.Module, iterator: DataLoader, optimizer: optim.Optimizer, criterion: nn.Module, clip: float):
+def train(
+    model: nn.Module,
+    iterator: DataLoader,
+    optimizer: optim.Optimizer,
+    criterion: nn.Module,
+    clip: float,
+    trg_vocab: Vocab,
+):
     model.train()
 
     epoch_loss = 0
-    for _, batch in enumerate(iterator):
+    bleu = 0.0
+    for idx, batch in enumerate(iterator):
         # Need to convert to [seq_len x batch x ...] size
         src = batch[0].transpose(0, 1)
         trg_char = batch[1][0].transpose(0, 1)
@@ -24,6 +34,12 @@ def train(model: nn.Module, iterator: DataLoader, optimizer: optim.Optimizer, cr
         optimizer.zero_grad()
 
         output = model(src, trg_char)
+        # Convert prediction to words
+        true = trg_word.transpose(0, 1).unsqueeze(1)
+        true = [[[trg_vocab.itos[word_idx] for word_idx in comb] for comb in sent] for sent in true]
+        pred = output.transpose(0, 1).argmax(-1)
+        pred = [[trg_vocab.itos[word_idx] for word_idx in sent] for sent in pred]
+
         output = output[1:].reshape(-1, output.shape[-1])
         trg = trg_word[1:].reshape(-1)
         loss = criterion(output, trg)
@@ -33,13 +49,18 @@ def train(model: nn.Module, iterator: DataLoader, optimizer: optim.Optimizer, cr
         optimizer.step()
 
         epoch_loss += loss.item()
-    return epoch_loss / len(iterator)
+        bleu += bleu_score(pred, true)
+
+        if idx > 20:
+            break
+    return (epoch_loss / len(iterator)), (bleu / len(iterator))
 
 
-def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module):
+def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_vocab: Vocab):
     model.eval()
 
     epoch_loss = 0
+    bleu = 0.0
     with torch.no_grad():
         for _, batch in enumerate(iterator):
             # Need to convert to [seq_len x batch x ...] size
@@ -48,13 +69,20 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module):
             trg_word = batch[1][1].transpose(0, 1)
 
             output = model(src, trg_char, 0)  # turn off teacher forcing
+            # Convert prediction to words
+            true = trg_word.transpose(0, 1).unsqueeze(1)
+            true = [[[trg_vocab.itos[word_idx] for word_idx in comb] for comb in sent] for sent in true]
+            pred = output.transpose(0, 1).argmax(-1)
+            pred = [[trg_vocab.itos[word_idx] for word_idx in sent] for sent in pred]
+
             output = output[1:].reshape(-1, output.shape[-1])
             trg = trg_word[1:].reshape(-1)
 
             loss = criterion(output, trg)
 
             epoch_loss += loss.item()
-    return epoch_loss / len(iterator)
+            bleu += bleu_score(pred, true)
+    return (epoch_loss / len(iterator)), (bleu / len(iterator))
 
 
 if __name__ == "__main__":
@@ -103,16 +131,20 @@ if __name__ == "__main__":
 
         start_time = time.time()
 
-        train_loss = train(model, train_iterator, optimizer, criterion, clip)
-        valid_loss = evaluate(model, valid_iterator, criterion)
+        train_loss, train_bleu_score = train(model, train_iterator, optimizer, criterion, clip, train_dataset.vocab[2])
+        valid_loss, valid_bleu_score = evaluate(model, valid_iterator, criterion, train_dataset.vocab[2])
 
         end_time = time.time()
 
         epoch_mins, epoch_secs = epoch_time(start_time, end_time)
 
         print(f"Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s")
-        print(f"\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}")
-        print(f"\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}")
+        print(
+            f"\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f} |  Train BLEU: {train_bleu_score:7.3f}"
+        )
+        print(
+            f"\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f} |  Val. BLEU: {valid_bleu_score:7.3f}"
+        )
 
     test_loss = evaluate(model, test_iterator, criterion)
 
