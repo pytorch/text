@@ -21,6 +21,7 @@ def train(
     criterion: nn.Module,
     clip: float,
     trg_vocab: Vocab,
+    device: torch.device,
 ):
     model.train()
 
@@ -28,9 +29,9 @@ def train(
     bleu = 0.0
     for idx, batch in enumerate(iterator):
         # Need to convert to [seq_len x batch x ...] size
-        src = batch[0].transpose(0, 1)
-        trg_char = batch[1][0].transpose(0, 1)
-        trg_word = batch[1][1].transpose(0, 1)
+        src = batch[0].transpose(0, 1).to(device)
+        trg_char = batch[1][0].transpose(0, 1).to(device)
+        trg_word = batch[1][1].transpose(0, 1).to(device)
         optimizer.zero_grad()
 
         output = model(src, trg_char)
@@ -56,7 +57,7 @@ def train(
     return (epoch_loss / len(iterator)), (bleu / len(iterator))
 
 
-def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_vocab: Vocab):
+def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_vocab: Vocab, device: torch.device):
     model.eval()
 
     epoch_loss = 0
@@ -64,9 +65,9 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
     with torch.no_grad():
         for _, batch in enumerate(iterator):
             # Need to convert to [seq_len x batch x ...] size
-            src = batch[0].transpose(0, 1)
-            trg_char = batch[1][0].transpose(0, 1)
-            trg_word = batch[1][1].transpose(0, 1)
+            src = batch[0].transpose(0, 1).to(device)
+            trg_char = batch[1][0].transpose(0, 1).to(device)
+            trg_word = batch[1][1].transpose(0, 1).to(device)
 
             output = model(src, trg_char, 0)  # turn off teacher forcing
             # Convert prediction to words
@@ -131,8 +132,10 @@ if __name__ == "__main__":
 
         start_time = time.time()
 
-        train_loss, train_bleu_score = train(model, train_iterator, optimizer, criterion, clip, train_dataset.vocab[2])
-        valid_loss, valid_bleu_score = evaluate(model, valid_iterator, criterion, train_dataset.vocab[2])
+        train_loss, train_bleu_score = train(
+            model, train_iterator, optimizer, criterion, clip, train_dataset.vocab[2], device
+        )
+        valid_loss, valid_bleu_score = evaluate(model, valid_iterator, criterion, train_dataset.vocab[2], device)
 
         end_time = time.time()
 
