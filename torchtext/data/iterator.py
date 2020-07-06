@@ -45,7 +45,7 @@ class Iterator(object):
                  batch_size_fn=None, train=True,
                  repeat=False, shuffle=None, sort=None,
                  sort_within_batch=None):
-        warnings.warn('Iterator class will retire in 0.8.0 release', RuntimeWarning)
+        warnings.warn('Iterator class will retire in 0.8.0 release and stay in torchtext.legacy. See 0.7.0 release note for the replacement.', UserWarning)
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0

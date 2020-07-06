@@ -10,7 +10,7 @@ class Example(object):
     """
     @classmethod
     def fromJSON(cls, data, fields):
-        warnings.warn('Example class will retire in 0.8.0 release', RuntimeWarning)
+        warnings.warn('Example class will retire in 0.8.0 release and stay in torchtext.legacy. See 0.7.0 release note for the replacement.', UserWarning)
         ex = cls()
         obj = json.loads(data)
 
@@ -49,7 +49,7 @@ class Example(object):
 
     @classmethod
     def fromdict(cls, data, fields):
-        warnings.warn('Example class will retire in 0.8.0 release', RuntimeWarning)
+        warnings.warn('Example class will retire in 0.8.0 release and stay in torchtext.legacy. See 0.7.0 release note for the replacement.', UserWarning)
         ex = cls()
         for key, vals in fields.items():
             if key not in data:
@@ -65,7 +65,7 @@ class Example(object):
 
     @classmethod
     def fromCSV(cls, data, fields, field_to_index=None):
-        warnings.warn('Example class will retire in 0.8.0 release', RuntimeWarning)
+        warnings.warn('Example class will retire in 0.8.0 release and stay in torchtext.legacy. See 0.7.0 release note for the replacement.', UserWarning)
         if field_to_index is None:
             return cls.fromlist(data, fields)
         else:
@@ -75,7 +75,7 @@ class Example(object):
 
     @classmethod
     def fromlist(cls, data, fields):
-        warnings.warn('Example class will retire in 0.8.0 release', RuntimeWarning)
+        warnings.warn('Example class will retire in 0.8.0 release and stay in torchtext.legacy. See 0.7.0 release note for the replacement.', UserWarning)
         ex = cls()
         for (name, field), val in zip(fields, data):
             if field is not None:
@@ -91,7 +91,7 @@ class Example(object):
 
     @classmethod
     def fromtree(cls, data, fields, subtrees=False):
-        warnings.warn('Example class will retire in 0.8.0 release', RuntimeWarning)
+        warnings.warn('Example class will retire in 0.8.0 release and stay in torchtext.legacy. See 0.7.0 release note for the replacement.', UserWarning)
         try:
             from nltk.tree import Tree
         except ImportError:
