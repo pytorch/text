@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Dict, List
 
 import torch
 import torch.nn as nn
@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 
 class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
+
+    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
+    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
 
     Arguments:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
@@ -61,7 +64,7 @@ class Vocab(nn.Module):
         return self.vocab[token]
 
     @torch.jit.export
-    def __setitem__(self, token: str, index: int):
+    def __setitem__(self, token: str, index: int) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
@@ -73,16 +76,16 @@ class Vocab(nn.Module):
         self.vocab[token] = index
 
     @torch.jit.export
-    def addToken(self, token: str):
+    def add_token(self, token: str) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
         """
-        self.vocab.addToken(token)
+        self.vocab.add_token(token)
 
     @torch.jit.export
-    def lookupToken(self, index: int):
+    def lookup_token(self, index: int) -> str:
         r"""
         Args:
             index (int): the index corresponding to the associated token.
@@ -93,10 +96,10 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if `index` not between [0, itos.size()].
         """
-        return self.vocab.lookupToken(index)
+        return self.vocab.lookup_token(index)
 
     @torch.jit.export
-    def lookupTokens(self, indices: List[int]):
+    def lookup_tokens(self, indices: List[int]) -> List[str]:
         r"""
         Args:
             indices (List[int]): the `indices` used to lookup their corresponding`tokens`.
@@ -107,10 +110,10 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if an index within `indices` is not between [0, itos.size()].
         """
-        return self.vocab.lookupTokens(indices)
+        return self.vocab.lookup_tokens(indices)
 
     @torch.jit.export
-    def lookupIndices(self, tokens: List[str]):
+    def lookup_indices(self, tokens: List[str]) -> List[int]:
         r"""
         Args:
             tokens (List[str]): the tokens used to lookup their corresponding `indices`.
@@ -118,20 +121,20 @@ class Vocab(nn.Module):
         Returns:
             indices (List[int]): the 'indices` associated with `tokens`.
         """
-        return self.vocab.lookupIndices(tokens)
+        return self.vocab.lookup_indices(tokens)
 
     @torch.jit.export
-    def getStoi(self):
+    def get_stoi(self) -> Dict[str, int]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping token to index.
+            stoi (dict): dictionary mapping tokens to indices.
         """
-        return self.vocab.getStoi()
+        return self.vocab.get_stoi()
 
     @torch.jit.export
-    def getItos(self):
+    def get_itos(self) -> List[str]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping token to index.
+            stoi (dict): dictionary mapping indices to tokens.
         """
-        return self.vocab.getItos()
+        return self.vocab.get_itos()
