@@ -24,6 +24,13 @@ class Vocab(nn.Module):
 
     Raises:
         ValueError: if a default `unk_token` isn't provided.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import Vocab
+        >>> counter = Counter(["a", "a", "b", "b", "b"])
+        >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+        >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
+        >>> v = Vocab(ordered_dict)
     """
 
     def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<unk>', '<pad>'), specials_first=True):
