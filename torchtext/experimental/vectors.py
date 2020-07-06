@@ -5,7 +5,6 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from tqdm import tqdm
-from typing import List
 
 from torchtext.utils import (
     download_from_url,
@@ -298,25 +297,6 @@ class Vectors(nn.Module):
             length (int): the length of the vectors.
         """
         return len(self.vectors)
-
-    @torch.jit.export
-    def get_vectors_by_tokens(self, tokens: List[str]) -> Tensor:
-        """Look up embedding vectors of tokens.
-        Arguments:
-            tokens: a list of tokens
-
-        Returns:
-            vectors (Tenosr): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
-
-        Examples:
-            >>> examples = ['chip', 'baby', 'Beautiful']
-            >>> vec = text.vocab.GloVe(name='6B', dim=50)
-            >>> ret = vec.get_vectors_by_tokens(tokens)
-        """
-        if not len(tokens):
-            return torch.empty(0, 0)
-
-        return self.vectors.get_vectors_by_tokens(tokens)
 
 
 CHECKSUMS_GLOVE = {
