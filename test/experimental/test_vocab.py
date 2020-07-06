@@ -69,7 +69,7 @@ class TestVocab(TorchtextTestCase):
     def test_vocab_add_token(self):
         c = OrderedDict({'a': 2})
         v = Vocab(c, specials=['<pad>', '<eos>'])
-        v.addToken('b')
+        v.add_token('b')
 
         self.assertEqual(len(v), 5)
         self.assertEqual(v['b'], 4)
@@ -158,7 +158,7 @@ class TestVocab(TorchtextTestCase):
         tokens = ['b', 'a', 'c']
         expected_indices = [1, 0, 2]
 
-        self.assertEqual(v.lookupIndices(tokens), expected_indices)
+        self.assertEqual(v.lookup_indices(tokens), expected_indices)
 
     def test_errors(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
