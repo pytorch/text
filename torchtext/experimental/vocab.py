@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
+    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
+    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
+
     Arguments:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
