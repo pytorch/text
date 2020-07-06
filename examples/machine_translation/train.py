@@ -52,8 +52,6 @@ def train(
         epoch_loss += loss.item()
         bleu += bleu_score(pred, true)
 
-        if idx > 20:
-            break
     return (epoch_loss / len(iterator)), (bleu / len(iterator))
 
 
@@ -88,7 +86,7 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    batch_size = 32
+    batch_size = 128
     train_dataset, val_dataset, test_dataset = get_dataset()
     train_iterator = DataLoader(train_dataset, batch_size=batch_size, collate_fn=collate_fn)
     valid_iterator = DataLoader(val_dataset, batch_size=batch_size, collate_fn=collate_fn)
