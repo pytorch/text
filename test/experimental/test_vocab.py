@@ -48,7 +48,7 @@ class TestVocab(TorchtextTestCase):
 
         # add item to end
         v = Vocab(c, specials=['<pad>', '<eos>'])
-        v['b'] = 4
+        v.insert_token('b', 4)
 
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['<pad>'], 1)
@@ -58,7 +58,7 @@ class TestVocab(TorchtextTestCase):
 
         # add item to middle
         v = Vocab(c, specials=['<pad>', '<eos>'], specials_first=False)
-        v['b'] = 0
+        v.insert_token('b', 0)
 
         self.assertEqual(v['b'], 0)
         self.assertEqual(v['a'], 1)
@@ -66,10 +66,10 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['<pad>'], 3)
         self.assertEqual(v['<eos>'], 4)
 
-    def test_vocab_add_token(self):
+    def test_vocab_append_token(self):
         c = OrderedDict({'a': 2})
         v = Vocab(c, specials=['<pad>', '<eos>'])
-        v.add_token('b')
+        v.append_token('b')
 
         self.assertEqual(len(v), 5)
         self.assertEqual(v['b'], 4)
@@ -172,12 +172,12 @@ class TestVocab(TorchtextTestCase):
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting a token out of bounds
             v = Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
-            v["new_token"] = 100
+            v.insert_token('new_token', 100)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when looking up a token out of bounds
             v = Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])
-            v["hello"] = 0
+            v.insert_token('hello', 0)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting a token out of bounds

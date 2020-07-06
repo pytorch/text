@@ -64,7 +64,7 @@ class Vocab(nn.Module):
         return self.vocab[token]
 
     @torch.jit.export
-    def __setitem__(self, token: str, index: int) -> None:
+    def insert_token(self, token: str, index: int) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
@@ -73,16 +73,15 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if `index` not between [0, Vocab.size()] or if token already exists in the vocab.
         """
-        self.vocab[token] = index
+        self.vocab.insert_token(token, index)
 
     @torch.jit.export
-    def add_token(self, token: str) -> None:
+    def append_token(self, token: str) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
-            index (int): the index corresponding to the associated token.
         """
-        self.vocab.add_token(token)
+        self.vocab.append_token(token)
 
     @torch.jit.export
     def lookup_token(self, index: int) -> str:
