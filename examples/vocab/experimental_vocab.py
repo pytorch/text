@@ -9,7 +9,7 @@ from typing import List, Optional
 def build_fairseq_vocab(
     vocab_file: str,
     dictionary_class: Dictionary = Dictionary,
-    special_token_replacements: Dict[str, SpecialToken] = None,
+    special_token_replacements: Dict[str, str] = None,
     unk_token: str = "<unk>",
     max_vocab: int = -1,
     min_count: int = -1,
