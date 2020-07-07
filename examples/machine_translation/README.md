@@ -8,6 +8,14 @@ To try the example, simply run the following commands:
 python train_char.py
 ```
 
+For character level training, and
+
+```bash
+python train_word.py
+```
+
+For word level training
+
 ## Experiment Result
 
 The following is the output example for running `train_char.py`
@@ -45,3 +53,6 @@ Epoch: 10 | Time: 2m 46s
 	 Val. Loss: 0.972 |  Val. PPL:   2.644 |  Val. BLEU:   0.280
 | Test Loss: 1.011 | Test PPL:   2.748 |  Test BLEU:   0.273
 ```
+
+And the following is the output of `train_word.py`
+# TODO
