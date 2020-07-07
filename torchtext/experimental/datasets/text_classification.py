@@ -16,10 +16,6 @@ def _build_vocab(data, transforms):
         tok_list.append(transforms(txt))
     return build_vocab_from_iterator(tok_list)
 
-def vocab_func(vocab):
-    def _forward(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
-    return _forward
 
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
