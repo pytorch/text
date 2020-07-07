@@ -300,13 +300,13 @@ class Vectors(nn.Module):
         return len(self.vectors)
 
     @torch.jit.export
-    def get_vectors_by_tokens(self, tokens: List[str]) -> Tensor:
-        """Look up embedding vectors of tokens.
+    def lookup_vectors(self, tokens: List[str]) -> Tensor:
+        """Look up embedding vectors for a list of tokens.
         Arguments:
             tokens: a list of tokens
 
         Returns:
-            vectors (Tenosr): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
+            vectors (Tensor): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
 
         Examples:
             >>> examples = ['chip', 'baby', 'Beautiful']
@@ -316,7 +316,7 @@ class Vectors(nn.Module):
         if not len(tokens):
             return torch.empty(0, 0)
 
-        return self.vectors.get_vectors_by_tokens(tokens)
+        return self.vectors.lookup_vectors(tokens)
 
 
 CHECKSUMS_GLOVE = {

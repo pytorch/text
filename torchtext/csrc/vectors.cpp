@@ -46,7 +46,7 @@ public:
     return unk_tensor_;
   }
 
-  torch::Tensor get_vectors_by_tokens(const std::vector<std::string> &tokens) {
+  torch::Tensor lookup_vectors(const std::vector<std::string> &tokens) {
     std::vector<torch::Tensor> vectors;
     for (const std::string &token : tokens) {
       vectors.push_back(__getitem__(token));
@@ -76,7 +76,7 @@ static auto vectors =
         .def(torch::init<std::vector<std::string>, torch::Tensor,
                          torch::Tensor>())
         .def("__getitem__", &Vectors::__getitem__)
-        .def("get_vectors_by_tokens", &Vectors::get_vectors_by_tokens)
+        .def("lookup_vectors", &Vectors::lookup_vectors)
         .def("__setitem__", &Vectors::__setitem__)
         .def("__len__", &Vectors::__len__)
         .def_pickle(
