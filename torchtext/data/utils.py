@@ -6,7 +6,7 @@ import re
 from functools import partial
 
 
-def _split_tokenizer(x): # noqa: F821
+def _split_tokenizer(x):  # noqa: F821
     # type: (str) -> List[str]
     return x.split()
 
@@ -41,7 +41,8 @@ _replacements = [' \'  ',
                  ' ',
                  ' ']
 
-_patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
+_patterns_dict = list((re.compile(p), r)
+                      for p, r in zip(_patterns, _replacements))
 
 
 def _basic_english_normalize(line):
@@ -102,7 +103,8 @@ def get_tokenizer(tokenizer, language='en'):
 
     if tokenizer == "basic_english":
         if language != 'en':
-            raise ValueError("Basic normalization is only available for Enlish(en)")
+            raise ValueError(
+                "Basic normalization is only available for Enlish(en)")
         return _basic_english_normalize
 
     # simply return if a function is passed

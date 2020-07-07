@@ -17,6 +17,9 @@ popular datasets for natural language.
    torchtext.vocab <vocab>
    torchtext.utils <utils>
    experimental_datasets 
+   experimental_functional
+   experimental_transforms
+   experimental_vectors
    examples <examples>
 
 .. automodule:: torchtext

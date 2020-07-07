@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/pytorch/text.svg?branch=master
-    :target: https://travis-ci.org/pytorch/text
+.. image:: https://circleci.com/gh/pytorch/text.svg?style=svg
+    :target: https://circleci.com/gh/pytorch/text
 
 .. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
@@ -21,16 +21,24 @@ Note: we are currently re-designing the torchtext library to make it more compat
 Installation
 ============
 
+We recommend Anaconda as Python package management system. Please refer to `pytorch.org <https://pytorch.org/>`_ for the detail of PyTorch installation. The following is the corresponding ``torchtext`` versions and supported Python versions.
 
-Make sure you have Python 3.5+ and PyTorch 0.4.0 or newer. You can then install torchtext using pip::
+.. csv-table:: Version Compatibility
+   :header: "PyTorch version", "torchtext version", "Supported Python version"
+   :widths: 10, 10, 10
+
+   nightly build, master, 3.6+
+   1.5, 0.5, 3.5+
+   1.4, 0.4, "2.7, 3.5+"
+   0.4 and below, 0.2.3, "2.7, 3.5+"
+
+Using conda;::
+
+    conda install -c pytorch torchtext
+
+Using pip;::
 
     pip install torchtext
-    
-For PyTorch versions before 0.4.0, please use `pip install torchtext==0.2.3`.
-
-Or you can install torchtext using conda::
-
-    conda install -c pytorch -c powerai torchtext sentencepiece
 
 Optional requirements
 ---------------------
@@ -43,6 +51,26 @@ If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need 
 Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
     pip install sacremoses
+
+For torchtext 0.5 and below, ``sentencepiece``::
+
+    conda install -c powerai sentencepiece
+
+Building from source
+--------------------
+
+To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler such as ``g++``.::
+
+    git clone https://github.com/pytorch/text torchtext
+    cd torchtext
+    git submodule update --init --recursive
+    python setup.py clean install
+    # or ``python setup.py develop`` if you are making modifications.
+
+**Note**
+
+When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
+If you are using nightly build of PyTorch, checkout the environment it was built `here (conda) <https://github.com/pytorch/builder/tree/master/conda>`_ and `here (pip) <https://github.com/pytorch/builder/tree/master/manywheel>`_.
 
 Documentation
 =============

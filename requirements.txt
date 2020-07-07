@@ -17,7 +17,7 @@ sphinx_rtd_theme
 # Required for tests only:
 
 # Style-checking for PEP8
-flake8
+flake8==3.7.9
 
 # Run unit tests
 pytest
