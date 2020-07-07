@@ -1,6 +1,6 @@
 from collections import OrderedDict
 import logging
-from typing import List
+from typing import Dict, List
 
 import torch
 import torch.nn as nn
@@ -34,6 +34,11 @@ def vocab_from_file_object(file_like_object, **kwargs):
 
     Returns:
         Vocab: a `Vocab` object.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import vocab_from_file_object
+        >>> f = open('vocab.csv', 'r')
+        >>> v = vocab_from_file_object(f, specials=('<unk>', '<pad>', '<eos>'), specials_first=False)
     """
     ordered_dict = OrderedDict()
     num_lines = _infer_shape(file_like_object)
@@ -50,35 +55,51 @@ def vocab_from_file_object(file_like_object, **kwargs):
 class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
+    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
+    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
+
     Arguments:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         specials: The tuple of special tokens (e.g., padding or eos) that will be prepended/postpended to the vocabulary.
-            based on the `specials_first` flag. The ordering of the tuple will be preserved. Default: [<pad>']
+            based on the `specials_first` flag. The ordering of the tuple will be preserved. Default: ('<unk>', '<pad>')
         specials_first: Whether to add special tokens into the vocabulary at first. If it is False,
             they are added into the vocabulary at last. Default: True.
 
     Raises:
         ValueError: if a default `unk_token` isn't provided.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import Vocab
+        >>> counter = Counter(["a", "a", "b", "b", "b"])
+        >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+        >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
+        >>> v = Vocab(ordered_dict)
     """
 
-    def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<pad>',), specials_first=True):
+    def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<unk>', '<pad>'), specials_first=True):
         super(Vocab, self).__init__()
 
         if not unk_token:
             raise ValueError("A default unk token wasn't provided.")
 
+        if unk_token not in specials:
+            raise ValueError("The unk token wasn't found in the `specials` tuple.")
+
         tokens = []
         for token, freq in ordered_dict.items():
             if freq >= min_freq:
+                if token in specials:
+                    raise ValueError("A `specials` token {} was found inside of `ordered_dict`."
+                                     "Please ensure that the `ordered_dict` doesn't contain any special tokens.".format(token))
                 tokens.append(token)
 
-        # assume unk_token and special tokens dont appear in ordered_dict
+        # assume special tokens dont appear in ordered_dict
         if specials_first:
-            tokens = [unk_token] + list(specials) + tokens
+            tokens = list(specials) + tokens
         else:
-            tokens += [unk_token] + list(specials)
+            tokens += list(specials)
 
         self.vocab = torch.classes.torchtext.Vocab(tokens, unk_token)
 
@@ -101,7 +122,7 @@ class Vocab(nn.Module):
         return self.vocab[token]
 
     @torch.jit.export
-    def __setitem__(self, token: str, index: int):
+    def insert_token(self, token: str, index: int) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
@@ -110,19 +131,18 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if `index` not between [0, Vocab.size()] or if token already exists in the vocab.
         """
-        self.vocab[token] = index
+        self.vocab.insert_token(token, index)
 
     @torch.jit.export
-    def addToken(self, token: str):
+    def append_token(self, token: str) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
-            index (int): the index corresponding to the associated token.
         """
-        self.vocab.addToken(token)
+        self.vocab.append_token(token)
 
     @torch.jit.export
-    def lookupToken(self, index: int):
+    def lookup_token(self, index: int) -> str:
         r"""
         Args:
             index (int): the index corresponding to the associated token.
@@ -133,10 +153,10 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if `index` not between [0, itos.size()].
         """
-        return self.vocab.lookupToken(index)
+        return self.vocab.lookup_token(index)
 
     @torch.jit.export
-    def lookupTokens(self, indices: List[int]):
+    def lookup_tokens(self, indices: List[int]) -> List[str]:
         r"""
         Args:
             indices (List[int]): the `indices` used to lookup their corresponding`tokens`.
@@ -147,10 +167,10 @@ class Vocab(nn.Module):
         Raises:
             RuntimeError: if an index within `indices` is not between [0, itos.size()].
         """
-        return self.vocab.lookupTokens(indices)
+        return self.vocab.lookup_tokens(indices)
 
     @torch.jit.export
-    def lookupIndices(self, tokens: List[str]):
+    def lookup_indices(self, tokens: List[str]) -> List[int]:
         r"""
         Args:
             tokens (List[str]): the tokens used to lookup their corresponding `indices`.
@@ -158,20 +178,20 @@ class Vocab(nn.Module):
         Returns:
             indices (List[int]): the 'indices` associated with `tokens`.
         """
-        return self.vocab.lookupIndices(tokens)
+        return self.vocab.lookup_indices(tokens)
 
     @torch.jit.export
-    def getStoi(self):
+    def get_stoi(self) -> Dict[str, int]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping token to index.
+            stoi (dict): dictionary mapping tokens to indices.
         """
-        return self.vocab.getStoi()
+        return self.vocab.get_stoi()
 
     @torch.jit.export
-    def getItos(self):
+    def get_itos(self) -> List[str]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping token to index.
+            stoi (dict): dictionary mapping indices to tokens.
         """
-        return self.vocab.getItos()
+        return self.vocab.get_itos()
