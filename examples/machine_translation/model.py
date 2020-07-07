@@ -136,7 +136,7 @@ class Seq2Seq(nn.Module):
         self.decoder = decoder
         self.device = device
 
-    def forward(self, src: torch.Tensor, trg: torch.Tensor, teacher_forcing_ratio: float = 0.5) -> torch.Tensor:
+    def forward(self, src: torch.Tensor, trg: torch.Tensor) -> torch.Tensor:
         batch_size = src.shape[1]
         max_len = trg.shape[0]
         trg_vocab_size = self.decoder.output_dim

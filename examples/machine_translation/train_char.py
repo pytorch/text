@@ -8,12 +8,13 @@ import torch.optim as optim
 from torch.utils.data.dataloader import DataLoader
 from tqdm import tqdm
 
-from dataset import get_dataset
+from char_dataset import get_dataset
 from embedding import WordCharCNNEmbedding
 from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.vocab import Vocab
-from utils import count_parameters, epoch_time, pad_chars, pad_words, seed_everything
+from utils import (count_parameters, epoch_time, pad_chars, pad_words,
+                   seed_everything)
 
 
 def train(
@@ -69,7 +70,7 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
             trg_char = batch[1][0].transpose(0, 1).to(device)
             trg_word = batch[1][1].transpose(0, 1).to(device)
 
-            output = model(src, trg_char, 0)  # turn off teacher forcing
+            output = model(src, trg_char)
             # Convert prediction to words
             true = trg_word.transpose(0, 1).unsqueeze(1)
             true = [[[trg_vocab.itos[word_idx] for word_idx in comb] for comb in sent] for sent in true]

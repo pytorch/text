@@ -5,12 +5,12 @@ Users will use the training data in the raw file from Multi30k dataset to train 
 To try the example, simply run the following commands:
 
 ```bash
-python train.py
+python train_char.py
 ```
 
 ## Experiment Result
 
-The following is the output example for running `train.py`
+The following is the output example for running `train_char.py`
 
 ```
 Epoch: 01 | Time: 2m 10s
