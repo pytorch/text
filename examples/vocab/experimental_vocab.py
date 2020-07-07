@@ -171,4 +171,3 @@ print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
 print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
 print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
 print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
-
