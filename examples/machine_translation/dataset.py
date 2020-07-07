@@ -5,7 +5,8 @@ import torch
 from torch.utils.data import DataLoader
 
 from torchtext.data.utils import get_tokenizer
-from torchtext.experimental.datasets.translation import DATASETS, TranslationDataset
+from torchtext.experimental.datasets.translation import (DATASETS,
+                                                         TranslationDataset)
 from torchtext.experimental.functional import sequential_transforms, vocab_func
 from torchtext.vocab import build_vocab_from_iterator
 
@@ -68,10 +69,10 @@ def parallel_transforms(*transforms):
     return func
 
 
-def get_dataset():
+def get_dataset(dataset_name: str):
     # Get the raw dataset first. This will give us the text
     # version of the dataset
-    train, test, val = DATASETS["Multi30k"]()
+    train, test, val = DATASETS[dataset_name]()
     # Cache training data for vocabulary construction
     train_data = [line for line in train]
     val_data = [line for line in val]

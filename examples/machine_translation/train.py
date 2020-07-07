@@ -1,3 +1,4 @@
+import argparse
 import math
 import time
 
@@ -12,10 +13,7 @@ from embedding import WordCharCNNEmbedding
 from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.vocab import Vocab
-from utils import collate_fn, count_parameters, epoch_time, seed_everything
-
-# Ensure reproducibility
-seed_everything(42)
+from utils import count_parameters, epoch_time, pad_chars, pad_words, seed_everything
 
 
 def train(
@@ -88,10 +86,22 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
     return (epoch_loss / len(iterator)), (bleu / len(iterator))
 
 
-if __name__ == "__main__":
+def collate_fn(batch):
+    src_batch, tgt_batch = zip(*batch)
+    char_tgt_batch, word_tgt_batch = zip(*tgt_batch)
+    padded_src_batch = pad_chars(src_batch)
+    padded_tgt_char_batch = pad_chars(char_tgt_batch)
+    padded_tgt_word_batch = pad_words(word_tgt_batch)
+    return (padded_src_batch, (padded_tgt_char_batch, padded_tgt_word_batch))
+
+
+def main(args):
+    # Ensure reproducibility
+    seed_everything(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    batch_size = 128
-    train_dataset, val_dataset, test_dataset = get_dataset()
+
+    batch_size = args.batch_size
+    train_dataset, val_dataset, test_dataset = get_dataset(args.dataset)
     train_iterator = DataLoader(train_dataset, batch_size=batch_size, collate_fn=collate_fn)
     valid_iterator = DataLoader(val_dataset, batch_size=batch_size, collate_fn=collate_fn)
     test_iterator = DataLoader(test_dataset, batch_size=batch_size, collate_fn=collate_fn)
@@ -99,34 +109,24 @@ if __name__ == "__main__":
     char_output_dim = len(train_dataset.vocab[1])
     word_output_dim = len(train_dataset.vocab[2])
 
-    # enc_emb_dim = 256
-    # dec_emb_dim = 256
-    # enc_hid_dim = 512
-    # dec_hid_dim = 512
-    # attn_dim = 64
-    # enc_dropout = 0.5
-    # dec_dropout = 0.5
-
-    enc_emb_dim = 300
-    dec_emb_dim = 300
-    enc_hid_dim = 64
-    dec_hid_dim = 64
-    attn_dim = 8
-    enc_dropout = 0.5
-    dec_dropout = 0.5
-
-    enc_emb = WordCharCNNEmbedding(input_dim)
-    enc = Encoder(input_dim, enc_emb_dim, enc_hid_dim, dec_hid_dim, enc_dropout, enc_emb)
-    attn = Attention(enc_hid_dim, dec_hid_dim, attn_dim)
-    dec_emb = WordCharCNNEmbedding(char_output_dim)
-    dec = Decoder(word_output_dim, dec_emb_dim, enc_hid_dim, dec_hid_dim, dec_dropout, attn, dec_emb)
+    enc_emb = WordCharCNNEmbedding(
+        input_dim, char_padding_idx=train_dataset.vocab[1].stoi["<pad>"], target_emb=args.enc_emb_dim
+    )
+    enc = Encoder(input_dim, args.enc_emb_dim, args.enc_hid_dim, args.dec_hid_dim, args.enc_dropout, enc_emb)
+    attn = Attention(args.enc_hid_dim, args.dec_hid_dim, args.attn_dim)
+    dec_emb = WordCharCNNEmbedding(
+        char_output_dim, char_padding_idx=train_dataset.vocab[1].stoi["<pad>"], target_emb=args.dec_emb_dim
+    )
+    dec = Decoder(
+        word_output_dim, args.dec_emb_dim, args.enc_hid_dim, args.dec_hid_dim, args.dec_dropout, attn, dec_emb
+    )
     model = Seq2Seq(enc, dec, device).to(device)
 
     criterion = nn.CrossEntropyLoss(ignore_index=train_dataset.vocab[2].stoi["<pad>"])
-    optimizer = optim.Adam(model.parameters())
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
     print(f"The model has {count_parameters(model):,} trainable parameters")
-    n_epochs = 10
-    clip = 1
+    n_epochs = args.epochs
+    clip = args.clip
 
     best_valid_loss = float("inf")
 
@@ -154,3 +154,26 @@ if __name__ == "__main__":
     test_loss, test_bleu_score = evaluate(model, test_iterator, criterion, train_dataset.vocab[2], device)
 
     print(f"| Test Loss: {test_loss:.3f} | Test PPL: {math.exp(test_loss):7.3f} |  Test BLEU: {test_bleu_score:7.3f}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="PyTorch Experimental Seq2seq for Machine Translation")
+    parser.add_argument("--enc_emb_dim", type=int, default=300, help="size of encoder char-composed embeddings")
+    parser.add_argument("--dec_emb_dim", type=int, default=300, help="size of decoder char-composed embeddings")
+    parser.add_argument("--enc_hid_dim", type=int, default=64, help="size of encoder hidden units")
+    parser.add_argument("--dec_hid_dim", type=int, default=64, help="size of decoder hidden units")
+    parser.add_argument("--attn_dim", type=int, default=8, help="size of attention weights")
+    parser.add_argument("--enc_dropout", type=float, default=0.5, help="dropout applied to encoder")
+    parser.add_argument("--dec_dropout", type=float, default=0.5, help="dropout applied to decoder")
+    parser.add_argument("--lr", type=float, default=6, help="initial learning rate")
+    parser.add_argument("--clip", type=float, default=1, help="gradient clipping")
+    parser.add_argument("--epochs", type=int, default=10, help="upper epoch limit")
+    parser.add_argument("--batch_size", type=int, default=128, metavar="N", help="batch size")
+    parser.add_argument("--seed", type=int, default=42, help="random seed")
+    parser.add_argument("--checkpoint", type=str, default="None", help="path to load the checkpoint")
+    parser.add_argument("--save", type=str, default="mlm_bert.pt", help="path to save the final model")
+    parser.add_argument("--save_vocab", type=str, default="torchtext_bert_vocab.pt", help="path to save the vocab")
+    parser.add_argument("--dataset", type=str, default="Multi30k", help="dataset used for MLM task")
+    args = parser.parse_args()
+
+    main(args)
