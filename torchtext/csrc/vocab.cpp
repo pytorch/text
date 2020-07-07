@@ -45,7 +45,13 @@ public:
     return unk_index_;
   }
 
-  void __setitem__(const std::string &token, const int64_t &index) {
+  void append_token(const std::string &token) {
+    if (stoi_.find(token) == stoi_.end()) {
+      stoi_.insert(std::move(token), stoi_.size());
+    }
+  }
+
+  void insert_token(const std::string &token, const int64_t &index) {
     if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
       throw std::runtime_error(
           "Specified index " + std::to_string(index) +
@@ -72,12 +78,6 @@ public:
     // need to update unk_index in case token equals unk_token or token inserted
     // before unk_token
     unk_index_ = stoi_.find(unk_token_)->value();
-  }
-
-  void add_token(const std::string &token) {
-    if (stoi_.find(token) == stoi_.end()) {
-      stoi_.insert(std::move(token), stoi_.size());
-    }
   }
 
   std::string lookup_token(const int64_t &index) {
@@ -117,8 +117,8 @@ static auto vocab =
         .def(torch::init<std::vector<std::string>, std::string>())
         .def("__getitem__", &Vocab::__getitem__)
         .def("__len__", &Vocab::__len__)
-        .def("__setitem__", &Vocab::__setitem__)
-        .def("add_token", &Vocab::add_token)
+        .def("insert_token", &Vocab::insert_token)
+        .def("append_token", &Vocab::append_token)
         .def("lookup_token", &Vocab::lookup_token)
         .def("lookup_tokens", &Vocab::lookup_tokens)
         .def("lookup_indices", &Vocab::lookup_indices)
