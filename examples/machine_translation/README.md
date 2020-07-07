@@ -55,4 +55,4 @@ Epoch: 10 | Time: 2m 46s
 ```
 
 And the following is the output of `train_word.py`
-# TODO
+# TODO: will run the experiment tomorrow morning
