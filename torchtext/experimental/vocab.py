@@ -73,10 +73,13 @@ class Vocab(nn.Module):
 
     Examples:
         >>> from torchtext.experimental.vocab import Vocab
+        >>> from collections import Counter, OrderedDict
         >>> counter = Counter(["a", "a", "b", "b", "b"])
         >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
         >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
-        >>> v = Vocab(ordered_dict)
+        >>> v1 = Vocab(ordered_dict)
+        >>> tokens = ['e', 'd', 'c', 'b', 'a']
+        >>> v2 = Vocab(OrderedDict([(token, 1) for token in tokens]))
     """
 
     def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<unk>', '<pad>'), specials_first=True):
