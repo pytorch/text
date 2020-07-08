@@ -23,7 +23,7 @@ class TestVectors(TorchtextTestCase):
 
     def test_empty_vectors(self):
         tokens = []
-        vectors = []
+        vectors = torch.empty(0, dtype=torch.float)
         unk_tensor = torch.tensor([0], dtype=torch.float)
 
         vectors_obj = Vectors(tokens, vectors, unk_tensor)
@@ -34,7 +34,7 @@ class TestVectors(TorchtextTestCase):
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
         tokens = ['a']
-        vectors = [tensorA]
+        vectors = tensorA.unsqueeze(0)
         vectors_obj = Vectors(tokens, vectors)
 
         self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
@@ -45,7 +45,7 @@ class TestVectors(TorchtextTestCase):
 
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
-        vectors = [tensorA, tensorB]
+        vectors = torch.stack((tensorA, tensorB), 0)
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
         self.assertEqual(vectors_obj['a'], tensorA)
@@ -58,7 +58,7 @@ class TestVectors(TorchtextTestCase):
 
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
-        vectors = [tensorA, tensorB]
+        vectors = torch.stack((tensorA, tensorB), 0)
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj)
 
@@ -71,10 +71,11 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
         tokens = ['a']
-        vectors = [tensorA]
+        vectors = tensorA.unsqueeze(0)
+        print(vectors)
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
-        tensorB = torch.tensor([0., 1])
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
         vectors_obj['b'] = tensorB
 
         self.assertEqual(vectors_obj['a'], tensorA)
@@ -86,7 +87,7 @@ class TestVectors(TorchtextTestCase):
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
         tokens = ['a']
-        vectors = [tensorA]
+        vectors = tensorA.unsqueeze(0)
         vectors_obj = Vectors(tokens, vectors)
 
         vector_path = os.path.join(self.test_dir, 'vectors.pt')
@@ -98,7 +99,7 @@ class TestVectors(TorchtextTestCase):
 
     def test_errors(self):
         tokens = []
-        vectors = []
+        vectors = torch.empty(0, dtype=torch.float)
 
         with self.assertRaises(ValueError):
             # Test proper error raised when passing in empty tokens and vectors and
@@ -108,7 +109,7 @@ class TestVectors(TorchtextTestCase):
         tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
         tokens = ['a', 'b', 'c']
-        vectors = [tensorA, tensorB]
+        vectors = torch.stack((tensorA, tensorB,), 0)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when tokens and vectors have different sizes
@@ -116,7 +117,7 @@ class TestVectors(TorchtextTestCase):
 
         tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
         tokens = ['a', 'a', 'c']
-        vectors = [tensorA, tensorB, tensorC]
+        vectors = torch.stack((tensorA, tensorB, tensorC), 0)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when tokens have duplicates
@@ -125,10 +126,11 @@ class TestVectors(TorchtextTestCase):
             Vectors(tokens, vectors)
 
         tensorC = torch.tensor([0, 0, 1], dtype=torch.int8)
-        vectors = [tensorA, tensorB, tensorC]
+        tokens = ['a']
+        vectors = tensorC.unsqueeze(0)
 
         with self.assertRaises(TypeError):
-            # Test proper error raised when vectors are not of type torch.float
+            # Test proper error raised when vector is not of type torch.float
             Vectors(tokens, vectors)
 
         with tempfile.TemporaryDirectory() as dir_name:
