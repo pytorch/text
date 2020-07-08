@@ -18,3 +18,13 @@ torchtext.experimental.vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: vectors_from_file_object
+
+:hidden:`FastText`
+~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: FastText
+
+:hidden:`GloVe`
+~~~~~~~~~~~~~~~~
+
+.. autofunction:: GloVe

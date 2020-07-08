@@ -34,9 +34,9 @@ IMDb
 ~~~~
 
 .. autoclass:: IMDB
-  :members: __init__ 
- 
- 
+  :members: __init__
+
+
 Text Classification
 ^^^^^^^^^^^^^^^^^^^
 
@@ -109,8 +109,8 @@ AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
 .. autoclass:: AmazonReviewFull
   :members: __init__
- 
- 
+
+
 Language Modeling
 ^^^^^^^^^^^^^^^^^
 
@@ -124,28 +124,28 @@ WikiText-2
 ~~~~~~~~~~
 
 .. autoclass:: WikiText2
-  :members: __init__ 
+  :members: __init__
 
 
 WikiText103
 ~~~~~~~~~~~
 
 .. autoclass:: WikiText103
-  :members: __init__ 
+  :members: __init__
 
 
 PennTreebank
 ~~~~~~~~~~~~
 
 .. autoclass:: PennTreebank
-  :members: __init__ 
+  :members: __init__
 
 
 WMTNewsCrawl
 ~~~~~~~~~~~~
 
-.. autoclass:: WMTNewsCrawl 
-  :members: __init__ 
+.. autoclass:: WMTNewsCrawl
+  :members: __init__
 
 
 Machine Translation
@@ -177,12 +177,33 @@ WMT14
 .. autoclass:: WMT14
   :members: __init__
 
+
+Sequence Tagging
+^^^^^^^^^^^^^^^^
+
+Language modeling datasets are subclasses of ``SequenceTaggingDataset`` class.
+
+.. autoclass:: SequenceTaggingDataset
+  :members: __init__
+
+UDPOS
+~~~~~
+
+.. autoclass:: UDPOS
+  :members: __init__
+
+CoNLL2000Chunking
+~~~~~
+
+.. autoclass:: CoNLL2000Chunking
+  :members: __init__
+
 Question Answer
 ^^^^^^^^^^^^^^^
 
 Question answer datasets are subclasses of ``QuestionAnswerDataset`` class.
 
-.. autoclass:: QuestionAnswerDataset 
+.. autoclass:: QuestionAnswerDataset
   :members: __init__
 
 
@@ -190,11 +211,11 @@ SQuAD 1.0
 ~~~~~~~~~
 
 .. autoclass:: SQuAD1
-  :members: __init__ 
+  :members: __init__
 
 
 SQuAD 2.0
 ~~~~~~~~~
 
 .. autoclass:: SQuAD2
-  :members: __init__ 
+  :members: __init__
