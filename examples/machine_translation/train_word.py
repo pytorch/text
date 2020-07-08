@@ -13,8 +13,7 @@ from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.experimental.datasets import Multi30k
 from torchtext.vocab import Vocab
-from utils import (count_parameters, epoch_time, pad_chars, pad_words,
-                   seed_everything)
+from utils import count_parameters, epoch_time, pad_chars, pad_words, seed_everything
 
 
 def train(
@@ -162,7 +161,7 @@ if __name__ == "__main__":
     parser.add_argument("--attn_dim", type=int, default=8, help="size of attention weights")
     parser.add_argument("--enc_dropout", type=float, default=0.5, help="dropout applied to encoder")
     parser.add_argument("--dec_dropout", type=float, default=0.5, help="dropout applied to decoder")
-    parser.add_argument("--lr", type=float, default=6, help="initial learning rate")
+    parser.add_argument("--lr", type=float, default=0.001, help="initial learning rate")
     parser.add_argument("--clip", type=float, default=1, help="gradient clipping")
     parser.add_argument("--epochs", type=int, default=10, help="upper epoch limit")
     parser.add_argument("--batch_size", type=int, default=128, metavar="N", help="batch size")
