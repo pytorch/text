@@ -148,7 +148,7 @@ def main(args):
             f"\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f} |  Val. BLEU: {valid_bleu_score:7.3f}"
         )
 
-    test_loss, test_bleu_score = evaluate(model, test_iterator, criterion, train_dataset.vocab[2], device)
+    test_loss, test_bleu_score = evaluate(model, test_iterator, criterion, train_dataset.vocab[1], device)
 
     print(f"| Test Loss: {test_loss:.3f} | Test PPL: {math.exp(test_loss):7.3f} |  Test BLEU: {test_bleu_score:7.3f}")
 
