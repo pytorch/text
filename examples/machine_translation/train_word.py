@@ -38,9 +38,12 @@ def train(
         output = model(src, trg)
         # Convert prediction to words
         true = trg.transpose(0, 1).unsqueeze(1)
-        true = [[[trg_vocab.itos[word_idx] for word_idx in comb] for comb in sent] for sent in true]
+        true = [
+            [[trg_vocab.itos[word_idx] for word_idx in comb if trg_vocab.itos[word_idx] != " "] for comb in sent]
+            for sent in true
+        ]
         pred = output.transpose(0, 1).argmax(-1)
-        pred = [[trg_vocab.itos[word_idx] for word_idx in sent] for sent in pred]
+        pred = [[trg_vocab.itos[word_idx] for word_idx in sent if trg_vocab.itos[word_idx] != " "] for sent in pred]
 
         output = output[1:].reshape(-1, output.shape[-1])
         trg = trg[1:].reshape(-1)
@@ -70,9 +73,12 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
             output = model(src, trg)
             # Convert prediction to words
             true = trg.transpose(0, 1).unsqueeze(1)
-            true = [[[trg_vocab.itos[word_idx] for word_idx in comb] for comb in sent] for sent in true]
+            true = [
+                [[trg_vocab.itos[word_idx] for word_idx in comb if trg_vocab.itos[word_idx] != " "] for comb in sent]
+                for sent in true
+            ]
             pred = output.transpose(0, 1).argmax(-1)
-            pred = [[trg_vocab.itos[word_idx] for word_idx in sent] for sent in pred]
+            pred = [[trg_vocab.itos[word_idx] for word_idx in sent if trg_vocab.itos[word_idx] != " "] for sent in pred]
 
             output = output[1:].reshape(-1, output.shape[-1])
             trg = trg[1:].reshape(-1)
