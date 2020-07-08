@@ -21,9 +21,9 @@ def vocab_from_file_object(file_like_object, **kwargs):
     r"""Create a `Vocab` object from a file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
-    The `file_like_object` should contain tokens seperated by new lines in a csv file format.
+    The `file_like_object` should contain tokens seperated by new lines.
 
-    Format for csv file:
+    Format for txt file:
         token1
         token2
         ...
