@@ -13,7 +13,8 @@ from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.experimental.datasets import Multi30k
 from torchtext.vocab import Vocab
-from utils import count_parameters, epoch_time, pad_chars, pad_words, seed_everything
+from utils import (count_parameters, epoch_time, pad_chars, pad_words,
+                   seed_everything)
 
 
 def train(
@@ -151,6 +152,13 @@ def main(args):
 
     print(f"| Test Loss: {test_loss:.3f} | Test PPL: {math.exp(test_loss):7.3f} |  Test BLEU: {test_bleu_score:7.3f}")
 
+    if args.save:
+        print("Saving model to {}".format(args.save))
+        torch.save(model.to("cpu"), args.save)
+
+    if args.save_vocab:
+        print("Save vocab to {}".format(args.save_vocab))
+        torch.save(train_dataset.vocab, args.save_vocab)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PyTorch Experimental Seq2seq for Machine Translation")
@@ -166,9 +174,8 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=10, help="upper epoch limit")
     parser.add_argument("--batch_size", type=int, default=128, metavar="N", help="batch size")
     parser.add_argument("--seed", type=int, default=42, help="random seed")
-    parser.add_argument("--checkpoint", type=str, default="None", help="path to load the checkpoint")
-    parser.add_argument("--save", type=str, default="mlm_bert.pt", help="path to save the final model")
-    parser.add_argument("--save_vocab", type=str, default="torchtext_bert_vocab.pt", help="path to save the vocab")
+    parser.add_argument("--save", type=str, default="mt_seq2seq.pt", help="path to save the final model")
+    parser.add_argument("--save_vocab", type=str, default="torchtext_mt_vocab.pt", help="path to save the vocab")
     parser.add_argument("--dataset", type=str, default="Multi30k", help="dataset used for MLM task")
     args = parser.parse_args()
 
