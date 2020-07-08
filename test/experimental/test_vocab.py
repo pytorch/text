@@ -213,7 +213,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
 
     def test_vocab_from_file(self):
-        asset_name = 'vocab_test.csv'
+        asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
         f = open(asset_path, 'r')
         v = vocab_from_file_object(f, specials=('<unk>', '<pad>', '<eos>'), specials_first=False)
