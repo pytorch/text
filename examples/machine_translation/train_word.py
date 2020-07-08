@@ -13,7 +13,8 @@ from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.experimental.datasets import Multi30k
 from torchtext.vocab import Vocab
-from utils import count_parameters, epoch_time, pad_chars, pad_words, seed_everything
+from utils import (count_parameters, epoch_time, pad_chars, pad_words,
+                   seed_everything)
 
 
 def train(
@@ -45,8 +46,8 @@ def train(
         pred = output.transpose(0, 1).argmax(-1)
         pred = [[trg_vocab.itos[word_idx] for word_idx in sent if trg_vocab.itos[word_idx] != " "] for sent in pred]
 
-        output = output[1:].reshape(-1, output.shape[-1])
-        trg = trg[1:].reshape(-1)
+        output = output.reshape(-1, output.shape[-1])
+        trg = trg.reshape(-1)
         loss = criterion(output, trg)
 
         loss.backward()
@@ -80,8 +81,8 @@ def evaluate(model: nn.Module, iterator: DataLoader, criterion: nn.Module, trg_v
             pred = output.transpose(0, 1).argmax(-1)
             pred = [[trg_vocab.itos[word_idx] for word_idx in sent if trg_vocab.itos[word_idx] != " "] for sent in pred]
 
-            output = output[1:].reshape(-1, output.shape[-1])
-            trg = trg[1:].reshape(-1)
+            output = output.reshape(-1, output.shape[-1])
+            trg = trg.reshape(-1)
 
             loss = criterion(output, trg)
 
@@ -111,10 +112,10 @@ def main(args):
     input_dim = len(train_dataset.vocab[0])
     output_dim = len(train_dataset.vocab[1])
 
-    enc_emb = nn.Embedding(input_dim, args.enc_emb_dim)
+    enc_emb = nn.Embedding(input_dim, args.enc_emb_dim, padding_idx=train_dataset.vocab[0].stoi["<pad>"])
     enc = Encoder(input_dim, args.enc_emb_dim, args.enc_hid_dim, args.dec_hid_dim, args.enc_dropout, enc_emb)
     attn = Attention(args.enc_hid_dim, args.dec_hid_dim, args.attn_dim)
-    dec_emb = nn.Embedding(output_dim, args.dec_emb_dim)
+    dec_emb = nn.Embedding(output_dim, args.dec_emb_dim, padding_idx=train_dataset.vocab[1].stoi["<pad>"])
     dec = Decoder(output_dim, args.dec_emb_dim, args.enc_hid_dim, args.dec_hid_dim, args.dec_dropout, attn, dec_emb)
     model = Seq2Seq(enc, dec, device).to(device)
 
