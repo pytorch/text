@@ -1,5 +1,6 @@
-from typing import List
+from typing import Any, Callable, List, Union
 
+import torch
 from torch.utils.data import Dataset, IterableDataset
 from torch.utils.data.sampler import RandomSampler, Sampler, SequentialSampler
 
@@ -15,19 +16,20 @@ class BucketBatchSampler(Sampler):
         data_source: data source to sample from.
         bucket_boundaries: upper length boundaries to merge sentences with length
             less than or equal to the boundaries.
+        seq_len_fn: function to return the current length of the sequence.
         batch_size: size of mini-batch.
             Default: 32
-        seq_dim: dimension id where the sequence sizes are located.
-            Default: 0
         shuffle: data_source will be wrapped with RandomSampler if set to ``True``,
             otherwise, SequentialSampler. Default: True
     Example:
         >>> dummy = [
             torch.tensor(range(1, torch.randint(2, 11, (1,))[0])) for num in range(10)
         ]
-        >>> list(BucketBatchSampler(dummy, [5, 10], batch_size=5, shuffle=False))
+        >>> def tensor_seq_len_fn(row):
+        ...     return row.size(0)
+        >>> list(BucketBatchSampler(dummy, [5, 10], tensor_seq_len_fn, batch_size=5, shuffle=False))
         [[0, 1, 2, 3, 4], [5, 6, 7, 8], [9]]
-        >>> list(BucketBatchSampler(dummy, [5, 10], batch_size=5))
+        >>> list(BucketBatchSampler(dummy, [5, 10], tensor_seq_len_fn, batch_size=5))
         [[9, 2, 4, 3, 1], [8, 7, 5, 6], [0]]
     """
 
@@ -35,15 +37,15 @@ class BucketBatchSampler(Sampler):
         self,
         data_source: Dataset,
         bucket_boundaries: List[int],
+        seq_len_fn: Callable[[Union[List[Any], torch.Tensor]], int],
         batch_size: int = 32,
-        seq_dim: int = 0,
         shuffle: bool = True,
     ):
         if isinstance(data_source, IterableDataset):
             raise TypeError("Currently does not support IterableDataset!")
 
         self.data_source = data_source
-        self.seq_dim = seq_dim
+        self.seq_len_fn = seq_len_fn
         self.bucket_boundaries = bucket_boundaries + [float("inf")]
         self.batch_size = batch_size
         if shuffle:
@@ -59,7 +61,7 @@ class BucketBatchSampler(Sampler):
         for idx in self.sampler:
             row = self.data_source[idx]
             for bidx, boundary in enumerate(self.bucket_boundaries):
-                if row.size(self.seq_dim) <= boundary:
+                if self.seq_len_fn(row) <= boundary:
                     self.buckets[bidx].append(idx)
                     break
             # Flush the buckets
