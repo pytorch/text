@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 # from fairseq.data.dictionary import Dictionary
 import torch
-from torchtext.experimental.vocab import Vocab, create_vocab_factory
+from torchtext.experimental.vocab import Vocab
 from typing import List, Optional, Set
 
 
@@ -63,13 +63,7 @@ class ScriptVocab(Vocab):
                  eos_token=None,
                  mask_token=None,
                  **kwargs):
-        # super(ScriptVocab, self).__init__(ordered_dict, **kwargs)
-        # super(ScriptVocab, self).__init__(create_vocab_factory(ordered_dict, **kwargs).vocab)
-        vocab = create_vocab_factory(ordered_dict, **kwargs)
-        vocab_cpp = vocab.vocab
-        # import pdb
-        # pdb.set_trace()
-        super(ScriptVocab, self).__init__(vocab_cpp)
+        super(ScriptVocab, self).__init__(ordered_dict, **kwargs)
         self.unk_token: str = kwargs.get('unk_token', '<unk>')
 
         # init all special token indices
@@ -82,8 +76,6 @@ class ScriptVocab(Vocab):
     @torch.jit.export
     def lookup_indices_1d(self, values: List[str]) -> List[int]:
         lookup_indices = self.lookup_indices(values)
-        # print(type(lookup_indices))
-        # print(type(lookup_indices[0]))
         return lookup_indices
 
     @torch.jit.export
