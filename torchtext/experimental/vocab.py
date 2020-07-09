@@ -1,10 +1,56 @@
+from collections import OrderedDict
 import logging
 from typing import Dict, List
 
 import torch
 import torch.nn as nn
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
+
+
+def _infer_shape(f):
+    num_lines = 0
+    for line in f:
+        num_lines += 1
+    f.seek(0)
+    return num_lines
+
+
+def vocab_from_file_object(file_like_object, **kwargs):
+    r"""Create a `Vocab` object from a file like object.
+
+    Note that the tensor corresponding to each vector is of type `torch.float`.
+    The `file_like_object` should contain tokens seperated by new lines.
+
+    Format for txt file:
+        token1
+        token2
+        ...
+        token_n
+
+    Args:
+        file_like_object (FileObject): a file like object to read data from.
+        Remaining keyword arguments: Passed to the constructor of Vocab class.
+
+    Returns:
+        Vocab: a `Vocab` object.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import vocab_from_file_object
+        >>> f = open('vocab.csv', 'r')
+        >>> v = vocab_from_file_object(f, specials=('<unk>', '<pad>', '<eos>'), specials_first=False)
+    """
+    ordered_dict = OrderedDict()
+    num_lines = _infer_shape(file_like_object)
+    for line in tqdm(file_like_object, unit_scale=0, unit="lines", total=num_lines):
+        token = line.rstrip()
+        if token in ordered_dict:
+            ordered_dict[token] += 1
+        else:
+            ordered_dict[token] = 1
+
+    return Vocab(ordered_dict, **kwargs)
 
 
 class Vocab(nn.Module):
