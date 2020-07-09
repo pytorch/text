@@ -7,6 +7,30 @@ import torch.nn as nn
 logger = logging.getLogger(__name__)
 
 
+def create_vocab_factory(ordered_dict, min_freq=1, unk_token='<unk>', specials=('<unk>', '<pad>'), specials_first=True):
+    if not unk_token:
+        raise ValueError("A default unk token wasn't provided.")
+
+    if unk_token not in specials:
+        raise ValueError("The unk token wasn't found in the `specials` tuple.")
+
+    tokens = []
+    for token, freq in ordered_dict.items():
+        if freq >= min_freq:
+            if token in specials:
+                raise ValueError("A `specials` token {} was found inside of `ordered_dict`."
+                                 "Please ensure that the `ordered_dict` doesn't contain any special tokens.".format(token))
+            tokens.append(token)
+
+    # assume special tokens dont appear in ordered_dict
+    if specials_first:
+        tokens = list(specials) + tokens
+    else:
+        tokens += list(specials)
+
+    return Vocab(torch.classes.torchtext.Vocab(tokens, unk_token))
+
+
 class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
@@ -36,30 +60,10 @@ class Vocab(nn.Module):
         >>> v2 = Vocab(OrderedDict([(token, 1) for token in tokens]))
     """
 
-    def __init__(self, ordered_dict, min_freq=1, unk_token='<unk>', specials=('<unk>', '<pad>'), specials_first=True):
-        super(Vocab, self).__init__()
-
-        if not unk_token:
-            raise ValueError("A default unk token wasn't provided.")
-
-        if unk_token not in specials:
-            raise ValueError("The unk token wasn't found in the `specials` tuple.")
-
-        tokens = []
-        for token, freq in ordered_dict.items():
-            if freq >= min_freq:
-                if token in specials:
-                    raise ValueError("A `specials` token {} was found inside of `ordered_dict`."
-                                     "Please ensure that the `ordered_dict` doesn't contain any special tokens.".format(token))
-                tokens.append(token)
-
-        # assume special tokens dont appear in ordered_dict
-        if specials_first:
-            tokens = list(specials) + tokens
-        else:
-            tokens += list(specials)
-
-        self.vocab = torch.classes.torchtext.Vocab(tokens, unk_token)
+    def __init__(self, vocab):
+        super().__init__()
+        print(type(vocab))
+        self.vocab = vocab
 
     @torch.jit.export
     def __len__(self) -> int:
@@ -83,7 +87,7 @@ class Vocab(nn.Module):
     def insert_token(self, token: str, index: int) -> None:
         r"""
         Args:
-            token (str): the token used to lookup the corresponding index.
+
             index (int): the index corresponding to the associated token.
 
         Raises:
