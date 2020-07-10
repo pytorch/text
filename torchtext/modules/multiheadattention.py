@@ -105,7 +105,7 @@ class ScaledDotProduct(torch.nn.Module):
                 as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
-            >>> SDP = torchtext.models.ScaledDotProduct(0.1)
+            >>> SDP = torchtext.modules.ScaledDotProduct(0.1)
             >>> q = torch.randn(256, 21, 3)
             >>> k = v = torch.randn(256, 21, 3)
             >>> attn_output, attn_weights = SDP(q, k, v)
