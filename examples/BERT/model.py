@@ -58,9 +58,6 @@ class TransformerEncoderLayer(nn.Module):
                                             Linear(d_model, d_model))
         self.mha = MultiheadAttentionContainer(nhead, in_proj_container,
                                                ScaledDotProduct(), Linear(d_model, d_model))
-#        self.attn_in_proj = MultiheadAttentionInProjection(d_model, nhead)
-#        self.scaled_dot_product = ScaledDotProduct(dropout=dropout)
-#        self.attn_out_proj = MultiheadAttentionOutProjection(d_model, nhead)
         self.linear1 = Linear(d_model, dim_feedforward)
         self.dropout = Dropout(dropout)
         self.linear2 = Linear(dim_feedforward, d_model)
@@ -92,10 +89,6 @@ class TransformerEncoderLayer(nn.Module):
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
         attn_output, attn_output_weights = self.mha(src, src, src, attn_mask=src_mask)
         src = src + self.dropout1(attn_output)
-#        query, key, value = self.attn_in_proj(src, src, src)
-#        attn_out = self.scaled_dot_product(query, key, value, attn_mask=src_mask)
-#        src2 = self.attn_out_proj(attn_out)
-#        src = src + self.dropout1(src2)
         src = self.norm1(src)
         src2 = self.linear2(self.dropout(self.activation(self.linear1(src))))
         src = src + self.dropout2(src2)
@@ -155,7 +148,6 @@ class NextSentenceTask(nn.Module):
     def forward(self, src, token_type_input):
         src = src.transpose(0, 1)  # Wrap up by nn.DataParallel
         output = self.bert_model(src, token_type_input)
-
         # Send the first <'cls'> seq to a classifier
         output = self.activation(self.linear_layer(output[0]))
         output = self.ns_span(output)
