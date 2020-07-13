@@ -105,7 +105,7 @@ class ScaledDotProduct(torch.nn.Module):
                 as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
-            >>> SDP = torchtext.modules.ScaledDotProduct(0.1)
+            >>> SDP = torchtext.modules.ScaledDotProduct(dropout=0.1)
             >>> q = torch.randn(256, 21, 3)
             >>> k = v = torch.randn(256, 21, 3)
             >>> attn_output, attn_weights = SDP(q, k, v)
@@ -156,8 +156,7 @@ class ScaledDotProduct(torch.nn.Module):
             key = torch.cat([key, bias_k])
             value = torch.cat([value, bias_v])
             if attn_mask is not None:
-                _attn_mask = attn_mask
-                attn_mask = torch.nn.functional.pad(_attn_mask, (0, 1))
+                attn_mask = torch.nn.functional.pad(attn_mask, (0, 1))
 
         tgt_len, head_dim = query.size(-3), query.size(-1)
         assert query.size(-1) == key.size(-1) == value.size(-1), "The feature dim of query, key, value must be equal."
