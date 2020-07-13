@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import torch
+import torch      # noqa: F401
 from torch.testing._internal.common_utils import TestCase
 import json
 import logging
