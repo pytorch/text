@@ -10,12 +10,13 @@ class MultiheadAttentionContainer(torch.nn.Module):
             nhead: the number of heads in the multiheadattention model
             in_proj_container: A container of multi-head in-projection linear layers (a.k.a nn.Linear).
             attention_layer: The custom attention layer. The input sent from MHA container to the attention layer
-                is in the shape of `(seq, batch, feature)` while the output shape of the attention layer
-                is expected to be `(seq, batch, feature)`. The attention_layer needs to support broadcast if users
-                want the overall MultiheadAttentionContainer with broadcast.
+                is in the shape of `(..., L, N * H, E / H)` for query and `(..., S, N * H, E / H)` for key/value
+                while the  output shape of the attention layer is expected to be `(..., L, N * H, E / H)`.
+                The attention_layer needs to support broadcast if users want the overall MultiheadAttentionContainer
+                with broadcast.
             out_proj: The multi-head out-projection layer (a.k.a nn.Linear).
             batch_first: If ``True``, then the input and output tensors are provided
-                as `(batch, seq, feature)`. Default: ``False``
+                as `(..., N, L, E)`. Default: ``False``
 
         Examples::
             >>> import torch
@@ -54,14 +55,17 @@ class MultiheadAttentionContainer(torch.nn.Module):
 
         Shape:
             - Inputs:
-            - query: :math:`(L, N, E)`
-            - key: :math:`(S, N, E)`
-            - value: :math:`(S, N, E)`
+            - query: :math:`(..., L, N, E)`
+            - key: :math:`(..., S, N, E)`
+            - value: :math:`(..., S, N, E)`
             - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.
 
             - Outputs:
-            - attn_output: :math:`(L, N, E)`
+            - attn_output: :math:`(..., L, N, E)`
             - attn_output_weights: :math:`(N * H, L, S)`
+
+            Note: It's optioinal to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
+                The MultiheadAttentionContainer module will operate on the last three dimensions.
 
             where where L is the target length, S is the sequence length, H is the number of attention heads,
                 N is the batch size, and E is the embedding dimension.
@@ -134,14 +138,17 @@ class ScaledDotProduct(torch.nn.Module):
                 non-None to both arguments in order to activate them.
 
         Shape:
-            - query: :math:`(L, N * H, E / H)`
-            - key: :math:`(S, N * H, E / H)`
-            - value: :math:`(S, N * H, E / H)`
+            - query: :math:`(..., L, N * H, E / H)`
+            - key: :math:`(..., S, N * H, E / H)`
+            - value: :math:`(..., S, N * H, E / H)`
             - attn_mask: :math:`(N * H, L, S)`, positions with ``True`` are not allowed to attend
                 while ``False`` values will be unchanged.
             - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
 
-            - Output: :math:`(L, N * H, E / H)`, :math:`(N * H, L, S)`
+            - Output: :math:`(..., L, N * H, E / H)`, :math:`(N * H, L, S)`
+
+            Note: It's optioinal to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
+                The ScaledDotProduct module will operate on the last three dimensions.
 
             where L is the target length, S is the source length, H is the number
             of attention heads, N is the batch size, and E is the embedding dimension.
