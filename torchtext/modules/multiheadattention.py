@@ -11,7 +11,8 @@ class MultiheadAttentionContainer(torch.nn.Module):
             in_proj_container: A container of multi-head in-projection linear layers (a.k.a nn.Linear).
             attention_layer: The custom attention layer. The input sent from MHA container to the attention layer
                 is in the shape of `(seq, batch, feature)` while the output shape of the attention layer
-                is expected to be `(seq, batch, feature)`.
+                is expected to be `(seq, batch, feature)`. The attention_layer needs to support broadcast if users
+                want the overall MultiheadAttentionContainer with broadcast.
             out_proj: The multi-head out-projection layer (a.k.a nn.Linear).
             batch_first: If ``True``, then the input and output tensors are provided
                 as `(batch, seq, feature)`. Default: ``False``
