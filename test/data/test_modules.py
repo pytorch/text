@@ -1,6 +1,6 @@
 import torch
 from torch.nn import Linear
-from torchtext.modules import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
+from torchtext.nn import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
 from torch.nn.functional import multi_head_attention_forward as mha_forward
 from ..common.torchtext_test_case import TorchtextTestCase
 
