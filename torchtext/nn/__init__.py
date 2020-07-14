@@ -1,3 +1,1 @@
-from . import modules
-
-__all__ = ['modules']
+from .modules import *  # noqa: F401,F403
