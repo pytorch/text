@@ -12,7 +12,7 @@ except ImportError:
     pass
 
 __all__ = ['data',
-           'modules',
+           'nn',
            'datasets',
            'utils',
            'vocab',

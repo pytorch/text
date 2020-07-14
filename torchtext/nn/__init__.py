@@ -1,1 +1,3 @@
-from .modules import *
+from . import modules
+
+__all__ = ['modules']
