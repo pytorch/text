@@ -106,19 +106,12 @@ std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
       _trim(line);
       std::stringstream s(line);
 
-      // std::cout << "[INFER LINE] " << line << std::endl;
-
       // get rid of the token
       std::getline(s, word, static_cast<char>(delimiter_ascii));
-      // std::cout << "[INFER_WORD] " << word << std::endl;
 
       // we assume entries for vector are always seperated by ' '
       while (std::getline(s, word, ' ')) {
-        // _trim(word);
-        // std::cout << "[INFER_VAL] `" << word << "`" << std::endl;
         vec_str.push_back(word);
-        // std::cout << "[VEC_SIZE] " << std::to_string(vec_str.size())
-        //           << std::endl;
       }
 
       // assuming word, [vector] format
@@ -133,7 +126,6 @@ std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
   }
   fin.clear();
   fin.seekg(0, std::ios::beg);
-  std::cout << "[LINES, DIM] " << num_lines << ", " << vector_dim << std::endl;
   return std::make_pair(num_lines, vector_dim);
 }
 
@@ -141,9 +133,6 @@ std::tuple<std::vector<std::string>, torch::Tensor, std::vector<std::string>>
 _load_token_and_vectors_from_file(const std::string &file_path,
                                   const int64_t delimiter_ascii = 32) {
   std::cout << "Reading file " << file_path << std::endl;
-  // std::cout << "[FILE_PATH] " << file_path << std::endl;
-  // std::cout << "[DELIMITER] "
-  //           << "`" << static_cast<char>(delimiter_ascii) << "`" << std::endl;
 
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
@@ -166,7 +155,6 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   int64_t num_vecs_loaded = 0;
 
   while (std::getline(fin, line)) {
-    // std::cout << "[CUR_LINE] " << line << std::endl;
 
     vec_float.clear();
 
@@ -175,13 +163,10 @@ _load_token_and_vectors_from_file(const std::string &file_path,
 
     // read the token
     std::getline(s, token, static_cast<char>(delimiter_ascii));
-    // std::cout << "[CUR_TOKEN] " << token << std::endl;
 
     // read every value of the vector and
     // store it in a string variable, 'vec_val'
     while (std::getline(s, vec_val, ' ')) {
-      // std::cout << "[CUR_VAL] " << vec_val << std::endl;
-
       vec_float.push_back(std::stof(vec_val));
     }
 
@@ -196,7 +181,8 @@ _load_token_and_vectors_from_file(const std::string &file_path,
           "Vector for token " + token + " has " +
           std::to_string(vec_float.size()) +
           " but previously read vectors have " + std::to_string(vector_dim) +
-          " dimensions. All vectors must have the same number of dimensions.");
+          " dimensions. All vectors must have the same number of
+          dimensions.");
     }
 
     if (tokens_set.find(token) != tokens_set.end()) {
@@ -209,7 +195,6 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     vectors[num_vecs_loaded] = torch::tensor(vec_float);
     num_vecs_loaded++;
   }
-  std::cout << "Done reading file." << std::endl;
 
   std::tuple<std::vector<std::string>, torch::Tensor, std::vector<std::string>>
       out_tuple(tokens, vectors.narrow(0, 0, num_vecs_loaded), dup_tokens);
