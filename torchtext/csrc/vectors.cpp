@@ -74,7 +74,7 @@ public:
 };
 
 std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
-                                         char delimiter = ' ') {
+                                         const int64_t delimiter_ascii = 32) {
 
   int64_t num_lines = 0, vector_dim = -1;
   std::vector<std::string> vec_str;
@@ -86,7 +86,7 @@ std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
       std::stringstream s(line);
 
       // get rid of the token
-      std::getline(s, word, delimiter);
+      std::getline(s, word, static_cast<char>(delimiter_ascii));
 
       // we assume entries for vector are always seperated by ' '
       while (std::getline(s, word, ' ')) {
@@ -112,7 +112,7 @@ std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
 std::tuple<std::vector<std::string>, torch::Tensor,
            std::vector<std::tuple<std::string, int64_t>>>
 _load_token_and_vectors_from_file(const std::string &file_path,
-                                  const char &delimiter = ' ') {
+                                  const int64_t delimiter_ascii = 32) {
   std::fstream fin;
   fin.open(file_path, std::ios::in);
 
@@ -138,7 +138,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     std::stringstream s(line);
 
     // read the token
-    std::getline(s, token, delimiter);
+    std::getline(s, token, static_cast<char>(delimiter_ascii));
 
     // read every value of the vector and
     // store it in a string variable, 'vec_val'
