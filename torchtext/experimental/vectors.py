@@ -32,6 +32,7 @@ def _infer_shape(f, delimiter=" "):
         else:
             num_lines += 1
     f.seek(0)
+    print("numlines, vector dim", num_lines, vector_dim)
     return num_lines, vector_dim
 
 
@@ -111,8 +112,15 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path)
+    # tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path)
+    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, 32)
 
+    print(tokens[:5])
+    print(vectors[:5])
+    print(dup_tokens)
+    print(type(tokens), type(vectors), type(dup_tokens))
+    # return
+    
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 

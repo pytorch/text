@@ -73,7 +73,27 @@ public:
   int64_t __len__() { return stovec_.size(); }
 };
 
-std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
+// trim str from start (in place)
+static inline void _ltrim(std::string &s) {
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+                                  [](int ch) { return !std::isspace(ch); }));
+}
+
+// trim str from end (in place)
+static inline void _rtrim(std::string &s) {
+  s.erase(std::find_if(s.rbegin(), s.rend(),
+                       [](int ch) { return !std::isspace(ch); })
+              .base(),
+          s.end());
+}
+
+// trim str from both ends (in place)
+static inline void _trim(std::string &s) {
+  _ltrim(s);
+  _rtrim(s);
+}
+
+std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
                                          const int64_t delimiter_ascii = 32) {
 
   int64_t num_lines = 0, vector_dim = -1;
@@ -81,16 +101,24 @@ std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
   std::string line, word;
 
   while (std::getline(fin, line)) {
+    vec_str.clear();
     if (vector_dim == -1) {
-      // used for breaking words
+      _trim(line);
       std::stringstream s(line);
+
+      // std::cout << "[INFER LINE] " << line << std::endl;
 
       // get rid of the token
       std::getline(s, word, static_cast<char>(delimiter_ascii));
+      // std::cout << "[INFER_WORD] " << word << std::endl;
 
       // we assume entries for vector are always seperated by ' '
       while (std::getline(s, word, ' ')) {
+        // _trim(word);
+        // std::cout << "[INFER_VAL] `" << word << "`" << std::endl;
         vec_str.push_back(word);
+        // std::cout << "[VEC_SIZE] " << std::to_string(vec_str.size())
+        //           << std::endl;
       }
 
       // assuming word, [vector] format
@@ -99,31 +127,37 @@ std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
         vector_dim = vec_str.size();
         num_lines++; // first element read
       }
-
     } else {
       num_lines++;
     }
   }
-
+  fin.clear();
   fin.seekg(0, std::ios::beg);
+  std::cout << "[LINES, DIM] " << num_lines << ", " << vector_dim << std::endl;
   return std::make_pair(num_lines, vector_dim);
 }
 
-std::tuple<std::vector<std::string>, torch::Tensor,
-           std::vector<std::tuple<std::string, int64_t>>>
+std::tuple<std::vector<std::string>, torch::Tensor, std::vector<std::string>>
 _load_token_and_vectors_from_file(const std::string &file_path,
                                   const int64_t delimiter_ascii = 32) {
-  std::fstream fin;
+  std::cout << "Reading file " << file_path << std::endl;
+  // std::cout << "[FILE_PATH] " << file_path << std::endl;
+  // std::cout << "[DELIMITER] "
+  //           << "`" << static_cast<char>(delimiter_ascii) << "`" << std::endl;
+
+  std::ifstream fin;
   fin.open(file_path, std::ios::in);
 
-  std::pair<int64_t, int64_t> num_lines_and_vector_dim_pair = _infer_shape(fin);
+  std::pair<int64_t, int64_t> num_lines_and_vector_dim_pair =
+      _infer_shape(fin, delimiter_ascii);
   int64_t num_lines = num_lines_and_vector_dim_pair.first;
   int64_t vector_dim = num_lines_and_vector_dim_pair.second;
 
   std::vector<std::string> tokens;
   torch::Tensor vectors = torch::zeros({num_lines, vector_dim});
   std::vector<float> vec_float;
-  std::vector<std::tuple<std::string, int64_t>> dup_tokens;
+  // std::vector<std::tuple<std::string, int64_t>> dup_tokens;
+  std::vector<std::string> dup_tokens;
   std::unordered_set<std::string> tokens_set;
 
   tokens.reserve(num_lines);
@@ -132,17 +166,22 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   int64_t num_vecs_loaded = 0;
 
   while (std::getline(fin, line)) {
+    // std::cout << "[CUR_LINE] " << line << std::endl;
+
     vec_float.clear();
 
-    // used for breaking words
+    _trim(line);
     std::stringstream s(line);
 
     // read the token
     std::getline(s, token, static_cast<char>(delimiter_ascii));
+    // std::cout << "[CUR_TOKEN] " << token << std::endl;
 
     // read every value of the vector and
     // store it in a string variable, 'vec_val'
     while (std::getline(s, vec_val, ' ')) {
+      // std::cout << "[CUR_VAL] " << vec_val << std::endl;
+
       vec_float.push_back(std::stof(vec_val));
     }
 
@@ -150,7 +189,8 @@ _load_token_and_vectors_from_file(const std::string &file_path,
       vector_dim = vec_float.size();
     } else if (vec_float.size() == 1) {
       std::cout << "Skipping token " << token
-                << "with 1-dimensional vector ; likely a header" << std::endl;
+                << " with 1-dimensional vector ; likely a header" << std::endl;
+      continue;
     } else if (vector_dim != static_cast<int64_t>(vec_float.size())) {
       throw std::runtime_error(
           "Vector for token " + token + " has " +
@@ -160,7 +200,8 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     }
 
     if (tokens_set.find(token) != tokens_set.end()) {
-      dup_tokens.push_back(std::make_tuple(token, vec_float.size() + 1));
+      // dup_tokens.push_back(std::make_tuple(token, vec_float.size() + 1));
+      dup_tokens.push_back(token);
     }
 
     tokens_set.insert(token);
@@ -168,9 +209,9 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     vectors[num_vecs_loaded] = torch::tensor(vec_float);
     num_vecs_loaded++;
   }
+  std::cout << "Done reading file." << std::endl;
 
-  std::tuple<std::vector<std::string>, torch::Tensor,
-             std::vector<std::tuple<std::string, int64_t>>>
+  std::tuple<std::vector<std::string>, torch::Tensor, std::vector<std::string>>
       out_tuple(tokens, vectors.narrow(0, 0, num_vecs_loaded), dup_tokens);
   return out_tuple;
 }
