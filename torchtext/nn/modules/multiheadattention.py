@@ -64,7 +64,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
             - attn_output: :math:`(..., L, N, E)`
             - attn_output_weights: :math:`(N * H, L, S)`
 
-            Note: It's optioinal to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
+            Note: It's optional to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
                 The MultiheadAttentionContainer module will operate on the last three dimensions.
 
             where where L is the target length, S is the sequence length, H is the number of attention heads,
@@ -111,11 +111,11 @@ class ScaledDotProduct(torch.nn.Module):
 
         Examples::
             >>> SDP = torchtext.nn.ScaledDotProduct(dropout=0.1)
-            >>> q = torch.randn(256, 21, 3)
-            >>> k = v = torch.randn(256, 21, 3)
+            >>> q = torch.randn(21, 256, 3)
+            >>> k = v = torch.randn(21, 256, 3)
             >>> attn_output, attn_weights = SDP(q, k, v)
             >>> print(attn_output.shape, attn_weights.shape)
-            torch.Size([256, 21, 3]) torch.Size([256, 21, 21])
+            torch.Size([21, 256, 3]) torch.Size([256, 21, 21])
         """
         super(ScaledDotProduct, self).__init__()
         self.dropout = dropout
@@ -147,7 +147,7 @@ class ScaledDotProduct(torch.nn.Module):
 
             - Output: :math:`(..., L, N * H, E / H)`, :math:`(N * H, L, S)`
 
-            Note: It's optioinal to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
+            Note: It's optional to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
                 The ScaledDotProduct module will operate on the last three dimensions.
 
             where L is the target length, S is the source length, H is the number
