@@ -1,3 +1,6 @@
+#include <fstream>
+// #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <torch/script.h>
@@ -23,8 +26,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stovec_.reserve(tokens.size());
@@ -70,6 +73,113 @@ public:
   int64_t __len__() { return stovec_.size(); }
 };
 
+std::pair<int64_t, int64_t> _infer_shape(std::fstream &fin,
+                                         char delimiter = ' ') {
+
+  int64_t num_lines = 0, vector_dim = -1;
+  std::vector<std::string> vec_str;
+  std::string line, word;
+
+  while (std::getline(fin, line)) {
+    if (vector_dim == -1) {
+      // used for breaking words
+      std::stringstream s(line);
+
+      // get rid of the token
+      std::getline(s, word, delimiter);
+
+      // we assume entries for vector are always seperated by ' '
+      while (std::getline(s, word, ' ')) {
+        vec_str.push_back(word);
+      }
+
+      // assuming word, [vector] format
+      if (vec_str.size() > 2) {
+        // the header present in some(w2v) formats contains two elements
+        vector_dim = vec_str.size();
+        num_lines++; // first element read
+      }
+
+    } else {
+      num_lines++;
+    }
+  }
+
+  fin.seekg(0, std::ios::beg);
+  return std::make_pair(num_lines, vector_dim);
+}
+
+std::tuple<std::vector<std::string>, torch::Tensor,
+           std::vector<std::tuple<std::string, int64_t>>>
+_load_token_and_vectors_from_file(const std::string &file_path,
+                                  const char &delimiter = ' ') {
+  std::fstream fin;
+  fin.open(file_path, std::ios::in);
+
+  std::pair<int64_t, int64_t> num_lines_and_vector_dim_pair = _infer_shape(fin);
+  int64_t num_lines = num_lines_and_vector_dim_pair.first;
+  int64_t vector_dim = num_lines_and_vector_dim_pair.second;
+
+  std::vector<std::string> tokens;
+  torch::Tensor vectors = torch::zeros({num_lines, vector_dim});
+  std::vector<float> vec_float;
+  std::vector<std::tuple<std::string, int64_t>> dup_tokens;
+  std::unordered_set<std::string> tokens_set;
+
+  tokens.reserve(num_lines);
+
+  std::string line, token, vec_val;
+  int64_t num_vecs_loaded = 0;
+
+  while (std::getline(fin, line)) {
+    vec_float.clear();
+
+    // used for breaking words
+    std::stringstream s(line);
+
+    // read the token
+    std::getline(s, token, delimiter);
+
+    // read every value of the vector and
+    // store it in a string variable, 'vec_val'
+    while (std::getline(s, vec_val, ' ')) {
+      vec_float.push_back(std::stof(vec_val));
+    }
+
+    if (vector_dim == -1 && vec_float.size() > 1) {
+      vector_dim = vec_float.size();
+    } else if (vec_float.size() == 1) {
+      std::cout << "Skipping token " << token
+                << "with 1-dimensional vector ; likely a header" << std::endl;
+    } else if (vector_dim != static_cast<int64_t>(vec_float.size())) {
+      throw std::runtime_error(
+          "Vector for token " + token + " has " +
+          std::to_string(vec_float.size()) +
+          " but previously read vectors have " + std::to_string(vector_dim) +
+          " dimensions. All vectors must have the same number of dimensions.");
+    }
+
+    if (tokens_set.find(token) != tokens_set.end()) {
+      dup_tokens.push_back(std::make_tuple(token, vec_float.size() + 1));
+    }
+
+    tokens_set.insert(token);
+    tokens.push_back(token);
+    vectors[num_vecs_loaded] = torch::tensor(vec_float);
+    num_vecs_loaded++;
+  }
+
+  std::tuple<std::vector<std::string>, torch::Tensor,
+             std::vector<std::tuple<std::string, int64_t>>>
+      out_tuple(tokens, vectors.narrow(0, 0, num_vecs_loaded), dup_tokens);
+  return out_tuple;
+}
+
+TORCH_LIBRARY(torchtext, m) {
+  m.def("_load_token_and_vectors_from_file",
+        &_load_token_and_vectors_from_file);
+}
+
 // Registers our custom class with torch.
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
@@ -81,9 +191,8 @@ static auto vectors =
         .def("__len__", &Vectors::__len__)
         .def_pickle(
             // __setstate__
-            [](const c10::intrusive_ptr<Vectors> &self)
-                -> std::tuple<std::vector<std::string>, torch::Tensor,
-                              torch::Tensor> {
+            [](const c10::intrusive_ptr<Vectors> &self) -> std::tuple<
+                std::vector<std::string>, torch::Tensor, torch::Tensor> {
               std::tuple<std::vector<std::string>, torch::Tensor, torch::Tensor>
                   states(self->tokens_, self->vectors_, self->unk_tensor_);
               return states;
