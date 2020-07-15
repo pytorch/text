@@ -3,14 +3,20 @@ from typing import Tuple, Optional
 
 
 class MultiheadAttentionContainer(torch.nn.Module):
-    def __init__(self, nhead, in_proj_container, attention_layer, out_proj):
+    def __init__(self, nhead, in_proj_container, attention_layer, out_proj, batch_first=False):
         r""" A multi-head attention container
 
         Args:
             nhead: the number of heads in the multiheadattention model
             in_proj_container: A container of multi-head in-projection linear layers (a.k.a nn.Linear).
-            attention_layer: The attention layer.
+            attention_layer: The custom attention layer. The input sent from MHA container to the attention layer
+                is in the shape of `(..., L, N * H, E / H)` for query and `(..., S, N * H, E / H)` for key/value
+                while the  output shape of the attention layer is expected to be `(..., L, N * H, E / H)`.
+                The attention_layer needs to support broadcast if users want the overall MultiheadAttentionContainer
+                with broadcast.
             out_proj: The multi-head out-projection layer (a.k.a nn.Linear).
+            batch_first: If ``True``, then the input and output tensors are provided
+                as `(..., N, L, E)`. Default: ``False``
 
         Examples::
             >>> import torch
@@ -33,6 +39,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
         self.in_proj_container = in_proj_container
         self.attention_layer = attention_layer
         self.out_proj = out_proj
+        self.batch_first = batch_first
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
                 attn_mask: Optional[torch.Tensor] = None,
@@ -48,18 +55,24 @@ class MultiheadAttentionContainer(torch.nn.Module):
 
         Shape:
             - Inputs:
-            - query: :math:`(L, N, E)`
-            - key: :math:`(S, N, E)`
-            - value: :math:`(S, N, E)`
+            - query: :math:`(..., L, N, E)`
+            - key: :math:`(..., S, N, E)`
+            - value: :math:`(..., S, N, E)`
             - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.
 
             - Outputs:
-            - attn_output: :math:`(L, N, E)`
+            - attn_output: :math:`(..., L, N, E)`
             - attn_output_weights: :math:`(N * H, L, S)`
+
+            Note: It's optioinal to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
+                The MultiheadAttentionContainer module will operate on the last three dimensions.
 
             where where L is the target length, S is the sequence length, H is the number of attention heads,
                 N is the batch size, and E is the embedding dimension.
         """
+        if self.batch_first:
+            query, key, value = query.transpose(-3, -2), key.transpose(-3, -2), value.transpose(-3, -2)
+
         tgt_len, src_len, bsz, embed_dim = query.size(-3), key.size(-3), query.size(-2), query.size(-1)
         q, k, v = self.in_proj_container(query, key, value)
         assert q.size(-1) % self.nhead == 0, "query's embed_dim must be divisible by the number of heads"
@@ -78,20 +91,26 @@ class MultiheadAttentionContainer(torch.nn.Module):
                                                                 bias_k=bias_k, bias_v=bias_v)
         attn_output = attn_output.reshape(tgt_len, bsz, embed_dim)
         attn_output = self.out_proj(attn_output)
+
+        if self.batch_first:
+            attn_output = attn_output.transpose(-3, -2)
+
         return attn_output, attn_output_weights
 
 
 class ScaledDotProduct(torch.nn.Module):
 
-    def __init__(self, dropout=0.0):
+    def __init__(self, dropout=0.0, batch_first=False):
         r"""Processes a projected query and key-value pair to apply
         scaled dot product attention.
 
         Args:
             dropout (float): probability of dropping an attention weight.
+            batch_first: If ``True``, then the input and output tensors are provided
+                as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
-            >>> SDP = torchtext.models.ScaledDotProduct(0.1)
+            >>> SDP = torchtext.nn.ScaledDotProduct(dropout=0.1)
             >>> q = torch.randn(256, 21, 3)
             >>> k = v = torch.randn(256, 21, 3)
             >>> attn_output, attn_weights = SDP(q, k, v)
@@ -100,6 +119,7 @@ class ScaledDotProduct(torch.nn.Module):
         """
         super(ScaledDotProduct, self).__init__()
         self.dropout = dropout
+        self.batch_first = batch_first
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
                 attn_mask: Optional[torch.Tensor] = None,
@@ -118,18 +138,24 @@ class ScaledDotProduct(torch.nn.Module):
                 non-None to both arguments in order to activate them.
 
         Shape:
-            - query: :math:`(L, N * H, E / H)`
-            - key: :math:`(S, N * H, E / H)`
-            - value: :math:`(S, N * H, E / H)`
+            - query: :math:`(..., L, N * H, E / H)`
+            - key: :math:`(..., S, N * H, E / H)`
+            - value: :math:`(..., S, N * H, E / H)`
             - attn_mask: :math:`(N * H, L, S)`, positions with ``True`` are not allowed to attend
                 while ``False`` values will be unchanged.
             - bias_k and bias_v:bias: :math:`(1, N * H, E / H)`
 
-            - Output: :math:`(L, N * H, E / H)`, :math:`(N * H, L, S)`
+            - Output: :math:`(..., L, N * H, E / H)`, :math:`(N * H, L, S)`
+
+            Note: It's optioinal to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
+                The ScaledDotProduct module will operate on the last three dimensions.
 
             where L is the target length, S is the source length, H is the number
             of attention heads, N is the batch size, and E is the embedding dimension.
         """
+        if self.batch_first:
+            query, key, value = query.transpose(-3, -2), key.transpose(-3, -2), value.transpose(-3, -2)
+
         if bias_k is not None and bias_v is not None:
             assert key.size(-1) == bias_k.size(-1) and key.size(-2) == bias_k.size(-2) and bias_k.size(-3) == 1, \
                 "Shape of bias_k is not supported"
@@ -138,8 +164,7 @@ class ScaledDotProduct(torch.nn.Module):
             key = torch.cat([key, bias_k])
             value = torch.cat([value, bias_v])
             if attn_mask is not None:
-                _attn_mask = attn_mask
-                attn_mask = torch.nn.functional.pad(_attn_mask, (0, 1))
+                attn_mask = torch.nn.functional.pad(attn_mask, (0, 1))
 
         tgt_len, head_dim = query.size(-3), query.size(-1)
         assert query.size(-1) == key.size(-1) == value.size(-1), "The feature dim of query, key, value must be equal."
@@ -166,7 +191,11 @@ class ScaledDotProduct(torch.nn.Module):
         attn_output_weights = torch.nn.functional.softmax(attn_output_weights, dim=-1)
         attn_output_weights = torch.nn.functional.dropout(attn_output_weights, p=self.dropout, training=self.training)
         attn_output = torch.matmul(attn_output_weights, value)
-        return attn_output.transpose(-2, -3), attn_output_weights
+
+        if self.batch_first:
+            return attn_output, attn_output_weights
+        else:
+            return attn_output.transpose(-3, -2), attn_output_weights
 
 
 class InProjContainer(torch.nn.Module):
