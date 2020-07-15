@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Linear, Dropout, LayerNorm, TransformerEncoder
-from torchtext.modules import MultiheadAttentionContainer, InProjContainer, ScaledDotProduct
+from torchtext.nn import MultiheadAttentionContainer, InProjContainer, ScaledDotProduct
 
 
 class PositionalEncoding(nn.Module):
