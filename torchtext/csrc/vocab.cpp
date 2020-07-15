@@ -125,14 +125,14 @@ static auto vocab =
         .def("get_stoi", &Vocab::get_stoi)
         .def("get_itos", &Vocab::get_itos)
         .def_pickle(
-            // __getstate__
+            // __setstate__
             [](const c10::intrusive_ptr<Vocab> &self)
                 -> std::tuple<std::vector<std::string>, std::string> {
               std::tuple<std::vector<std::string>, std::string> states(
                   self->itos_, self->unk_token_);
               return states;
             },
-            // __setstate__
+            // __getstate__
             [](std::tuple<std::vector<std::string>, std::string> states)
                 -> c10::intrusive_ptr<Vocab> {
               return c10::make_intrusive<Vocab>(std::move(std::get<0>(states)),
