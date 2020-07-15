@@ -53,6 +53,6 @@ def wrap_up(train_loss_log, val_loss_log, test_loss, args, model, ns_loss_log, m
     print('=' * 89)
     print_loss_log(ns_loss_log, train_loss_log, val_loss_log, test_loss)
     with open(args.save, 'wb') as f:
-        torch.save(model.bert_model, f)
+        torch.save(model.bert_model.state_dict(), f)
     with open(model_filename, 'wb') as f:
-        torch.save(model, f)
+        torch.save(model.state_dict(), f)

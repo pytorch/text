@@ -9,6 +9,7 @@ from torchtext.experimental.datasets import SQuAD1
 from model import QuestionAnswerTask
 from metrics import compute_qa_exact, compute_qa_f1
 from utils import print_loss_log
+from model import BertModel
 
 
 def process_raw_data(data):
@@ -144,6 +145,16 @@ if __name__ == "__main__":
                         help='path to save the vocab')
     parser.add_argument('--bert-model', type=str, default='ns_bert.pt',
                         help='path to save the pretrained bert')
+    parser.add_argument('--emsize', type=int, default=768,
+                        help='size of word embeddings')
+    parser.add_argument('--nhid', type=int, default=3072,
+                        help='number of hidden units per layer')
+    parser.add_argument('--nlayers', type=int, default=12,
+                        help='number of layers')
+    parser.add_argument('--nhead', type=int, default=12,
+                        help='the number of heads in the encoder/decoder of the transformer model')
+    parser.add_argument('--dropout', type=float, default=0.2,
+                        help='dropout applied to layers (0 = no dropout)')
     args = parser.parse_args()
     torch.manual_seed(args.seed)
 
@@ -163,7 +174,8 @@ if __name__ == "__main__":
     train_dataset = process_raw_data(train_dataset)
     dev_dataset = process_raw_data(dev_dataset)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    pretrained_bert = torch.load(args.bert_model)
+    pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+    pretrained_bert.load_state_dict(torch.load(args.bert_model))
     model = QuestionAnswerTask(pretrained_bert).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)

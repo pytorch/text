@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
-from model import NextSentenceTask
+from model import NextSentenceTask, BertModel
 from utils import run_demo, run_ddp, wrap_up
 
 
@@ -150,7 +150,8 @@ def run_main(args, rank=None):
     if args.checkpoint != 'None':
         model = torch.load(args.checkpoint)
     else:
-        pretrained_bert = torch.load(args.bert_model)
+        pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+        pretrained_bert.load_state_dict(torch.load(args.bert_model))
         model = NextSentenceTask(pretrained_bert)
 
     if args.parallel == 'DDP':
@@ -243,6 +244,16 @@ if __name__ == "__main__":
                         help='Use DataParallel/DDP to train model')
     parser.add_argument('--world_size', type=int, default=8,
                         help='the world size to initiate DPP')
+    parser.add_argument('--emsize', type=int, default=768,
+                        help='size of word embeddings')
+    parser.add_argument('--nhid', type=int, default=3072,
+                        help='number of hidden units per layer')
+    parser.add_argument('--nlayers', type=int, default=12,
+                        help='number of layers')
+    parser.add_argument('--nhead', type=int, default=12,
+                        help='the number of heads in the encoder/decoder of the transformer model')
+    parser.add_argument('--dropout', type=float, default=0.2,
+                        help='dropout applied to layers (0 = no dropout)')
     args = parser.parse_args()
 
     if args.parallel == 'DDP':
