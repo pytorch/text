@@ -3,32 +3,7 @@ import torch
 import logging
 from torchtext.data.utils import get_tokenizer
 import random
-
-
-class LanguageModelingDataset(torch.utils.data.Dataset):
-    """Defines a dataset for language modeling.
-    """
-
-    def __init__(self, data, vocab):
-        """Initiate language modeling dataset.
-        """
-
-        super(LanguageModelingDataset, self).__init__()
-        self.data = data
-        self.vocab = vocab
-
-    def __getitem__(self, i):
-        return self.data[i]
-
-    def __len__(self):
-        return len(self.data)
-
-    def __iter__(self):
-        for x in self.data:
-            yield x
-
-    def get_vocab(self):
-        return self.vocab
+from torchtext.experimental.datasets import LanguageModelingDataset
 
 
 ###################################################################
@@ -72,8 +47,8 @@ def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
         if data[key] == []:
             raise TypeError('Dataset {} is empty!'.format(key))
     if min_sentence_len:
-        return tuple(LanguageModelingDataset(data[d], vocab)
+        return tuple(LanguageModelingDataset(data[d], vocab, lambda x: x, False)
                      for d in data_select)
     else:
-        return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab)
+        return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab, lambda x: x, False)
                      for d in data_select)
