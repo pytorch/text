@@ -110,12 +110,12 @@ class ScaledDotProduct(torch.nn.Module):
                 as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
-            >>> SDP = torchtext.nn.ScaledDotProduct(dropout=0.1, batch_first=True)
-            >>> q = torch.randn(256, 21, 3)
-            >>> k = v = torch.randn(256, 21, 3)
+            >>> SDP = torchtext.nn.ScaledDotProduct(dropout=0.1)
+            >>> q = torch.randn(21, 256, 3)
+            >>> k = v = torch.randn(21, 256, 3)
             >>> attn_output, attn_weights = SDP(q, k, v)
             >>> print(attn_output.shape, attn_weights.shape)
-            torch.Size([256, 21, 3]) torch.Size([256, 21, 21])
+            torch.Size([21, 256, 3]) torch.Size([256, 21, 21])
         """
         super(ScaledDotProduct, self).__init__()
         self.dropout = dropout
