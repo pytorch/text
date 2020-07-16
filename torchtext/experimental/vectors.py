@@ -112,7 +112,6 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    # tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path)
     tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), 5)
 
     if dup_tokens:
