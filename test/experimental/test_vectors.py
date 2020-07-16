@@ -187,17 +187,17 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = FastText(root=dir_name, validate_file=False)
-            # jit_vectors_obj = torch.jit.script(vectors_obj)
+            jit_vectors_obj = torch.jit.script(vectors_obj)
 
-            # # The first 3 entries in each vector.
-            # expected_fasttext_simple_en = {
-            #     'the': [-0.065334, -0.093031, -0.017571],
-            #     'world': [-0.32423, -0.098845, -0.0073467],
-            # }
+            # The first 3 entries in each vector.
+            expected_fasttext_simple_en = {
+                'the': [-0.065334, -0.093031, -0.017571],
+                'world': [-0.32423, -0.098845, -0.0073467],
+            }
 
-            # for word in expected_fasttext_simple_en.keys():
-            #     self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
-            #     self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
+            for word in expected_fasttext_simple_en.keys():
+                self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
+                self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
     # TODO (Nayef211): reenable test once the GloVe dataset url starts working
     # def test_glove(self):
