@@ -3,11 +3,26 @@ from torchtext.data.functional import load_sp_model
 from torchtext.experimental.vocab import Vocab
 from typing import List
 from collections import OrderedDict
+import torch
+
+
+class TextDataPipeline(nn.Module):
+    r"""Text data pipeline template
+    """
+
+    def __init__(self, tokenizer, vocab):
+        super(TextDataPipeline, self).__init__()
+        self.tokenizer = tokenizer
+        self.vocab = vocab
+
+    def forward(self, line: str) -> List[int]:
+        tokens = self.tokenizer(line)
+        index = self.vocab(tokens)
+        return index
 
 
 class PretrainedSPTokenizer(nn.Module):
     r"""Tokenizer based on a pretained sentencepiece model
-
     """
 
     def __init__(self, spm_file):
@@ -24,7 +39,6 @@ class PretrainedSPTokenizer(nn.Module):
 
 class PretrainedSPVocab(nn.Module):
     r"""Vocab based on a pretained sentencepiece model
-
     """
 
     def __init__(self, spm_file):
