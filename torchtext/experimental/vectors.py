@@ -32,7 +32,6 @@ def _infer_shape(f, delimiter=" "):
         else:
             num_lines += 1
     f.seek(0)
-    print("numlines, vector dim", num_lines, vector_dim)
     return num_lines, vector_dim
 
 

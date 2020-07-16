@@ -31,8 +31,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stovec_.reserve(tokens.size());
@@ -168,7 +168,7 @@ void _load_tokens_from_file_chunk(const std::string &file_path,
     }
 
     if (vec_float.size() == 1) {
-      std::cout << "Skipping token " << token
+      std::cerr << "[WARNING] Skipping token " << token
                 << " with 1-dimensional vector ; likely a header" << std::endl;
       continue;
     } else if (vector_dim != static_cast<int64_t>(vec_float.size())) {
@@ -194,10 +194,10 @@ void _load_tokens_from_file_chunk(const std::string &file_path,
       tokens, vectors.narrow(0, 0, num_vecs_loaded), dup_tokens));
 }
 
-void concat_loaded_vectors_tuples(std::vector<LoadedVectorsTuple> &tuples,
-                                  const int64_t num_lines,
-                                  const int64_t vector_dim,
-                                  LoadedVectorsTuple *out_tuple) {
+void _concat_loaded_vectors_tuples(std::vector<LoadedVectorsTuple> &tuples,
+                                   const int64_t num_lines,
+                                   const int64_t vector_dim,
+                                   LoadedVectorsTuple *out_tuple) {
   std::vector<std::string> tokens;
   torch::Tensor vectors = torch::zeros({num_lines, vector_dim});
   std::vector<std::string> dup_tokens;
@@ -236,7 +236,7 @@ LoadedVectorsTuple
 _load_token_and_vectors_from_file(const std::string &file_path,
                                   const int64_t delimiter_ascii = 32,
                                   const int64_t num_cpus = 10) {
-  std::cout << "Reading file " << file_path << std::endl;
+  std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
@@ -275,7 +275,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   }
 
   LoadedVectorsTuple out_tuple;
-  concat_loaded_vectors_tuples(tuples, num_lines, vector_dim, &out_tuple);
+  _concat_loaded_vectors_tuples(tuples, num_lines, vector_dim, &out_tuple);
   return out_tuple;
 }
 
@@ -296,9 +296,8 @@ static auto vectors =
         .def("__len__", &Vectors::__len__)
         .def_pickle(
             // __setstate__
-            [](const c10::intrusive_ptr<Vectors> &self)
-                -> std::tuple<std::vector<std::string>, torch::Tensor,
-                              torch::Tensor> {
+            [](const c10::intrusive_ptr<Vectors> &self) -> std::tuple<
+                std::vector<std::string>, torch::Tensor, torch::Tensor> {
               std::tuple<std::vector<std::string>, torch::Tensor, torch::Tensor>
                   states(self->tokens_, self->vectors_, self->unk_tensor_);
               return states;

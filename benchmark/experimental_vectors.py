@@ -20,7 +20,6 @@ def benchmark_experimental_vectors():
         for id in text.tolist():
             tokens.append(vocab.itos[id])
 
-
     # existing FastText construction
     print("Existing FastText - Not Jit Mode")
     t0 = time.monotonic()
