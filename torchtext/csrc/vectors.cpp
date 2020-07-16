@@ -297,9 +297,8 @@ static auto vectors =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vectors> &self)
-                -> std::tuple<
-                std::vector<std::string>, torch::Tensor,
-                            torch::Tensor> {
+                -> std::tuple<std::vector<std::string>, torch::Tensor,
+                              torch::Tensor> {
               std::tuple<std::vector<std::string>, torch::Tensor, torch::Tensor>
                   states(self->tokens_, self->vectors_, self->unk_tensor_);
               return states;
