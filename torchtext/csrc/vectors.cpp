@@ -3,6 +3,7 @@
 #include <torch/script.h>
 
 using c10::Dict;
+using c10::IValue;
 
 namespace torchtext {
 namespace {
@@ -80,8 +81,14 @@ _get_vectors_from_states(std::vector<c10::IValue> states) {
 
   // version string is greater than or equal
   if (states[0].toStringRef().compare("0.0.1") >= 0) {
-    std::vector<std::string> tokens =
-        c10::toTypedList(states[1].toList()).vec();
+    // std::vector<std::string> tokens =
+    //     c10::toTypedList(states[1].toList());
+    // auto tokens = c10::impl::toTypedList().vec();
+    std::vector<std::string> tokens;
+
+    for (c10::IValue token : states[1].toList()) {
+      tokens.push_back(token.toString()->string());
+    }
 
     return c10::make_intrusive<Vectors>(std::move(tokens),
                                         std::move(states[2].toTensor()),
@@ -109,16 +116,28 @@ static auto vectors =
               c10::IValue tokens(self->tokens_);
               c10::IValue vectors(self->vectors_);
               c10::IValue unk_tensor(self->unk_tensor_);
+              // c10::impl::GenericList<c10::IValue> states;
+              std::vector<c10::IValue> states;
+              // auto states = c10::List<c10::IValue>(
+              //     {version_str, tokens, vectors,
+              //     unk_tensor});
 
-              std::vector<c10::IValue> states{
-                  std::move(version_str), std::move(tokens), std::move(vectors),
-                  std::move(unk_tensor)};
+              //       std::vector<c10::IValue> states{
+              // std::move(version_str), std::move(tokens),
+              // std::move(vectors),
+              // std::move(unk_tensor)};
+              // c10::impl::GenericList<c10::IValue> states;
               return states;
             },
             // __getstate__
             [](std::vector<c10::IValue> states) -> c10::intrusive_ptr<Vectors> {
 
-              return _get_vectors_from_states(states);
+              // return _get_vectors_from_states(states);
+
+              return c10::make_intrusive<Vectors>(
+                  std::move(std::vector<std::string>{}),
+                  std::move(states[2].toTensor()),
+                  std::move(states[3].toTensor()));
             });
 // .def_pickle(
 //     // __setstate__
