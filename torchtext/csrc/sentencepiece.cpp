@@ -50,6 +50,17 @@ public:
   }
 
   int64_t GetPieceSize() const { return processor_.GetPieceSize(); }
+
+  int64_t unk_id() const { return processor_.unk_id(); }
+
+  int64_t PieceToId(const std::string &piece) const {
+    return processor_.PieceToId(piece);
+  }
+
+  std::string IdToPiece(const int64_t id) const {
+    return processor_.IdToPiece(id);
+  }
+
 };
 
 // Registers our custom class with torch.
@@ -59,6 +70,9 @@ static auto sentencepiece =
         .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
         .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
         .def("GetPieceSize", &SentencePiece::GetPieceSize)
+        .def("unk_id", &SentencePiece::unk_id)
+        .def("PieceToId", &SentencePiece::PieceToId)
+        .def("IdToPiece", &SentencePiece::IdToPiece)
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<SentencePiece> &self) -> std::string {
