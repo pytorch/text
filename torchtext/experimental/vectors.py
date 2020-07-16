@@ -1,4 +1,3 @@
-import csv
 import logging
 import os
 
@@ -6,6 +5,7 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from tqdm import tqdm
+from typing import List
 
 from torchtext.utils import (
     download_from_url,
@@ -15,12 +15,15 @@ from torchtext.utils import (
 logger = logging.getLogger(__name__)
 
 
-def _infer_shape(f):
+def _infer_shape(f, delimiter=" "):
     num_lines, vector_dim = 0, None
     for line in f:
         if vector_dim is None:
-            row = line.rstrip().split(b" ")
-            vector = row[1:]
+            # token and entries are seperated by delimeter
+            token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
+            # we assume entries are always seperated by " "
+            vector = entries.split(b" ")
+
             # Assuming word, [vector] format
             if len(vector) > 2:
                 # The header present in some (w2v) formats contains two elements.
@@ -32,13 +35,32 @@ def _infer_shape(f):
     return num_lines, vector_dim
 
 
-def _load_token_and_vectors_from_file(file_path):
-    stoi, tokens, vectors, dup_tokens = {}, [], [], []
+def _load_token_and_vectors_from_file(file_path, delimiter=" "):
     with open(file_path, "rb") as f:
-        num_lines, _ = _infer_shape(f)
+        num_lines, dim = _infer_shape(f, delimiter=delimiter)
+        stoi, tokens, vectors, dup_tokens = {}, [], [], []
+
+        vectors = torch.zeros((num_lines, dim))
+        vectors_loaded = 0
+
         for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
-            token, entries = line.rstrip().split(b" ", 1)
-            vector = torch.tensor([float(c) for c in entries.split(b" ")], dtype=torch.float)
+            # token and entries are seperated by delimeter
+            token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
+            # we assume entries are always seperated by " "
+            entries = entries.split(b" ")
+
+            if dim is None and len(entries) > 1:
+                dim = len(entries)
+            elif len(entries) == 1:
+                logger.warning("Skipping token {} with 1-dimensional "
+                               "vector {}; likely a header".format(token, entries))
+                continue
+            elif dim != len(entries):
+                raise RuntimeError(
+                    "Vector for token {} has {} dimensions, but previously "
+                    "read vectors have {} dimensions. All vectors must have "
+                    "the same number of dimensions.".format(token, len(entries),
+                                                            dim))
             try:
                 if isinstance(token, bytes):
                     token = token.decode("utf-8")
@@ -47,12 +69,14 @@ def _load_token_and_vectors_from_file(file_path):
                 continue
 
             if token in stoi:
-                dup_tokens.append(token, len(vectors) + 1)
+                dup_tokens.append((token, len(vectors) + 1))
                 continue
 
             stoi[token] = len(vectors)
             tokens.append(token)
-            vectors.append(vector)
+            vectors[vectors_loaded] = torch.tensor([float(c) for c in entries], dtype=torch.float)
+            vectors_loaded += 1
+        vectors = vectors[:vectors_loaded]
     return tokens, vectors, dup_tokens
 
 
@@ -79,7 +103,8 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
 
     cached_vectors_file_path = os.path.join(root, file_name + ".pt")
     if os.path.isfile(cached_vectors_file_path):
-        return(torch.load(cached_vectors_file_path))
+        logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
+        return torch.load(cached_vectors_file_path)
 
     checksum = None
     if validate_file:
@@ -131,11 +156,11 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
         ValueError: if unexpected duplicate tokens are found in GloVe file.
 
     """
-    dup_token_glove_840b = ("����������������������������������������������������������������������"
-                            "����������������������������������������������������������������������"
-                            "����������������������������������������������������������������������"
-                            "����������������������������������������������������������������������"
-                            "������������������������������������������������������", 140649)
+    dup_token_glove_840b = [("����������������������������������������������������������������������"
+                             "����������������������������������������������������������������������"
+                             "����������������������������������������������������������������������"
+                             "����������������������������������������������������������������������"
+                             "������������������������������������������������������", 140649)]
     urls = {
         "42B": "https://nlp.stanford.edu/data/glove.42B.300d.zip",
         "840B": "https://nlp.stanford.edu/data/glove.840B.300d.zip",
@@ -163,7 +188,8 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     url = urls[name]
     cached_vectors_file_path = os.path.join(root, file_name + '.pt')
     if os.path.isfile(cached_vectors_file_path):
-        return(torch.load(cached_vectors_file_path))
+        logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
+        return torch.load(cached_vectors_file_path)
 
     checksum = None
     if validate_file:
@@ -176,43 +202,40 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
-    if dup_tokens:
-        if not (len(dup_tokens) == 1 and dup_tokens[0] == dup_token_glove_840b[0] and
-           dup_tokens[1] == dup_token_glove_840b[1]):
-            raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
+    if dup_tokens and dup_tokens != dup_token_glove_840b:
+        raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 
-def vectors_from_file_object(file_like_object, unk_tensor=None):
+def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None):
     r"""Create a Vectors object from a csv file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
 
     Format for csv file:
-        token1,num1 num2 num3
-        token2,num4 num5 num6
+        token1<delimiter>num1 num2 num3
+        token2<delimiter>num4 num5 num6
         ...
-        token_n,num_m num_j num_k
+        token_n<delimiter>num_m num_j num_k
 
     Args:
         file_like_object (FileObject): a file like object to read data from.
+        delimiter (char): a character to delimit between the token and the vector. Default value is ","
         unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
 
     Returns:
         Vectors: a Vectors object.
 
+     Raises:
+        ValueError: if duplicate tokens are found in FastText file.
+
     """
-    readCSV = csv.reader(file_like_object, delimiter=",")
-
-    tokens = []
-    vectors = []
-    for row in readCSV:
-        tokens.append(row[0])
-        vectors.append(torch.tensor([float(c) for c in row[1].split()], dtype=torch.float))
-
+    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name, delimiter=delimiter)
+    if dup_tokens:
+        raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     return Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
 
@@ -221,7 +244,7 @@ class Vectors(nn.Module):
 
     Arguments:
         tokens (List[str]): a list of tokens.
-        vectors (List[torch.Tensor]): a list of 1d tensors representing the vector associated with each token.
+        vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
 
     Raises:
@@ -233,14 +256,13 @@ class Vectors(nn.Module):
     def __init__(self, tokens, vectors, unk_tensor=None):
         super(Vectors, self).__init__()
 
-        if unk_tensor is None and not vectors:
+        if unk_tensor is None and (vectors is None or not len(vectors)):
             raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
 
-        if not all(vector.dtype == torch.float for vector in vectors):
-            raise TypeError("All tensors within `vectors` should be of data type `torch.float`.")
+        if not vectors.dtype == torch.float:
+            raise TypeError("`vectors` should be of data type `torch.float`.")
 
         unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-
         self.vectors = torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor)
 
     @torch.jit.export
@@ -251,10 +273,10 @@ class Vectors(nn.Module):
         Returns:
             vector (Tensor): a tensor (the vector) corresponding to the associated token.
         """
-        return self.vectors.GetItem(token)
+        return self.vectors[token]
 
     @torch.jit.export
-    def __setitem__(self, token: str, vector: Tensor):
+    def __setitem__(self, token: str, vector: Tensor) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding vector.
@@ -266,7 +288,35 @@ class Vectors(nn.Module):
         if vector.dtype != torch.float:
             raise TypeError("`vector` should be of data type `torch.float` but it's of type " + vector.dtype)
 
-        self.vectors.AddItem(token, vector.float())
+        self.vectors[token] = vector.float()
+
+    @torch.jit.export
+    def __len__(self) -> int:
+        r"""Get length of vectors object.
+
+        Returns:
+            length (int): the length of the vectors.
+        """
+        return len(self.vectors)
+
+    @torch.jit.export
+    def lookup_vectors(self, tokens: List[str]) -> Tensor:
+        """Look up embedding vectors for a list of tokens.
+        Arguments:
+            tokens: a list of tokens
+
+        Returns:
+            vectors (Tensor): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
+
+        Examples:
+            >>> examples = ['chip', 'baby', 'Beautiful']
+            >>> vec = text.vocab.GloVe(name='6B', dim=50)
+            >>> ret = vec.get_vectors_by_tokens(tokens)
+        """
+        if not len(tokens):
+            return torch.empty(0, 0)
+
+        return self.vectors.lookup_vectors(tokens)
 
 
 CHECKSUMS_GLOVE = {
