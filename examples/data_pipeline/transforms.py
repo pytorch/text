@@ -46,9 +46,8 @@ class PretrainedSPVocab(nn.Module):
         self.sp_model = load_sp_model(spm_file)
         unk_id = self.sp_model.unk_id()
         unk_token = self.sp_model.IdToPiece(unk_id)
-        vocab_list = [self.sp_model.IdToPiece(i) for i in range(unk_id + 1, self.sp_model.GetPieceSize())]
-        self.vocab = Vocab(OrderedDict([(token, 1) for token in vocab_list]), unk_token=unk_token,
-                           specials=tuple([self.sp_model.IdToPiece(i) for i in range(unk_id + 1)]))
+        vocab_list = [self.sp_model.IdToPiece(i) for i in range(self.sp_model.GetPieceSize())]
+        self.vocab = Vocab(OrderedDict([(token, 1) for token in vocab_list]), unk_token=unk_token)
 
     def forward(self, tokens: List[str]) -> List[int]:
         return self.vocab.lookup_indices(tokens)

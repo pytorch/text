@@ -8,6 +8,7 @@ from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
 )
 from torchtext.experimental.vocab import vocab_from_file_object
+from torchtext.experimental.vectors import FastText
 
 
 tokenizer = PretrainedSPTokenizer('m_user.model')
@@ -40,3 +41,13 @@ print('jit HF vocab success!')
 pipeline2 = TextDataPipeline(tokenizer, vocab.lookup_indices)
 print(pipeline2('here is an example'))
 print('pipeline2 success!')
+
+f = open('vocab.txt', 'r')
+vector = FastText()
+jit_vocab = torch.jit.script(vector)
+print('jit FastText vector success!')
+
+# Insert token in vocab to match a pretrained vocab
+pipeline3 = TextDataPipeline(tokenizer, vector.lookup_vectors)
+print(pipeline3('here is an example'))
+print('pipeline3 success!')
