@@ -110,7 +110,7 @@ std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
     vec_str.clear();
     if (vector_dim == -1) {
       _trim(line);
-      std::stringstream s(line);
+      std::istringstream s(line);
 
       // get rid of the token
       std::getline(s, word, static_cast<char>(delimiter_ascii));
@@ -165,7 +165,7 @@ void _load_tokens_from_file_chunk(
 
     std::getline(fin, line);
     _trim(line);
-    std::stringstream s(line);
+    std::istringstream s(line);
 
     // read the token
     std::getline(s, token, static_cast<char>(delimiter_ascii));
@@ -214,6 +214,7 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedChunkVectorsTuple> &tuples,
 
   tokens.reserve(num_lines);
   vectors_float.reserve(num_lines);
+  tokens_set.reserve(num_lines);
 
   // concat all loaded tuples
   for (size_t i = 0; i < tuples.size(); i++) {
@@ -222,26 +223,29 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedChunkVectorsTuple> &tuples,
     auto &&subset_dup_tokens = std::move(std::get<2>(tuples[i]));
     int64_t num_subset_vecs_loaded = 0;
 
-    // efficient vector concatenation
+    // efficient dup tokens concatenation
     std::move(subset_dup_tokens.begin(), subset_dup_tokens.end(),
               std::back_inserter(dup_tokens));
 
-    // process tokens from each tuple
+    // finding dup tokens
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_set.find(subset_tokens[j]) != tokens_set.end()) {
         dup_tokens.push_back(subset_tokens[j]);
-        // remove the dup vec
+        // remove the dup token and vec
+        subset_tokens.erase(subset_tokens.begin() + num_subset_vecs_loaded);
         subset_vectors.erase(subset_vectors.begin() + num_subset_vecs_loaded);
         continue;
       }
-
       tokens_set.insert(subset_tokens[j]);
-      tokens.push_back(subset_tokens[j]);
       num_subset_vecs_loaded++;
     }
 
+    // efficient tokens concatenation
+    std::move(subset_tokens.begin(), subset_tokens.end(),
+              std::back_inserter(tokens));
+
+    // efficient vectors concatenation
     for (auto &subset_vector : subset_vectors) {
-      // efficient vector concatenation
       std::move(subset_vector.begin(), subset_vector.end(),
                 std::back_inserter(vectors_float));
     }
