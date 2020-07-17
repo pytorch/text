@@ -1,10 +1,12 @@
 from collections import OrderedDict
 import logging
 from typing import Dict, List
+import warnings
 
 import torch
 import torch.nn as nn
 from tqdm import tqdm
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +40,7 @@ def vocab_from_file_object(file_like_object, **kwargs):
 
     Examples:
         >>> from torchtext.experimental.vocab import vocab_from_file_object
-        >>> f = open('vocab.csv', 'r')
+        >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file_object(f, specials=('<unk>', '<pad>', '<eos>'), specials_first=False)
     """
     ordered_dict = OrderedDict()
@@ -94,9 +96,8 @@ class Vocab(nn.Module):
 
         if unk_token not in tokens:
             tokens.append(unk_token)
-            logger.warning("The `unk_token` '{}' wasn't found in the `ordered_dict`."
-                           "Adding the `unk_token` to the end of the Vocab.".format(unk_token))
-
+            warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
+                          "to the end of the Vocab.".format(unk_token), RuntimeWarning)
         self.vocab = torch.classes.torchtext.Vocab(tokens, unk_token)
 
     @torch.jit.export
