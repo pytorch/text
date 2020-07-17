@@ -175,6 +175,6 @@ static auto vocab =
               return _get_vocab_from_states(states);
 
             });
-            
+
 } // namespace
 } // namespace torchtext
