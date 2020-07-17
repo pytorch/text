@@ -12,6 +12,9 @@ from torchtext.utils import (
     extract_archive
 )
 
+import time
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -80,7 +83,7 @@ def _load_token_and_vectors_from_file(file_path, delimiter=" "):
     return tokens, vectors, dup_tokens
 
 
-def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
+def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=1):
     r"""Create a FastText Vectors object.
 
     Args:
@@ -115,8 +118,11 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
-
+    
+    t0 = time.monotonic()
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
+    print("Cpp Vocab construnction time:", time.monotonic() - t0)
+
     # torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
