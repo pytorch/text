@@ -87,8 +87,8 @@ void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
                        const std::string &model_prefix) {
   const auto status = ::sentencepiece::SentencePieceTrainer::Train(
       "--input=" + filename + " --model_prefix=" + model_prefix +
-      " --vocab_size=" + std::to_string(vocab_size) + " --model_type=" +
-      model_type);
+      " --vocab_size=" + std::to_string(vocab_size) +
+      " --model_type=" + model_type);
   if (!status.ok()) {
     throw std::runtime_error("Failed to train SentencePiece model. Error: " +
                              status.ToString());
