@@ -7,6 +7,10 @@ namespace {
 
 using c10::Dict;
 
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
+                   std::vector<torch::Tensor>>
+    VocabStates;
+
 struct Vocab : torch::CustomClassHolder {
 private:
   int64_t unk_index_;
@@ -111,6 +115,34 @@ public:
   std::vector<std::string> get_itos() const { return itos_; }
 };
 
+c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
+  auto state_size = std::tuple_size<decltype(states)>::value;
+  if (state_size == 0) {
+    throw std::runtime_error(
+        "Expected deserialized Vocab to have a version string.");
+  } else if (state_size != 4) {
+    throw std::runtime_error(
+        "Expected deserialized Vocab to have 4 states but found only " +
+        std::to_string(state_size) + " states.");
+  }
+
+  auto &version_str = std::get<0>(states);
+  // auto &integers = std::get<1>(states);
+  auto &strings = std::get<2>(states);
+  // auto &tensors = std::get<3>(states);
+
+  // version string is greater than or equal
+  if (version_str.compare("0.0.1") >= 0) {
+    std::string unk_token = strings.back();
+    strings.pop_back(); // remove last element which is unk_token
+
+    return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
+  }
+
+  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
+                           version_str + ".");
+}
+
 // Registers our custom class with torch.
 static auto vocab =
     torch::class_<Vocab>("torchtext", "Vocab")
@@ -126,17 +158,23 @@ static auto vocab =
         .def("get_itos", &Vocab::get_itos)
         .def_pickle(
             // __setstate__
-            [](const c10::intrusive_ptr<Vocab> &self)
-                -> std::tuple<std::vector<std::string>, std::string> {
-              std::tuple<std::vector<std::string>, std::string> states(
-                  self->itos_, self->unk_token_);
+            [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
+              std::string version_str = "0.0.1";
+              std::vector<int64_t> integers;
+              std::vector<std::string> strings = self->itos_;
+              strings.push_back(self->unk_token_);
+              std::vector<torch::Tensor> tensors;
+
+              VocabStates states =
+                  std::make_tuple(version_str, std::move(integers),
+                                  std::move(strings), std::move(tensors));
               return states;
             },
             // __getstate__
-            [](std::tuple<std::vector<std::string>, std::string> states)
-                -> c10::intrusive_ptr<Vocab> {
-              return c10::make_intrusive<Vocab>(std::move(std::get<0>(states)),
-                                                std::move(std::get<1>(states)));
+            [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
+              return _get_vocab_from_states(states);
+
             });
+            
 } // namespace
 } // namespace torchtext
