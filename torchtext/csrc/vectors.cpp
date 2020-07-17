@@ -20,7 +20,7 @@ typedef std::tuple<std::vector<std::string>, torch::Tensor,
                    std::vector<std::string>>
     LoadedVectorsTuple;
 
-typedef std::tuple<std::vector<std::string>, std::vector<torch::Tensor>,
+typedef std::tuple<std::vector<std::string>, std::vector<std::vector<float>>,
                    std::vector<std::string>>
     LoadedChunkVectorsTuple;
 
@@ -145,7 +145,7 @@ void _load_tokens_from_file_chunk(
   fin.open(file_path, std::ios::in);
 
   std::vector<std::string> tokens;
-  std::vector<torch::Tensor> vectors;
+  std::vector<std::vector<float>> vectors;
   std::vector<float> vec_float;
   std::vector<std::string> dup_tokens;
   std::unordered_set<std::string> tokens_set;
@@ -195,7 +195,7 @@ void _load_tokens_from_file_chunk(
 
     tokens_set.insert(token);
     tokens.push_back(token);
-    vectors.push_back(torch::tensor(vec_float));
+    vectors.push_back(std::move(vec_float));
     num_vecs_loaded++;
   }
 
@@ -207,11 +207,13 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedChunkVectorsTuple> &tuples,
                                    const int64_t vector_dim,
                                    LoadedVectorsTuple *out_tuple) {
   std::vector<std::string> tokens;
-  torch::Tensor vectors = torch::zeros({0, vector_dim});
+  std::vector<float> vectors_float;
+  torch::Tensor vectors;
   std::vector<std::string> dup_tokens;
   std::unordered_set<std::string> tokens_set;
 
   tokens.reserve(num_lines);
+  vectors_float.reserve(num_lines);
 
   // concat all loaded tuples
   for (size_t i = 0; i < tuples.size(); i++) {
@@ -220,8 +222,9 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedChunkVectorsTuple> &tuples,
     auto &&subset_dup_tokens = std::move(std::get<2>(tuples[i]));
     int64_t num_subset_vecs_loaded = 0;
 
-    dup_tokens.insert(dup_tokens.end(), subset_dup_tokens.begin(),
-                      subset_dup_tokens.end());
+    // efficient vector concatenation
+    std::move(subset_dup_tokens.begin(), subset_dup_tokens.end(),
+              std::back_inserter(dup_tokens));
 
     // process tokens from each tuple
     for (size_t j = 0; j < subset_tokens.size(); j++) {
@@ -237,13 +240,16 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedChunkVectorsTuple> &tuples,
       num_subset_vecs_loaded++;
     }
 
-    // don't cat empty tensor
-    if (subset_vectors.size() > 0) {
-      vectors = torch::cat({vectors, torch::stack(subset_vectors, /*dim=*/0)},
-                           /*dim=*/0);
+    for (auto &subset_vector : subset_vectors) {
+      // efficient vector concatenation
+      std::move(subset_vector.begin(), subset_vector.end(),
+                std::back_inserter(vectors_float));
     }
   }
-  *out_tuple = std::make_tuple(tokens, vectors, dup_tokens);
+  // construct the vectors tensor
+  vectors = torch::tensor(vectors_float).reshape({-1, vector_dim});
+  *out_tuple = std::make_tuple(std::move(tokens), std::move(vectors),
+                               std::move(dup_tokens));
 }
 
 LoadedVectorsTuple
