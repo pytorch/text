@@ -8,6 +8,10 @@ using c10::IValue;
 namespace torchtext {
 namespace {
 
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
+                   std::vector<torch::Tensor>>
+    VectorsStates;
+
 struct Vectors : torch::CustomClassHolder {
 public:
   Dict<std::string, torch::Tensor> stovec_;
@@ -71,32 +75,30 @@ public:
   int64_t __len__() { return stovec_.size(); }
 };
 
-c10::intrusive_ptr<Vectors>
-_get_vectors_from_states(std::vector<c10::IValue> states) {
-  if (states.size() <= 1) {
-    throw std::runtime_error("Expected deserialized Vectors to have 2 or "
-                             "more states but found only " +
-                             std::to_string(states.size()) + " states.");
+c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
+  auto state_size = std::tuple_size<decltype(states)>::value;
+  if (state_size == 0) {
+    throw std::runtime_error(
+        "Expected deserialized Vectors to have a version string.");
+  } else if (state_size != 4) {
+    throw std::runtime_error(
+        "Expected deserialized Vectors to have 4 states but found only " +
+        std::to_string(state_size) + " states.");
   }
 
+  auto &version_str = std::get<0>(states);
+  // auto &integers = std::get<1>(states);
+  auto &strings = std::get<2>(states);
+  auto &tensors = std::get<3>(states);
+
   // version string is greater than or equal
-  if (states[0].toStringRef().compare("0.0.1") >= 0) {
-    // std::vector<std::string> tokens =
-    //     c10::toTypedList(states[1].toList());
-    // auto tokens = c10::impl::toTypedList().vec();
-    std::vector<std::string> tokens;
-
-    for (c10::IValue token : states[1].toList()) {
-      tokens.push_back(token.toString()->string());
-    }
-
-    return c10::make_intrusive<Vectors>(std::move(tokens),
-                                        std::move(states[2].toTensor()),
-                                        std::move(states[3].toTensor()));
+  if (version_str.compare("0.0.1") >= 0) {
+    return c10::make_intrusive<Vectors>(
+        std::move(strings), std::move(tensors[0]), std::move(tensors[1]));
   }
 
   throw std::runtime_error("Found unexpected version for serialized Vector: " +
-                           states[0].toStringRef() + ".");
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
@@ -110,52 +112,23 @@ static auto vectors =
         .def("__len__", &Vectors::__len__)
         .def_pickle(
             // __setstate__
-            [](const c10::intrusive_ptr<Vectors> &self)
-                -> std::vector<c10::IValue> {
-              c10::IValue version_str("0.0.1");
-              c10::IValue tokens(self->tokens_);
-              c10::IValue vectors(self->vectors_);
-              c10::IValue unk_tensor(self->unk_tensor_);
-              // c10::impl::GenericList<c10::IValue> states;
-              std::vector<c10::IValue> states;
-              // auto states = c10::List<c10::IValue>(
-              //     {version_str, tokens, vectors,
-              //     unk_tensor});
+            [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
+              std::string version_str = "0.0.1";
+              std::vector<int64_t> integers;
+              std::vector<std::string> strings = self->tokens_;
+              std::vector<torch::Tensor> tensors{self->vectors_,
+                                                 self->unk_tensor_};
+              VectorsStates states =
+                  std::make_tuple(version_str, std::move(integers),
+                                  std::move(strings), std::move(tensors));
 
-              //       std::vector<c10::IValue> states{
-              // std::move(version_str), std::move(tokens),
-              // std::move(vectors),
-              // std::move(unk_tensor)};
-              // c10::impl::GenericList<c10::IValue> states;
               return states;
             },
             // __getstate__
-            [](std::vector<c10::IValue> states) -> c10::intrusive_ptr<Vectors> {
+            [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
 
-              // return _get_vectors_from_states(states);
-
-              return c10::make_intrusive<Vectors>(
-                  std::move(std::vector<std::string>{}),
-                  std::move(states[2].toTensor()),
-                  std::move(states[3].toTensor()));
+              return _get_vectors_from_states(states);
             });
-// .def_pickle(
-//     // __setstate__
-//     [](const c10::intrusive_ptr<Vectors> &self) -> std::tuple<
-//         std::vector<std::string>, torch::Tensor, torch::Tensor> {
-//       std::tuple<std::vector<std::string>, torch::Tensor, torch::Tensor>
-//           states(self->tokens_, self->vectors_, self->unk_tensor_);
-//       return states;
-//     },
-//     // __getstate__
-//     [](std::tuple<std::vector<std::string>, torch::Tensor,
-//                   torch::Tensor>
-//            states) -> c10::intrusive_ptr<Vectors> {
-//       return c10::make_intrusive<Vectors>(
-//           std::move(std::get<0>(states)),
-//           std::move(std::get<1>(states)),
-//           std::move(std::get<2>(states)));
-//     });
 
 } // namespace
 } // namespace torchtext
