@@ -6,6 +6,11 @@
 #include <thread>
 #include <torch/script.h>
 
+// timing
+#include <chrono>
+#include <ctime>
+#include <ratio>
+
 using c10::Dict;
 
 namespace torchtext {
@@ -14,6 +19,10 @@ namespace {
 typedef std::tuple<std::vector<std::string>, torch::Tensor,
                    std::vector<std::string>>
     LoadedVectorsTuple;
+
+typedef std::tuple<std::vector<std::string>, std::vector<torch::Tensor>,
+                   std::vector<std::string>>
+    LoadedChunkVectorsTuple;
 
 struct Vectors : torch::CustomClassHolder {
 public:
@@ -127,24 +136,24 @@ std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
   return std::make_pair(num_lines, vector_dim);
 }
 
-void _load_tokens_from_file_chunk(const std::string &file_path,
-                                  const int64_t start_line,
-                                  const int64_t num_lines,
-                                  const int64_t vector_dim,
-                                  const int64_t delimiter_ascii,
-                                  std::promise<LoadedVectorsTuple> &&promise) {
+void _load_tokens_from_file_chunk(
+    const std::string &file_path, const int64_t start_line,
+    const int64_t num_lines, const int64_t vector_dim,
+    const int64_t delimiter_ascii,
+    std::promise<LoadedChunkVectorsTuple> &&promise) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
 
   std::vector<std::string> tokens;
-  tokens.reserve(num_lines);
-  torch::Tensor vectors = torch::zeros({num_lines, vector_dim});
+  std::vector<torch::Tensor> vectors;
   std::vector<float> vec_float;
   std::vector<std::string> dup_tokens;
   std::unordered_set<std::string> tokens_set;
-
   std::string line, token, vec_val;
   int64_t num_vecs_loaded = 0;
+
+  tokens.reserve(num_lines);
+  vectors.reserve(num_lines);
 
   // get to line we care about
   for (int64_t i = 0; i < start_line; i++) {
@@ -186,23 +195,21 @@ void _load_tokens_from_file_chunk(const std::string &file_path,
 
     tokens_set.insert(token);
     tokens.push_back(token);
-    vectors[num_vecs_loaded] = torch::tensor(vec_float);
+    vectors.push_back(torch::tensor(vec_float));
     num_vecs_loaded++;
   }
 
-  promise.set_value(std::make_tuple(
-      tokens, vectors.narrow(0, 0, num_vecs_loaded), dup_tokens));
+  promise.set_value(std::make_tuple(tokens, vectors, dup_tokens));
 }
 
-void _concat_loaded_vectors_tuples(std::vector<LoadedVectorsTuple> &tuples,
+void _concat_loaded_vectors_tuples(std::vector<LoadedChunkVectorsTuple> &tuples,
                                    const int64_t num_lines,
                                    const int64_t vector_dim,
                                    LoadedVectorsTuple *out_tuple) {
   std::vector<std::string> tokens;
-  torch::Tensor vectors = torch::zeros({num_lines, vector_dim});
+  torch::Tensor vectors = torch::zeros({0, vector_dim});
   std::vector<std::string> dup_tokens;
   std::unordered_set<std::string> tokens_set;
-  int64_t num_vecs_loaded = 0;
 
   tokens.reserve(num_lines);
 
@@ -211,6 +218,7 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedVectorsTuple> &tuples,
     auto &&subset_tokens = std::move(std::get<0>(tuples[i]));
     auto &&subset_vectors = std::move(std::get<1>(tuples[i]));
     auto &&subset_dup_tokens = std::move(std::get<2>(tuples[i]));
+    int64_t num_subset_vecs_loaded = 0;
 
     dup_tokens.insert(dup_tokens.end(), subset_dup_tokens.begin(),
                       subset_dup_tokens.end());
@@ -219,23 +227,29 @@ void _concat_loaded_vectors_tuples(std::vector<LoadedVectorsTuple> &tuples,
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_set.find(subset_tokens[j]) != tokens_set.end()) {
         dup_tokens.push_back(subset_tokens[j]);
+        // remove the dup vec
+        subset_vectors.erase(subset_vectors.begin() + num_subset_vecs_loaded);
         continue;
       }
 
       tokens_set.insert(subset_tokens[j]);
       tokens.push_back(subset_tokens[j]);
-      vectors[num_vecs_loaded] = subset_vectors[j];
-      num_vecs_loaded++;
+      num_subset_vecs_loaded++;
+    }
+
+    // don't cat empty tensor
+    if (subset_vectors.size() > 0) {
+      vectors = torch::cat({vectors, torch::stack(subset_vectors, /*dim=*/0)},
+                           /*dim=*/0);
     }
   }
-  *out_tuple = std::make_tuple(tokens, vectors.narrow(0, 0, num_vecs_loaded),
-                               dup_tokens);
+  *out_tuple = std::make_tuple(tokens, vectors, dup_tokens);
 }
 
 LoadedVectorsTuple
 _load_token_and_vectors_from_file(const std::string &file_path,
                                   const int64_t delimiter_ascii = 32,
-                                  const int64_t num_cpus = 10) {
+                                  int64_t num_cpus = 10) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
   std::ifstream fin;
@@ -246,17 +260,19 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   int64_t num_lines = num_lines_and_vector_dim_pair.first;
   int64_t vector_dim = num_lines_and_vector_dim_pair.second;
 
+  // guard against num_lines being smaller than num_cpus
+  num_cpus = std::min(num_lines, num_cpus);
   // need chunk size large enough to read entire file
   int64_t chunk_size = num_lines / num_cpus + 1;
 
-  std::vector<std::future<LoadedVectorsTuple>> futures;
+  std::vector<std::future<LoadedChunkVectorsTuple>> futures;
   std::vector<std::thread> threads;
-  std::vector<LoadedVectorsTuple> tuples;
+  std::vector<LoadedChunkVectorsTuple> tuples;
 
   // create threads
   for (int64_t i = 0; i < num_cpus; i++) {
-    std::promise<LoadedVectorsTuple> p;
-    std::future<LoadedVectorsTuple> f = p.get_future();
+    std::promise<LoadedChunkVectorsTuple> p;
+    std::future<LoadedChunkVectorsTuple> f = p.get_future();
     futures.push_back(std::move(f));
     threads.push_back(
         std::thread(_load_tokens_from_file_chunk, file_path, i * chunk_size,
@@ -274,8 +290,19 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     tuples.push_back(std::move(futures[i].get()));
   }
 
+  std::chrono::high_resolution_clock::time_point t1 =
+      std::chrono::high_resolution_clock::now();
+
   LoadedVectorsTuple out_tuple;
   _concat_loaded_vectors_tuples(tuples, num_lines, vector_dim, &out_tuple);
+
+  std::chrono::high_resolution_clock::time_point t2 =
+      std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_span =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+  std::cout << "Concat function time: " << time_span.count() << " seconds."
+            << std::endl;
+
   return out_tuple;
 }
 

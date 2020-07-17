@@ -80,7 +80,7 @@ def _load_token_and_vectors_from_file(file_path, delimiter=" "):
     return tokens, vectors, dup_tokens
 
 
-def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
+def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
     r"""Create a FastText Vectors object.
 
     Args:
@@ -111,13 +111,13 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True):
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), 1)
+    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), 10)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-    torch.save(vectors_obj, cached_vectors_file_path)
+    # torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 
