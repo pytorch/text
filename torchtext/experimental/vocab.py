@@ -189,6 +189,6 @@ class Vocab(nn.Module):
     def get_itos(self) -> List[str]:
         r"""
         Returns:
-            stoi (dict): dictionary mapping indices to tokens.
+            itos (dict): dictionary mapping indices to tokens.
         """
         return self.vocab.get_itos()
