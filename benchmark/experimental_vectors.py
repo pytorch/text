@@ -2,7 +2,7 @@ import time
 
 import torch
 from torchtext.experimental.datasets import AG_NEWS
-from torchtext.experimental.vectors import FastText as FastTextExperimental
+from torchtext.experimental.vectors import FastText as FastTextExperimental, GloVe
 from torchtext.vocab import FastText
 
 
@@ -28,11 +28,18 @@ def benchmark_experimental_vectors():
     # _run_benchmark_lookup(tokens, fast_text)
 
     # experimental FastText construction
-    print("FastText Experimental")
-    t0 = time.monotonic()
-    fast_text_experimental = FastTextExperimental(validate_file=False)
-    print("Construction time:", time.monotonic() - t0)
+    # print("FastText Experimental")
+    # t0 = time.monotonic()
+    # fast_text_experimental = FastTextExperimental(validate_file=False)
+    # print("Construction time:", time.monotonic() - t0)
 
+
+    print("Glove Experimental")
+    t0 = time.monotonic()
+    # fast_text_experimental = GloVe(name="42B", dim=300, validate_file=False)
+    # fast_text_experimental = GloVe(name="twitter.27B", dim=25, validate_file=False)
+    fast_text_experimental = GloVe(validate_file=False)
+    print("Construction time:", time.monotonic() - t0)
     # # not jit lookup
     # print("FastText Experimental - Not Jit Mode")
     # _run_benchmark_lookup(tokens, fast_text_experimental)

@@ -18,72 +18,72 @@ import time
 logger = logging.getLogger(__name__)
 
 
-def _infer_shape(f, delimiter=" "):
-    num_lines, vector_dim = 0, None
-    for line in f:
-        if vector_dim is None:
-            # token and entries are seperated by delimeter
-            token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
-            # we assume entries are always seperated by " "
-            vector = entries.split(b" ")
+# def _infer_shape(f, delimiter=" "):
+#     num_lines, vector_dim = 0, None
+#     for line in f:
+#         if vector_dim is None:
+#             # token and entries are seperated by delimeter
+#             token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
+#             # we assume entries are always seperated by " "
+#             vector = entries.split(b" ")
 
-            # Assuming word, [vector] format
-            if len(vector) > 2:
-                # The header present in some (w2v) formats contains two elements.
-                vector_dim = len(vector)
-                num_lines += 1  # First element read
-        else:
-            num_lines += 1
-    f.seek(0)
-    return num_lines, vector_dim
-
-
-def _load_token_and_vectors_from_file(file_path, delimiter=" "):
-    with open(file_path, "rb") as f:
-        num_lines, dim = _infer_shape(f, delimiter=delimiter)
-        stoi, tokens, vectors, dup_tokens = {}, [], [], []
-
-        vectors = torch.zeros((num_lines, dim))
-        vectors_loaded = 0
-
-        for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
-            # token and entries are seperated by delimeter
-            token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
-            # we assume entries are always seperated by " "
-            entries = entries.split(b" ")
-
-            if dim is None and len(entries) > 1:
-                dim = len(entries)
-            elif len(entries) == 1:
-                logger.warning("Skipping token {} with 1-dimensional "
-                               "vector {}; likely a header".format(token, entries))
-                continue
-            elif dim != len(entries):
-                raise RuntimeError(
-                    "Vector for token {} has {} dimensions, but previously "
-                    "read vectors have {} dimensions. All vectors must have "
-                    "the same number of dimensions.".format(token, len(entries),
-                                                            dim))
-            try:
-                if isinstance(token, bytes):
-                    token = token.decode("utf-8")
-            except UnicodeDecodeError:
-                logger.info("Skipping non-UTF8 token {}".format(repr(token)))
-                continue
-
-            if token in stoi:
-                dup_tokens.append((token, len(vectors) + 1))
-                continue
-
-            stoi[token] = len(vectors)
-            tokens.append(token)
-            vectors[vectors_loaded] = torch.tensor([float(c) for c in entries], dtype=torch.float)
-            vectors_loaded += 1
-        vectors = vectors[:vectors_loaded]
-    return tokens, vectors, dup_tokens
+#             # Assuming word, [vector] format
+#             if len(vector) > 2:
+#                 # The header present in some (w2v) formats contains two elements.
+#                 vector_dim = len(vector)
+#                 num_lines += 1  # First element read
+#         else:
+#             num_lines += 1
+#     f.seek(0)
+#     return num_lines, vector_dim
 
 
-def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=1):
+# def _load_token_and_vectors_from_file(file_path, delimiter=" "):
+#     with open(file_path, "rb") as f:
+#         num_lines, dim = _infer_shape(f, delimiter=delimiter)
+#         stoi, tokens, vectors, dup_tokens = {}, [], [], []
+
+#         vectors = torch.zeros((num_lines, dim))
+#         vectors_loaded = 0
+
+#         for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
+#             # token and entries are seperated by delimeter
+#             token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
+#             # we assume entries are always seperated by " "
+#             entries = entries.split(b" ")
+
+#             if dim is None and len(entries) > 1:
+#                 dim = len(entries)
+#             elif len(entries) == 1:
+#                 logger.warning("Skipping token {} with 1-dimensional "
+#                                "vector {}; likely a header".format(token, entries))
+#                 continue
+#             elif dim != len(entries):
+#                 raise RuntimeError(
+#                     "Vector for token {} has {} dimensions, but previously "
+#                     "read vectors have {} dimensions. All vectors must have "
+#                     "the same number of dimensions.".format(token, len(entries),
+#                                                             dim))
+#             try:
+#                 if isinstance(token, bytes):
+#                     token = token.decode("utf-8")
+#             except UnicodeDecodeError:
+#                 logger.info("Skipping non-UTF8 token {}".format(repr(token)))
+#                 continue
+
+#             if token in stoi:
+#                 dup_tokens.append((token, len(vectors) + 1))
+#                 continue
+
+#             stoi[token] = len(vectors)
+#             tokens.append(token)
+#             vectors[vectors_loaded] = torch.tensor([float(c) for c in entries], dtype=torch.float)
+#             vectors_loaded += 1
+#         vectors = vectors[:vectors_loaded]
+#     return tokens, vectors, dup_tokens
+
+
+def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
     r"""Create a FastText Vectors object.
 
     Args:
@@ -115,7 +115,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
     tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), num_cpus)
-
+    print(len(tokens), len(vectors), dup_tokens)
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     
@@ -127,7 +127,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
     return vectors_obj
 
 
-def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True):
+def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
     r"""Create a GloVe Vectors object.
 
     Args:
@@ -162,11 +162,11 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
         ValueError: if unexpected duplicate tokens are found in GloVe file.
 
     """
-    dup_token_glove_840b = [("����������������������������������������������������������������������"
+    dup_token_glove_840b = ["����������������������������������������������������������������������"
                              "����������������������������������������������������������������������"
                              "����������������������������������������������������������������������"
                              "����������������������������������������������������������������������"
-                             "������������������������������������������������������", 140649)]
+                             "������������������������������������������������������"]
     urls = {
         "42B": "https://nlp.stanford.edu/data/glove.42B.300d.zip",
         "840B": "https://nlp.stanford.edu/data/glove.840B.300d.zip",
@@ -205,14 +205,14 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     extracted_file_paths = extract_archive(downloaded_file_path)
     # need to get the full path to the correct file in the case when multiple files are extracted with different dims
     extracted_file_path_with_correct_dim = [path for path in extracted_file_paths if file_name in path][0]
-    tokens, vectors, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim)
+    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ord(' '), num_cpus)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens and dup_tokens != dup_token_glove_840b:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-    torch.save(vectors_obj, cached_vectors_file_path)
+    # torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 

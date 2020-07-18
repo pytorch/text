@@ -99,12 +99,15 @@ static inline void _trim(std::string &s) {
           s.end());
 }
 
-std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
-                                         const int64_t delimiter_ascii) {
+std::tuple<int64_t, int64_t, int64_t>
+_infer_shape(const std::string &file_path, const int64_t delimiter_ascii) {
 
-  int64_t num_lines = 0, vector_dim = -1;
+  int64_t num_header_lines = 0, num_lines = 0, vector_dim = -1;
   std::vector<std::string> vec_str;
   std::string line, word;
+
+  std::ifstream fin;
+  fin.open(file_path, std::ios::in);
 
   while (std::getline(fin, line)) {
     vec_str.clear();
@@ -121,7 +124,9 @@ std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
       }
 
       // assuming word, [vector] format
-      if (vec_str.size() > 2) {
+      if (vec_str.size() <= 2) {
+        num_header_lines++;
+      } else if (vec_str.size() > 2) {
         // the header present in some(w2v) formats contains two elements
         vector_dim = vec_str.size();
         num_lines++; // first element read
@@ -130,10 +135,7 @@ std::pair<int64_t, int64_t> _infer_shape(std::ifstream &fin,
       num_lines++;
     }
   }
-  fin.clear();
-  fin.seekg(0, std::ios::beg);
-
-  return std::make_pair(num_lines, vector_dim);
+  return std::make_tuple(num_lines, num_header_lines, vector_dim);
 }
 
 void _load_tokens_from_file_chunk(
@@ -165,22 +167,19 @@ void _load_tokens_from_file_chunk(
 
     std::getline(fin, line);
     _trim(line);
-    std::istringstream s(line);
+    std::istringstream sstrm(std::move(line));
 
     // read the token
-    std::getline(s, token, static_cast<char>(delimiter_ascii));
+    std::getline(sstrm, token, static_cast<char>(delimiter_ascii));
 
     // read every value of the vector and
     // store it in a string variable, 'vec_val'
-    while (std::getline(s, vec_val, ' ')) {
+    for (int64_t i = 0; i < vector_dim; i++) {
+      sstrm >> vec_val;
       vec_float.push_back(std::stof(vec_val));
     }
 
-    if (vec_float.size() == 1) {
-      std::cerr << "[WARNING] Skipping token " << token
-                << " with 1-dimensional vector ; likely a header" << std::endl;
-      continue;
-    } else if (vector_dim != static_cast<int64_t>(vec_float.size())) {
+    if (vector_dim != static_cast<int64_t>(vec_float.size())) {
       throw std::runtime_error(
           "Vector for token " + token + " has " +
           std::to_string(vec_float.size()) +
@@ -189,6 +188,7 @@ void _load_tokens_from_file_chunk(
     }
 
     if (tokens_set.find(token) != tokens_set.end()) {
+
       dup_tokens.push_back(token);
       continue;
     }
@@ -198,7 +198,6 @@ void _load_tokens_from_file_chunk(
     vectors.push_back(std::move(vec_float));
     num_vecs_loaded++;
   }
-
   promise.set_value(std::make_tuple(tokens, vectors, dup_tokens));
 }
 
@@ -262,13 +261,22 @@ _load_token_and_vectors_from_file(const std::string &file_path,
                                   int64_t num_cpus = 10) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
-  std::ifstream fin;
-  fin.open(file_path, std::ios::in);
+  std::chrono::high_resolution_clock::time_point t3 =
+      std::chrono::high_resolution_clock::now();
 
-  std::pair<int64_t, int64_t> num_lines_and_vector_dim_pair =
-      _infer_shape(fin, delimiter_ascii);
-  int64_t num_lines = num_lines_and_vector_dim_pair.first;
-  int64_t vector_dim = num_lines_and_vector_dim_pair.second;
+  std::tuple<int64_t, int64_t, int64_t> num_lines_headers_vector_dim_tuple =
+      _infer_shape(file_path, delimiter_ascii);
+
+  std::chrono::high_resolution_clock::time_point t4 =
+      std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_span1 =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
+  std::cout << "Infer shape function time: " << time_span1.count()
+            << " seconds." << std::endl;
+
+  int64_t num_lines = std::get<0>(num_lines_headers_vector_dim_tuple);
+  int64_t num_header_lines = std::get<1>(num_lines_headers_vector_dim_tuple);
+  int64_t vector_dim = std::get<2>(num_lines_headers_vector_dim_tuple);
 
   // guard against num_lines being smaller than num_cpus
   num_cpus = std::min(num_lines, num_cpus);
@@ -284,10 +292,20 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     std::promise<LoadedChunkVectorsTuple> p;
     std::future<LoadedChunkVectorsTuple> f = p.get_future();
     futures.push_back(std::move(f));
-    threads.push_back(
-        std::thread(_load_tokens_from_file_chunk, file_path, i * chunk_size,
-                    std::min(chunk_size, num_lines - (i * chunk_size)),
-                    vector_dim, delimiter_ascii, std::move(p)));
+
+    // for first chunk of file we should start from the line after all the
+    // header lines
+    if (i == 0 && num_header_lines > 0) {
+      threads.push_back(std::thread(
+          _load_tokens_from_file_chunk, file_path, num_header_lines,
+          std::min(chunk_size - num_header_lines, num_lines - num_header_lines),
+          vector_dim, delimiter_ascii, std::move(p)));
+    } else {
+      threads.push_back(
+          std::thread(_load_tokens_from_file_chunk, file_path, i * chunk_size,
+                      std::min(chunk_size, num_lines - (i * chunk_size)),
+                      vector_dim, delimiter_ascii, std::move(p)));
+    }
   }
 
   // join threads
