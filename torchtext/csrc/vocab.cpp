@@ -17,10 +17,7 @@ private:
   Dict<std::string, int64_t> stoi_;
 
 public:
-  // stoi_, and unordered_map holds the serialized params passed in
-  // during initialization. We need this because we need to be able to serialize
-  // the model so that we can save the scripted object. Pickle will get the
-  // serialized model from these members, thus they needs to be public.
+  const std::string version_str_ = "0.0.1";
   std::vector<std::string> itos_;
   std::string unk_token_;
 
@@ -115,23 +112,36 @@ public:
   std::vector<std::string> get_itos() const { return itos_; }
 };
 
+VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
+  std::vector<int64_t> integers;
+  std::vector<std::string> strings = self->itos_;
+  strings.push_back(self->unk_token_);
+  std::vector<torch::Tensor> tensors;
+
+  VocabStates states = std::make_tuple(self->version_str_, std::move(integers),
+                                       std::move(strings), std::move(tensors));
+  return states;
+}
+
 c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  if (state_size == 0) {
-    throw std::runtime_error(
-        "Expected deserialized Vocab to have a version string.");
-  } else if (state_size != 4) {
+  if (state_size != 4) {
     throw std::runtime_error(
         "Expected deserialized Vocab to have 4 states but found only " +
         std::to_string(state_size) + " states.");
   }
 
   auto &version_str = std::get<0>(states);
-  // auto &integers = std::get<1>(states);
+  auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
-  // auto &tensors = std::get<3>(states);
+  auto &tensors = std::get<3>(states);
 
-  // version string is greater than or equal
+  // check integers and tensors are empty
+  if (integers.size() != 0 || tensors.size() != 0) {
+    throw std::runtime_error(
+        "Expected `integers` and `tensors` states to be empty.");
+  }
+
   if (version_str.compare("0.0.1") >= 0) {
     std::string unk_token = strings.back();
     strings.pop_back(); // remove last element which is unk_token
@@ -159,16 +169,7 @@ static auto vocab =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-              std::string version_str = "0.0.1";
-              std::vector<int64_t> integers;
-              std::vector<std::string> strings = self->itos_;
-              strings.push_back(self->unk_token_);
-              std::vector<torch::Tensor> tensors;
-
-              VocabStates states =
-                  std::make_tuple(version_str, std::move(integers),
-                                  std::move(strings), std::move(tensors));
-              return states;
+              return _set_vocab_states(self);
             },
             // __getstate__
             [](VocabStates states) -> c10::intrusive_ptr<Vocab> {

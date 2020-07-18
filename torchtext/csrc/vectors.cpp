@@ -14,6 +14,8 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 
 struct Vectors : torch::CustomClassHolder {
 public:
+  const std::string version_str_ = "0.0.1";
+
   Dict<std::string, torch::Tensor> stovec_;
   std::vector<std::string> tokens_;
   torch::Tensor vectors_;
@@ -28,8 +30,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stovec_.reserve(tokens.size());
@@ -75,30 +77,43 @@ public:
   int64_t __len__() { return stovec_.size(); }
 };
 
+VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
+  std::vector<int64_t> integers;
+  std::vector<std::string> strings = self->tokens_;
+  std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
+
+  VectorsStates states =
+      std::make_tuple(self->version_str_, std::move(integers),
+                      std::move(strings), std::move(tensors));
+
+  return states;
+}
+
 c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  if (state_size == 0) {
-    throw std::runtime_error(
-        "Expected deserialized Vectors to have a version string.");
-  } else if (state_size != 4) {
+  if (state_size != 4) {
     throw std::runtime_error(
         "Expected deserialized Vectors to have 4 states but found only " +
         std::to_string(state_size) + " states.");
   }
 
   auto &version_str = std::get<0>(states);
-  // auto &integers = std::get<1>(states);
+  auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
   auto &tensors = std::get<3>(states);
 
-  // version string is greater than or equal
+  // check integers are empty
+  if (integers.size() != 0) {
+    throw std::runtime_error("Expected `integers` states to be empty.");
+  }
+
   if (version_str.compare("0.0.1") >= 0) {
     return c10::make_intrusive<Vectors>(
         std::move(strings), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
@@ -113,16 +128,7 @@ static auto vectors =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
-              std::string version_str = "0.0.1";
-              std::vector<int64_t> integers;
-              std::vector<std::string> strings = self->tokens_;
-              std::vector<torch::Tensor> tensors{self->vectors_,
-                                                 self->unk_tensor_};
-              VectorsStates states =
-                  std::make_tuple(version_str, std::move(integers),
-                                  std::move(strings), std::move(tensors));
-
-              return states;
+              return _set_vectors_states(self);
             },
             // __getstate__
             [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
