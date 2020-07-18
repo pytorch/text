@@ -1,5 +1,6 @@
 import json
 from functools import reduce
+import warnings
 
 
 class Example(object):
@@ -9,6 +10,7 @@ class Example(object):
     """
     @classmethod
     def fromJSON(cls, data, fields):
+        warnings.warn('Example class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.', UserWarning)
         ex = cls()
         obj = json.loads(data)
 
@@ -47,6 +49,7 @@ class Example(object):
 
     @classmethod
     def fromdict(cls, data, fields):
+        warnings.warn('Example class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.', UserWarning)
         ex = cls()
         for key, vals in fields.items():
             if key not in data:
@@ -62,6 +65,7 @@ class Example(object):
 
     @classmethod
     def fromCSV(cls, data, fields, field_to_index=None):
+        warnings.warn('Example class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.', UserWarning)
         if field_to_index is None:
             return cls.fromlist(data, fields)
         else:
@@ -71,6 +75,7 @@ class Example(object):
 
     @classmethod
     def fromlist(cls, data, fields):
+        warnings.warn('Example class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.', UserWarning)
         ex = cls()
         for (name, field), val in zip(fields, data):
             if field is not None:
@@ -86,6 +91,7 @@ class Example(object):
 
     @classmethod
     def fromtree(cls, data, fields, subtrees=False):
+        warnings.warn('Example class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.', UserWarning)
         try:
             from nltk.tree import Tree
         except ImportError:
