@@ -87,7 +87,6 @@ class TestVectors(TorchtextTestCase):
 
         tokens = ['a']
         vectors = tensorA.unsqueeze(0)
-        print(vectors)
         vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
 
         tensorB = torch.tensor([0, 1], dtype=torch.float)
@@ -199,7 +198,6 @@ class TestVectors(TorchtextTestCase):
                 self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
                 self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
 
-    # TODO (Nayef211): reenable test once the GloVe dataset url starts working
     def test_glove(self):
         # copy the asset file into the expected download location
         # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
@@ -222,7 +220,6 @@ class TestVectors(TorchtextTestCase):
                 self.assertEqual(vectors_obj[word][:3], expected_glove[word])
                 self.assertEqual(jit_vectors_obj[word][:3], expected_glove[word])
 
-    # TODO (Nayef211): reenable test once the GloVe dataset url starts working
     def test_glove_different_dims(self):
         # copy the asset file into the expected download location
         # note that this is just a zip file with 1 line txt files used to test that the

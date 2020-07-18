@@ -87,18 +87,6 @@ public:
   int64_t __len__() { return stovec_.size(); }
 };
 
-// trim str from both ends (in place)
-static inline void _trim(std::string &s) {
-  // trim start
-  s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-                                  [](int ch) { return !std::isspace(ch); }));
-  // trim end
-  s.erase(std::find_if(s.rbegin(), s.rend(),
-                       [](int ch) { return !std::isspace(ch); })
-              .base(),
-          s.end());
-}
-
 std::tuple<int64_t, int64_t, int64_t>
 _infer_shape(const std::string &file_path, const int64_t delimiter_ascii) {
 
@@ -112,7 +100,6 @@ _infer_shape(const std::string &file_path, const int64_t delimiter_ascii) {
   while (std::getline(fin, line)) {
     vec_str.clear();
     if (vector_dim == -1) {
-      _trim(line);
       std::istringstream s(line);
 
       // get rid of the token
@@ -166,14 +153,13 @@ void _load_tokens_from_file_chunk(
     vec_float.clear();
 
     std::getline(fin, line);
-    _trim(line);
+    // _trim(line);
     std::istringstream sstrm(std::move(line));
 
     // read the token
     std::getline(sstrm, token, static_cast<char>(delimiter_ascii));
 
-    // read every value of the vector and
-    // store it in a string variable, 'vec_val'
+    // read the vector
     for (int64_t i = 0; i < vector_dim; i++) {
       sstrm >> vec_val;
       vec_float.push_back(std::stof(vec_val));
@@ -188,7 +174,6 @@ void _load_tokens_from_file_chunk(
     }
 
     if (tokens_set.find(token) != tokens_set.end()) {
-
       dup_tokens.push_back(token);
       continue;
     }
@@ -261,18 +246,8 @@ _load_token_and_vectors_from_file(const std::string &file_path,
                                   int64_t num_cpus = 10) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
-  std::chrono::high_resolution_clock::time_point t3 =
-      std::chrono::high_resolution_clock::now();
-
   std::tuple<int64_t, int64_t, int64_t> num_lines_headers_vector_dim_tuple =
       _infer_shape(file_path, delimiter_ascii);
-
-  std::chrono::high_resolution_clock::time_point t4 =
-      std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> time_span1 =
-      std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
-  std::cout << "Infer shape function time: " << time_span1.count()
-            << " seconds." << std::endl;
 
   int64_t num_lines = std::get<0>(num_lines_headers_vector_dim_tuple);
   int64_t num_header_lines = std::get<1>(num_lines_headers_vector_dim_tuple);
@@ -318,18 +293,8 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     tuples.push_back(std::move(futures[i].get()));
   }
 
-  std::chrono::high_resolution_clock::time_point t1 =
-      std::chrono::high_resolution_clock::now();
-
   LoadedVectorsTuple out_tuple;
   _concat_loaded_vectors_tuples(tuples, num_lines, vector_dim, &out_tuple);
-
-  std::chrono::high_resolution_clock::time_point t2 =
-      std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> time_span =
-      std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-  std::cout << "Concat function time: " << time_span.count() << " seconds."
-            << std::endl;
 
   return out_tuple;
 }
