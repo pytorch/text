@@ -146,14 +146,13 @@ void _load_tokens_from_file_chunk(
 
   // get to line we care about
   for (int64_t i = 0; i < start_line; i++) {
-    std::getline(fin, line);
+    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
 
   for (int64_t i = start_line; i < start_line + num_lines; i++) {
     vec_float.clear();
 
     std::getline(fin, line);
-    // _trim(line);
     std::istringstream sstrm(std::move(line));
 
     // read the token
