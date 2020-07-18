@@ -43,24 +43,28 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
 
-    def test_vocab_set_item(self):
+    def test_vocab_insert_token(self):
         c = OrderedDict({'<unk>': 2, 'a': 2})
 
         # add item to end
         v = Vocab(c)
         v.insert_token('b', 2)
 
-        self.assertEqual(v['<unk>'], 0)
-        self.assertEqual(v['a'], 1)
-        self.assertEqual(v['b'], 2)
+        expected_itos = ['<unk>', 'a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
         # add item to middle
         v = Vocab(c)
         v.insert_token('b', 0)
 
-        self.assertEqual(v['b'], 0)
-        self.assertEqual(v['<unk>'], 1)
-        self.assertEqual(v['a'], 2)
+        expected_itos = ['b', '<unk>', 'a']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_append_token(self):
         c = OrderedDict({'a': 2})
