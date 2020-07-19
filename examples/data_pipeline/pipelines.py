@@ -12,6 +12,8 @@ from torchtext.experimental.transforms import (
 from torchtext.experimental.vocab import vocab_from_file_object
 from torchtext.experimental.vectors import FastText
 import argparse
+from torchtext.experimental.datasets.raw import text_classification as raw
+import time
 
 
 def build_sp_pipeline(spm_file):
@@ -50,6 +52,13 @@ def build_fasttext_vector_pipeline():
     return pipeline, jit_pipeline
 
 
+def run_benchmark_lookup(text_classification_dataset, pipeline):
+    t0 = time.monotonic()
+    for (label, text) in text_classification_dataset:
+        pipeline(text)
+    print("Lookup time:", time.monotonic() - t0)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Data procesing pipelines')
     parser.add_argument('--pipeline', type=str, default='sentencepiece',
@@ -71,5 +80,6 @@ if __name__ == "__main__":
     else:
         print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
 
-    print("eager mode:", pipeline("torchtext provides building blocks for data processing"))
-    print("jit mode:", jit_pipeline("torchtext provides building blocks for data processing"))
+    train, test = raw.DATASETS[args.dataset]()
+    run_benchmark_lookup(train, pipeline)
+    run_benchmark_lookup(train, jit_pipeline)
