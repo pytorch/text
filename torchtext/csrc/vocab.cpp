@@ -68,12 +68,11 @@ public:
     }
 
     // need to offset all tokens greater than or equal index by 1
-    for (auto &entry : stoi_) {
-      if (entry.value() >= index) {
-        stoi_.insert_or_assign(entry.key(), std::move(entry.value() + 1));
-      }
+    for (size_t i = index; i < itos_.size(); i++) {
+      stoi_.insert_or_assign(itos_[i], std::move(i + 1));
     }
     stoi_.insert(std::move(token), std::move(index));
+    itos_.insert(itos_.begin() + index, std::move(token));
 
     // need to update unk_index in case token equals unk_token or token inserted
     // before unk_token
