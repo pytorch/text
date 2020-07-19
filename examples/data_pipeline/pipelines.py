@@ -14,6 +14,7 @@ from torchtext.experimental.vectors import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
+from functools import partial
 
 
 def build_sp_pipeline(spm_file):
@@ -26,6 +27,20 @@ def build_sp_pipeline(spm_file):
     jit_pipeline = torch.jit.script(pipeline)
     print('jit sentencepiece pipeline success!')
     return pipeline, jit_pipeline
+
+
+def build_torchtext_vocab(vocab_file):
+    from torchtext.data.utils import get_tokenizer
+    tokenizer = get_tokenizer("basic_english")
+    from torchtext.vocab import build_vocab_from_iterator
+
+    def token_iterator(vocab_file):
+        f = open(vocab_file, 'r')
+        for token in f:
+            yield token
+    vocab = build_vocab_from_iterator(token_iterator(vocab_file))
+    pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
+    return pipeline, None
 
 
 def build_huggingface_vocab_pipeline(hf_vocab_file):
@@ -77,9 +92,12 @@ if __name__ == "__main__":
         pipeline, jit_pipeline = build_huggingface_vocab_pipeline(args.hf_vocab_filename)
     elif args.pipeline == 'fasttext':
         pipeline, jit_pipeline = build_fasttext_vector_pipeline()
+    elif args.pipeline == 'torchtext':
+        pipeline, jit_pipeline = build_torchtext_vocab(args.hf_vocab_filename)
     else:
         print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
-
     train, test = raw.DATASETS[args.dataset]()
-    run_benchmark_lookup(train, pipeline)
-    run_benchmark_lookup(train, jit_pipeline)
+    if pipeline is not None:
+        run_benchmark_lookup(train, pipeline)
+    if jit_pipeline is not None:
+        run_benchmark_lookup(train, jit_pipeline)
