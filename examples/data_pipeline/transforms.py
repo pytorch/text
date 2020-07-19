@@ -4,6 +4,7 @@ from torchtext.experimental.vocab import Vocab
 from typing import List
 from collections import OrderedDict
 import torch
+from torch import Tensor
 
 
 class TextDataPipeline(nn.Module):
@@ -15,7 +16,8 @@ class TextDataPipeline(nn.Module):
         self.tokenizer = tokenizer
         self.vocab = vocab
 
-    def forward(self, line: str) -> List[int]:
+    @torch.jit.export
+    def forward(self, line: str):
         tokens = self.tokenizer(line)
         index = self.vocab(tokens)
         return index
@@ -54,3 +56,27 @@ class PretrainedSPVocab(nn.Module):
 
     def insert_token(self, token: str, index: int) -> None:
         self.vocab.insert_token(token, index)
+
+
+class VocabTransform(nn.Module):
+    r"""Vocab transform
+    """
+
+    def __init__(self, vocab):
+        super(VocabTransform, self).__init__()
+        self.vocab = vocab
+
+    def forward(self, tokens: List[str]) -> List[int]:
+        return self.vocab.lookup_indices(tokens)
+
+
+class VectorTransform(nn.Module):
+    r"""Vector transform
+    """
+
+    def __init__(self, vector):
+        super(VectorTransform, self).__init__()
+        self.vector = vector
+
+    def forward(self, tokens: List[str]) -> Tensor:
+        return self.vector.lookup_vectors(tokens)
