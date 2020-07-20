@@ -96,8 +96,11 @@ if __name__ == "__main__":
         pipeline, jit_pipeline = build_torchtext_vocab(args.hf_vocab_filename)
     else:
         print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
+    print("Test eager mode")
     train, test = raw.DATASETS[args.dataset]()
     if pipeline is not None:
         run_benchmark_lookup(train, pipeline)
+    print("Test jit mode")
+    train, test = raw.DATASETS[args.dataset]()
     if jit_pipeline is not None:
         run_benchmark_lookup(train, jit_pipeline)
