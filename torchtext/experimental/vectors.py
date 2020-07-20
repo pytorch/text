@@ -14,7 +14,7 @@ from torchtext.utils import (
 logger = logging.getLogger(__name__)
 
 
-def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
+def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
     r"""Create a FastText Vectors object.
 
     Args:

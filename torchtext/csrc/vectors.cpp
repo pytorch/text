@@ -245,8 +245,18 @@ _load_token_and_vectors_from_file(const std::string &file_path,
                                   int64_t num_cpus = 10) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
+  std::chrono::high_resolution_clock::time_point t5 =
+      std::chrono::high_resolution_clock::now();
+
   std::tuple<int64_t, int64_t, int64_t> num_lines_headers_vector_dim_tuple =
       _infer_shape(file_path, delimiter_ascii);
+
+  std::chrono::high_resolution_clock::time_point t6 =
+      std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_span2 =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t6 - t5);
+  std::cout << "_infer_shape() function time: " << time_span2.count()
+            << " seconds." << std::endl;
 
   int64_t num_lines = std::get<0>(num_lines_headers_vector_dim_tuple);
   int64_t num_header_lines = std::get<1>(num_lines_headers_vector_dim_tuple);
@@ -282,18 +292,43 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     }
   }
 
+  std::chrono::high_resolution_clock::time_point t3 =
+      std::chrono::high_resolution_clock::now();
+
   // join threads
   for (int64_t i = 0; i < num_cpus; i++) {
     threads[i].join();
   }
+
+  std::chrono::high_resolution_clock::time_point t4 =
+      std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_span1 =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
+  std::cout << "_load_tokens_from_file_chunk() function time: "
+            << time_span1.count() << " seconds." << std::endl;
+
+  // // join threads
+  // for (int64_t i = 0; i < num_cpus; i++) {
+  //   threads[i].join();
+  // }
 
   // get all loaded tuples
   for (int64_t i = 0; i < num_cpus; i++) {
     tuples.push_back(std::move(futures[i].get()));
   }
 
+  std::chrono::high_resolution_clock::time_point t1 =
+      std::chrono::high_resolution_clock::now();
+
   LoadedVectorsTuple out_tuple;
   _concat_loaded_vectors_tuples(tuples, num_lines, vector_dim, &out_tuple);
+
+  std::chrono::high_resolution_clock::time_point t2 =
+      std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> time_span =
+      std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+  std::cout << "Concat function time: " << time_span.count() << " seconds."
+            << std::endl;
 
   return out_tuple;
 }
