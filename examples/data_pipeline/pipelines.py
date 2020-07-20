@@ -70,7 +70,7 @@ def build_fasttext_vector_pipeline():
 def run_benchmark_lookup(text_classification_dataset, pipeline):
     t0 = time.monotonic()
     for (label, text) in text_classification_dataset:
-        pipeline(text)
+        text = pipeline(text)
     print("Lookup time:", time.monotonic() - t0)
 
 
