@@ -5,6 +5,7 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from tqdm import tqdm
+from typing import List
 
 from torchtext.utils import (
     download_from_url,
@@ -18,9 +19,9 @@ def _infer_shape(f, delimiter=" "):
     num_lines, vector_dim = 0, None
     for line in f:
         if vector_dim is None:
-            # token and entries are separated by delimiter
+            # token and entries are seperated by delimeter
             token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
-            # we assume entries are always separated by " "
+            # we assume entries are always seperated by " "
             vector = entries.split(b" ")
 
             # Assuming word, [vector] format
@@ -43,9 +44,9 @@ def _load_token_and_vectors_from_file(file_path, delimiter=" "):
         vectors_loaded = 0
 
         for line in tqdm(f, unit_scale=0, unit="lines", total=num_lines):
-            # token and entries are separated by delimiter
+            # token and entries are seperated by delimeter
             token, entries = line.rstrip().split(bytes(delimiter, "utf-8"), 1)
-            # we assume entries are always separated by " "
+            # we assume entries are always seperated by " "
             entries = entries.split(b" ")
 
             if dim is None and len(entries) > 1:
@@ -297,6 +298,25 @@ class Vectors(nn.Module):
             length (int): the length of the vectors.
         """
         return len(self.vectors)
+
+    @torch.jit.export
+    def lookup_vectors(self, tokens: List[str]) -> Tensor:
+        """Look up embedding vectors for a list of tokens.
+        Arguments:
+            tokens: a list of tokens
+
+        Returns:
+            vectors (Tensor): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
+
+        Examples:
+            >>> examples = ['chip', 'baby', 'Beautiful']
+            >>> vec = text.vocab.GloVe(name='6B', dim=50)
+            >>> ret = vec.get_vectors_by_tokens(tokens)
+        """
+        if not len(tokens):
+            return torch.empty(0, 0)
+
+        return self.vectors.lookup_vectors(tokens)
 
 
 CHECKSUMS_GLOVE = {

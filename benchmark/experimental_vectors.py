@@ -16,7 +16,7 @@ def benchmark_experimental_vectors():
     train, = AG_NEWS(data_select='train')
     vocab = train.get_vocab()
     tokens = []
-    for (_label, text) in train:
+    for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
 
