@@ -49,9 +49,7 @@ def build_huggingface_vocab_pipeline(hf_vocab_file):
     vocab = vocab_from_file_object(f)
 
     # Insert token in vocab to match a pretrained vocab
-    # pipeline = TextDataPipeline(tokenizer, vocab.lookup_indices)
-#    pipeline = TextDataPipeline(tokenizer, VocabTransform(vocab))
-    pipeline = TextDataPipeline(tokenizer, vocab.lookup_indices)
+    pipeline = TextDataPipeline(tokenizer, VocabTransform(vocab))
     jit_pipeline = torch.jit.script(pipeline)
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
