@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.utils &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.experimental.vectors &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.experimental.datasets" href="experimental_datasets.html" />
-    <link rel="prev" title="torchtext.vocab" href="vocab.html" /> 
+    <link rel="next" title="torchtext.experimental.vocab" href="experimental_vocab.html" />
+    <link rel="prev" title="torchtext.experimental.transforms" href="experimental_transforms.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -192,10 +192,10 @@
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
@@ -238,13 +238,13 @@
       </li>
 
         
-      <li>torchtext.utils</li>
+      <li>torchtext.experimental.vectors</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/utils.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+            <a href="_sources/experimental_vectors.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -270,99 +270,231 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="module-torchtext.utils">
-<span id="torchtext-utils"></span><h1>torchtext.utils<a class="headerlink" href="#module-torchtext.utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="reporthook">
-<h2><span class="hidden-section">reporthook</span><a class="headerlink" href="#reporthook" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.reporthook">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">reporthook</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#reporthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.reporthook" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://github.com/tqdm/tqdm">https://github.com/tqdm/tqdm</a>.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="download-from-url">
-<h2><span class="hidden-section">download_from_url</span><a class="headerlink" href="#download-from-url" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.download_from_url">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">download_from_url</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">path=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">overwrite=False</em>, <em class="sig-param">hash_value=None</em>, <em class="sig-param">hash_type='sha256'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#download_from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.download_from_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download file, with logic (from tensor2tensor) for Google Drive. Returns
-the path to the downloaded file.</p>
+  <div class="section" id="module-torchtext.experimental.vectors">
+<span id="torchtext-experimental-vectors"></span><h1>torchtext.experimental.vectors<a class="headerlink" href="#module-torchtext.experimental.vectors" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="vector">
+<h2><span class="hidden-section">Vector</span><a class="headerlink" href="#vector" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchtext.experimental.vectors.Vectors">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">Vectors</code><span class="sig-paren">(</span><em class="sig-param">tokens</em>, <em class="sig-param">vectors</em>, <em class="sig-param">unk_tensor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a vectors object which maps tokens to vectors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> – the url of the file from URL header. (None)</p></li>
-<li><p><strong>root</strong> – download folder used to store the file in (.data)</p></li>
-<li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
-<li><p><strong>hash_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – hash for url (Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
-<li><p><strong>hash_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – hash type, among “sha256” and “md5” (Default: <code class="docutils literal notranslate"><span class="pre">&quot;sha256&quot;</span></code>).</p></li>
+<li><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – a list of tokens.</p></li>
+<li><p><strong>vectors</strong> (<a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><em>torch.Tensor</em></a>) – a 2d tensor representing the vector associated with each token.</p></li>
+<li><p><strong>unk_tensor</strong> (<a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><em>torch.Tensor</em></a>) – a 1d tensors representing the vector associated with an unknown token.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <cite>vectors</cite> is empty and a default <cite>unk_tensor</cite> isn’t provided.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.8)"><strong>RuntimeError</strong></a> – if <cite>tokens</cite> and <cite>vectors</cite> have different sizes or <cite>tokens</cite> has duplicates.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – if all tensors within`vectors` are not of data type <cite>torch.float</cite>.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;.data/validation.tar.gz&#39;</span>
-</pre></div>
-</div>
+<dl class="method">
+<dt id="torchtext.experimental.vectors.Vectors.__getitem__">
+<code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tensor (the vector) corresponding to the associated token.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>vector (Tensor)</p>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="unicode-csv-reader">
-<h2><span class="hidden-section">unicode_csv_reader</span><a class="headerlink" href="#unicode-csv-reader" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.unicode_csv_reader">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">unicode_csv_reader</code><span class="sig-paren">(</span><em class="sig-param">unicode_csv_data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#unicode_csv_reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.unicode_csv_reader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
-Borrowed and slightly modified from the Python docs:
-<a class="reference external" href="https://docs.python.org/2/library/csv.html#csv-examples">https://docs.python.org/2/library/csv.html#csv-examples</a></p>
+<dl class="method">
+<dt id="torchtext.experimental.vectors.Vectors.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">tokens</em>, <em class="sig-param">vectors</em>, <em class="sig-param">unk_tensor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.experimental.vectors.Vectors.__len__">
+<code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__len__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get length of vectors object.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the length of the vectors.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>length (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.experimental.vectors.Vectors.__setitem__">
+<code class="sig-name descname">__setitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">vector: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>unicode_csv_data</strong> – unicode csv data (see example below)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p></li>
+<li><p><strong>vector</strong> (<em>Tensor</em>) – a 1d tensor representing a vector associated with the token.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – if <cite>vector</cite> is not of data type <cite>torch.float</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.experimental.vectors.Vectors.lookup_vectors">
+<code class="sig-name descname">lookup_vectors</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.lookup_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.lookup_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up embedding vectors for a list of tokens.
+:param tokens: a list of tokens</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if <cite>tokens</cite> is empty</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>vectors (Tensor)</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">unicode_csv_reader</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">reader</span> <span class="o">=</span> <span class="n">unicode_csv_reader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">examples</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chip&#39;</span><span class="p">,</span> <span class="s1">&#39;baby&#39;</span><span class="p">,</span> <span class="s1">&#39;Beautiful&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">GloVe</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;6B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ret</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">get_vectors_by_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
+</dd></dl>
+
 </div>
-<div class="section" id="extract-archive">
-<h2><span class="hidden-section">extract_archive</span><a class="headerlink" href="#extract-archive" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="vectors-from-file-object">
+<h2><span class="hidden-section">vectors_from_file_object</span><a class="headerlink" href="#vectors-from-file-object" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="torchtext.utils.extract_archive">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">from_path</em>, <em class="sig-param">to_path=None</em>, <em class="sig-param">overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.extract_archive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract archive.</p>
+<dt id="torchtext.experimental.vectors.vectors_from_file_object">
+<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">vectors_from_file_object</code><span class="sig-paren">(</span><em class="sig-param">file_like_object</em>, <em class="sig-param">delimiter='</em>, <em class="sig-param">'</em>, <em class="sig-param">unk_tensor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#vectors_from_file_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.vectors_from_file_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Vectors object from a csv file like object.</p>
+<p>Note that the tensor corresponding to each vector is of type <cite>torch.float</cite>.</p>
+<dl class="simple">
+<dt>Format for csv file:</dt><dd><p>token1&lt;delimiter&gt;num1 num2 num3
+token2&lt;delimiter&gt;num4 num5 num6
+…
+token_n&lt;delimiter&gt;num_m num_j num_k</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from_path</strong> – the path of the archive.</p></li>
-<li><p><strong>to_path</strong> – the root path of the extracted files (directory of from_path)</p></li>
-<li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
+<li><p><strong>file_like_object</strong> (<em>FileObject</em>) – a file like object to read data from.</p></li>
+<li><p><strong>delimiter</strong> (<em>char</em>) – a character to delimit between the token and the vector. Default value is “,”</p></li>
+<li><p><strong>unk_tensor</strong> (<em>Tensor</em>) – a 1d tensor representing the vector associated with an unknown token.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of paths to extracted files even if not overwritten.</p>
+<dd class="field-even"><p>a Vectors object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><p>Vectors</p>
+<dl class="simple">
+<dt>Raises:</dt><dd><p>ValueError: if duplicate tokens are found in FastText file.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">from_path</span> <span class="o">=</span> <span class="s1">&#39;./validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">to_path</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">from_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;.data/val.de&#39;</span><span class="p">,</span> <span class="s1">&#39;.data/val.en&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">from_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;.data/val.de&#39;</span><span class="p">,</span> <span class="s1">&#39;.data/val.en&#39;</span><span class="p">]</span>
-</pre></div>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
+<div class="section" id="fasttext">
+<h2><span class="hidden-section">FastText</span><a class="headerlink" href="#fasttext" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchtext.experimental.vectors.FastText">
+<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">FastText</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">unk_tensor=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">validate_file=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#FastText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.FastText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a FastText Vectors object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>language</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – the language to use for FastText. The list of supported languages options
+can be found at <a class="reference external" href="https://fasttext.cc/docs/en/language-identification.html">https://fasttext.cc/docs/en/language-identification.html</a></p></li>
+<li><p><strong>unk_tensor</strong> (<em>Tensor</em>) – a 1d tensor representing the vector associated with an unknown token</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – folder used to store downloaded files in (.data)</p></li>
+<li><p><strong>validate_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – flag to determine whether to validate the downloaded files checksum.
+Should be <cite>False</cite> when running tests with a local asset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a Vectors object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vectors.Vectors" title="torchtext.experimental.vectors.Vectors">Vectors</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if duplicate tokens are found in FastText file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="glove">
+<h2><span class="hidden-section">GloVe</span><a class="headerlink" href="#glove" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchtext.experimental.vectors.GloVe">
+<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">GloVe</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">unk_tensor=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">validate_file=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#GloVe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.GloVe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a GloVe Vectors object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – the name of the GloVe dataset to use. Options are:
+- 42B
+- 840B
+- twitter.27B
+- 6B</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – <p>the dimension for the GloVe dataset to load. Options are:
+42B:</p>
+<blockquote>
+<div><ul>
+<li><p>300</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>840B:</dt><dd><ul>
+<li><p>300</p></li>
+</ul>
+</dd>
+<dt>twitter.27B:</dt><dd><ul>
+<li><p>25</p></li>
+<li><p>50</p></li>
+<li><p>100</p></li>
+<li><p>200</p></li>
+</ul>
+</dd>
+<dt>6B:</dt><dd><ul>
+<li><p>50</p></li>
+<li><p>100</p></li>
+<li><p>200</p></li>
+<li><p>300</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>unk_tensor</strong> (<em>Tensor</em>) – a 1d tensor representing the vector associated with an unknown token.</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – folder used to store downloaded files in (.data)</p></li>
+<li><p><strong>validate_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – flag to determine whether to validate the downloaded files checksum.
+Should be <cite>False</cite> when running tests with a local asset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a Vectors object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vectors.Vectors" title="torchtext.experimental.vectors.Vectors">Vectors</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if unexpected duplicate tokens are found in GloVe file.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -376,10 +508,10 @@ Borrowed and slightly modified from the Python docs:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="experimental_datasets.html" class="btn btn-neutral float-right" title="torchtext.experimental.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="experimental_vocab.html" class="btn btn-neutral float-right" title="torchtext.experimental.vocab" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="vocab.html" class="btn btn-neutral" title="torchtext.vocab" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="experimental_transforms.html" class="btn btn-neutral" title="torchtext.experimental.transforms" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -411,11 +543,11 @@ Borrowed and slightly modified from the Python docs:
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext.utils</a><ul>
-<li><a class="reference internal" href="#reporthook"><span class="hidden-section">reporthook</span></a></li>
-<li><a class="reference internal" href="#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
-<li><a class="reference internal" href="#unicode-csv-reader"><span class="hidden-section">unicode_csv_reader</span></a></li>
-<li><a class="reference internal" href="#extract-archive"><span class="hidden-section">extract_archive</span></a></li>
+<li><a class="reference internal" href="#">torchtext.experimental.vectors</a><ul>
+<li><a class="reference internal" href="#vector"><span class="hidden-section">Vector</span></a></li>
+<li><a class="reference internal" href="#vectors-from-file-object"><span class="hidden-section">vectors_from_file_object</span></a></li>
+<li><a class="reference internal" href="#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li><a class="reference internal" href="#glove"><span class="hidden-section">GloVe</span></a></li>
 </ul>
 </li>
 </ul>

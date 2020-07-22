@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.dataset &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.data.dataset &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -192,6 +192,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
 </ul>
 
@@ -873,9 +876,6 @@
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

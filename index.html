@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -154,7 +154,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -193,6 +193,9 @@
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
@@ -332,7 +335,28 @@ popular datasets for natural language.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#sentiment-analysis">Sentiment Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#text-classification">Text Classification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#language-modeling">Language Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#machine-translation">Machine Translation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#sequence-tagging">Sequence Tagging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#question-answer">Question Answer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="experimental_transforms.html#basicenglishnormalize"><span class="hidden-section">BasicEnglishNormalize</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_transforms.html#regextokenizer"><span class="hidden-section">RegexTokenizer</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#vector"><span class="hidden-section">Vector</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#vectors-from-file-object"><span class="hidden-section">vectors_from_file_object</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#fasttext"><span class="hidden-section">FastText</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#glove"><span class="hidden-section">GloVe</span></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="experimental_vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental_vocab.html#vocab-from-file-object"><span class="hidden-section">vocab_from_file_object</span></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
@@ -608,9 +632,6 @@ popular datasets for natural language.</p>
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

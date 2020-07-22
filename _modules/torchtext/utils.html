@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.utils &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.utils &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -192,6 +192,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">examples</a></li>
 </ul>
 
@@ -264,9 +267,9 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">six</span>
-<span class="kn">import</span> <span class="nn">requests</span>
+<span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
@@ -274,10 +277,13 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
 
 
 <div class="viewcode-block" id="reporthook"><a class="viewcode-back" href="../../utils.html#torchtext.utils.reporthook">[docs]</a><span class="k">def</span> <span class="nf">reporthook</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;https://github.com/tqdm/tqdm&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    https://github.com/tqdm/tqdm.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">last_b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bsize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tsize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -296,22 +302,31 @@
     <span class="k">return</span> <span class="n">inner</span></div>
 
 
-<div class="viewcode-block" id="download_from_url"><a class="viewcode-back" href="../../utils.html#torchtext.utils.download_from_url">[docs]</a><span class="k">def</span> <span class="nf">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Download file, with logic (from tensor2tensor) for Google Drive.</span>
-<span class="sd">    Returns the path to the downloaded file.</span>
+<div class="viewcode-block" id="download_from_url"><a class="viewcode-back" href="../../utils.html#torchtext.utils.download_from_url">[docs]</a><span class="k">def</span> <span class="nf">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;sha256&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download file, with logic (from tensor2tensor) for Google Drive. Returns</span>
+<span class="sd">    the path to the downloaded file.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        url: the url of the file</span>
-<span class="sd">        path: explicitly set the filename, otherwise attempts to</span>
-<span class="sd">            detect the file name from URL header. (None)</span>
+<span class="sd">        url: the url of the file from URL header. (None)</span>
 <span class="sd">        root: download folder used to store the file in (.data)</span>
 <span class="sd">        overwrite: overwrite existing files (False)</span>
+<span class="sd">        hash_value (str, optional): hash for url (Default: ``None``).</span>
+<span class="sd">        hash_type (str, optional): hash type, among &quot;sha256&quot; and &quot;md5&quot; (Default: ``&quot;sha256&quot;``).</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url)</span>
+<span class="sd">        &gt;&gt;&gt; url = &#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
+<span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url)</span>
 <span class="sd">        &gt;&gt;&gt; &#39;.data/validation.tar.gz&#39;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_file</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The hash of </span><span class="si">{}</span><span class="s2"> does not match. Delete the file manually and retry.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_process_response</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">1024</span>
@@ -326,6 +341,7 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">%s</span><span class="s1"> already exists.&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">path</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Overwriting file </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Downloading file </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
@@ -337,6 +353,8 @@
                         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
                         <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> downloaded.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+        <span class="n">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">path</span>
 
     <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -345,9 +363,11 @@
         <span class="n">root</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s2">&quot;Download directory </span><span class="si">{}</span><span class="s2"> does not exist. &quot;</span>
-            <span class="s2">&quot;Did you create it?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Can&#39;t create the download directory </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+            <span class="k">raise</span>
 
     <span class="k">if</span> <span class="s1">&#39;drive.google.com&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">url</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0&#39;</span><span class="p">},</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -399,15 +419,8 @@
             <span class="n">maxInt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxInt</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
     <span class="n">csv</span><span class="o">.</span><span class="n">field_size_limit</span><span class="p">(</span><span class="n">maxInt</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY2</span><span class="p">:</span>
-        <span class="c1"># csv.py doesn&#39;t do Unicode; encode temporarily as UTF-8:</span>
-        <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">utf_8_encoder</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-            <span class="c1"># decode UTF-8 back to Unicode, cell by cell:</span>
-            <span class="k">yield</span> <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">line</span></div>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">line</span></div>
 
 
 <span class="k">def</span> <span class="nf">utf_8_encoder</span><span class="p">(</span><span class="n">unicode_csv_data</span><span class="p">):</span>
@@ -433,6 +446,10 @@
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url, from_path)</span>
 <span class="sd">        &gt;&gt;&gt; torchtext.utils.extract_archive(from_path, to_path)</span>
 <span class="sd">        &gt;&gt;&gt; [&#39;.data/val.de&#39;, &#39;.data/val.en&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; torchtext.utils.download_from_url(url, from_path)</span>
+<span class="sd">        &gt;&gt;&gt; torchtext.utils.extract_archive(from_path, to_path)</span>
+<span class="sd">        &gt;&gt;&gt; [&#39;.data/val.de&#39;, &#39;.data/val.en&#39;]</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">to_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -469,9 +486,52 @@
         <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">files</span>
 
+    <span class="k">elif</span> <span class="n">from_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
+        <span class="n">default_block_size</span> <span class="o">=</span> <span class="mi">65536</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">from_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+        <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzfile</span><span class="p">,</span> \
+                <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">d_file</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">block</span> <span class="o">=</span> <span class="n">gzfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">default_block_size</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">block</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+            <span class="n">d_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">files</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;We currently only support tar.gz, .tgz and zip achives.&quot;</span><span class="p">)</span></div>
+            <span class="s2">&quot;We currently only support tar.gz, .tgz, .gz and zip achives.&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">validate_file</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;sha256&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate a given file object with its hash.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_obj: File object to read from.</span>
+<span class="sd">        hash_value (str): Hash for url.</span>
+<span class="sd">        hash_type (str, optional): Hash type, among &quot;sha256&quot; and &quot;md5&quot; (Default: ``&quot;sha256&quot;``).</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: return True if its a valid file, else False.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">hash_type</span> <span class="o">==</span> <span class="s2">&quot;sha256&quot;</span><span class="p">:</span>
+        <span class="n">hash_func</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">hash_type</span> <span class="o">==</span> <span class="s2">&quot;md5&quot;</span><span class="p">:</span>
+        <span class="n">hash_func</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Read by chunk to avoid filling memory</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">hash_func</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hash_func</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">==</span> <span class="n">hash_value</span>
 </pre></div>
 
              </article>
@@ -722,9 +782,6 @@
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

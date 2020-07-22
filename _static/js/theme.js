@@ -151,7 +151,8 @@ window.filterTags = {
   bind: function() {
     var options = {
       valueNames: [{ data: ["tags"] }],
-      page: "18"
+      page: "6",
+      pagination: true
     };
 
     var tutorialList = new List("tutorial-cards", options);
@@ -186,7 +187,6 @@ window.filterTags = {
           return filterSelectedTags(cardTags, selectedTags);
         }
       });
-      $("[data-tags='null']").remove();
     }
 
     $(".filter-btn").on("click", function() {
@@ -947,8 +947,8 @@ if (downloadNote.length >= 1) {
 
     var githubLink = "https://github.com/pytorch/tutorials/blob/master/" + tutorialUrlArray.join("/") + ".py",
         notebookLink = $(".reference.download")[1].href,
-        notebookDownloadPath = notebookLink.split('_downloads')[1].split('/').pop(),
-        colabLink = "https://colab.research.google.com/github/pytorch/tutorials/blob/gh-pages/_downloads/" + notebookDownloadPath;
+        notebookDownloadPath = notebookLink.split('_downloads')[1],
+        colabLink = "https://colab.research.google.com/github/pytorch/tutorials/blob/gh-pages/_downloads" + notebookDownloadPath;
 
     $("#google-colab-link").wrap("<a href=" + colabLink + " data-behavior='call-to-action-event' data-response='Run in Google Colab' target='_blank'/>");
     $("#download-notebook-link").wrap("<a href=" + notebookLink + " data-behavior='call-to-action-event' data-response='Download Notebook'/>");
@@ -1002,7 +1002,7 @@ function unique(value, index, self) {
 
 // Only return unique tags
 
-var tags = tagList.filter(unique);
+var tags = tagList.sort().filter(unique);
 
 // Add filter buttons to the top of the page for each tag
 
@@ -1030,5 +1030,13 @@ $(".tutorial-filter").each(function(){
     var tag = $(this).text();
     $(this).html(tag.replace(/-/, ' '))
 })
+
+// Remove any empty p tags that Sphinx adds
+
+$("#tutorial-cards p").each(function(index, item) {
+    if(!$(item).text().trim()) {
+        $(item).remove();
+    }
+});
 
 },{"jquery":"jquery"}]},{},[1,2,3,4,5,6,7,8,9,10,"pytorch-sphinx-theme"]);

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.experimental.datasets &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="next" title="torchtext.experimental.transforms" href="experimental_transforms.html" />
     <link rel="prev" title="torchtext.utils" href="utils.html" /> 
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -194,6 +194,9 @@
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
@@ -295,11 +298,44 @@
 <li><p><a class="reference internal" href="#imdb" id="id2">IMDb</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#language-modeling" id="id3">Language Modeling</a></p>
+<li><p><a class="reference internal" href="#text-classification" id="id3">Text Classification</a></p>
 <ul>
-<li><p><a class="reference internal" href="#wikitext-2" id="id4">WikiText-2</a></p></li>
-<li><p><a class="reference internal" href="#wikitext103" id="id5">WikiText103</a></p></li>
-<li><p><a class="reference internal" href="#penntreebank" id="id6">PennTreebank</a></p></li>
+<li><p><a class="reference internal" href="#textclassificationdataset" id="id4">TextClassificationDataset</a></p></li>
+<li><p><a class="reference internal" href="#ag-news" id="id5">AG_NEWS</a></p></li>
+<li><p><a class="reference internal" href="#sogounews" id="id6">SogouNews</a></p></li>
+<li><p><a class="reference internal" href="#dbpedia" id="id7">DBpedia</a></p></li>
+<li><p><a class="reference internal" href="#yelpreviewpolarity" id="id8">YelpReviewPolarity</a></p></li>
+<li><p><a class="reference internal" href="#yelpreviewfull" id="id9">YelpReviewFull</a></p></li>
+<li><p><a class="reference internal" href="#yahooanswers" id="id10">YahooAnswers</a></p></li>
+<li><p><a class="reference internal" href="#amazonreviewpolarity" id="id11">AmazonReviewPolarity</a></p></li>
+<li><p><a class="reference internal" href="#amazonreviewfull" id="id12">AmazonReviewFull</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#language-modeling" id="id13">Language Modeling</a></p>
+<ul>
+<li><p><a class="reference internal" href="#wikitext-2" id="id14">WikiText-2</a></p></li>
+<li><p><a class="reference internal" href="#wikitext103" id="id15">WikiText103</a></p></li>
+<li><p><a class="reference internal" href="#penntreebank" id="id16">PennTreebank</a></p></li>
+<li><p><a class="reference internal" href="#wmtnewscrawl" id="id17">WMTNewsCrawl</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#machine-translation" id="id18">Machine Translation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#multi30k" id="id19">Multi30k</a></p></li>
+<li><p><a class="reference internal" href="#iwslt" id="id20">IWSLT</a></p></li>
+<li><p><a class="reference internal" href="#wmt14" id="id21">WMT14</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#sequence-tagging" id="id22">Sequence Tagging</a></p>
+<ul>
+<li><p><a class="reference internal" href="#udpos" id="id23">UDPOS</a></p></li>
+<li><p><a class="reference internal" href="#conll2000chunking" id="id24">CoNLL2000Chunking</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#question-answer" id="id25">Question Answer</a></p>
+<ul>
+<li><p><a class="reference internal" href="#squad-1-0" id="id26">SQuAD 1.0</a></p></li>
+<li><p><a class="reference internal" href="#squad-2-0" id="id27">SQuAD 2.0</a></p></li>
 </ul>
 </li>
 </ul>
@@ -364,12 +400,493 @@ data.</p></li>
 
 </div>
 </div>
+<div class="section" id="text-classification">
+<h2><a class="toc-backref" href="#id3">Text Classification</a><a class="headerlink" href="#text-classification" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="textclassificationdataset">
+<h3><a class="toc-backref" href="#id4">TextClassificationDataset</a><a class="headerlink" href="#textclassificationdataset" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="ag-news">
+<h3><a class="toc-backref" href="#id5">AG_NEWS</a><a class="headerlink" href="#ag-news" title="Permalink to this headline">¶</a></h3>
+<p>AG_NEWS dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.AG_NEWS">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">AG_NEWS</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines AG_NEWS datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><ul class="simple">
+<li><p>1 : World</p></li>
+<li><p>2 : Sports</p></li>
+<li><p>3 : Business</p></li>
+<li><p>4 : Sci/Tech</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: AG_NEWS</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">AG_NEWS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.AG_NEWS.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.AG_NEWS.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sogounews">
+<h3><a class="toc-backref" href="#id6">SogouNews</a><a class="headerlink" href="#sogounews" title="Permalink to this headline">¶</a></h3>
+<p>SogouNews dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.SogouNews">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">SogouNews</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines SogouNews datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><ul class="simple">
+<li><p>1 : Sports</p></li>
+<li><p>2 : Finance</p></li>
+<li><p>3 : Entertainment</p></li>
+<li><p>4 : Automobile</p></li>
+<li><p>5 : Technology</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: SogouNews</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">SogouNews</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.SogouNews.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.SogouNews.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="dbpedia">
+<h3><a class="toc-backref" href="#id7">DBpedia</a><a class="headerlink" href="#dbpedia" title="Permalink to this headline">¶</a></h3>
+<p>DBpedia dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.DBpedia">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">DBpedia</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines DBpedia datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><ul class="simple">
+<li><p>1 : Company</p></li>
+<li><p>2 : EducationalInstitution</p></li>
+<li><p>3 : Artist</p></li>
+<li><p>4 : Athlete</p></li>
+<li><p>5 : OfficeHolder</p></li>
+<li><p>6 : MeanOfTransportation</p></li>
+<li><p>7 : Building</p></li>
+<li><p>8 : NaturalPlace</p></li>
+<li><p>9 : Village</p></li>
+<li><p>10 : Animal</p></li>
+<li><p>11 : Plant</p></li>
+<li><p>12 : Album</p></li>
+<li><p>13 : Film</p></li>
+<li><p>14 : WrittenWork</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: DBpedia</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">DBpedia</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.DBpedia.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.DBpedia.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="yelpreviewpolarity">
+<h3><a class="toc-backref" href="#id8">YelpReviewPolarity</a><a class="headerlink" href="#yelpreviewpolarity" title="Permalink to this headline">¶</a></h3>
+<p>YelpReviewPolarity dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.YelpReviewPolarity">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">YelpReviewPolarity</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines YelpReviewPolarity datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><ul class="simple">
+<li><p>1 : Negative polarity.</p></li>
+<li><p>2 : Positive polarity.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: YelpReviewPolarity</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">YelpReviewPolarity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.YelpReviewPolarity.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.YelpReviewPolarity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="yelpreviewfull">
+<h3><a class="toc-backref" href="#id9">YelpReviewFull</a><a class="headerlink" href="#yelpreviewfull" title="Permalink to this headline">¶</a></h3>
+<p>YelpReviewFull dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.YelpReviewFull">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">YelpReviewFull</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines YelpReviewFull datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><p>1 - 5 : rating classes (5 is highly recommended).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: YelpReviewFull</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">YelpReviewFull</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.YelpReviewFull.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.YelpReviewFull.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="yahooanswers">
+<h3><a class="toc-backref" href="#id10">YahooAnswers</a><a class="headerlink" href="#yahooanswers" title="Permalink to this headline">¶</a></h3>
+<p>YahooAnswers dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.YahooAnswers">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">YahooAnswers</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines YahooAnswers datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><ul class="simple">
+<li><p>1 : Society &amp; Culture</p></li>
+<li><p>2 : Science &amp; Mathematics</p></li>
+<li><p>3 : Health</p></li>
+<li><p>4 : Education &amp; Reference</p></li>
+<li><p>5 : Computers &amp; Internet</p></li>
+<li><p>6 : Sports</p></li>
+<li><p>7 : Business &amp; Finance</p></li>
+<li><p>8 : Entertainment &amp; Music</p></li>
+<li><p>9 : Family &amp; Relationships</p></li>
+<li><p>10 : Politics &amp; Government</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: YahooAnswers</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">YahooAnswers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.YahooAnswers.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.YahooAnswers.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="amazonreviewpolarity">
+<h3><a class="toc-backref" href="#id11">AmazonReviewPolarity</a><a class="headerlink" href="#amazonreviewpolarity" title="Permalink to this headline">¶</a></h3>
+<p>AmazonReviewPolarity dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.AmazonReviewPolarity">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">AmazonReviewPolarity</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines AmazonReviewPolarity datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><ul class="simple">
+<li><p>1 : Negative polarity</p></li>
+<li><p>2 : Positive polarity</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: AmazonReviewPolarity</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">AmazonReviewPolarity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.AmazonReviewPolarity.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.AmazonReviewPolarity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="amazonreviewfull">
+<h3><a class="toc-backref" href="#id12">AmazonReviewFull</a><a class="headerlink" href="#amazonreviewfull" title="Permalink to this headline">¶</a></h3>
+<p>AmazonReviewFull dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.AmazonReviewFull">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">AmazonReviewFull</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/text_classification.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Defines AmazonReviewFull datasets.</dt><dd><dl class="simple">
+<dt>The labels includes:</dt><dd><p>1 - 5 : rating classes (5 is highly recommended)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Create text classification dataset: AmazonReviewFull</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>ngrams</strong> – a contiguous sequence of n items from s string text.
+Default: 1</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">AmazonReviewFull</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.AmazonReviewFull.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.AmazonReviewFull.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
 <div class="section" id="language-modeling">
-<h2><a class="toc-backref" href="#id3">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
 <p>Language modeling datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">LanguageModelingDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.LanguageModelingDataset">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">LanguageModelingDataset</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#LanguageModelingDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.LanguageModelingDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">LanguageModelingDataset</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocab</em>, <em class="sig-param">transforms</em>, <em class="sig-param">single_line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#LanguageModelingDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.LanguageModelingDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a dataset for language modeling.
 Currently, we only support the following datasets:</p>
 <blockquote>
@@ -377,11 +894,12 @@ Currently, we only support the following datasets:</p>
 <li><p>WikiText2</p></li>
 <li><p>WikiText103</p></li>
 <li><p>PennTreebank</p></li>
+<li><p>WMTNewsCrawl</p></li>
 </ul>
 </div></blockquote>
 <dl class="method">
 <dt id="torchtext.experimental.datasets.LanguageModelingDataset.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#LanguageModelingDataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.LanguageModelingDataset.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocab</em>, <em class="sig-param">transforms</em>, <em class="sig-param">single_line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#LanguageModelingDataset.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.LanguageModelingDataset.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiate language modeling dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -390,23 +908,16 @@ Currently, we only support the following datasets:</p>
 numericalizing the string tokens.
 torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()</p></li>
 <li><p><strong>vocab</strong> – Vocabulary object used for dataset.</p></li>
+<li><p><strong>transforms</strong> – Text string transforms.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">token_id_1</span><span class="p">,</span> <span class="n">token_id_2</span><span class="p">,</span>
-<span class="go">                         token_id_3, token_id_1]).long()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vocab</span> <span class="o">=</span> <span class="n">build_vocab_from_iterator</span><span class="p">([[</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;modeling&#39;</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">LanguageModelingDataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">vocab</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </dd></dl>
 
 <div class="section" id="wikitext-2">
-<h3><a class="toc-backref" href="#id4">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.WikiText2">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WikiText2</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#WikiText2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WikiText2" title="Permalink to this definition">¶</a></dt>
@@ -423,7 +934,6 @@ function with input of a string and output of a token list.</p></li>
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
 <li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
 vocabulary based on the train data set.</p></li>
-<li><p><strong>removed_tokens</strong> – removed tokens from output dataset (Default: [])</p></li>
 <li><p><strong>data_select</strong> – a string or tupel for the returned datasets
 (Default: (‘train’, ‘test’,’valid’))
 By default, all the three datasets (train, test, valid) are generated. Users
@@ -431,6 +941,10 @@ could also choose any one or two of them, for example (‘train’, ‘test’) 
 just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
 object should be provided which will be used to process valid and/or test
 data.</p></li>
+<li><p><strong>single_line</strong> – whether to return all tokens in a single line.
+(Default: True)
+By default, all lines in raw text file are concatenated into a single line.
+Use <cite>single_line = False</cite> if one wants to get data line by line.</p></li>
 </ul>
 </dd>
 </dl>
@@ -453,7 +967,7 @@ data.</p></li>
 
 </div>
 <div class="section" id="wikitext103">
-<h3><a class="toc-backref" href="#id5">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.WikiText103">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WikiText103</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#WikiText103"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WikiText103" title="Permalink to this definition">¶</a></dt>
@@ -470,12 +984,6 @@ function with input of a string and output of a token list.</p></li>
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
 <li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
 vocabulary based on the train data set.</p></li>
-<li><p><strong>data_select</strong> – the returned datasets (Default: (‘train’, ‘test’,’valid’))
-By default, all the three datasets (train, test, valid) are generated. Users
-could also choose any one or two of them, for example (‘train’, ‘test’).
-If ‘train’ is not in the tuple, an vocab object should be provided which will
-be used to process valid and/or test data.</p></li>
-<li><p><strong>removed_tokens</strong> – removed tokens from output dataset (Default: [])</p></li>
 <li><p><strong>data_select</strong> – a string or tupel for the returned datasets
 (Default: (‘train’, ‘test’,’valid’))
 By default, all the three datasets (train, test, valid) are generated. Users
@@ -483,6 +991,10 @@ could also choose any one or two of them, for example (‘train’, ‘test’) 
 just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
 object should be provided which will be used to process valid and/or test
 data.</p></li>
+<li><p><strong>single_line</strong> – whether to return all tokens in a single line.
+(Default: True)
+By default, all lines in raw text file are concatenated into a single line.
+Use <cite>single_line = False</cite> if one wants to get data line by line.</p></li>
 </ul>
 </dd>
 </dl>
@@ -505,7 +1017,7 @@ data.</p></li>
 
 </div>
 <div class="section" id="penntreebank">
-<h3><a class="toc-backref" href="#id6">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.PennTreebank">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">PennTreebank</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#PennTreebank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
@@ -522,7 +1034,6 @@ function with input of a string and output of a token list.</p></li>
 <li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
 <li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
 vocabulary based on the train data set.</p></li>
-<li><p><strong>removed_tokens</strong> – removed tokens from output dataset (Default: [])</p></li>
 <li><p><strong>data_select</strong> – a string or tupel for the returned datasets
 (Default: (‘train’, ‘test’,’valid’))
 By default, all the three datasets (train, test, valid) are generated. Users
@@ -530,6 +1041,10 @@ could also choose any one or two of them, for example (‘train’, ‘test’) 
 just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
 object should be provided which will be used to process valid and/or test
 data.</p></li>
+<li><p><strong>single_line</strong> – whether to return all tokens in a single line.
+(Default: True)
+By default, all lines in raw text file are concatenated into a single line.
+Use <cite>single_line = False</cite> if one wants to get data line by line.</p></li>
 </ul>
 </dd>
 </dl>
@@ -551,6 +1066,639 @@ data.</p></li>
 </dd></dl>
 
 </div>
+<div class="section" id="wmtnewscrawl">
+<h3><a class="toc-backref" href="#id17">WMTNewsCrawl</a><a class="headerlink" href="#wmtnewscrawl" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.WMTNewsCrawl">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WMTNewsCrawl</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/language_modeling.html#WMTNewsCrawl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WMTNewsCrawl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines WMTNewsCrawl datasets.</p>
+<p>Create language modeling dataset: WMTNewsCrawl
+returns the train set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well (see example below). A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>data_select</strong> – a string or tupel for the returned datasets
+(Default: (‘train’,))</p></li>
+<li><p><strong>single_line</strong> – whether to return all tokens in a single line.
+(Default: True)
+By default, all lines in raw text file are concatenated into a single line.
+Use <cite>single_line = False</cite> if one wants to get data line by line.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">WMTNewsCrawl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="o">=</span> <span class="n">WMTNewsCrawl</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.WMTNewsCrawl.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.WMTNewsCrawl.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="machine-translation">
+<h2><a class="toc-backref" href="#id18">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
+<p>Language modeling datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">TranslationDataset</span></code> class.</p>
+<div class="section" id="multi30k">
+<h3><a class="toc-backref" href="#id19">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.Multi30k">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">Multi30k</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Define translation datasets: Multi30k</dt><dd><p>Separately returns train/valid/test datasets as a tuple</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_filenames</strong> – the source and target filenames for training.
+Default: (‘train.de’, ‘train.en’)</p></li>
+<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
+Default: (‘val.de’, ‘val.en’)</p></li>
+<li><p><strong>test_filenames</strong> – the source and target filenames for test.
+Default: (‘test2016.de’, ‘test2016.en’)</p></li>
+<li><p><strong>tokenizer</strong> – <p>the tokenizer used to preprocess source and target raw text data.
+It has to be in a form of tuple.
+Default: (get_tokenizer(“spacy”, language=’de_core_news_sm’),</p>
+<blockquote>
+<div><p>get_tokenizer(“spacy”, language=’en_core_web_sm’))</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Source and target Vocabulary objects used for dataset. If None, it
+will generate a new vocabulary based on the train data set. It has to be
+in a form of tuple.
+Default: (None, None)</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘valid’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+<li><p><strong>removed_tokens</strong> – removed tokens from output dataset (Default: ‘&lt;unk&gt;’)</p></li>
+<li><p><strong>available dataset include</strong> (<em>The</em>) – test_2016_flickr.cs
+test_2016_flickr.de
+test_2016_flickr.en
+test_2016_flickr.fr
+test_2017_flickr.de
+test_2017_flickr.en
+test_2017_flickr.fr
+test_2017_mscoco.de
+test_2017_mscoco.en
+test_2017_mscoco.fr
+test_2018_flickr.en
+train.cs
+train.de
+train.en
+train.fr
+val.cs
+val.de
+val.en
+val.fr
+test_2016.1.de
+test_2016.1.en
+test_2016.2.de
+test_2016.2.en
+test_2016.3.de
+test_2016.3.en
+test_2016.4.de
+test_2016.4.en
+test_2016.5.de
+test_2016.5.en
+train.1.de
+train.1.en
+train.2.de
+train.2.en
+train.3.de
+train.3.en
+train.4.de
+train.4.en
+train.5.de
+train.5.en
+val.1.de
+val.1.en
+val.2.de
+val.2.en
+val.3.de
+val.3.en
+val.4.de
+val.4.en
+val.5.de
+val.5.en</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">Multi30k</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;de&#39;</span><span class="p">),</span>
+<span class="go">                 get_tokenizer(&quot;basic_english&quot;))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_data</span><span class="p">,</span> <span class="n">tgt_data</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.Multi30k.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.Multi30k.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="iwslt">
+<h3><a class="toc-backref" href="#id20">IWSLT</a><a class="headerlink" href="#iwslt" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.IWSLT">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">IWSLT</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#IWSLT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.IWSLT" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Define translation datasets: IWSLT</dt><dd><p>Separately returns train/valid/test datasets
+The available datasets include:</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_filenames</strong> – the source and target filenames for training.
+Default: (‘train.de-en.de’, ‘train.de-en.en’)</p></li>
+<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
+Default: (‘IWSLT16.TED.tst2013.de-en.de’, ‘IWSLT16.TED.tst2013.de-en.en’)</p></li>
+<li><p><strong>test_filenames</strong> – the source and target filenames for test.
+Default: (‘IWSLT16.TED.tst2014.de-en.de’, ‘IWSLT16.TED.tst2014.de-en.en’)</p></li>
+<li><p><strong>tokenizer</strong> – <p>the tokenizer used to preprocess source and target raw text data.
+It has to be in a form of tuple.
+Default: (get_tokenizer(“spacy”, language=’de_core_news_sm’),</p>
+<blockquote>
+<div><p>get_tokenizer(“spacy”, language=’en_core_web_sm’))</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Source and target Vocabulary objects used for dataset. If None, it
+will generate a new vocabulary based on the train data set. It has to be
+in a form of tuple.
+Default: (None, None)</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘valid’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+<li><p><strong>removed_tokens</strong> – removed tokens from output dataset (Default: ‘&lt;unk&gt;’)</p></li>
+<li><p><strong>available datasets include</strong> (<em>The</em>) – IWSLT16.TED.dev2010.ar-en.ar
+IWSLT16.TED.dev2010.ar-en.en
+IWSLT16.TED.dev2010.cs-en.cs
+IWSLT16.TED.dev2010.cs-en.en
+IWSLT16.TED.dev2010.de-en.de
+IWSLT16.TED.dev2010.de-en.en
+IWSLT16.TED.dev2010.en-ar.ar
+IWSLT16.TED.dev2010.en-ar.en
+IWSLT16.TED.dev2010.en-cs.cs
+IWSLT16.TED.dev2010.en-cs.en
+IWSLT16.TED.dev2010.en-de.de
+IWSLT16.TED.dev2010.en-de.en
+IWSLT16.TED.dev2010.en-fr.en
+IWSLT16.TED.dev2010.en-fr.fr
+IWSLT16.TED.dev2010.fr-en.en
+IWSLT16.TED.dev2010.fr-en.fr
+IWSLT16.TED.tst2010.ar-en.ar
+IWSLT16.TED.tst2010.ar-en.en
+IWSLT16.TED.tst2010.cs-en.cs
+IWSLT16.TED.tst2010.cs-en.en
+IWSLT16.TED.tst2010.de-en.de
+IWSLT16.TED.tst2010.de-en.en
+IWSLT16.TED.tst2010.en-ar.ar
+IWSLT16.TED.tst2010.en-ar.en
+IWSLT16.TED.tst2010.en-cs.cs
+IWSLT16.TED.tst2010.en-cs.en
+IWSLT16.TED.tst2010.en-de.de
+IWSLT16.TED.tst2010.en-de.en
+IWSLT16.TED.tst2010.en-fr.en
+IWSLT16.TED.tst2010.en-fr.fr
+IWSLT16.TED.tst2010.fr-en.en
+IWSLT16.TED.tst2010.fr-en.fr
+IWSLT16.TED.tst2011.ar-en.ar
+IWSLT16.TED.tst2011.ar-en.en
+IWSLT16.TED.tst2011.cs-en.cs
+IWSLT16.TED.tst2011.cs-en.en
+IWSLT16.TED.tst2011.de-en.de
+IWSLT16.TED.tst2011.de-en.en
+IWSLT16.TED.tst2011.en-ar.ar
+IWSLT16.TED.tst2011.en-ar.en
+IWSLT16.TED.tst2011.en-cs.cs
+IWSLT16.TED.tst2011.en-cs.en
+IWSLT16.TED.tst2011.en-de.de
+IWSLT16.TED.tst2011.en-de.en
+IWSLT16.TED.tst2011.en-fr.en
+IWSLT16.TED.tst2011.en-fr.fr
+IWSLT16.TED.tst2011.fr-en.en
+IWSLT16.TED.tst2011.fr-en.fr
+IWSLT16.TED.tst2012.ar-en.ar
+IWSLT16.TED.tst2012.ar-en.en
+IWSLT16.TED.tst2012.cs-en.cs
+IWSLT16.TED.tst2012.cs-en.en
+IWSLT16.TED.tst2012.de-en.de
+IWSLT16.TED.tst2012.de-en.en
+IWSLT16.TED.tst2012.en-ar.ar
+IWSLT16.TED.tst2012.en-ar.en
+IWSLT16.TED.tst2012.en-cs.cs
+IWSLT16.TED.tst2012.en-cs.en
+IWSLT16.TED.tst2012.en-de.de
+IWSLT16.TED.tst2012.en-de.en
+IWSLT16.TED.tst2012.en-fr.en
+IWSLT16.TED.tst2012.en-fr.fr
+IWSLT16.TED.tst2012.fr-en.en
+IWSLT16.TED.tst2012.fr-en.fr
+IWSLT16.TED.tst2013.ar-en.ar
+IWSLT16.TED.tst2013.ar-en.en
+IWSLT16.TED.tst2013.cs-en.cs
+IWSLT16.TED.tst2013.cs-en.en
+IWSLT16.TED.tst2013.de-en.de
+IWSLT16.TED.tst2013.de-en.en
+IWSLT16.TED.tst2013.en-ar.ar
+IWSLT16.TED.tst2013.en-ar.en
+IWSLT16.TED.tst2013.en-cs.cs
+IWSLT16.TED.tst2013.en-cs.en
+IWSLT16.TED.tst2013.en-de.de
+IWSLT16.TED.tst2013.en-de.en
+IWSLT16.TED.tst2013.en-fr.en
+IWSLT16.TED.tst2013.en-fr.fr
+IWSLT16.TED.tst2013.fr-en.en
+IWSLT16.TED.tst2013.fr-en.fr
+IWSLT16.TED.tst2014.ar-en.ar
+IWSLT16.TED.tst2014.ar-en.en
+IWSLT16.TED.tst2014.de-en.de
+IWSLT16.TED.tst2014.de-en.en
+IWSLT16.TED.tst2014.en-ar.ar
+IWSLT16.TED.tst2014.en-ar.en
+IWSLT16.TED.tst2014.en-de.de
+IWSLT16.TED.tst2014.en-de.en
+IWSLT16.TED.tst2014.en-fr.en
+IWSLT16.TED.tst2014.en-fr.fr
+IWSLT16.TED.tst2014.fr-en.en
+IWSLT16.TED.tst2014.fr-en.fr
+IWSLT16.TEDX.dev2012.de-en.de
+IWSLT16.TEDX.dev2012.de-en.en
+IWSLT16.TEDX.tst2013.de-en.de
+IWSLT16.TEDX.tst2013.de-en.en
+IWSLT16.TEDX.tst2014.de-en.de
+IWSLT16.TEDX.tst2014.de-en.en
+train.ar
+train.ar-en.ar
+train.ar-en.en
+train.cs
+train.cs-en.cs
+train.cs-en.en
+train.de
+train.de-en.de
+train.de-en.en
+train.en
+train.en-ar.ar
+train.en-ar.en
+train.en-cs.cs
+train.en-cs.en
+train.en-de.de
+train.en-de.en
+train.en-fr.en
+train.en-fr.fr
+train.fr
+train.fr-en.en
+train.fr-en.fr
+train.tags.ar-en.ar
+train.tags.ar-en.en
+train.tags.cs-en.cs
+train.tags.cs-en.en
+train.tags.de-en.de
+train.tags.de-en.en
+train.tags.en-ar.ar
+train.tags.en-ar.en
+train.tags.en-cs.cs
+train.tags.en-cs.en
+train.tags.en-de.de
+train.tags.en-de.en
+train.tags.en-fr.en
+train.tags.en-fr.fr
+train.tags.fr-en.en
+train.tags.fr-en.fr</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">IWSLT</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;de&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tgt_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">IWSLT</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="p">(</span><span class="n">src_tokenizer</span><span class="p">,</span>
+<span class="go">                                                                  tgt_tokenizer))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_data</span><span class="p">,</span> <span class="n">tgt_data</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.IWSLT.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.IWSLT.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="wmt14">
+<h3><a class="toc-backref" href="#id21">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.WMT14">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WMT14</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Define translation datasets: WMT14</dt><dd><p>Separately returns train/valid/test datasets
+The available datasets include:</p>
+<blockquote>
+<div><p>newstest2016.en
+newstest2016.de
+newstest2015.en
+newstest2015.de
+newstest2014.en
+newstest2014.de
+newstest2013.en
+newstest2013.de
+newstest2012.en
+newstest2012.de
+newstest2011.tok.de
+newstest2011.en
+newstest2011.de
+newstest2010.tok.de
+newstest2010.en
+newstest2010.de
+newstest2009.tok.de
+newstest2009.en
+newstest2009.de
+newstest2016.tok.de
+newstest2015.tok.de
+newstest2014.tok.de
+newstest2013.tok.de
+newstest2012.tok.de
+newstest2010.tok.en
+newstest2009.tok.en
+newstest2015.tok.en
+newstest2014.tok.en
+newstest2013.tok.en
+newstest2012.tok.en
+newstest2011.tok.en
+newstest2016.tok.en
+newstest2009.tok.bpe.32000.en
+newstest2011.tok.bpe.32000.en
+newstest2010.tok.bpe.32000.en
+newstest2013.tok.bpe.32000.en
+newstest2012.tok.bpe.32000.en
+newstest2015.tok.bpe.32000.en
+newstest2014.tok.bpe.32000.en
+newstest2016.tok.bpe.32000.en
+train.tok.clean.bpe.32000.en
+newstest2009.tok.bpe.32000.de
+newstest2010.tok.bpe.32000.de
+newstest2011.tok.bpe.32000.de
+newstest2013.tok.bpe.32000.de
+newstest2012.tok.bpe.32000.de
+newstest2014.tok.bpe.32000.de
+newstest2016.tok.bpe.32000.de
+newstest2015.tok.bpe.32000.de
+train.tok.clean.bpe.32000.de</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_filenames</strong> – the source and target filenames for training.
+Default: (‘train.tok.clean.bpe.32000.de’, ‘train.tok.clean.bpe.32000.en’)</p></li>
+<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
+Default: (‘newstest2013.tok.bpe.32000.de’, ‘newstest2013.tok.bpe.32000.en’)</p></li>
+<li><p><strong>test_filenames</strong> – the source and target filenames for test.
+Default: (‘newstest2014.tok.bpe.32000.de’, ‘newstest2014.tok.bpe.32000.en’)</p></li>
+<li><p><strong>tokenizer</strong> – <p>the tokenizer used to preprocess source and target raw text data.
+It has to be in a form of tuple.
+Default: (get_tokenizer(“spacy”, language=’de_core_news_sm’),</p>
+<blockquote>
+<div><p>get_tokenizer(“spacy”, language=’en_core_web_sm’))</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Source and target Vocabulary objects used for dataset. If None, it
+will generate a new vocabulary based on the train data set. It has to be
+in a form of tuple.
+Default: (None, None)</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘valid’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+<li><p><strong>removed_tokens</strong> – removed tokens from output dataset (Default: ‘&lt;unk&gt;’)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">WMT14</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;de&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tgt_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">WMT14</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="p">(</span><span class="n">src_tokenizer</span><span class="p">,</span>
+<span class="go">                                                                  tgt_tokenizer))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_data</span><span class="p">,</span> <span class="n">tgt_data</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.WMT14.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.WMT14.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="sequence-tagging">
+<h2><a class="toc-backref" href="#id22">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
+<p>Language modeling datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">SequenceTaggingDataset</span></code> class.</p>
+<div class="section" id="udpos">
+<h3><a class="toc-backref" href="#id23">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.UDPOS">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">UDPOS</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/sequence_tagging.html#UDPOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Universal Dependencies English Web Treebank</p>
+<p>Separately returns the training, validation, and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocabs</strong> – A list of voabularies for each columns in the dataset. Must be in an
+instance of List
+Default: None</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘valid’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.datasets.raw</span> <span class="kn">import</span> <span class="n">UDPOS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">UDPOS</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.UDPOS.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.UDPOS.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="conll2000chunking">
+<h3><a class="toc-backref" href="#id24">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.CoNLL2000Chunking">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">CoNLL2000Chunking</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/sequence_tagging.html#CoNLL2000Chunking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
+<dd><p>CoNLL 2000 Chunking Dataset</p>
+<p>Separately returns the training and test dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocabs</strong> – A list of voabularies for each columns in the dataset. Must be in an
+instance of List
+Default: None</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘valid’, ‘test’))
+By default, all the three datasets (train, test, valid) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.datasets.raw</span> <span class="kn">import</span> <span class="n">CoNLL2000Chunking</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">CoNLL2000Chunking</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.CoNLL2000Chunking.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.CoNLL2000Chunking.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="question-answer">
+<h2><a class="toc-backref" href="#id25">Question Answer</a><a class="headerlink" href="#question-answer" title="Permalink to this headline">¶</a></h2>
+<p>Question answer datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">QuestionAnswerDataset</span></code> class.</p>
+<div class="section" id="squad-1-0">
+<h3><a class="toc-backref" href="#id26">SQuAD 1.0</a><a class="headerlink" href="#squad-1-0" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.SQuAD1">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">SQuAD1</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/question_answer.html#SQuAD1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.SQuAD1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines SQuAD1 datasets.</p>
+<p>Create question answer dataset: SQuAD1</p>
+<p>Separately returns the train and dev dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘dev’))
+By default, all the two datasets (train, dev) are generated. Users
+could also choose any one of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">SQuAD1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">dev</span> <span class="o">=</span> <span class="n">SQuAD1</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">dev</span> <span class="o">=</span> <span class="n">SQuAD1</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.SQuAD1.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.SQuAD1.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="squad-2-0">
+<h3><a class="toc-backref" href="#id27">SQuAD 2.0</a><a class="headerlink" href="#squad-2-0" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchtext.experimental.datasets.SQuAD2">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">SQuAD2</code><a class="reference internal" href="_modules/torchtext/experimental/datasets/question_answer.html#SQuAD2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.SQuAD2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines SQuAD2 datasets.</p>
+<p>Create question answer dataset: SQuAD2</p>
+<p>Separately returns the train and dev dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
+vocabulary based on the train data set.</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess raw text data.
+The default one is basic_english tokenizer in fastText. spacy tokenizer
+is supported as well. A custom tokenizer is callable
+function with input of a string and output of a token list.</p></li>
+<li><p><strong>data_select</strong> – a string or tuple for the returned datasets
+(Default: (‘train’, ‘dev’))
+By default, all the two datasets (train, dev) are generated. Users
+could also choose any one of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">SQuAD2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">dev</span> <span class="o">=</span> <span class="n">SQuAD2</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">dev</span> <span class="o">=</span> <span class="n">SQuAD2</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchtext.experimental.datasets.SQuAD2.__init__">
+<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.experimental.datasets.SQuAD2.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -562,7 +1710,7 @@ data.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="experimental_transforms.html" class="btn btn-neutral float-right" title="torchtext.experimental.transforms" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="utils.html" class="btn btn-neutral" title="torchtext.utils" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
@@ -602,10 +1750,39 @@ data.</p></li>
 <li><a class="reference internal" href="#imdb">IMDb</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#text-classification">Text Classification</a><ul>
+<li><a class="reference internal" href="#textclassificationdataset">TextClassificationDataset</a></li>
+<li><a class="reference internal" href="#ag-news">AG_NEWS</a></li>
+<li><a class="reference internal" href="#sogounews">SogouNews</a></li>
+<li><a class="reference internal" href="#dbpedia">DBpedia</a></li>
+<li><a class="reference internal" href="#yelpreviewpolarity">YelpReviewPolarity</a></li>
+<li><a class="reference internal" href="#yelpreviewfull">YelpReviewFull</a></li>
+<li><a class="reference internal" href="#yahooanswers">YahooAnswers</a></li>
+<li><a class="reference internal" href="#amazonreviewpolarity">AmazonReviewPolarity</a></li>
+<li><a class="reference internal" href="#amazonreviewfull">AmazonReviewFull</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#language-modeling">Language Modeling</a><ul>
 <li><a class="reference internal" href="#wikitext-2">WikiText-2</a></li>
 <li><a class="reference internal" href="#wikitext103">WikiText103</a></li>
 <li><a class="reference internal" href="#penntreebank">PennTreebank</a></li>
+<li><a class="reference internal" href="#wmtnewscrawl">WMTNewsCrawl</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#machine-translation">Machine Translation</a><ul>
+<li><a class="reference internal" href="#multi30k">Multi30k</a></li>
+<li><a class="reference internal" href="#iwslt">IWSLT</a></li>
+<li><a class="reference internal" href="#wmt14">WMT14</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sequence-tagging">Sequence Tagging</a><ul>
+<li><a class="reference internal" href="#udpos">UDPOS</a></li>
+<li><a class="reference internal" href="#conll2000chunking">CoNLL2000Chunking</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#question-answer">Question Answer</a><ul>
+<li><a class="reference internal" href="#squad-1-0">SQuAD 1.0</a></li>
+<li><a class="reference internal" href="#squad-2-0">SQuAD 2.0</a></li>
 </ul>
 </li>
 </ul>
@@ -827,9 +2004,6 @@ data.</p></li>
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

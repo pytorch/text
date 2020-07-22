@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.vocab &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -192,6 +192,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">examples</a></li>
 </ul>
 
@@ -264,16 +267,14 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.vocab</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
 
-<span class="kn">import</span> <span class="nn">six</span>
-<span class="kn">from</span> <span class="nn">six.moves.urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
@@ -299,7 +300,7 @@
     <span class="c1"># TODO (@mttk): Populate classs with default values of special symbols</span>
     <span class="n">UNK</span> <span class="o">=</span> <span class="s1">&#39;&lt;unk&gt;&#39;</span>
 
-<div class="viewcode-block" id="Vocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">],</span>
+<div class="viewcode-block" id="Vocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">),</span>
                  <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vectors_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials_first</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Vocab object from a collections.Counter.</span>
 
@@ -435,9 +436,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">vectors</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">vector</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vectors</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY2</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">vector</span> <span class="o">=</span> <span class="n">six</span><span class="o">.</span><span class="n">text_type</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="c1"># Convert the string pretrained vector identifier</span>
                 <span class="c1"># to a Vectors object</span>
                 <span class="k">if</span> <span class="n">vector</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pretrained_aliases</span><span class="p">:</span>
@@ -488,7 +487,7 @@
 
 <div class="viewcode-block" id="SubwordVocab"><a class="viewcode-back" href="../../vocab.html#torchtext.data.SubwordVocab">[docs]</a><span class="k">class</span> <span class="nc">SubwordVocab</span><span class="p">(</span><span class="n">Vocab</span><span class="p">):</span>
 
-<div class="viewcode-block" id="SubwordVocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.SubwordVocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">],</span>
+<div class="viewcode-block" id="SubwordVocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.SubwordVocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">),</span>
                  <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">zero_</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a revtok subword vocabulary from a collections.Counter.</span>
 
@@ -672,7 +671,7 @@
                                                                     <span class="n">dim</span><span class="p">))</span>
 
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">binary_type</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
                             <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Skipping non-UTF8 token </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">word</span><span class="p">)))</span>
@@ -773,8 +772,6 @@
         <span class="n">vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;&lt;unk&gt;&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
-        <span class="c1"># These literals need to be coerced to unicode for Python 2 compatibility</span>
-        <span class="c1"># when we try to join them with read ngrams from the files.</span>
         <span class="n">chars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#BEGIN#&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;#END#&#39;</span><span class="p">]</span>
         <span class="n">num_vectors</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
@@ -1075,9 +1072,6 @@
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

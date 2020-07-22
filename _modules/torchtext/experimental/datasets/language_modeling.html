@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.language_modeling &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.experimental.datasets.language_modeling &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -192,6 +192,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">examples</a></li>
 </ul>
 
@@ -265,24 +268,17 @@
               
   <h1>Source code for torchtext.experimental.datasets.language_modeling</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
-<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
-<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">numericalize_tokens_from_iterator</span>
+<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">language_modeling</span> <span class="k">as</span> <span class="n">raw</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.functional</span> <span class="kn">import</span> <span class="n">vocab_func</span><span class="p">,</span> <span class="n">totensor</span><span class="p">,</span> <span class="n">sequential_transforms</span>
 
-<span class="n">URLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;WikiText2&#39;</span><span class="p">:</span>
-        <span class="s1">&#39;https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span>
-        <span class="s1">&#39;https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span>
-        <span class="p">[</span><span class="s1">&#39;https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt&#39;</span><span class="p">]</span>
-<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">transforms</span><span class="p">):</span>
+    <span class="n">tok_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">tok_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transforms</span><span class="p">(</span><span class="n">txt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">build_vocab_from_iterator</span><span class="p">(</span><span class="n">tok_list</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="LanguageModelingDataset"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.LanguageModelingDataset">[docs]</a><span class="k">class</span> <span class="nc">LanguageModelingDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
@@ -292,10 +288,11 @@
 <span class="sd">             - WikiText2</span>
 <span class="sd">             - WikiText103</span>
 <span class="sd">             - PennTreebank</span>
+<span class="sd">             - WMTNewsCrawl</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="LanguageModelingDataset.__init__"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.LanguageModelingDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">vocab</span><span class="p">):</span>
+<div class="viewcode-block" id="LanguageModelingDataset.__init__"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.LanguageModelingDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">single_line</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initiate language modeling dataset.</span>
 
 <span class="sd">        Arguments:</span>
@@ -303,22 +300,24 @@
 <span class="sd">                numericalizing the string tokens.</span>
 <span class="sd">                torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()</span>
 <span class="sd">            vocab: Vocabulary object used for dataset.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; from torchtext.vocab import build_vocab_from_iterator</span>
-<span class="sd">            &gt;&gt;&gt; data = torch.tensor([token_id_1, token_id_2,</span>
-<span class="sd">                                     token_id_3, token_id_1]).long()</span>
-<span class="sd">            &gt;&gt;&gt; vocab = build_vocab_from_iterator([[&#39;language&#39;, &#39;modeling&#39;]])</span>
-<span class="sd">            &gt;&gt;&gt; dataset = LanguageModelingDataset(data, vocab)</span>
+<span class="sd">            transforms: Text string transforms.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">LanguageModelingDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">single_line</span> <span class="o">=</span> <span class="n">single_line</span>
+        <span class="k">if</span> <span class="n">single_line</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">transforms</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span></div>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_line</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -331,63 +330,45 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_datafile_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">extracted_files</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">fname</span>
-
-
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">),</span>
-                    <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removed_tokens</span><span class="o">=</span><span class="p">[],</span>
-                    <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">)):</span>
+<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">),</span> <span class="n">single_line</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">tokenizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s1">&#39;basic_english&#39;</span><span class="p">)</span>
+    <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_select</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">data_select</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_select</span><span class="p">]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">data_select</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">))):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;data_select is not supported!&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">data_select</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Given data selection </span><span class="si">{}</span><span class="s1"> is not supported!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_select</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">select_to_index</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="s1">&#39;PennTreebank&#39;</span><span class="p">][</span><span class="n">select_to_index</span><span class="p">[</span><span class="n">key</span><span class="p">]],</span>
-                                             <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">single_line</span> <span class="ow">and</span> <span class="n">dataset_name</span> <span class="o">!=</span> <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;single_line must be True except for WikiText103&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span>
+        <span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,))</span>
+        <span class="k">if</span> <span class="n">single_line</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">train</span><span class="p">]),</span> <span class="p">]}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">train</span><span class="p">]}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
-
-    <span class="n">_path</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
-        <span class="n">_path</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_datafile_path</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">valid</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">))</span>
+        <span class="c1"># Cache raw text iterable dataset</span>
+        <span class="k">if</span> <span class="n">single_line</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">train</span><span class="p">]),</span> <span class="p">],</span>
+                        <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">),</span> <span class="p">],</span>
+                        <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">test</span><span class="p">),</span> <span class="p">]}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">train</span><span class="p">],</span>
+                        <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">],</span>
+                        <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">txt</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">test</span><span class="p">]}</span>
 
     <span class="k">if</span> <span class="n">vocab</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;train&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_path</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;train&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Must pass a vocab if train is not selected.&quot;</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building Vocab based on </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_path</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]))</span>
-        <span class="n">txt_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">_path</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span>
-                                                          <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">))</span>
-        <span class="n">vocab</span> <span class="o">=</span> <span class="n">build_vocab_from_iterator</span><span class="p">(</span><span class="n">txt_iter</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Vocab has </span><span class="si">{}</span><span class="s1"> entries&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vocab</span><span class="p">)))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">Vocab</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Passed vocabulary is not of type Vocab&quot;</span><span class="p">)</span>
-
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">_path</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
-        <span class="n">txt_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">_path</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
-                                                          <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">))</span>
-        <span class="n">_iter</span> <span class="o">=</span> <span class="n">numericalize_tokens_from_iterator</span><span class="p">(</span>
-            <span class="n">vocab</span><span class="p">,</span> <span class="n">txt_iter</span><span class="p">,</span> <span class="n">removed_tokens</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">_iter</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">token_id</span> <span class="k">for</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="p">[]:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Dataset </span><span class="si">{}</span><span class="s1"> is empty!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LanguageModelingDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">d</span><span class="p">])</span><span class="o">.</span><span class="n">long</span><span class="p">(),</span> <span class="n">vocab</span><span class="p">)</span>
-                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">)</span>
+        <span class="n">vocab</span> <span class="o">=</span> <span class="n">build_vocab</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span> <span class="n">text_transform</span><span class="p">)</span>
+    <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">text_transform</span><span class="p">,</span> <span class="n">vocab_func</span><span class="p">(</span><span class="n">vocab</span><span class="p">),</span>
+                                           <span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">LanguageModelingDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">text_transform</span><span class="p">,</span> <span class="n">single_line</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="WikiText2"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.WikiText2">[docs]</a><span class="k">def</span> <span class="nf">WikiText2</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -404,7 +385,6 @@
 <span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
-<span class="sd">        removed_tokens: removed tokens from output dataset (Default: [])</span>
 <span class="sd">        data_select: a string or tupel for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;,&#39;valid&#39;))</span>
 <span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
@@ -412,6 +392,10 @@
 <span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
 <span class="sd">            object should be provided which will be used to process valid and/or test</span>
 <span class="sd">            data.</span>
+<span class="sd">        single_line: whether to return all tokens in a single line.</span>
+<span class="sd">            (Default: True)</span>
+<span class="sd">            By default, all lines in raw text file are concatenated into a single line.</span>
+<span class="sd">            Use `single_line = False` if one wants to get data line by line.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import WikiText2</span>
@@ -441,12 +425,6 @@
 <span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
-<span class="sd">        data_select: the returned datasets (Default: (&#39;train&#39;, &#39;test&#39;,&#39;valid&#39;))</span>
-<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
-<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;).</span>
-<span class="sd">            If &#39;train&#39; is not in the tuple, an vocab object should be provided which will</span>
-<span class="sd">            be used to process valid and/or test data.</span>
-<span class="sd">        removed_tokens: removed tokens from output dataset (Default: [])</span>
 <span class="sd">        data_select: a string or tupel for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;,&#39;valid&#39;))</span>
 <span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
@@ -454,6 +432,10 @@
 <span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
 <span class="sd">            object should be provided which will be used to process valid and/or test</span>
 <span class="sd">            data.</span>
+<span class="sd">        single_line: whether to return all tokens in a single line.</span>
+<span class="sd">            (Default: True)</span>
+<span class="sd">            By default, all lines in raw text file are concatenated into a single line.</span>
+<span class="sd">            Use `single_line = False` if one wants to get data line by line.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import WikiText103</span>
@@ -483,7 +465,6 @@
 <span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
 <span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
 <span class="sd">            vocabulary based on the train data set.</span>
-<span class="sd">        removed_tokens: removed tokens from output dataset (Default: [])</span>
 <span class="sd">        data_select: a string or tupel for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;,&#39;valid&#39;))</span>
 <span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
@@ -491,6 +472,10 @@
 <span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
 <span class="sd">            object should be provided which will be used to process valid and/or test</span>
 <span class="sd">            data.</span>
+<span class="sd">        single_line: whether to return all tokens in a single line.</span>
+<span class="sd">            (Default: True)</span>
+<span class="sd">            By default, all lines in raw text file are concatenated into a single line.</span>
+<span class="sd">            Use `single_line = False` if one wants to get data line by line.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import PennTreebank</span>
@@ -504,6 +489,45 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;PennTreebank&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WMTNewsCrawl"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.WMTNewsCrawl">[docs]</a><span class="k">def</span> <span class="nf">WMTNewsCrawl</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines WMTNewsCrawl datasets.</span>
+
+<span class="sd">    Create language modeling dataset: WMTNewsCrawl</span>
+<span class="sd">    returns the train set</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well (see example below). A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        data_select: a string or tupel for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;,))</span>
+<span class="sd">        single_line: whether to return all tokens in a single line.</span>
+<span class="sd">            (Default: True)</span>
+<span class="sd">            By default, all lines in raw text file are concatenated into a single line.</span>
+<span class="sd">            Use `single_line = False` if one wants to get data line by line.</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import WMTNewsCrawl</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;WMTNewsCrawl&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;WikiText2&#39;</span><span class="p">:</span> <span class="n">WikiText2</span><span class="p">,</span>
+    <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span> <span class="n">WikiText103</span><span class="p">,</span>
+    <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span> <span class="n">PennTreebank</span><span class="p">,</span>
+    <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span> <span class="n">WMTNewsCrawl</span>
+<span class="p">}</span>
 </pre></div>
 
              </article>
@@ -754,9 +778,6 @@
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.text_classification &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.experimental.datasets.text_classification &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -192,6 +192,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">examples</a></li>
 </ul>
 
@@ -264,96 +267,461 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.experimental.datasets.text_classification</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">ngrams_iterator</span>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
-<span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">TextClassificationDataset</span>
-
-<span class="n">URLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;IMDB&#39;</span><span class="p">:</span>
-        <span class="s1">&#39;http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz&#39;</span>
-<span class="p">}</span>
-
-
-<span class="k">def</span> <span class="nf">_create_data_from_iterator</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">removed_tokens</span><span class="p">):</span>
-    <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="p">,</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">vocab</span><span class="p">[</span><span class="n">x</span><span class="p">],</span>
-                        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">removed_tokens</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)))</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">text_classification</span> <span class="k">as</span> <span class="n">raw</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.functional</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">vocab_func</span><span class="p">,</span>
+    <span class="n">totensor</span><span class="p">,</span>
+    <span class="n">ngrams_func</span><span class="p">,</span>
+    <span class="n">sequential_transforms</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_imdb_iterator</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">yield_cls</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">extracted_files</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;urls&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fname</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;pos&#39;</span> <span class="ow">in</span> <span class="n">fname</span> <span class="ow">or</span> <span class="s1">&#39;neg&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="s1">&#39;pos&#39;</span> <span class="ow">in</span> <span class="n">fname</span> <span class="k">else</span> <span class="mi">0</span>
-                <span class="k">if</span> <span class="n">yield_cls</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()),</span> <span class="n">ngrams</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()),</span> <span class="n">ngrams</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_build_vocab</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">transforms</span><span class="p">):</span>
+    <span class="n">tok_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">tok_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transforms</span><span class="p">(</span><span class="n">txt</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">build_vocab_from_iterator</span><span class="p">(</span><span class="n">tok_list</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_generate_data_iterators</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">tokenizer</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">TextClassificationDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines an abstract text classification datasets.</span>
+<span class="sd">       Currently, we only support the following datasets:</span>
+<span class="sd">             - AG_NEWS</span>
+<span class="sd">             - SogouNews</span>
+<span class="sd">             - DBpedia</span>
+<span class="sd">             - YelpReviewPolarity</span>
+<span class="sd">             - YelpReviewFull</span>
+<span class="sd">             - YahooAnswers</span>
+<span class="sd">             - AmazonReviewPolarity</span>
+<span class="sd">             - AmazonReviewFull</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">transforms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initiate text-classification dataset.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            data: a list of label and text tring tuple. label is an integer.</span>
+<span class="sd">                [(label1, text1), (label2, text2), (label2, text3)]</span>
+<span class="sd">            vocab: Vocabulary object used for dataset.</span>
+<span class="sd">            transforms: a tuple of label and text string transforms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>  <span class="c1"># (label_transforms, tokens_transforms)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">label</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">txt</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">apppend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">label</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span>
+
+
+<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span>
+    <span class="n">dataset_name</span><span class="p">,</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span>
+    <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="n">text_transform</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">tokenizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">data_select</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Given data selection </span><span class="si">{}</span><span class="s1"> is not supported!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_select</span><span class="p">))</span>
-
-    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
-    <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
-
-    <span class="n">iters_group</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="s1">&#39;train&#39;</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
-        <span class="n">iters_group</span><span class="p">[</span><span class="s1">&#39;vocab&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_imdb_iterator</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">,</span>
-                                              <span class="n">tokenizer</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
-        <span class="n">iters_group</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">_imdb_iterator</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">,</span>
-                                           <span class="n">tokenizer</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">yield_cls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">iters_group</span>
-
-
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">removed_tokens</span><span class="o">=</span><span class="p">[],</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)):</span>
+    <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">ngrams_func</span><span class="p">(</span><span class="n">ngrams</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_select</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">data_select</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_select</span><span class="p">]</span>
-
-    <span class="n">iters_group</span> <span class="o">=</span> <span class="n">_generate_data_iterators</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span>
-                                           <span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">data_select</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Given data selection </span><span class="si">{}</span><span class="s2"> is not supported!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_select</span><span class="p">))</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+    <span class="c1"># Cache raw text iterable dataset</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span> <span class="ow">in</span> <span class="n">train</span><span class="p">],</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span> <span class="ow">in</span> <span class="n">test</span><span class="p">],</span>
+    <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">vocab</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;vocab&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">iters_group</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;train&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Must pass a vocab if train is not selected.&quot;</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building Vocab based on train data&#39;</span><span class="p">)</span>
-        <span class="n">vocab</span> <span class="o">=</span> <span class="n">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iters_group</span><span class="p">[</span><span class="s1">&#39;vocab&#39;</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">Vocab</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Passed vocabulary is not of type Vocab&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Vocab has </span><span class="si">{}</span><span class="s1"> entries&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vocab</span><span class="p">)))</span>
+        <span class="n">vocab</span> <span class="o">=</span> <span class="n">_build_vocab</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span> <span class="n">text_transform</span><span class="p">)</span>
+    <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span>
+        <span class="n">text_transform</span><span class="p">,</span> <span class="n">vocab_func</span><span class="p">(</span><span class="n">vocab</span><span class="p">),</span> <span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">label_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">TextClassificationDataset</span><span class="p">(</span>
+            <span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocab</span><span class="p">,</span> <span class="p">(</span><span class="n">label_transform</span><span class="p">,</span> <span class="n">text_transform</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span>
+    <span class="p">)</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
-        <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
-        <span class="n">data_iter</span> <span class="o">=</span> <span class="n">_create_data_from_iterator</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">iters_group</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">removed_tokens</span><span class="p">)</span>
-        <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">data_iter</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
-                                       <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">token_id</span> <span class="k">for</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">])))</span>
-            <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">TextClassificationDataset</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">],</span>
-                                           <span class="n">data</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">)</span>
+<div class="viewcode-block" id="AG_NEWS"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.AG_NEWS">[docs]</a><span class="k">def</span> <span class="nf">AG_NEWS</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines AG_NEWS datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            - 1 : World</span>
+<span class="sd">            - 2 : Sports</span>
+<span class="sd">            - 3 : Business</span>
+<span class="sd">            - 4 : Sci/Tech</span>
+
+<span class="sd">    Create text classification dataset: AG_NEWS</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import AG_NEWS</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = AG_NEWS(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = AG_NEWS(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = AG_NEWS(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;AG_NEWS&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SogouNews"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SogouNews">[docs]</a><span class="k">def</span> <span class="nf">SogouNews</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines SogouNews datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            - 1 : Sports</span>
+<span class="sd">            - 2 : Finance</span>
+<span class="sd">            - 3 : Entertainment</span>
+<span class="sd">            - 4 : Automobile</span>
+<span class="sd">            - 5 : Technology</span>
+
+<span class="sd">    Create text classification dataset: SogouNews</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import SogouNews</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = SogouNews(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = SogouNews(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = SogouNews(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;SogouNews&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.DBpedia">[docs]</a><span class="k">def</span> <span class="nf">DBpedia</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines DBpedia datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            - 1 : Company</span>
+<span class="sd">            - 2 : EducationalInstitution</span>
+<span class="sd">            - 3 : Artist</span>
+<span class="sd">            - 4 : Athlete</span>
+<span class="sd">            - 5 : OfficeHolder</span>
+<span class="sd">            - 6 : MeanOfTransportation</span>
+<span class="sd">            - 7 : Building</span>
+<span class="sd">            - 8 : NaturalPlace</span>
+<span class="sd">            - 9 : Village</span>
+<span class="sd">            - 10 : Animal</span>
+<span class="sd">            - 11 : Plant</span>
+<span class="sd">            - 12 : Album</span>
+<span class="sd">            - 13 : Film</span>
+<span class="sd">            - 14 : WrittenWork</span>
+
+<span class="sd">    Create text classification dataset: DBpedia</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import DBpedia</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = DBpedia(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = DBpedia(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = DBpedia(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;DBpedia&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="YelpReviewPolarity"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.YelpReviewPolarity">[docs]</a><span class="k">def</span> <span class="nf">YelpReviewPolarity</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines YelpReviewPolarity datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            - 1 : Negative polarity.</span>
+<span class="sd">            - 2 : Positive polarity.</span>
+
+<span class="sd">    Create text classification dataset: YelpReviewPolarity</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import YelpReviewPolarity</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = YelpReviewPolarity(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = YelpReviewPolarity(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = YelpReviewPolarity(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;YelpReviewPolarity&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="YelpReviewFull"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.YelpReviewFull">[docs]</a><span class="k">def</span> <span class="nf">YelpReviewFull</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines YelpReviewFull datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 - 5 : rating classes (5 is highly recommended).</span>
+
+<span class="sd">    Create text classification dataset: YelpReviewFull</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import YelpReviewFull</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = YelpReviewFull(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = YelpReviewFull(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = YelpReviewFull(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;YelpReviewFull&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="YahooAnswers"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.YahooAnswers">[docs]</a><span class="k">def</span> <span class="nf">YahooAnswers</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines YahooAnswers datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            - 1 : Society &amp; Culture</span>
+<span class="sd">            - 2 : Science &amp; Mathematics</span>
+<span class="sd">            - 3 : Health</span>
+<span class="sd">            - 4 : Education &amp; Reference</span>
+<span class="sd">            - 5 : Computers &amp; Internet</span>
+<span class="sd">            - 6 : Sports</span>
+<span class="sd">            - 7 : Business &amp; Finance</span>
+<span class="sd">            - 8 : Entertainment &amp; Music</span>
+<span class="sd">            - 9 : Family &amp; Relationships</span>
+<span class="sd">            - 10 : Politics &amp; Government</span>
+
+<span class="sd">    Create text classification dataset: YahooAnswers</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import YahooAnswers</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = YahooAnswers(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = YahooAnswers(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = YahooAnswers(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;YahooAnswers&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AmazonReviewPolarity"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.AmazonReviewPolarity">[docs]</a><span class="k">def</span> <span class="nf">AmazonReviewPolarity</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines AmazonReviewPolarity datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            - 1 : Negative polarity</span>
+<span class="sd">            - 2 : Positive polarity</span>
+
+<span class="sd">    Create text classification dataset: AmazonReviewPolarity</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import AmazonReviewPolarity</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewPolarity(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewPolarity(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = AmazonReviewPolarity(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;AmazonReviewPolarity&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AmazonReviewFull"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.AmazonReviewFull">[docs]</a><span class="k">def</span> <span class="nf">AmazonReviewFull</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines AmazonReviewFull datasets.</span>
+<span class="sd">        The labels includes:</span>
+<span class="sd">            1 - 5 : rating classes (5 is highly recommended)</span>
+
+<span class="sd">    Create text classification dataset: AmazonReviewFull</span>
+
+<span class="sd">    Separately returns the training and test dataset</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        ngrams: a contiguous sequence of n items from s string text.</span>
+<span class="sd">            Default: 1</span>
+<span class="sd">        vocab: Vocabulary used for dataset. If None, it will generate a new</span>
+<span class="sd">            vocabulary based on the train data set.</span>
+<span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
+<span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
+<span class="sd">            is supported as well. A custom tokenizer is callable</span>
+<span class="sd">            function with input of a string and output of a token list.</span>
+<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
+<span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
+<span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
+<span class="sd">            just a string &#39;train&#39;. If &#39;train&#39; is not in the tuple or string, a vocab</span>
+<span class="sd">            object should be provided which will be used to process valid and/or test</span>
+<span class="sd">            data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets import AmazonReviewFull</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.data.utils import get_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewFull(ngrams=3)</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewFull(tokenizer=tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; train, = AmazonReviewFull(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;AmazonReviewFull&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="IMDB"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.IMDB">[docs]</a><span class="k">def</span> <span class="nf">IMDB</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -392,19 +760,79 @@
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = IMDB(tokenizer=tokenizer)</span>
 <span class="sd">        &gt;&gt;&gt; train, = IMDB(tokenizer=tokenizer, data_select=&#39;train&#39;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="s2">&quot;IMDB&quot;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;IMDB&#39;</span><span class="p">:</span> <span class="n">IMDB</span>
+    <span class="s2">&quot;AG_NEWS&quot;</span><span class="p">:</span> <span class="n">AG_NEWS</span><span class="p">,</span>
+    <span class="s2">&quot;SogouNews&quot;</span><span class="p">:</span> <span class="n">SogouNews</span><span class="p">,</span>
+    <span class="s2">&quot;DBpedia&quot;</span><span class="p">:</span> <span class="n">DBpedia</span><span class="p">,</span>
+    <span class="s2">&quot;YelpReviewPolarity&quot;</span><span class="p">:</span> <span class="n">YelpReviewPolarity</span><span class="p">,</span>
+    <span class="s2">&quot;YelpReviewFull&quot;</span><span class="p">:</span> <span class="n">YelpReviewFull</span><span class="p">,</span>
+    <span class="s2">&quot;YahooAnswers&quot;</span><span class="p">:</span> <span class="n">YahooAnswers</span><span class="p">,</span>
+    <span class="s2">&quot;AmazonReviewPolarity&quot;</span><span class="p">:</span> <span class="n">AmazonReviewPolarity</span><span class="p">,</span>
+    <span class="s2">&quot;AmazonReviewFull&quot;</span><span class="p">:</span> <span class="n">AmazonReviewFull</span><span class="p">,</span>
+    <span class="s2">&quot;IMDB&quot;</span><span class="p">:</span> <span class="n">IMDB</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <span class="n">LABELS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;IMDB&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Negative&#39;</span><span class="p">,</span>
-             <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Positive&#39;</span><span class="p">}</span>
+    <span class="s2">&quot;AG_NEWS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Sports&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Business&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Sci/Tech&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;SogouNews&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Sports&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Finance&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Entertainment&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Automobile&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;Technology&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DBpedia&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Company&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;EducationalInstitution&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Artist&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Athlete&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;OfficeHolder&quot;</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;MeanOfTransportation&quot;</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;Building&quot;</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;NaturalPlace&quot;</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;Village&quot;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;Animal&quot;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="s2">&quot;Plant&quot;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="s2">&quot;Album&quot;</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="s2">&quot;Film&quot;</span><span class="p">,</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="s2">&quot;WrittenWork&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;YelpReviewPolarity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Negative polarity&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Positive polarity&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;YelpReviewFull&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;score 1&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;score 2&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;score 3&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;score 4&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;score 5&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;YahooAnswers&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Society &amp; Culture&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Science &amp; Mathematics&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Health&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;Education &amp; Reference&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;Computers &amp; Internet&quot;</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;Sports&quot;</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;Business &amp; Finance&quot;</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="s2">&quot;Entertainment &amp; Music&quot;</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="s2">&quot;Family &amp; Relationships&quot;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;Politics &amp; Government&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;AmazonReviewPolarity&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Negative polarity&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Positive polarity&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;AmazonReviewFull&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;score 1&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;score 2&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;score 3&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;score 4&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;score 5&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;IMDB&quot;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;Negative&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;Positive&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -656,9 +1084,6 @@
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

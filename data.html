@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.data &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -194,6 +194,9 @@
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
@@ -708,8 +711,7 @@ returns the padded list. If <cite>self.sequential</cite> is <cite>False</cite>, 
 <dt id="torchtext.data.Field.preprocess">
 <code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/field.html#Field.preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Field.preprocess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a single example using this field, tokenizing if necessary.</p>
-<p>If the input is a Python 2 <cite>str</cite>, it will be converted to Unicode
-first. If <cite>sequential=True</cite>, it will be tokenized. Then the input
+<p>If <cite>sequential=True</cite>, the input will be tokenized. Then the input
 will be optionally lowercased and passed to the user-provided
 <cite>preprocessing</cite> Pipeline.</p>
 </dd></dl>
@@ -1100,8 +1102,7 @@ If left as default, the tensors will be created on cpu. Default: None.</p></li>
 <dt id="torchtext.data.Pipeline">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.data.</code><code class="sig-name descname">Pipeline</code><span class="sig-paren">(</span><em class="sig-param">convert_token=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/pipeline.html#Pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.Pipeline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a pipeline for transforming sequence data.</p>
-<p>The input is assumed to be utf-8 encoded <cite>str</cite> (Python 3) or
-<cite>unicode</cite> (Python 2).</p>
+<p>The input is assumed to be utf-8 encoded <cite>str</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1541,9 +1542,6 @@ text fields like machine translation or natural language inference.</p>
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab &mdash; torchtext 0.6.0 documentation</title>
+  <title>torchtext.vocab &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.6.0
+                  0.8.0a0+c4a91f2
                 </div>
               
             
@@ -194,6 +194,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 
@@ -273,7 +276,7 @@
 <h2><span class="hidden-section">Vocab</span><a class="headerlink" href="#vocab" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.Vocab">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">Vocab</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">Vocab</code><span class="sig-paren">(</span><em class="sig-param">counter</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">min_freq=1</em>, <em class="sig-param">specials=('&lt;unk&gt;'</em>, <em class="sig-param">'&lt;pad&gt;')</em>, <em class="sig-param">vectors=None</em>, <em class="sig-param">unk_init=None</em>, <em class="sig-param">vectors_cache=None</em>, <em class="sig-param">specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines a vocabulary object that will be used to numericalize a field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
@@ -288,7 +291,7 @@ numerical identifiers.</p></li>
 </dl>
 <dl class="method">
 <dt id="torchtext.vocab.Vocab.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, min_freq=1, specials=['&lt;unk&gt;', '&lt;pad&gt;'], vectors=None, unk_init=None, vectors_cache=None, specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">counter</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">min_freq=1</em>, <em class="sig-param">specials=('&lt;unk&gt;'</em>, <em class="sig-param">'&lt;pad&gt;')</em>, <em class="sig-param">vectors=None</em>, <em class="sig-param">unk_init=None</em>, <em class="sig-param">vectors_cache=None</em>, <em class="sig-param">specials_first=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Vocab object from a collections.Counter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -373,10 +376,10 @@ returns a Tensor of the same size. Default: <a href="#id3"><span class="problema
 <h2><span class="hidden-section">SubwordVocab</span><a class="headerlink" href="#subwordvocab" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchtext.vocab.SubwordVocab">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">SubwordVocab</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, specials=['&lt;pad&gt;'], vectors=None, unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">SubwordVocab</code><span class="sig-paren">(</span><em class="sig-param">counter</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">specials='&lt;pad&gt;'</em>, <em class="sig-param">vectors=None</em>, <em class="sig-param">unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="torchtext.vocab.SubwordVocab.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">counter, max_size=None, specials=['&lt;pad&gt;'], vectors=None, unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">counter</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">specials='&lt;pad&gt;'</em>, <em class="sig-param">vectors=None</em>, <em class="sig-param">unk_init=&lt;method 'zero_' of 'torch._C._TensorBase' objects&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#SubwordVocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.SubwordVocab.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a revtok subword vocabulary from a collections.Counter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -852,9 +855,6 @@ can limit the size of the loaded set.</p>
       highlightNavigation.bind();
       mainMenuDropdown.bind();
       filterTags.bind();
-
-      // Remove any empty p tags that Sphinx adds
-      $("[data-tags='null']").remove();
 
       // Add class to links that have code blocks, since we cannot create links in code blocks
       $("article.pytorch-article a span.pre").each(function(e) {
