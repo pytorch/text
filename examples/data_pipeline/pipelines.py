@@ -16,7 +16,7 @@ import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
 from functools import partial
-from pytext_vocab import ScriptVocabulary
+from pytext.torchscript.vocab import ScriptVocabulary
 
 
 def build_sp_pipeline(spm_file):
