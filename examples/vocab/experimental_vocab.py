@@ -157,15 +157,15 @@ class ScriptVocab(Vocab):
         return result
 
 
-token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
-sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-c = OrderedDict(sorted_by_freq_tuples)
+# token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+# sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+# c = OrderedDict(sorted_by_freq_tuples)
 
-v = ScriptVocab(c)
-v = torch.jit.script(v)
-print(v.lookup_word(0, possible_unk_token='unk'))
-print(v.lookup_indices_1d(['not_present', 'world', 'hello']))
-print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
-print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
-print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
-print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
+# v = ScriptVocab(c)
+# v = torch.jit.script(v)
+# print(v.lookup_word(0, possible_unk_token='unk'))
+# print(v.lookup_indices_1d(['not_present', 'world', 'hello']))
+# print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
+# print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
+# print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
+# print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
