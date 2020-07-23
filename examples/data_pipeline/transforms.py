@@ -70,6 +70,18 @@ class VocabTransform(nn.Module):
         return self.vocab.lookup_indices(tokens)
 
 
+class PyTextVocabTransform(nn.Module):
+    r"""Vocab transform
+    """
+
+    def __init__(self, vocab):
+        super(PyTextVocabTransform, self).__init__()
+        self.vocab = vocab
+
+    def forward(self, tokens: List[str]) -> List[int]:
+        return self.vocab.lookup_indices_1d(tokens)
+
+
 class VectorTransform(nn.Module):
     r"""Vector transform
     """

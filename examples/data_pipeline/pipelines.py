@@ -4,6 +4,7 @@ from transforms import (
     PretrainedSPVocab,
     TextDataPipeline,
     VocabTransform,
+    PyTextVocabTransform,
     VectorTransform,
 )
 from torchtext.experimental.transforms import (
@@ -15,6 +16,7 @@ import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
 from functools import partial
+from pytext_vocab import ScriptVocabulary
 
 
 def build_sp_pipeline(spm_file):
@@ -55,6 +57,19 @@ def build_huggingface_vocab_pipeline(hf_vocab_file):
     return pipeline, jit_pipeline
 
 
+def build_pytext_vocab_pipeline(vocab_file):
+    tokenizer = BasicEnglishNormalize()
+    f = open(vocab_file, 'r')
+    vocab_list = [line.rstrip() for line in f]
+
+    # Insert token in vocab to match a pretrained vocab
+    pipeline = TextDataPipeline(tokenizer,
+                                PyTextVocabTransform(ScriptVocabulary(vocab_list)))
+    jit_pipeline = torch.jit.script(pipeline)
+    print('jit PyText pipeline success!')
+    return pipeline, jit_pipeline
+
+
 def build_fasttext_vector_pipeline():
     tokenizer = BasicEnglishNormalize()
     vector = FastText()
@@ -81,25 +96,27 @@ if __name__ == "__main__":
                         help='Dataset for performance benchmark')
     parser.add_argument('--spm-filename', type=str, default='m_user.model',
                         help='The filename of sentencepiece model')
-    parser.add_argument('--hf-vocab-filename', type=str, default='vocab.txt',
-                        help='The name of Hugging Face vocab filename')
+    parser.add_argument('--vocab-filename', type=str, default='vocab.txt',
+                        help='The name of vocab filename')
     args = parser.parse_args()
 
     if args.pipeline == 'sentencepiece':
         pipeline, jit_pipeline = build_sp_pipeline(args.spm_filename)
     elif args.pipeline == 'huggingface':
-        pipeline, jit_pipeline = build_huggingface_vocab_pipeline(args.hf_vocab_filename)
+        pipeline, jit_pipeline = build_huggingface_vocab_pipeline(args.vocab_filename)
+    elif args.pipeline == 'pytext':
+        pipeline, jit_pipeline = build_pytext_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'fasttext':
         pipeline, jit_pipeline = build_fasttext_vector_pipeline()
     elif args.pipeline == 'torchtext':
-        pipeline, jit_pipeline = build_torchtext_vocab(args.hf_vocab_filename)
+        pipeline, jit_pipeline = build_torchtext_vocab(args.vocab_filename)
     else:
         print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
-    print("Test eager mode")
+    print("Test eager mode for pipeline", args.pipeline)
     train, test = raw.DATASETS[args.dataset]()
     if pipeline is not None:
         run_benchmark_lookup(train, pipeline)
-    print("Test jit mode")
+    print("Test jit mode for pipeline", args.pipeline)
     train, test = raw.DATASETS[args.dataset]()
     if jit_pipeline is not None:
         run_benchmark_lookup(train, jit_pipeline)
