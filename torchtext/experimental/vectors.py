@@ -51,11 +51,11 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
-    # torch.save(vectors_obj, cached_vectors_file_path)
+    torch.save(vectors_obj, cached_vectors_file_path)
     return Vectors(vectors_obj)
 
 
-def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
+def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
     r"""Create a GloVe Vectors object.
 
     Args:

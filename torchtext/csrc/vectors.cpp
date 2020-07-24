@@ -9,11 +9,6 @@
 #include <thread>
 #include <torch/script.h>
 
-// timing
-#include <chrono>
-#include <ctime>
-#include <ratio>
-
 using c10::Dict;
 
 namespace torchtext {
@@ -100,8 +95,8 @@ public:
 
 inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
-void _infer_shape(const std::string &file_path, const int64_t delimiter_ascii,
-                  std::tuple<int64_t, int64_t, int64_t> *out_tuple) {
+std::tuple<int64_t, int64_t, int64_t>
+_infer_shape(const std::string &file_path, const int64_t delimiter_ascii) {
 
   int64_t num_header_lines = 0, num_lines = 0, vector_dim = -1;
   std::vector<std::string> vec_str;
@@ -134,7 +129,7 @@ void _infer_shape(const std::string &file_path, const int64_t delimiter_ascii,
       num_lines++;
     }
   }
-  *out_tuple = std::make_tuple(num_lines, num_header_lines, vector_dim);
+  return std::make_tuple(num_lines, num_header_lines, vector_dim);
 }
 
 void _infer_offsets(const std::string &file_path, int64_t num_lines,
@@ -190,9 +185,9 @@ void parse_chunk(const std::string &file_path, size_t offset,
 }
 
 std::tuple<IndexDict, StringList>
-concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-               torch::Tensor data_tensor, int64_t num_header_lines,
-               int64_t num_lines) {
+_concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
+                torch::Tensor data_tensor, int64_t num_header_lines,
+                int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
   IndexDict tokens;
@@ -212,7 +207,7 @@ concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
       count++;
     }
   }
-  return std::make_tuple(tokens, dup_tokens);
+  return std::make_tuple(std::move(tokens), std::move(dup_tokens));
 }
 
 constexpr int64_t GRAIN_SIZE = 131072;
@@ -223,35 +218,17 @@ _load_token_and_vectors_from_file(const std::string &file_path,
                                   c10::optional<torch::Tensor> opt_unk_tensor) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
-  auto start = std::chrono::steady_clock::now();
-
-  std::tuple<int64_t, int64_t, int64_t> out_tuple;
   int64_t num_lines, num_header_lines, vector_dim;
-
-  _infer_shape(file_path, delimiter_ascii, &out_tuple);
-  std::tie(num_lines, num_header_lines, vector_dim) = out_tuple;
-
-  auto end = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed_seconds = end - start;
-  std::cout << "_infer_shape elapsed time: " << elapsed_seconds.count()
-            << "s\n";
+  std::tie(num_lines, num_header_lines, vector_dim) =
+      _infer_shape(file_path, delimiter_ascii);
 
   int64_t chunk_size = divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
   // TODO: Add explicit test beyond grain size to cover multithreading
   chunk_size = std::max(chunk_size, GRAIN_SIZE);
 
-  start = std::chrono::steady_clock::now();
-
   std::vector<size_t> offsets;
   _infer_offsets(file_path, num_lines, chunk_size, num_header_lines, &offsets);
-
-  end = std::chrono::steady_clock::now();
-  elapsed_seconds = end - start;
-  std::cout << "_infer_offsets elapsed time: " << elapsed_seconds.count()
-            << "s\n";
-
-  start = std::chrono::steady_clock::now();
 
   torch::Tensor data_tensor = torch::empty({num_lines, vector_dim});
   float *data_ptr = data_tensor.data_ptr<float>();
@@ -275,21 +252,12 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   for (auto &thread : threads) {
     thread.join();
   }
-  end = std::chrono::steady_clock::now();
-  elapsed_seconds = end - start;
-  std::cout << "threads elapsed time: " << elapsed_seconds.count() << "s\n";
 
-  start = std::chrono::steady_clock::now();
   IndexDict dict;
   StringList dup_tokens;
   std::tie(dict, dup_tokens) =
-      concat_vectors(chunk_tokens, data_tensor, num_header_lines, num_lines);
-  end = std::chrono::steady_clock::now();
-  elapsed_seconds = end - start;
-  std::cout << "concat_vectors elapsed time: " << elapsed_seconds.count()
-            << "s\n";
+      _concat_vectors(chunk_tokens, data_tensor, num_header_lines, num_lines);
 
-  start = std::chrono::steady_clock::now();
   torch::Tensor unk_tensor;
   if (opt_unk_tensor) {
     unk_tensor = *opt_unk_tensor;
@@ -299,9 +267,6 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   auto result = std::make_tuple(
       c10::make_intrusive<Vectors>(Vectors(dict, data_tensor, unk_tensor)),
       dup_tokens);
-  end = std::chrono::steady_clock::now();
-  elapsed_seconds = end - start;
-  std::cout << "result elapsed time: " << elapsed_seconds.count() << "s\n";
   return result;
 }
 
