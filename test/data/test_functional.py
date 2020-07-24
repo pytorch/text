@@ -17,7 +17,8 @@ from torchtext.data.functional import (
 )
 from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
-    RegexTokenizer
+    NgramsTransform,
+    RegexTokenizer,
 )
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -159,6 +160,19 @@ class TestFunctional(TorchtextTestCase):
 
         self.assertEqual(jit_tokens, eager_tokens)
         self.assertEqual(jit_tokens, ref_results)
+
+    def test_NgramsTransform(self):
+        test_sample = ['here', 'we', 'are']
+        ref_results = ['here', 'we', 'are', 'here we', 'we are', 'here we are']
+
+        ngrams_transform = NgramsTransform()
+        eager_ngrams = ngrams_transform(test_sample, 3)
+
+        jit_ngrams_transform = torch.jit.script(ngrams_transform)
+        jit_ngrams = jit_ngrams_transform(test_sample, 3)
+
+        self.assertEqual(ref_results, eager_ngrams)
+        self.assertEqual(ref_results, jit_ngrams)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])

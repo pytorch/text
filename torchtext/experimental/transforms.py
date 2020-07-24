@@ -112,3 +112,40 @@ class RegexTokenizer(nn.Module):
         for regex, replacement_string in self.regex_and_replacement_string_pairs:
             line = regex.Sub(line, replacement_string)
         return line.split()
+
+
+class NgramsTransform(nn.Module):
+    """Return a list of all tokens and ngrams.
+
+    Examples:
+        >>> token_list = ['here', 'we', 'are']
+        >>> ngrams_transform = NgramsTransform()
+        >>> list(ngrams_transform(token_list, 3))
+        >>> ['here', 'we', 'are', 'here we', 'we are', 'here we are']
+
+    """
+    def __init__(self, ):
+        super(NgramsTransform, self).__init__()
+
+    def _get_ngrams(self, token_list: List[str], n: int) -> List[List[str]]:
+        ngrams: List[List[str]] = [token_list[i:i + n] for i in range(len(token_list) - n + 1)]
+        return ngrams
+
+    def forward(self, token_list: List[str], ngrams: int) -> List[str]:
+        r"""
+        Args:
+            token_list: A list of tokens
+            ngrams: the number of ngrams.
+
+        Returns:
+            List[str]: a list of tokens and ngrams.
+        """
+        tokens_and_ngrams: List[str] = []
+
+        for x in token_list:
+            tokens_and_ngrams.append(x)
+        for n in range(2, ngrams + 1):
+            for x in self._get_ngrams(token_list, n):
+                tokens_and_ngrams.append(' '.join(x))
+
+        return tokens_and_ngrams
