@@ -140,7 +140,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     if dup_tokens and dup_tokens != dup_token_glove_840b:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
-    # torch.save(vectors_obj, cached_vectors_file_path)
+    torch.save(vectors_obj, cached_vectors_file_path)
     return Vectors(vectors_obj)
 
 
