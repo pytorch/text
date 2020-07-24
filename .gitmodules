@@ -6,4 +6,7 @@
 	path = third_party/re2
 	url = https://github.com/google/re2
 	ignore = dirty
-
+[submodule "third_party/double-conversion"]
+	path = third_party/double-conversion
+	url = https://github.com/google/double-conversion
+	ignore=dirty

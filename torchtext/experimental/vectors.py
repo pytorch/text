@@ -46,15 +46,13 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), num_cpus)
+    vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), num_cpus, unk_tensor)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
-    vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
-
     # torch.save(vectors_obj, cached_vectors_file_path)
-    return vectors_obj
+    return Vectors(vectors_obj)
 
 
 def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=10):
@@ -136,15 +134,14 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     extracted_file_paths = extract_archive(downloaded_file_path)
     # need to get the full path to the correct file in the case when multiple files are extracted with different dims
     extracted_file_path_with_correct_dim = [path for path in extracted_file_paths if file_name in path][0]
-    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ord(' '), num_cpus)
+    vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ord(' '), num_cpus, unk_tensor)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens and dup_tokens != dup_token_glove_840b:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
-    vectors_obj = Vectors(tokens, vectors, unk_tensor=unk_tensor)
     # torch.save(vectors_obj, cached_vectors_file_path)
-    return vectors_obj
+    return Vectors(vectors_obj)
 
 
 def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, num_cpus=10):
@@ -171,37 +168,38 @@ def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, n
         ValueError: if duplicate tokens are found in FastText file.
 
     """
-    tokens, vectors, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(file_like_object.name, ord(delimiter), num_cpus)
+    vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(file_like_object.name, ord(delimiter), num_cpus, unk_tensor)
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
-    return Vectors(tokens, vectors, unk_tensor=unk_tensor)
+    return Vectors(vectors_obj)
+
+
+def vectors(tokens, vectors, unk_tensor=None):
+    if unk_tensor is None and (vectors is None or not len(vectors)):
+        raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
+
+    if not vectors.dtype == torch.float:
+        raise TypeError("`vectors` should be of data type `torch.float`.")
+
+    unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
+    return Vectors(torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor))
 
 
 class Vectors(nn.Module):
     r"""Creates a vectors object which maps tokens to vectors.
-
     Arguments:
         tokens (List[str]): a list of tokens.
         vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
-
     Raises:
         ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
     """
 
-    def __init__(self, tokens, vectors, unk_tensor=None):
+    def __init__(self, vectors):
         super(Vectors, self).__init__()
-
-        if unk_tensor is None and (vectors is None or not len(vectors)):
-            raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
-
-        if not vectors.dtype == torch.float:
-            raise TypeError("`vectors` should be of data type `torch.float`.")
-
-        unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-        self.vectors = torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor)
+        self.vectors = vectors
 
     @torch.jit.export
     def __getitem__(self, token: str) -> Tensor:
