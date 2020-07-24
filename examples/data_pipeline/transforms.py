@@ -7,6 +7,19 @@ import torch
 from torch import Tensor
 
 
+class TextClassificationPipeline(nn.Module):
+    r"""Text classification pipeline template
+    """
+
+    def __init__(self, label_transform, text_transform):
+        super(TextClassificationPipeline, self).__init__()
+        self.label_transform = label_transform
+        self.text_transform = text_transform
+
+    def forward(self, label_text_tuple):
+        return self.label_transform(label_text_tuple[0]), self.text_transform(label_text_tuple[1])
+
+
 class TextDataPipeline(nn.Module):
     r"""Text data pipeline template
     """

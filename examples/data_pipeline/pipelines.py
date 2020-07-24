@@ -17,6 +17,7 @@ from torchtext.experimental.datasets.raw import text_classification as raw
 import time
 from functools import partial
 from pytext.torchscript.vocab import ScriptVocabulary
+from dataset import BatchTextClassificationData
 
 
 def build_sp_pipeline(spm_file):
@@ -43,6 +44,22 @@ def build_torchtext_vocab(vocab_file):
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
     pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
     return pipeline, None
+
+
+def build_batch_torchtext_vocab(vocab_file):
+    from torchtext.data.utils import get_tokenizer
+    tokenizer = get_tokenizer("basic_english")
+    from torchtext.vocab import build_vocab_from_iterator
+    from transforms import TextClassificationPipeline
+
+    def token_iterator(vocab_file):
+        f = open(vocab_file, 'r')
+        for token in f:
+            yield token
+    vocab = build_vocab_from_iterator(token_iterator(vocab_file))
+    text_pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
+    label_pipeline = int
+    return TextClassificationPipeline(label_pipeline, text_pipeline), None
 
 
 def build_huggingface_vocab_pipeline(hf_vocab_file):
@@ -88,6 +105,22 @@ def run_benchmark_lookup(text_classification_dataset, pipeline):
     print("Lookup time:", time.monotonic() - t0)
 
 
+def run_batch_benchmark_lookup(text_classification_dataset, pipeline):
+    t0 = time.monotonic()
+    for items in text_classification_dataset:
+        items = list(map(pipeline, items))
+    print("Lookup time:", time.monotonic() - t0)
+
+
+def generate_dataset(args):
+    if args.pipeline == 'batch_torchtext':
+        train = BatchTextClassificationData(args.dataset)
+        test = None
+    else:
+        train, test = raw.DATASETS[args.dataset]()
+    return train, test
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Data procesing pipelines')
     parser.add_argument('--pipeline', type=str, default='sentencepiece',
@@ -110,13 +143,20 @@ if __name__ == "__main__":
         pipeline, jit_pipeline = build_fasttext_vector_pipeline()
     elif args.pipeline == 'torchtext':
         pipeline, jit_pipeline = build_torchtext_vocab(args.vocab_filename)
+    elif args.pipeline == 'batch_torchtext':
+        pipeline, jit_pipeline = build_batch_torchtext_vocab(args.vocab_filename)
     else:
         print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
-    print("Test eager mode for pipeline", args.pipeline)
-    train, test = raw.DATASETS[args.dataset]()
+
     if pipeline is not None:
-        run_benchmark_lookup(train, pipeline)
-    print("Test jit mode for pipeline", args.pipeline)
-    train, test = raw.DATASETS[args.dataset]()
+        print("Test eager mode for pipeline", args.pipeline)
+        train, test = generate_dataset(args)
+        if args.pipeline == 'batch_torchtext':
+            run_batch_benchmark_lookup(train, pipeline)
+        else:
+            run_benchmark_lookup(train, pipeline)
+
     if jit_pipeline is not None:
+        print("Test jit mode for pipeline", args.pipeline)
+        train, test = generate_dataset(args)
         run_benchmark_lookup(train, jit_pipeline)
