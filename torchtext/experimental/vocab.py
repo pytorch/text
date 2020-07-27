@@ -122,7 +122,7 @@ class Vocab(nn.Module):
     def insert_token(self, token: str, index: int) -> None:
         r"""
         Args:
-
+            token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
 
         Raises:
