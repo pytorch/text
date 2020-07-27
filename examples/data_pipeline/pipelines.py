@@ -11,7 +11,8 @@ from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
 )
 from torchtext.experimental.vocab import vocab_from_file_object
-from torchtext.experimental.vectors import FastText
+from torchtext.experimental.vectors import ExperimentalFastText
+from torchtext.vectors import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
@@ -98,6 +99,17 @@ def build_fasttext_vector_pipeline():
     return pipeline, jit_pipeline
 
 
+def build_experimental_fasttext_vector_pipeline():
+    tokenizer = BasicEnglishNormalize()
+    vector = ExperimentalFastText()
+
+    # Insert token in vocab to match a pretrained vocab
+    pipeline = TextDataPipeline(tokenizer, VectorTransform(vector))
+    jit_pipeline = torch.jit.script(pipeline)
+    print('jit fasttext pipeline success!')
+    return pipeline, jit_pipeline
+
+
 def run_benchmark_lookup(text_classification_dataset, pipeline):
     t0 = time.monotonic()
     for (label, text) in text_classification_dataset:
@@ -141,6 +153,8 @@ if __name__ == "__main__":
         pipeline, jit_pipeline = build_pytext_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'fasttext':
         pipeline, jit_pipeline = build_fasttext_vector_pipeline()
+    elif args.pipeline == 'experimental_fasttext':
+        pipeline, jit_pipeline = build_experimental_fasttext_vector_pipeline()
     elif args.pipeline == 'torchtext':
         pipeline, jit_pipeline = build_torchtext_vocab(args.vocab_filename)
     elif args.pipeline == 'batch_torchtext':
