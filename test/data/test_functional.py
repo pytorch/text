@@ -15,6 +15,7 @@ from torchtext.data.functional import (
     custom_replace,
     simple_space_split,
 )
+from torchtext.data.utils import ngrams_iterator
 from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
     NgramsTransform,
@@ -165,14 +166,17 @@ class TestFunctional(TorchtextTestCase):
         test_sample = ['here', 'we', 'are']
         ref_results = ['here', 'we', 'are', 'here we', 'we are', 'here we are']
 
-        ngrams_transform = NgramsTransform()
-        eager_ngrams = ngrams_transform(test_sample, 3)
+        ngrams_transform = NgramsTransform(3)
+        eager_ngrams = ngrams_transform(test_sample)
 
         jit_ngrams_transform = torch.jit.script(ngrams_transform)
-        jit_ngrams = jit_ngrams_transform(test_sample, 3)
+        jit_ngrams = jit_ngrams_transform(test_sample)
+
+        iterator_ngrams = list(ngrams_iterator(test_sample, 3))
 
         self.assertEqual(ref_results, eager_ngrams)
         self.assertEqual(ref_results, jit_ngrams)
+        self.assertEqual(ref_results, iterator_ngrams)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])

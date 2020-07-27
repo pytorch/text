@@ -20,3 +20,10 @@ torchtext.experimental.transforms
 .. autoclass:: RegexTokenizer
     :members:
     :special-members: __init__
+
+:hidden:`NgramsTransform`
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: NgramsTransform
+    :members:
+    :special-members: __init__

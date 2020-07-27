@@ -212,7 +212,7 @@ def ngrams_iterator(token_list, ngrams):
     Examples:
         >>> token_list = ['here', 'we', 'are']
         >>> list(ngrams_iterator(token_list, 2))
-        >>> ['here', 'here we', 'we', 'we are', 'are']
+        >>> ['here', 'we', 'are', 'here we', 'we are']
     """
 
     def _get_ngrams(n):
