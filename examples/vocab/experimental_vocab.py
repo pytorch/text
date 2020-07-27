@@ -6,6 +6,7 @@ from torchtext.experimental.vocab import Vocab
 from typing import List, Optional, Set
 
 
+# TODO: This function is commented out since we don't have fairseq as a dependency in torchtext.
 # def build_fairseq_vocab(
 #     vocab_file: str,
 #     dictionary_class: Dictionary = Dictionary,
@@ -32,7 +33,7 @@ from typing import List, Optional, Set
 #         }
 #         unk_replacement = special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
 #         special_tokens_to_remove = [special_pair[0] for special_pair in special_token_replacements]
-#         specials = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
+#         special_tokens_to_add = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
 
 #     with open(vocab_file) as f:
 #         dictionary = dictionary_class.load(f)
@@ -45,17 +46,42 @@ from typing import List, Optional, Set
 #                 dictionary.add_symbol(token)
 
 #         dictionary_items = list(zip(dictionary.symbols, dictionary.count))
-#         ordered_dict = OrderedDict(dictionary_items)
 
-#         # remove specials from dict since Vocab expects a seperate tuple of special tokens
+#         ordered_dict = OrderedDict()
+#         # add special tokens to beginning of ordered_dict
+#         for s in special_tokens_to_remove:
+#             ordered_dict[s] = 1
+
+#         # add all other tokens from dictionary_items
+#         for token, freq in dictionary_items:
+#             ordered_dict[token] = freq
+
+#         # remove special_tokens_to_remove from dict
 #         for s in special_tokens_to_remove:
 #             if s in ordered_dict:
 #                 del ordered_dict[s]
 
-#         return Vocab(dictionary_items, unk_token=unk_replacement, specials=specials)
+#         return Vocab(dictionary_items, unk_token=unk_replacement)
 
 
 class ScriptVocab(Vocab):
+    r"""Creates a script vocab object which maps tokens to indices.
+
+    Examples:
+        >>> token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+        >>> sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        >>> c = OrderedDict(sorted_by_freq_tuples)
+
+        >>> v = ScriptVocab(c)
+        >>> v = torch.jit.script(v)
+
+        >>> print(v.lookup_word(0, possible_unk_token='unk'))
+        >>> print(v.lookup_indices_1d(['not_present', 'world', 'hello']))
+        >>> print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
+        >>> print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
+        >>> print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
+        >>> print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
+    """
     def __init__(self,
                  ordered_dict,
                  pad_token=None,
@@ -155,17 +181,3 @@ class ScriptVocab(Vocab):
                         result.append(unk_value)
                         unk_idx += 1
         return result
-
-
-# token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
-# sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-# c = OrderedDict(sorted_by_freq_tuples)
-
-# v = ScriptVocab(c)
-# v = torch.jit.script(v)
-# print(v.lookup_word(0, possible_unk_token='unk'))
-# print(v.lookup_indices_1d(['not_present', 'world', 'hello']))
-# print(v.lookup_indices_2d([['not_present', 'world', 'hello']]))
-# print(v.lookup_words_1d(torch.tensor([0, 1, 2], dtype=torch.int32), [2]))
-# print(v.lookup_words_1d_cycle_heuristic(torch.tensor([0, 1, 2, 0], dtype=torch.int32), [2], ['unk_a', 'unk_b']))
-# print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
