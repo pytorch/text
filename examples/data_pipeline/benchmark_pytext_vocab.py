@@ -5,7 +5,7 @@ from typing import List
 import torch
 from torchtext.experimental.datasets import AG_NEWS
 
-from experimental_vocab import ScriptVocab as ExperimentalScriptVocabulary
+from pytext_vocab import ScriptVocab as ExperimentalScriptVocabulary
 from pytext.torchscript.vocab import ScriptVocabulary as PytextScriptVocabulary
 from pytext.data.utils import Vocabulary as PytextVocabulary
 
