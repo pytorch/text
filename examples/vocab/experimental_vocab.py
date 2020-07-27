@@ -1,9 +1,9 @@
-from collections import OrderedDict
+# from collections import OrderedDict
 
 # from fairseq.data.dictionary import Dictionary
 import torch
 from torchtext.experimental.vocab import Vocab
-from typing import List, Optional, Set
+from typing import List, Optional
 
 
 # TODO: This function is commented out since we don't have fairseq as a dependency in torchtext.
