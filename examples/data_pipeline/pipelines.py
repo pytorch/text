@@ -16,8 +16,8 @@ import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
 from functools import partial
-from pytext.torchscript.vocab import ScriptVocabulary
 from dataset import BatchTextClassificationData
+from transforms import Sequential
 
 
 def build_sp_pipeline(spm_file):
@@ -26,9 +26,11 @@ def build_sp_pipeline(spm_file):
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = TextDataPipeline(tokenizer, vocab)
+    pipeline = Sequential(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline)
     print('jit sentencepiece pipeline success!')
+    print('eager mode: ', pipeline('here is an example'))
+    print('jit mode: ', jit_pipeline('here is an example'))
     return pipeline, jit_pipeline
 
 
@@ -75,6 +77,7 @@ def build_huggingface_vocab_pipeline(hf_vocab_file):
 
 
 def build_pytext_vocab_pipeline(vocab_file):
+    from pytext.torchscript.vocab import ScriptVocabulary
     tokenizer = BasicEnglishNormalize()
     f = open(vocab_file, 'r')
     vocab_list = [line.rstrip() for line in f]
