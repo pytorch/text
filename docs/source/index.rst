@@ -20,6 +20,7 @@ popular datasets for natural language.
    experimental_functional
    experimental_transforms
    experimental_vectors
+   experimental_vocab
    examples <examples>
 
 .. automodule:: torchtext
