@@ -1,11 +1,9 @@
-BERT with torchtext
-+++++++++
+# BERT with torchtext
 
 This example shows how to train a BERT model with PyTorch and torchtext only. Then, we fine-tune the pre-trained BERT for the question-answer task.
 
 
-Generate pre-trained BERT
--------------------------
+## Generate pre-trained BERT
 
 Train the BERT model with masked language modeling task and next-sentence task. Run the tasks on a local GPU or CPU:
 
@@ -21,8 +19,7 @@ or run the tasks on a SLURM powered cluster with Distributed Data Parallel (DDP)
 The result ppl of mlm_task is 18.97899 for the test set.
 The result loss of ns_task is 0.05446 for the test set.
 
-Fine-tune pre-trained BERT for question-answer task
----------------------------------------------------
+## Fine-tune pre-trained BERT for question-answer task
 
 With SQuAD dataset, the pre-trained BERT is used for question-answer task:
 
@@ -30,9 +27,9 @@ With SQuAD dataset, the pre-trained BERT is used for question-answer task:
 
 The pre-trained BERT models and vocab are available:
 
-* `bert_vocab.pt <https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/bert_vocab.pt>`_
-* `mlm_bert.pt <https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/mlm_bert.pt>`_
-* `ns_bert.pt <https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/ns_bert.pt>`_
+* [bert_vocab.pt](https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/bert_vocab.pt)
+* [mlm_bert.pt](https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/mlm_bert.pt)
+* [ns_bert.pt](https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/ns_bert.pt)
 
 An example train/valid/test printout with the pretrained BERT model in question-answer task:
 
@@ -120,33 +117,27 @@ An example train/valid/test printout with the pretrained BERT model in question-
     | End of training | test loss  2.05 | exact   51.337% | f1   63.645%
     =========================================================================================
 
-Structure of the example
-========================
+## Structure of the example
 
-model.py
---------
+### model.py
 
 This file defines the Transformer and MultiheadAttention models used for BERT. The embedding layer include PositionalEncoding and TokenTypeEncoding layers. MLMTask, NextSentenceTask, and QuestionAnswerTask are the models for the three tasks mentioned above.
 
-data.py
--------
+### data.py
 
 This file provides a few datasets required to train the BERT model and question-answer task. Please note that BookCorpus dataset is not available publicly.
 
 
-mlm_task.py, ns_task.py, qa_task.py
------------------------------------
+### mlm_task.py, ns_task.py, qa_task.py
 
 Those three files define the train/valid/test process for the tasks.
 
 
-metrics.py
-----------
+### metrics.py
 
 This file provides two metrics (F1 and exact score) for question-answer task
 
 
-utils.py
---------
+### utils.py
 
 This file provides a few utils used by the three tasks.
