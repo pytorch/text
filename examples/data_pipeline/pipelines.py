@@ -7,6 +7,7 @@ from transforms import (
     VectorTransform,
     TextDataPipeline,
     TextSequential,
+    ToLongTensor,
 )
 from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
@@ -26,11 +27,9 @@ def build_sp_pipeline(spm_file):
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = Sequential(tokenizer, vocab)
+    pipeline = TextSequential(tokenizer, vocab, ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit sentencepiece pipeline success!')
-    print('eager mode: ', pipeline('here is an example'))
-    print('jit mode: ', jit_pipeline('here is an example'))
     return pipeline, jit_pipeline
 
 
@@ -70,7 +69,7 @@ def build_huggingface_vocab_pipeline(hf_vocab_file):
     vocab = vocab_from_file_object(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequential(tokenizer, VocabTransform(vocab))
+    pipeline = TextSequential(tokenizer, VocabTransform(vocab), ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
@@ -84,7 +83,8 @@ def build_pytext_vocab_pipeline(vocab_file):
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequential(tokenizer,
-                              PyTextVocabTransform(ScriptVocabulary(vocab_list)))
+                              PyTextVocabTransform(ScriptVocabulary(vocab_list)),
+                              ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit PyText pipeline success!')
     return pipeline, jit_pipeline
@@ -95,7 +95,7 @@ def build_fasttext_vector_pipeline():
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequential(tokenizer, VectorTransform(vector))
+    pipeline = TextSequential(tokenizer, VectorTransform(vector), ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit fasttext pipeline success!')
     return pipeline, jit_pipeline

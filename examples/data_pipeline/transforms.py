@@ -127,3 +127,14 @@ class TextSequential(nn.Sequential):
         for module in self:
             input = module(input)
         return input
+
+
+class ToLongTensor(nn.Module):
+    r"""Convert a list of integers to long tensor
+    """
+
+    def __init__(self):
+        super(ToLongTensor, self).__init__()
+
+    def forward(self, tokens: List[int]) -> Tensor:
+        return torch.tensor(tokens).to(torch.long)
