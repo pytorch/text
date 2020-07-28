@@ -1,14 +1,18 @@
+import os
+import sys
 from collections import (Counter, OrderedDict)
 import time
 from typing import List
 
-import torch
-from torchtext.experimental.datasets import AG_NEWS
+# this is needed because we want to add 'torchtext/examples/data_pipeline' directory to the
+# `sys.path` variable in order to import the pytext_vocab (since its not a module)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "examples", "data_pipeline"))
 
-from examples.data_pipeline.pytext_vocab import ScriptVocab as ExperimentalScriptVocabulary
-# from pytext_vocab import ScriptVocab as ExperimentalScriptVocabulary
+from pytext_vocab import ScriptVocab as ExperimentalScriptVocabulary
 from pytext.torchscript.vocab import ScriptVocabulary as PytextScriptVocabulary
 from pytext.data.utils import Vocabulary as PytextVocabulary
+import torch
+from torchtext.experimental.datasets import AG_NEWS
 
 
 def _run_benchmark_lookup(tokens, vocab, num_iters=1):
@@ -111,6 +115,8 @@ def benchmark_experimental_vocab():
             cur_tokens.append(vocab.itos[id])
         tokens_lists.append(cur_tokens)
         tokens += cur_tokens
+        if len(tokens) > 100:
+            break
 
     counter = Counter(tokens)
     sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
@@ -139,14 +145,14 @@ def benchmark_experimental_vocab():
     jit_experimental_script_vocab = torch.jit.script(experimental_script_vocab)
     print("Construction time:", time.monotonic() - t0)
 
-    # pytext Vocab not jit lookup
-    print("Pytext Vocabulary - Not Jit Mode")
+    # pytext Vocab eager lookup
+    print("Pytext Vocabulary - Eager Mode")
     _run_benchmark_lookup(tokens, pytext_vocab)
     _run_benchmark_lookup_list_tokens([tokens], pytext_vocab)
     _run_benchmark_lookup_list_tokens(tokens_lists, pytext_vocab)
 
-    # pytext ScriptVocab not jit lookup
-    print("Pytext ScriptVocab - Not Jit Mode")
+    # pytext ScriptVocab eager lookup
+    print("Pytext ScriptVocab - Eager Mode")
     _run_benchmark_lookup(tokens, pytext_script_vocab)
     _run_benchmark_lookup_list_tokens([tokens], pytext_script_vocab)
     _run_benchmark_lookup_list_tokens(tokens_lists, pytext_script_vocab)
@@ -157,8 +163,8 @@ def benchmark_experimental_vocab():
     _run_benchmark_lookup_list_tokens([tokens], jit_pytext_script_vocab)
     _run_benchmark_lookup_list_tokens(tokens_lists, jit_pytext_script_vocab)
 
-    # experimental ScriptVocab not jit lookup
-    print("Experimental ScriptVocab - Not Jit Mode")
+    # experimental ScriptVocab eager lookup
+    print("Experimental ScriptVocab - Eager Mode")
     _run_benchmark_lookup(tokens, experimental_script_vocab)
     _run_benchmark_lookup_list_tokens([tokens], experimental_script_vocab)
     _run_benchmark_lookup_list_tokens(tokens_lists, experimental_script_vocab)
