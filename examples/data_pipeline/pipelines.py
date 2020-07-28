@@ -2,10 +2,11 @@ import torch
 from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
-    TextDataPipeline,
     VocabTransform,
     PyTextVocabTransform,
     VectorTransform,
+    TextDataPipeline,
+    TextSequential,
 )
 from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
@@ -17,7 +18,6 @@ from torchtext.experimental.datasets.raw import text_classification as raw
 import time
 from functools import partial
 from dataset import BatchTextClassificationData
-from transforms import Sequential
 
 
 def build_sp_pipeline(spm_file):
@@ -70,7 +70,7 @@ def build_huggingface_vocab_pipeline(hf_vocab_file):
     vocab = vocab_from_file_object(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextDataPipeline(tokenizer, VocabTransform(vocab))
+    pipeline = TextSequential(tokenizer, VocabTransform(vocab))
     jit_pipeline = torch.jit.script(pipeline)
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
@@ -83,8 +83,8 @@ def build_pytext_vocab_pipeline(vocab_file):
     vocab_list = [line.rstrip() for line in f]
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextDataPipeline(tokenizer,
-                                PyTextVocabTransform(ScriptVocabulary(vocab_list)))
+    pipeline = TextSequential(tokenizer,
+                              PyTextVocabTransform(ScriptVocabulary(vocab_list)))
     jit_pipeline = torch.jit.script(pipeline)
     print('jit PyText pipeline success!')
     return pipeline, jit_pipeline
@@ -95,7 +95,7 @@ def build_fasttext_vector_pipeline():
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextDataPipeline(tokenizer, VectorTransform(vector))
+    pipeline = TextSequential(tokenizer, VectorTransform(vector))
     jit_pipeline = torch.jit.script(pipeline)
     print('jit fasttext pipeline success!')
     return pipeline, jit_pipeline
