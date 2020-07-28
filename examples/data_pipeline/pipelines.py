@@ -5,7 +5,6 @@ from transforms import (
     VocabTransform,
     PyTextVocabTransform,
     VectorTransform,
-    TextDataPipeline,
     TextSequential,
     ToLongTensor,
 )
@@ -17,7 +16,6 @@ from torchtext.experimental.vectors import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
-from functools import partial
 from dataset import BatchTextClassificationData
 
 
@@ -37,13 +35,14 @@ def build_torchtext_vocab(vocab_file):
     from torchtext.data.utils import get_tokenizer
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
+    from torchtext.experimental.functional import totensor, vocab_func, sequential_transforms
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
         for token in f:
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
+    pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
     return pipeline, None
 
 
@@ -52,14 +51,15 @@ def build_batch_torchtext_vocab(vocab_file):
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
     from transforms import TextClassificationPipeline
+    from torchtext.experimental.functional import totensor, vocab_func, sequential_transforms
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
         for token in f:
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    text_pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
-    label_pipeline = int
+    text_pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
+    label_pipeline = totensor(dtype=torch.long)
     return TextClassificationPipeline(label_pipeline, text_pipeline), None
 
 
