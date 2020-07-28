@@ -90,19 +90,6 @@ def build_pytext_vocab_pipeline(vocab_file):
     return pipeline, jit_pipeline
 
 
-class TextClassificationPipeline(torch.nn.Module):
-    r"""Text classification pipeline template
-    """
-
-    def __init__(self, label_transform, text_transform):
-        super(TextClassificationPipeline, self).__init__()
-        self.label_transform = label_transform
-        self.text_transform = text_transform
-
-    def forward(self, label_text_tuple):
-        return self.label_transform(label_text_tuple[0]), self.text_transform(label_text_tuple[1])
-
-
 def build_fasttext_vector_pipeline():
     tokenizer = BasicEnglishNormalize()
     vector = FastText()
