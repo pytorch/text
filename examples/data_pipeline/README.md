@@ -16,3 +16,18 @@ The command to run the pipeline:
     python pipelines.py --pipeline sentencepiece
 
 The lookup time: 25.09393248707056 (eager mode) vs. 18.71099873096682 (jit mode)
+
+
+## PyText 
+
+This pipeline example shows the application with the existing `ScriptVocab` in pytext library. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
+
+* `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
+* `from pytext.torchscript.vocab.ScriptVocabulary`
+* `ToLongTensor` to convert a list of integers to `torch.tensor`
+
+With the dependency of `pytext` library, the command to run the pipeline:
+
+    python pipelines.py --pipeline pytext
+
+The lookup time: 43.51164810406044 (eager mode) vs. 26.57643914804794 (jit mode)
