@@ -91,11 +91,11 @@ class VectorTransform(nn.Module):
         return self.vector.lookup_vectors(tokens)
 
 
-class TextSequential(nn.Sequential):
+class SequentialTransform(nn.Sequential):
     r"""Text Sequential pipeline
 
         Example:
-            >>> from transforms import TextSequential
+            >>> from transforms import SequentialTransform
             >>> from torchtext.experimental.transforms import BasicEnglishNormalize
             >>> from transforms import VocabTransform
             >>> tokenizer = BasicEnglishNormalize()
@@ -103,7 +103,7 @@ class TextSequential(nn.Sequential):
             >>> from collections import Counter, OrderedDict
             >>> v = Vocab(OrderedDict([(token, 1) for token in ['e', 'd', 'c', 'b', 'a']]))
             >>> vocab = VocabTransform(v)
-            >>> txt_pipeline = TextSequential(tokenizer, vocab)
+            >>> txt_pipeline = SequentialTransform(tokenizer, vocab)
             >>> import torch
             >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
     """

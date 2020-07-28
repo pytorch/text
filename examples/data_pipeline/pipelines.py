@@ -5,7 +5,7 @@ from transforms import (
     VocabTransform,
     PyTextVocabTransform,
     VectorTransform,
-    TextSequential,
+    SequentialTransform,
     ToLongTensor,
 )
 from torchtext.experimental.transforms import (
@@ -25,7 +25,7 @@ def build_sp_pipeline(spm_file):
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = TextSequential(tokenizer, vocab, ToLongTensor())
+    pipeline = SequentialTransform(tokenizer, vocab, ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit sentencepiece pipeline success!')
     return pipeline, jit_pipeline
@@ -69,7 +69,7 @@ def build_huggingface_vocab_pipeline(hf_vocab_file):
     vocab = vocab_from_file_object(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequential(tokenizer, VocabTransform(vocab), ToLongTensor())
+    pipeline = SequentialTransform(tokenizer, VocabTransform(vocab), ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
@@ -82,9 +82,9 @@ def build_pytext_vocab_pipeline(vocab_file):
     vocab_list = [line.rstrip() for line in f]
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequential(tokenizer,
-                              PyTextVocabTransform(ScriptVocabulary(vocab_list)),
-                              ToLongTensor())
+    pipeline = SequentialTransform(tokenizer,
+                                   PyTextVocabTransform(ScriptVocabulary(vocab_list)),
+                                   ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit PyText pipeline success!')
     return pipeline, jit_pipeline
@@ -95,7 +95,7 @@ def build_fasttext_vector_pipeline():
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequential(tokenizer, VectorTransform(vector), ToLongTensor())
+    pipeline = SequentialTransform(tokenizer, VectorTransform(vector), ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit fasttext pipeline success!')
     return pipeline, jit_pipeline
