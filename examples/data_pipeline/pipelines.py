@@ -11,8 +11,8 @@ from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
 )
 from torchtext.experimental.vocab import vocab_from_file_object
-from torchtext.experimental.vectors import ExperimentalFastText
-from torchtext.vectors import FastText
+from torchtext.experimental.vectors import FastText as ExperimentalFastText
+from torchtext.vocab import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
@@ -45,6 +45,16 @@ def build_torchtext_vocab(vocab_file):
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
     pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
     return pipeline, None
+
+
+# def build_torchtext_experimental_vocab(vocab_file):
+#     from torchtext.data.utils import get_tokenizer
+#     tokenizer = get_tokenizer("basic_english")
+#     f = open(vocab_file, 'r')
+#     vocab = vocab_from_file_object(f)
+
+#     pipeline = TextDataPipeline(tokenizer, VocabTransform(vocab))
+#     return pipeline, None
 
 
 def build_batch_torchtext_vocab(vocab_file):
@@ -157,6 +167,8 @@ if __name__ == "__main__":
         pipeline, jit_pipeline = build_experimental_fasttext_vector_pipeline()
     elif args.pipeline == 'torchtext':
         pipeline, jit_pipeline = build_torchtext_vocab(args.vocab_filename)
+    # elif args.pipeline == 'experimental_torchtext':
+    #     pipeline, jit_pipeline = build_torchtext_experimental_vocab(args.vocab_filename)
     elif args.pipeline == 'batch_torchtext':
         pipeline, jit_pipeline = build_batch_torchtext_vocab(args.vocab_filename)
     else:
