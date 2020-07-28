@@ -65,11 +65,19 @@ The lookup time: 6.821685338858515 (eager mode)
 
 ## Torchtext with a batch of data
 
-This pipeline example shows the application with the data batch as input. The other building blocks are same with the ones in torchtext case. Since the incoming data are in the form of a batch, `run_batch_benchmark_lookup` func uses python built-in `map()` func to process a list of raw text strings according the pipeline.
+This pipeline example shows the application with the data batch as input. For the real-world text classification task, two separate pipelines are created for text and label.
+
+For the text pipeline:
 
 * `basic_english` func from `torchtext.data.utils.get_tokenizer`
 * `torchtext.vocab.Vocab`
 * `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
+
+For the label pipeline:
+
+* `torchtext.experimental.functional.totensor` to convert a list of strings to `torch.tensor`
+
+And the text and label pipeline are passed to TextClassificationPipeline. Since the incoming data are in the form of a batch, `run_batch_benchmark_lookup` func uses python built-in `map()` func to process a batch of raw text data according the pipeline.
 
 The command to run the pipeline:
 
