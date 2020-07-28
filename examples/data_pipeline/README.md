@@ -18,6 +18,21 @@ The command to run the pipeline:
 The lookup time: 25.09393248707056 (eager mode) vs. 18.71099873096682 (jit mode)
 
 
+## Hugging Face 
+
+This pipeline example shows the application with the vocab text file from Hugging Face ([link](https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt)). The experimental vocab in torchtext library is used here:
+
+* `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
+* `torchtext.experimental.vocab.Vocab`
+* `ToLongTensor` to convert a list of integers to `torch.tensor`
+
+The command to run the pipeline:
+
+    python pipelines.py --pipeline huggingface 
+
+The lookup time: 45.7489246588666 (eager mode) vs. 30.990019195945933 (jit mode)
+
+
 ## PyText 
 
 This pipeline example shows the application with the existing `ScriptVocab` in pytext library. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
@@ -61,3 +76,17 @@ The command to run the pipeline:
     python pipelines.py --pipeline batch_torchtext
 
 The lookup time: 7.915330206044018 (eager mode)
+
+
+## FastText pretrained word vectors 
+
+This pipeline example shows the application with the pretained word vector from FastText:
+
+* `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
+* `torchtext.experimental.vectors.FastText`
+
+The command to run the pipeline:
+
+    python pipelines.py --pipeline fasttext 
+
+The lookup time: 51.57529654097743 (eager mode) vs. 36.06794896814972 (jit mode)
