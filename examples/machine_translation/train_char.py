@@ -13,8 +13,7 @@ from embedding import WordCharCNNEmbedding
 from model import Attention, Decoder, Encoder, Seq2Seq
 from torchtext.data.metrics import bleu_score
 from torchtext.vocab import Vocab
-from utils import (count_parameters, epoch_time, pad_chars, pad_words,
-                   seed_everything)
+from utils import count_parameters, epoch_time, pad_chars, pad_words, seed_everything
 
 
 def train(
@@ -163,6 +162,7 @@ def main(args):
     if args.save_vocab:
         print("Save vocab to {}".format(args.save_vocab))
         torch.save(train_dataset.vocab, args.save_vocab)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PyTorch Experimental Seq2seq for Machine Translation")

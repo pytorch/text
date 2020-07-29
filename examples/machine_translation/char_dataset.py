@@ -1,21 +1,20 @@
 import itertools
 import re
+from functools import partial
 
 import torch
 from torch.utils.data import DataLoader
 
 from torchtext.data.utils import get_tokenizer
-from torchtext.experimental.datasets.translation import (DATASETS,
-                                                         TranslationDataset)
+from torchtext.experimental.datasets.raw.translation import DATASETS
+from torchtext.experimental.datasets.translation import TranslationDataset
 from torchtext.experimental.functional import sequential_transforms, vocab_func
 from torchtext.vocab import build_vocab_from_iterator
 
 
 def build_word_vocab(data, transforms, index, init_token="<w>", eos_token="</w>"):
     tok_list = [[init_token], [eos_token]]
-    for line in data:
-        tok_list.append(transforms(line[index]))
-    return build_vocab_from_iterator(tok_list)
+    return build_vocab_from_iterator(tok_list + list(map(lambda x: transforms(x[index]), data)))
 
 
 def build_char_vocab(
@@ -82,20 +81,17 @@ def get_dataset(dataset_name: str):
     tgt_tokenizer = get_tokenizer("spacy", language="en_core_web_sm")
     # Setup char tokenizer
 
-    def char_tokenizer(words):
-        return [list(word) for word in words]
-
     def remove_extra_whitespace(line):
         return re.sub(" {2,}", " ", line)
 
-    src_char_transform = sequential_transforms(remove_extra_whitespace, src_tokenizer, char_tokenizer)
-    tgt_char_transform = sequential_transforms(remove_extra_whitespace, tgt_tokenizer, char_tokenizer)
+    src_char_transform = sequential_transforms(remove_extra_whitespace, src_tokenizer, partial(map, list))
+    tgt_char_transform = sequential_transforms(remove_extra_whitespace, tgt_tokenizer, partial(map, list))
     tgt_word_transform = sequential_transforms(remove_extra_whitespace, tgt_tokenizer)
 
     # Setup vocabularies (both words and chars)
     src_char_vocab = build_char_vocab(train_data, src_char_transform, index=0)
     tgt_char_vocab = build_char_vocab(train_data, tgt_char_transform, index=1)
-    tgt_word_vocab = build_word_vocab(train_data, tgt_word_transform, index=1)
+    tgt_word_vocab = build_word_vocab(train, tgt_word_transform, 0)
 
     # Building the dataset with character level tokenization
     src_char_transform = sequential_transforms(
