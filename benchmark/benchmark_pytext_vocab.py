@@ -6,7 +6,7 @@ from typing import List, Union
 
 # this is needed because we want to add 'torchtext/examples/data_pipeline' directory to the
 # `sys.path` variable in order to import the pytext_vocab (since its not a module)
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "examples", "data_pipeline"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "examples", "vocab"))
 
 from pytext_vocab import ScriptVocab as ExperimentalScriptVocabulary
 from pytext.torchscript.vocab import ScriptVocabulary as PytextScriptVocabulary
