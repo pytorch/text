@@ -1,5 +1,5 @@
 import torch
-from torchtext.modules import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
+from torchtext.nn import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
 from torch.testing import assert_allclose
 from ..common.torchtext_test_case import TorchtextTestCase
 

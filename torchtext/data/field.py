@@ -3,7 +3,7 @@ from collections import Counter, OrderedDict
 from itertools import chain
 import torch
 from tqdm import tqdm
-
+import warnings
 from .dataset import Dataset
 from .pipeline import Pipeline
 from .utils import get_tokenizer, dtype_to_attr, is_tokenizer_serializable
@@ -33,6 +33,7 @@ class RawField(object):
     """
 
     def __init__(self, preprocessing=None, postprocessing=None, is_target=False):
+        warnings.warn('{} class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
         self.preprocessing = preprocessing
         self.postprocessing = postprocessing
         self.is_target = is_target
@@ -146,6 +147,7 @@ class Field(RawField):
                  batch_first=False, pad_token="<pad>", unk_token="<unk>",
                  pad_first=False, truncate_first=False, stop_words=None,
                  is_target=False):
+        warnings.warn('{} class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
         self.sequential = sequential
         self.use_vocab = use_vocab
         self.init_token = init_token
@@ -365,6 +367,7 @@ class Field(RawField):
 
 class ReversibleField(Field):
     def __init__(self, **kwargs):
+        warnings.warn('{} class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
         if kwargs.get('tokenize') is list:
             self.use_revtok = False
         else:
@@ -411,6 +414,7 @@ class SubwordField(ReversibleField):
     vocab_cls = SubwordVocab
 
     def __init__(self, **kwargs):
+        warnings.warn('{} class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
         kwargs['tokenize'] = 'subword'
         if 'unk_token' not in kwargs:
             kwargs['unk_token'] = '�'
@@ -491,6 +495,7 @@ class NestedField(Field):
                  postprocessing=None, tokenize=None, tokenizer_language='en',
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
+        warnings.warn('{} class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
         if isinstance(nesting_field, NestedField):
             raise ValueError('nesting field must not be another NestedField')
         if nesting_field.include_lengths:
