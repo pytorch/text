@@ -1,5 +1,5 @@
 from . import data
-from . import modules
+from . import nn
 from . import datasets
 from . import utils
 from . import vocab
@@ -12,7 +12,7 @@ except ImportError:
     pass
 
 __all__ = ['data',
-           'modules',
+           'nn',
            'datasets',
            'utils',
            'vocab',
