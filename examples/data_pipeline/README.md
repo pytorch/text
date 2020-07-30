@@ -97,4 +97,4 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline fasttext 
 
-The lookup time: 51.57529654097743 (eager mode) vs. 36.06794896814972 (jit mode)
+The lookup time: 45.74515324481763 (eager mode) vs. 32.64012925699353 (jit mode)
