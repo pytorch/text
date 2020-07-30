@@ -30,8 +30,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size())
-          + ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stovec_.reserve(tokens.size());
@@ -41,7 +41,7 @@ public:
         throw std::runtime_error("Duplicate token found in tokens list: " +
                                  tokens[i]);
       }
-      stovec_[std::move(tokens[i])] = vectors_.select(0, i)]
+      stovec_[std::move(tokens[i])] = vectors_.select(0, i);
     }
   }
 
@@ -70,8 +70,7 @@ public:
       tokens_.push_back(token);
       vectors_ = torch::cat({vectors_, torch::unsqueeze(vector, /*dim=*/0)},
                             /*dim=*/0);
-      stovec_[std::move(token)] = vectors_.select(0, stovec_.size()]
-      
+      stovec_[std::move(token)] = vectors_.select(0, stovec_.size());
     }
   }
 
@@ -113,8 +112,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(strings), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
