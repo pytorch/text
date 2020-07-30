@@ -18,11 +18,17 @@ namespace {
 typedef Dict<std::string, torch::Tensor> VectorsDict;
 typedef Dict<std::string, int64_t> IndexDict;
 typedef std::vector<std::string> StringList;
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
+                   std::vector<torch::Tensor>>
+    VectorsStates;
 
 struct Vectors : torch::CustomClassHolder {
 public:
+  const std::string version_str_ = "0.0.1";
+
   IndexDict stoindex_;
   VectorsDict stovec_;
+
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
 
@@ -195,7 +201,7 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
   tokens.reserve(num_lines);
 
   // concat all loaded tuples
-  int64_t count = num_header_lines;
+  int64_t count = 0;
   for (size_t i = 0; i < chunk_tokens.size(); i++) {
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
@@ -258,6 +264,10 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   std::tie(dict, dup_tokens) =
       _concat_vectors(chunk_tokens, data_tensor, num_header_lines, num_lines);
 
+  // we need to remove header rows from the data_tensor
+  data_tensor =
+      data_tensor.narrow(0, num_header_lines, num_lines - num_header_lines);
+
   torch::Tensor unk_tensor;
   if (opt_unk_tensor) {
     unk_tensor = *opt_unk_tensor;
@@ -268,6 +278,51 @@ _load_token_and_vectors_from_file(const std::string &file_path,
       c10::make_intrusive<Vectors>(Vectors(dict, data_tensor, unk_tensor)),
       dup_tokens);
   return result;
+}
+
+VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
+  std::vector<std::string> tokens(self->stoindex_.size());
+  // reconstruct tokens list
+  for (const auto &item : self->stoindex_) {
+    tokens[item.value()] = item.key();
+  }
+
+  std::vector<int64_t> integers;
+  std::vector<std::string> strings = std::move(tokens);
+  std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
+
+  VectorsStates states =
+      std::make_tuple(self->version_str_, std::move(integers),
+                      std::move(strings), std::move(tensors));
+
+  return states;
+}
+
+c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
+  auto state_size = std::tuple_size<decltype(states)>::value;
+  if (state_size != 4) {
+    throw std::runtime_error(
+        "Expected deserialized Vectors to have 4 states but found only " +
+        std::to_string(state_size) + " states.");
+  }
+
+  auto &version_str = std::get<0>(states);
+  auto &integers = std::get<1>(states);
+  auto &strings = std::get<2>(states);
+  auto &tensors = std::get<3>(states);
+
+  // check integers are empty
+  if (integers.size() != 0) {
+    throw std::runtime_error("Expected `integers` states to be empty.");
+  }
+
+  if (version_str.compare("0.0.1") >= 0) {
+    return c10::make_intrusive<Vectors>(
+        std::move(strings), std::move(tensors[0]), std::move(tensors[1]));
+  }
+
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
@@ -281,19 +336,12 @@ static auto vectors =
         .def("__len__", &Vectors::__len__)
         .def_pickle(
             // __setstate__
-            [](const c10::intrusive_ptr<Vectors> &self) -> std::tuple<
-                Dict<std::string, int64_t>, torch::Tensor, torch::Tensor> {
-              return std::make_tuple(self->stoindex_, self->vectors_,
-                                     self->unk_tensor_);
+            [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
+              return _set_vectors_states(self);
             },
             // __getstate__
-            [](std::tuple<Dict<std::string, int64_t>, torch::Tensor,
-                          torch::Tensor>
-                   states) -> c10::intrusive_ptr<Vectors> {
-              return c10::make_intrusive<Vectors>(
-                  std::move(std::get<0>(states)),
-                  std::move(std::get<1>(states)),
-                  std::move(std::get<2>(states)));
+            [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
+              return _get_vectors_from_states(states);
             });
 
 // Registers our custom op with torch.

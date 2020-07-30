@@ -7,16 +7,17 @@ namespace {
 
 using c10::Dict;
 
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
+                   std::vector<torch::Tensor>>
+    VocabStates;
+
 struct Vocab : torch::CustomClassHolder {
 private:
   int64_t unk_index_;
   Dict<std::string, int64_t> stoi_;
 
 public:
-  // stoi_, and unordered_map holds the serialized params passed in
-  // during initialization. We need this because we need to be able to serialize
-  // the model so that we can save the scripted object. Pickle will get the
-  // serialized model from these members, thus they needs to be public.
+  const std::string version_str_ = "0.0.1";
   std::vector<std::string> itos_;
   std::string unk_token_;
 
@@ -68,12 +69,11 @@ public:
     }
 
     // need to offset all tokens greater than or equal index by 1
-    for (auto &entry : stoi_) {
-      if (entry.value() >= index) {
-        stoi_.insert_or_assign(entry.key(), std::move(entry.value() + 1));
-      }
+    for (size_t i = index; i < itos_.size(); i++) {
+      stoi_.insert_or_assign(itos_[i], std::move(i + 1));
     }
     stoi_.insert(std::move(token), std::move(index));
+    itos_.insert(itos_.begin() + index, std::move(token));
 
     // need to update unk_index in case token equals unk_token or token inserted
     // before unk_token
@@ -111,6 +111,47 @@ public:
   std::vector<std::string> get_itos() const { return itos_; }
 };
 
+VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
+  std::vector<int64_t> integers;
+  std::vector<std::string> strings = self->itos_;
+  strings.push_back(self->unk_token_);
+  std::vector<torch::Tensor> tensors;
+
+  VocabStates states = std::make_tuple(self->version_str_, std::move(integers),
+                                       std::move(strings), std::move(tensors));
+  return states;
+}
+
+c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
+  auto state_size = std::tuple_size<decltype(states)>::value;
+  if (state_size != 4) {
+    throw std::runtime_error(
+        "Expected deserialized Vocab to have 4 states but found only " +
+        std::to_string(state_size) + " states.");
+  }
+
+  auto &version_str = std::get<0>(states);
+  auto &integers = std::get<1>(states);
+  auto &strings = std::get<2>(states);
+  auto &tensors = std::get<3>(states);
+
+  // check integers and tensors are empty
+  if (integers.size() != 0 || tensors.size() != 0) {
+    throw std::runtime_error(
+        "Expected `integers` and `tensors` states to be empty.");
+  }
+
+  if (version_str.compare("0.0.1") >= 0) {
+    std::string unk_token = strings.back();
+    strings.pop_back(); // remove last element which is unk_token
+
+    return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
+  }
+
+  throw std::runtime_error(
+      "Found unexpected version for serialized Vocab: " + version_str + ".");
+}
+
 // Registers our custom class with torch.
 static auto vocab =
     torch::class_<Vocab>("torchtext", "Vocab")
@@ -125,18 +166,14 @@ static auto vocab =
         .def("get_stoi", &Vocab::get_stoi)
         .def("get_itos", &Vocab::get_itos)
         .def_pickle(
-            // __getstate__
-            [](const c10::intrusive_ptr<Vocab> &self)
-                -> std::tuple<std::vector<std::string>, std::string> {
-              std::tuple<std::vector<std::string>, std::string> states(
-                  self->itos_, self->unk_token_);
-              return states;
-            },
             // __setstate__
-            [](std::tuple<std::vector<std::string>, std::string> states)
-                -> c10::intrusive_ptr<Vocab> {
-              return c10::make_intrusive<Vocab>(std::move(std::get<0>(states)),
-                                                std::move(std::get<1>(states)));
+            [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
+              return _set_vocab_states(self);
+            },
+            // __getstate__
+            [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
+              return _get_vocab_from_states(states);
             });
+
 } // namespace
 } // namespace torchtext
