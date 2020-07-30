@@ -19,6 +19,9 @@ def benchmark_experimental_vectors():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
+        
+        if len(tokens) > 100:
+            break
 
     # existing FastText construction
     print("Existing FastText - Not Jit Mode")
