@@ -15,7 +15,9 @@ struct Vectors : torch::CustomClassHolder {
 public:
   const std::string version_str_ = "0.0.1";
 
-  Dict<std::string, torch::Tensor> stovec_;
+  ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
+      stovec_;
+  // Dict<std::string, torch::Tensor> stovec_;
   std::vector<std::string> tokens_;
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
@@ -29,8 +31,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stovec_.reserve(tokens.size());
@@ -40,14 +42,14 @@ public:
         throw std::runtime_error("Duplicate token found in tokens list: " +
                                  tokens[i]);
       }
-      stovec_.insert(std::move(tokens[i]), vectors_.select(0, i));
+      stovec_.insert_or_assign(std::move(tokens[i]), vectors_.select(0, i));
     }
   }
 
   torch::Tensor __getitem__(const std::string &token) const {
     const auto &item = stovec_.find(token);
     if (item != stovec_.end()) {
-      return item->value();
+      return item->second;
     }
     return unk_tensor_;
   }
@@ -64,7 +66,7 @@ public:
   void __setitem__(const std::string &token, const torch::Tensor &vector) {
     const auto &item = stovec_.find(token);
     if (item != stovec_.end()) {
-      item->value() = vector;
+      item->second = vector;
     } else {
       tokens_.push_back(token);
       vectors_ = torch::cat({vectors_, torch::unsqueeze(vector, /*dim=*/0)},
@@ -111,8 +113,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(strings), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
