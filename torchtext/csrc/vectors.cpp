@@ -49,6 +49,7 @@ public:
     }
 
     stoindex_.reserve(tokens.size());
+    stovec_.reserve(tokens.size());
     for (std::size_t i = 0; i < tokens.size(); i++) {
       // tokens should not have any duplicates
       if (stoindex_.contains(tokens[i])) {
@@ -64,12 +65,14 @@ public:
     if (item != stovec_.end()) {
       return item->value();
     }
-    const auto &item_index = stoindex_.find(token);
-    if (item_index != stoindex_.end()) {
-      auto vector = vectors_[item_index->value()];
-      stovec_.insert(token, vector);
-      return vector;
-    }
+    // TODO: uncomment this in followup PR to see performance implications for
+    // lazy construction
+    // const auto &item_index = stoindex_.find(token);
+    // if (item_index != stoindex_.end()) {
+    //   auto vector = vectors_[item_index->value()];
+    //   stovec_.insert(token, vector);
+    //   return vector;
+    // }
     return unk_tensor_;
   }
 
@@ -192,7 +195,6 @@ void parse_chunk(const std::string &file_path, size_t offset,
 
 std::tuple<IndexDict, StringList>
 _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-                torch::Tensor data_tensor, int64_t num_header_lines,
                 int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
@@ -261,8 +263,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
 
   IndexDict dict;
   StringList dup_tokens;
-  std::tie(dict, dup_tokens) =
-      _concat_vectors(chunk_tokens, data_tensor, num_header_lines, num_lines);
+  std::tie(dict, dup_tokens) = _concat_vectors(chunk_tokens, num_lines);
 
   // we need to remove header rows from the data_tensor
   data_tensor =
