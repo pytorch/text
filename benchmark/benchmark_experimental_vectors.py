@@ -19,12 +19,9 @@ def benchmark_experimental_vectors():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
-        
-        if len(tokens) > 1000:
-            break
 
     # existing FastText construction
-    print("Existing FastText - Not Jit Mode")
+    print("Existing FastText - Eager Mode")
     t0 = time.monotonic()
     fast_text = FastText()
     print("Construction time:", time.monotonic() - t0)
@@ -36,8 +33,8 @@ def benchmark_experimental_vectors():
     fast_text_experimental = FastTextExperimental(validate_file=False)
     print("Construction time:", time.monotonic() - t0)
 
-    # not jit lookup
-    print("FastText Experimental - Not Jit Mode")
+    # eager lookup
+    print("FastText Experimental - Eager Mode")
     _run_benchmark_lookup(tokens, fast_text_experimental)
 
     # jit lookup

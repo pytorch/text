@@ -17,7 +17,6 @@ public:
 
   ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
       stovec_;
-  // Dict<std::string, torch::Tensor> stovec_;
   std::vector<std::string> tokens_;
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
