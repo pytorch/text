@@ -91,28 +91,6 @@ class VectorTransform(nn.Module):
         return self.vector.lookup_vectors(tokens)
 
 
-class SequentialTransform(nn.Sequential):
-    r"""Text Sequential pipeline
-
-        Example:
-            >>> from transforms import SequentialTransform
-            >>> from torchtext.experimental.transforms import BasicEnglishNormalize
-            >>> from transforms import VocabTransform
-            >>> tokenizer = BasicEnglishNormalize()
-            >>> from torchtext.experimental.vocab import Vocab
-            >>> from collections import Counter, OrderedDict
-            >>> v = Vocab(OrderedDict([(token, 1) for token in ['e', 'd', 'c', 'b', 'a']]))
-            >>> vocab = VocabTransform(v)
-            >>> txt_pipeline = SequentialTransform(tokenizer, vocab)
-            >>> import torch
-            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
-    """
-    def forward(self, input: str):
-        for module in self:
-            input = module(input)
-        return input
-
-
 class ToLongTensor(nn.Module):
     r"""Convert a list of integers to long tensor
     """
