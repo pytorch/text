@@ -1,3 +1,4 @@
+from heapq import heappop, heappush
 from typing import Any, Callable, List, Tuple, Union
 
 import torch
@@ -40,7 +41,6 @@ class BucketBatchSampler(Sampler):
 
         self.data_source = data_source
         self.seq_len_fn = seq_len_fn
-        self.sort_key_fn_wrapper = lambda x: self.seq_len_fn(x[0])
         self.batch_size = batch_size
         if shuffle:
             self.sampler = RandomSampler(data_source)
@@ -52,27 +52,29 @@ class BucketBatchSampler(Sampler):
         minibatch = []
         for idx in self.sampler:
             if len(minibatch) % (self.batch_size * sample_count) == 0:
-                for batch in self._sorted_batch(minibatch):
+                for batch in self._batch(minibatch):
                     yield batch
                 minibatch = []
-            minibatch.append((self.data_source[idx], idx))
+            heappush(minibatch, (self.seq_len_fn(self.data_source[idx]), idx))
 
         # Finish up leftovers
         if minibatch:
-            for batch in self._sorted_batch(minibatch):
+            for batch in self._batch(minibatch):
                 yield batch
 
     def __len__(self):
         return (len(self.data_source) + self.batch_size - 1) // self.batch_size
 
-    def _sorted_batch(self, minibatch: List[Tuple[torch.Tensor, int]]):
+    def _batch(self, minibatch: List[Tuple[torch.Tensor, int]]):
         # Sort all the data first to ensure we have similar lengths for each batches
-        minibatch = sorted(minibatch, key=self.sort_key_fn_wrapper)
+        # minibatch = sorted(minibatch, key=self.sort_key_fn_wrapper)
         # Extra steps to ensure all data are returned
         diff = (len(minibatch) % self.batch_size) + 1
         start = 0
-        for batch_id in range(self.batch_size, len(minibatch) + diff, self.batch_size):
-            # Only grab the index and ignore the original data
-            yield map(lambda x: x[1], minibatch[start:batch_id])
+        for _ in range(self.batch_size, len(minibatch) + diff, self.batch_size):
+            max_steps = min(self.batch_size, len(minibatch))
+            # Return data in ordered manner
+            this_batch = [heappop(minibatch) for _ in range(max_steps)]
+            yield list(map(lambda x: x[1], this_batch))
             # Increment the index starting point
             start += self.batch_size
