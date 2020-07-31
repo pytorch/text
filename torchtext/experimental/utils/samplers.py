@@ -66,15 +66,9 @@ class BucketBatchSampler(Sampler):
         return (len(self.data_source) + self.batch_size - 1) // self.batch_size
 
     def _batch(self, minibatch: List[Tuple[torch.Tensor, int]]):
-        # Sort all the data first to ensure we have similar lengths for each batches
-        # minibatch = sorted(minibatch, key=self.sort_key_fn_wrapper)
-        # Extra steps to ensure all data are returned
-        diff = (len(minibatch) % self.batch_size) + 1
-        start = 0
-        for _ in range(self.batch_size, len(minibatch) + diff, self.batch_size):
+        total_iter = (len(minibatch) + self.batch_size - 1) // self.batch_size
+        for _ in range(total_iter):
             max_steps = min(self.batch_size, len(minibatch))
-            # Return data in ordered manner
-            this_batch = [heappop(minibatch) for _ in range(max_steps)]
-            yield list(map(lambda x: x[1], this_batch))
-            # Increment the index starting point
-            start += self.batch_size
+            # Return ordered data
+            batch_iter = [heappop(minibatch) for _ in range(max_steps)]
+            yield list(map(lambda x: x[1], batch_iter))
