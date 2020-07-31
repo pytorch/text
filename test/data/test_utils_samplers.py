@@ -11,16 +11,16 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 class TestSampler(TorchtextTestCase):
     def test_bucket_by_length_batch_sampler(self):
-        dummy = [torch.tensor(range(1, torch.randint(2, 11, (1,))[0])) for num in range(15)]
+        dummy = [torch.tensor(range(1, torch.randint(2, 11, (1,))[0])) for num in range(150)]
 
         def tensor_seq_len_fn(row):
             return row.size(0)
 
-        sampler = BucketBatchSampler(dummy, [5, 10], tensor_seq_len_fn, batch_size=5)
+        sampler = BucketBatchSampler(dummy, tensor_seq_len_fn, batch_size=4)
 
         # Ensure all indexes are available from the sampler
         indexes = [idx for row in sampler for idx in row]
-        self.assertEquals(sorted(indexes), list(range(15)))
+        self.assertEquals(sorted(indexes), list(range(150)))
 
         # Since our bucket boundaries are 5 and 10, we can check if all of the
         # members have no difference more than 5
@@ -39,7 +39,7 @@ class TestSampler(TorchtextTestCase):
         class MyDataset(Dataset):
             def __init__(self):
                 self.data = []
-                for num in range(20):
+                for num in range(200):
                     max_length = torch.randint(2, 11, (1,))[0]
                     self.data.append(torch.tensor(range(1, max_length)))
 
@@ -56,7 +56,7 @@ class TestSampler(TorchtextTestCase):
             return row.size(0)
 
         dataset = MyDataset()
-        batch_sampler = BucketBatchSampler(dataset, [3, 5, 10], tensor_seq_len_fn, 5)
+        batch_sampler = BucketBatchSampler(dataset, tensor_seq_len_fn, 5)
         iterator = DataLoader(dataset, batch_sampler=batch_sampler, collate_fn=collate_fn)
 
         for x in iterator:
