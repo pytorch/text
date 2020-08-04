@@ -98,17 +98,22 @@ class TestVectors(TorchtextTestCase):
 
     def test_vectors_load_and_save(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
         expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
-        tokens = ['a']
-        vecs = tensorA.unsqueeze(0)
+        tokens = ['a', 'b']
+        vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = vectors(tokens, vecs)
+
+        tensorC = torch.tensor([1, 1], dtype=torch.float)
+        vectors_obj['b'] = tensorC
 
         vector_path = os.path.join(self.test_dir, 'vectors.pt')
         torch.save(vectors_obj, vector_path)
         loaded_vectors_obj = torch.load(vector_path)
 
         self.assertEqual(loaded_vectors_obj['a'], tensorA)
+        self.assertEqual(loaded_vectors_obj['b'], tensorC)
         self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
     def test_errors(self):
