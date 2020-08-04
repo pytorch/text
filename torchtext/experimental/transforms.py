@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from typing import List, Tuple
 
+from torchtext._torchtext import Regex as RegexPybind
 
 __all__ = [
     'BasicEnglishNormalize',
@@ -55,7 +56,8 @@ class BasicEnglishNormalize(nn.Module):
             (r'\:', ' '),
             (r'\s+', ' ')]
 
-        regex_objects = map(lambda pattern_tuple: torch.classes.torchtext.Regex(pattern_tuple[0]), patterns_list)
+        # regex_objects = map(lambda pattern_tuple: torch.classes.torchtext.Regex(pattern_tuple[0]), patterns_list)
+        regex_objects = map(lambda pattern_tuple: RegexPybind(pattern_tuple[0]), patterns_list)
         replacement_strings = map(lambda pattern_tuple: pattern_tuple[1], patterns_list)
         self.regex_and_replacement_string_pairs = list(zip(regex_objects, replacement_strings))
 

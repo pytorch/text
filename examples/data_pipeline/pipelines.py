@@ -63,13 +63,17 @@ def build_batch_torchtext_vocab(vocab_file):
 
 
 def build_huggingface_vocab_pipeline(hf_vocab_file):
-    tokenizer = BasicEnglishNormalize()
+    # tokenizer = BasicEnglishNormalize()
+    from torchtext.data.utils import get_tokenizer
+    tokenizer = get_tokenizer("basic_english")
+
     f = open(hf_vocab_file, 'r')
     vocab = vocab_from_file_object(f)
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextDataPipeline(tokenizer, VocabTransform(vocab))
-    jit_pipeline = torch.jit.script(pipeline)
+    # jit_pipeline = torch.jit.script(pipeline)
+    jit_pipeline = None
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
 
