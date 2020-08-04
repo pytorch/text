@@ -1,6 +1,6 @@
-#include <double-conversion/double-conversion.h>
-#include <double-conversion/ieee.h>
-#include <double-conversion/utils.h>
+// #include <double-conversion/double-conversion.h>
+// #include <double-conversion/ieee.h>
+// #include <double-conversion/utils.h>
 #include <future>
 #include <iostream>
 #include <sstream>
@@ -170,9 +170,9 @@ void parse_chunk(const std::string &file_path, size_t offset,
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
 
-  int converter_flags = double_conversion::StringToDoubleConverter::NO_FLAGS;
-  double_conversion::StringToDoubleConverter converter(
-      converter_flags, 0.0f, double_conversion::Single::NaN(), NULL, NULL);
+  // int converter_flags = double_conversion::StringToDoubleConverter::NO_FLAGS;
+  // double_conversion::StringToDoubleConverter converter(
+  //     converter_flags, 0.0f, double_conversion::Single::NaN(), NULL, NULL);
 
   for (int64_t i = start_line; i < end_line; i++) {
     std::string token;
@@ -184,10 +184,16 @@ void parse_chunk(const std::string &file_path, size_t offset,
     // read the vector
     for (int64_t j = 0; j < vector_dim; j++) {
       fin >> vec_val;
-      const char *tmp_str = vec_val.c_str();
-      int processed_characters_count;
-      data_ptr[i * vector_dim + j] = converter.StringToFloat(
-          tmp_str, strlen(tmp_str), &processed_characters_count);
+      // const char *tmp_str = vec_val.c_str();
+      // int processed_characters_count;
+      // data_ptr[i * vector_dim + j] = converter.StringToFloat(
+      //     tmp_str, strlen(tmp_str), &processed_characters_count);
+
+      data_ptr[i * vector_dim + j] = std::stof(vec_val);
+
+      // std::cerr << "[vector_dim]" << vector_dim << std::endl;
+      // std::cerr << "[vec_val]" << vec_val << std::endl;
+      // std::cerr << "[std::stof(vec_val)]" << std::stof(vec_val) << std::endl;
     }
     fin >> std::ws;
   }

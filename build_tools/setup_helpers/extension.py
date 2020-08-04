@@ -79,8 +79,7 @@ def _get_libraries():
     return [
         'sentencepiece_train',
         'sentencepiece',
-        're2',
-        'double-conversion'
+        're2'
     ]
 
 
