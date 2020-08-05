@@ -6,4 +6,3 @@
 	path = third_party/re2
 	url = https://github.com/google/re2
 	ignore = dirty
-	
