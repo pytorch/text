@@ -145,7 +145,7 @@ std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
 
 void _infer_offsets(const std::string &file_path, int64_t num_lines,
                     int64_t chunk_size, int64_t num_header_lines,
-                    std::vector<size_t> *offsets) {
+                    std::vector<size_t> &offsets) {
 
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
@@ -154,12 +154,12 @@ void _infer_offsets(const std::string &file_path, int64_t num_lines,
     fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     num_header_lines--;
   }
-  (*offsets).push_back(fin.tellg());
+  offsets.push_back(fin.tellg());
   size_t offset = 0;
   while (fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n')) {
     offset++;
     if (offset % chunk_size == 0) {
-      (*offsets).push_back(fin.tellg());
+      offsets.push_back(fin.tellg());
     }
   }
 }
@@ -235,7 +235,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   chunk_size = std::max(chunk_size, GRAIN_SIZE);
 
   std::vector<size_t> offsets;
-  _infer_offsets(file_path, num_lines, chunk_size, num_header_lines, &offsets);
+  _infer_offsets(file_path, num_lines, chunk_size, num_header_lines, offsets);
 
   torch::Tensor data_tensor = torch::empty({num_lines, vector_dim});
   float *data_ptr = data_tensor.data_ptr<float>();
