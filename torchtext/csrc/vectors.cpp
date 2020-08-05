@@ -48,8 +48,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) + ", size of vectors: " +
-          std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) +
+          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
     }
 
     stoindex_.reserve(tokens.size());
@@ -109,8 +109,8 @@ public:
 
 inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
-std::tuple<int64_t, int64_t, int64_t>
-_infer_shape(const std::string &file_path, const int64_t delimiter_ascii) {
+std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
+                                                   const char delimiter) {
 
   int64_t num_header_lines = 0, num_lines = 0, vector_dim = -1;
   std::vector<std::string> vec_str;
@@ -125,7 +125,7 @@ _infer_shape(const std::string &file_path, const int64_t delimiter_ascii) {
       std::istringstream s(line);
 
       // get rid of the token
-      std::getline(s, word, static_cast<char>(delimiter_ascii));
+      std::getline(s, word, delimiter);
       // we assume entries for vector are always seperated by ' '
       while (std::getline(s, word, ' ')) {
         vec_str.push_back(word);
@@ -169,7 +169,7 @@ void _infer_offsets(const std::string &file_path, int64_t num_lines,
 
 void parse_chunk(const std::string &file_path, size_t offset,
                  const int64_t start_line, const int64_t end_line,
-                 const int64_t vector_dim, const int64_t delimiter_ascii,
+                 const int64_t vector_dim, const char delimiter,
                  std::shared_ptr<StringList> tokens, float *data_ptr) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
@@ -182,7 +182,7 @@ void parse_chunk(const std::string &file_path, size_t offset,
   for (int64_t i = start_line; i < end_line; i++) {
     std::string token;
     // read the token
-    std::getline(fin, token, static_cast<char>(delimiter_ascii));
+    std::getline(fin, token, delimiter);
     tokens->push_back(token);
 
     std::string vec_val;
@@ -228,14 +228,17 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 constexpr int64_t GRAIN_SIZE = 131072;
 std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
 _load_token_and_vectors_from_file(const std::string &file_path,
-                                  const int64_t delimiter_ascii,
+                                  const std::string delimiter_str,
                                   int64_t num_cpus,
                                   c10::optional<torch::Tensor> opt_unk_tensor) {
+  TORCH_CHECK(delimiter_str.size() == 1,
+              "Only string delimeters of size 1 are supported.");
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
+  const char delimiter = delimiter_str.at(0);
   int64_t num_lines, num_header_lines, vector_dim;
   std::tie(num_lines, num_header_lines, vector_dim) =
-      _infer_shape(file_path, delimiter_ascii);
+      _infer_shape(file_path, delimiter);
 
   int64_t chunk_size = divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
@@ -259,10 +262,10 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     auto tokens_ptr = std::make_shared<StringList>();
 
     counter++;
-    at::launch([&, file_path, num_lines, chunk_size, vector_dim,
-                delimiter_ascii, j, i, tokens_ptr, data_ptr]() {
+    at::launch([&, file_path, num_lines, chunk_size, vector_dim, delimiter, j,
+                i, tokens_ptr, data_ptr]() {
       parse_chunk(file_path, offsets[j], i, std::min(num_lines, i + chunk_size),
-                  vector_dim, delimiter_ascii, tokens_ptr, data_ptr);
+                  vector_dim, delimiter, tokens_ptr, data_ptr);
       std::lock_guard<std::mutex> lk(m);
       counter--;
       cv.notify_all();
@@ -284,7 +287,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   if (opt_unk_tensor) {
     unk_tensor = *opt_unk_tensor;
   } else {
-    unk_tensor = torch::zeros({vector_dim});
+    unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
   }
   auto result = std::make_tuple(
       c10::make_intrusive<Vectors>(Vectors(stoindex, data_tensor, unk_tensor)),
@@ -346,8 +349,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error("Found unexpected version for serialized Vector: " +
-                           version_str + ".");
+  throw std::runtime_error(
+      "Found unexpected version for serialized Vector: " + version_str + ".");
 }
 
 // Registers our custom class with torch.
