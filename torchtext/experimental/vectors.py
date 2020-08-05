@@ -46,13 +46,14 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), num_cpus, unk_tensor)
+    cpp_vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ord(' '), num_cpus, unk_tensor)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
+    vectors_obj = Vectors(cpp_vectors_obj)
     torch.save(vectors_obj, cached_vectors_file_path)
-    return Vectors(vectors_obj)
+    return vectors_obj
 
 
 def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
@@ -134,14 +135,15 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     extracted_file_paths = extract_archive(downloaded_file_path)
     # need to get the full path to the correct file in the case when multiple files are extracted with different dims
     extracted_file_path_with_correct_dim = [path for path in extracted_file_paths if file_name in path][0]
-    vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ord(' '), num_cpus, unk_tensor)
+    cpp_vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ord(' '), num_cpus, unk_tensor)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens and dup_tokens != dup_token_glove_840b:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
+    vectors_obj = Vectors(cpp_vectors_obj)
     torch.save(vectors_obj, cached_vectors_file_path)
-    return Vectors(vectors_obj)
+    return vectors_obj
 
 
 def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, num_cpus=10):

@@ -1,9 +1,12 @@
+#include <ATen/Parallel.h>
+#include <atomic>
+#include <condition_variable>
 #include <future>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <thread>
 #include <torch/script.h>
 
 using c10::Dict;
@@ -187,7 +190,7 @@ void parse_chunk(const std::string &file_path, size_t offset,
 
 std::tuple<IndexMap, StringList>
 _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-                int64_t num_lines) {
+                int64_t num_header_lines, int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
   IndexMap tokens;
@@ -195,7 +198,7 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
   tokens.reserve(num_lines);
 
   // concat all loaded tuples
-  int64_t count = 0;
+  int64_t count = num_header_lines;
   for (size_t i = 0; i < chunk_tokens.size(); i++) {
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
@@ -233,43 +236,38 @@ _load_token_and_vectors_from_file(const std::string &file_path,
 
   torch::Tensor data_tensor = torch::empty({num_lines, vector_dim});
   float *data_ptr = data_tensor.data_ptr<float>();
-  std::vector<std::thread> threads;
   std::vector<std::shared_ptr<StringList>> chunk_tokens;
+
+  std::mutex m;
+  std::condition_variable cv;
+  std::atomic<int> counter(0);
 
   // create threads
   int64_t j = 0;
   for (int64_t i = num_header_lines; i < num_lines; i += chunk_size) {
     auto tokens_ptr = std::make_shared<StringList>();
 
-    // auto offset = offsets[j]
-    // cond var need to incrememnt at the begining of parse_chunk
-    at::launch([&](){
+    counter++;
+    at::launch([&, file_path, num_lines, chunk_size, vector_dim,
+                delimiter_ascii, j, i, tokens_ptr, data_ptr]() {
       parse_chunk(file_path, offsets[j], i, std::min(num_lines, i + chunk_size),
-                  vector_dim, delimiter_ascii, tokens_ptr, data_ptr)
-    };
-    // cond var need to decrement at the begining of parse_chunk
-
-    // TODO: Replace this with at::launch (this may require the use of mutexes)
-    threads.push_back(std::thread(parse_chunk, file_path, offsets[j], i,
-                                  std::min(num_lines, i + chunk_size),
-                                  vector_dim, delimiter_ascii, tokens_ptr,
-                                  data_ptr));
+                  vector_dim, delimiter_ascii, tokens_ptr, data_ptr);
+      std::lock_guard<std::mutex> lk(m);
+      counter--;
+      cv.notify_all();
+    });
     chunk_tokens.push_back(tokens_ptr);
     j++;
   }
 
-  // join threads
-  for (auto &thread : threads) {
-    thread.join();
-  }
+  // block until all threads finish execution
+  std::unique_lock<std::mutex> lock(m);
+  cv.wait(lock, [&counter] { return counter == 0; });
 
   IndexMap stoindex;
   StringList dup_tokens;
-  std::tie(stoindex, dup_tokens) = _concat_vectors(chunk_tokens, num_lines);
-
-  // we need to remove header rows from the data_tensor
-  data_tensor =
-      data_tensor.narrow(0, num_header_lines, num_lines - num_header_lines);
+  std::tie(stoindex, dup_tokens) =
+      _concat_vectors(chunk_tokens, num_header_lines, num_lines);
 
   torch::Tensor unk_tensor;
   if (opt_unk_tensor) {
@@ -284,13 +282,19 @@ _load_token_and_vectors_from_file(const std::string &file_path,
 }
 
 VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
-  std::vector<std::string> tokens(self->stoindex_.size());
-  // reconstruct tokens list
+  std::vector<std::string> tokens;
+  std::vector<int64_t> indices;
+  tokens.reserve(self->stoindex_.size());
+  indices.reserve(self->stoindex_.size());
+
+  // construct tokens and index list
+  // we need to store indices because the `vectors_` tensor may have gaps
   for (const auto &item : self->stoindex_) {
-    tokens[item.second] = item.first;
+    tokens.push_back(item.first);
+    indices.push_back(item.second);
   }
 
-  std::vector<int64_t> integers;
+  std::vector<int64_t> integers = std::move(indices);
   std::vector<std::string> strings = std::move(tokens);
   std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
 
@@ -314,14 +318,21 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
   auto &strings = std::get<2>(states);
   auto &tensors = std::get<3>(states);
 
-  // check integers are empty
-  if (integers.size() != 0) {
-    throw std::runtime_error("Expected `integers` states to be empty.");
-  }
-
   if (version_str.compare("0.0.1") >= 0) {
+    // check integers and tokens are same size
+    if (integers.size() != strings.size()) {
+      throw std::runtime_error(
+          "Expected `integers` and `strings` states to be the same size.");
+    }
+
+    IndexMap stoindex;
+    stoindex.reserve(integers.size());
+    for (size_t i = 0; i < integers.size(); i++) {
+      stoindex[strings[i]] = integers[i];
+    }
+
     return c10::make_intrusive<Vectors>(
-        std::move(strings), std::move(tensors[0]), std::move(tensors[1]));
+        std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
   throw std::runtime_error("Found unexpected version for serialized Vector: " +
