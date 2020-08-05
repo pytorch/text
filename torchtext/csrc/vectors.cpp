@@ -48,8 +48,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stoindex_.reserve(tokens.size());
@@ -193,7 +193,9 @@ void parse_chunk(const std::string &file_path, size_t offset,
       const char *tmp_str = vec_val.c_str();
       data_ptr[i * vector_dim + j] = converter.StringToFloat(
           tmp_str, strlen(tmp_str), &processed_characters_count);
-      // data_ptr[i * vector_dim + j] = std::stof(vec_val);
+      TORCH_CHECK(processed_characters_count == strlen(tmp_str),
+                  "Processed characters count didn't match vector string "
+                  "length during string to float conversion!");
     }
     fin >> std::ws;
   }
@@ -349,8 +351,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
