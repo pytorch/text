@@ -25,19 +25,16 @@ BasicEnglishNormalize::split_(std::string &str,
   return tokens;
 }
 
-std::vector<std::string>
-BasicEnglishNormalize::forward(const std::string &str) const {
-  std::string str_copy = str;
-
+std::vector<std::string> BasicEnglishNormalize::forward(std::string str) const {
   // str tolower
-  std::transform(str_copy.begin(), str_copy.end(), str_copy.begin(),
+  std::transform(str.begin(), str.end(), str.begin(),
                  [](unsigned char c) { return std::tolower(c); });
 
   for (size_t i = 0; i < regex_objects_.size(); i++) {
-    str_copy = regex_objects_[i].Sub(str_copy, replacements_[i]);
+    str = regex_objects_[i].Sub(str, replacements_[i]);
   }
 
-  return split_(str_copy);
+  return split_(str);
 }
 
 // Registers our custom class with torch.

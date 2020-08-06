@@ -3,12 +3,13 @@
 
 namespace torchtext {
 
-Regex::Regex(const std::string &re_str) : re_str_(re_str) {}
+Regex::Regex(const std::string &re_str) : re_str_(re_str) {
+  compiled_pattern_ = new RE2(re_str_);
+}
 
-std::string Regex::Sub(const std::string &str, const std::string &repl) const {
-  std::string mutable_str = str;
-  RE2::GlobalReplace(&mutable_str, re_str_, repl);
-  return mutable_str;
+std::string Regex::Sub(std::string str, const std::string &repl) const {
+  RE2::GlobalReplace(&str, *compiled_pattern_, repl);
+  return str;
 }
 
 // Registers our custom class with torch.

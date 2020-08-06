@@ -18,6 +18,6 @@ private:
 public:
   explicit BasicEnglishNormalize();
 
-  std::vector<std::string> forward(const std::string &str) const;
+  std::vector<std::string> forward(std::string str) const;
 };
 } // namespace torchtext
