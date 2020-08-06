@@ -80,7 +80,6 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-
     # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_BasicEnglishNormalize(self):
