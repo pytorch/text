@@ -37,46 +37,6 @@ class BasicEnglishNormalize(nn.Module):
         >>> jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
         >>> tokens = jit_basic_english_normalize(test_sample)
     """
-
-    # regex_and_replacement_string_pairs: List[Tuple[torch.classes.torchtext.Regex, str]]
-
-    # def __init__(self):
-    #     super(BasicEnglishNormalize, self).__init__()
-    #     patterns_list = [
-    #         (r'\'', ' \'  '),
-    #         (r'\"', ''),
-    #         (r'\.', ' . '),
-    #         (r'<br \/>', ' '),
-    #         (r',', ' , '),
-    #         (r'\(', ' ( '),
-    #         (r'\)', ' ) '),
-    #         (r'\!', ' ! '),
-    #         (r'\?', ' ? '),
-    #         (r'\;', ' '),
-    #         (r'\:', ' '),
-    #         (r'\s+', ' ')]
-
-    #     regex_objects = map(lambda pattern_tuple: torch.classes.torchtext.Regex(pattern_tuple[0]), patterns_list)
-    #     # regex_objects = map(lambda pattern_tuple: RegexPybind(pattern_tuple[0]), patterns_list)
-    #     replacement_strings = map(lambda pattern_tuple: pattern_tuple[1], patterns_list)
-    #     self.regex_and_replacement_string_pairs = list(zip(regex_objects, replacement_strings))
-
-    # def forward(self, line: str) -> List[str]:
-    #     r"""
-    #     Args:
-    #         line (str): a line of text to tokenize.
-    #     Returns:
-    #         List[str]: a list of tokens after normalizing and splitting on whitespace.
-    #     """
-
-    #     line = line.lower()
-    #     for regex, replacement_string in self.regex_and_replacement_string_pairs:
-    #         line = regex.Sub(line, replacement_string)
-    #     return line.split()
-
-
-    # _replacement_string_pairs: List[Tuple[torch.classes.torchtext.Regex, str]]
-
     def __init__(self):
         super(BasicEnglishNormalize, self).__init__()
         self.basic_english_normalize = torch.classes.torchtext.BasicEnglishNormalize()
