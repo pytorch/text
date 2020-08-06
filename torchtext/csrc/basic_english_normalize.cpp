@@ -54,7 +54,9 @@ public:
     std::string token;
 
     while (std::getline(ss, token, delimiter)) {
-      tokens.push_back(token);
+      if (!token.empty()) {
+        tokens.push_back(token);
+      }
     }
 
     return tokens;
@@ -71,7 +73,7 @@ public:
       str_copy = regex_objects_[i].Sub(str_copy, replacements_[i]);
     }
 
-    std::cout << "[str_copy] " << str_copy << std::endl;
+    // std::cout << "[str_copy] " << str_copy << std::endl;
     return split_(str_copy);
   }
 };
