@@ -2,21 +2,20 @@ import torch
 from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
-    TextDataPipeline,
     VocabTransform,
     PyTextVocabTransform,
     VectorTransform,
+    ToLongTensor,
 )
 from torchtext.experimental.transforms import (
     BasicEnglishNormalize,
+    TextSequentialTransforms,
 )
 from torchtext.experimental.vocab import vocab_from_file_object
 from torchtext.experimental.vectors import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
-from functools import partial
-from pytext.torchscript.vocab import ScriptVocabulary
 from dataset import BatchTextClassificationData
 
 
@@ -26,7 +25,7 @@ def build_sp_pipeline(spm_file):
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = TextDataPipeline(tokenizer, vocab)
+    pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit sentencepiece pipeline success!')
     return pipeline, jit_pipeline
@@ -36,13 +35,14 @@ def build_torchtext_vocab(vocab_file):
     from torchtext.data.utils import get_tokenizer
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
+    from torchtext.experimental.functional import totensor, vocab_func, sequential_transforms
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
         for token in f:
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
+    pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
     return pipeline, None
 
 
@@ -51,41 +51,40 @@ def build_batch_torchtext_vocab(vocab_file):
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
     from transforms import TextClassificationPipeline
+    from torchtext.experimental.functional import totensor, vocab_func, sequential_transforms
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
         for token in f:
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    text_pipeline = TextDataPipeline(tokenizer, partial(map, vocab))
-    label_pipeline = int
+    text_pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
+    label_pipeline = totensor(dtype=torch.long)
     return TextClassificationPipeline(label_pipeline, text_pipeline), None
 
 
-def build_huggingface_vocab_pipeline(hf_vocab_file):
-    # tokenizer = BasicEnglishNormalize()
-    from torchtext.data.utils import get_tokenizer
-    tokenizer = get_tokenizer("basic_english")
-
+def build_text_vocab_pipeline(hf_vocab_file):
+    tokenizer = BasicEnglishNormalize()
     f = open(hf_vocab_file, 'r')
     vocab = vocab_from_file_object(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextDataPipeline(tokenizer, VocabTransform(vocab))
-    # jit_pipeline = torch.jit.script(pipeline)
-    jit_pipeline = None
+    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
+    jit_pipeline = torch.jit.script(pipeline)
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
 
 
 def build_pytext_vocab_pipeline(vocab_file):
+    from pytext.torchscript.vocab import ScriptVocabulary
     tokenizer = BasicEnglishNormalize()
     f = open(vocab_file, 'r')
     vocab_list = [line.rstrip() for line in f]
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextDataPipeline(tokenizer,
-                                PyTextVocabTransform(ScriptVocabulary(vocab_list)))
+    pipeline = TextSequentialTransforms(tokenizer,
+                                        PyTextVocabTransform(ScriptVocabulary(vocab_list)),
+                                        ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline)
     print('jit PyText pipeline success!')
     return pipeline, jit_pipeline
@@ -96,7 +95,7 @@ def build_fasttext_vector_pipeline():
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextDataPipeline(tokenizer, VectorTransform(vector))
+    pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
     jit_pipeline = torch.jit.script(pipeline)
     print('jit fasttext pipeline success!')
     return pipeline, jit_pipeline
@@ -139,8 +138,8 @@ if __name__ == "__main__":
 
     if args.pipeline == 'sentencepiece':
         pipeline, jit_pipeline = build_sp_pipeline(args.spm_filename)
-    elif args.pipeline == 'huggingface':
-        pipeline, jit_pipeline = build_huggingface_vocab_pipeline(args.vocab_filename)
+    elif args.pipeline == 'text_vocab':
+        pipeline, jit_pipeline = build_text_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'pytext':
         pipeline, jit_pipeline = build_pytext_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'fasttext':
@@ -150,7 +149,8 @@ if __name__ == "__main__":
     elif args.pipeline == 'batch_torchtext':
         pipeline, jit_pipeline = build_batch_torchtext_vocab(args.vocab_filename)
     else:
-        print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
+        print("pipeline is not supported. Current pipelines include sentencepiece, text_vocab, " +
+              "fasttext, pytext, fasttext, torchtext, batch_torchtext")
 
     if pipeline is not None:
         print("Test eager mode for pipeline", args.pipeline)

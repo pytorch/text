@@ -90,3 +90,19 @@ class RegexTokenizer(nn.Module):
         for regex, replacement_string in self.regex_and_replacement_string_pairs:
             line = regex.Sub(line, replacement_string)
         return line.split()
+
+
+class TextSequentialTransforms(nn.Sequential):
+    r"""A container to host a sequential text transforms.
+
+        Example:
+            >>> import torch
+            >>> from torchtext.experimental.transforms import BasicEnglishNormalize, TextSequentialTransforms
+            >>> tokenizer = BasicEnglishNormalize()
+            >>> txt_pipeline = TextSequentialTransforms(tokenizer)
+            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
+    """
+    def forward(self, input: str):
+        for module in self:
+            input = module(input)
+        return input

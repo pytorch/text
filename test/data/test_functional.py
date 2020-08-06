@@ -1,8 +1,9 @@
 import os
-import uuid
+import platform
 import shutil
-import unittest
 import tempfile
+import uuid
+import unittest
 
 import sentencepiece as spm
 import torch
@@ -79,6 +80,9 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
+
+    # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_BasicEnglishNormalize(self):
         test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
         ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
@@ -97,6 +101,8 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(experimental_jit_tokens, eager_tokens)
         self.assertEqual(experimental_jit_tokens, experimental_eager_tokens)
 
+    # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_RegexTokenizer(self):
         test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
         ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',

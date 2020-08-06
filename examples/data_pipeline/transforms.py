@@ -20,22 +20,6 @@ class TextClassificationPipeline(nn.Module):
         return self.label_transform(label_text_tuple[0]), self.text_transform(label_text_tuple[1])
 
 
-class TextDataPipeline(nn.Module):
-    r"""Text data pipeline template
-    """
-
-    def __init__(self, tokenizer, vocab):
-        super(TextDataPipeline, self).__init__()
-        self.tokenizer = tokenizer
-        self.vocab = vocab
-
-    @torch.jit.export
-    def forward(self, line: str):
-        tokens = self.tokenizer(line)
-        index = self.vocab(tokens)
-        return index
-
-
 class PretrainedSPTokenizer(nn.Module):
     r"""Tokenizer based on a pretained sentencepiece model
     """
@@ -105,3 +89,14 @@ class VectorTransform(nn.Module):
 
     def forward(self, tokens: List[str]) -> Tensor:
         return self.vector.lookup_vectors(tokens)
+
+
+class ToLongTensor(nn.Module):
+    r"""Convert a list of integers to long tensor
+    """
+
+    def __init__(self):
+        super(ToLongTensor, self).__init__()
+
+    def forward(self, tokens: List[int]) -> Tensor:
+        return torch.tensor(tokens).to(torch.long)
