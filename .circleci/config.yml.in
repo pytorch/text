@@ -225,12 +225,13 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workspace
+      - designate_upload_channel
       - run:
           name: install binaries
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-nightly pytorch
+            conda install -v -y -c pytorch-${UPLOAD_CHANNEL} pytorch
             conda install -v -y -c file://$HOME/workspace/conda-bld torchtext
       - run:
           name: smoke test
