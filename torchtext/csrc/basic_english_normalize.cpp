@@ -5,7 +5,7 @@ namespace torchtext {
 
 BasicEnglishNormalize::BasicEnglishNormalize() {
   for (const auto &pattern : patterns_) {
-    regex_objects_.push_back(Regex(pattern));
+    compiled_patterns_.push_back(new RE2(pattern));
   }
 }
 
@@ -30,10 +30,9 @@ std::vector<std::string> BasicEnglishNormalize::forward(std::string str) const {
   std::transform(str.begin(), str.end(), str.begin(),
                  [](unsigned char c) { return std::tolower(c); });
 
-  for (size_t i = 0; i < regex_objects_.size(); i++) {
-    str = regex_objects_[i].Sub(str, replacements_[i]);
+  for (size_t i = 0; i < compiled_patterns_.size(); i++) {
+    RE2::GlobalReplace(&str, *compiled_patterns_[i], replacements_[i]);
   }
-
   return split_(str);
 }
 

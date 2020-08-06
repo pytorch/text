@@ -1,4 +1,4 @@
-#include "regex.h"
+#include <re2/re2.h>
 #include <torch/script.h>
 
 namespace torchtext {
@@ -10,7 +10,7 @@ private:
                                      "\\?", "\\;", "\\:", "\\s+"};
   std::vector<std::string> replacements_{
       " '  ", "", " . ", " ", " , ", " ( ", " ) ", " ! ", " ? ", " ", " ", " "};
-  std::vector<Regex> regex_objects_;
+  std::vector<RE2 *> compiled_patterns_;
 
   std::vector<std::string> split_(std::string &str,
                                   const char &delimiter) const;
