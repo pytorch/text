@@ -18,7 +18,7 @@ The command to run the pipeline:
 The lookup time: 25.09393248707056 (eager mode) vs. 18.71099873096682 (jit mode)
 
 
-## Hugging Face 
+## Vocab from a text file 
 
 This pipeline example shows the application with the vocab text file from Hugging Face ([link](https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt)). The experimental vocab in torchtext library is used here:
 
@@ -28,7 +28,7 @@ This pipeline example shows the application with the vocab text file from Huggin
 
 The command to run the pipeline:
 
-    python pipelines.py --pipeline huggingface 
+    python pipelines.py --pipeline text_vocab 
 
 The lookup time: 45.7489246588666 (eager mode) vs. 30.990019195945933 (jit mode)
 

@@ -63,7 +63,7 @@ def build_batch_torchtext_vocab(vocab_file):
     return TextClassificationPipeline(label_pipeline, text_pipeline), None
 
 
-def build_huggingface_vocab_pipeline(hf_vocab_file):
+def build_text_vocab_pipeline(hf_vocab_file):
     tokenizer = BasicEnglishNormalize()
     f = open(hf_vocab_file, 'r')
     vocab = vocab_from_file_object(f)
@@ -138,8 +138,8 @@ if __name__ == "__main__":
 
     if args.pipeline == 'sentencepiece':
         pipeline, jit_pipeline = build_sp_pipeline(args.spm_filename)
-    elif args.pipeline == 'huggingface':
-        pipeline, jit_pipeline = build_huggingface_vocab_pipeline(args.vocab_filename)
+    elif args.pipeline == 'text_vocab':
+        pipeline, jit_pipeline = build_text_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'pytext':
         pipeline, jit_pipeline = build_pytext_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'fasttext':
@@ -149,7 +149,8 @@ if __name__ == "__main__":
     elif args.pipeline == 'batch_torchtext':
         pipeline, jit_pipeline = build_batch_torchtext_vocab(args.vocab_filename)
     else:
-        print("pipeline is not supported. Current pipelines include sentencepiece, huggingface, fasttext")
+        print("pipeline is not supported. Current pipelines include sentencepiece, text_vocab, " +
+              "fasttext, pytext, fasttext, torchtext, batch_torchtext")
 
     if pipeline is not None:
         print("Test eager mode for pipeline", args.pipeline)
