@@ -7,6 +7,10 @@ using c10::Dict;
 namespace torchtext {
 namespace {
 
+typedef ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
+    VectorsMap;
+typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
+    IndexMap;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VectorsStates;
@@ -15,16 +19,16 @@ struct Vectors : torch::CustomClassHolder {
 public:
   const std::string version_str_ = "0.0.1";
 
-  Dict<std::string, torch::Tensor> stovec_;
-  std::vector<std::string> tokens_;
+  IndexMap stoindex_;
+  VectorsMap stovec_;
+
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
 
   explicit Vectors(const std::vector<std::string> &tokens,
                    const torch::Tensor &vectors,
                    const torch::Tensor &unk_tensor)
-      : tokens_(std::move(tokens)), vectors_(std::move(vectors)),
-        unk_tensor_(std::move(unk_tensor)) {
+      : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
     // guarding against size mismatch of vectors and tokens
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
@@ -33,22 +37,31 @@ public:
           ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
     }
 
-    stovec_.reserve(tokens.size());
+    stoindex_.reserve(tokens.size());
     for (std::size_t i = 0; i < tokens.size(); i++) {
       // tokens should not have any duplicates
-      if (stovec_.find(tokens[i]) != stovec_.end()) {
+      const auto &item_index = stoindex_.find(tokens[i]);
+      if (item_index != stoindex_.end()) {
         throw std::runtime_error("Duplicate token found in tokens list: " +
                                  tokens[i]);
       }
-      stovec_.insert(std::move(tokens[i]), vectors_.select(0, i));
+      stoindex_[std::move(tokens[i])] = i;
     }
   }
 
-  torch::Tensor __getitem__(const std::string &token) const {
+  torch::Tensor __getitem__(const std::string &token) {
     const auto &item = stovec_.find(token);
     if (item != stovec_.end()) {
-      return item->value();
+      return item->second;
     }
+
+    const auto &item_index = stoindex_.find(token);
+    if (item_index != stoindex_.end()) {
+      auto vector = vectors_[item_index->second];
+      stovec_[token] = vector;
+      return vector;
+    }
+
     return unk_tensor_;
   }
 
@@ -62,14 +75,17 @@ public:
   }
 
   void __setitem__(const std::string &token, const torch::Tensor &vector) {
-    const auto &item = stovec_.find(token);
-    if (item != stovec_.end()) {
-      item->value() = vector;
+    const auto &item_index = stoindex_.find(token);
+    if (item_index != stoindex_.end()) {
+      stovec_[token] = vector;
+      vectors_[item_index->second] = vector;
     } else {
-      tokens_.push_back(token);
-      vectors_ = torch::cat({vectors_, torch::unsqueeze(vector, /*dim=*/0)},
-                            /*dim=*/0);
-      stovec_.insert_or_assign(token, vectors_.select(0, stovec_.size()));
+      stoindex_[token] = vectors_.size(0);
+      stovec_[token] = vector;
+      // TODO: This could be done lazily during serialization (if necessary).
+      // We would cycle through the vectors and concatenate those that aren't
+      // views.
+      vectors_ = at::cat({vectors_, vector.unsqueeze(0)});
     }
   }
 
@@ -77,8 +93,14 @@ public:
 };
 
 VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
+  std::vector<std::string> tokens(self->stoindex_.size());
+  // reconstruct tokens list
+  for (const auto &item : self->stoindex_) {
+    tokens[item.second] = item.first;
+  }
+
   std::vector<int64_t> integers;
-  std::vector<std::string> strings = self->tokens_;
+  std::vector<std::string> strings = std::move(tokens);
   std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
 
   VectorsStates states =
