@@ -179,7 +179,6 @@ void parse_chunk(const std::string &file_path, size_t offset,
   double_conversion::StringToDoubleConverter converter(
       converter_flags, 0.0f, double_conversion::Single::NaN(), NULL, NULL);
 
-
   for (int64_t i = start_line; i < end_line; i++) {
     std::string token;
     // read the token
