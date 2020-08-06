@@ -81,74 +81,40 @@ class TestFunctional(TorchtextTestCase):
 
     # TODO(Nayef211): uncomment and replace the test below with this once
     # https://github.com/pytorch/pytorch/issues/38207 is closed
-    # def test_BasicEnglishNormalize(self):
-    #     test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
-    #     ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-    #                    'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
-
-    #     basic_english_normalize = BasicEnglishNormalize()
-    #     experimental_eager_tokens = basic_english_normalize(test_sample)
-
-    #     jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-    #     experimental_jit_tokens = jit_basic_english_normalize(test_sample)
-
-    #     basic_english_tokenizer = data.get_tokenizer("basic_english")
-    #     eager_tokens = basic_english_tokenizer(test_sample)
-
-    #     self.assertEqual(experimental_jit_tokens, ref_results)
-    #     self.assertEqual(experimental_jit_tokens, eager_tokens)
-    #     self.assertEqual(experimental_jit_tokens, experimental_eager_tokens)
-
     def test_BasicEnglishNormalize(self):
-        test_sample = 'Basic English Normalization for a Line of Text'
-        ref_results = ['basic', 'english', 'normalization',
-                       'for', 'a', 'line', 'of', 'text']
+        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
         basic_english_normalize = BasicEnglishNormalize()
         experimental_eager_tokens = basic_english_normalize(test_sample)
 
+        jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
+        experimental_jit_tokens = jit_basic_english_normalize(test_sample)
+
         basic_english_tokenizer = data.get_tokenizer("basic_english")
-        tokens_eager = basic_english_tokenizer(test_sample)
+        eager_tokens = basic_english_tokenizer(test_sample)
 
-        self.assertEqual(experimental_eager_tokens, ref_results)
-        self.assertEqual(experimental_eager_tokens, tokens_eager)
-
-    # TODO(Nayef211): uncomment and replace the test below with this once
-    # https://github.com/pytorch/pytorch/issues/38207 is closed
-    # def test_RegexTokenizer(self):
-    #     test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
-    #     ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
-    #                    'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
-    #     patterns_list = [
-    #         (r'\'', ' \'  '),
-    #         (r'\"', ''),
-    #         (r'\.', ' . '),
-    #         (r'<br \/>', ' '),
-    #         (r',', ' , '),
-    #         (r'\(', ' ( '),
-    #         (r'\)', ' ) '),
-    #         (r'\!', ' ! '),
-    #         (r'\?', ' ? '),
-    #         (r'\;', ' '),
-    #         (r'\:', ' '),
-    #         (r'\s+', ' ')]
-
-    #     regex_tokenizer = RegexTokenizer(patterns_list)
-    #     eager_tokens = regex_tokenizer(test_sample)
-
-    #     jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-    #     jit_tokens = jit_regex_tokenizer(test_sample)
-
-    #     self.assertEqual(jit_tokens, ref_results)
-    #     self.assertEqual(jit_tokens, eager_tokens)
+        self.assertEqual(experimental_jit_tokens, ref_results)
+        self.assertEqual(experimental_jit_tokens, eager_tokens)
+        self.assertEqual(experimental_jit_tokens, experimental_eager_tokens)
 
     def test_RegexTokenizer(self):
-        test_sample = '"Basic Regex Tokenization". For a Line of Text'
-        ref_results = ['Basic', 'Regex', 'Tokenization', '.',
-                       'For', 'a', 'Line', 'of', 'Text']
+        test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
+                       'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
         patterns_list = [
+            (r'\'', ' \'  '),
             (r'\"', ''),
             (r'\.', ' . '),
+            (r'<br \/>', ' '),
+            (r',', ' , '),
+            (r'\(', ' ( '),
+            (r'\)', ' ) '),
+            (r'\!', ' ! '),
+            (r'\?', ' ? '),
+            (r'\;', ' '),
+            (r'\:', ' '),
             (r'\s+', ' ')]
 
         regex_tokenizer = RegexTokenizer(patterns_list)
@@ -157,8 +123,8 @@ class TestFunctional(TorchtextTestCase):
         jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
         jit_tokens = jit_regex_tokenizer(test_sample)
 
-        self.assertEqual(jit_tokens, eager_tokens)
         self.assertEqual(jit_tokens, ref_results)
+        self.assertEqual(jit_tokens, eager_tokens)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
