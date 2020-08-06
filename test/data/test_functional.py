@@ -79,8 +79,6 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-    # TODO(Nayef211): uncomment and replace the test below with this once
-    # https://github.com/pytorch/pytorch/issues/38207 is closed
     def test_BasicEnglishNormalize(self):
         test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
         ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
