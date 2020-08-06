@@ -9,10 +9,9 @@ BasicEnglishNormalize::BasicEnglishNormalize() {
   }
 }
 
-std::vector<std::string>
-BasicEnglishNormalize::split_(std::string &str,
-                              const char &delimiter = ' ') const {
-  std::vector<std::string> tokens;
+void BasicEnglishNormalize::split_(std::string &str,
+                                   std::vector<std::string> &tokens,
+                                   const char &delimiter = ' ') const {
   std::stringstream ss(str);
   std::string token;
 
@@ -21,8 +20,6 @@ BasicEnglishNormalize::split_(std::string &str,
       tokens.push_back(token);
     }
   }
-
-  return tokens;
 }
 
 std::vector<std::string> BasicEnglishNormalize::forward(std::string str) const {
@@ -33,7 +30,10 @@ std::vector<std::string> BasicEnglishNormalize::forward(std::string str) const {
   for (size_t i = 0; i < compiled_patterns_.size(); i++) {
     RE2::GlobalReplace(&str, *compiled_patterns_[i], replacements_[i]);
   }
-  return split_(str);
+
+  std::vector<std::string> tokens;
+  split_(str, tokens);
+  return tokens;
 }
 
 // Registers our custom class with torch.

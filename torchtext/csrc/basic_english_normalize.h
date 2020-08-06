@@ -12,12 +12,11 @@ private:
       " '  ", "", " . ", " ", " , ", " ( ", " ) ", " ! ", " ? ", " ", " ", " "};
   std::vector<RE2 *> compiled_patterns_;
 
-  std::vector<std::string> split_(std::string &str,
-                                  const char &delimiter) const;
+  void split_(std::string &str, std::vector<std::string> &tokens,
+              const char &delimiter) const;
 
 public:
   explicit BasicEnglishNormalize();
-
   std::vector<std::string> forward(std::string str) const;
 };
 } // namespace torchtext
