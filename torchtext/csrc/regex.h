@@ -9,4 +9,4 @@ public:
   Regex(const std::string &re_str);
   std::string Sub(const std::string &str, const std::string &repl) const;
 };
-}
+} // namespace torchtext
