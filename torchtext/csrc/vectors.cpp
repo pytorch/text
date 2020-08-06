@@ -1,6 +1,9 @@
 #include <ATen/Parallel.h>
 #include <atomic>
 #include <condition_variable>
+#include <double-conversion/double-conversion.h>
+#include <double-conversion/ieee.h>
+#include <double-conversion/utils.h>
 #include <future>
 #include <iostream>
 #include <mutex>
@@ -172,6 +175,10 @@ void parse_chunk(const std::string &file_path, size_t offset,
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
 
+  int converter_flags = double_conversion::StringToDoubleConverter::NO_FLAGS;
+  double_conversion::StringToDoubleConverter converter(
+      converter_flags, 0.0f, double_conversion::Single::NaN(), NULL, NULL);
+
   for (int64_t i = start_line; i < end_line; i++) {
     std::string token;
     // read the token
@@ -179,10 +186,16 @@ void parse_chunk(const std::string &file_path, size_t offset,
     tokens->push_back(token);
 
     std::string vec_val;
+    int processed_characters_count;
     // read the vector
     for (int64_t j = 0; j < vector_dim; j++) {
       fin >> vec_val;
-      data_ptr[i * vector_dim + j] = std::stof(vec_val);
+      const char *tmp_str = vec_val.c_str();
+      data_ptr[i * vector_dim + j] = converter.StringToFloat(
+          tmp_str, strlen(tmp_str), &processed_characters_count);
+      TORCH_CHECK(processed_characters_count == strlen(tmp_str),
+                  "Processed characters count didn't match vector string "
+                  "length during string to float conversion!");
     }
     fin >> std::ws;
   }
