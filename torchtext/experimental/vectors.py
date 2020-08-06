@@ -224,7 +224,7 @@ class Vectors(nn.Module):
             TypeError: if `vector` is not of data type `torch.float`.
         """
         if vector.dtype != torch.float:
-            raise TypeError("`vector` should be of data type `torch.float` but it's of type " + vector.dtype)
+            raise TypeError("`vector` should be of data type `torch.float` but it's of type " + str(vector.dtype))
 
         self.vectors[token] = vector.float()
 
