@@ -8,7 +8,6 @@ RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
                                const bool to_lower = false)
     : patterns_(std::move(patterns)), replacements_(std::move(replacements)),
       to_lower_(to_lower) {
-
   TORCH_CHECK(patterns.size() == replacements.size(),
               "Expected `patterns` and `replacements` to have same size!");
 

@@ -80,7 +80,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-    # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
+    # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_BasicEnglishNormalize(self):
         test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
@@ -108,7 +108,7 @@ class TestFunctional(TorchtextTestCase):
         loaded_eager_tokens = loaded_basic_english_tokenizer(test_sample)
         self.assertEqual(loaded_eager_tokens, ref_results)
 
-    # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
+    # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_RegexTokenizer(self):
         test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
