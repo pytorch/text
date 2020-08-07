@@ -16,6 +16,12 @@ RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
   }
 }
 
+RegexTokenizer::RegexTokenizer(const RegexTokenizer &regex_tokenizer) {
+  patterns_ = regex_tokenizer.patterns_;
+  replacements_ = regex_tokenizer.replacements_;
+  compiled_patterns_ = regex_tokenizer.compiled_patterns_;
+}
+
 std::vector<std::string> RegexTokenizer::forward(std::string str) const {
   // str tolower
   if (to_lower_) {
@@ -42,6 +48,11 @@ void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,
       tokens.push_back(token);
     }
   }
+}
+
+c10::intrusive_ptr<RegexTokenizer> RegexTokenizer::to_jit() {
+  return c10::make_intrusive<RegexTokenizer>(patterns_, replacements_,
+                                             to_lower_);
 }
 
 // Registers our custom class with torch.
@@ -74,7 +85,8 @@ namespace py = pybind11;
 void register_regex_tokenizer_pybind(pybind11::module m) {
   py::class_<RegexTokenizer>(m, "RegexTokenizer")
       .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward);
+      .def("forward", &RegexTokenizer::forward)
+      .def("to_jit", &RegexTokenizer::to_jit);
 }
 
 } // namespace torchtext

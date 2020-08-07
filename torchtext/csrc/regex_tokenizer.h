@@ -19,7 +19,9 @@ public:
   explicit RegexTokenizer(const std::vector<std::string> &patterns,
                           const std::vector<std::string> &replacements,
                           const bool to_lower);
+  RegexTokenizer(const RegexTokenizer &regex_tokenizer);
   std::vector<std::string> forward(std::string str) const;
+  c10::intrusive_ptr<RegexTokenizer> to_jit();
 };
 
 void register_regex_tokenizer_pybind(pybind11::module m);
