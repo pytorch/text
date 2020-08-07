@@ -19,4 +19,7 @@ public:
                           const bool to_lower);
   std::vector<std::string> forward(std::string str) const;
 };
+
+void register_regex_tokenizer_pybind(pybind11::module m);
+
 } // namespace torchtext
