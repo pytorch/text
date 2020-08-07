@@ -374,11 +374,11 @@ static auto vectors =
               return _get_vectors_from_states(states);
             });
 
-// Registers our custom op with torch.
-TORCH_LIBRARY(torchtext, m) {
-  m.def("_load_token_and_vectors_from_file",
-        &_load_token_and_vectors_from_file);
-}
+// // Registers our custom op with torch.
+// TORCH_LIBRARY(torchtext, m) {
+//   m.def("_load_token_and_vectors_from_file",
+//         &_load_token_and_vectors_from_file);
+// }
 
 namespace py = pybind11;
 // Registers our custom class with pybind11.

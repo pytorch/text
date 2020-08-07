@@ -20,7 +20,8 @@ def benchmark_basic_english_normalize():
     r = RegexTokenizer([], [], True)
     print("test2")
     
-    jitable_r = r.to_jit()
+    # jitable_r = r.to_jit()
+    jitable_r = torch.ops.torchtext.to_jit(r)
     
     print("done")
 

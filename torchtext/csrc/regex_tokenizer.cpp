@@ -50,11 +50,6 @@ void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,
   }
 }
 
-c10::intrusive_ptr<RegexTokenizer> RegexTokenizer::to_jit() {
-  return c10::make_intrusive<RegexTokenizer>(patterns_, replacements_,
-                                             to_lower_);
-}
-
 // Registers our custom class with torch.
 static auto regex_tokenizer =
     torch::class_<RegexTokenizer>("torchtext", "RegexTokenizer")
@@ -85,8 +80,33 @@ namespace py = pybind11;
 void register_regex_tokenizer_pybind(pybind11::module m) {
   py::class_<RegexTokenizer>(m, "RegexTokenizer")
       .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward)
-      .def("to_jit", &RegexTokenizer::to_jit);
+      .def("forward", &RegexTokenizer::forward);
+  // m.def("to_jit", &to_jit);
 }
+
+c10::IValue to_jit(c10::IValue val) {
+  std::string temp = "test1";
+  std::cout << "Returning an IValue" << std::endl;
+  return c10::IValue(temp);
+  // return torch::make_custom_class<std::string>(temp);
+}
+
+// c10::IValue to_jit(c10::IValue val) {
+//   // c10::intrusive_ptr<RegexTokenizer> to_jit(c10::IValue val) {
+//   // PyObject *p = val.toPyObject();
+//   // py::object o = py::reinterpret_borrow<py::object>(p);
+//   // RegexTokenizer result = o.cast<RegexTokenizer>();
+//   // std::cout <<;
+
+//   // return torch::make_custom_class<RegexTokenizer>(result);
+//   // return c10::make_intrusive<RegexTokenizer>(result);
+//   std::vector<std::string> temp;
+//   return torch::make_custom_class<RegexTokenizer>(temp, temp, false);
+
+//   // return c10::make_intrusive<RegexTokenizer>(temp, temp, false);
+// }
+
+// Registers our custom op with torch.
+TORCH_LIBRARY(torchtext, m) { m.def("to_jit", &to_jit); }
 
 } // namespace torchtext
