@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from typing import List, Tuple
 
+# from torchtext._torchtext import Regex as RegexPybind
 
 __all__ = [
     'BasicEnglishNormalize',
@@ -36,9 +37,6 @@ class BasicEnglishNormalize(nn.Module):
         >>> jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
         >>> tokens = jit_basic_english_normalize(test_sample)
     """
-
-    regex_and_replacement_string_pairs: List[Tuple[torch.classes.torchtext.Regex, str]]
-
     def __init__(self):
         super(BasicEnglishNormalize, self).__init__()
         patterns_list = [
@@ -55,9 +53,9 @@ class BasicEnglishNormalize(nn.Module):
             (r'\:', ' '),
             (r'\s+', ' ')]
 
-        regex_objects = map(lambda pattern_tuple: torch.classes.torchtext.Regex(pattern_tuple[0]), patterns_list)
-        replacement_strings = map(lambda pattern_tuple: pattern_tuple[1], patterns_list)
-        self.regex_and_replacement_string_pairs = list(zip(regex_objects, replacement_strings))
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        self.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(patterns, replacements, True)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -66,11 +64,7 @@ class BasicEnglishNormalize(nn.Module):
         Returns:
             List[str]: a list of tokens after normalizing and splitting on whitespace.
         """
-
-        line = line.lower()
-        for regex, replacement_string in self.regex_and_replacement_string_pairs:
-            line = regex.Sub(line, replacement_string)
-        return line.split()
+        return self.regex_tokenizer.forward(line)
 
 
 class RegexTokenizer(nn.Module):
@@ -91,15 +85,12 @@ class RegexTokenizer(nn.Module):
         >>> jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
         >>> tokens = jit_regex_tokenizer(test_sample)
     """
-
-    regex_and_replacement_string_pairs: List[Tuple[torch.classes.torchtext.Regex, str]]
-
     def __init__(self, patterns_list: List[Tuple[str, str]]):
         super(RegexTokenizer, self).__init__()
 
-        regex_objects = map(lambda pattern_tuple: torch.classes.torchtext.Regex(pattern_tuple[0]), patterns_list)
-        replacement_strings = map(lambda pattern_tuple: pattern_tuple[1], patterns_list)
-        self.regex_and_replacement_string_pairs = list(zip(regex_objects, replacement_strings))
+        patterns = [pair[0] for pair in patterns_list]
+        replacements = [pair[1] for pair in patterns_list]
+        self.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(patterns, replacements, False)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -108,10 +99,7 @@ class RegexTokenizer(nn.Module):
         Returns:
             List[str]: a list of tokens after normalizing and splitting on whitespace.
         """
-
-        for regex, replacement_string in self.regex_and_replacement_string_pairs:
-            line = regex.Sub(line, replacement_string)
-        return line.split()
+        return self.regex_tokenizer.forward(line)
 
 
 class TextSequentialTransforms(nn.Sequential):
