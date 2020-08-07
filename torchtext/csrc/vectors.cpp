@@ -10,7 +10,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <torch/script.h>
+#include <vectors.h>
 
 using c10::Dict;
 
@@ -48,8 +48,8 @@ public:
     if (static_cast<int>(tokens.size()) != vectors.size(0)) {
       throw std::runtime_error(
           "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+          std::to_string(tokens.size()) + ", size of vectors: " +
+          std::to_string(vectors.size(0)) + ".");
     }
 
     stoindex_.reserve(tokens.size());
@@ -351,8 +351,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
@@ -378,6 +378,17 @@ static auto vectors =
 TORCH_LIBRARY(torchtext, m) {
   m.def("_load_token_and_vectors_from_file",
         &_load_token_and_vectors_from_file);
+}
+
+namespace py = pybind11;
+// Registers our custom class with pybind11.
+void register_vectors_pybind(pybind11::module m) {
+  py::class_<Vectors>(m, "Vectors")
+      .def(py::init<std::vector<std::string>, torch::Tensor, torch::Tensor>())
+      .def("__getitem__", &Vectors::__getitem__)
+      .def("lookup_vectors", &Vectors::lookup_vectors)
+      .def("__setitem__", &Vectors::__setitem__)
+      .def("__len__", &Vectors::__len__);
 }
 
 } // namespace

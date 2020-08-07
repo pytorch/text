@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <string>
-#include <torch/script.h>
+#include <vocab.h>
 
 namespace torchtext {
 namespace {
@@ -148,8 +148,8 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vocab: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
+                           version_str + ".");
 }
 
 // Registers our custom class with torch.
@@ -175,5 +175,20 @@ static auto vocab =
               return _get_vocab_from_states(states);
             });
 
+namespace py = pybind11;
+// Registers our custom class with pybind11.
+void register_vocab_pybind(pybind11::module m) {
+    py::class_<Vocab>(m, "Vocab")
+        .def(py::init<std::vector<std::string>, std::string>())
+        .def("__getitem__", &Vocab::__getitem__)
+        .def("__len__", &Vocab::__len__)
+        .def("insert_token", &Vocab::insert_token)
+        .def("append_token", &Vocab::append_token)
+        .def("lookup_token", &Vocab::lookup_token)
+        .def("lookup_tokens", &Vocab::lookup_tokens)
+        .def("lookup_indices", &Vocab::lookup_indices)
+        .def("get_stoi", &Vocab::get_stoi)
+        .def("get_itos", &Vocab::get_itos);
+}
 } // namespace
 } // namespace torchtext

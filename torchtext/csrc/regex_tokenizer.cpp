@@ -69,31 +69,12 @@ static auto regex_tokenizer =
                   std::move(patterns), std::move(replacements), to_lower);
             });
 
-} // namespace torchtext
-
-using namespace torchtext;
 namespace py = pybind11;
-
+// Registers our custom class with pybind11.
 void register_regex_tokenizer_pybind(pybind11::module m) {
   py::class_<RegexTokenizer>(m, "RegexTokenizer")
       .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward)
-      .def_pickle(
-          // __setstate__
-          [](const c10::intrusive_ptr<RegexTokenizer> &self) -> std::tuple<
-              std::vector<std::string>, std::vector<std::string>, bool> {
-            return std::make_tuple(self->patterns_, self->replacements_,
-                                   self->to_lower_);
-          },
-          // __getstate__
-          [](std::tuple<std::vector<std::string>, std::vector<std::string>,
-                        bool>
-                 states) -> c10::intrusive_ptr<RegexTokenizer> {
-            auto patterns = std::get<0>(states);
-            auto replacements = std::get<1>(states);
-            auto to_lower = std::get<2>(states);
-
-            return c10::make_intrusive<RegexTokenizer>(
-                std::move(patterns), std::move(replacements), to_lower);
-          });
+      .def("forward", &RegexTokenizer::forward);
 }
+
+} // namespace torchtext
