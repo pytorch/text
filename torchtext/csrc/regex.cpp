@@ -1,5 +1,4 @@
 #include <regex.h>
-#include <re2/re2.h>
 
 namespace torchtext {
 
