@@ -80,7 +80,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-    # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
+    # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_BasicEnglishNormalize(self):
         test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
@@ -97,10 +97,18 @@ class TestFunctional(TorchtextTestCase):
         eager_tokens = basic_english_tokenizer(test_sample)
 
         self.assertEqual(experimental_jit_tokens, ref_results)
-        self.assertEqual(experimental_jit_tokens, eager_tokens)
-        self.assertEqual(experimental_jit_tokens, experimental_eager_tokens)
+        self.assertEqual(eager_tokens, ref_results)
+        self.assertEqual(experimental_eager_tokens, ref_results)
 
-    # TODO(Nayef211): remove decorator once	# https://github.com/pytorch/pytorch/issues/38207 is closed
+        # test load and save
+        save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
+        torch.save(basic_english_tokenizer, save_path)
+        loaded_basic_english_tokenizer = torch.load(save_path)
+
+        loaded_eager_tokens = loaded_basic_english_tokenizer(test_sample)
+        self.assertEqual(loaded_eager_tokens, ref_results)
+
+    # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_RegexTokenizer(self):
         test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
@@ -126,8 +134,16 @@ class TestFunctional(TorchtextTestCase):
         jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
         jit_tokens = jit_regex_tokenizer(test_sample)
 
+        self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(jit_tokens, ref_results)
-        self.assertEqual(jit_tokens, eager_tokens)
+
+        # test load and save
+        save_path = os.path.join(self.test_dir, 'regex.pt')
+        torch.save(regex_tokenizer, save_path)
+        loaded_regex_tokenizer = torch.load(save_path)
+
+        loaded_eager_tokens = loaded_regex_tokenizer(test_sample)
+        self.assertEqual(loaded_eager_tokens, ref_results)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
