@@ -231,7 +231,7 @@ constexpr int64_t GRAIN_SIZE = 131072;
 std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
 _load_token_and_vectors_from_file(const std::string &file_path,
                                   const std::string delimiter_str,
-                                  int64_t num_cpus,
+                                  const int64_t num_cpus,
                                   c10::optional<torch::Tensor> opt_unk_tensor) {
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");

@@ -35,7 +35,7 @@ def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file_object(f)
     """
-    vocab_obj = torch.ops.torchtext._load_vocab_from_file(file_like_object.name, min_freq, unk_token, num_cpus)
+    vocab_obj = torch.ops.torchtext._load_vocab_from_file(file_like_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 

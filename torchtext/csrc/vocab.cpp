@@ -219,9 +219,9 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
 constexpr int64_t GRAIN_SIZE = 13107;
 c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
-                                                int64_t min_freq,
                                                 const std::string &unk_token,
-                                                int64_t num_cpus) {
+                                                const int64_t min_freq,
+                                                const int64_t num_cpus) {
 
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
