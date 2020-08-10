@@ -333,7 +333,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
                            version_str + ".");
 }
 
-// Registers our custom class with torch.
+// // Registers our custom class with torch.
 // static auto vectors =
 //     torch::class_<Vectors>("torchtext", "Vectors")
 //         .def(torch::init<std::vector<std::string>, torch::Tensor,
