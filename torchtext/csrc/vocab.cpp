@@ -293,3 +293,25 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
       "Found unexpected version for serialized Vocab: " + version_str + ".");
 }
 } // namespace torchtext
+
+
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+using namespace torchtext;
+namespace py = pybind11;
+
+PYBIND11_MODULE(_torchtext, m) {
+  py::class_<Vocab>(m, "Vocab")
+      .def(py::init<std::vector<std::string>, std::string>())
+      .def("__getitem__", &Vocab::__getitem__)
+      .def("__len__", &Vocab::__len__)
+      .def("insert_token", &Vocab::insert_token)
+      .def("append_token", &Vocab::append_token)
+      .def("lookup_token", &Vocab::lookup_token)
+      .def("lookup_tokens", &Vocab::lookup_tokens)
+      .def("lookup_indices", &Vocab::lookup_indices)
+      .def("get_stoi", &Vocab::get_stoi)
+      .def("get_itos", &Vocab::get_itos);
+}

@@ -87,7 +87,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
         t0 = time.monotonic()
         v_experimental = VocabExperimental(ordered_dict)
         print("Construction time:", time.monotonic() - t0)
-    jit_v_experimental = torch.jit.script(v_experimental)
+    # jit_v_experimental = torch.jit.script(v_experimental)
 
     # existing Vocab eager lookup
     print("Vocab - Eager Mode")
@@ -101,11 +101,11 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     _run_benchmark_lookup([tokens], v_experimental)
     _run_benchmark_lookup(tokens_lists, v_experimental)
 
-    # experimental Vocab jit lookup
-    print("Vocab Experimental - Jit Mode")
-    _run_benchmark_lookup(tokens, jit_v_experimental)
-    _run_benchmark_lookup([tokens], jit_v_experimental)
-    _run_benchmark_lookup(tokens_lists, jit_v_experimental)
+    # # experimental Vocab jit lookup
+    # print("Vocab Experimental - Jit Mode")
+    # _run_benchmark_lookup(tokens, jit_v_experimental)
+    # _run_benchmark_lookup([tokens], jit_v_experimental)
+    # _run_benchmark_lookup(tokens_lists, jit_v_experimental)
 
 
 if __name__ == "__main__":
