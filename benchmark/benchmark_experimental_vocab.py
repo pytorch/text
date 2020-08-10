@@ -5,7 +5,7 @@ import time
 import torch
 from torchtext.experimental.datasets import AG_NEWS
 from torchtext.experimental.vocab import (
-    Vocab as VocabExperimental,
+    vocab as VocabExperimental,
     vocab_from_file_object
 )
 from torchtext.vocab import Vocab
@@ -73,4 +73,5 @@ if __name__ == "__main__":
 
     if args.run_construction_benchmark:
         benchmark_experimental_vocab_construction(args.vocab_filename)
-    benchmark_experimental_vocab_lookup()
+    else:
+        benchmark_experimental_vocab_lookup()

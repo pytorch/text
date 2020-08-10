@@ -1,9 +1,6 @@
 import time
 
 import torch
-
-# print("[TEST]")
-
 from torchtext.experimental.datasets import AG_NEWS
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.vocab import FastText

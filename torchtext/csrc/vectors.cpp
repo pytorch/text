@@ -328,7 +328,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
     return c10::make_intrusive<Vectors>(
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
-  
+
   throw std::runtime_error(
       "Found unexpected version for serialized Vector: " + version_str + ".");
 }
