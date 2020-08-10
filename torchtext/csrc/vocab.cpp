@@ -1,122 +1,102 @@
 #include <ATen/Parallel.h>
 #include <stdexcept>
 #include <string>
-#include <torch/script.h>
+#include <vocab.h>
 
 namespace torchtext {
-namespace {
 
-using c10::Dict;
+Vocab::Vocab(const StringList &tokens, const IndexDict &stoindex,
+             const std::string &unk_token, const int64_t unk_index)
+    : itos_(std::move(tokens)), stoi_(std::move(stoindex)),
+      unk_index_(std::move(unk_index)), unk_token_(std::move(unk_token)) {}
 
-typedef Dict<std::string, int64_t> IndexMap;
-typedef std::vector<std::string> StringList;
-typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
-                   std::vector<torch::Tensor>>
-    VocabStates;
-
-struct Vocab : torch::CustomClassHolder {
-private:
-  int64_t unk_index_;
-  IndexMap stoi_;
-
-public:
-  const std::string version_str_ = "0.0.1";
-  StringList itos_;
-  std::string unk_token_;
-
-  explicit Vocab(const StringList &tokens, const IndexMap &stoindex,
-                 const std::string &unk_token, const int64_t unk_index)
-      : itos_(std::move(tokens)), stoi_(std::move(stoindex)),
-        unk_index_(std::move(unk_index)), unk_token_(std::move(unk_token)) {}
-
-  explicit Vocab(const StringList &tokens, const std::string &unk_token)
-      : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
-    stoi_.reserve(tokens.size());
-    for (std::size_t i = 0; i < tokens.size(); i++) {
-      // tokens should not have any duplicates
-      if (stoi_.find(tokens[i]) != stoi_.end()) {
-        throw std::runtime_error("Duplicate token found in tokens list: " +
-                                 tokens[i]);
-      }
-      stoi_.insert(std::move(tokens[i]), i);
+Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
+    : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
+  stoi_.reserve(tokens.size());
+  for (std::size_t i = 0; i < tokens.size(); i++) {
+    // tokens should not have any duplicates
+    if (stoi_.find(tokens[i]) != stoi_.end()) {
+      throw std::runtime_error("Duplicate token found in tokens list: " +
+                               tokens[i]);
     }
-    unk_index_ = stoi_.find(unk_token)->value();
+    stoi_.insert(std::move(tokens[i]), i);
+  }
+  unk_index_ = stoi_.find(unk_token)->value();
+}
+
+int64_t Vocab::__len__() const { return stoi_.size(); }
+
+int64_t Vocab::__getitem__(const std::string &token) const {
+  const auto &item = stoi_.find(token);
+  if (item != stoi_.end()) {
+    return item->value();
+  }
+  return unk_index_;
+}
+
+void Vocab::append_token(const std::string &token) {
+  if (stoi_.find(token) == stoi_.end()) {
+    stoi_.insert(std::move(token), stoi_.size());
+  }
+}
+
+void Vocab::insert_token(const std::string &token, const int64_t &index) {
+  if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
+    throw std::runtime_error(
+        "Specified index " + std::to_string(index) +
+        " is out of bounds of the size of stoi dictionary: " +
+        std::to_string(stoi_.size()) + ".");
   }
 
-  int64_t __len__() const { return stoi_.size(); }
-
-  int64_t __getitem__(const std::string &token) const {
-    const auto &item = stoi_.find(token);
-    if (item != stoi_.end()) {
-      return item->value();
-    }
-    return unk_index_;
+  const auto &item = stoi_.find(token);
+  // if item already in stoi we throw an error
+  if (item != stoi_.end()) {
+    throw std::runtime_error("Token " + token +
+                             " already exists in the Vocab with index: " +
+                             std::to_string(item->value()) + ".");
   }
 
-  void append_token(const std::string &token) {
-    if (stoi_.find(token) == stoi_.end()) {
-      stoi_.insert(std::move(token), stoi_.size());
-    }
+  // need to offset all tokens greater than or equal index by 1
+  for (size_t i = index; i < itos_.size(); i++) {
+    stoi_.insert_or_assign(itos_[i], std::move(i + 1));
+  }
+  stoi_.insert(std::move(token), std::move(index));
+  itos_.insert(itos_.begin() + index, std::move(token));
+
+  // need to update unk_index in case token equals unk_token or token inserted
+  // before unk_token
+  unk_index_ = stoi_.find(unk_token_)->value();
+}
+
+std::string Vocab::lookup_token(const int64_t &index) {
+  if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
+    throw std::runtime_error(
+        "Specified index " + std::to_string(index) +
+        " is out of bounds of the size of itos dictionary: " +
+        std::to_string(itos_.size()) + ".");
   }
 
-  void insert_token(const std::string &token, const int64_t &index) {
-    if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
-      throw std::runtime_error(
-          "Specified index " + std::to_string(index) +
-          " is out of bounds of the size of stoi dictionary: " +
-          std::to_string(stoi_.size()) + ".");
-    }
+  return itos_[index];
+}
 
-    const auto &item = stoi_.find(token);
-    // if item already in stoi we throw an error
-    if (item != stoi_.end()) {
-      throw std::runtime_error("Token " + token +
-                               " already exists in the Vocab with index: " +
-                               std::to_string(item->value()) + ".");
-    }
-
-    // need to offset all tokens greater than or equal index by 1
-    for (size_t i = index; i < itos_.size(); i++) {
-      stoi_.insert_or_assign(itos_[i], std::move(i + 1));
-    }
-    stoi_.insert(std::move(token), std::move(index));
-    itos_.insert(itos_.begin() + index, std::move(token));
-
-    // need to update unk_index in case token equals unk_token or token inserted
-    // before unk_token
-    unk_index_ = stoi_.find(unk_token_)->value();
+StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
+  std::vector<std::string> tokens(indices.size());
+  for (int64_t i = 0; i < static_cast<int64_t>(indices.size()); i++) {
+    tokens[i] = lookup_token(indices[i]);
   }
+  return tokens;
+}
 
-  std::string lookup_token(const int64_t &index) {
-    if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
-      throw std::runtime_error(
-          "Specified index " + std::to_string(index) +
-          " is out of bounds of the size of itos dictionary: " +
-          std::to_string(itos_.size()) + ".");
-    }
-
-    return itos_[index];
+std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
+  std::vector<int64_t> indices(tokens.size());
+  for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
+    indices[i] = __getitem__(tokens[i]);
   }
+  return indices;
+}
 
-  StringList lookup_tokens(const std::vector<int64_t> &indices) {
-    std::vector<std::string> tokens(indices.size());
-    for (int64_t i = 0; i < static_cast<int64_t>(indices.size()); i++) {
-      tokens[i] = lookup_token(indices[i]);
-    }
-    return tokens;
-  }
-
-  std::vector<int64_t> lookup_indices(const StringList &tokens) {
-    std::vector<int64_t> indices(tokens.size());
-    for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
-      indices[i] = __getitem__(tokens[i]);
-    }
-    return indices;
-  }
-
-  Dict<std::string, int64_t> get_stoi() const { return stoi_; }
-  StringList get_itos() const { return itos_; }
-};
+c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
+StringList Vocab::get_itos() const { return itos_; }
 
 inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
@@ -163,7 +143,7 @@ void parse_chunk(const std::string &file_path, size_t offset,
   }
 }
 
-std::tuple<IndexMap, StringList>
+std::tuple<IndexDict, StringList>
 _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
                const std::string &unk_token, const int64_t min_freq,
                const int64_t num_lines) {
@@ -171,7 +151,7 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               "There must be at least 1 chunk to concatenate!");
 
   std::unordered_map<std::string, int64_t> tokens_freq;
-  IndexMap stoindex;
+  IndexDict stoindex;
   StringList tokens;
   stoindex.reserve(num_lines);
   tokens.reserve(num_lines);
@@ -261,7 +241,7 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
   std::unique_lock<std::mutex> lock(m);
   cv.wait(lock, [&counter] { return counter == 0; });
 
-  IndexMap stoindex;
+  IndexDict stoindex;
   StringList tokens;
   std::tie(stoindex, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
@@ -336,10 +316,4 @@ static auto vocab =
               return _get_vocab_from_states(states);
             });
 
-// Registers our custom op with torch.
-TORCH_LIBRARY(torchtext, m) {
-  m.def("_load_vocab_from_file", &_load_vocab_from_file);
-}
-
-} // namespace
 } // namespace torchtext
