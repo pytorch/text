@@ -3,15 +3,32 @@
 #include <vocab.h>
 
 namespace torchtext {
-// Registers our custom op with torch.
-TORCH_LIBRARY(torchtext, m) {
-  register_vocab_ops(m);
-  // m.def("_load_vocab_from_file", &_load_vocab_from_file);
-  // m.def("_load_token_and_vectors_from_file",
-  //       &_load_token_and_vectors_from_file);
-}
 
 // Registers our custom classes with torch.
+static auto regex_tokenizer =
+    torch::class_<RegexTokenizer>("torchtext", "RegexTokenizer")
+        .def(torch::init<std::vector<std::string>, std::vector<std::string>,
+                         bool>())
+        .def("forward", &RegexTokenizer::forward)
+        .def_pickle(
+            // __setstate__
+            [](const c10::intrusive_ptr<RegexTokenizer> &self) -> std::tuple<
+                std::vector<std::string>, std::vector<std::string>, bool> {
+              return std::make_tuple(self->patterns_, self->replacements_,
+                                     self->to_lower_);
+            },
+            // __getstate__
+            [](std::tuple<std::vector<std::string>, std::vector<std::string>,
+                          bool>
+                   states) -> c10::intrusive_ptr<RegexTokenizer> {
+              auto patterns = std::get<0>(states);
+              auto replacements = std::get<1>(states);
+              auto to_lower = std::get<2>(states);
+
+              return c10::make_intrusive<RegexTokenizer>(
+                  std::move(patterns), std::move(replacements), to_lower);
+            });
+
 static auto vocab =
     torch::class_<Vocab>("torchtext", "Vocab")
         .def(torch::init<StringList, std::string>())
@@ -51,4 +68,11 @@ static auto vectors =
             [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
               return _get_vectors_from_states(states);
             });
+
+// Registers our custom op with torch.
+TORCH_LIBRARY(torchtext, m) {
+  m.def("_load_vocab_from_file", &_load_vocab_from_file);
+  m.def("_load_token_and_vectors_from_file",
+        &_load_token_and_vectors_from_file);
+}
 } // namespace torchtext

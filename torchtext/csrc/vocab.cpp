@@ -292,40 +292,4 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   throw std::runtime_error("Found unexpected version for serialized Vocab: " +
                            version_str + ".");
 }
-
-// Registers our custom ops with torch.
-void register_vocab_ops(torch::Library &m) {
-  m.def("_load_vocab_from_file", &_load_vocab_from_file);
-}
-
-// TORCH_LIBRARY(torchtext, m) {
-//   // register_vocab_ops(m);
-//   m.def("_load_vocab_from_file", &_load_vocab_from_file);
-//   // m.def("_load_token_and_vectors_from_file",
-//   //       &_load_token_and_vectors_from_file);
-// }
-
-// // Registers our custom class with torch.
-// static auto vocab =
-//     torch::class_<Vocab>("torchtext", "Vocab")
-//         .def(torch::init<StringList, std::string>())
-//         .def("__getitem__", &Vocab::__getitem__)
-//         .def("__len__", &Vocab::__len__)
-//         .def("insert_token", &Vocab::insert_token)
-//         .def("append_token", &Vocab::append_token)
-//         .def("lookup_token", &Vocab::lookup_token)
-//         .def("lookup_tokens", &Vocab::lookup_tokens)
-//         .def("lookup_indices", &Vocab::lookup_indices)
-//         .def("get_stoi", &Vocab::get_stoi)
-//         .def("get_itos", &Vocab::get_itos)
-//         .def_pickle(
-//             // __setstate__
-//             [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-//               return _set_vocab_states(self);
-//             },
-//             // __getstate__
-//             [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
-//               return _get_vocab_from_states(states);
-//             });
-
 } // namespace torchtext

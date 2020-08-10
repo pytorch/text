@@ -37,5 +37,4 @@ _load_token_and_vectors_from_file(const std::string &file_path,
                                   const std::string delimiter_str,
                                   const int64_t num_cpus,
                                   c10::optional<torch::Tensor> opt_unk_tensor);
-
 } // namespace torchtext

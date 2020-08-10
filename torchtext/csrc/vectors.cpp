@@ -332,24 +332,4 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
   throw std::runtime_error("Found unexpected version for serialized Vector: " +
                            version_str + ".");
 }
-
-// // Registers our custom class with torch.
-// static auto vectors =
-//     torch::class_<Vectors>("torchtext", "Vectors")
-//         .def(torch::init<std::vector<std::string>, torch::Tensor,
-//                          torch::Tensor>())
-//         .def("__getitem__", &Vectors::__getitem__)
-//         .def("lookup_vectors", &Vectors::lookup_vectors)
-//         .def("__setitem__", &Vectors::__setitem__)
-//         .def("__len__", &Vectors::__len__)
-//         .def_pickle(
-//             // __setstate__
-//             [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
-//               return _set_vectors_states(self);
-//             },
-//             // __getstate__
-//             [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
-//               return _get_vectors_from_states(states);
-//             });
-
 } // namespace torchtext
