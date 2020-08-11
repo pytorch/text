@@ -3,7 +3,7 @@ from collections import (Counter, OrderedDict)
 import time
 
 import torch
-from torchtext.experimental.datasets import AG_NEWS
+from torchtext.experimental.datasets import AG_NEWS, YahooAnswers
 from torchtext.experimental.vocab import (
     vocab as VocabExperimental,
     vocab_from_file_object
@@ -40,7 +40,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     tokens: List[str] = []
     tokens_lists: List[List[str]] = []
     
-    train, = AG_NEWS(data_select='train')
+    train, = YahooAnswers(data_select='train')
     vocab = train.get_vocab()
     for (_, text) in train:
         cur_tokens = []
@@ -53,6 +53,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
 
     if vocab_file_path:
         print("Loading Vocab from file {}".format(vocab_file_path))
+        
         def token_iterator(file_path):
             f = open(file_path, 'r')
             for token in f:
