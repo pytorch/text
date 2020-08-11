@@ -181,7 +181,7 @@ void parse_chunk(const std::string &file_path, size_t offset,
 
 std::tuple<IndexMap, StringList>
 _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-                const int64_t num_header_lines, const int64_t num_lines) {
+                int64_t num_header_lines, int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
   IndexMap tokens;
