@@ -90,6 +90,7 @@ class TestFunctional(TorchtextTestCase):
         basic_english_normalize = BasicEnglishNormalize()
         experimental_eager_tokens = basic_english_normalize(test_sample)
 
+        basic_english_normalize.to_ivalue()
         jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
         experimental_jit_tokens = jit_basic_english_normalize(test_sample)
 
@@ -131,6 +132,7 @@ class TestFunctional(TorchtextTestCase):
         regex_tokenizer = RegexTokenizer(patterns_list)
         eager_tokens = regex_tokenizer(test_sample)
 
+        regex_tokenizer.to_ivalue()
         jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
         jit_tokens = jit_regex_tokenizer(test_sample)
 

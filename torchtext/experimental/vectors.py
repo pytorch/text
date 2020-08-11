@@ -34,25 +34,32 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
 
     """
     url = "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.{}.vec".format(language)
-    file_name = os.path.basename(url)
+    # file_name = os.path.basename(url)
 
-    cached_vectors_file_path = os.path.join(root, file_name + ".pt")
-    if os.path.isfile(cached_vectors_file_path):
-        logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
-        return torch.load(cached_vectors_file_path)
+    # cached_vectors_file_path = os.path.join(root, file_name + ".pt")
+    # if os.path.isfile(cached_vectors_file_path):
+    #     logger.info("Loading from cached file {}".format(str(cached_vectors_file_path)))
+    #     return torch.load(cached_vectors_file_path)
 
     checksum = None
     if validate_file:
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    cpp_vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus, unk_tensor)
+
+    # need to pass in an empty tensor of dim 0 since we can't use c10::optional<Tensor> with pybind
+    # if not unk_tensor:
+    #     unk_tensor = torch.empty(0)
+        
+    from torchtext._torchtext import _load_token_and_vectors_from_file
+    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus, unk_tensor)
+    # cpp_vectors_obj, dup_tokens = torch.ops.torchtext._load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus, unk_tensor)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
 
     vectors_obj = Vectors(cpp_vectors_obj)
-    torch.save(vectors_obj, cached_vectors_file_path)
+    # torch.save(vectors_obj, cached_vectors_file_path)
     return vectors_obj
 
 
@@ -183,8 +190,10 @@ def vectors(tokens, vectors, unk_tensor=None):
     if not vectors.dtype == torch.float:
         raise TypeError("`vectors` should be of data type `torch.float`.")
 
+    indices = [i for i in range(len(tokens))]
+    print(indices[:5])
     unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-    return Vectors(torch.classes.torchtext.Vectors(tokens, vectors, unk_tensor))
+    return Vectors(torch.classes.torchtext.Vectors(tokens, indices, vectors, unk_tensor))
 
 
 class Vectors(nn.Module):
@@ -255,6 +264,13 @@ class Vectors(nn.Module):
             return torch.empty(0, 0)
 
         return self.vectors.lookup_vectors(tokens)
+
+    def to_ivalue(self):
+        r"""Converts the current eager Vectors to a JIT Vectors.
+        """
+        stoi = self.vectors.get_stoi()
+        vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_, self.vectors.unk_tensor_)
+        self.vectors = vectors
 
 
 CHECKSUMS_GLOVE = {

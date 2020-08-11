@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from typing import List, Tuple
 
-# from torchtext._torchtext import Regex as RegexPybind
+from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 
 __all__ = [
     'BasicEnglishNormalize',
@@ -55,7 +55,7 @@ class BasicEnglishNormalize(nn.Module):
 
         patterns = [pair[0] for pair in patterns_list]
         replacements = [pair[1] for pair in patterns_list]
-        self.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(patterns, replacements, True)
+        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, True)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -65,6 +65,12 @@ class BasicEnglishNormalize(nn.Module):
             List[str]: a list of tokens after normalizing and splitting on whitespace.
         """
         return self.regex_tokenizer.forward(line)
+
+    def to_ivalue(self):
+        r"""Converts the current eager BasicEnglishNormalize to a JIT BasicEnglishNormalize.
+        """
+        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
+        self.regex_tokenizer = regex_tokenizer
 
 
 class RegexTokenizer(nn.Module):
@@ -90,7 +96,7 @@ class RegexTokenizer(nn.Module):
 
         patterns = [pair[0] for pair in patterns_list]
         replacements = [pair[1] for pair in patterns_list]
-        self.regex_tokenizer = torch.classes.torchtext.RegexTokenizer(patterns, replacements, False)
+        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, False)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -100,6 +106,12 @@ class RegexTokenizer(nn.Module):
             List[str]: a list of tokens after normalizing and splitting on whitespace.
         """
         return self.regex_tokenizer.forward(line)
+
+    def to_ivalue(self):
+        r"""Converts the current eager RegexTokenizer to a JIT RegexTokenizer.
+        """
+        regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
+        self.regex_tokenizer = regex_tokenizer
 
 
 class TextSequentialTransforms(nn.Sequential):

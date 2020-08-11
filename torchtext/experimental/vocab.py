@@ -200,12 +200,5 @@ class Vocab(nn.Module):
     def to_ivalue(self):
         r"""Converts the current eager Vocab to a JIT Vocab.
         """
-        # tokens = self.vocab.itos_
-        # unk_token = self.vocab.unk_token_
-
         vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
         self.vocab = vocab
-
-        # sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
-        # ordered_dict = OrderedDict(sorted_by_freq_tuples)
-        # v = Vocab()

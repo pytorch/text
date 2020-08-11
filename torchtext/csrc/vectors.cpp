@@ -7,9 +7,11 @@
 #include <future>
 #include <iostream>
 #include <mutex>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <torch/csrc/utils/pybind.h>
 #include <vectors.h>
 
 using c10::Dict;
@@ -45,11 +47,11 @@ public:
                    const torch::Tensor &unk_tensor)
       : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
     // guarding against size mismatch of vectors and tokens
-    if (static_cast<int>(tokens.size()) != vectors.size(0)) {
+    if (static_cast<int>(tokens.size()) != indices.size()) {
       throw std::runtime_error(
-          "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) + ", size of vectors: " +
-          std::to_string(vectors.size(0)) + ".");
+          "Mismatching sizes for tokens and indices. Size of tokens: " +
+          std::to_string(tokens.size()) + ", size of indices: " +
+          std::to_string(indices.size()) + ".");
     }
 
     stoindex_.reserve(tokens.size());
@@ -61,7 +63,7 @@ public:
         throw std::runtime_error("Duplicate token found in tokens list: " +
                                  tokens[i]);
       }
-      stoindex_[std::move(tokens[i])] = i;
+      stoindex_[std::move(tokens[i])] = indices[i];
     }
   }
 
@@ -106,15 +108,16 @@ public:
 
   int64_t __len__() { return stovec_.size(); }
 
-  std::vector<std::string> get_all_tokens() {
-    std::vector<std::string> tokens;
-    tokens.reserve(self->stoindex_.size());
+  std::unordered_map<std::string, int64_t> get_stoi() {
+    std::unordered_map<std::string, int64_t> stoi;
+    stoi.reserve(stoindex_.size());
 
     // construct tokens and index list
-    for (const auto &item : self->stoindex_) {
-      tokens.push_back(item.first);
-      indices.push_back(item.second);
+    for (const auto &item : stoindex_) {
+      stoi[item.first] = item.second;
     }
+
+    return stoi;
   }
 };
 
@@ -239,11 +242,10 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 }
 
 constexpr int64_t GRAIN_SIZE = 131072;
-std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
-_load_token_and_vectors_from_file(const std::string &file_path,
-                                  const std::string delimiter_str,
-                                  int64_t num_cpus,
-                                  c10::optional<torch::Tensor> opt_unk_tensor) {
+// std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
+std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
+    const std::string &file_path, const std::string delimiter_str,
+    int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor) {
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
@@ -302,9 +304,14 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   } else {
     unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
   }
-  auto result = std::make_tuple(
-      c10::make_intrusive<Vectors>(Vectors(stoindex, data_tensor, unk_tensor)),
-      dup_tokens);
+
+  // torch::Tensor unk_tensor;
+  // if (unk_tensor.size(0) == 0) {
+  // unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
+  // }
+
+  auto result =
+      std::make_tuple(Vectors(stoindex, data_tensor, unk_tensor), dup_tokens);
   return result;
 }
 
@@ -385,11 +392,11 @@ static auto vectors =
               return _get_vectors_from_states(states);
             });
 
-// Registers our custom op with torch.
-TORCH_LIBRARY(torchtext, m) {
-  m.def("_load_token_and_vectors_from_file",
-        &_load_token_and_vectors_from_file);
-}
+// // Registers our custom op with torch.
+// TORCH_LIBRARY(torchtext, m) {
+//   m.def("_load_token_and_vectors_from_file",
+//         &_load_token_and_vectors_from_file);
+// }
 
 namespace py = pybind11;
 // Registers our custom class with pybind11.
@@ -399,10 +406,13 @@ void register_vectors_pybind(pybind11::module m) {
                     torch::Tensor, torch::Tensor>())
       .def_readonly("vectors_", &Vectors::vectors_)
       .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
-
+      .def("get_stoi", &Vectors::get_stoi)
       .def("__getitem__", &Vectors::__getitem__)
       .def("lookup_vectors", &Vectors::lookup_vectors)
       .def("__setitem__", &Vectors::__setitem__)
       .def("__len__", &Vectors::__len__);
+
+  m.def("_load_token_and_vectors_from_file",
+        &_load_token_and_vectors_from_file);
 }
 } // namespace torchtext

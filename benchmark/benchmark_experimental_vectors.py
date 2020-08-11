@@ -20,12 +20,14 @@ def benchmark_experimental_vectors():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
+        if len(tokens) > 1000:
+            break
 
-    # existing FastText construction
-    print("FastText Existing Construction")
-    t0 = time.monotonic()
-    fast_text = FastText()
-    print("Construction time:", time.monotonic() - t0)
+    # # existing FastText construction
+    # print("FastText Existing Construction")
+    # t0 = time.monotonic()
+    # fast_text = FastText()
+    # print("Construction time:", time.monotonic() - t0)
 
     # experimental FastText construction
     print("FastText Experimental Construction")
@@ -33,9 +35,9 @@ def benchmark_experimental_vectors():
     fast_text_experimental = FastTextExperimental(validate_file=False)
     print("Construction time:", time.monotonic() - t0)
 
-    # existing FastText eager lookup
-    print("FastText Existing - Eager Mode")
-    _run_benchmark_lookup(tokens, fast_text)
+    # # existing FastText eager lookup
+    # print("FastText Existing - Eager Mode")
+    # _run_benchmark_lookup(tokens, fast_text)
 
     # experimental FastText eager lookup
     print("FastText Experimental - Eager Mode")
@@ -43,6 +45,7 @@ def benchmark_experimental_vectors():
 
     # experimental FastText jit lookup
     print("FastText Experimental - Jit Mode")
+    fast_text_experimental.to_ivalue()
     jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
     _run_benchmark_lookup(tokens, jit_fast_text_experimental)
 
