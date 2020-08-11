@@ -39,6 +39,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(spm_tokenizer.decode(ref_results), test_sample)
         self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
+        print(ref_results, jit_spm_tokenizer.decode(ref_results), test_sample)
 
     def test_builtin_pretrained_sentencepiece_transform(self):
         spm_tokenizer = PretrainedSPTokenizer()
