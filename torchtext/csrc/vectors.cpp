@@ -27,8 +27,8 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
   if (static_cast<int>(tokens.size()) != vectors.size(0)) {
     throw std::runtime_error(
         "Mismatching sizes for tokens and vectors. Size of tokens: " +
-        std::to_string(tokens.size()) + ", size of vectors: " +
-        std::to_string(vectors.size(0)) + ".");
+        std::to_string(tokens.size()) +
+        ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
   }
 
   stoindex_.reserve(tokens.size());
@@ -85,8 +85,6 @@ void Vectors::__setitem__(const std::string &token,
 }
 
 int64_t Vectors::__len__() { return stovec_.size(); }
-
-// inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
 std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
                                                    const char delimiter) {
@@ -311,7 +309,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error("Found unexpected version for serialized Vector: " +
-                           version_str + ".");
+  throw std::runtime_error(
+      "Found unexpected version for serialized Vector: " + version_str + ".");
 }
 } // namespace torchtext
