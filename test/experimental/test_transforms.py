@@ -1,6 +1,7 @@
 import torch
 from torchtext.experimental.transforms import (
     PretrainedSPTransform,
+    PretrainedSPTokenizer,
     ToLongTensor,
     TextSequentialTransforms,
 )
@@ -12,7 +13,7 @@ class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_pretrained_pipeline(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = get_asset_path('spm_example.model')
-        pipeline = TextSequentialTransforms(PretrainedSPTransform(model_path), ToLongTensor)
+        pipeline = TextSequentialTransforms(PretrainedSPTransform(model_path), ToLongTensor())
         jit_pipeline = torch.jit.script(pipeline)
         ref_results = torch.tensor([15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
                                     144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]).to(torch.long)
