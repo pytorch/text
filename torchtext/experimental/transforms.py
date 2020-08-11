@@ -141,8 +141,6 @@ class PretrainedSPTokenizer(nn.Module):
         >>> import torch
         >>> from torchtext.experimental.transforms import PretrainedSPTokenizer
         >>> spm_tokenizer = PretrainedSPTokenizer()
-        >>> spm_tokenizer('the pretrained spm model names')
-        >>> ['▁the', '▁pre', 'trained', '▁sp', 'm', '▁model', '▁names']
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
     """
 
@@ -156,12 +154,76 @@ class PretrainedSPTokenizer(nn.Module):
 
     def forward(self, line: str) -> List[str]:
         r"""
+        Args:
+            line: the input string
+
+        Examples:
+            >>> spm_tokenizer('the pretrained spm model names')
+            >>> ['▁the', '▁pre', 'trained', '▁sp', 'm', '▁model', '▁names']
         """
 
         return self.sp_model.EncodeAsPieces(line)
 
     def decode(self, tokens: List[str]) -> str:
         r"""
+        Args:
+            tokens: the tokens list for decoder
+
+        Examples:
+            >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', 'm', '▁model', '▁names'])
+            >>> 'the pretrained spm model names'
         """
 
         return self.sp_model.DecodePieces(tokens)
+
+
+class PretrainedSPTransform(nn.Module):
+    r"""string to ids transform based on a pretained sentencepiece model
+
+    Args:
+       spm_model: the pretrained spm model names. Default: 'text_unigram_25000'. The following pretrained spm models are provided:
+            - text_unigram_15000
+            - text_unigram_25000
+            - text_unigram_50000
+            - text_bpe_15000
+            - text_bpe_25000
+            - text_bpe_50000
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.experimental.transforms import PretrainedSPTransform
+        >>> spm_transform = PretrainedSPTransform()
+        >>> jit_spm_transform = torch.jit.script(spm_transform)
+    """
+
+    def __init__(self, spm_model='text_unigram_25000'):
+        super(PretrainedSPTransform, self).__init__()
+        if spm_model in _pretrained_spm:
+            spm_file_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
+        else:
+            raise RuntimeError('The pretrained sentencepiece model is not supported')
+        self.sp_model = load_sp_model(spm_file_path)
+
+    def forward(self, line: str) -> List[int]:
+        r"""
+        Args:
+            line: the input string
+
+        Examples:
+            >>> spm_transform('the pretrained spm model names')
+            >>> [9, 1546, 18811, 2849, 61, 2759, 2202]
+        """
+
+        return self.sp_model.EncodeAsIds(line)
+
+    def decode(self, ids: List[int]) -> str:
+        r"""
+        Args:
+            ids: the integer list for decoder
+
+        Examples:
+            >>> spm_transform.decoder([9, 1546, 18811, 2849, 61, 2759, 2202])
+            >>> 'the pretrained spm model names'
+        """
+
+        return self.sp_model.DecodeIds(ids)
