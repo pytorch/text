@@ -26,8 +26,8 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
   if (static_cast<int>(tokens.size()) != vectors.size(0)) {
     throw std::runtime_error(
         "Mismatching sizes for tokens and vectors. Size of tokens: " +
-        std::to_string(tokens.size()) +
-        ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+        std::to_string(tokens.size()) + ", size of vectors: " +
+        std::to_string(vectors.size(0)) + ".");
   }
 
   stoindex_.reserve(tokens.size());
@@ -181,7 +181,7 @@ void parse_chunk(const std::string &file_path, size_t offset,
 
 std::tuple<IndexMap, StringList>
 _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-                int64_t num_header_lines, int64_t num_lines) {
+                const int64_t num_header_lines, const int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
   IndexMap tokens;
@@ -329,7 +329,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 } // namespace torchtext
