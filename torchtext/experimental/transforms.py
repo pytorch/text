@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
 from typing import List, Tuple
+from torchtext.data.functional import load_sp_model
+from torchtext.utils import download_from_url
+
 
 # from torchtext._torchtext import Regex as RegexPybind
 
@@ -116,3 +119,49 @@ class TextSequentialTransforms(nn.Sequential):
         for module in self:
             input = module(input)
         return input
+
+
+_pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_50000',
+                   'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
+
+
+class PretrainedSPTokenizer(nn.Module):
+    r"""Tokenizer based on a pretained sentencepiece model
+
+    Args:
+       spm_model: the pretrained spm model names. Default: 'text_unigram_25000'. The following pretrained spm models are provided:
+            - text_unigram_15000
+            - text_unigram_25000
+            - text_unigram_50000
+            - text_bpe_15000
+            - text_bpe_25000
+            - text_bpe_50000
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.experimental.transforms import PretrainedSPTokenizer
+        >>> spm_tokenizer = PretrainedSPTokenizer()
+        >>> spm_tokenizer('the pretrained spm model names')
+        >>> ['▁the', '▁pre', 'trained', '▁sp', 'm', '▁model', '▁names']
+        >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
+    """
+
+    def __init__(self, spm_model='text_unigram_25000'):
+        super(PretrainedSPTokenizer, self).__init__()
+        if spm_model in _pretrained_spm:
+            spm_file_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
+        else:
+            raise RuntimeError('The pretrained sentencepiece model is not supported')
+        self.sp_model = load_sp_model(spm_file_path)
+
+    def forward(self, line: str) -> List[str]:
+        r"""
+        """
+
+        return self.sp_model.EncodeAsPieces(line)
+
+    def decode(self, tokens: List[str]) -> str:
+        r"""
+        """
+
+        return self.sp_model.DecodePieces(tokens)
