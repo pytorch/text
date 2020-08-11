@@ -11,101 +11,79 @@
 #include <stdexcept>
 #include <string>
 #include <torch/script.h>
-
-using c10::Dict;
+#include <vectors.h>
 
 namespace torchtext {
-namespace {
 
-typedef ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
-    VectorsMap;
-typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
-    IndexMap;
-typedef std::vector<std::string> StringList;
-typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
-                   std::vector<torch::Tensor>>
-    VectorsStates;
+Vectors::Vectors(const IndexMap &stoindex, const torch::Tensor vectors,
+                 const torch::Tensor &unk_tensor)
+    : stoindex_(stoindex), vectors_(vectors), unk_tensor_(unk_tensor) {}
 
-struct Vectors : torch::CustomClassHolder {
-public:
-  const std::string version_str_ = "0.0.1";
-
-  IndexMap stoindex_;
-  VectorsMap stovec_;
-
-  torch::Tensor vectors_;
-  torch::Tensor unk_tensor_;
-
-  explicit Vectors(const IndexMap &stoindex, const torch::Tensor vectors,
-                   const torch::Tensor &unk_tensor)
-      : stoindex_(stoindex), vectors_(vectors), unk_tensor_(unk_tensor) {}
-
-  explicit Vectors(const std::vector<std::string> &tokens,
-                   const torch::Tensor &vectors,
-                   const torch::Tensor &unk_tensor)
-      : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
-    // guarding against size mismatch of vectors and tokens
-    if (static_cast<int>(tokens.size()) != vectors.size(0)) {
-      throw std::runtime_error(
-          "Mismatching sizes for tokens and vectors. Size of tokens: " +
-          std::to_string(tokens.size()) +
-          ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
-    }
-
-    stoindex_.reserve(tokens.size());
-    stovec_.reserve(tokens.size());
-    for (std::size_t i = 0; i < tokens.size(); i++) {
-      // tokens should not have any duplicates
-      const auto &item_index = stoindex_.find(tokens[i]);
-      if (item_index != stoindex_.end()) {
-        throw std::runtime_error("Duplicate token found in tokens list: " +
-                                 tokens[i]);
-      }
-      stoindex_[std::move(tokens[i])] = i;
-    }
+Vectors::Vectors(const std::vector<std::string> &tokens,
+                 const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
+    : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
+  // guarding against size mismatch of vectors and tokens
+  if (static_cast<int>(tokens.size()) != vectors.size(0)) {
+    throw std::runtime_error(
+        "Mismatching sizes for tokens and vectors. Size of tokens: " +
+        std::to_string(tokens.size()) +
+        ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
   }
 
-  torch::Tensor __getitem__(const std::string &token) {
-    const auto &item = stovec_.find(token);
-    if (item != stovec_.end()) {
-      return item->second;
-    }
-
-    const auto &item_index = stoindex_.find(token);
+  stoindex_.reserve(tokens.size());
+  stovec_.reserve(tokens.size());
+  for (std::size_t i = 0; i < tokens.size(); i++) {
+    // tokens should not have any duplicates
+    const auto &item_index = stoindex_.find(tokens[i]);
     if (item_index != stoindex_.end()) {
-      auto vector = vectors_[item_index->second];
-      stovec_[token] = vector;
-      return vector;
+      throw std::runtime_error("Duplicate token found in tokens list: " +
+                               tokens[i]);
     }
-    return unk_tensor_;
+    stoindex_[std::move(tokens[i])] = i;
+  }
+}
+
+torch::Tensor Vectors::__getitem__(const std::string &token) {
+  const auto &item = stovec_.find(token);
+  if (item != stovec_.end()) {
+    return item->second;
   }
 
-  torch::Tensor lookup_vectors(const std::vector<std::string> &tokens) {
-    std::vector<torch::Tensor> vectors;
-    for (const std::string &token : tokens) {
-      vectors.push_back(__getitem__(token));
-    }
+  const auto &item_index = stoindex_.find(token);
+  if (item_index != stoindex_.end()) {
+    auto vector = vectors_[item_index->second];
+    stovec_[token] = vector;
+    return vector;
+  }
+  return unk_tensor_;
+}
 
-    return torch::stack(vectors, 0);
+torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
+  std::vector<torch::Tensor> vectors;
+  for (const std::string &token : tokens) {
+    vectors.push_back(__getitem__(token));
   }
 
-  void __setitem__(const std::string &token, const torch::Tensor &vector) {
-    const auto &item_index = stoindex_.find(token);
-    if (item_index != stoindex_.end()) {
-      stovec_[token] = vector;
-      vectors_[item_index->second] = vector;
-    } else {
-      stoindex_[token] = vectors_.size(0);
-      stovec_[token] = vector;
-      // TODO: This could be done lazily during serialization (if necessary).
-      // We would cycle through the vectors and concatenate those that aren't
-      // views.
-      vectors_ = at::cat({vectors_, vector.unsqueeze(0)});
-    }
-  }
+  return torch::stack(vectors, 0);
+}
 
-  int64_t __len__() { return stovec_.size(); }
-};
+void Vectors::__setitem__(const std::string &token,
+                          const torch::Tensor &vector) {
+  const auto &item_index = stoindex_.find(token);
+  if (item_index != stoindex_.end()) {
+    stovec_[token] = vector;
+    vectors_[item_index->second] = vector;
+  } else {
+    stoindex_[token] = vectors_.size(0);
+    stovec_[token] = vector;
+    // TODO: This could be done lazily during serialization (if necessary).
+    // We would cycle through the vectors and concatenate those that aren't
+    // views.
+    vectors_ = at::cat({vectors_, vector.unsqueeze(0)});
+  }
+}
+
+int64_t Vectors::__len__() { return stovec_.size(); }
 
 inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
@@ -203,7 +181,7 @@ void parse_chunk(const std::string &file_path, size_t offset,
 
 std::tuple<IndexMap, StringList>
 _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-                int64_t num_header_lines, int64_t num_lines) {
+                const int64_t num_header_lines, const int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
   IndexMap tokens;
@@ -231,7 +209,7 @@ constexpr int64_t GRAIN_SIZE = 131072;
 std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
 _load_token_and_vectors_from_file(const std::string &file_path,
                                   const std::string delimiter_str,
-                                  int64_t num_cpus,
+                                  const int64_t num_cpus,
                                   c10::optional<torch::Tensor> opt_unk_tensor) {
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");
@@ -354,31 +332,4 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
   throw std::runtime_error(
       "Found unexpected version for serialized Vector: " + version_str + ".");
 }
-
-// Registers our custom class with torch.
-static auto vectors =
-    torch::class_<Vectors>("torchtext", "Vectors")
-        .def(torch::init<std::vector<std::string>, torch::Tensor,
-                         torch::Tensor>())
-        .def("__getitem__", &Vectors::__getitem__)
-        .def("lookup_vectors", &Vectors::lookup_vectors)
-        .def("__setitem__", &Vectors::__setitem__)
-        .def("__len__", &Vectors::__len__)
-        .def_pickle(
-            // __setstate__
-            [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
-              return _set_vectors_states(self);
-            },
-            // __getstate__
-            [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
-              return _get_vectors_from_states(states);
-            });
-
-// Registers our custom op with torch.
-TORCH_LIBRARY(torchtext, m) {
-  m.def("_load_token_and_vectors_from_file",
-        &_load_token_and_vectors_from_file);
-}
-
-} // namespace
 } // namespace torchtext
