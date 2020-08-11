@@ -145,21 +145,24 @@ class PretrainedSPTokenizer(nn.Module):
             - text_bpe_15000
             - text_bpe_25000
             - text_bpe_50000
+            Otherwise, the file path to the user-provided sentencepiece model is required.
 
     Examples:
         >>> import torch
         >>> from torchtext.experimental.transforms import PretrainedSPTokenizer
-        >>> spm_tokenizer = PretrainedSPTokenizer()
+        >>> spm_tokenizer = PretrainedSPTokenizer('text_unigram_25000')
+        >>> spm_tokenizer = PretrainedSPTokenizer('.data/text_unigram_25000.model')
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
     """
 
     def __init__(self, spm_model='text_unigram_25000'):
         super(PretrainedSPTokenizer, self).__init__()
         if spm_model in _pretrained_spm:
-            spm_file_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-        else:
+            spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
+        try:
+            self.sp_model = load_sp_model(spm_model)
+        except:
             raise RuntimeError('The pretrained sentencepiece model is not supported')
-        self.sp_model = load_sp_model(spm_file_path)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -197,21 +200,24 @@ class PretrainedSPTransform(nn.Module):
             - text_bpe_15000
             - text_bpe_25000
             - text_bpe_50000
+            Otherwise, the file path to the user-provided sentencepiece model is required.
 
     Examples:
         >>> import torch
         >>> from torchtext.experimental.transforms import PretrainedSPTransform
-        >>> spm_transform = PretrainedSPTransform()
+        >>> spm_transform = PretrainedSPTransform('text_unigram_25000')
+        >>> spm_transform = PretrainedSPTransform('.data/text_unigram_25000.model')
         >>> jit_spm_transform = torch.jit.script(spm_transform)
     """
 
     def __init__(self, spm_model='text_unigram_25000'):
         super(PretrainedSPTransform, self).__init__()
         if spm_model in _pretrained_spm:
-            spm_file_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-        else:
+            spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
+        try:
+            self.sp_model = load_sp_model(spm_model)
+        except:
             raise RuntimeError('The pretrained sentencepiece model is not supported')
-        self.sp_model = load_sp_model(spm_file_path)
 
     def forward(self, line: str) -> List[int]:
         r"""
