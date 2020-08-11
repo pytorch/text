@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch import Tensor
 from typing import List, Tuple
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
@@ -110,15 +111,23 @@ class TextSequentialTransforms(nn.Sequential):
 
         Example:
             >>> import torch
-            >>> from torchtext.experimental.transforms import BasicEnglishNormalize, TextSequentialTransforms
-            >>> tokenizer = BasicEnglishNormalize()
-            >>> txt_pipeline = TextSequentialTransforms(tokenizer)
+            >>> from torchtext.experimental.transforms import PretrainedSPTransform, ToLongTensor, TextSequentialTransforms
+            >>> spm_transform = PretrainedSPTransform()
+            >>> to_tensor = ToLongTensor()
+            >>> txt_pipeline = TextSequentialTransforms(spm_transform, to_tensor)
             >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
     """
-    def forward(self, input: str):
+    def forward(self, line: str):
+        r"""
+        Args:
+            line: the input string
+
+        Examples:
+            >>> txt_pipeline('the pretrained spm model names')
+        """
         for module in self:
-            input = module(input)
-        return input
+            line = module(line)
+        return line
 
 
 _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_50000',
@@ -227,3 +236,26 @@ class PretrainedSPTransform(nn.Module):
         """
 
         return self.sp_model.DecodeIds(ids)
+
+
+class ToLongTensor(nn.Module):
+    r"""Convert a list of integers to long tensor
+
+    Examples:
+        >>> from torchtext.experimental.transforms import ToLongTensor
+        >>> to_tensor = ToLongTensor()
+    """
+
+    def __init__(self):
+        super(ToLongTensor, self).__init__()
+
+    def forward(self, ids: List[int]) -> Tensor:
+        r"""
+        Args:
+            ids: the input list of ids
+
+        Examples:
+            >>> to_tensor([9, 1546, 18811, 2849, 61, 2759, 2202])
+            >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
+        """
+        return torch.tensor(ids).to(torch.long)
