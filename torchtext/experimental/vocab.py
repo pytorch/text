@@ -5,6 +5,7 @@ import warnings
 
 import torch
 import torch.nn as nn
+from torchtext._torchtext import Vocab as VocabPybind
 from tqdm import tqdm
 
 
@@ -98,11 +99,14 @@ class Vocab(nn.Module):
             tokens.append(unk_token)
             warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
                           "to the end of the Vocab.".format(unk_token), RuntimeWarning)
-        self.vocab = torch.classes.torchtext.Vocab(tokens, unk_token)
+        # self.vocab = torch.classes.torchtext.Vocab(tokens, unk_token)
+        self.vocab = VocabPybind(tokens, unk_token)
+
 
     @torch.jit.export
     def __len__(self) -> int:
-        r"""Returns:
+        r"""
+        Returns:
             length (int): the length of the vocab
         """
         return len(self.vocab)
@@ -192,3 +196,16 @@ class Vocab(nn.Module):
             itos (dict): dictionary mapping indices to tokens.
         """
         return self.vocab.get_itos()
+
+    def to_ivalue(self):
+        r"""Converts the current eager Vocab to a JIT Vocab.
+        """
+        # tokens = self.vocab.itos_
+        # unk_token = self.vocab.unk_token_
+
+        vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
+        self.vocab = vocab
+
+        # sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+        # ordered_dict = OrderedDict(sorted_by_freq_tuples)
+        # v = Vocab()

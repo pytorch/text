@@ -15,7 +15,6 @@
 using c10::Dict;
 
 namespace torchtext {
-namespace {
 
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
     VectorsMap;
@@ -41,6 +40,7 @@ public:
       : stoindex_(stoindex), vectors_(vectors), unk_tensor_(unk_tensor) {}
 
   explicit Vectors(const std::vector<std::string> &tokens,
+                   const std::vector<std::int64_t> &indices,
                    const torch::Tensor &vectors,
                    const torch::Tensor &unk_tensor)
       : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
@@ -105,6 +105,17 @@ public:
   }
 
   int64_t __len__() { return stovec_.size(); }
+
+  std::vector<std::string> get_all_tokens() {
+    std::vector<std::string> tokens;
+    tokens.reserve(self->stoindex_.size());
+
+    // construct tokens and index list
+    for (const auto &item : self->stoindex_) {
+      tokens.push_back(item.first);
+      indices.push_back(item.second);
+    }
+  }
 };
 
 inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
@@ -358,8 +369,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
 // Registers our custom class with torch.
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
-        .def(torch::init<std::vector<std::string>, torch::Tensor,
-                         torch::Tensor>())
+        .def(torch::init<std::vector<std::string>, std::vector<int64_t>,
+                         torch::Tensor, torch::Tensor>())
         .def("__getitem__", &Vectors::__getitem__)
         .def("lookup_vectors", &Vectors::lookup_vectors)
         .def("__setitem__", &Vectors::__setitem__)
@@ -374,22 +385,24 @@ static auto vectors =
               return _get_vectors_from_states(states);
             });
 
-// // Registers our custom op with torch.
-// TORCH_LIBRARY(torchtext, m) {
-//   m.def("_load_token_and_vectors_from_file",
-//         &_load_token_and_vectors_from_file);
-// }
+// Registers our custom op with torch.
+TORCH_LIBRARY(torchtext, m) {
+  m.def("_load_token_and_vectors_from_file",
+        &_load_token_and_vectors_from_file);
+}
 
 namespace py = pybind11;
 // Registers our custom class with pybind11.
 void register_vectors_pybind(pybind11::module m) {
   py::class_<Vectors>(m, "Vectors")
-      .def(py::init<std::vector<std::string>, torch::Tensor, torch::Tensor>())
+      .def(py::init<std::vector<std::string>, std::vector<int64_t>,
+                    torch::Tensor, torch::Tensor>())
+      .def_readonly("vectors_", &Vectors::vectors_)
+      .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
+
       .def("__getitem__", &Vectors::__getitem__)
       .def("lookup_vectors", &Vectors::lookup_vectors)
       .def("__setitem__", &Vectors::__setitem__)
       .def("__len__", &Vectors::__len__);
 }
-
-} // namespace
 } // namespace torchtext

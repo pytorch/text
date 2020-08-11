@@ -166,6 +166,8 @@ namespace py = pybind11;
 void register_vocab_pybind(pybind11::module m) {
   py::class_<Vocab>(m, "Vocab")
       .def(py::init<std::vector<std::string>, std::string>())
+      .def_readonly("itos_", &Vocab::itos_)
+      .def_readonly("unk_token_", &Vocab::unk_token_)
       .def("__getitem__", &Vocab::__getitem__)
       .def("__len__", &Vocab::__len__)
       .def("insert_token", &Vocab::insert_token)
