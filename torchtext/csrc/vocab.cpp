@@ -1,4 +1,5 @@
 #include <ATen/Parallel.h>
+#include <common.h>
 #include <stdexcept>
 #include <string>
 #include <vocab.h>
@@ -98,7 +99,7 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
 c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
 StringList Vocab::get_itos() const { return itos_; }
 
-inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
+// inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
 int64_t _infer_lines(const std::string &file_path) {
   int64_t num_lines = 0;
@@ -111,25 +112,9 @@ int64_t _infer_lines(const std::string &file_path) {
   return num_lines;
 }
 
-void _infer_offsets(const std::string &file_path, int64_t num_lines,
-                    int64_t chunk_size, std::vector<size_t> &offsets) {
-
-  std::ifstream fin;
-  fin.open(file_path, std::ios::in);
-
-  offsets.push_back(fin.tellg());
-  size_t offset = 0;
-  while (fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n')) {
-    offset++;
-    if (offset % chunk_size == 0) {
-      offsets.push_back(fin.tellg());
-    }
-  }
-}
-
-void parse_chunk(const std::string &file_path, size_t offset,
-                 const int64_t start_line, const int64_t end_line,
-                 std::shared_ptr<StringList> tokens) {
+void parse_vocab_chunk(const std::string &file_path, size_t offset,
+                       const int64_t start_line, const int64_t end_line,
+                       std::shared_ptr<StringList> tokens) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
@@ -206,13 +191,13 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
   int64_t num_lines = _infer_lines(file_path);
-  int64_t chunk_size = divup(num_lines, num_cpus);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
   // TODO: Add explicit test beyond grain size to cover multithreading
   chunk_size = std::max(chunk_size, GRAIN_SIZE);
 
   std::vector<size_t> offsets;
-  _infer_offsets(file_path, num_lines, chunk_size, offsets);
+  impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
   std::vector<std::shared_ptr<StringList>> chunk_tokens;
 
@@ -227,8 +212,8 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
 
     counter++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
-      parse_chunk(file_path, offsets[j], i, std::min(num_lines, i + chunk_size),
-                  tokens_ptr);
+      parse_vocab_chunk(file_path, offsets[j], i,
+                        std::min(num_lines, i + chunk_size), tokens_ptr);
       std::lock_guard<std::mutex> lk(m);
       counter--;
       cv.notify_all();
@@ -289,7 +274,7 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vocab: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
+                           version_str + ".");
 }
 } // namespace torchtext

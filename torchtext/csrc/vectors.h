@@ -1,7 +1,9 @@
-#include <common.h>
+// #include <common.h>
 #include <torch/script.h>
 
 namespace torchtext {
+
+typedef std::vector<std::string> StringList;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
     VectorsMap;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>

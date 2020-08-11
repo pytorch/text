@@ -1,8 +1,9 @@
-#include <common.h>
+// #include <common.h>
 #include <torch/script.h>
 
 namespace torchtext {
 
+typedef std::vector<std::string> StringList;
 typedef c10::Dict<std::string, int64_t> IndexDict;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>

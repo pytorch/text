@@ -1,5 +1,6 @@
 #include <ATen/Parallel.h>
 #include <atomic>
+#include <common.h>
 #include <condition_variable>
 #include <double-conversion/double-conversion.h>
 #include <double-conversion/ieee.h>
@@ -26,8 +27,8 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
   if (static_cast<int>(tokens.size()) != vectors.size(0)) {
     throw std::runtime_error(
         "Mismatching sizes for tokens and vectors. Size of tokens: " +
-        std::to_string(tokens.size()) +
-        ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+        std::to_string(tokens.size()) + ", size of vectors: " +
+        std::to_string(vectors.size(0)) + ".");
   }
 
   stoindex_.reserve(tokens.size());
@@ -85,7 +86,7 @@ void Vectors::__setitem__(const std::string &token,
 
 int64_t Vectors::__len__() { return stovec_.size(); }
 
-inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
+// inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
 
 std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
                                                    const char delimiter) {
@@ -124,31 +125,10 @@ std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
   return std::make_tuple(num_lines, num_header_lines, vector_dim);
 }
 
-void _infer_offsets(const std::string &file_path, int64_t num_lines,
-                    int64_t chunk_size, int64_t num_header_lines,
-                    std::vector<size_t> &offsets) {
-
-  std::ifstream fin;
-  fin.open(file_path, std::ios::in);
-
-  while (num_header_lines > 0) {
-    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    num_header_lines--;
-  }
-  offsets.push_back(fin.tellg());
-  size_t offset = 0;
-  while (fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n')) {
-    offset++;
-    if (offset % chunk_size == 0) {
-      offsets.push_back(fin.tellg());
-    }
-  }
-}
-
-void parse_chunk(const std::string &file_path, size_t offset,
-                 const int64_t start_line, const int64_t end_line,
-                 const int64_t vector_dim, const char delimiter,
-                 std::shared_ptr<StringList> tokens, float *data_ptr) {
+void parse_vectors_chunk(const std::string &file_path, size_t offset,
+                         const int64_t start_line, const int64_t end_line,
+                         const int64_t vector_dim, const char delimiter,
+                         std::shared_ptr<StringList> tokens, float *data_ptr) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
@@ -220,13 +200,14 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   std::tie(num_lines, num_header_lines, vector_dim) =
       _infer_shape(file_path, delimiter);
 
-  int64_t chunk_size = divup(num_lines, num_cpus);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
   // TODO: Add explicit test beyond grain size to cover multithreading
   chunk_size = std::max(chunk_size, GRAIN_SIZE);
 
   std::vector<size_t> offsets;
-  _infer_offsets(file_path, num_lines, chunk_size, num_header_lines, offsets);
+  impl::infer_offsets(file_path, num_lines, chunk_size, offsets,
+                      num_header_lines);
 
   torch::Tensor data_tensor = torch::empty({num_lines, vector_dim});
   float *data_ptr = data_tensor.data_ptr<float>();
@@ -244,8 +225,9 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     counter++;
     at::launch([&, file_path, num_lines, chunk_size, vector_dim, delimiter, j,
                 i, tokens_ptr, data_ptr]() {
-      parse_chunk(file_path, offsets[j], i, std::min(num_lines, i + chunk_size),
-                  vector_dim, delimiter, tokens_ptr, data_ptr);
+      parse_vectors_chunk(file_path, offsets[j], i,
+                          std::min(num_lines, i + chunk_size), vector_dim,
+                          delimiter, tokens_ptr, data_ptr);
       std::lock_guard<std::mutex> lk(m);
       counter--;
       cv.notify_all();
@@ -329,7 +311,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 } // namespace torchtext
