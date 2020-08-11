@@ -31,9 +31,19 @@ SentencePiece::EncodeAsIds(const std::string &input) const {
   return std::vector<int64_t>(val.begin(), val.end());
 }
 
+std::string SentencePiece::DecodeIds(const std::vector<int64_t> &ids) const {
+  const std::vector<int> val(ids.begin(), ids.end());
+  return processor_.DecodeIds(val);
+}
+
 std::vector<std::string>
 SentencePiece::EncodeAsPieces(const std::string &input) const {
   return processor_.EncodeAsPieces(input);
+}
+
+std::string
+SentencePiece::DecodePieces(const std::vector<std::string> &pieces) const {
+  return processor_.DecodePieces(pieces);
 }
 
 int64_t SentencePiece::GetPieceSize() const {
