@@ -6,9 +6,9 @@
 
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens, const IndexDict &stoindex,
+Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
              const std::string &unk_token, const int64_t unk_index)
-    : itos_(std::move(tokens)), stoi_(std::move(stoindex)),
+    : itos_(std::move(tokens)), stoi_(std::move(stoi)),
       unk_index_(std::move(unk_index)), unk_token_(std::move(unk_token)) {}
 
 Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
@@ -145,9 +145,9 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               "There must be at least 1 chunk to concatenate!");
 
   std::unordered_map<std::string, int64_t> tokens_freq;
-  IndexDict stoindex;
+  IndexDict stoi;
   StringList tokens;
-  stoindex.reserve(num_lines);
+  stoi.reserve(num_lines);
   tokens.reserve(num_lines);
 
   // create tokens frequency map
@@ -163,15 +163,15 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     }
   }
 
-  // create tokens list and stoindex map
+  // create tokens list and stoi map
   int64_t index = 0;
   for (size_t i = 0; i < chunk_tokens.size(); i++) {
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_freq[subset_tokens[j]] >= min_freq &&
-          stoindex.find(subset_tokens[j]) == stoindex.end()) {
+          stoi.find(subset_tokens[j]) == stoi.end()) {
         tokens.emplace_back(subset_tokens[j]);
-        stoindex[subset_tokens[j]] = index;
+        stoi[subset_tokens[j]] = index;
         index++;
       }
     }
@@ -185,10 +185,10 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               << std::endl;
 
     tokens.emplace_back(unk_token);
-    stoindex[unk_token] = index;
+    stoi[unk_token] = index;
   }
 
-  return std::make_tuple(std::move(stoindex), std::move(tokens));
+  return std::make_tuple(std::move(stoi), std::move(tokens));
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
@@ -235,14 +235,14 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
   std::unique_lock<std::mutex> lock(m);
   cv.wait(lock, [&counter] { return counter == 0; });
 
-  IndexDict stoindex;
+  IndexDict stoi;
   StringList tokens;
-  std::tie(stoindex, tokens) =
+  std::tie(stoi, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
 
-  int64_t unk_index = stoindex.find(unk_token)->second;
+  int64_t unk_index = stoi.find(unk_token)->second;
 
-  return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoindex),
+  return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoi),
                                     unk_token, unk_index);
 }
 
