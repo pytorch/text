@@ -62,8 +62,8 @@ class TestVectors(TorchtextTestCase):
         vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
-        assert vectors_obj.is_jitable == False
-        assert vectors_obj.to_ivalue().is_jitable == True
+        assert not vectors_obj.is_jitable
+        assert vectors_obj.to_ivalue().is_jitable
 
         self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
         self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])

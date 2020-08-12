@@ -89,7 +89,7 @@ class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
     Arguments:
-        vocab (torch.classes.torchtext.Vocab): a cpp vocab object.
+        vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.
     """
 
     def __init__(self, vocab):

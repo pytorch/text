@@ -106,8 +106,8 @@ class TestVocab(TorchtextTestCase):
         expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-        assert v.is_jitable == False
-        assert v.to_ivalue().is_jitable == True
+        assert not v.is_jitable
+        assert v.to_ivalue().is_jitable
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
         self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)

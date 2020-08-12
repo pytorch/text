@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-class BasicEnglishNormalize(nn.Module):
+def basic_english_normalize():
     r"""Basic normalization for a string sentence.
 
     Normalization includes
@@ -31,31 +31,67 @@ class BasicEnglishNormalize(nn.Module):
 
     Examples:
         >>> import torch
-        >>> from torchtext.experimental.transforms import BasicEnglishNormalize
+        >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> test_sample = 'Basic English Normalization for a Line of Text'
-        >>> basic_english_normalize = BasicEnglishNormalize()
-        >>> jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
-        >>> tokens = jit_basic_english_normalize(test_sample)
+        >>> basic_eng_norm = basic_english_normalize()
+        >>> jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())
+        >>> tokens = jit_basic_eng_norm(test_sample)
     """
-    def __init__(self):
-        super(BasicEnglishNormalize, self).__init__()
-        patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', ''),
-            (r'\.', ' . '),
-            (r'<br \/>', ' '),
-            (r',', ' , '),
-            (r'\(', ' ( '),
-            (r'\)', ' ) '),
-            (r'\!', ' ! '),
-            (r'\?', ' ? '),
-            (r'\;', ' '),
-            (r'\:', ' '),
-            (r'\s+', ' ')]
+    patterns_list = [
+                (r'\'', ' \'  '),
+                (r'\"', ''),
+                (r'\.', ' . '),
+                (r'<br \/>', ' '),
+                (r',', ' , '),
+                (r'\(', ' ( '),
+                (r'\)', ' ) '),
+                (r'\!', ' ! '),
+                (r'\?', ' ? '),
+                (r'\;', ' '),
+                (r'\:', ' '),
+                (r'\s+', ' ')]
 
-        patterns = [pair[0] for pair in patterns_list]
-        replacements = [pair[1] for pair in patterns_list]
-        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, True)
+    patterns = [pair[0] for pair in patterns_list]
+    replacements = [pair[1] for pair in patterns_list]
+    return BasicEnglishNormalize(RegexTokenizerPybind(patterns, replacements, True))
+
+
+def regex_tokenizer(patterns_list):
+    r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
+
+    Args:
+        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
+        as the first element and the replacement string as the second element.
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.experimental.transforms import regex_tokenizer
+        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
+        >>> patterns_list = [
+            (r'\'', ' \'  '),
+            (r'\"', '')]
+        >>> reg_tokenizer = regex_tokenizer(patterns_list)
+        >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
+        >>> tokens = jit_reg_tokenizer(test_sample)
+    """
+    patterns = [pair[0] for pair in patterns_list]
+    replacements = [pair[1] for pair in patterns_list]
+    return RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
+
+
+class BasicEnglishNormalize(nn.Module):
+    r"""Basic normalization for a string sentence.
+    
+    Args:
+        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
+    """
+    def __init__(self, regex_tokenizer):
+        super(BasicEnglishNormalize, self).__init__()
+        self.regex_tokenizer = regex_tokenizer
+
+    @property
+    def is_jitable(self):
+        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -70,33 +106,22 @@ class BasicEnglishNormalize(nn.Module):
         r"""Converts the current eager BasicEnglishNormalize to a JIT BasicEnglishNormalize.
         """
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
-        self.regex_tokenizer = regex_tokenizer
+        return BasicEnglishNormalize(regex_tokenizer)
 
 
 class RegexTokenizer(nn.Module):
     r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
-
+    
     Args:
-        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string
-        as the first element and the replacement string as the second element.
-
-    Examples:
-        >>> import torch
-        >>> from torchtext.experimental.transforms import RegexTokenizer
-        >>> test_sample = 'Basic Regex Tokenization for a Line of Text'
-        >>> patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', '')]
-        >>> regex_tokenizer = RegexTokenizer(patterns_list)
-        >>> jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
-        >>> tokens = jit_regex_tokenizer(test_sample)
+        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
-    def __init__(self, patterns_list: List[Tuple[str, str]]):
+    def __init__(self, regex_tokenzier):
         super(RegexTokenizer, self).__init__()
+        self.regex_tokenizer = regex_tokenzier
 
-        patterns = [pair[0] for pair in patterns_list]
-        replacements = [pair[1] for pair in patterns_list]
-        self.regex_tokenizer = RegexTokenizerPybind(patterns, replacements, False)
+    @property
+    def is_jitable(self):
+        return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
 
     def forward(self, line: str) -> List[str]:
         r"""
@@ -111,7 +136,7 @@ class RegexTokenizer(nn.Module):
         r"""Converts the current eager RegexTokenizer to a JIT RegexTokenizer.
         """
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
-        self.regex_tokenizer = regex_tokenizer
+        return RegexTokenizer(regex_tokenizer)
 
 
 class TextSequentialTransforms(nn.Sequential):
