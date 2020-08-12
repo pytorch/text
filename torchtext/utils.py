@@ -102,7 +102,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
 
     if filename is not None:
         path = os.path.join(root, filename)
-    #skip requests.get if path exists and not overwrite.
+    # skip requests.get if path exists and not overwrite.
     if os.path.exists(path):
         logging.info('File %s already exists.' % path)
         if not overwrite:
