@@ -4,7 +4,10 @@ import warnings
 
 import torch
 import torch.nn as nn
-from torchtext._torchtext import Vocab as VocabPybind
+from torchtext._torchtext import (
+    Vocab as VocabPybind,
+    _load_vocab_from_file
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +39,7 @@ def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file_object(f)
     """
-    vocab_obj = torch.ops.torchtext._load_vocab_from_file(file_like_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_like_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
@@ -92,6 +95,10 @@ class Vocab(nn.Module):
     def __init__(self, vocab):
         super(Vocab, self).__init__()
         self.vocab = vocab
+
+    @property
+    def is_jitable(self):
+        return not isinstance(self.vocab, VocabPybind)
 
     @torch.jit.export
     def __len__(self) -> int:
@@ -190,5 +197,5 @@ class Vocab(nn.Module):
     def to_ivalue(self):
         r"""Converts the current eager Vocab to a JIT Vocab.
         """
-        vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
-        self.vocab = vocab
+        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
+        return Vocab(cpp_vocab)

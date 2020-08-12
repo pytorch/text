@@ -6,9 +6,9 @@
 
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens, const IndexDict &stoindex,
+Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
              const std::string &unk_token, const int64_t unk_index)
-    : itos_(std::move(tokens)), stoi_(std::move(stoindex)),
+    : itos_(std::move(tokens)), stoi_(std::move(stoi)),
       unk_index_(std::move(unk_index)), unk_token_(std::move(unk_token)) {}
 
 Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
@@ -96,7 +96,17 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
   return indices;
 }
 
-c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
+std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
+  std::unordered_map<std::string, int64_t> stoi;
+  stoi.reserve(stoi_.size());
+
+  // construct tokens and index list
+  for (const auto &item : stoi_) {
+    stoi[item.key()] = item.value();
+  }
+
+  return stoi;
+}
 
 StringList Vocab::get_itos() const { return itos_; }
 

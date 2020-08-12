@@ -101,10 +101,13 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
-        jit_v = torch.jit.script(v)
+        jit_v = torch.jit.script(v.to_ivalue())
 
         expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        assert v.is_jitable == False
+        assert v.to_ivalue().is_jitable == True
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
         self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)
@@ -172,7 +175,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
         vocab_path = os.path.join(self.test_dir, 'vocab.pt')
-        torch.save(v, vocab_path)
+        torch.save(v.to_ivalue(), vocab_path)
         loaded_v = torch.load(vocab_path)
 
         self.assertEqual(v.get_itos(), expected_itos)
