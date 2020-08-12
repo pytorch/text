@@ -7,6 +7,7 @@ from torchtext.experimental.transforms import (
 )
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
+import os
 
 
 class TestTransforms(TorchtextTestCase):
@@ -42,11 +43,15 @@ class TestTransforms(TorchtextTestCase):
 
     def test_builtin_pretrained_sentencepiece_transform(self):
         spm_tokenizer = PretrainedSPTokenizer()
+        _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
+        os.remove(_path)
         test_sample = 'the pretrained spm model names'
         ref_results = ['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
         spm_transform = PretrainedSPTransform()
+        _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
+        os.remove(_path)
         test_sample = 'the pretrained spm model names'
         ref_results = [9, 1546, 18811, 2849, 61, 2759, 2202]
         self.assertEqual(spm_transform(test_sample), ref_results)
