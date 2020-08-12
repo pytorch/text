@@ -8,7 +8,6 @@
 #include <future>
 #include <iostream>
 #include <mutex>
-#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>

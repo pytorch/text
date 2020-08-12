@@ -14,7 +14,7 @@ from torchtext.vocab import Vocab
 def benchmark_experimental_vocab_construction(vocab_file_path, num_iters=100):
     f = open(vocab_file_path, 'r')
     t0 = time.monotonic()
-    for i in range(num_iters):
+    for _ in range(num_iters):
         vocab_from_file_object(f)
     print("Construction time:", time.monotonic() - t0)
 
@@ -29,7 +29,7 @@ def benchmark_experimental_vocab_lookup():
     train, = AG_NEWS(data_select='train')
     vocab = train.get_vocab()
     tokens = []
-    for (label, text) in train:
+    for (_, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
 
