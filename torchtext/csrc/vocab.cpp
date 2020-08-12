@@ -170,8 +170,8 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_freq[subset_tokens[j]] >= min_freq &&
           stoindex.find(subset_tokens[j]) == stoindex.end()) {
-        tokens.emplace_back(std::move(subset_tokens[j]));
-        stoindex[std::move(subset_tokens[j])] = index;
+        tokens.emplace_back(subset_tokens[j]);
+        stoindex[subset_tokens[j]] = index;
         index++;
       }
     }
