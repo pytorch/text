@@ -16,12 +16,6 @@ RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
   }
 }
 
-RegexTokenizer::RegexTokenizer(const RegexTokenizer &regex_tokenizer) {
-  patterns_ = regex_tokenizer.patterns_;
-  replacements_ = regex_tokenizer.replacements_;
-  compiled_patterns_ = regex_tokenizer.compiled_patterns_;
-}
-
 std::vector<std::string> RegexTokenizer::forward(std::string str) const {
   // str tolower
   if (to_lower_) {

@@ -17,7 +17,6 @@ public:
   explicit RegexTokenizer(const std::vector<std::string> &patterns,
                           const std::vector<std::string> &replacements,
                           const bool to_lower);
-  RegexTokenizer(const RegexTokenizer &regex_tokenizer);
   std::vector<std::string> forward(std::string str) const;
 };
 

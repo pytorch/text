@@ -256,7 +256,7 @@ class Vectors(nn.Module):
         return self.vectors.lookup_vectors(tokens)
 
     def to_ivalue(self):
-        r"""Converts the current eager Vectors to a JIT Vectors.
+        r"""Return a JITable Vectors.
         """
         stoi = self.vectors.get_stoi()
         cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_, self.vectors.unk_tensor_)

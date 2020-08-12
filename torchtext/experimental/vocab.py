@@ -195,7 +195,7 @@ class Vocab(nn.Module):
         return self.vocab.get_itos()
 
     def to_ivalue(self):
-        r"""Converts the current eager Vocab to a JIT Vocab.
+        r"""Return a JITable Vocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
         return Vocab(cpp_vocab)

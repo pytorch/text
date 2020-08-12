@@ -103,7 +103,7 @@ class BasicEnglishNormalize(nn.Module):
         return self.regex_tokenizer.forward(line)
 
     def to_ivalue(self):
-        r"""Converts the current eager BasicEnglishNormalize to a JIT BasicEnglishNormalize.
+        r"""Return a JITable BasicEnglishNormalize.
         """
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
         return BasicEnglishNormalize(regex_tokenizer)
@@ -133,7 +133,7 @@ class RegexTokenizer(nn.Module):
         return self.regex_tokenizer.forward(line)
 
     def to_ivalue(self):
-        r"""Converts the current eager RegexTokenizer to a JIT RegexTokenizer.
+        r"""Return a JITable RegexTokenizer.
         """
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
         return RegexTokenizer(regex_tokenizer)
