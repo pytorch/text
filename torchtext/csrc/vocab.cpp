@@ -104,7 +104,6 @@ std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
   for (const auto &item : stoi_) {
     stoi[item.key()] = item.value();
   }
-
   return stoi;
 }
 

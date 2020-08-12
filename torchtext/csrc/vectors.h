@@ -38,6 +38,5 @@ VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self);
 std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
     const std::string &file_path, const std::string delimiter_str,
     const int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor);
-// void register_vectors_pybind(pybind11::module m);
 
 } // namespace torchtext
