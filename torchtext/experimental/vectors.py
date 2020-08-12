@@ -184,6 +184,16 @@ def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, n
 
 
 def vectors(tokens, vectors, unk_tensor=None):
+    r"""Factory method for creating a vectors object which maps tokens to vectors.
+    Arguments:
+        tokens (List[str]): a list of tokens.
+        vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
+        unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
+    Raises:
+        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
+        RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
+        TypeError: if all tensors within`vectors` are not of data type `torch.float`.
+    """
     if unk_tensor is None and (vectors is None or not len(vectors)):
         raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
 
@@ -199,13 +209,7 @@ def vectors(tokens, vectors, unk_tensor=None):
 class Vectors(nn.Module):
     r"""Creates a vectors object which maps tokens to vectors.
     Arguments:
-        tokens (List[str]): a list of tokens.
-        vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
-        unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
-    Raises:
-        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
-        RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
-        TypeError: if all tensors within`vectors` are not of data type `torch.float`.
+        vectors (torch.classes.torchtext.Vectors): a cpp vectors object.
     """
 
     def __init__(self, vectors):

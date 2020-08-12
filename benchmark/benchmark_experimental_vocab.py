@@ -1,13 +1,25 @@
+import argparse
 from collections import (Counter, OrderedDict)
 import time
 
 import torch
 from torchtext.experimental.datasets import AG_NEWS
-from torchtext.experimental.vocab import Vocab as VocabExperimental
+from torchtext.experimental.vocab import (
+    vocab as VocabExperimental,
+    vocab_from_file_object
+)
 from torchtext.vocab import Vocab
 
 
-def benchmark_experimental_vocab():
+def benchmark_experimental_vocab_construction(vocab_file_path, num_iters=100):
+    f = open(vocab_file_path, 'r')
+    t0 = time.monotonic()
+    for i in range(num_iters):
+        vocab_from_file_object(f)
+    print("Construction time:", time.monotonic() - t0)
+
+
+def benchmark_experimental_vocab_lookup():
     def _run_benchmark_lookup(tokens, vocab):
         t0 = time.monotonic()
         for token in tokens:
@@ -53,4 +65,14 @@ def benchmark_experimental_vocab():
 
 
 if __name__ == "__main__":
-    benchmark_experimental_vocab()
+    parser = argparse.ArgumentParser(description='Data procesing pipelines')
+    parser.add_argument('--run-construction-benchmark', type=bool, default=False,
+                        help='run benchmark for constructing a vocab (default=False)')
+    parser.add_argument('--vocab-filename', type=str, default='vocab.txt',
+                        help='The name of vocab file')
+    args = parser.parse_args()
+
+    if args.run_construction_benchmark:
+        benchmark_experimental_vocab_construction(args.vocab_filename)
+    else:
+        benchmark_experimental_vocab_lookup()
