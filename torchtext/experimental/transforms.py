@@ -176,6 +176,7 @@ class PretrainedSPTokenizer(nn.Module):
 
         return self.sp_model.EncodeAsPieces(line)
 
+    @torch.jit.export
     def decode(self, tokens: List[str]) -> str:
         r"""
         Args:
@@ -231,6 +232,7 @@ class PretrainedSPTransform(nn.Module):
 
         return self.sp_model.EncodeAsIds(line)
 
+    @torch.jit.export
     def decode(self, ids: List[int]) -> str:
         r"""
         Args:
