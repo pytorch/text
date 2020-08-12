@@ -35,8 +35,6 @@ class TestTransforms(TorchtextTestCase):
                        '\u2581to', 'ken', 'izer', '\u2581and',
                        '\u2581de', 'to', 'ken', 'izer']
 
-        print(ref_results, jit_spm_tokenizer.decode(ref_results), test_sample)
-
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
         self.assertEqual(spm_tokenizer.decode(ref_results), test_sample)
         self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
