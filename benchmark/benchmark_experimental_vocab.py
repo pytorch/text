@@ -17,7 +17,7 @@ from torchtext.vocab import (
 def benchmark_experimental_vocab_construction(vocab_file_path, num_iters=100):
     f = open(vocab_file_path, 'r')
     t0 = time.monotonic()
-    for i in range(num_iters):
+    for _ in range(num_iters):
         vocab_from_file_object(f)
     print("Construction time:", time.monotonic() - t0)
 
@@ -34,7 +34,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
             for token in tokens:
                 vocab[token]
         else:
-            raise RuntimeError("Received tokens of incorrect type {}.".format(type(toks)))
+            raise RuntimeError("Received tokens of incorrect type {}.".format(type(tokens)))
         print("Lookup time:", time.monotonic() - t0)
 
     tokens = []
@@ -51,7 +51,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
 
     if vocab_file_path:
         print("Loading Vocab from file {}".format(vocab_file_path))
-        
+
         def token_iterator(file_path):
             f = open(file_path, 'r')
             for token in f:
@@ -93,7 +93,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     _run_benchmark_lookup(tokens, v_existing)
     _run_benchmark_lookup([tokens], v_existing)
     _run_benchmark_lookup(tokens_lists, v_existing)
-    
+
     # experimental Vocab eager lookup
     print("Vocab Experimental - Eager Mode")
     _run_benchmark_lookup(tokens, v_experimental)
