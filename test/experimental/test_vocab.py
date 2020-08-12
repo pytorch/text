@@ -187,7 +187,5 @@ class TestVocab(TorchtextTestCase):
         expected_itos = ['<new_unk>', 'a', 'b', 'c']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-        print(v.get_itos())
-        print(v.get_stoi())
-        # self.assertEqual(v.get_itos(), expected_itos)
-        # self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
