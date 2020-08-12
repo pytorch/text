@@ -90,8 +90,7 @@ class TestFunctional(TorchtextTestCase):
         basic_english_normalize = BasicEnglishNormalize()
         experimental_eager_tokens = basic_english_normalize(test_sample)
 
-        basic_english_normalize.to_ivalue()
-        jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
+        jit_basic_english_normalize = torch.jit.script(basic_english_normalize.to_ivalue())
         experimental_jit_tokens = jit_basic_english_normalize(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
@@ -103,7 +102,7 @@ class TestFunctional(TorchtextTestCase):
 
         # test load and save
         save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
-        torch.save(basic_english_tokenizer, save_path)
+        torch.save(basic_english_tokenizer.to_ivalue(), save_path)
         loaded_basic_english_tokenizer = torch.load(save_path)
 
         loaded_eager_tokens = loaded_basic_english_tokenizer(test_sample)
@@ -132,8 +131,7 @@ class TestFunctional(TorchtextTestCase):
         regex_tokenizer = RegexTokenizer(patterns_list)
         eager_tokens = regex_tokenizer(test_sample)
 
-        regex_tokenizer.to_ivalue()
-        jit_regex_tokenizer = torch.jit.script(regex_tokenizer)
+        jit_regex_tokenizer = torch.jit.script(regex_tokenizer.to_ivalue())
         jit_tokens = jit_regex_tokenizer(test_sample)
 
         self.assertEqual(eager_tokens, ref_results)
@@ -141,7 +139,7 @@ class TestFunctional(TorchtextTestCase):
 
         # test load and save
         save_path = os.path.join(self.test_dir, 'regex.pt')
-        torch.save(regex_tokenizer, save_path)
+        torch.save(regex_tokenizer.to_ivalue(), save_path)
         loaded_regex_tokenizer = torch.load(save_path)
 
         loaded_eager_tokens = loaded_regex_tokenizer(test_sample)
