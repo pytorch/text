@@ -32,6 +32,8 @@ def benchmark_experimental_vocab_lookup():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
+        if len(tokens) > 1000:
+            break
 
     counter = Counter(tokens)
     sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
@@ -57,8 +59,7 @@ def benchmark_experimental_vocab_lookup():
     print("Vocab Experimental - Eager Mode")
     _run_benchmark_lookup(tokens, v_experimental)
 
-    v_experimental.to_ivalue()
-    jit_v_experimental = torch.jit.script(v_experimental)
+    jit_v_experimental = torch.jit.script(v_experimental.to_ivalue())
     # experimental Vocab jit lookup
     print("Vocab Experimental - Jit Mode")
     _run_benchmark_lookup(tokens, jit_v_experimental)

@@ -1,5 +1,4 @@
 import logging
-import os
 
 import torch
 from torch import Tensor
@@ -44,7 +43,6 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-        
     cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus, unk_tensor)
 
     if dup_tokens:

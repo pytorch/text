@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import List, Tuple
+from typing import List
 
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 
@@ -38,18 +38,18 @@ def basic_english_normalize():
         >>> tokens = jit_basic_eng_norm(test_sample)
     """
     patterns_list = [
-                (r'\'', ' \'  '),
-                (r'\"', ''),
-                (r'\.', ' . '),
-                (r'<br \/>', ' '),
-                (r',', ' , '),
-                (r'\(', ' ( '),
-                (r'\)', ' ) '),
-                (r'\!', ' ! '),
-                (r'\?', ' ? '),
-                (r'\;', ' '),
-                (r'\:', ' '),
-                (r'\s+', ' ')]
+        (r'\'', ' \'  '),
+        (r'\"', ''),
+        (r'\.', ' . '),
+        (r'<br \/>', ' '),
+        (r',', ' , '),
+        (r'\(', ' ( '),
+        (r'\)', ' ) '),
+        (r'\!', ' ! '),
+        (r'\?', ' ? '),
+        (r'\;', ' '),
+        (r'\:', ' '),
+        (r'\s+', ' ')]
 
     patterns = [pair[0] for pair in patterns_list]
     replacements = [pair[1] for pair in patterns_list]
@@ -81,7 +81,7 @@ def regex_tokenizer(patterns_list):
 
 class BasicEnglishNormalize(nn.Module):
     r"""Basic normalization for a string sentence.
-    
+
     Args:
         regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
@@ -111,7 +111,7 @@ class BasicEnglishNormalize(nn.Module):
 
 class RegexTokenizer(nn.Module):
     r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
-    
+
     Args:
         regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
