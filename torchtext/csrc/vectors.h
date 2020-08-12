@@ -1,4 +1,3 @@
-// #include <common.h>
 #include <torch/script.h>
 
 namespace torchtext {

@@ -99,8 +99,6 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
 c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
 StringList Vocab::get_itos() const { return itos_; }
 
-// inline int64_t divup(int64_t x, int64_t y) { return (x + y - 1) / y; }
-
 int64_t _infer_lines(const std::string &file_path) {
   int64_t num_lines = 0;
   std::ifstream fin;
