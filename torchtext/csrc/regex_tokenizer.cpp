@@ -50,15 +50,4 @@ void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,
   }
 }
 
-namespace py = pybind11;
-// Registers our custom class with pybind11.
-void register_regex_tokenizer_pybind(pybind11::module m) {
-  py::class_<RegexTokenizer>(m, "RegexTokenizer")
-      .def_readonly("patterns_", &RegexTokenizer::patterns_)
-      .def_readonly("replacements_", &RegexTokenizer::replacements_)
-      .def_readonly("to_lower_", &RegexTokenizer::to_lower_)
-      .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward);
-}
-
 } // namespace torchtext

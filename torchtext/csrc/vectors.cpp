@@ -12,8 +12,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <torch/csrc/utils/pybind.h>
-#include <torch/script.h>
 #include <vectors.h>
 
 namespace torchtext {
@@ -324,42 +322,5 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
 
   throw std::runtime_error("Found unexpected version for serialized Vector: " +
                            version_str + ".");
-}
-
-// Registers our custom class with torch.
-static auto vectors =
-    torch::class_<Vectors>("torchtext", "Vectors")
-        .def(torch::init<std::vector<std::string>, std::vector<int64_t>,
-                         torch::Tensor, torch::Tensor>())
-        .def("__getitem__", &Vectors::__getitem__)
-        .def("lookup_vectors", &Vectors::lookup_vectors)
-        .def("__setitem__", &Vectors::__setitem__)
-        .def("__len__", &Vectors::__len__)
-        .def_pickle(
-            // __setstate__
-            [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
-              return _set_vectors_states(self);
-            },
-            // __getstate__
-            [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
-              return _get_vectors_from_states(states);
-            });
-
-namespace py = pybind11;
-// Registers our custom class with pybind11.
-void register_vectors_pybind(pybind11::module m) {
-  py::class_<Vectors>(m, "Vectors")
-      .def(py::init<std::vector<std::string>, std::vector<int64_t>,
-                    torch::Tensor, torch::Tensor>())
-      .def_readonly("vectors_", &Vectors::vectors_)
-      .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
-      .def("get_stoi", &Vectors::get_stoi)
-      .def("__getitem__", &Vectors::__getitem__)
-      .def("lookup_vectors", &Vectors::lookup_vectors)
-      .def("__setitem__", &Vectors::__setitem__)
-      .def("__len__", &Vectors::__len__);
-
-  m.def("_load_token_and_vectors_from_file",
-        &_load_token_and_vectors_from_file);
 }
 } // namespace torchtext

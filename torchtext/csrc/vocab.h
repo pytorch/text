@@ -1,5 +1,3 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <torch/script.h>
 
 namespace torchtext {
@@ -38,9 +36,7 @@ public:
 
 c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states);
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self);
-c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
-                                                const std::string &unk_token,
-                                                const int64_t min_freq,
-                                                const int64_t num_cpus);
-void register_vocab_pybind(pybind11::module m);
+Vocab _load_vocab_from_file(const std::string &file_path,
+                            const std::string &unk_token,
+                            const int64_t min_freq, const int64_t num_cpus);
 } // namespace torchtext

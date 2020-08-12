@@ -182,10 +182,9 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
-c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
-                                                const std::string &unk_token,
-                                                const int64_t min_freq,
-                                                const int64_t num_cpus) {
+Vocab _load_vocab_from_file(const std::string &file_path,
+                            const std::string &unk_token,
+                            const int64_t min_freq, const int64_t num_cpus) {
 
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
@@ -232,8 +231,7 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
 
   int64_t unk_index = stoindex.find(unk_token)->value();
 
-  return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoindex),
-                                    unk_token, unk_index);
+  return Vocab(std::move(tokens), std::move(stoindex), unk_token, unk_index);
 }
 
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
@@ -275,24 +273,6 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
   throw std::runtime_error("Found unexpected version for serialized Vocab: " +
                            version_str + ".");
-}
-
-namespace py = pybind11;
-// Registers our custom class with pybind11.
-void register_vocab_pybind(pybind11::module m) {
-  py::class_<Vocab>(m, "Vocab")
-      .def(py::init<std::vector<std::string>, std::string>())
-      .def_readonly("itos_", &Vocab::itos_)
-      .def_readonly("unk_token_", &Vocab::unk_token_)
-      .def("__getitem__", &Vocab::__getitem__)
-      .def("__len__", &Vocab::__len__)
-      .def("insert_token", &Vocab::insert_token)
-      .def("append_token", &Vocab::append_token)
-      .def("lookup_token", &Vocab::lookup_token)
-      .def("lookup_tokens", &Vocab::lookup_tokens)
-      .def("lookup_indices", &Vocab::lookup_indices)
-      .def("get_stoi", &Vocab::get_stoi)
-      .def("get_itos", &Vocab::get_itos);
 }
 
 } // namespace torchtext

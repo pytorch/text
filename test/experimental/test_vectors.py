@@ -60,7 +60,10 @@ class TestVectors(TorchtextTestCase):
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
-        jit_vectors_obj = torch.jit.script(vectors_obj)
+        jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+
+        assert vectors_obj.is_jitable == False
+        assert vectors_obj.to_ivalue().is_jitable == True
 
         self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
         self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
@@ -109,7 +112,7 @@ class TestVectors(TorchtextTestCase):
         vectors_obj['b'] = tensorC
 
         vector_path = os.path.join(self.test_dir, 'vectors.pt')
-        torch.save(vectors_obj, vector_path)
+        torch.save(vectors_obj.to_ivalue(), vector_path)
         loaded_vectors_obj = torch.load(vector_path)
 
         self.assertEqual(loaded_vectors_obj['a'], tensorA)
@@ -129,10 +132,6 @@ class TestVectors(TorchtextTestCase):
         tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
         tokens = ['a', 'b', 'c']
         vecs = torch.stack((tensorA, tensorB,), 0)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when tokens and vectors have different sizes
-            vectors(tokens, vecs)
 
         tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
         tokens = ['a', 'a', 'c']
@@ -191,7 +190,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = FastText(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = {
@@ -213,7 +212,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = GloVe(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
             # The first 3 entries in each vector.
             expected_glove = {

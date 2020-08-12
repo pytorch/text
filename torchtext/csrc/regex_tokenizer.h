@@ -1,5 +1,3 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <re2/re2.h>
 #include <torch/script.h>
 
@@ -21,9 +19,6 @@ public:
                           const bool to_lower);
   RegexTokenizer(const RegexTokenizer &regex_tokenizer);
   std::vector<std::string> forward(std::string str) const;
-  c10::intrusive_ptr<RegexTokenizer> to_jit();
 };
-
-void register_regex_tokenizer_pybind(pybind11::module m);
 
 } // namespace torchtext
