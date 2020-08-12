@@ -19,8 +19,6 @@ def benchmark_experimental_vectors():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
-        if len(tokens) > 1000:
-            break
 
     # existing FastText construction
     print("FastText Existing Construction")

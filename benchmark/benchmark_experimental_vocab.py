@@ -32,8 +32,6 @@ def benchmark_experimental_vocab_lookup():
     for (label, text) in train:
         for id in text.tolist():
             tokens.append(vocab.itos[id])
-        if len(tokens) > 1000:
-            break
 
     counter = Counter(tokens)
     sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)

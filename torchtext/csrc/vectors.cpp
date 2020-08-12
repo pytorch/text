@@ -28,8 +28,8 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
   if (static_cast<int>(tokens.size()) != indices.size()) {
     throw std::runtime_error(
         "Mismatching sizes for tokens and indices. Size of tokens: " +
-        std::to_string(tokens.size()) + ", size of indices: " +
-        std::to_string(indices.size()) + ".");
+        std::to_string(tokens.size()) +
+        ", size of indices: " + std::to_string(indices.size()) + ".");
   }
 
   stoi_.reserve(tokens.size());
@@ -320,7 +320,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error("Found unexpected version for serialized Vector: " +
-                           version_str + ".");
+  throw std::runtime_error(
+      "Found unexpected version for serialized Vector: " + version_str + ".");
 }
 } // namespace torchtext
