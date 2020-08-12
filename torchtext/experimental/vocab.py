@@ -120,9 +120,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
                       "to the end of the Vocab.".format(unk_token), RuntimeWarning)
 
-    from torchtext._torchtext import Vocab as VocabPybind
-    return Vocab(VocabPybind(tokens, unk_token))
-    # return Vocab(torch.classes.torchtext.Vocab(tokens, unk_token))
+    return Vocab(torch.classes.torchtext.Vocab(tokens, unk_token))
 
 
 class Vocab(nn.Module):

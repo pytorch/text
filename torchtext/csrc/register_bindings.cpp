@@ -1,4 +1,5 @@
 #include <regex_tokenizer.h>
+#include <sentencepiece.h>
 #include <torch/script.h>
 #include <vectors.h>
 #include <vocab.h>
@@ -30,27 +31,46 @@ static auto regex_tokenizer =
                   std::move(patterns), std::move(replacements), to_lower);
             });
 
-// static auto vocab =
-//     torch::class_<Vocab>("torchtext", "Vocab")
-//         .def(torch::init<StringList, std::string>())
-//         .def("__getitem__", &Vocab::__getitem__)
-//         .def("__len__", &Vocab::__len__)
-//         .def("insert_token", &Vocab::insert_token)
-//         .def("append_token", &Vocab::append_token)
-//         .def("lookup_token", &Vocab::lookup_token)
-//         .def("lookup_tokens", &Vocab::lookup_tokens)
-//         .def("lookup_indices", &Vocab::lookup_indices)
-//         .def("get_stoi", &Vocab::get_stoi)
-//         .def("get_itos", &Vocab::get_itos)
-//         .def_pickle(
-//             // __setstate__
-//             [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-//               return _set_vocab_states(self);
-//             },
-//             // __getstate__
-//             [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
-//               return _get_vocab_from_states(states);
-//             });
+static auto sentencepiece =
+    torch::class_<SentencePiece>("torchtext", "SentencePiece")
+        .def("Encode", &SentencePiece::Encode)
+        .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
+        .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
+        .def("GetPieceSize", &SentencePiece::GetPieceSize)
+        .def("unk_id", &SentencePiece::unk_id)
+        .def("PieceToId", &SentencePiece::PieceToId)
+        .def("IdToPiece", &SentencePiece::IdToPiece)
+        .def_pickle(
+            // __setstate__
+            [](const c10::intrusive_ptr<SentencePiece> &self) -> std::string {
+              return self->content_;
+            },
+            // __getstate__
+            [](std::string state) -> c10::intrusive_ptr<SentencePiece> {
+              return c10::make_intrusive<SentencePiece>(std::move(state));
+            });
+
+static auto vocab =
+    torch::class_<Vocab>("torchtext", "Vocab")
+        .def(torch::init<StringList, std::string>())
+        .def("__getitem__", &Vocab::__getitem__)
+        .def("__len__", &Vocab::__len__)
+        .def("insert_token", &Vocab::insert_token)
+        .def("append_token", &Vocab::append_token)
+        .def("lookup_token", &Vocab::lookup_token)
+        .def("lookup_tokens", &Vocab::lookup_tokens)
+        .def("lookup_indices", &Vocab::lookup_indices)
+        .def("get_stoi", &Vocab::get_stoi)
+        .def("get_itos", &Vocab::get_itos)
+        .def_pickle(
+            // __setstate__
+            [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
+              return _set_vocab_states(self);
+            },
+            // __getstate__
+            [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
+              return _get_vocab_from_states(states);
+            });
 
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
@@ -71,9 +91,14 @@ static auto vectors =
             });
 
 // Registers our custom op with torch.
-// TORCH_LIBRARY(torchtext, m) {
-//   m.def("_load_vocab_from_file", &_load_vocab_from_file);
-//   m.def("_load_token_and_vectors_from_file",
-//         &_load_token_and_vectors_from_file);
-// }
+static auto registry =
+    torch::RegisterOperators()
+        .op("torchtext::generate_sp_model", &generate_sp_model)
+        .op("torchtext::_load_token_and_vectors_from_file",
+            &_load_token_and_vectors_from_file)
+        .op("torchtext::_load_vocab_from_file", &_load_vocab_from_file)
+        .op(torch::RegisterOperators::options()
+                .schema("torchtext::load_sp_model(str path) -> "
+                        "__torch__.torch.classes.torchtext.SentencePiece model")
+                .catchAllKernel<decltype(load_sp_model), &load_sp_model>());
 } // namespace torchtext
