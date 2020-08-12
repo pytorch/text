@@ -202,7 +202,7 @@ class TestVectors(TorchtextTestCase):
             for word in expected_fasttext_simple_en.keys():
                 self.assertEqual(vectors_obj[word][:3], expected_fasttext_simple_en[word])
                 self.assertEqual(jit_vectors_obj[word][:3], expected_fasttext_simple_en[word])
-    
+
     # TODO: reenable test once the GloVe dataset url starts working
     # def test_glove(self):
     #     # copy the asset file into the expected download location
