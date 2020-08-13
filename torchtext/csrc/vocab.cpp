@@ -2,9 +2,12 @@
 #include <common.h>
 #include <stdexcept>
 #include <string>
+#include <torch/torch.h>
 #include <vocab.h>
 
 namespace torchtext {
+
+using namespace torch::jit;
 
 Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
              const std::string &unk_token, const int64_t unk_index)
@@ -136,6 +139,30 @@ void parse_vocab_chunk(const std::string &file_path, size_t offset,
   }
 }
 
+void parse_file_chunk(const std::string &file_path, size_t offset,
+                      const int64_t start_line, const int64_t end_line,
+                      std::shared_ptr<StringList> tokens,
+                      StrongFunctionPtr sfn) {
+  std::ifstream fin;
+  fin.open(file_path, std::ios::in);
+  fin.seekg(offset);
+
+  Function &operation = *sfn.function_;
+
+  std::string line;
+  for (int64_t i = start_line; i < end_line; i++) {
+    std::getline(fin, line);
+    auto token_list =
+        operation(std::vector<c10::IValue>({c10::IValue(line)})).toList();
+
+    for (size_t i = 0; i < token_list.size(); i++) {
+      c10::IValue token_ref = token_list.get(i);
+      std::string token = token_ref.toStringRef();
+      tokens->push_back(token);
+    }
+  }
+}
+
 std::tuple<IndexDict, StringList>
 _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
                const std::string &unk_token, const int64_t min_freq,
@@ -243,6 +270,60 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoindex), unk_token, unk_index);
 }
 
+Vocab _create_vocab_from_raw_text_file(const std::string &file_path,
+                                       const std::string &unk_token,
+                                       const int64_t min_freq,
+                                       const int64_t num_cpus, py::object fn) {
+  if (!py::isinstance<StrongFunctionPtr>(fn)) {
+    throw std::runtime_error("Given object is not a JIT function.");
+  }
+  auto sfn = py::cast<StrongFunctionPtr>(fn);
+
+  int64_t num_lines = _infer_lines(file_path);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
+  // Launching a thread on less lines than this likely has too much overhead.
+  chunk_size = std::max(chunk_size, GRAIN_SIZE);
+
+  std::vector<size_t> offsets;
+  impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
+
+  std::vector<std::shared_ptr<StringList>> chunk_tokens;
+
+  std::mutex m;
+  std::condition_variable cv;
+  std::atomic<int> counter(0);
+
+  // create threads
+  int64_t j = 0;
+  for (int64_t i = 0; i < num_lines; i += chunk_size) {
+    auto tokens_ptr = std::make_shared<StringList>();
+
+    counter++;
+    at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
+      parse_file_chunk(file_path, offsets[j], i,
+                       std::min(num_lines, i + chunk_size), tokens_ptr, sfn);
+      std::lock_guard<std::mutex> lk(m);
+      counter--;
+      cv.notify_all();
+    });
+    chunk_tokens.push_back(tokens_ptr);
+    j++;
+  }
+
+  // block until all threads finish execution
+  std::unique_lock<std::mutex> lock(m);
+  cv.wait(lock, [&counter] { return counter == 0; });
+
+  IndexDict stoindex;
+  StringList tokens;
+  std::tie(stoindex, tokens) =
+      _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+
+  int64_t unk_index = stoindex.find(unk_token)->value();
+
+  return Vocab(std::move(tokens), std::move(stoindex), unk_token, unk_index);
+}
+
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   std::vector<int64_t> integers;
   StringList strings = self->itos_;
@@ -280,8 +361,8 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vocab: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
+                           version_str + ".");
 }
 
 } // namespace torchtext
