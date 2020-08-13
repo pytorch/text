@@ -37,6 +37,7 @@ int64_t Vocab::__getitem__(const std::string &token) const {
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
+    std::cout << "append token: " <<  stoi_.size() << '\t' << token << '\n';
     stoi_[std::move(token)] = stoi_.size();
   }
 }
