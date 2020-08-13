@@ -114,8 +114,9 @@ class TestUtils(TorchtextTestCase):
             os.makedirs(root)
         data_path = os.path.join('.data', asset_name)
         shutil.copy(asset_path, data_path)
-        file_path = download_from_url('fakedownload/glove.840B.300d.zip')
+        file_path = utils.download_from_url('fakedownload/glove.840B.300d.zip')
         assertEqual(file_path, data_path)
+        conditional_remove(data_path)
 
     def test_download_extract_to_path(self):
         # create root directory for downloading data
