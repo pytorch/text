@@ -96,10 +96,10 @@ def _build_third_party(debug):
     build_dir.mkdir(exist_ok=True)
     build_env = os.environ.copy()
     config = 'Debug' if debug else 'Release'
-    extra_args = [
-        '-GNinja',
-    ]
     if platform.system() == 'Windows':
+        extra_args = [
+            '-GNinja',
+        ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
     else:
@@ -134,8 +134,8 @@ def _build_sentence_piece(debug):
     build_dir.mkdir(exist_ok=True)
     build_env = os.environ.copy()
     config = 'Debug' if debug else 'Release'
-    extra_args = ['-GNinja']
     if platform.system() == 'Windows':
+        extra_args = ['-GNinja']
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
     else:
