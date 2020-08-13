@@ -72,7 +72,7 @@ class TestVocab(TorchtextTestCase):
         v.append_token('b')
 
         print([v['b'], v['a'], v['<unk>']])
-        self.assertEqual([v['b'], v['a'], v['<unk>'], v.get_stoi(), v.get_itos()], [2, 0, 1])
+        self.assertEqual([v['b'], v['a'], v['<unk>'], v.get_stoi(), v.get_itos()], [2, 0, 1, {'a': 1, '<unk>': 1, 'b': 2}, ['a', '<unk>', 'b']])
         self.assertEqual(len(v), 3)
         self.assertEqual(v['b'], 2)
 
