@@ -37,6 +37,9 @@ class BasicEnglishNormalize(nn.Module):
         >>> jit_basic_english_normalize = torch.jit.script(basic_english_normalize)
         >>> tokens = jit_basic_english_normalize(test_sample)
     """
+
+    regex_tokenizer: torch.classes.torchtext.RegexTokenizer
+
     def __init__(self):
         super(BasicEnglishNormalize, self).__init__()
         patterns_list = [
