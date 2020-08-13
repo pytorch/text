@@ -83,6 +83,7 @@ def _get_libraries():
         'double-conversion'
     ]
 
+
 def _get_cxx11_abi():
     try:
         import torch
@@ -90,6 +91,7 @@ def _get_cxx11_abi():
     except ImportError:
         value = 0
     return '-D_GLIBCXX_USE_CXX11_ABI=' + str(value)
+
 
 def _build_third_party(debug):
     build_dir = _TP_BASE_DIR / 'build'
@@ -120,7 +122,7 @@ def _build_third_party(debug):
     print('*** Command list Thirdparty ***')
     with open(build_dir / 'compile_commands.json', 'r') as fileobj:
         print(fileobj.read())
-    print(f'running cmake --build', flush=True)
+    print('running cmake --build', flush=True)
     subprocess.run(
         args=['cmake', '--build', '.', '--target', 'install', '--config', config],
         cwd=str(build_dir),
@@ -141,8 +143,8 @@ def _build_sentence_piece(debug):
     else:
         extra_args = []
     subprocess.run(
-        args=['cmake', f'-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
-            '-DCMAKE_CXX_FLAGS=' + _get_cxx11_abi(),
+        args=['cmake', '-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
+              '-DCMAKE_CXX_FLAGS=' + _get_cxx11_abi(),
               f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
