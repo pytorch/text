@@ -103,7 +103,7 @@ def _build_third_party(debug):
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
     else:
-        extra_args += ['-DCMAKE_CXX_FLAGS=-fPIC ' + _get_cxx11_abi()]
+        extra_args = ['-DCMAKE_CXX_FLAGS=-fPIC ' + _get_cxx11_abi()]
     subprocess.run(
         args=[
             'cmake',
