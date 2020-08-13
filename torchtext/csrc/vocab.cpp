@@ -37,7 +37,7 @@ int64_t Vocab::__getitem__(const std::string &token) const {
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
-    std::cout << "append token: " <<  stoi_.size() << '\t' << token << '\n';
+    std::cout << "append token: " << stoi_.size() << '\t' << token << '\n';
     stoi_[std::move(token)] = stoi_.size();
   }
 }
@@ -283,7 +283,7 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vocab: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
+                           version_str + ".");
 }
 } // namespace torchtext
