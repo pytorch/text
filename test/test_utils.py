@@ -3,9 +3,6 @@
 import os
 from torchtext import utils
 from .common.torchtext_test_case import TorchtextTestCase
-from test.common.assets import get_asset_path
-import tempfile
-import shutil
 
 
 def conditional_remove(f):
