@@ -71,6 +71,8 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
         v.append_token('b')
 
+        print("[VOCAB TEST]", v['b'])
+
         self.assertEqual(len(v), 3)
         self.assertEqual(v['b'], 2)
 
