@@ -89,7 +89,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
@@ -103,7 +103,7 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c, min_freq=3)
         jit_v = torch.jit.script(v)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
@@ -115,7 +115,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        self.assertEqual(v.lookup_token(0), 'a')
+        self.assertEqual(v.lookup_token(1), 'a')
 
     def test_vocab_lookup_tokens(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -123,7 +123,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        indices = [1, 0, 2]
+        indices = [2, 1, 3]
         expected_tokens = ['b', 'a', 'c']
 
         self.assertEqual(v.lookup_tokens(indices), expected_tokens)
@@ -135,7 +135,7 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
 
         tokens = ['b', 'a', 'c']
-        expected_indices = [1, 0, 2]
+        expected_indices = [2, 1, 3]
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
 
@@ -165,7 +165,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
