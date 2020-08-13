@@ -270,10 +270,10 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoindex), unk_token, unk_index);
 }
 
-Vocab _create_vocab_from_raw_text_file(const std::string &file_path,
-                                       const std::string &unk_token,
-                                       const int64_t min_freq,
-                                       const int64_t num_cpus, py::object fn) {
+Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
+                                     const std::string &unk_token,
+                                     const int64_t min_freq,
+                                     const int64_t num_cpus, py::object fn) {
   if (!py::isinstance<StrongFunctionPtr>(fn)) {
     throw std::runtime_error("Given object is not a JIT function.");
   }

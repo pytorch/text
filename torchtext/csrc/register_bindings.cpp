@@ -63,7 +63,7 @@ PYBIND11_MODULE(_torchtext, m) {
   m.def("_load_token_and_vectors_from_file",
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
-  m.def("_create_vocab_from_raw_text_file", _create_vocab_from_raw_text_file);
+  m.def("_load_vocab_from_raw_text_file", _load_vocab_from_raw_text_file);
 }
 
 // Registers our custom classes with torch.

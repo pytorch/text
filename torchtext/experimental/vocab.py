@@ -6,10 +6,16 @@ import torch
 import torch.nn as nn
 from torchtext._torchtext import (
     Vocab as VocabPybind,
-    _load_vocab_from_file
+    _load_vocab_from_file,
+    _load_vocab_from_raw_text_file
 )
 
 logger = logging.getLogger(__name__)
+
+
+def vocab_from_raw_text_file_object(file_like_object, jit_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=1):
+    vocab_obj = _load_vocab_from_raw_text_file(file_like_object.name, unk_token, min_freq, num_cpus, jit_tokenizer)
+    return Vocab(vocab_obj)
 
 
 def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_cpus=1):
