@@ -3,18 +3,10 @@
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
-
-// order_preserving_flat_hash_map is buggy on Windows
-#ifdef _MSC_VER
-typedef std::unordered_map<std::string, torch::Tensor> VectorsMap;
-typedef std::unordered_map<std::string, int64_t> IndexMap;
-#else
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
     VectorsMap;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexMap;
-#endif
-
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VectorsStates;
