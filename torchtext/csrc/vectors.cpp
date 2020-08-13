@@ -25,10 +25,16 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
     : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
   // guarding against size mismatch of tokens and indices
   if (static_cast<int>(tokens.size()) != indices.size()) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Mismatching sizes for tokens and indices. "
+                 "Size of tokens: "
+              << tokens.size() << ", size of indices: " << indices.size()
+              << std::endl;
+#endif
     throw std::runtime_error(
         "Mismatching sizes for tokens and indices. Size of tokens: " +
-        std::to_string(tokens.size()) +
-        ", size of indices: " + std::to_string(indices.size()) + ".");
+        std::to_string(tokens.size()) + ", size of indices: " +
+        std::to_string(indices.size()) + ".");
   }
 
   stoi_.reserve(tokens.size());
@@ -37,6 +43,10 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
     // tokens should not have any duplicates
     const auto &item_index = stoi_.find(tokens[i]);
     if (item_index != stoi_.end()) {
+#ifdef _MSC_VER
+      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
+                << tokens[i] << std::endl;
+#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
@@ -319,7 +329,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
         std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
   }
 
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vector: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vector: " +
+                           version_str + ".");
 }
 } // namespace torchtext
