@@ -37,7 +37,8 @@ int64_t Vocab::__getitem__(const std::string &token) const {
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
-    stoi_[std::move(token)] = stoi_.size();
+    stoi_[token] = stoi_.size();
+    itos_.push_back(token);
   }
 }
 
@@ -61,8 +62,8 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   for (size_t i = index; i < itos_.size(); i++) {
     stoi_[itos_[i]] = i + 1;
   }
-  stoi_[std::move(token)] = std::move(index);
-  itos_.insert(itos_.begin() + index, std::move(token));
+  stoi_[token] = index;
+  itos_.insert(itos_.begin() + index, token);
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
