@@ -139,6 +139,17 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
 
+    def test_vocab_call_method(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        tokens = ['b', 'a', 'c']
+        expected_indices = [1, 0, 2]
+
+        self.assertEqual(v(tokens), expected_indices)
+
     def test_errors(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
