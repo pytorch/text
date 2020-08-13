@@ -8,17 +8,6 @@
 #include <vectors.h>
 #include <vocab.h>
 
-// If we are in a Windows environment, we need to define
-// initialization functions for the _custom_ops extension
-#ifdef _WIN32
-#include <Python.h>
-PyMODINIT_FUNC PyInit__torchtext(void) {
-  // No need to do anything.
-  // extension.py will run on load
-  return NULL;
-}
-#endif
-
 namespace torchtext {
 
 namespace py = pybind11;
