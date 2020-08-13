@@ -163,8 +163,19 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     }
   }
 
-  // create tokens list and stoindex map
   int64_t index = 0;
+  // insert unk_token if not present
+  if (tokens_freq.find(unk_token) == tokens_freq.end()) {
+    std::cerr << "The `unk_token` " << unk_token
+              << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
+                 "to the beginning of the Vocab."
+              << std::endl;
+
+    tokens.emplace_back(unk_token);
+    stoindex[unk_token] = index;
+  }
+
+  // create tokens list and stoindex map
   for (size_t i = 0; i < chunk_tokens.size(); i++) {
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
@@ -176,18 +187,6 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
       }
     }
   }
-
-  // insert unk_token if not present
-  if (tokens_freq.find(unk_token) == tokens_freq.end()) {
-    std::cerr << "The `unk_token` " << unk_token
-              << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                 "to the end of the Vocab."
-              << std::endl;
-
-    tokens.emplace_back(unk_token);
-    stoindex[unk_token] = index;
-  }
-
   return std::make_tuple(std::move(stoindex), std::move(tokens));
 }
 
@@ -261,7 +260,7 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 4) {
     throw std::runtime_error(
-        "Expected deserialized Vocab to have 4 states but found only " +
+        "Expected deserialized Vocab to have 4 states but found " +
         std::to_string(state_size) + " states.");
   }
 

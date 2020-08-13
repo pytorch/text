@@ -70,9 +70,9 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
             tokens.append(token)
 
     if unk_token not in tokens:
-        tokens.append(unk_token)
+        tokens.insert(0, unk_token)
         warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                      "to the end of the Vocab.".format(unk_token), RuntimeWarning)
+                      "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
     return Vocab(torch.classes.torchtext.Vocab(tokens, unk_token))
 
 
@@ -86,6 +86,17 @@ class Vocab(nn.Module):
     def __init__(self, vocab):
         super(Vocab, self).__init__()
         self.vocab = vocab
+
+    @torch.jit.export
+    def __call__(self, tokens: List[str]) -> List[int]:
+        r"""Calls the `lookup_indices` method
+        Args:
+            tokens (List[str]): the tokens used to lookup their corresponding `indices`.
+
+        Returns:
+            indices (List[int]): the 'indices` associated with `tokens`.
+        """
+        return self.lookup_indices(tokens)
 
     @torch.jit.export
     def __len__(self) -> int:
