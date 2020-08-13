@@ -71,8 +71,11 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
         v.append_token('b')
 
-        self.assertEqual(len(v), 3)
-        self.assertEqual(v['b'], 2)
+        expected_itos = ['<unk>', 'a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_len(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}

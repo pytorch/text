@@ -14,16 +14,13 @@ logger = logging.getLogger(__name__)
 
 def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_cpus=1):
     r"""Create a `Vocab` object from a file like object.
-
     The `file_like_object` should contain tokens seperated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
-
     Format for txt file:
         token1
         token2
         ...
         token_n
-
     Args:
         file_like_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
@@ -33,7 +30,6 @@ def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_
 
     Returns:
         Vocab: a `Vocab` object.
-
     Examples:
         >>> from torchtext.experimental.vocab import vocab_from_file_object
         >>> f = open('vocab.txt', 'r')
