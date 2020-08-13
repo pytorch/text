@@ -166,11 +166,11 @@ class TestVocab(TorchtextTestCase):
 #            # Test proper error raised when setting a token out of bounds
 #            v = vocab(c, min_freq=3)
 #            v.insert_token('new_token', 100)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when looking up a token out of bounds
-            v = vocab(c)
-            v.lookup_token(100)
+#
+#        with self.assertRaises(RuntimeError):
+#            # Test proper error raised when looking up a token out of bounds
+#            v = vocab(c)
+#            v.lookup_token(100)
 
     def test_vocab_load_and_save(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
