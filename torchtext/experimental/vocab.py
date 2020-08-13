@@ -74,9 +74,9 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
             tokens.append(token)
 
     if unk_token not in tokens:
-        tokens.append(unk_token)
+        tokens.insert(0, unk_token)
         warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                      "to the end of the Vocab.".format(unk_token), RuntimeWarning)
+                      "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
     return Vocab(torch.classes.torchtext.Vocab(tokens, unk_token))
 
 
