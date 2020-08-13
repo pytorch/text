@@ -92,6 +92,17 @@ class Vocab(nn.Module):
         self.vocab = vocab
 
     @torch.jit.export
+    def __call__(self, tokens: List[str]) -> List[int]:
+        r"""Calls the `lookup_indices` method
+        Args:
+            tokens (List[str]): the tokens used to lookup their corresponding `indices`.
+
+        Returns:
+            indices (List[int]): the 'indices` associated with `tokens`.
+        """
+        return self.lookup_indices(tokens)
+
+    @torch.jit.export
     def __len__(self) -> int:
         r"""Returns:
             length (int): the length of the vocab
