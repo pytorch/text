@@ -3,6 +3,8 @@
 import os
 from torchtext import utils
 from .common.torchtext_test_case import TorchtextTestCase
+from test.common.assets import get_asset_path
+import shutil
 
 
 def conditional_remove(f):
@@ -103,6 +105,18 @@ class TestUtils(TorchtextTestCase):
             conditional_remove(f)
         os.rmdir(os.path.join(root, 'en-ud-v2'))
         conditional_remove(archive_path)
+
+    def test_no_download(self):
+        asset_name = 'glove.840B.300d.zip'
+        asset_path = get_asset_path(asset_name)
+        root = '.data'
+        if not os.path.exists(root):
+            os.makedirs(root)
+        data_path = os.path.join('.data', asset_name)
+        shutil.copy(asset_path, data_path)
+        file_path = utils.download_from_url('fakedownload/glove.840B.300d.zip')
+        self.assertEqual(file_path, data_path)
+        conditional_remove(data_path)
 
     def test_download_extract_to_path(self):
         # create root directory for downloading data
