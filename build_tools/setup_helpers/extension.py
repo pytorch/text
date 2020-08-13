@@ -83,6 +83,13 @@ def _get_libraries():
         'double-conversion'
     ]
 
+def _get_cxx11_abi():
+    try:
+        import torch
+        value = int(torch._C._GLIBCXX_USE_CXX11_ABI)
+    except ImportError:
+        value = 0
+    return '-D_GLIBCXX_USE_CXX11_ABI=' + str(value)
 
 def _build_third_party(debug):
     build_dir = _TP_BASE_DIR / 'build'
@@ -96,13 +103,12 @@ def _build_third_party(debug):
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
     else:
-        extra_args += ['-DCMAKE_CXX_FLAGS=-fPIC -D_GLIBCXX_USE_CXX11_ABI=0']
+        extra_args += ['-DCMAKE_CXX_FLAGS=-fPIC ' + _get_cxx11_abi()]
     subprocess.run(
         args=[
             'cmake',
             '-DBUILD_SHARED_LIBS=OFF',
             '-DRE2_BUILD_TESTING=OFF',
-            # '-D_GLIBCXX_USE_CXX11_ABI=0',
             '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
             f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
             f'-DCMAKE_BUILD_TYPE={config}',
@@ -136,7 +142,7 @@ def _build_sentence_piece(debug):
         extra_args = []
     subprocess.run(
         args=['cmake', f'-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
-            '-DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0',
+            '-DCMAKE_CXX_FLAGS=' + _get_cxx11_abi(),
               f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
