@@ -1,8 +1,11 @@
 #include <torch/script.h> // One-stop header.
 
+#include <chrono>
+#include <ctime>
 #include <iostream>
 #include <istream>
 #include <memory>
+#include <ratio>
 #include <string>
 #include <vector>
 
@@ -80,85 +83,70 @@ readCSV(std::string file_path,
   return all_lines;
 }
 
+void pipeline_benchmark(
+    torch::jit::script::Module &module,
+    std::vector<std::vector<torch::jit::IValue>> all_lines_ivalue) {
+
+  for (auto &line : all_lines_ivalue) {
+    auto token_list = module.forward(line).toList();
+
+    for (size_t i = 0; i < token_list.size(); i++) {
+      c10::IValue token_ref = token_list.get(i);
+      std::string token = token_ref.toStringRef();
+      // std::cout << token << "\n";
+    }
+  }
+}
+
 int main(int argc, const char *argv[]) {
   if (argc != 3) {
     std::cerr << "usage: example-app <path-to-exported-script-module> "
                  "<path-to-train-dataset-csv>\n";
     return -1;
-
-    // // Create a vector of inputs.
-    // std::vector<torch::jit::IValue> inputs;
-    // inputs.push_back(torch::ones({1, 3, 224, 224}));
-
-    // // Execute the model and turn its output into a tensor.
-    // at::Tensor output = module.forward(inputs).toTensor();
-    // std::cout << output.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
   }
 
-  torch::jit::script::Module module;
-  std::string script_module_path = argv[1];
+  torch::jit::script::Module module, vocab;
+  std::string tokenizer_path = argv[1];
+  // std::string vocab_path = argv[2];
   std::string file_path = argv[2];
 
   try {
     // Deserialize the ScriptModule from a file using torch::jit::load().
-    module = torch::jit::load(script_module_path);
+    module = torch::jit::load(tokenizer_path);
+    // vocab = torch::jit::load(tokenizer_path);
   } catch (const c10::Error &e) {
     std::cerr << "error loading the model\n";
     return -1;
   }
 
-  // std::vector<std::vector<std::string>> all_lines;
-  // readCSV(file_path, all_lines);
+  std::vector<std::vector<std::string>> all_lines;
+  readCSV(file_path, all_lines);
 
   // Create a vector of inputs.
-  std::vector<torch::jit::IValue> inputs;
-  inputs.push_back("test string random");
+  std::vector<std::vector<torch::jit::IValue>> all_lines_ivalue;
+  // for (int i = 0; i < 1; i++) {
+  //   auto &lines = all_lines[i];
+  for (auto &lines : all_lines) {
 
-  std::cout << "[TEST 1]\n";
-
-  // std::vector<std::string> split_tokens;
-  auto split_tokens = module.forward(inputs).toListRef();
-
-  std::cout << "[TEST 2]\n";
-
-  for (int i = 0; i < split_tokens.size(); i++) {
-    // std::cout << "[TEST 3]\n";
-
-    // std::cout << split_tokens[i] << std::endl;
-    // std::string string_token = split_tokens[i].toStringRef();
-    c10::IValue ival_token = split_tokens[i];
-
-    std::cout << "[isString] " << ival_token.isString() << std::endl;
-    std::cout << "[isInt] " << ival_token.isInt() << std::endl;
-
-    std::string str_token = ival_token.toString()->string();
-    std::cout << "[print] " << str_token << std::endl;
-
-    // std::cout << string_token << std::endl;
+    std::string concat_lines = "";
+    // skip first item since its the label
+    for (auto line_it = lines.begin() + 1; line_it != lines.end(); line_it++) {
+      concat_lines += " " + *line_it;
+    }
+    all_lines_ivalue.push_back(
+        std::vector<torch::jit::IValue>{c10::IValue(concat_lines)});
   }
 
-  // for (auto ivalue_token : split_tokens) {
-  //   std::cout << "[TEST 3]\n";
+  std::cout << "benchmarking jit pipeline\n";
 
-  //   std::cout << *ivalue_token << std::endl;
-  //   std::string string_token = (*ivalue_token).toStringRef();
+  auto start = std::chrono::steady_clock::now();
 
-  //   std::cout << "[TEST 4]\n";
+  pipeline_benchmark(module, all_lines_ivalue);
 
-  //   std::cout << string_token << std::endl;
-  // }
-
-  // for (int i = 0; i < 5; i++) {
-  //   for (auto it = all_lines[i].begin() + 1; it != all_lines[i].end(); it++)
-  //   {
-  //     std::cout << *it << std::endl;
-  //     split_tokens = module.forward(*it);
-
-  //     for (auto &token : split_tokens) {
-  //       std::cout << token << std::endl;
-  //     }
-  //   }
-  // }
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end - start;
+  std::cout << "pipeline_benchmark elapsed time: " << elapsed_seconds.count()
+            << "s\n";
 
   std::cout << "[DONE]\n";
 }
