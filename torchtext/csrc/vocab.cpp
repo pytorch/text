@@ -37,11 +37,11 @@ int64_t Vocab::__getitem__(const std::string &token) const {
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
-    // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug 
+    // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
     // on Windows where the size gets updated before the assign occurs.
-    // For example if the size of `stoi_` is 2, doing 
-    // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a 
-    value of 3 instead of 2 on Windows
+    // For example if the size of `stoi_` is 2, doing
+    // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a
+    // value of 3 instead of 2 on Windows stoi_[token] = itos_.size();
     stoi_[token] = itos_.size();
     itos_.push_back(token);
   }
