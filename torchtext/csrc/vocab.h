@@ -3,7 +3,9 @@
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
-typedef c10::Dict<std::string, int64_t> IndexDict;
+typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
+    IndexDict;
+
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VocabStates;
@@ -29,7 +31,7 @@ public:
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);
   std::vector<int64_t> lookup_indices(const std::vector<std::string> &tokens);
-  c10::Dict<std::string, int64_t> get_stoi() const;
+  std::unordered_map<std::string, int64_t> get_stoi() const;
   std::vector<std::string> get_itos() const;
 };
 

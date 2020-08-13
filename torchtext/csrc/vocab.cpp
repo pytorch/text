@@ -20,9 +20,9 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_.insert(std::move(tokens[i]), i);
+    stoi_[std::move(tokens[i])] = i;
   }
-  unk_index_ = stoi_.find(unk_token)->value();
+  unk_index_ = stoi_.find(unk_token)->second;
 }
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
@@ -30,14 +30,20 @@ int64_t Vocab::__len__() const { return stoi_.size(); }
 int64_t Vocab::__getitem__(const std::string &token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
-    return item->value();
+    return item->second;
   }
   return unk_index_;
 }
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
-    stoi_.insert(std::move(token), stoi_.size());
+    // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
+    // on Windows where the size gets updated before the assign occurs.
+    // For example if the size of `stoi_` is 2, doing
+    // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a
+    // value of 3 instead of 2 on Windows stoi_[token] = itos_.size();
+    stoi_[token] = itos_.size();
+    itos_.push_back(token);
   }
 }
 
@@ -54,19 +60,19 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   if (item != stoi_.end()) {
     throw std::runtime_error("Token " + token +
                              " already exists in the Vocab with index: " +
-                             std::to_string(item->value()) + ".");
+                             std::to_string(item->second) + ".");
   }
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < itos_.size(); i++) {
-    stoi_.insert_or_assign(itos_[i], std::move(i + 1));
+    stoi_[itos_[i]] = i + 1;
   }
-  stoi_.insert(std::move(token), std::move(index));
-  itos_.insert(itos_.begin() + index, std::move(token));
+  stoi_[token] = index;
+  itos_.insert(itos_.begin() + index, token);
 
-  // need to update unk_index in case token equals unk_token or token inserted
-  // before unk_token
-  unk_index_ = stoi_.find(unk_token_)->value();
+  // need to update unk_index in case token equals unk_token or token
+  // inserted before unk_token
+  unk_index_ = stoi_.find(unk_token_)->second;
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
@@ -96,7 +102,18 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
   return indices;
 }
 
-c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
+std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
+  std::unordered_map<std::string, int64_t> stoi;
+  stoi.reserve(stoi_.size());
+
+  // construct tokens and index list
+  for (const auto &item : stoi_) {
+    stoi[item.first] = item.second;
+  }
+
+  return stoi;
+}
+
 StringList Vocab::get_itos() const { return itos_; }
 
 int64_t _infer_lines(const std::string &file_path) {
@@ -161,7 +178,7 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               << std::endl;
 
     tokens.emplace_back(unk_token);
-    stoindex.insert(unk_token, index);
+    stoindex[unk_token] = index;
   }
 
   // create tokens list and stoindex map
@@ -169,14 +186,13 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_freq[subset_tokens[j]] >= min_freq &&
-          !stoindex.contains(subset_tokens[j])) {
+          stoindex.find(subset_tokens[j]) == stoindex.end()) {
         tokens.emplace_back(subset_tokens[j]);
-        stoindex.insert(subset_tokens[j], index);
+        stoindex[subset_tokens[j]] = index;
         index++;
       }
     }
   }
-
   return std::make_tuple(std::move(stoindex), std::move(tokens));
 }
 
@@ -229,7 +245,7 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
   std::tie(stoindex, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
 
-  int64_t unk_index = stoindex.find(unk_token)->value();
+  int64_t unk_index = stoindex.find(unk_token)->second;
 
   return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoindex),
                                     unk_token, unk_index);
