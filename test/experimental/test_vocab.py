@@ -74,7 +74,9 @@ class TestVocab(TorchtextTestCase):
         print("[VOCAB TEST]", v['b'])
         print("v['a']", v['a'])
         print("v['<unk>']", v['<unk>'])
-        print("v.lookup_tokens([0, 1, 2])", v.lookup_tokens([0, 1, 2]))
+        print("v.lookup_token(0)", v.lookup_token(0))
+        print("v.lookup_token(1)", v.lookup_token(1))
+        print("v.lookup_token(2)", v.lookup_token(2))
 
         self.assertEqual(len(v), 3)
         self.assertEqual(v['b'], 2)
