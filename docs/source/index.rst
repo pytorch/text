@@ -12,7 +12,6 @@ popular datasets for natural language.
    torchtext.data <data>
    modules 
    data_utils
-   data_utils
    data_functional
    data_metrics
    torchtext.datasets <datasets>
