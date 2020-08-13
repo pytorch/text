@@ -40,7 +40,7 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_[std::move(tokens[i])] = indices[i];
+    stoi_[tokens[i]] = indices[i];
   }
 }
 
