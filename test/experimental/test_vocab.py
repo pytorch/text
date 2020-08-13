@@ -149,7 +149,7 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
 
         tokens = ['b', 'a', 'c']
-        expected_indices = [1, 0, 2]
+        expected_indices = [2, 1, 3]
 
         self.assertEqual(v(tokens), expected_indices)
 

@@ -227,7 +227,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = GloVe(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
             # The first 3 entries in each vector.
             expected_glove = {
