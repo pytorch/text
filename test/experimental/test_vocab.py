@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
+import platform
 import torch
+import unittest
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -156,15 +158,13 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v(tokens), expected_indices)
 
-    def test_errors(self):
+    # we seperate out these errors because Windows runs into seg faults when looking up tokens out of bounds
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_errors_out_of_bounds(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-
-        with self.assertRaises(ValueError):
-            # Test proper error raised when setting unk token to None
-            vocab(c, unk_token=None)
-
+        
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting a token out of bounds
             v = vocab(c, min_freq=3)
@@ -174,6 +174,15 @@ class TestVocab(TorchtextTestCase):
             # Test proper error raised when looking up a token out of bounds
             v = vocab(c)
             v.lookup_token(100)
+
+    def test_other_errors(self):
+        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+
+        with self.assertRaises(ValueError):
+            # Test proper error raised when setting unk token to None
+            vocab(c, unk_token=None)
 
     def test_vocab_load_and_save(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
