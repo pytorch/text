@@ -97,9 +97,9 @@ static auto registry =
         .op("torchtext::generate_sp_model", &generate_sp_model)
         .op("torchtext::_load_token_and_vectors_from_file",
             &_load_token_and_vectors_from_file)
+        .op("torchtext::_load_vocab_from_file", &_load_vocab_from_file)
         .op(torch::RegisterOperators::options()
                 .schema("torchtext::load_sp_model(str path) -> "
                         "__torch__.torch.classes.torchtext.SentencePiece model")
                 .catchAllKernel<decltype(load_sp_model), &load_sp_model>());
-
 } // namespace torchtext

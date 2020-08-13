@@ -1,4 +1,5 @@
 #include <ATen/Parallel.h>
+#include <common.h>
 #include <stdexcept>
 #include <string>
 #include <vocab.h>
@@ -97,6 +98,142 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
 
 c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
 StringList Vocab::get_itos() const { return itos_; }
+
+int64_t _infer_lines(const std::string &file_path) {
+  int64_t num_lines = 0;
+  std::ifstream fin;
+  fin.open(file_path, std::ios::in);
+
+  while (fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n')) {
+    num_lines++;
+  }
+  return num_lines;
+}
+
+void parse_vocab_chunk(const std::string &file_path, size_t offset,
+                       const int64_t start_line, const int64_t end_line,
+                       std::shared_ptr<StringList> tokens) {
+  std::ifstream fin;
+  fin.open(file_path, std::ios::in);
+  fin.seekg(offset);
+
+  for (int64_t i = start_line; i < end_line; i++) {
+    std::string token;
+    fin >> token;
+    fin >> std::ws;
+
+    tokens->push_back(token);
+  }
+}
+
+std::tuple<IndexDict, StringList>
+_concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
+               const std::string &unk_token, const int64_t min_freq,
+               const int64_t num_lines) {
+  TORCH_CHECK(chunk_tokens.size() > 0,
+              "There must be at least 1 chunk to concatenate!");
+
+  std::unordered_map<std::string, int64_t> tokens_freq;
+  IndexDict stoindex;
+  StringList tokens;
+  stoindex.reserve(num_lines);
+  tokens.reserve(num_lines);
+
+  // create tokens frequency map
+  for (size_t i = 0; i < chunk_tokens.size(); i++) {
+    auto &subset_tokens = *chunk_tokens[i];
+    for (size_t j = 0; j < subset_tokens.size(); j++) {
+      // const auto &item = tokens_freq.find(subset_tokens[j]);
+      if (tokens_freq.find(subset_tokens[j]) != tokens_freq.end()) {
+        tokens_freq[subset_tokens[j]]++;
+      } else {
+        tokens_freq[subset_tokens[j]] = 1;
+      }
+    }
+  }
+
+  // create tokens list and stoindex map
+  int64_t index = 0;
+  for (size_t i = 0; i < chunk_tokens.size(); i++) {
+    auto &subset_tokens = *chunk_tokens[i];
+    for (size_t j = 0; j < subset_tokens.size(); j++) {
+      if (tokens_freq[subset_tokens[j]] >= min_freq &&
+          !stoindex.contains(subset_tokens[j])) {
+        tokens.emplace_back(subset_tokens[j]);
+        stoindex.insert(subset_tokens[j], index);
+        index++;
+      }
+    }
+  }
+
+  // insert unk_token if not present
+  if (tokens_freq.find(unk_token) == tokens_freq.end()) {
+    std::cerr << "The `unk_token` " << unk_token
+              << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
+                 "to the end of the Vocab."
+              << std::endl;
+
+    tokens.emplace_back(unk_token);
+    stoindex.insert(unk_token, index);
+  }
+
+  return std::make_tuple(std::move(stoindex), std::move(tokens));
+}
+
+constexpr int64_t GRAIN_SIZE = 13107;
+c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
+                                                const std::string &unk_token,
+                                                const int64_t min_freq,
+                                                const int64_t num_cpus) {
+
+  std::cerr << "[INFO] Reading file " << file_path << std::endl;
+
+  int64_t num_lines = _infer_lines(file_path);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
+  // Launching a thread on less lines than this likely has too much overhead.
+  // TODO: Add explicit test beyond grain size to cover multithreading
+  chunk_size = std::max(chunk_size, GRAIN_SIZE);
+
+  std::vector<size_t> offsets;
+  impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
+
+  std::vector<std::shared_ptr<StringList>> chunk_tokens;
+
+  std::mutex m;
+  std::condition_variable cv;
+  std::atomic<int> counter(0);
+
+  // create threads
+  int64_t j = 0;
+  for (int64_t i = 0; i < num_lines; i += chunk_size) {
+    auto tokens_ptr = std::make_shared<StringList>();
+
+    counter++;
+    at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
+      parse_vocab_chunk(file_path, offsets[j], i,
+                        std::min(num_lines, i + chunk_size), tokens_ptr);
+      std::lock_guard<std::mutex> lk(m);
+      counter--;
+      cv.notify_all();
+    });
+    chunk_tokens.push_back(tokens_ptr);
+    j++;
+  }
+
+  // block until all threads finish execution
+  std::unique_lock<std::mutex> lock(m);
+  cv.wait(lock, [&counter] { return counter == 0; });
+
+  IndexDict stoindex;
+  StringList tokens;
+  std::tie(stoindex, tokens) =
+      _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+
+  int64_t unk_index = stoindex.find(unk_token)->value();
+
+  return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoindex),
+                                    unk_token, unk_index);
+}
 
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   std::vector<int64_t> integers;
