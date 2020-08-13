@@ -123,7 +123,7 @@ class TextSequentialTransforms(nn.Sequential):
             line: the input string
 
         Examples:
-            >>> txt_pipeline('the pretrained spm model names')
+            >>> txt_pipeline('the pretrained sp model names')
         """
         for module in self:
             line = module(line)
@@ -138,7 +138,7 @@ class PretrainedSPTokenizer(nn.Module):
     r"""Tokenizer based on a pretained sentencepiece model
 
     Args:
-       spm_model: the pretrained spm model names. Default: 'text_unigram_25000'. The following pretrained spm models are provided:
+       spm_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
             - text_unigram_15000
             - text_unigram_25000
             - text_unigram_50000
@@ -170,8 +170,8 @@ class PretrainedSPTokenizer(nn.Module):
             line: the input string
 
         Examples:
-            >>> spm_tokenizer('the pretrained spm model names')
-            >>> ['▁the', '▁pre', 'trained', '▁sp', 'm', '▁model', '▁names']
+            >>> spm_tokenizer('the pretrained sp model names')
+            >>> ['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']
         """
 
         return self.sp_model.EncodeAsPieces(line)
@@ -183,8 +183,8 @@ class PretrainedSPTokenizer(nn.Module):
             tokens: the tokens list for decoder
 
         Examples:
-            >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', 'm', '▁model', '▁names'])
-            >>> 'the pretrained spm model names'
+            >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names'])
+            >>> 'the pretrained sp model names'
         """
 
         return self.sp_model.DecodePieces(tokens)
@@ -194,7 +194,7 @@ class PretrainedSPTransform(nn.Module):
     r"""string to ids transform based on a pretained sentencepiece model
 
     Args:
-       spm_model: the pretrained spm model names. Default: 'text_unigram_25000'. The following pretrained spm models are provided:
+       spm_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
             - text_unigram_15000
             - text_unigram_25000
             - text_unigram_50000
@@ -226,8 +226,8 @@ class PretrainedSPTransform(nn.Module):
             line: the input string
 
         Examples:
-            >>> spm_transform('the pretrained spm model names')
-            >>> [9, 1546, 18811, 2849, 61, 2759, 2202]
+            >>> spm_transform('the pretrained sp model names')
+            >>> [9, 1546, 18811, 2849, 2759, 2202]
         """
 
         return self.sp_model.EncodeAsIds(line)
@@ -239,8 +239,8 @@ class PretrainedSPTransform(nn.Module):
             ids: the integer list for decoder
 
         Examples:
-            >>> spm_transform.decoder([9, 1546, 18811, 2849, 61, 2759, 2202])
-            >>> 'the pretrained spm model names'
+            >>> spm_transform.decoder([9, 1546, 18811, 2849, 2759, 2202])
+            >>> 'the pretrained sp model names'
         """
 
         return self.sp_model.DecodeIds(ids)
