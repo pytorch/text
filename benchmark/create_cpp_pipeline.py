@@ -48,14 +48,10 @@ def create_and_save_cpp_pipeline():
     # experimental_basic_english_normalize = BasicEnglishNormalize()
 
     test_tokenizer = TestTokenizer()
-    # pipeline = TextSequentialTransforms(TestTokenizer
     pipeline = TextSequentialTransforms(test_tokenizer, VocabTransform(v_experimental))
     # pipeline = TextSequentialTransforms(experimental_basic_english_normalize, VocabTransform(v_experimental))
     jit_pipeline = torch.jit.script(pipeline)
-
     jit_pipeline.save("jit_pipeline.pt")
-
-    # print(jit_pipeline("test string random"))
 
     print("done")
 

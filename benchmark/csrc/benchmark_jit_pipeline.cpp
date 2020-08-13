@@ -100,20 +100,19 @@ void pipeline_benchmark(
 
 int main(int argc, const char *argv[]) {
   if (argc != 3) {
-    std::cerr << "usage: example-app <path-to-exported-script-module> "
-                 "<path-to-train-dataset-csv>\n";
+    std::cerr
+        << "usage: ./benchmark-jit_pipeline <path-to-exported-script-module> "
+           "<path-to-train-dataset-csv>\n";
     return -1;
   }
 
   torch::jit::script::Module module, vocab;
-  std::string tokenizer_path = argv[1];
-  // std::string vocab_path = argv[2];
+  std::string module_path = argv[1];
   std::string file_path = argv[2];
 
   try {
     // Deserialize the ScriptModule from a file using torch::jit::load().
-    module = torch::jit::load(tokenizer_path);
-    // vocab = torch::jit::load(tokenizer_path);
+    module = torch::jit::load(module_path);
   } catch (const c10::Error &e) {
     std::cerr << "error loading the model\n";
     return -1;
@@ -124,8 +123,6 @@ int main(int argc, const char *argv[]) {
 
   // Create a vector of inputs.
   std::vector<std::vector<torch::jit::IValue>> all_lines_ivalue;
-  // for (int i = 0; i < 1; i++) {
-  //   auto &lines = all_lines[i];
   for (auto &lines : all_lines) {
 
     std::string concat_lines = "";
