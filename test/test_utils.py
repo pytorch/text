@@ -110,7 +110,9 @@ class TestUtils(TorchtextTestCase):
     def test_no_download(self):
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)
-        os.makedirs('.data')
+        root = '.data'
+        if not os.path.exists(root):
+            os.makedirs(root)
         data_path = os.path.join('.data', asset_name)
         shutil.copy(asset_path, data_path)
         file_path = download_from_url('fakedownload/glove.840B.300d.zip')
