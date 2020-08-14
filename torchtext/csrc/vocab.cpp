@@ -313,7 +313,6 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
-  
 #ifdef _MSC_VER
   std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
             << version_str << std::endl;
