@@ -26,7 +26,9 @@ def build_sp_pipeline(spm_file):
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
     pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
-    jit_pipeline = torch.jit.script(pipeline)
+    vocab.to_ivalue()
+    torchbine_pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
+    jit_pipeline = torch.jit.script(torchbine_pipeline)
     print('jit sentencepiece pipeline success!')
     return pipeline, jit_pipeline
 
