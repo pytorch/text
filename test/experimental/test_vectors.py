@@ -81,6 +81,21 @@ class TestVectors(TorchtextTestCase):
 
         self.assertEqual(expected_vectors, vectors_by_tokens)
 
+    def test_vectors_call_method(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
+
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tokens = ['a', 'b']
+        vecs = torch.stack((tensorA, tensorB), 0)
+        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+
+        tokens_to_lookup = ['a', 'b', 'c']
+        expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
+        vectors_by_tokens = vectors_obj(tokens_to_lookup)
+
+        self.assertEqual(expected_vectors, vectors_by_tokens)
+
     def test_vectors_add_item(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)

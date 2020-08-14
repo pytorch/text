@@ -37,7 +37,13 @@ int64_t Vocab::__getitem__(const std::string &token) const {
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
-    stoi_[std::move(token)] = stoi_.size();
+    // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
+    // on Windows where the size gets updated before the assign occurs.
+    // For example if the size of `stoi_` is 2, doing
+    // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a
+    // value of 3 instead of 2 on Windows stoi_[token] = itos_.size();
+    stoi_[token] = itos_.size();
+    itos_.push_back(token);
   }
 }
 
@@ -61,8 +67,9 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   for (size_t i = index; i < itos_.size(); i++) {
     stoi_[itos_[i]] = i + 1;
   }
-  stoi_[std::move(token)] = std::move(index);
-  itos_.insert(itos_.begin() + index, std::move(token));
+
+  stoi_[token] = index;
+  itos_.insert(itos_.begin() + index, token);
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
@@ -163,8 +170,19 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     }
   }
 
-  // create tokens list and stoi map
   int64_t index = 0;
+  // insert unk_token if not present
+  if (tokens_freq.find(unk_token) == tokens_freq.end()) {
+    std::cerr << "The `unk_token` " << unk_token
+              << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
+                 "to the beginning of the Vocab."
+              << std::endl;
+
+    tokens.emplace_back(unk_token);
+    stoi[unk_token] = index;
+  }
+
+  // create tokens list and stoi map
   for (size_t i = 0; i < chunk_tokens.size(); i++) {
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
@@ -176,18 +194,6 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
       }
     }
   }
-
-  // insert unk_token if not present
-  if (tokens_freq.find(unk_token) == tokens_freq.end()) {
-    std::cerr << "The `unk_token` " << unk_token
-              << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                 "to the end of the Vocab."
-              << std::endl;
-
-    tokens.emplace_back(unk_token);
-    stoi[unk_token] = index;
-  }
-
   return std::make_tuple(std::move(stoi), std::move(tokens));
 }
 
@@ -239,7 +245,6 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
   StringList tokens;
   std::tie(stoi, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
-
   int64_t unk_index = stoi.find(unk_token)->second;
 
   return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoi),
@@ -261,7 +266,7 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 4) {
     throw std::runtime_error(
-        "Expected deserialized Vocab to have 4 states but found only " +
+        "Expected deserialized Vocab to have 4 states but found " +
         std::to_string(state_size) + " states.");
   }
 
