@@ -17,9 +17,10 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
     if (stoi_.find(tokens[i]) != stoi_.end()) {
-      #ifdef _MSC_VER
-      std::cerr << "[RuntimeError] Duplicate token found in tokens list: " << tokens[i] << std::endl;
-      #endif
+#ifdef _MSC_VER
+      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
+                << tokens[i] << std::endl;
+#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
@@ -52,6 +53,11 @@ void Vocab::append_token(const std::string &token) {
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of stoi dictionary: "
+              << stoi_.size() << std::endl;
+#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of stoi dictionary: " +
@@ -61,6 +67,11 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   const auto &item = stoi_.find(token);
   // if item already in stoi we throw an error
   if (item != stoi_.end()) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Token " << token
+              << " already exists in the Vocab with index: " << item->second
+              << std::endl;
+#endif
     throw std::runtime_error("Token " + token +
                              " already exists in the Vocab with index: " +
                              std::to_string(item->second) + ".");
@@ -70,6 +81,7 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   for (size_t i = index; i < itos_.size(); i++) {
     stoi_[itos_[i]] = i + 1;
   }
+
   stoi_[token] = index;
   itos_.insert(itos_.begin() + index, token);
 
@@ -80,6 +92,11 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of itos dictionary: "
+              << stoi_.size() << std::endl;
+#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of itos dictionary: " +
@@ -153,9 +170,9 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               "There must be at least 1 chunk to concatenate!");
 
   std::unordered_map<std::string, int64_t> tokens_freq;
-  IndexDict stoindex;
+  IndexDict stoi;
   StringList tokens;
-  stoindex.reserve(num_lines);
+  stoi.reserve(num_lines);
   tokens.reserve(num_lines);
 
   // create tokens frequency map
@@ -180,22 +197,22 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               << std::endl;
 
     tokens.emplace_back(unk_token);
-    stoindex[unk_token] = index;
+    stoi[unk_token] = index;
   }
 
-  // create tokens list and stoindex map
+  // create tokens list and stoi map
   for (size_t i = 0; i < chunk_tokens.size(); i++) {
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_freq[subset_tokens[j]] >= min_freq &&
-          stoindex.find(subset_tokens[j]) == stoindex.end()) {
+          stoi.find(subset_tokens[j]) == stoi.end()) {
         tokens.emplace_back(subset_tokens[j]);
-        stoindex[subset_tokens[j]] = index;
+        stoi[subset_tokens[j]] = index;
         index++;
       }
     }
   }
-  return std::make_tuple(std::move(stoindex), std::move(tokens));
+  return std::make_tuple(std::move(stoi), std::move(tokens));
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
@@ -241,14 +258,13 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   std::unique_lock<std::mutex> lock(m);
   cv.wait(lock, [&counter] { return counter == 0; });
 
-  IndexDict stoindex;
+  IndexDict stoi;
   StringList tokens;
-  std::tie(stoindex, tokens) =
+  std::tie(stoi, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+  int64_t unk_index = stoi.find(unk_token)->second;
 
-  int64_t unk_index = stoindex.find(unk_token)->second;
-
-  return Vocab(std::move(tokens), std::move(stoindex), unk_token, unk_index);
+  return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
 
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
@@ -265,6 +281,11 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
 c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 4) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Expected deserialized Vocab to have 4 states "
+                 "but found "
+              << state_size << " states." << std::endl;
+#endif
     throw std::runtime_error(
         "Expected deserialized Vocab to have 4 states but found " +
         std::to_string(state_size) + " states.");
@@ -277,6 +298,11 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
   // check integers and tensors are empty
   if (integers.size() != 0 || tensors.size() != 0) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Expected `integers` and `tensors` states to "
+                 "be empty."
+              << std::endl;
+#endif
     throw std::runtime_error(
         "Expected `integers` and `tensors` states to be empty.");
   }
@@ -287,7 +313,10 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
-
+#ifdef _MSC_VER
+  std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
+            << version_str << std::endl;
+#endif
   throw std::runtime_error(
       "Found unexpected version for serialized Vocab: " + version_str + ".");
 }

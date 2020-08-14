@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
+import platform
 import shutil
 import tempfile
-
 import torch
+import unittest
+
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -134,7 +136,23 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(loaded_vectors_obj['b'], tensorC)
         self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
-    def test_errors(self):
+    # we seperate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_errors_vectors_cpp(self):
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
+        tokens = ['a', 'a', 'c']
+        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
+
+        with self.assertRaises(RuntimeError):
+            # Test proper error raised when tokens have duplicates
+            # TODO: use self.assertRaisesRegex() to check
+            # the key of the duplicate token in the error message
+            vectors(tokens, vecs)
+
+    def test_errors_vectors_python(self):
         tokens = []
         vecs = torch.empty(0, dtype=torch.float)
 
@@ -143,24 +161,9 @@ class TestVectors(TorchtextTestCase):
             # not passing in a user defined unk_tensor
             vectors(tokens, vecs)
 
-        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-        tokens = ['a', 'b', 'c']
-        vecs = torch.stack((tensorA, tensorB,), 0)
-
-        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
-        tokens = ['a', 'a', 'c']
-        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when tokens have duplicates
-            # TODO (Nayef211): use self.assertRaisesRegex() to check
-            # the key of the duplicate token in the error message
-            vectors(tokens, vecs)
-
-        tensorC = torch.tensor([0, 0, 1], dtype=torch.int8)
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.int8)
         tokens = ['a']
-        vecs = tensorC.unsqueeze(0)
+        vecs = tensorA.unsqueeze(0)
 
         with self.assertRaises(TypeError):
             # Test proper error raised when vector is not of type torch.float
