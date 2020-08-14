@@ -136,6 +136,10 @@ class Vocab(object):
     def __len__(self):
         return len(self.itos)
 
+    def lookup_indices(self, tokens):
+        indices = [self.__getitem__(token) for token in tokens]
+        return indices
+
     def extend(self, v, sort=False):
         words = sorted(v.itos) if sort else v.itos
         for w in words:

@@ -71,8 +71,11 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
         v.append_token('b')
 
-        self.assertEqual(len(v), 3)
-        self.assertEqual(v['b'], 2)
+        expected_itos = ['<unk>', 'a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_len(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -89,7 +92,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
@@ -103,7 +106,7 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c, min_freq=3)
         jit_v = torch.jit.script(v)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
@@ -115,7 +118,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        self.assertEqual(v.lookup_token(0), 'a')
+        self.assertEqual(v.lookup_token(1), 'a')
 
     def test_vocab_lookup_tokens(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -123,7 +126,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        indices = [1, 0, 2]
+        indices = [2, 1, 3]
         expected_tokens = ['b', 'a', 'c']
 
         self.assertEqual(v.lookup_tokens(indices), expected_tokens)
@@ -135,9 +138,20 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
 
         tokens = ['b', 'a', 'c']
-        expected_indices = [1, 0, 2]
+        expected_indices = [2, 1, 3]
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
+
+    def test_vocab_call_method(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        tokens = ['b', 'a', 'c']
+        expected_indices = [2, 1, 3]
+
+        self.assertEqual(v(tokens), expected_indices)
 
     def test_errors(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
@@ -165,7 +179,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
