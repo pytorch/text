@@ -70,8 +70,8 @@ def build_text_vocab_pipeline(hf_vocab_file):
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
-    jit_pipeline = TextSequentialTransforms(tokenizer.to_ivalue(), VocabTransform(vocab.to_ivalue()), ToLongTensor())
-    jit_pipeline = torch.jit.script(jit_pipeline)
+    torchbine_pipeline = TextSequentialTransforms(tokenizer.to_ivalue(), VocabTransform(vocab.to_ivalue()), ToLongTensor())
+    jit_pipeline = torch.jit.script(torchbine_pipeline)
     print('jit Hugging Face pipeline success!')
     return pipeline, jit_pipeline
 
