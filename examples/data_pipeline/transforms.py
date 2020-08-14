@@ -53,10 +53,12 @@ class PretrainedSPVocab(nn.Module):
         self.vocab.insert_token(token, index)
 
     def to_ivalue(self):
-        sp_model = self.sp_model
-        new_module = PretrainedSPVocab(sp_model)
-        new_module.vocab = self.vocab.to_ivalue()
-        return new_module
+        if hasattr(self.vocab, 'to_ivalue'):
+            sp_model = self.sp_model
+            new_module = PretrainedSPVocab(sp_model)
+            new_module.vocab = self.vocab.to_ivalue()
+            return new_module
+        return self
 
 
 class VocabTransform(nn.Module):
@@ -73,7 +75,8 @@ class VocabTransform(nn.Module):
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
-        return VocabTransform(vocab)
+            return VocabTransform(vocab)
+        return self
 
 
 class PyTextVocabTransform(nn.Module):
@@ -90,7 +93,8 @@ class PyTextVocabTransform(nn.Module):
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
-        return PyTextVocabTransform(vocab)
+            return PyTextVocabTransform(vocab)
+        return self
 
 
 class VectorTransform(nn.Module):
@@ -107,7 +111,8 @@ class VectorTransform(nn.Module):
     def to_ivalue(self):
         if hasattr(self.vector, 'to_ivalue'):
             vector = self.vector.to_ivalue()
-        return VectorTransform(vector)
+            return VectorTransform(vector)
+        return self
 
 
 class ToLongTensor(nn.Module):
