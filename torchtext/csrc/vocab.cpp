@@ -281,6 +281,11 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
 c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 4) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Expected deserialized Vocab to have 4 states "
+                 "but found "
+              << state_size << " states." << std::endl;
+#endif
     throw std::runtime_error(
         "Expected deserialized Vocab to have 4 states but found " +
         std::to_string(state_size) + " states.");
@@ -293,6 +298,11 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
   // check integers and tensors are empty
   if (integers.size() != 0 || tensors.size() != 0) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Expected `integers` and `tensors` states to "
+                 "be empty."
+              << std::endl;
+#endif
     throw std::runtime_error(
         "Expected `integers` and `tensors` states to be empty.");
   }
@@ -303,7 +313,11 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
-
+  
+#ifdef _MSC_VER
+  std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
+            << version_str << std::endl;
+#endif
   throw std::runtime_error(
       "Found unexpected version for serialized Vocab: " + version_str + ".");
 }
