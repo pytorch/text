@@ -40,9 +40,9 @@ class PretrainedSPVocab(nn.Module):
     r"""Vocab based on a pretained sentencepiece model
     """
 
-    def __init__(self, spm_file):
+    def __init__(self, sp_model):
         super(PretrainedSPVocab, self).__init__()
-        self.sp_model = load_sp_model(spm_file)
+        self.sp_model = sp_model
         unk_id = self.sp_model.unk_id()
         unk_token = self.sp_model.IdToPiece(unk_id)
         vocab_list = [self.sp_model.IdToPiece(i) for i in range(self.sp_model.GetPieceSize())]
@@ -55,8 +55,10 @@ class PretrainedSPVocab(nn.Module):
         self.vocab.insert_token(token, index)
 
     def to_ivalue(self):
-        self.vocab = self.vocab.to_ivalue()
-        return
+        sp_model = self.sp_model
+        new_module = PretrainedSPVocab(sp_model)
+        new_module.vocab = self.vocab.to_ivalue()
+        return new_module
 
 
 class VocabTransform(nn.Module):
@@ -69,6 +71,11 @@ class VocabTransform(nn.Module):
 
     def forward(self, tokens: List[str]) -> List[int]:
         return self.vocab.lookup_indices(tokens)
+
+    def to_ivalue(self):
+        if hasattr(self.vocab, 'to_ivalue'):
+            vocab = self.vocab.to_ivalue()
+        return VocabTransform(vocab)
 
 
 class PyTextVocabTransform(nn.Module):

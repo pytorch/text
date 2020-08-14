@@ -21,7 +21,7 @@ from dataset import BatchTextClassificationData
 
 def build_sp_pipeline(spm_file):
     tokenizer = PretrainedSPTokenizer(spm_file)
-    vocab = PretrainedSPVocab(spm_file)
+    vocab = PretrainedSPVocab(load_sp_model(spm_file))
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
@@ -72,9 +72,8 @@ def build_text_vocab_pipeline(hf_vocab_file):
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
-    torchbine_pipeline = TextSequentialTransforms(tokenizer.to_ivalue(), VocabTransform(vocab.to_ivalue()), ToLongTensor())
-    jit_pipeline = torch.jit.script(torchbine_pipeline)
-    print('jit Hugging Face pipeline success!')
+    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    print('jit text vocab pipeline success!')
     return pipeline, jit_pipeline
 
 
