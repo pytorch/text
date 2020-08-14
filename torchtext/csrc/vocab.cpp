@@ -8,8 +8,8 @@ namespace torchtext {
 
 Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
              const std::string &unk_token, const int64_t unk_index)
-    : itos_(std::move(tokens)), stoi_(std::move(stoi)),
-      unk_index_(std::move(unk_index)), unk_token_(std::move(unk_token)) {}
+    : unk_index_(std::move(unk_index)), stoi_(std::move(stoi)),
+      itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {}
 
 Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
     : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
