@@ -49,8 +49,8 @@ With the dependency of `pytext` library, the command to run the pipeline:
 
     python pipelines.py --pipeline pytext
 
-The lookup time: 19.42690186202526 (eager mode with pybind)
-The lookup time: 21.36238066479563 (eager mode with torchbind)
+The lookup time: 18.07144843228161 (eager mode with pybind)
+The lookup time: 22.16066740499809 (eager mode with torchbind)
 The lookup time: 13.41519635310396 (jit mode)
 
 
@@ -66,7 +66,7 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline torchtext
 
-The lookup time: 6.821685338858515 (eager mode)
+The lookup time: 8.690132656134665 (eager mode)
 
 
 ## Torchtext with a batch of data
@@ -89,7 +89,7 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline batch_torchtext
 
-The lookup time: 7.915330206044018 (eager mode)
+The lookup time: 10.05315054487437 (eager mode)
 
 
 ## FastText pretrained word vectors 
