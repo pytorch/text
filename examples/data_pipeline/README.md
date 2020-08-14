@@ -15,7 +15,9 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline sentencepiece
 
-The lookup time: 25.09393248707056 (eager mode) vs. 18.71099873096682 (jit mode)
+The lookup time: 30.770548372063786 (eager mode with pybind)
+The lookup time: 34.36592311505228 (eager mode with torchbind)
+The lookup time: 23.43273439211771 (jit mode)
 
 
 ## Vocab from a text file 
@@ -30,7 +32,9 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline text_vocab 
 
-The lookup time: 45.7489246588666 (eager mode) vs. 30.990019195945933 (jit mode)
+The lookup time: 10.21763815311715 (eager mode with pybind)
+The lookup time: 17.28485624492168 (eager mode with torchbind)
+The lookup time: 10.25370063772425 (jit mode)
 
 
 ## PyText 
@@ -99,4 +103,6 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline fasttext 
 
-The lookup time: 45.74515324481763 (eager mode) vs. 32.64012925699353 (jit mode)
+The lookup time: 16.45024944096803 (eager mode with pybind)
+The lookup time: 23.96459424262866 (eager mode with torchbind)
+The lookup time: 19.34995342604816 (jit mode)
