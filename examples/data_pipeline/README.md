@@ -45,7 +45,9 @@ With the dependency of `pytext` library, the command to run the pipeline:
 
     python pipelines.py --pipeline pytext
 
-The lookup time: 43.51164810406044 (eager mode) vs. 26.57643914804794 (jit mode)
+The lookup time: 19.42690186202526 (eager mode with pybind)
+The lookup time: 21.36238066479563 (eager mode with torchbind)
+The lookup time: 13.41519635310396 (jit mode)
 
 
 ## Torchtext
