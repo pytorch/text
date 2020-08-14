@@ -11,7 +11,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <torch/script.h>
 #include <vectors.h>
 
 namespace torchtext {
@@ -21,14 +20,21 @@ Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
     : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
+                 const std::vector<std::int64_t> &indices,
                  const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
     : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
-  // guarding against size mismatch of vectors and tokens
-  if (static_cast<int>(tokens.size()) != vectors.size(0)) {
+  // guarding against size mismatch of tokens and indices
+  if (static_cast<int>(tokens.size()) != indices.size()) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Mismatching sizes for tokens and indices. "
+                 "Size of tokens: "
+              << tokens.size() << ", size of indices: " << indices.size()
+              << std::endl;
+#endif
     throw std::runtime_error(
-        "Mismatching sizes for tokens and vectors. Size of tokens: " +
+        "Mismatching sizes for tokens and indices. Size of tokens: " +
         std::to_string(tokens.size()) +
-        ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
+        ", size of indices: " + std::to_string(indices.size()) + ".");
   }
 
   stoi_.reserve(tokens.size());
@@ -37,10 +43,14 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
     // tokens should not have any duplicates
     const auto &item_index = stoi_.find(tokens[i]);
     if (item_index != stoi_.end()) {
+#ifdef _MSC_VER
+      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
+                << tokens[i] << std::endl;
+#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_[std::move(tokens[i])] = i;
+    stoi_[tokens[i]] = indices[i];
   }
 }
 
@@ -64,7 +74,6 @@ torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
   for (const std::string &token : tokens) {
     vectors.push_back(__getitem__(token));
   }
-
   return torch::stack(vectors, 0);
 }
 
@@ -85,6 +94,18 @@ void Vectors::__setitem__(const std::string &token,
 }
 
 int64_t Vectors::__len__() { return stovec_.size(); }
+
+std::unordered_map<std::string, int64_t> Vectors::get_stoi() {
+  std::unordered_map<std::string, int64_t> stoi;
+  stoi.reserve(stoi_.size());
+
+  // construct tokens and index list
+  for (const auto &item : stoi_) {
+    stoi[item.first] = item.second;
+  }
+
+  return stoi;
+}
 
 std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
                                                    const char delimiter) {
@@ -184,11 +205,10 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 }
 
 constexpr int64_t GRAIN_SIZE = 131072;
-std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
-_load_token_and_vectors_from_file(const std::string &file_path,
-                                  const std::string delimiter_str,
-                                  const int64_t num_cpus,
-                                  c10::optional<torch::Tensor> opt_unk_tensor) {
+std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
+    const std::string &file_path, const std::string delimiter_str,
+    int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor) {
+
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
@@ -249,9 +269,9 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   } else {
     unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
   }
-  auto result = std::make_tuple(
-      c10::make_intrusive<Vectors>(Vectors(stoi, data_tensor, unk_tensor)),
-      dup_tokens);
+
+  auto result =
+      std::make_tuple(Vectors(stoi, data_tensor, unk_tensor), dup_tokens);
   return result;
 }
 

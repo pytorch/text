@@ -22,8 +22,10 @@ public:
   explicit Vectors(const IndexMap &stoi, const torch::Tensor vectors,
                    const torch::Tensor &unk_tensor);
   explicit Vectors(const std::vector<std::string> &tokens,
+                   const std::vector<std::int64_t> &indices,
                    const torch::Tensor &vectors,
                    const torch::Tensor &unk_tensor);
+  std::unordered_map<std::string, int64_t> get_stoi();
   torch::Tensor __getitem__(const std::string &token);
   torch::Tensor lookup_vectors(const std::vector<std::string> &tokens);
   void __setitem__(const std::string &token, const torch::Tensor &vector);
@@ -33,9 +35,8 @@ public:
 c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states);
 VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self);
 
-std::tuple<c10::intrusive_ptr<Vectors>, std::vector<std::string>>
-_load_token_and_vectors_from_file(const std::string &file_path,
-                                  const std::string delimiter_str,
-                                  const int64_t num_cpus,
-                                  c10::optional<torch::Tensor> opt_unk_tensor);
+std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
+    const std::string &file_path, const std::string delimiter_str,
+    const int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor);
+
 } // namespace torchtext

@@ -19,4 +19,5 @@ public:
                           const bool to_lower);
   std::vector<std::string> forward(std::string str) const;
 };
+
 } // namespace torchtext
