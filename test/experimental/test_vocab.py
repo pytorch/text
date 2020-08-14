@@ -6,7 +6,7 @@ import torch
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vocab import (
-    Vocab,
+    vocab,
     vocab_from_file_object
 )
 
@@ -19,7 +19,7 @@ class TestVocab(TorchtextTestCase):
 
     def test_has_unk(self):
         c = OrderedDict()
-        v = Vocab(c)
+        v = vocab(c)
 
         # check if unk is mapped to the first index
         self.assertEqual(v['not_in_it'], 0)
@@ -27,7 +27,7 @@ class TestVocab(TorchtextTestCase):
 
     def test_new_unk(self):
         c = OrderedDict()
-        v = Vocab(c, unk_token="<new_unk>")
+        v = vocab(c, unk_token="<new_unk>")
 
         # check if new_unk is mapped to the first index
         self.assertEqual(v['<new_unk>'], 0)
@@ -37,7 +37,7 @@ class TestVocab(TorchtextTestCase):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c, min_freq=2)
+        v = vocab(c, min_freq=2)
 
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['a'], 1)
@@ -47,7 +47,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict({'<unk>': 2, 'a': 2})
 
         # add item to end
-        v = Vocab(c)
+        v = vocab(c)
         v.insert_token('b', 2)
 
         expected_itos = ['<unk>', 'a', 'b']
@@ -57,7 +57,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
         # add item to middle
-        v = Vocab(c)
+        v = vocab(c)
         v.insert_token('b', 0)
 
         expected_itos = ['b', '<unk>', 'a']
@@ -68,17 +68,20 @@ class TestVocab(TorchtextTestCase):
 
     def test_vocab_append_token(self):
         c = OrderedDict({'a': 2})
-        v = Vocab(c)
+        v = vocab(c)
         v.append_token('b')
 
-        self.assertEqual(len(v), 3)
-        self.assertEqual(v['b'], 2)
+        expected_itos = ['<unk>', 'a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_len(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c)
+        v = vocab(c)
 
         self.assertEqual(len(v), 4)
 
@@ -87,9 +90,9 @@ class TestVocab(TorchtextTestCase):
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
 
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c, min_freq=3)
+        v = vocab(c, min_freq=3)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
@@ -100,10 +103,10 @@ class TestVocab(TorchtextTestCase):
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
 
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c, min_freq=3)
+        v = vocab(c, min_freq=3)
         jit_v = torch.jit.script(v)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
@@ -113,17 +116,17 @@ class TestVocab(TorchtextTestCase):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c)
+        v = vocab(c)
 
-        self.assertEqual(v.lookup_token(0), 'a')
+        self.assertEqual(v.lookup_token(1), 'a')
 
     def test_vocab_lookup_tokens(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c)
+        v = vocab(c)
 
-        indices = [1, 0, 2]
+        indices = [2, 1, 3]
         expected_tokens = ['b', 'a', 'c']
 
         self.assertEqual(v.lookup_tokens(indices), expected_tokens)
@@ -132,12 +135,23 @@ class TestVocab(TorchtextTestCase):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c)
+        v = vocab(c)
 
         tokens = ['b', 'a', 'c']
-        expected_indices = [1, 0, 2]
+        expected_indices = [2, 1, 3]
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
+
+    def test_vocab_call_method(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        tokens = ['b', 'a', 'c']
+        expected_indices = [2, 1, 3]
+
+        self.assertEqual(v(tokens), expected_indices)
 
     def test_errors(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
@@ -146,16 +160,16 @@ class TestVocab(TorchtextTestCase):
 
         with self.assertRaises(ValueError):
             # Test proper error raised when setting unk token to None
-            Vocab(c, unk_token=None)
+            vocab(c, unk_token=None)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting a token out of bounds
-            v = Vocab(c, min_freq=3)
+            v = vocab(c, min_freq=3)
             v.insert_token('new_token', 100)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when looking up a token out of bounds
-            v = Vocab(c)
+            v = vocab(c)
             v.lookup_token(100)
 
     def test_vocab_load_and_save(self):
@@ -163,9 +177,9 @@ class TestVocab(TorchtextTestCase):
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
 
         c = OrderedDict(sorted_by_freq_tuples)
-        v = Vocab(c, min_freq=3)
+        v = vocab(c, min_freq=3)
 
-        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<unk>']
+        expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
