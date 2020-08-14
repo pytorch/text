@@ -153,3 +153,11 @@ class TextSequentialTransforms(nn.Sequential):
         for module in self:
             input = module(input)
         return input
+
+    def to_ivalue(self):
+        r"""Return a JITable TextSequentialTransforms.
+        """
+        for _idx, _module in enumerate(self):
+            if hasattr(_module, 'to_ivalue'):
+                self[_idx] = _module.to_ivalue()
+        return self
