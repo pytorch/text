@@ -1,5 +1,4 @@
 import torch.nn as nn
-from torchtext.data.functional import load_sp_model
 from torchtext.experimental.vocab import vocab
 from typing import List
 from collections import OrderedDict
@@ -24,13 +23,12 @@ class PretrainedSPTokenizer(nn.Module):
     r"""Tokenizer based on a pretained sentencepiece model
     """
 
-    def __init__(self, spm_file):
+    def __init__(self, sp_model):
         super(PretrainedSPTokenizer, self).__init__()
-        self.sp_model = load_sp_model(spm_file)
+        self.sp_model = sp_model
 
     def forward(self, line: str) -> List[str]:
         r"""
-
         """
 
         return self.sp_model.EncodeAsPieces(line)
@@ -100,6 +98,11 @@ class VectorTransform(nn.Module):
 
     def forward(self, tokens: List[str]) -> Tensor:
         return self.vector.lookup_vectors(tokens)
+
+    def to_ivalue(self):
+        if hasattr(self.vector, 'to_ivalue'):
+            vector = self.vector.to_ivalue()
+        return VectorTransform(vector)
 
 
 class ToLongTensor(nn.Module):
