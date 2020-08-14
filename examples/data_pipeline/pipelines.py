@@ -80,7 +80,7 @@ def build_text_vocab_pipeline(hf_vocab_file):
 
 def build_pytext_vocab_pipeline(vocab_file):
     from pytext.torchscript.vocab import ScriptVocabulary
-    tokenizer = BasicEnglishNormalize()
+    tokenizer = basic_english_normalize()
     f = open(vocab_file, 'r')
     vocab_list = [line.rstrip() for line in f]
 
@@ -94,12 +94,13 @@ def build_pytext_vocab_pipeline(vocab_file):
 
 
 def build_fasttext_vector_pipeline():
-    tokenizer = BasicEnglishNormalize()
+    tokenizer = basic_english_normalize()
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
-    jit_pipeline = torch.jit.script(pipeline)
+    torchbind_pipeline = TextSequentialTransforms(tokenizer.to_ivalue(), VectorTransform(vector.to_ivalue()))
+    jit_pipeline = torch.jit.script(torchbind_pipeline)
     print('jit fasttext pipeline success!')
     return pipeline, jit_pipeline
 
