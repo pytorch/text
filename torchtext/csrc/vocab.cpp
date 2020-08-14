@@ -17,9 +17,10 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
     if (stoi_.find(tokens[i]) != stoi_.end()) {
-      #ifdef _MSC_VER
-      std::cerr << "[RuntimeError] Duplicate token found in tokens list: " << tokens[i] << std::endl;
-      #endif
+#ifdef _MSC_VER
+      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
+                << tokens[i] << std::endl;
+#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
@@ -52,6 +53,11 @@ void Vocab::append_token(const std::string &token) {
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of stoi dictionary: "
+              << stoi_.size() << std::endl;
+#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of stoi dictionary: " +
@@ -61,6 +67,11 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   const auto &item = stoi_.find(token);
   // if item already in stoi we throw an error
   if (item != stoi_.end()) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Token " << token
+              << " already exists in the Vocab with index: " << item->second
+              << std::endl;
+#endif
     throw std::runtime_error("Token " + token +
                              " already exists in the Vocab with index: " +
                              std::to_string(item->second) + ".");
@@ -80,6 +91,11 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of itos dictionary: "
+              << stoi_.size() << std::endl;
+#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of itos dictionary: " +
