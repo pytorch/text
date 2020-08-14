@@ -10,9 +10,9 @@ private:
               const char &delimiter = ' ') const;
 
 public:
-  bool to_lower_;
   std::vector<std::string> patterns_;
   std::vector<std::string> replacements_;
+  bool to_lower_;
 
   explicit RegexTokenizer(const std::vector<std::string> &patterns,
                           const std::vector<std::string> &replacements,
