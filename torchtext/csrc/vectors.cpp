@@ -305,8 +305,8 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
       stoi[strings[i]] = integers[i];
     }
 
-    return c10::make_intrusive<Vectors>(
-        std::move(stoi), std::move(tensors[0]), std::move(tensors[1]));
+    return c10::make_intrusive<Vectors>(std::move(stoi), std::move(tensors[0]),
+                                        std::move(tensors[1]));
   }
 
   throw std::runtime_error(
