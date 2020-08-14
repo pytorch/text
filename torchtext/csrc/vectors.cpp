@@ -16,9 +16,9 @@
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoindex, const torch::Tensor vectors,
+Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
                  const torch::Tensor &unk_tensor)
-    : stoindex_(stoindex), vectors_(vectors), unk_tensor_(unk_tensor) {}
+    : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
                  const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
@@ -31,16 +31,16 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
         ", size of vectors: " + std::to_string(vectors.size(0)) + ".");
   }
 
-  stoindex_.reserve(tokens.size());
+  stoi_.reserve(tokens.size());
   stovec_.reserve(tokens.size());
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
-    const auto &item_index = stoindex_.find(tokens[i]);
-    if (item_index != stoindex_.end()) {
+    const auto &item_index = stoi_.find(tokens[i]);
+    if (item_index != stoi_.end()) {
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoindex_[std::move(tokens[i])] = i;
+    stoi_[std::move(tokens[i])] = i;
   }
 }
 
@@ -50,8 +50,8 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
     return item->second;
   }
 
-  const auto &item_index = stoindex_.find(token);
-  if (item_index != stoindex_.end()) {
+  const auto &item_index = stoi_.find(token);
+  if (item_index != stoi_.end()) {
     auto vector = vectors_[item_index->second];
     stovec_[token] = vector;
     return vector;
@@ -70,12 +70,12 @@ torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
 
 void Vectors::__setitem__(const std::string &token,
                           const torch::Tensor &vector) {
-  const auto &item_index = stoindex_.find(token);
-  if (item_index != stoindex_.end()) {
+  const auto &item_index = stoi_.find(token);
+  if (item_index != stoi_.end()) {
     stovec_[token] = vector;
     vectors_[item_index->second] = vector;
   } else {
-    stoindex_[token] = vectors_.size(0);
+    stoi_[token] = vectors_.size(0);
     stovec_[token] = vector;
     // TODO: This could be done lazily during serialization (if necessary).
     // We would cycle through the vectors and concatenate those that aren't
@@ -238,9 +238,9 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   std::unique_lock<std::mutex> lock(m);
   cv.wait(lock, [&counter] { return counter == 0; });
 
-  IndexMap stoindex;
+  IndexMap stoi;
   StringList dup_tokens;
-  std::tie(stoindex, dup_tokens) =
+  std::tie(stoi, dup_tokens) =
       _concat_vectors(chunk_tokens, num_header_lines, num_lines);
 
   torch::Tensor unk_tensor;
@@ -250,7 +250,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
     unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
   }
   auto result = std::make_tuple(
-      c10::make_intrusive<Vectors>(Vectors(stoindex, data_tensor, unk_tensor)),
+      c10::make_intrusive<Vectors>(Vectors(stoi, data_tensor, unk_tensor)),
       dup_tokens);
   return result;
 }
@@ -258,12 +258,12 @@ _load_token_and_vectors_from_file(const std::string &file_path,
 VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
   std::vector<std::string> tokens;
   std::vector<int64_t> indices;
-  tokens.reserve(self->stoindex_.size());
-  indices.reserve(self->stoindex_.size());
+  tokens.reserve(self->stoi_.size());
+  indices.reserve(self->stoi_.size());
 
   // construct tokens and index list
   // we need to store indices because the `vectors_` tensor may have gaps
-  for (const auto &item : self->stoindex_) {
+  for (const auto &item : self->stoi_) {
     tokens.push_back(item.first);
     indices.push_back(item.second);
   }
@@ -299,14 +299,14 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
           "Expected `integers` and `strings` states to be the same size.");
     }
 
-    IndexMap stoindex;
-    stoindex.reserve(integers.size());
+    IndexMap stoi;
+    stoi.reserve(integers.size());
     for (size_t i = 0; i < integers.size(); i++) {
-      stoindex[strings[i]] = integers[i];
+      stoi[strings[i]] = integers[i];
     }
 
-    return c10::make_intrusive<Vectors>(
-        std::move(stoindex), std::move(tensors[0]), std::move(tensors[1]));
+    return c10::make_intrusive<Vectors>(std::move(stoi), std::move(tensors[0]),
+                                        std::move(tensors[1]));
   }
 
   throw std::runtime_error(

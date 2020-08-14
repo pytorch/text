@@ -14,12 +14,12 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 struct Vectors : torch::CustomClassHolder {
 public:
   const std::string version_str_ = "0.0.1";
-  IndexMap stoindex_;
+  IndexMap stoi_;
   VectorsMap stovec_;
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
 
-  explicit Vectors(const IndexMap &stoindex, const torch::Tensor vectors,
+  explicit Vectors(const IndexMap &stoi, const torch::Tensor vectors,
                    const torch::Tensor &unk_tensor);
   explicit Vectors(const std::vector<std::string> &tokens,
                    const torch::Tensor &vectors,
