@@ -2,6 +2,7 @@
 #include <common.h>
 #include <stdexcept>
 #include <string>
+#include <torch/csrc/jit/python/pybind_utils.h>
 #include <torch/torch.h>
 #include <vocab.h>
 
@@ -123,9 +124,9 @@ int64_t _infer_lines(const std::string &file_path) {
   return num_lines;
 }
 
-void parse_vocab_chunk(const std::string &file_path, size_t offset,
-                       const int64_t start_line, const int64_t end_line,
-                       std::shared_ptr<StringList> tokens) {
+void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
+                            const int64_t start_line, const int64_t end_line,
+                            std::shared_ptr<StringList> tokens) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
@@ -139,21 +140,19 @@ void parse_vocab_chunk(const std::string &file_path, size_t offset,
   }
 }
 
-void parse_file_chunk(const std::string &file_path, size_t offset,
-                      const int64_t start_line, const int64_t end_line,
-                      std::shared_ptr<StringList> tokens,
-                      StrongFunctionPtr sfn) {
+void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
+                               const int64_t start_line, const int64_t end_line,
+                               std::shared_ptr<StringList> tokens,
+                               torch::jit::script::Module &module) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
-
-  Function &operation = *sfn.function_;
 
   std::string line;
   for (int64_t i = start_line; i < end_line; i++) {
     std::getline(fin, line);
     auto token_list =
-        operation(std::vector<c10::IValue>({c10::IValue(line)})).toList();
+        module.forward(std::vector<c10::IValue>({c10::IValue(line)})).toList();
 
     for (size_t i = 0; i < token_list.size(); i++) {
       c10::IValue token_ref = token_list.get(i);
@@ -221,7 +220,6 @@ constexpr int64_t GRAIN_SIZE = 13107;
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus) {
-
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
   int64_t num_lines = _infer_lines(file_path);
@@ -246,8 +244,8 @@ Vocab _load_vocab_from_file(const std::string &file_path,
 
     counter++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
-      parse_vocab_chunk(file_path, offsets[j], i,
-                        std::min(num_lines, i + chunk_size), tokens_ptr);
+      parse_vocab_file_chunk(file_path, offsets[j], i,
+                             std::min(num_lines, i + chunk_size), tokens_ptr);
       std::lock_guard<std::mutex> lk(m);
       counter--;
       cv.notify_all();
@@ -274,11 +272,9 @@ Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
                                      const std::string &unk_token,
                                      const int64_t min_freq,
                                      const int64_t num_cpus, py::object fn) {
-  if (!py::isinstance<StrongFunctionPtr>(fn)) {
-    throw std::runtime_error("Given object is not a JIT function.");
-  }
-  auto sfn = py::cast<StrongFunctionPtr>(fn);
+  std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
+  torch::jit::script::Module module = *as_module(fn);
   int64_t num_lines = _infer_lines(file_path);
   int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
@@ -300,8 +296,9 @@ Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
 
     counter++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
-      parse_file_chunk(file_path, offsets[j], i,
-                       std::min(num_lines, i + chunk_size), tokens_ptr, sfn);
+      parse_raw_text_file_chunk(file_path, offsets[j], i,
+                                std::min(num_lines, i + chunk_size), tokens_ptr,
+                                module);
       std::lock_guard<std::mutex> lk(m);
       counter--;
       cv.notify_all();
