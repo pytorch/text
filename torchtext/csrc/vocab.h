@@ -4,7 +4,8 @@
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
-typedef c10::Dict<std::string, int64_t> IndexDict;
+typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
+    IndexDict;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VocabStates;
@@ -40,11 +41,10 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self);
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus);
-
 Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
-                                       const std::string &unk_token,
-                                       const int64_t min_freq,
-                                       const int64_t num_cpus,
-                                       py::object tokenizer);
+                                     const std::string &unk_token,
+                                     const int64_t min_freq,
+                                     const int64_t num_cpus,
+                                     py::object tokenizer);
 
 } // namespace torchtext

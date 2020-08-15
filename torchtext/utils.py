@@ -100,6 +100,15 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
             print("Can't create the download directory {}.".format(root))
             raise
 
+    if filename is not None:
+        path = os.path.join(root, filename)
+    # skip requests.get if path exists and not overwrite.
+    if os.path.exists(path):
+        logging.info('File %s already exists.' % path)
+        if not overwrite:
+            _check_hash(path)
+            return path
+
     if 'drive.google.com' not in url:
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
         return _process_response(response, root, filename)

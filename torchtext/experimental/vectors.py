@@ -190,7 +190,7 @@ def vectors(tokens, vectors, unk_tensor=None):
 
 class Vectors(nn.Module):
     r"""Creates a vectors object which maps tokens to vectors.
-    Arguments:
+    Args:
         vectors (torch.classes.torchtext.Vectors or torchtext._torchtext.Vectors): a cpp vectors object.
     """
 
@@ -201,6 +201,17 @@ class Vectors(nn.Module):
     @property
     def is_jitable(self):
         return not isinstance(self.vectors, VectorsPybind)
+
+    @torch.jit.export
+    def __call__(self, tokens: List[str]) -> Tensor:
+        r"""Calls the `lookup_vectors` method
+         Args:
+            tokens: a list of tokens
+
+        Returns:
+            vectors (Tensor): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
+        """
+        return self.lookup_vectors(tokens)
 
     @torch.jit.export
     def __getitem__(self, token: str) -> Tensor:
@@ -239,7 +250,7 @@ class Vectors(nn.Module):
     @torch.jit.export
     def lookup_vectors(self, tokens: List[str]) -> Tensor:
         """Look up embedding vectors for a list of tokens.
-        Arguments:
+        Args:
             tokens: a list of tokens
 
         Returns:
