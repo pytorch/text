@@ -222,6 +222,7 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
     tokens.emplace_back(unk_token);
     stoi[unk_token] = index;
+    index++;
   }
 
   // create tokens list and stoi map

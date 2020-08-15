@@ -228,7 +228,10 @@ class TestVocab(TorchtextTestCase):
         jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         v = vocab_from_raw_text_file_object(f, jit_tokenizer, unk_token='<new_unk>')
 
-        expected_itos = ['<new_unk>', 'a', 'b', 'c']
+        expected_itos = ['<new_unk>', 'fears', 'for', 't', 'n', 'pension', 'after',
+                         'talks', 'unions', 'representing', 'workers', 'at', 'turner',
+                         'newall', 'say', 'they', 'are', "'", 'disappointed', 'with',
+                         'stricken', 'parent', 'firm', 'federal', 'mogul', '.']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
