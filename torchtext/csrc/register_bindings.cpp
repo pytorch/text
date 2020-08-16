@@ -88,8 +88,9 @@ static auto regex_tokenizer =
         .def("forward", &RegexTokenizer::forward)
         .def_pickle(
             // __setstate__
-            [](const c10::intrusive_ptr<RegexTokenizer> &self) -> std::tuple<
-                std::vector<std::string>, std::vector<std::string>, bool> {
+            [](const c10::intrusive_ptr<RegexTokenizer> &self)
+                -> std::tuple<std::vector<std::string>,
+                              std::vector<std::string>, bool> {
               return std::make_tuple(self->patterns_, self->replacements_,
                                      self->to_lower_);
             },
