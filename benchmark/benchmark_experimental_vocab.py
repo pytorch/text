@@ -14,19 +14,23 @@ from torchtext.vocab import (
     Vocab,
     build_vocab_from_iterator
 )
+from torchtext.experimental.transforms import basic_english_normalize
 
 
-@torch.jit.script
-def basic_tokenizer(s: str) -> List[str]:
-    return s.split()
-
-
-def benchmark_experimental_vocab_construction(vocab_file_path, num_iters=100):
+def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True, num_iters=1):
     f = open(vocab_file_path, 'r')
     t0 = time.monotonic()
-    for _ in range(num_iters):
-        vocab_from_file_object(f)
-    print("Construction time:", time.monotonic() - t0)
+    if is_raw_text:
+        print("Loading from raw text file with basic_english_normalize tokenizer")
+        for _ in range(num_iters):
+            tokenizer = basic_english_normalize()
+            jited_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+            vocab_from_raw_text_file_object(f, jited_tokenizer)
+        print("Construction time:", time.monotonic() - t0)
+    else:
+        for _ in range(num_iters):
+            vocab_from_file_object(f)
+        print("Construction time:", time.monotonic() - t0)
 
 
 def benchmark_experimental_vocab_lookup(vocab_file_path=None):
@@ -119,6 +123,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Data procesing pipelines')
     parser.add_argument('--run-construction-benchmark', type=bool, default=False,
                         help='run benchmark for constructing a vocab (default=False)')
+    parser.add_argument('--is-raw-text', type=bool, default=True,
+                        help='construct vocab from raw text file (default=True)')
     parser.add_argument('--vocab-filename-construction', type=str, default='vocab.txt',
                         help='The name of vocab file used for construction')
     parser.add_argument('--vocab-filename-lookup', type=str, default=None,
@@ -126,6 +132,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.run_construction_benchmark:
-        benchmark_experimental_vocab_construction(args.vocab_filename_construction)
+        benchmark_experimental_vocab_construction(args.vocab_filename_construction, is_raw_text=args.is_raw_text)
     else:
         benchmark_experimental_vocab_lookup(args.vocab_filename_lookup)
