@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def vocab_from_raw_text_file_object(file_like_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=32):
     r"""Create a `Vocab` object from a raw text file like object.
 
-    The `file_like_object` can contain any raw text. Note that the vocab will be created in the order 
+    The `file_like_object` can contain any raw text. Note that the vocab will be created in the order
     that the tokens first appear in the file (and not by the frequency of tokens).
 
     Args:

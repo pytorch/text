@@ -1,7 +1,6 @@
 import argparse
 from collections import (Counter, OrderedDict)
 import time
-from typing import List
 
 import torch
 from torchtext.experimental.datasets import AG_NEWS

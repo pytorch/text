@@ -223,7 +223,7 @@ class TestVocab(TorchtextTestCase):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
         f = open(asset_path, 'r')
-        
+
         tokenizer = basic_english_normalize()
         jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         v = vocab_from_raw_text_file_object(f, jit_tokenizer, unk_token='<new_unk>')
