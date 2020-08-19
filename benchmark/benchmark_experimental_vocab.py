@@ -100,6 +100,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     _run_benchmark_lookup([tokens], v_experimental)
     _run_benchmark_lookup(tokens_lists, v_experimental)
 
+    jit_v_experimental = torch.jit.script(v_experimental.to_ivalue())
     # experimental Vocab jit lookup
     print("Vocab Experimental - Jit Mode")
     _run_benchmark_lookup(tokens, jit_v_experimental)

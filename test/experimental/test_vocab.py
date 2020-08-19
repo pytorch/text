@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
+import platform
 import torch
+import unittest
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -104,10 +106,13 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
-        jit_v = torch.jit.script(v)
+        jit_v = torch.jit.script(v.to_ivalue())
 
         expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        assert not v.is_jitable
+        assert v.to_ivalue().is_jitable
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
         self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)
@@ -153,14 +158,13 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v(tokens), expected_indices)
 
-    def test_errors(self):
+    # we seperate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_errors_vocab_cpp(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
-
-        with self.assertRaises(ValueError):
-            # Test proper error raised when setting unk token to None
-            vocab(c, unk_token=None)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting a token out of bounds
@@ -171,6 +175,15 @@ class TestVocab(TorchtextTestCase):
             # Test proper error raised when looking up a token out of bounds
             v = vocab(c)
             v.lookup_token(100)
+
+    def test_errors_vocab_python(self):
+        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+
+        with self.assertRaises(ValueError):
+            # Test proper error raised when setting unk token to None
+            vocab(c, unk_token=None)
 
     def test_vocab_load_and_save(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
@@ -186,7 +199,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
         vocab_path = os.path.join(self.test_dir, 'vocab.pt')
-        torch.save(v, vocab_path)
+        torch.save(v.to_ivalue(), vocab_path)
         loaded_v = torch.load(vocab_path)
 
         self.assertEqual(v.get_itos(), expected_itos)
