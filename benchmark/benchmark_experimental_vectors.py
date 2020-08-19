@@ -3,7 +3,6 @@ import time
 import torch
 from torchtext.experimental.datasets import AG_NEWS
 from torchtext.experimental.vectors import FastText as FastTextExperimental
-
 from torchtext.vocab import FastText
 
 
@@ -43,7 +42,7 @@ def benchmark_experimental_vectors():
 
     # experimental FastText jit lookup
     print("FastText Experimental - Jit Mode")
-    jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
+    jit_fast_text_experimental = torch.jit.script(fast_text_experimental.to_ivalue())
     _run_benchmark_lookup(tokens, jit_fast_text_experimental)
 
 

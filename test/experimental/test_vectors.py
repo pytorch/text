@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
+import platform
 import shutil
 import tempfile
-
 import torch
+import unittest
+
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
@@ -60,7 +62,10 @@ class TestVectors(TorchtextTestCase):
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
-        jit_vectors_obj = torch.jit.script(vectors_obj)
+        jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+
+        assert not vectors_obj.is_jitable
+        assert vectors_obj.to_ivalue().is_jitable
 
         self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
         self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
@@ -78,6 +83,21 @@ class TestVectors(TorchtextTestCase):
         tokens_to_lookup = ['a', 'b', 'c']
         expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
         vectors_by_tokens = vectors_obj.lookup_vectors(tokens_to_lookup)
+
+        self.assertEqual(expected_vectors, vectors_by_tokens)
+
+    def test_vectors_call_method(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
+
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tokens = ['a', 'b']
+        vecs = torch.stack((tensorA, tensorB), 0)
+        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+
+        tokens_to_lookup = ['a', 'b', 'c']
+        expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
+        vectors_by_tokens = vectors_obj(tokens_to_lookup)
 
         self.assertEqual(expected_vectors, vectors_by_tokens)
 
@@ -109,14 +129,30 @@ class TestVectors(TorchtextTestCase):
         vectors_obj['b'] = tensorC
 
         vector_path = os.path.join(self.test_dir, 'vectors.pt')
-        torch.save(vectors_obj, vector_path)
+        torch.save(vectors_obj.to_ivalue(), vector_path)
         loaded_vectors_obj = torch.load(vector_path)
 
         self.assertEqual(loaded_vectors_obj['a'], tensorA)
         self.assertEqual(loaded_vectors_obj['b'], tensorC)
         self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
-    def test_errors(self):
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_errors_vectors_cpp(self):
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
+        tokens = ['a', 'a', 'c']
+        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
+
+        with self.assertRaises(RuntimeError):
+            # Test proper error raised when tokens have duplicates
+            # TODO: use self.assertRaisesRegex() to check
+            # the key of the duplicate token in the error message
+            vectors(tokens, vecs)
+
+    def test_errors_vectors_python(self):
         tokens = []
         vecs = torch.empty(0, dtype=torch.float)
 
@@ -125,28 +161,9 @@ class TestVectors(TorchtextTestCase):
             # not passing in a user defined unk_tensor
             vectors(tokens, vecs)
 
-        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-        tokens = ['a', 'b', 'c']
-        vecs = torch.stack((tensorA, tensorB,), 0)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when tokens and vectors have different sizes
-            vectors(tokens, vecs)
-
-        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
-        tokens = ['a', 'a', 'c']
-        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when tokens have duplicates
-            # TODO (Nayef211): use self.assertRaisesRegex() to check
-            # the key of the duplicate token in the error message
-            vectors(tokens, vecs)
-
-        tensorC = torch.tensor([0, 0, 1], dtype=torch.int8)
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.int8)
         tokens = ['a']
-        vecs = tensorC.unsqueeze(0)
+        vecs = tensorA.unsqueeze(0)
 
         with self.assertRaises(TypeError):
             # Test proper error raised when vector is not of type torch.float
@@ -191,7 +208,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = FastText(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = {
@@ -213,7 +230,7 @@ class TestVectors(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = GloVe(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj)
+            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
             # The first 3 entries in each vector.
             expected_glove = {

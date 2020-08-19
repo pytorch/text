@@ -1,86 +1,45 @@
-#include <sentencepiece_processor.h>
-#include <sentencepiece_trainer.h>
-#include <torch/script.h>
-
-#ifdef _WIN32
-#include <Python.h>
-PyMODINIT_FUNC PyInit__torchtext(void) {
-  // No need to do anything.
-  // extension.py will run on load
-  return NULL;
-}
-#endif
+#include "sentencepiece.h"
 
 namespace torchtext {
-namespace {
 
-struct SentencePiece : torch::CustomClassHolder {
-private:
-  sentencepiece::SentencePieceProcessor processor_;
-
-public:
-  // content_ holds the serialized model data passed at the initialization.
-  // We need this because the underlying SentencePieceProcessor class does not
-  // provide serialization mechanism, yet we still need to be able to serialize
-  // the model so that we can save the scripted object. pickle will get the
-  // serialized model from this content_ member, thus it needs to be public.
-  const std::string content_;
-
-  explicit SentencePiece(const std::string &content) : content_(content) {
-    const auto status = processor_.LoadFromSerializedProto(content_);
-    if (!status.ok()) {
-      throw std::runtime_error("Failed to load SentencePiece model. Error: " +
-                               status.ToString());
-    }
+SentencePiece::SentencePiece(const std::string &content) : content_(content) {
+  const auto status = processor_.LoadFromSerializedProto(content_);
+  if (!status.ok()) {
+    throw std::runtime_error("Failed to load SentencePiece model. Error: " +
+                             status.ToString());
   }
+}
 
-  std::vector<std::string> Encode(const std::string &input) const {
-    std::vector<std::string> pieces;
-    processor_.Encode(input, &pieces);
-    return pieces;
-  }
+std::vector<std::string> SentencePiece::Encode(const std::string &input) const {
+  std::vector<std::string> pieces;
+  processor_.Encode(input, &pieces);
+  return pieces;
+}
 
-  std::vector<int64_t> EncodeAsIds(const std::string &input) const {
-    const auto val = processor_.EncodeAsIds(input);
-    return std::vector<int64_t>(val.begin(), val.end());
-  }
+std::vector<int64_t>
+SentencePiece::EncodeAsIds(const std::string &input) const {
+  const auto val = processor_.EncodeAsIds(input);
+  return std::vector<int64_t>(val.begin(), val.end());
+}
 
-  std::vector<std::string> EncodeAsPieces(const std::string &input) const {
-    return processor_.EncodeAsPieces(input);
-  }
+std::vector<std::string>
+SentencePiece::EncodeAsPieces(const std::string &input) const {
+  return processor_.EncodeAsPieces(input);
+}
 
-  int64_t GetPieceSize() const { return processor_.GetPieceSize(); }
+int64_t SentencePiece::GetPieceSize() const {
+  return processor_.GetPieceSize();
+}
 
-  int64_t unk_id() const { return processor_.unk_id(); }
+int64_t SentencePiece::unk_id() const { return processor_.unk_id(); }
 
-  int64_t PieceToId(const std::string &piece) const {
-    return processor_.PieceToId(piece);
-  }
+int64_t SentencePiece::PieceToId(const std::string &piece) const {
+  return processor_.PieceToId(piece);
+}
 
-  std::string IdToPiece(const int64_t id) const {
-    return processor_.IdToPiece(id);
-  }
-};
-
-// Registers our custom class with torch.
-static auto sentencepiece =
-    torch::class_<SentencePiece>("torchtext", "SentencePiece")
-        .def("Encode", &SentencePiece::Encode)
-        .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
-        .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
-        .def("GetPieceSize", &SentencePiece::GetPieceSize)
-        .def("unk_id", &SentencePiece::unk_id)
-        .def("PieceToId", &SentencePiece::PieceToId)
-        .def("IdToPiece", &SentencePiece::IdToPiece)
-        .def_pickle(
-            // __setstate__
-            [](const c10::intrusive_ptr<SentencePiece> &self) -> std::string {
-              return self->content_;
-            },
-            // __getstate__
-            [](std::string state) -> c10::intrusive_ptr<SentencePiece> {
-              return c10::make_intrusive<SentencePiece>(std::move(state));
-            });
+std::string SentencePiece::IdToPiece(const int64_t id) const {
+  return processor_.IdToPiece(id);
+}
 
 void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
                        const std::string &model_type,
@@ -105,13 +64,4 @@ c10::intrusive_ptr<SentencePiece> load_sp_model(const std::string &path) {
   return c10::make_intrusive<SentencePiece>(std::move(content));
 }
 
-static auto registry =
-    torch::RegisterOperators()
-        .op("torchtext::generate_sp_model", &generate_sp_model)
-        .op(torch::RegisterOperators::options()
-                .schema("torchtext::load_sp_model(str path) -> "
-                        "__torch__.torch.classes.torchtext.SentencePiece model")
-                .catchAllKernel<decltype(load_sp_model), &load_sp_model>());
-
-} // namespace
 } // namespace torchtext
