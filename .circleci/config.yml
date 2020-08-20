@@ -13,7 +13,7 @@ executors:
   windows-cpu:
     machine:
       resource_class: windows.xlarge
-      image: windows-server-2019-vs2019:stable
+      image: windows-server-2019-vs2019:canary
       shell: bash.exe
 
 commands:
