@@ -4,22 +4,23 @@ import warnings
 
 import torch
 import torch.nn as nn
+from torchtext._torchtext import (
+    Vocab as VocabPybind,
+    _load_vocab_from_file
+)
 
 logger = logging.getLogger(__name__)
 
 
 def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_cpus=1):
     r"""Create a `Vocab` object from a file like object.
-
     The `file_like_object` should contain tokens seperated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
-
     Format for txt file:
         token1
         token2
         ...
         token_n
-
     Args:
         file_like_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
@@ -29,13 +30,12 @@ def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_
 
     Returns:
         Vocab: a `Vocab` object.
-
     Examples:
         >>> from torchtext.experimental.vocab import vocab_from_file_object
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file_object(f)
     """
-    vocab_obj = torch.ops.torchtext._load_vocab_from_file(file_like_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_like_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
@@ -74,26 +74,42 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
             tokens.append(token)
 
     if unk_token not in tokens:
-        tokens.append(unk_token)
+        tokens.insert(0, unk_token)
         warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                      "to the end of the Vocab.".format(unk_token), RuntimeWarning)
-    return Vocab(torch.classes.torchtext.Vocab(tokens, unk_token))
+                      "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
+    return Vocab(VocabPybind(tokens, unk_token))
 
 
 class Vocab(nn.Module):
     r"""Creates a vocab object which maps tokens to indices.
 
     Arguments:
-        vocab (torch.classes.torchtext.Vocab): a cpp vocab object.
+        vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.
     """
 
     def __init__(self, vocab):
         super(Vocab, self).__init__()
         self.vocab = vocab
 
+    @property
+    def is_jitable(self):
+        return not isinstance(self.vocab, VocabPybind)
+
+    @torch.jit.export
+    def __call__(self, tokens: List[str]) -> List[int]:
+        r"""Calls the `lookup_indices` method
+        Args:
+            tokens (List[str]): the tokens used to lookup their corresponding `indices`.
+
+        Returns:
+            indices (List[int]): the 'indices` associated with `tokens`.
+        """
+        return self.lookup_indices(tokens)
+
     @torch.jit.export
     def __len__(self) -> int:
-        r"""Returns:
+        r"""
+        Returns:
             length (int): the length of the vocab
         """
         return len(self.vocab)
@@ -183,3 +199,9 @@ class Vocab(nn.Module):
             itos (dict): dictionary mapping indices to tokens.
         """
         return self.vocab.get_itos()
+
+    def to_ivalue(self):
+        r"""Return a JITable Vocab.
+        """
+        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
+        return Vocab(cpp_vocab)

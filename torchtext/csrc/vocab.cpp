@@ -6,10 +6,10 @@
 
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens, const IndexDict &stoindex,
+Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
              const std::string &unk_token, const int64_t unk_index)
-    : itos_(std::move(tokens)), stoi_(std::move(stoindex)),
-      unk_index_(std::move(unk_index)), unk_token_(std::move(unk_token)) {}
+    : unk_index_(std::move(unk_index)), stoi_(std::move(stoi)),
+      itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {}
 
 Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
     : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
@@ -17,12 +17,16 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
     if (stoi_.find(tokens[i]) != stoi_.end()) {
+#ifdef _MSC_VER
+      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
+                << tokens[i] << std::endl;
+#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_.insert(std::move(tokens[i]), i);
+    stoi_[std::move(tokens[i])] = i;
   }
-  unk_index_ = stoi_.find(unk_token)->value();
+  unk_index_ = stoi_.find(unk_token)->second;
 }
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
@@ -30,19 +34,30 @@ int64_t Vocab::__len__() const { return stoi_.size(); }
 int64_t Vocab::__getitem__(const std::string &token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
-    return item->value();
+    return item->second;
   }
   return unk_index_;
 }
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
-    stoi_.insert(std::move(token), stoi_.size());
+    // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
+    // on Windows where the size gets updated before the assign occurs.
+    // For example if the size of `stoi_` is 2, doing
+    // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a
+    // value of 3 instead of 2 on Windows stoi_[token] = itos_.size();
+    stoi_[token] = itos_.size();
+    itos_.push_back(token);
   }
 }
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of stoi dictionary: "
+              << stoi_.size() << std::endl;
+#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of stoi dictionary: " +
@@ -52,25 +67,36 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   const auto &item = stoi_.find(token);
   // if item already in stoi we throw an error
   if (item != stoi_.end()) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Token " << token
+              << " already exists in the Vocab with index: " << item->second
+              << std::endl;
+#endif
     throw std::runtime_error("Token " + token +
                              " already exists in the Vocab with index: " +
-                             std::to_string(item->value()) + ".");
+                             std::to_string(item->second) + ".");
   }
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < itos_.size(); i++) {
-    stoi_.insert_or_assign(itos_[i], std::move(i + 1));
+    stoi_[itos_[i]] = i + 1;
   }
-  stoi_.insert(std::move(token), std::move(index));
-  itos_.insert(itos_.begin() + index, std::move(token));
 
-  // need to update unk_index in case token equals unk_token or token inserted
-  // before unk_token
-  unk_index_ = stoi_.find(unk_token_)->value();
+  stoi_[token] = index;
+  itos_.insert(itos_.begin() + index, token);
+
+  // need to update unk_index in case token equals unk_token or token
+  // inserted before unk_token
+  unk_index_ = stoi_.find(unk_token_)->second;
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of itos dictionary: "
+              << stoi_.size() << std::endl;
+#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of itos dictionary: " +
@@ -96,7 +122,17 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
   return indices;
 }
 
-c10::Dict<std::string, int64_t> Vocab::get_stoi() const { return stoi_; }
+std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
+  std::unordered_map<std::string, int64_t> stoi;
+  stoi.reserve(stoi_.size());
+
+  // construct tokens and index list
+  for (const auto &item : stoi_) {
+    stoi[item.first] = item.second;
+  }
+  return stoi;
+}
+
 StringList Vocab::get_itos() const { return itos_; }
 
 int64_t _infer_lines(const std::string &file_path) {
@@ -134,9 +170,9 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               "There must be at least 1 chunk to concatenate!");
 
   std::unordered_map<std::string, int64_t> tokens_freq;
-  IndexDict stoindex;
+  IndexDict stoi;
   StringList tokens;
-  stoindex.reserve(num_lines);
+  stoi.reserve(num_lines);
   tokens.reserve(num_lines);
 
   // create tokens frequency map
@@ -152,39 +188,37 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     }
   }
 
-  // create tokens list and stoindex map
   int64_t index = 0;
-  for (size_t i = 0; i < chunk_tokens.size(); i++) {
-    auto &subset_tokens = *chunk_tokens[i];
-    for (size_t j = 0; j < subset_tokens.size(); j++) {
-      if (tokens_freq[subset_tokens[j]] >= min_freq &&
-          !stoindex.contains(subset_tokens[j])) {
-        tokens.emplace_back(subset_tokens[j]);
-        stoindex.insert(subset_tokens[j], index);
-        index++;
-      }
-    }
-  }
-
   // insert unk_token if not present
   if (tokens_freq.find(unk_token) == tokens_freq.end()) {
     std::cerr << "The `unk_token` " << unk_token
               << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                 "to the end of the Vocab."
+                 "to the beginning of the Vocab."
               << std::endl;
 
     tokens.emplace_back(unk_token);
-    stoindex.insert(unk_token, index);
+    stoi[unk_token] = index;
   }
 
-  return std::make_tuple(std::move(stoindex), std::move(tokens));
+  // create tokens list and stoi map
+  for (size_t i = 0; i < chunk_tokens.size(); i++) {
+    auto &subset_tokens = *chunk_tokens[i];
+    for (size_t j = 0; j < subset_tokens.size(); j++) {
+      if (tokens_freq[subset_tokens[j]] >= min_freq &&
+          stoi.find(subset_tokens[j]) == stoi.end()) {
+        tokens.emplace_back(subset_tokens[j]);
+        stoi[subset_tokens[j]] = index;
+        index++;
+      }
+    }
+  }
+  return std::make_tuple(std::move(stoi), std::move(tokens));
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
-c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
-                                                const std::string &unk_token,
-                                                const int64_t min_freq,
-                                                const int64_t num_cpus) {
+Vocab _load_vocab_from_file(const std::string &file_path,
+                            const std::string &unk_token,
+                            const int64_t min_freq, const int64_t num_cpus) {
 
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
@@ -224,15 +258,13 @@ c10::intrusive_ptr<Vocab> _load_vocab_from_file(const std::string &file_path,
   std::unique_lock<std::mutex> lock(m);
   cv.wait(lock, [&counter] { return counter == 0; });
 
-  IndexDict stoindex;
+  IndexDict stoi;
   StringList tokens;
-  std::tie(stoindex, tokens) =
+  std::tie(stoi, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+  int64_t unk_index = stoi.find(unk_token)->second;
 
-  int64_t unk_index = stoindex.find(unk_token)->value();
-
-  return c10::make_intrusive<Vocab>(std::move(tokens), std::move(stoindex),
-                                    unk_token, unk_index);
+  return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
 
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
@@ -249,8 +281,13 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
 c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 4) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Expected deserialized Vocab to have 4 states "
+                 "but found "
+              << state_size << " states." << std::endl;
+#endif
     throw std::runtime_error(
-        "Expected deserialized Vocab to have 4 states but found only " +
+        "Expected deserialized Vocab to have 4 states but found " +
         std::to_string(state_size) + " states.");
   }
 
@@ -261,6 +298,11 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
   // check integers and tensors are empty
   if (integers.size() != 0 || tensors.size() != 0) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Expected `integers` and `tensors` states to "
+                 "be empty."
+              << std::endl;
+#endif
     throw std::runtime_error(
         "Expected `integers` and `tensors` states to be empty.");
   }
@@ -271,8 +313,12 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
     return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
   }
-
+#ifdef _MSC_VER
+  std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
+            << version_str << std::endl;
+#endif
   throw std::runtime_error(
       "Found unexpected version for serialized Vocab: " + version_str + ".");
 }
+
 } // namespace torchtext
