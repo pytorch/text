@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 from typing import List
-
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
+from collections import OrderedDict
 
 __all__ = [
     'BasicEnglishNormalize',
@@ -153,3 +153,13 @@ class TextSequentialTransforms(nn.Sequential):
         for module in self:
             input = module(input)
         return input
+
+    def to_ivalue(self):
+        r"""Return a JITable TextSequentialTransforms.
+        """
+        module_list = []
+        for _idx, _module in enumerate(self):
+            if hasattr(_module, 'to_ivalue'):
+                _module = _module.to_ivalue()
+            module_list.append((str(_idx), _module))
+        return TextSequentialTransforms(OrderedDict(module_list))
