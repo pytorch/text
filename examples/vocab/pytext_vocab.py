@@ -1,67 +1,77 @@
 from collections import OrderedDict
 
-from fairseq.data.dictionary import Dictionary
+# from fairseq.data.dictionary import Dictionary
 import torch
-from torchtext.experimental.vocab import Vocab
+from torchtext.experimental.vocab import vocab, Vocab
 from typing import Dict, List, Optional
 
 
-def build_fairseq_vocab(
-    vocab_file: str,
-    dictionary_class: Dictionary = Dictionary,
-    special_token_replacements: Dict[str, str] = None,
-    unk_token: str = "<unk>",
-    max_vocab: int = -1,
-    min_count: int = -1,
-    tokens_to_add: Optional[List[str]] = None,
-):
-    """Function builds a torchtext Vocab for models pre-trained using Fairseq
-    modules.
+# def build_fairseq_vocab(
+#     vocab_file: str,
+#     dictionary_class: Dictionary = Dictionary,
+#     special_token_replacements: Dict[str, str] = None,
+#     unk_token: str = "<unk>",
+#     max_vocab: int = -1,
+#     min_count: int = -1,
+#     tokens_to_add: Optional[List[str]] = None,
+# ):
+#     """Function builds a torchtext Vocab for models pre-trained using Fairseq
+#     modules.
 
-    The dictionary class can take any Fairseq Dictionary class and is
-    used to load the vocab file.
+#     The dictionary class can take any Fairseq Dictionary class and is
+#     used to load the vocab file.
 
-    """
-    if not special_token_replacements:
-        special_token_replacements = {
-            "<pad>": "__PAD__",
-            "<s>": "__BEGIN_OF_SENTENCE__",
-            "</s>": "__END_OF_SENTENCE__",
-            "<unk>": "__UNKNOWN__",
-            "<mask>": "__MASK__",
-        }
-        unk_replacement = special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
-        special_tokens_to_remove = [special_pair[0] for special_pair in special_token_replacements]
-        special_tokens_to_add = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
+#     """
+#     if not special_token_replacements:
+#         special_token_replacements = {
+#             "<pad>": "__PAD__",
+#             "<s>": "__BEGIN_OF_SENTENCE__",
+#             "</s>": "__END_OF_SENTENCE__",
+#             "<unk>": "__UNKNOWN__",
+#             "<mask>": "__MASK__",
+#         }
+#         unk_replacement = special_token_replacements[unk_token] if unk_token in special_token_replacements else unk_token
+#         special_tokens_to_remove = [special_pair[0] for special_pair in special_token_replacements]
+#         special_tokens_to_add = tuple(special_pair[1] for special_pair in special_token_replacements if special_pair[0] != unk_token)
 
-    with open(vocab_file) as f:
-        dictionary = dictionary_class.load(f)
-        # finalize will sort the dict based on frequency so only do this if
-        # a min_count or max_vocab size is specified
-        if min_count > 0 or max_vocab > 0:
-            dictionary.finalize(threshold=min_count, nwords=max_vocab, padding_factor=1)
-        if tokens_to_add:
-            for token in tokens_to_add:
-                dictionary.add_symbol(token)
+#     with open(vocab_file) as f:
+#         dictionary = dictionary_class.load(f)
+#         # finalize will sort the dict based on frequency so only do this if
+#         # a min_count or max_vocab size is specified
+#         if min_count > 0 or max_vocab > 0:
+#             dictionary.finalize(threshold=min_count, nwords=max_vocab, padding_factor=1)
+#         if tokens_to_add:
+#             for token in tokens_to_add:
+#                 dictionary.add_symbol(token)
 
-        dictionary_items = list(zip(dictionary.symbols, dictionary.count))
+#         dictionary_items = list(zip(dictionary.symbols, dictionary.count))
 
-        ordered_dict = OrderedDict()
-        # add special tokens to beginning of ordered_dict
-        for s in special_tokens_to_add:
-            ordered_dict[s] = 1
+#         ordered_dict = OrderedDict()
+#         # add special tokens to beginning of ordered_dict
+#         for s in special_tokens_to_add:
+#             ordered_dict[s] = 1
 
-        # add all other tokens from dictionary_items
-        for token, freq in dictionary_items:
-            ordered_dict[token] = freq
+#         # add all other tokens from dictionary_items
+#         for token, freq in dictionary_items:
+#             ordered_dict[token] = freq
 
-        # remove special_tokens_to_remove from dict
-        for s in special_tokens_to_remove:
-            if s in ordered_dict:
-                del ordered_dict[s]
+#         # remove special_tokens_to_remove from dict
+#         for s in special_tokens_to_remove:
+#             if s in ordered_dict:
+#                 del ordered_dict[s]
 
-        return Vocab(dictionary_items, unk_token=unk_replacement)
+#         return Vocab(dictionary_items, unk_token=unk_replacement)
 
+def script_vocab(ordered_dict,
+                 pad_token=None,
+                 bos_token=None,
+                 eos_token=None,
+                 mask_token=None,
+                 **kwargs):
+
+    v = vocab(ordered_dict, **kwargs)
+    return ScriptVocab(v.vocab, pad_token, bos_token, eos_token, mask_token, **kwargs)
+   
 
 class ScriptVocab(Vocab):
     r"""Creates a script vocab object which maps tokens to indices.
@@ -82,14 +92,21 @@ class ScriptVocab(Vocab):
         >>> print(v.unk_idx, v.pad_idx, v.bos_idx, v.eos_idx, v.mask_idx)
     """
     def __init__(self,
-                 ordered_dict,
+                 cpp_vocab,
                  pad_token=None,
                  bos_token=None,
                  eos_token=None,
                  mask_token=None,
                  **kwargs):
-        super(ScriptVocab, self).__init__(ordered_dict, **kwargs)
+
+        super(ScriptVocab, self).__init__(cpp_vocab)
+        
+        # store all tokens
         self.unk_token: str = kwargs.get('unk_token', '<unk>')
+        self.pad_token: str = pad_token
+        self.bos_token: str = bos_token
+        self.eos_token: str = eos_token
+        self.mask_token: str = mask_token
 
         # init all special token indices
         self.unk_idx: int = self.vocab[self.unk_token]
@@ -180,3 +197,10 @@ class ScriptVocab(Vocab):
                         result.append(unk_value)
                         unk_idx += 1
         return result
+
+    def to_ivalue(self):
+        r"""Return a JITable ScriptVocab.
+        """
+        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
+        return ScriptVocab(cpp_vocab, self.pad_token, self.bos_token, self.eos_token, 
+                           self.mask_token, unk_token=self.unk_token)

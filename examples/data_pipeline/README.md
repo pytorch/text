@@ -20,7 +20,22 @@ The lookup time: 34.36592311505228 (eager mode with torchbind)
 The lookup time: 23.43273439211771 (jit mode)
 
 
-## Vocab from a text file 
+## Legacy Torchtext
+
+This pipeline example shows the application with the existing `Vocab` in torchtext library. The `Vocab` instance is built from a text file where a column of vocab tokens are read in sequence.
+
+* `basic_english` func from `torchtext.data.utils.get_tokenizer`
+* `torchtext.vocab.Vocab`
+* `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
+
+The command to run the pipeline:
+
+    python pipelines.py --pipeline torchtext
+
+The lookup time: 8.690132656134665 (eager mode)
+
+
+## Experimental Torchtext
 
 This pipeline example shows the application with the vocab text file from Hugging Face ([link](https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt)). The experimental vocab in torchtext library is used here:
 
@@ -37,7 +52,7 @@ The lookup time: 17.28485624492168 (eager mode with torchbind)
 The lookup time: 10.25370063772425 (jit mode)
 
 
-## PyText 
+## Legacy PyText
 
 This pipeline example shows the application with the existing `ScriptVocab` in pytext library. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
 
@@ -54,22 +69,24 @@ The lookup time: 22.16066740499809 (eager mode with torchbind)
 The lookup time: 13.41519635310396 (jit mode)
 
 
-## Torchtext
+## Experimental PyText
 
-This pipeline example shows the application with the existing `Vocab` in torchtext library. The `Vocab` instance is built from a text file where a column of vocab tokens are read in sequence.
+This pipeline example shows the application with the existing `ScriptVocab` in pytext library. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
 
-* `basic_english` func from `torchtext.data.utils.get_tokenizer`
-* `torchtext.vocab.Vocab`
-* `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
+* `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
+* `from pytext.torchscript.vocab.ScriptVocabulary`
+* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
-The command to run the pipeline:
+With the dependency of `pytext` library, the command to run the pipeline:
 
-    python pipelines.py --pipeline torchtext
+    python pipelines.py --pipeline pytext
 
-The lookup time: 8.690132656134665 (eager mode)
+The lookup time: 11.004039663821459 (eager mode with pybind)
+The lookup time: 17.025434703100473 (eager mode with torchbind)
+The lookup time: 10.078087331261486 (jit mode)
 
 
-## Torchtext with a batch of data
+## Legacy Torchtext with a batch of data
 
 This pipeline example shows the application with the data batch as input. For the real-world text classification task, two separate pipelines are created for text and label.
 
@@ -92,7 +109,21 @@ The command to run the pipeline:
 The lookup time: 10.05315054487437 (eager mode)
 
 
-## FastText pretrained word vectors 
+## Legacy FastText pretrained word vectors 
+
+This pipeline example shows the application with the pretained word vector from legacy FastText:
+
+* `basic_english` func from `torchtext.data.utils.get_tokenizer`
+* `torchtext.vocab.FastText`
+
+The command to run the pipeline:
+
+    python pipelines.py --pipeline fasttext 
+
+The lookup time: 34.08170719863847 (eager mode)
+
+
+## Experimental FastText pretrained word vectors 
 
 This pipeline example shows the application with the pretained word vector from FastText:
 

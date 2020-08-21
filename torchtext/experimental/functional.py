@@ -9,6 +9,13 @@ def vocab_func(vocab):
     return func
 
 
+def vector_func(vector):
+    def func(tok_iter):
+        return vector.get_vecs_by_tokens(tok_iter)
+
+    return func
+
+
 def totensor(dtype):
     def func(ids_list):
         return torch.tensor(ids_list).to(dtype)
