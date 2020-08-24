@@ -165,6 +165,16 @@ class TextSequentialTransforms(nn.Sequential):
             line = module(line)
         return line
 
+    def to_ivalue(self):
+        r"""Call to_ivalue func if any modules have the func.
+        """
+        module_list = []
+        for _idx, _module in enumerate(self):
+            if hasattr(_module, 'to_ivalue'):
+                _module = _module.to_ivalue()
+            module_list.append((str(_idx), _module))
+        return TextSequentialTransforms(OrderedDict(module_list))
+
 
 _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_50000',
                    'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
@@ -303,13 +313,3 @@ class ToLongTensor(nn.Module):
             >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
         """
         return torch.tensor(ids).to(torch.long)
-
-    def to_ivalue(self):
-        r"""Return a JITable TextSequentialTransforms.
-        """
-        module_list = []
-        for _idx, _module in enumerate(self):
-            if hasattr(_module, 'to_ivalue'):
-                _module = _module.to_ivalue()
-            module_list.append((str(_idx), _module))
-        return TextSequentialTransforms(OrderedDict(module_list))
