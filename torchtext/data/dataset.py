@@ -247,6 +247,11 @@ class TabularDataset(Dataset):
         make_example = {
             'json': Example.fromJSON, 'dict': Example.fromdict,
             'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format]
+        
+        
+        # Because most of case are dealing with text, the default double quotes may cause some problems.
+        if not 'quotechar' in csv_reader_params:
+            csv_reader_params['quotechar'] = None
 
         with io.open(os.path.expanduser(path), encoding="utf8") as f:
             if format == 'csv':
