@@ -16,7 +16,8 @@ RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
   }
 }
 
-std::vector<std::string> RegexTokenizer::forward(std::string str) const {
+// std::vector<std::string> RegexTokenizer::forward(std::string str) const {
+std::string RegexTokenizer::forward(std::string str) const {
   // str tolower
   if (to_lower_) {
     std::transform(str.begin(), str.end(), str.begin(),
@@ -26,10 +27,12 @@ std::vector<std::string> RegexTokenizer::forward(std::string str) const {
   for (size_t i = 0; i < compiled_patterns_.size(); i++) {
     RE2::GlobalReplace(&str, *compiled_patterns_[i], replacements_[i]);
   }
+  return str;
 
-  std::vector<std::string> tokens;
-  split_(str, tokens);
-  return tokens;
+  // std::vector<std::string> tokens;
+  // tokens.reserve(100);
+  // split_(str, tokens);
+  // return tokens;
 }
 
 void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,
