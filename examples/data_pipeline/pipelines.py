@@ -13,6 +13,8 @@ from torchtext.experimental.transforms import (
 )
 from torchtext.experimental.vocab import vocab_from_file_object
 from torchtext.experimental.vectors import FastText as FastTextExperimental
+from torchtext.experimental.functional import sequential_transforms, totensor
+
 from torchtext.vocab import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
@@ -53,10 +55,13 @@ def build_experimental_torchtext_pipeline(hf_vocab_file):
     f = open(hf_vocab_file, 'r')
     vocab = vocab_from_file_object(f)
 
-    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-    print('jit experimental torchtext pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    # pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
+    pipeline = sequential_transforms(tokenizer, VocabTransform(vocab), totensor(dtype=torch.long))
+    return pipeline, None, None
+
+    # jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    # print('jit experimental torchtext pipeline success!')
+    # return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
 def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
@@ -105,12 +110,16 @@ def build_experimental_pytext_vocab_pipeline(vocab_file):
     ordered_dict = OrderedDict(sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True))
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequentialTransforms(tokenizer,
-                                        PyTextVocabTransform(script_vocab(ordered_dict)),
-                                        ToLongTensor())
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-    print('jit legacy PyText pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    # pipeline = TextSequentialTransforms(tokenizer,
+    #                                     PyTextVocabTransform(script_vocab(ordered_dict)),
+    #                                     ToLongTensor())
+    pipeline = sequential_transforms(tokenizer, PyTextVocabTransform(script_vocab(ordered_dict)), totensor(dtype=torch.long))
+    return pipeline, None, None
+
+
+    # jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    # print('jit legacy PyText pipeline success!')
+    # return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
 def build_legacy_fasttext_vector_pipeline():
@@ -127,10 +136,13 @@ def build_experimental_fasttext_vector_pipeline():
     tokenizer = basic_english_normalize()
     vector = FastTextExperimental()
 
-    pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-    print('jit legacy fasttext pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    # pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
+    pipeline = sequential_transforms(tokenizer, VectorTransform(vector))
+    return pipeline, None, None
+
+    # jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    # print('jit legacy fasttext pipeline success!')
+    # return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
 def run_benchmark_lookup(text_classification_dataset, pipeline):
@@ -196,15 +208,15 @@ if __name__ == "__main__":
         else:
             run_benchmark_lookup(train, pipeline)
 
-    if torchbind_pipeline is not None:
-        print("Test eager mode for pipeline with torchbind", args.pipeline)
-        train, test = generate_dataset(args)
-        if args.pipeline == 'legacy_batch_torchtext':
-            run_batch_benchmark_lookup(train, torchbind_pipeline)
-        else:
-            run_benchmark_lookup(train, torchbind_pipeline)
+    # if torchbind_pipeline is not None:
+    #     print("Test eager mode for pipeline with torchbind", args.pipeline)
+    #     train, test = generate_dataset(args)
+    #     if args.pipeline == 'legacy_batch_torchtext':
+    #         run_batch_benchmark_lookup(train, torchbind_pipeline)
+    #     else:
+    #         run_benchmark_lookup(train, torchbind_pipeline)
 
-    if jit_pipeline is not None:
-        print("Test jit mode for pipeline", args.pipeline)
-        train, test = generate_dataset(args)
-        run_benchmark_lookup(train, jit_pipeline)
+    # if jit_pipeline is not None:
+    #     print("Test jit mode for pipeline", args.pipeline)
+    #     train, test = generate_dataset(args)
+    #     run_benchmark_lookup(train, jit_pipeline)
