@@ -125,16 +125,16 @@ std::vector<int64_t> Vocab::lookup_indices(const std::vector<std::string_view> &
   return indices;
 }
 
-// std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
-//   std::unordered_map<std::string, int64_t> stoi;
-//   stoi.reserve(stoi_.size());
-// 
-//   // construct tokens and index list
-//   for (const auto &item : stoi_) {
-//     stoi[item.first] = item.second;
-//   }
-//   return stoi;
-// }
+std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
+  std::unordered_map<std::string, int64_t> stoi;
+  stoi.reserve(stoi_.size());
+
+  // construct tokens and index list
+  for (const auto &item : itos_) {
+    stoi[item] = stoi_.at(std::hash<std::string>{}(item));
+  }
+  return stoi;
+}
 
 StringList Vocab::get_itos() const { return itos_; }
 

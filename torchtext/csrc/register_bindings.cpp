@@ -56,7 +56,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("lookup_token", &Vocab::lookup_token)
       .def("lookup_tokens", &Vocab::lookup_tokens)
       .def("lookup_indices", &Vocab::lookup_indices)
-//      .def("get_stoi", &Vocab::get_stoi)
+      //      .def("get_stoi", &Vocab::get_stoi)
       .def("get_itos", &Vocab::get_itos);
 
   // Functions
@@ -124,27 +124,38 @@ static auto sentencepiece =
               return c10::make_intrusive<SentencePiece>(std::move(state));
             });
 
-// static auto vocab =
-//     torch::class_<Vocab>("torchtext", "Vocab")
-//         .def(torch::init<StringList, std::string>())
-//         .def("__getitem__", &Vocab::__getitem__)
-//         .def("__len__", &Vocab::__len__)
-//         .def("insert_token", &Vocab::insert_token)
-//         .def("append_token", &Vocab::append_token)
-//         .def("lookup_token", &Vocab::lookup_token)
-//         .def("lookup_tokens", &Vocab::lookup_tokens)
-//         .def("lookup_indices", &Vocab::lookup_indices)
-//         .def("get_stoi", &Vocab::get_stoi)
-//         .def("get_itos", &Vocab::get_itos)
-//         .def_pickle(
-//             // __setstate__
-//             [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-//               return _set_vocab_states(self);
-//             },
-//             // __getstate__
-//             [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
-//               return _get_vocab_from_states(states);
-//             });
+static auto vocab =
+    torch::class_<Vocab>("torchtext", "Vocab")
+        .def(torch::init<StringList, std::string>())
+        .def("__getitem__",
+             [](const c10::intrusive_ptr<Vocab> &self, std::string str) {
+               return self->__getitem__(str);
+             })
+        .def("__len__", &Vocab::__len__)
+        .def("insert_token", &Vocab::insert_token)
+        .def("append_token", &Vocab::append_token)
+        .def("lookup_token", &Vocab::lookup_token)
+        .def("lookup_tokens", &Vocab::lookup_tokens)
+        .def("lookup_indices",
+             [](const c10::intrusive_ptr<Vocab> &self,
+                const std::vector<std::string> &tokens_) {
+             std::vector<std::string_view> tokens;
+             for (const std::string& item : tokens_) {
+             tokens.push_back(std::string_view(item));
+             }
+               return self->lookup_indices(tokens);
+             })
+        .def("get_stoi", &Vocab::get_stoi)
+        .def("get_itos", &Vocab::get_itos)
+        .def_pickle(
+            // __setstate__
+            [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
+              return _set_vocab_states(self);
+            },
+            // __getstate__
+            [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
+              return _get_vocab_from_states(states);
+            });
 
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
