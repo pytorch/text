@@ -56,7 +56,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("lookup_token", &Vocab::lookup_token)
       .def("lookup_tokens", &Vocab::lookup_tokens)
       .def("lookup_indices", &Vocab::lookup_indices)
-      .def("get_stoi", &Vocab::get_stoi)
+//      .def("get_stoi", &Vocab::get_stoi)
       .def("get_itos", &Vocab::get_itos);
 
   // Functions
@@ -84,7 +84,8 @@ static auto regex_tokenizer =
     torch::class_<RegexTokenizer>("torchtext", "RegexTokenizer")
         .def(torch::init<std::vector<std::string>, std::vector<std::string>,
                          bool>())
-        .def("forward", &RegexTokenizer::forward)
+        .def("forward", [](const c10::intrusive_ptr<RegexTokenizer> &self, std::string str) {
+            return self->RegexTokenizer::forward(std::string_view(str)); })
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<RegexTokenizer> &self)
@@ -124,27 +125,27 @@ static auto sentencepiece =
               return c10::make_intrusive<SentencePiece>(std::move(state));
             });
 
-static auto vocab =
-    torch::class_<Vocab>("torchtext", "Vocab")
-        .def(torch::init<StringList, std::string>())
-        .def("__getitem__", &Vocab::__getitem__)
-        .def("__len__", &Vocab::__len__)
-        .def("insert_token", &Vocab::insert_token)
-        .def("append_token", &Vocab::append_token)
-        .def("lookup_token", &Vocab::lookup_token)
-        .def("lookup_tokens", &Vocab::lookup_tokens)
-        .def("lookup_indices", &Vocab::lookup_indices)
-        .def("get_stoi", &Vocab::get_stoi)
-        .def("get_itos", &Vocab::get_itos)
-        .def_pickle(
-            // __setstate__
-            [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-              return _set_vocab_states(self);
-            },
-            // __getstate__
-            [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
-              return _get_vocab_from_states(states);
-            });
+// static auto vocab =
+//     torch::class_<Vocab>("torchtext", "Vocab")
+//         .def(torch::init<StringList, std::string>())
+//         .def("__getitem__", &Vocab::__getitem__)
+//         .def("__len__", &Vocab::__len__)
+//         .def("insert_token", &Vocab::insert_token)
+//         .def("append_token", &Vocab::append_token)
+//         .def("lookup_token", &Vocab::lookup_token)
+//         .def("lookup_tokens", &Vocab::lookup_tokens)
+//         .def("lookup_indices", &Vocab::lookup_indices)
+//         .def("get_stoi", &Vocab::get_stoi)
+//         .def("get_itos", &Vocab::get_itos)
+//         .def_pickle(
+//             // __setstate__
+//             [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
+//               return _set_vocab_states(self);
+//             },
+//             // __getstate__
+//             [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
+//               return _get_vocab_from_states(states);
+//             });
 
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")

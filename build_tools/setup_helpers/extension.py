@@ -30,6 +30,7 @@ def _get_eca(debug):
             eca += ['-O2']
         else:
             eca += ["-O3"]
+    eca += ["-std=c++17"]
     return eca
 
 

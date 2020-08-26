@@ -16,12 +16,16 @@ RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
   }
 }
 
-std::vector<std::string> RegexTokenizer::forward(std::string str) const {
+std::vector<std::string> RegexTokenizer::forward(std::string_view str_) const {
   // str tolower
-  if (to_lower_) {
-    std::transform(str.begin(), str.end(), str.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
-  }
+  std::string str(str_.size(), ' ');
+  // if (to_lower_) {
+    for (int64_t i = 0; i < str_.size(); i++) {
+      str[i] = std::tolower(str_[i]);
+    }
+    // std::transform(str.begin(), str.end(), str.begin(),
+    //                [](unsigned char c) { return std::tolower(c); });
+  // }
 
   for (size_t i = 0; i < compiled_patterns_.size(); i++) {
     RE2::GlobalReplace(&str, *compiled_patterns_[i], replacements_[i]);

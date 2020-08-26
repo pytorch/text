@@ -3,20 +3,21 @@
 #include <stdexcept>
 #include <string>
 #include <vocab.h>
+#include <functional>
 
 namespace torchtext {
 
 Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
-             const std::string &unk_token, const int64_t unk_index)
+             std::string unk_token, const int64_t unk_index)
     : unk_index_(std::move(unk_index)), stoi_(std::move(stoi)),
       itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {}
 
-Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
+Vocab::Vocab(const StringList &tokens, std::string unk_token)
     : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
   stoi_.reserve(tokens.size());
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
-    if (stoi_.find(tokens[i]) != stoi_.end()) {
+    if (stoi_.find(std::hash<std::string>{}(tokens[i])) != stoi_.end()) {
 #ifdef _MSC_VER
       std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
                 << tokens[i] << std::endl;
@@ -24,15 +25,17 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_[std::move(tokens[i])] = i;
+    stoi_[std::hash<std::string>{}(std::move(tokens[i]))] = i;
   }
-  unk_index_ = stoi_.find(unk_token)->second;
+  unk_index_ = stoi_.find(std::hash<std::string>{}(unk_token))->second;
 }
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
-int64_t Vocab::__getitem__(const std::string &token) const {
-  const auto &item = stoi_.find(token);
+int64_t Vocab::__getitem__(const std::string_view &token_) const {
+  std::string token(token_.data(), token_.size());
+
+  const auto &item = stoi_.find(std::hash<std::string>{}(token));
   if (item != stoi_.end()) {
     return item->second;
   }
@@ -40,13 +43,13 @@ int64_t Vocab::__getitem__(const std::string &token) const {
 }
 
 void Vocab::append_token(const std::string &token) {
-  if (stoi_.find(token) == stoi_.end()) {
+  if (stoi_.find(std::hash<std::string>{}(token)) == stoi_.end()) {
     // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
     // on Windows where the size gets updated before the assign occurs.
     // For example if the size of `stoi_` is 2, doing
     // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a
     // value of 3 instead of 2 on Windows stoi_[token] = itos_.size();
-    stoi_[token] = itos_.size();
+    stoi_[std::hash<std::string>{}(token)] = itos_.size();
     itos_.push_back(token);
   }
 }
@@ -64,7 +67,7 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
         std::to_string(stoi_.size()) + ".");
   }
 
-  const auto &item = stoi_.find(token);
+  const auto &item = stoi_.find(std::hash<std::string>{}(token));
   // if item already in stoi we throw an error
   if (item != stoi_.end()) {
 #ifdef _MSC_VER
@@ -79,15 +82,15 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < itos_.size(); i++) {
-    stoi_[itos_[i]] = i + 1;
+    stoi_[std::hash<std::string>{}(itos_[i])] = i + 1;
   }
 
-  stoi_[token] = index;
+  stoi_[std::hash<std::string>{}(token)] = index;
   itos_.insert(itos_.begin() + index, token);
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  unk_index_ = stoi_.find(unk_token_)->second;
+  unk_index_ = stoi_.find(std::hash<std::string>{}(unk_token_))->second;
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
@@ -114,7 +117,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
   return tokens;
 }
 
-std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
+std::vector<int64_t> Vocab::lookup_indices(const std::vector<std::string_view> &tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
     indices[i] = __getitem__(tokens[i]);
@@ -122,16 +125,16 @@ std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
   return indices;
 }
 
-std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
-  std::unordered_map<std::string, int64_t> stoi;
-  stoi.reserve(stoi_.size());
-
-  // construct tokens and index list
-  for (const auto &item : stoi_) {
-    stoi[item.first] = item.second;
-  }
-  return stoi;
-}
+// std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
+//   std::unordered_map<std::string, int64_t> stoi;
+//   stoi.reserve(stoi_.size());
+// 
+//   // construct tokens and index list
+//   for (const auto &item : stoi_) {
+//     stoi[item.first] = item.second;
+//   }
+//   return stoi;
+// }
 
 StringList Vocab::get_itos() const { return itos_; }
 
@@ -164,7 +167,7 @@ void parse_vocab_chunk(const std::string &file_path, size_t offset,
 
 std::tuple<IndexDict, StringList>
 _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
-               const std::string &unk_token, const int64_t min_freq,
+               std::string unk_token, const int64_t min_freq,
                const int64_t num_lines) {
   TORCH_CHECK(chunk_tokens.size() > 0,
               "There must be at least 1 chunk to concatenate!");
@@ -197,7 +200,7 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
               << std::endl;
 
     tokens.emplace_back(unk_token);
-    stoi[unk_token] = index;
+    stoi[std::hash<std::string>{}(unk_token)] = index;
   }
 
   // create tokens list and stoi map
@@ -205,9 +208,9 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
     auto &subset_tokens = *chunk_tokens[i];
     for (size_t j = 0; j < subset_tokens.size(); j++) {
       if (tokens_freq[subset_tokens[j]] >= min_freq &&
-          stoi.find(subset_tokens[j]) == stoi.end()) {
+          stoi.find(std::hash<std::string>{}(subset_tokens[j])) == stoi.end()) {
         tokens.emplace_back(subset_tokens[j]);
-        stoi[subset_tokens[j]] = index;
+        stoi[std::hash<std::string>{}(subset_tokens[j])] = index;
         index++;
       }
     }
@@ -217,7 +220,7 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
 constexpr int64_t GRAIN_SIZE = 13107;
 Vocab _load_vocab_from_file(const std::string &file_path,
-                            const std::string &unk_token,
+                            std::string unk_token,
                             const int64_t min_freq, const int64_t num_cpus) {
 
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
@@ -262,7 +265,7 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   StringList tokens;
   std::tie(stoi, tokens) =
       _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
-  int64_t unk_index = stoi.find(unk_token)->second;
+  int64_t unk_index = stoi.find(std::hash<std::string>{}(unk_token))->second;
 
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
