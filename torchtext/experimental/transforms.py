@@ -3,6 +3,7 @@ import torch.nn as nn
 from typing import List
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
+from torch import Tensor
 
 __all__ = [
     'BasicEnglishNormalize',
