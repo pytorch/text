@@ -88,7 +88,7 @@ class PyTextVocabTransform(nn.Module):
         self.vocab = vocab
 
     def forward(self, tokens):
-        return [self.vocab[token] for token in tokens]
+        return [self.vocab.idx[token] if token in self.vocab.idx.keys() else 0 for token in tokens]
 
 
 class VectorTransform(nn.Module):
