@@ -64,7 +64,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 
 
 def _setup_datasets(dataset_name, root='.data'):
-    dataset_tar = download_from_url(URLS[dataset_name], root=root, path=root+"/ag_news_csv.tar.gz")
+    dataset_tar = download_from_url(URLS[dataset_name], root=root)
     extracted_files = extract_archive(dataset_tar)
 
     for fname in extracted_files:

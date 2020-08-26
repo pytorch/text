@@ -56,7 +56,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("lookup_token", &Vocab::lookup_token)
       .def("lookup_tokens", &Vocab::lookup_tokens)
       .def("lookup_indices", &Vocab::lookup_indices)
-      //      .def("get_stoi", &Vocab::get_stoi)
+      .def("get_stoi", &Vocab::get_stoi)
       .def("get_itos", &Vocab::get_itos);
 
   // Functions
