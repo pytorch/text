@@ -7,6 +7,9 @@ from torchtext.experimental.transforms import (
 )
 from torchtext.experimental.vocab import vocab_from_file_object
 from torchtext.experimental.vectors import FastText
+import shutil
+import tempfile
+import os
 
 
 class TestTransforms(TorchtextTestCase):
