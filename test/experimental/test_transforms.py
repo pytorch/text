@@ -34,10 +34,10 @@ class TestTransforms(TorchtextTestCase):
 
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = {
-                'the': [-0.065334, -0.093031, -0.017571],
-                'world': [-0.32423, -0.098845, -0.0073467],
+                'the': torch.tensor([-0.065334, -0.093031, -0.017571]),
+                'world': torch.tensor([-0.32423, -0.098845, -0.0073467]),
             }
 
             for word in expected_fasttext_simple_en.keys():
-                self.assertEqual(vectors_transform[word][:3], expected_fasttext_simple_en[word])
-                self.assertEqual(jit_vectors_transform[word][:3], expected_fasttext_simple_en[word])
+                self.assertEqual(vectors_transform(word)[:3], expected_fasttext_simple_en[word])
+                self.assertEqual(jit_vectors_transform(word)[:3], expected_fasttext_simple_en[word])
