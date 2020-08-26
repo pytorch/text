@@ -87,14 +87,8 @@ class PyTextVocabTransform(nn.Module):
         super(PyTextVocabTransform, self).__init__()
         self.vocab = vocab
 
-    def forward(self, tokens: List[str]) -> List[int]:
-        return self.vocab.lookup_indices_1d(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            vocab = self.vocab.to_ivalue()
-            return PyTextVocabTransform(vocab)
-        return self
+    def forward(self, tokens):
+        return [self.vocab[token] for token in tokens]
 
 
 class VectorTransform(nn.Module):
