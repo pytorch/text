@@ -84,8 +84,7 @@ static auto regex_tokenizer =
     torch::class_<RegexTokenizer>("torchtext", "RegexTokenizer")
         .def(torch::init<std::vector<std::string>, std::vector<std::string>,
                          bool>())
-        .def("forward", [](const c10::intrusive_ptr<RegexTokenizer> &self, std::string str) {
-            return self->RegexTokenizer::forward(std::string_view(str)); })
+        .def("forward", &RegexTokenizer::forward)
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<RegexTokenizer> &self)
