@@ -181,7 +181,11 @@ _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_500
 
 
 class PretrainedSPTokenizer(nn.Module):
-    r"""Tokenizer based on a pretained sentencepiece model
+    r"""Tokenizer based on a pretained sentencepiece model.
+        The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
+        Both BPE and unigram methods were used to train the model (for more details please refer to
+        SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
+        with a different size of the vocabulary (i.e. 15000, 25000, 50000).
 
     Args:
        spm_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
@@ -238,6 +242,10 @@ class PretrainedSPTokenizer(nn.Module):
 
 class PretrainedSPTransform(nn.Module):
     r"""string to ids transform based on a pretained sentencepiece model
+        The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
+        Both BPE and unigram methods were used to train the model (for more details please refer to
+        SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
+        with a different size of the vocabulary (i.e. 15000, 25000, 50000).
 
     Args:
        spm_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
