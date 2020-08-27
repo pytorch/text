@@ -22,7 +22,7 @@ torchtext.experimental.transforms
     :special-members: __init__
 
 :hidden:`TextSequentialTransforms`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: TextSequentialTransforms
     :members:
@@ -46,5 +46,17 @@ torchtext.experimental.transforms
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: ToLongTensor
+
+:hidden:`VocabTransform`
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: VocabTransform
+    :members:
+    :special-members: __init__
+
+:hidden:`VectorTransform`
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: VectorTransform
     :members:
     :special-members: __init__

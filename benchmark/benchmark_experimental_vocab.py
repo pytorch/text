@@ -86,7 +86,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
         t0 = time.monotonic()
         v_experimental = VocabExperimental(ordered_dict)
         print("Construction time:", time.monotonic() - t0)
-    jit_v_experimental = torch.jit.script(v_experimental)
+    jit_v_experimental = torch.jit.script(v_experimental.to_ivalue())
 
     # existing Vocab eager lookup
     print("Vocab - Eager Mode")
