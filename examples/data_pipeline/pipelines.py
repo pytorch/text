@@ -2,14 +2,14 @@ import torch
 from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
-    VocabTransform,
     PyTextVocabTransform,
-    VectorTransform,
     ToLongTensor,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
+    VocabTransform,
+    VectorTransform,
 )
 from torchtext.experimental.vocab import vocab_from_file_object
 from torchtext.experimental.vectors import FastText

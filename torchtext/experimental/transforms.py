@@ -3,6 +3,7 @@ import torch.nn as nn
 from typing import List
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
+from torch import Tensor
 
 __all__ = [
     'BasicEnglishNormalize',
@@ -163,3 +164,76 @@ class TextSequentialTransforms(nn.Sequential):
                 _module = _module.to_ivalue()
             module_list.append((str(_idx), _module))
         return TextSequentialTransforms(OrderedDict(module_list))
+
+
+class VocabTransform(nn.Module):
+    r"""Vocab transform
+
+    Args:
+        vocab: an instance of torchtext.experimental.vocab.Vocab class.
+
+    Example:
+        >>> import torch
+        >>> from torchtext.experimental.vocab import vocab_from_file_object
+        >>> f = open('vocab.txt', 'r')
+        >>> vocab_transform = VocabTransform(vocab_from_file_object(f))
+        >>> jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
+    """
+
+    def __init__(self, vocab):
+        super(VocabTransform, self).__init__()
+        self.vocab = vocab
+
+    def forward(self, tokens: List[str]) -> List[int]:
+        r"""
+
+        Args:
+            tokens: a list of string tokens
+
+        Example:
+            >>> vocab_transform(['here', 'is', 'an', 'example'])
+
+        """
+        return self.vocab.lookup_indices(tokens)
+
+    def to_ivalue(self):
+        if hasattr(self.vocab, 'to_ivalue'):
+            vocab = self.vocab.to_ivalue()
+            return VocabTransform(vocab)
+        return self
+
+
+class VectorTransform(nn.Module):
+    r"""Vector transform
+
+    Args:
+        vector: an instance of torchtext.experimental.vectors.Vectors class.
+
+    Example:
+        >>> import torch
+        >>> from torchtext.experimental.vectors import FastText
+        >>> vector_transform = VectorTransform(FastText())
+        >>> jit_vector_transform = torch.jit.script(vector_transform.to_ivalue())
+    """
+
+    def __init__(self, vector):
+        super(VectorTransform, self).__init__()
+        self.vector = vector
+
+    def forward(self, tokens: List[str]) -> Tensor:
+        r"""
+
+        Args:
+            tokens: a list of string tokens
+
+        Example:
+            >>> vector_transform(['here', 'is', 'an', 'example'])
+
+        """
+        return self.vector.lookup_vectors(tokens)
+
+    def to_ivalue(self):
+        if hasattr(self.vector, 'to_ivalue'):
+            vector = self.vector.to_ivalue()
+            return VectorTransform(vector)
+        return self
