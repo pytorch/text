@@ -320,7 +320,7 @@ class ToLongTensor(nn.Module):
             >>> to_tensor([9, 1546, 18811, 2849, 61, 2759, 2202])
             >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
         """
-        return torch.tensor(ids).to(torch.long)
+        return torch.tensor(ids, dtype=torch.long)
 
 
 class VocabTransform(nn.Module):
