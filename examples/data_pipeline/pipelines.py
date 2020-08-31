@@ -4,6 +4,7 @@ from transforms import (
     PretrainedSPVocab,
     VocabTransform,
     PyTextVocabTransform,
+    PyTextScriptVocabTransform,
     VectorTransform,
     ToLongTensor,
 )
@@ -82,20 +83,35 @@ def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
 
 
 def build_legacy_pytext_vocab_pipeline(vocab_file):
+    from pytext.data.utils import Vocabulary
+    from torchtext.data.utils import get_tokenizer
+
+    tokenizer = get_tokenizer("basic_english")
+    f = open(vocab_file, 'r')
+    vocab_list = [line.rstrip() for line in f]
+
+    pipeline = sequential_transforms(tokenizer,
+                                    PyTextVocabTransform(Vocabulary(vocab_list)),
+                                    totensor(dtype=torch.long))
+    return pipeline, None, None
+
+
+def build_legacy_pytext_script_vocab_pipeline(vocab_file):
     from pytext.torchscript.vocab import ScriptVocabulary
+
     tokenizer = basic_english_normalize()
     f = open(vocab_file, 'r')
     vocab_list = [line.rstrip() for line in f]
 
     pipeline = TextSequentialTransforms(tokenizer,
-                                        PyTextVocabTransform(ScriptVocabulary(vocab_list)),
+                                        PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)),
                                         ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit legacy PyText pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
-def build_experimental_pytext_vocab_pipeline(vocab_file):
+def build_experimental_pytext_script_vocab_pipeline(vocab_file):
     # this is needed because we want to add 'torchtext/examples/vocab' directory to the
     # `sys.path` variable in order to import the pytext_vocab (since its not a module)
     import os
@@ -113,7 +129,7 @@ def build_experimental_pytext_vocab_pipeline(vocab_file):
     # pipeline = TextSequentialTransforms(tokenizer,
     #                                     PyTextVocabTransform(script_vocab(ordered_dict)),
     #                                     ToLongTensor())
-    pipeline = sequential_transforms(tokenizer, PyTextVocabTransform(script_vocab(ordered_dict)), totensor(dtype=torch.long))
+    pipeline = sequential_transforms(tokenizer, PyTextScriptVocabTransform(script_vocab(ordered_dict)), totensor(dtype=torch.long))
     return pipeline, None, None
 
 
@@ -184,14 +200,16 @@ if __name__ == "__main__":
         pipeline, torchbind_pipeline, jit_pipeline = build_sp_pipeline(args.spm_filename)
     elif args.pipeline == 'experimental_torchtext':
         pipeline, torchbind_pipeline, jit_pipeline = build_experimental_torchtext_pipeline(args.vocab_filename)
-    elif args.pipeline == 'experimental_pytext':
-        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_pytext_vocab_pipeline(args.vocab_filename)
+    elif args.pipeline == 'experimental_pytext_script_vocab':
+        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_pytext_script_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'experimental_fasttext':
         pipeline, torchbind_pipeline, jit_pipeline = build_experimental_fasttext_vector_pipeline()
     elif args.pipeline == 'legacy_torchtext':
         pipeline, torchbind_pipeline, jit_pipeline = build_legacy_torchtext_vocab_pipeline(args.vocab_filename)
-    elif args.pipeline == 'legacy_pytext':
+    elif args.pipeline == 'legacy_pytext_vocab':
         pipeline, torchbind_pipeline, jit_pipeline = build_legacy_pytext_vocab_pipeline(args.vocab_filename)
+    elif args.pipeline == 'legacy_pytext_script_vocab':
+        pipeline, torchbind_pipeline, jit_pipeline = build_legacy_pytext_script_vocab_pipeline(args.vocab_filename)
     elif args.pipeline == 'legacy_fasttext':
         pipeline, torchbind_pipeline, jit_pipeline = build_legacy_fasttext_vector_pipeline()
     elif args.pipeline == 'legacy_batch_torchtext':
