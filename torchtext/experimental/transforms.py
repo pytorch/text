@@ -246,7 +246,10 @@ class PadTransform(nn.Module):
         pad_id: the id for pad tokens
 
     Example:
-        >>> pad = PadTransform(0)
+        >>> pad_transform = PadTransform(2)
+        >>> seq_batch = [[5, 4, 5, 6, 7], [1, 3], [7, 5, 8]]
+        >>> pad_seq, key_padding_mask = pad_transform(seq_batch)
+        >>> jit_pad_transform = torch.jit.script(pad_transform)
     """
 
     def __init__(self, pad_id, bos_token_id=None, eos_token_id=None, return_key_padding_mask=True):
