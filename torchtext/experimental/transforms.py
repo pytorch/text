@@ -264,17 +264,15 @@ class PadTransform(nn.Module):
         if self.eos_token_id is not None:
             max_seq_len += 1
         key_padding_mask = torch.zeros(len(seq_batch), max_seq_len)
+        output_batch = torch.ones(len(seq_batch), max_seq_len, dtype=torch.long) * self.pad_id
         for idx, seq in enumerate(seq_batch):
             if self.bos_token_id is not None:
                 seq = [self.bos_token_id] + seq
             if self.eos_token_id is not None:
                 seq = seq + [self.eos_token_id]
-            pad_len = max_seq_len - len(seq)
+            output_batch[idx][:len(seq)] = torch.tensor(seq, dtype=torch.long)
             key_padding_mask[idx][len(seq):] = 1.0
-            seq += [self.pad_id] * pad_len
-            seq_batch[idx] = seq
-        print(key_padding_mask)
         if self.return_key_padding_mask:
-            return torch.tensor(seq_batch, dtype=torch.long), key_padding_mask.to(torch.bool)
+            return output_batch, key_padding_mask.to(torch.bool)
         else:
-            return torch.tensor(seq_batch, dtype=torch.long), None
+            return output_batch, None
