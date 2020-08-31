@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import List
+from typing import List, Tuple, Optional
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
 from torch import Tensor
@@ -237,3 +237,44 @@ class VectorTransform(nn.Module):
             vector = self.vector.to_ivalue()
             return VectorTransform(vector)
         return self
+
+
+class PadTransform(nn.Module):
+    r"""Pad sequences
+
+    Args:
+        pad_id: the id for pad tokens
+
+    Example:
+        >>> pad = PadTransform(0)
+    """
+
+    def __init__(self, pad_id, bos_token_id=None, eos_token_id=None, return_key_padding_mask=True):
+        super(PadTransform, self).__init__()
+        self.pad_id = pad_id
+        self.bos_token_id = bos_token_id
+        self.eos_token_id = eos_token_id
+        self.return_key_padding_mask = return_key_padding_mask
+
+    @torch.jit.export
+    def forward(self, seq_batch: List[List[int]]) -> Tuple[torch.Tensor, Optional[Tensor]]:
+        max_seq_len = max([len(seq) for seq in seq_batch] + [0])
+        if self.bos_token_id is not None:
+            max_seq_len += 1
+        if self.eos_token_id is not None:
+            max_seq_len += 1
+        key_padding_mask = torch.zeros(len(seq_batch), max_seq_len)
+        for idx, seq in enumerate(seq_batch):
+            if self.bos_token_id is not None:
+                seq = [self.bos_token_id] + seq
+            if self.eos_token_id is not None:
+                seq = seq + [self.eos_token_id]
+            pad_len = max_seq_len - len(seq)
+            key_padding_mask[idx][len(seq):] = 1.0
+            seq += [self.pad_id] * pad_len
+            seq_batch[idx] = seq
+        print(key_padding_mask)
+        if self.return_key_padding_mask:
+            return torch.tensor(seq_batch, dtype=torch.long), key_padding_mask.to(torch.bool)
+        else:
+            return torch.tensor(seq_batch, dtype=torch.long), None
