@@ -119,6 +119,20 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(jit_v.get_itos(), expected_itos)
         self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)
 
+    def test_vocab_forward(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+        jit_v = torch.jit.script(v.to_ivalue())
+
+        tokens = ['b', 'a', 'c']
+        expected_indices = [2, 1, 3]
+
+        self.assertEqual(v(tokens), expected_indices)
+        self.assertEqual(jit_v(tokens), expected_indices)
+
     def test_vocab_lookup_token(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)

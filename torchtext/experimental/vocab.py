@@ -128,7 +128,7 @@ class Vocab(nn.Module):
         return not isinstance(self.vocab, VocabPybind)
 
     @torch.jit.export
-    def __call__(self, tokens: List[str]) -> List[int]:
+    def forward(self, tokens: List[str]) -> List[int]:
         r"""Calls the `lookup_indices` method
         Args:
             tokens (List[str]): the tokens used to lookup their corresponding `indices`.
