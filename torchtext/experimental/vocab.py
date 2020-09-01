@@ -32,13 +32,13 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
         Vocab: a `Vocab` object.
 
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file_object
+        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file
         >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> f = open('vocab.txt', 'r')
         >>>     tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        >>> v = vocab_from_raw_text_file_object(f, jit_tokenizer)
+        >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
     """
     vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
@@ -63,9 +63,9 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
     Returns:
         Vocab: a `Vocab` object.
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_file_object
+        >>> from torchtext.experimental.vocab import vocab_from_file
         >>> f = open('vocab.txt', 'r')
-        >>> v = vocab_from_file_object(f)
+        >>> v = vocab_from_file(f)
     """
     vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
