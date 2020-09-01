@@ -4,6 +4,7 @@ from test.common.assets import get_asset_path
 from torchtext.experimental.transforms import (
     VectorTransform,
     VocabTransform,
+    PadTransform,
 )
 from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
