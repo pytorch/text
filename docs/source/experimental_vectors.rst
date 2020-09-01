@@ -14,6 +14,11 @@ torchtext.experimental.vectors
     :members:
     :special-members:
 
+:hidden:`vectors`
+~~~~~~~~~~~~~~~~~
+
+.. autofunction:: vectors
+
 :hidden:`vectors_from_file_object`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
