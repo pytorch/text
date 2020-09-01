@@ -6,15 +6,47 @@ import torch
 import torch.nn as nn
 from torchtext._torchtext import (
     Vocab as VocabPybind,
-    _load_vocab_from_file
+    _load_vocab_from_file,
+    _load_vocab_from_raw_text_file
 )
 
 logger = logging.getLogger(__name__)
 
 
-def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_cpus=1):
-    r"""Create a `Vocab` object from a file like object.
-    The `file_like_object` should contain tokens seperated by new lines. Note that the vocab
+def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+    r"""Create a `Vocab` object from a raw text file.
+
+    The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
+    parallel to the text. Note that the vocab will be created in the order that the tokens first appear
+    in the file (and not by the frequency of tokens).
+
+    Args:
+        file_object (FileObject): a file object to read data from.
+        jited_tokenizer (ScriptModule): a tokenizer that has been JITed using `torch.jit.script`
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+            Values less than 1 will be set to 1. Default: 1.
+        unk_token: The default unknown token to use. Default: '<unk>'.
+        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
+
+    Returns:
+        Vocab: a `Vocab` object.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file_object
+        >>> from torchtext.experimental.transforms import basic_english_normalize
+        >>> f = open('vocab.txt', 'r')
+        >>>     tokenizer = basic_english_normalize()
+        >>> tokenizer = basic_english_normalize()
+        >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+        >>> v = vocab_from_raw_text_file_object(f, jit_tokenizer)
+    """
+    vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    return Vocab(vocab_obj)
+
+
+def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
+    r"""Create a `Vocab` object from a text file.
+    The `file_object` should contain tokens seperated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
     Format for txt file:
         token1
@@ -22,11 +54,11 @@ def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_
         ...
         token_n
     Args:
-        file_like_object (FileObject): a file like object to read data from.
+        file_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         unk_token: The default unknown token to use. Default: '<unk>'.
-        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 10.
+        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
         Vocab: a `Vocab` object.
@@ -35,7 +67,7 @@ def vocab_from_file_object(file_like_object, min_freq=1, unk_token='<unk>', num_
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file_object(f)
     """
-    vocab_obj = _load_vocab_from_file(file_like_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
