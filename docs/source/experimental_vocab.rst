@@ -14,7 +14,17 @@ torchtext.experimental.vocab
     :members:
     :special-members:
 
-:hidden:`vocab_from_file_object`
+:hidden:`vocab`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: vocab_from_file_object
+.. autofunction:: vocab
+
+:hidden:`vocab_from_file`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: vocab_from_file
+
+:hidden:`vocab_from_raw_text_file`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: vocab_from_raw_text_file
