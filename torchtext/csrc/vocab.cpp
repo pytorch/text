@@ -2,7 +2,9 @@
 #include <common.h>
 #include <stdexcept>
 #include <string>
-#include "vocab.h"
+#include <torch/csrc/jit/python/pybind_utils.h> // @manual
+#include <torch/torch.h> // @manual
+#include <vocab.h> // @manual
 
 namespace torchtext {
 
@@ -146,9 +148,9 @@ int64_t _infer_lines(const std::string &file_path) {
   return num_lines;
 }
 
-void parse_vocab_chunk(const std::string &file_path, size_t offset,
-                       const int64_t start_line, const int64_t end_line,
-                       std::shared_ptr<StringList> tokens) {
+void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
+                            const int64_t start_line, const int64_t end_line,
+                            std::shared_ptr<StringList> tokens) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
@@ -159,6 +161,28 @@ void parse_vocab_chunk(const std::string &file_path, size_t offset,
     fin >> std::ws;
 
     tokens->push_back(token);
+  }
+}
+
+void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
+                               const int64_t start_line, const int64_t end_line,
+                               std::shared_ptr<StringList> tokens,
+                               torch::jit::script::Module &module) {
+  std::ifstream fin;
+  fin.open(file_path, std::ios::in);
+  fin.seekg(offset);
+
+  std::string line;
+  for (int64_t i = start_line; i < end_line; i++) {
+    std::getline(fin, line);
+    auto token_list =
+        module.forward(std::vector<c10::IValue>({c10::IValue(line)})).toList();
+
+    for (size_t i = 0; i < token_list.size(); i++) {
+      c10::IValue token_ref = token_list.get(i);
+      std::string token = token_ref.toStringRef();
+      tokens->push_back(token);
+    }
   }
 }
 
@@ -198,6 +222,7 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
     tokens.emplace_back(unk_token);
     stoi[unk_token] = index;
+    index++;
   }
 
   // create tokens list and stoi map
@@ -219,7 +244,6 @@ constexpr int64_t GRAIN_SIZE = 13107;
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus) {
-
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
   int64_t num_lines = _infer_lines(file_path);
@@ -244,8 +268,61 @@ Vocab _load_vocab_from_file(const std::string &file_path,
 
     counter++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
-      parse_vocab_chunk(file_path, offsets[j], i,
-                        std::min(num_lines, i + chunk_size), tokens_ptr);
+      parse_vocab_file_chunk(file_path, offsets[j], i,
+                             std::min(num_lines, i + chunk_size), tokens_ptr);
+      std::lock_guard<std::mutex> lk(m);
+      counter--;
+      cv.notify_all();
+    });
+    chunk_tokens.push_back(tokens_ptr);
+    j++;
+  }
+
+  // block until all threads finish execution
+  std::unique_lock<std::mutex> lock(m);
+  cv.wait(lock, [&counter] { return counter == 0; });
+
+  IndexDict stoi;
+  StringList tokens;
+  std::tie(stoi, tokens) =
+      _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+
+  int64_t unk_index = stoi.find(unk_token)->second;
+
+  return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
+}
+
+Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
+                                     const std::string &unk_token,
+                                     const int64_t min_freq,
+                                     const int64_t num_cpus, py::object fn) {
+  std::cerr << "[INFO] Reading file " << file_path << std::endl;
+
+  torch::jit::script::Module module(*torch::jit::as_module(fn));
+  int64_t num_lines = _infer_lines(file_path);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
+  // Launching a thread on less lines than this likely has too much overhead.
+  chunk_size = std::max(chunk_size, GRAIN_SIZE);
+
+  std::vector<size_t> offsets;
+  impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
+
+  std::vector<std::shared_ptr<StringList>> chunk_tokens;
+
+  std::mutex m;
+  std::condition_variable cv;
+  std::atomic<int> counter(0);
+
+  // create threads
+  int64_t j = 0;
+  for (int64_t i = 0; i < num_lines; i += chunk_size) {
+    auto tokens_ptr = std::make_shared<StringList>();
+
+    counter++;
+    at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
+      parse_raw_text_file_chunk(file_path, offsets[j], i,
+                                std::min(num_lines, i + chunk_size), tokens_ptr,
+                                module);
       std::lock_guard<std::mutex> lk(m);
       counter--;
       cv.notify_all();

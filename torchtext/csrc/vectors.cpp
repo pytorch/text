@@ -11,7 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include "vectors.h"
+#include <vectors.h> // @manual
 
 namespace torchtext {
 

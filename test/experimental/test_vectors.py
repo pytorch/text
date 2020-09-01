@@ -71,6 +71,24 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
         self.assertEqual(vectors_obj['not_in_it'], jit_vectors_obj['not_in_it'])
 
+    def test_vectors_forward(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
+
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tokens = ['a', 'b']
+        vecs = torch.stack((tensorA, tensorB), 0)
+        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+
+        tokens_to_lookup = ['a', 'b', 'c']
+        expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
+        vectors_by_tokens = vectors_obj(tokens_to_lookup)
+        jit_vectors_by_tokens = jit_vectors_obj(tokens_to_lookup)
+
+        self.assertEqual(expected_vectors, vectors_by_tokens)
+        self.assertEqual(expected_vectors, jit_vectors_by_tokens)
+
     def test_vectors_lookup_vectors(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
