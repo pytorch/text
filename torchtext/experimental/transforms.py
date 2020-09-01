@@ -243,7 +243,10 @@ class PadTransform(nn.Module):
     r"""Pad sequences
 
     Args:
-        pad_id: the id for pad tokens
+        pad_id: the id for padding token
+        bos_token_id: the id for bos token (Default: None)
+        eos_token_id: the id for eos token (Default: None)
+        return_key_padding_mask: flag to output key_padding_mask as output (Defualt: True)
 
     Example:
         >>> pad_transform = PadTransform(2)
@@ -261,6 +264,14 @@ class PadTransform(nn.Module):
 
     @torch.jit.export
     def forward(self, seq_batch: List[List[int]]) -> Tuple[torch.Tensor, Optional[Tensor]]:
+        r"""
+
+        Args:
+            seq_batch: a list of integer lists. Type: List[List[int]]
+
+        Outputs:
+            padded_sequence, key_padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
+        """
         max_seq_len = max([len(seq) for seq in seq_batch] + [0])
         if self.bos_token_id is not None:
             max_seq_len += 1

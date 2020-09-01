@@ -42,3 +42,10 @@ torchtext.experimental.transforms
 .. autoclass:: VectorTransform
     :members:
     :special-members: __init__
+
+:hidden:` PadTransform`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: PadTransform 
+    :members:
+    :special-members: __init__
