@@ -3,7 +3,6 @@ from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
     PyTextVocabTransform,
-    ToLongTensor,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
@@ -24,7 +23,7 @@ def build_sp_pipeline(spm_file):
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit sentencepiece pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -68,7 +67,7 @@ def build_text_vocab_pipeline(hf_vocab_file):
     vocab = vocab_from_file(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit text vocab pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -82,8 +81,7 @@ def build_pytext_vocab_pipeline(vocab_file):
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer,
-                                        PyTextVocabTransform(ScriptVocabulary(vocab_list)),
-                                        ToLongTensor())
+                                        PyTextVocabTransform(ScriptVocabulary(vocab_list)))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit PyText pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
