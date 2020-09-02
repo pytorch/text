@@ -6,19 +6,6 @@ import torch
 from torch import Tensor
 
 
-class TextClassificationPipeline(nn.Module):
-    r"""Text classification pipeline template
-    """
-
-    def __init__(self, label_transform, text_transform):
-        super(TextClassificationPipeline, self).__init__()
-        self.label_transform = label_transform
-        self.text_transform = text_transform
-
-    def forward(self, label_text_tuple):
-        return self.label_transform(label_text_tuple[0]), self.text_transform(label_text_tuple[1])
-
-
 class PretrainedSPTokenizer(nn.Module):
     r"""Tokenizer based on a pretained sentencepiece model
     """
@@ -61,24 +48,6 @@ class PretrainedSPVocab(nn.Module):
         return self
 
 
-class VocabTransform(nn.Module):
-    r"""Vocab transform
-    """
-
-    def __init__(self, vocab):
-        super(VocabTransform, self).__init__()
-        self.vocab = vocab
-
-    def forward(self, tokens: List[str]) -> List[int]:
-        return self.vocab.lookup_indices(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            vocab = self.vocab.to_ivalue()
-            return VocabTransform(vocab)
-        return self
-
-
 class PyTextVocabTransform(nn.Module):
     r"""Vocab transform
     """
@@ -94,24 +63,6 @@ class PyTextVocabTransform(nn.Module):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
             return PyTextVocabTransform(vocab)
-        return self
-
-
-class VectorTransform(nn.Module):
-    r"""Vector transform
-    """
-
-    def __init__(self, vector):
-        super(VectorTransform, self).__init__()
-        self.vector = vector
-
-    def forward(self, tokens: List[str]) -> Tensor:
-        return self.vector.lookup_vectors(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vector, 'to_ivalue'):
-            vector = self.vector.to_ivalue()
-            return VectorTransform(vector)
         return self
 
 
