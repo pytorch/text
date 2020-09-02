@@ -94,13 +94,13 @@ class TestFunctional(TorchtextTestCase):
         experimental_jit_tokens = jit_basic_eng_norm(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
-        eager_tokens = basic_english_tokenizer(test_sample)
+        eager_tokens = [basic_english_tokenizer(test_sample[0])]
 
         assert not basic_eng_norm.is_jitable
         assert basic_eng_norm.to_ivalue().is_jitable
 
         self.assertEqual(experimental_jit_tokens, ref_results)
-        self.assertEqual([eager_tokens], ref_results)
+        self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, ref_results)
 
         # test load and save
