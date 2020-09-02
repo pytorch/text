@@ -130,8 +130,8 @@ class TestVocab(TorchtextTestCase):
         tokens = ['b', 'a', 'c']
         expected_indices = [2, 1, 3]
 
-        self.assertEqual(v(tokens), expected_indices)
-        self.assertEqual(jit_v(tokens), expected_indices)
+        self.assertEqual(v([tokens]), expected_indices)
+        self.assertEqual(jit_v([tokens]), expected_indices)
 
     def test_vocab_lookup_token(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
