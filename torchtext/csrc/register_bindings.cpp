@@ -1,12 +1,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h> // @manual
+#include <regex_tokenizer.h>         // @manual
+#include <sentencepiece.h>           // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
 #include <vectors.h> // @manual
-#include <vocab.h> // @manual
+#include <vocab.h>   // @manual
 
 namespace torchtext {
 

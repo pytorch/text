@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <string>
 #include <torch/csrc/jit/python/pybind_utils.h> // @manual
-#include <torch/torch.h> // @manual
-#include <vocab.h> // @manual
+#include <torch/torch.h>                        // @manual
+#include <vocab.h>                              // @manual
 
 namespace torchtext {
 
