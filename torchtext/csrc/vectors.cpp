@@ -1,4 +1,4 @@
-#include <ATen/Parallel.h>
+#include <ATen/Parallel.h> // @manual
 #include <atomic>
 #include <common.h>
 #include <condition_variable>
@@ -11,7 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vectors.h>
+#include <vectors.h> // @manual
 
 namespace torchtext {
 

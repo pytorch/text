@@ -174,7 +174,7 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v(tokens), expected_indices)
 
-    # we seperate out these errors because Windows runs into seg faults when propagating
+    # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_errors_vocab_cpp(self):
@@ -224,29 +224,29 @@ class TestVocab(TorchtextTestCase):
     def test_vocab_from_file(self):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        v = vocab_from_file(f, unk_token='<new_unk>')
+        with open(asset_path, 'r') as f:
+            v = vocab_from_file(f, unk_token='<new_unk>')
 
-        expected_itos = ['<new_unk>', 'a', 'b', 'c']
-        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            expected_itos = ['<new_unk>', 'a', 'b', 'c']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_from_raw_text_file(self):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
+        with open(asset_path, 'r') as f:
 
-        tokenizer = basic_english_normalize()
-        jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
+            tokenizer = basic_english_normalize()
+            jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+            v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
 
-        expected_itos = ['<new_unk>', 'fears', 'for', 't', 'n', 'pension', 'after',
-                         'talks', 'unions', 'representing', 'workers', 'at', 'turner',
-                         'newall', 'say', 'they', 'are', "'", 'disappointed', 'with',
-                         'stricken', 'parent', 'firm', 'federal', 'mogul', '.']
-        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            expected_itos = ['<new_unk>', 'fears', 'for', 't', 'n', 'pension', 'after',
+                             'talks', 'unions', 'representing', 'workers', 'at', 'turner',
+                             'newall', 'say', 'they', 'are', "'", 'disappointed', 'with',
+                             'stricken', 'parent', 'firm', 'federal', 'mogul', '.']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(v.get_stoi()), expected_stoi)

@@ -154,7 +154,7 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(loaded_vectors_obj['b'], tensorC)
         self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
-    # we seperate out these errors because Windows runs into seg faults when propagating
+    # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_errors_vectors_cpp(self):
