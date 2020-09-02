@@ -62,6 +62,7 @@ def build_fairseq_vocab(
 
         return Vocab(dictionary_items, unk_token=unk_replacement)
 
+
 def script_vocab(ordered_dict,
                  pad_token=None,
                  bos_token=None,
@@ -71,7 +72,7 @@ def script_vocab(ordered_dict,
 
     v = vocab(ordered_dict, **kwargs)
     return ScriptVocab(v.vocab, pad_token, bos_token, eos_token, mask_token, **kwargs)
-   
+
 
 class ScriptVocab(Vocab):
     r"""Creates a script vocab object which maps tokens to indices.
@@ -100,7 +101,7 @@ class ScriptVocab(Vocab):
                  **kwargs):
 
         super(ScriptVocab, self).__init__(cpp_vocab)
-        
+
         # store all tokens
         self.unk_token: str = kwargs.get('unk_token', '<unk>')
         self.pad_token: str = pad_token
@@ -202,5 +203,5 @@ class ScriptVocab(Vocab):
         r"""Return a JITable ScriptVocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
-        return ScriptVocab(cpp_vocab, self.pad_token, self.bos_token, self.eos_token, 
+        return ScriptVocab(cpp_vocab, self.pad_token, self.bos_token, self.eos_token,
                            self.mask_token, unk_token=self.unk_token)

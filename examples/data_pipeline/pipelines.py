@@ -52,9 +52,9 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
 def build_experimental_torchtext_pipeline(hf_vocab_file):
     tokenizer = basic_english_normalize()
     f = open(hf_vocab_file, 'r')
-    vocab = vocab_from_file_object(f)
+    vocab = vocab_from_file(f)
 
-    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab))
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
 
     print('jit experimental torchtext pipeline success!')
@@ -87,8 +87,8 @@ def build_legacy_pytext_vocab_pipeline(vocab_file):
     vocab_list = [line.rstrip() for line in f]
 
     pipeline = sequential_transforms(tokenizer,
-                                    PyTextVocabTransform(Vocabulary(vocab_list)),
-                                    totensor(dtype=torch.long))
+                                     PyTextVocabTransform(Vocabulary(vocab_list)),
+                                     totensor(dtype=torch.long))
     return pipeline, None, None
 
 
