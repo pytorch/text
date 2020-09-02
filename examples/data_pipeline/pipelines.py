@@ -11,7 +11,7 @@ from torchtext.experimental.transforms import (
     VocabTransform,
     VectorTransform,
 )
-from torchtext.experimental.vocab import vocab_from_file_object
+from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
@@ -67,7 +67,7 @@ def build_batch_torchtext_vocab(vocab_file):
 def build_text_vocab_pipeline(hf_vocab_file):
     tokenizer = basic_english_normalize()
     f = open(hf_vocab_file, 'r')
-    vocab = vocab_from_file_object(f)
+    vocab = vocab_from_file(f)
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
