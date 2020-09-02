@@ -203,7 +203,7 @@ class Vectors(nn.Module):
         return not isinstance(self.vectors, VectorsPybind)
 
     @torch.jit.export
-    def __call__(self, tokens: List[str]) -> Tensor:
+    def forward(self, tokens: List[str]) -> Tensor:
         r"""Calls the `lookup_vectors` method
          Args:
             tokens: a list of tokens
