@@ -83,3 +83,9 @@ class ToLongTensor(nn.Module):
 
     def forward(self, tokens: List[List[int]]) -> Tensor:
         return torch.tensor(tokens).to(torch.long)
+
+
+def iterate_batch(pipeline):
+    def func(data_batch):
+        return [pipeline(data) for data in data_batch]
+    return func

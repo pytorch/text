@@ -3,6 +3,7 @@ from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
     PyTextVocabTransform,
+    iterate_batch,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
@@ -41,7 +42,7 @@ def build_torchtext_vocab(vocab_file):
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
     pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
-    return pipeline, None, None
+    return iterate_batch(pipeline), None, None
 
 
 def build_batch_torchtext_vocab(vocab_file):
