@@ -46,7 +46,7 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
 
 def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
-    The `file_object` should contain tokens seperated by new lines. Note that the vocab
+    The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
     Format for txt file:
         token1
