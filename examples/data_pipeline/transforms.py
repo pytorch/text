@@ -61,8 +61,11 @@ class PyTextVocabTransform(nn.Module):
         super(PyTextVocabTransform, self).__init__()
         self.vocab = vocab
 
-    def forward(self, tokens: List[str]) -> List[int]:
-        return self.vocab.lookup_indices_1d(tokens)
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices_1d(tokens))
+        return ids
 
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
@@ -78,5 +81,5 @@ class ToLongTensor(nn.Module):
     def __init__(self):
         super(ToLongTensor, self).__init__()
 
-    def forward(self, tokens: List[int]) -> Tensor:
+    def forward(self, tokens: List[List[int]]) -> Tensor:
         return torch.tensor(tokens).to(torch.long)
