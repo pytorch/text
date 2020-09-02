@@ -14,11 +14,13 @@ class PretrainedSPTokenizer(nn.Module):
         super(PretrainedSPTokenizer, self).__init__()
         self.sp_model = sp_model
 
-    def forward(self, line: str) -> List[str]:
+    def forward(self, lines: List[str]) -> List[List[str]]:
         r"""
         """
-
-        return self.sp_model.EncodeAsPieces(line)
+        tokens: List[List[str]] = []
+        for line in lines:
+            tokens.append(self.sp_model.EncodeAsPieces(line))
+        return tokens
 
 
 class PretrainedSPVocab(nn.Module):
@@ -33,8 +35,11 @@ class PretrainedSPVocab(nn.Module):
         vocab_list = [self.sp_model.IdToPiece(i) for i in range(self.sp_model.GetPieceSize())]
         self.vocab = vocab(OrderedDict([(token, 1) for token in vocab_list]), unk_token=unk_token)
 
-    def forward(self, tokens: List[str]) -> List[int]:
-        return self.vocab.lookup_indices(tokens)
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices(tokens))
+        return ids
 
     def insert_token(self, token: str, index: int) -> None:
         self.vocab.insert_token(token, index)
