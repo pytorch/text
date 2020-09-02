@@ -158,7 +158,7 @@ class TextSequentialTransforms(nn.Sequential):
             >>> txt_pipeline = TextSequentialTransforms(tokenizer)
             >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
     """
-    def forward(self, input: str):
+    def forward(self, input: List[str]):
         for module in self:
             input = module(input)
         return input
