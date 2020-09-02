@@ -7,12 +7,12 @@ import unittest
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.transforms import basic_english_normalize
+# from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.experimental.vocab import (
     vocab,
     vocab_from_file,
-    vocab_from_raw_text_file
 )
+#    vocab_from_raw_text_file
 
 
 class TestVocab(TorchtextTestCase):
@@ -223,7 +223,7 @@ class TestVocab(TorchtextTestCase):
             self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     # [TODO]
-    #def test_vocab_from_raw_text_file(self):
+    # def test_vocab_from_raw_text_file(self):
     #    asset_name = 'vocab_raw_text_test.txt'
     #    asset_path = get_asset_path(asset_name)
     #    with open(asset_path, 'r') as f:
