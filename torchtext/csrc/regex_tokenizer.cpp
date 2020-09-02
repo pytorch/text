@@ -16,8 +16,7 @@ RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
   }
 }
 
-// std::vector<std::string> RegexTokenizer::forward(std::string str) const {
-std::string RegexTokenizer::forward(std::string str) const {
+std::vector<std::string> RegexTokenizer::forward(std::string str) const {
   // str tolower
   if (to_lower_) {
     std::transform(str.begin(), str.end(), str.begin(),
@@ -29,7 +28,6 @@ std::string RegexTokenizer::forward(std::string str) const {
   }
 
   std::vector<std::string> tokens;
-  tokens.reserve(100);
   split_(str, tokens);
   return tokens;
 }
