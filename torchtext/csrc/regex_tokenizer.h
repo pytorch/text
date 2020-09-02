@@ -17,8 +17,7 @@ public:
   explicit RegexTokenizer(const std::vector<std::string> &patterns,
                           const std::vector<std::string> &replacements,
                           const bool to_lower);
-  std::string forward(std::string str) const;
-  // std::vector<std::string> forward(std::string str) const;
+  std::vector<std::string> forward(std::string str) const;
 };
 
 } // namespace torchtext

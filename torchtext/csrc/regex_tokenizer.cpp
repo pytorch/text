@@ -27,12 +27,11 @@ std::string RegexTokenizer::forward(std::string str) const {
   for (size_t i = 0; i < compiled_patterns_.size(); i++) {
     RE2::GlobalReplace(&str, *compiled_patterns_[i], replacements_[i]);
   }
-  return str;
 
-  // std::vector<std::string> tokens;
-  // tokens.reserve(100);
-  // split_(str, tokens);
-  // return tokens;
+  std::vector<std::string> tokens;
+  tokens.reserve(100);
+  split_(str, tokens);
+  return tokens;
 }
 
 void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,

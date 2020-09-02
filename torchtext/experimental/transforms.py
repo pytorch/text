@@ -100,7 +100,7 @@ class BasicEnglishNormalize(nn.Module):
         Returns:
             List[str]: a list of tokens after normalizing and splitting on whitespace.
         """
-        return self.regex_tokenizer.forward(line).split()
+        return self.regex_tokenizer.forward(line)
 
     def to_ivalue(self):
         r"""Return a JITable BasicEnglishNormalize.
@@ -130,7 +130,7 @@ class RegexTokenizer(nn.Module):
         Returns:
             List[str]: a list of tokens after normalizing and splitting on whitespace.
         """
-        return self.regex_tokenizer.forward(line).split()
+        return self.regex_tokenizer.forward(line)
 
     def to_ivalue(self):
         r"""Return a JITable RegexTokenizer.

@@ -71,7 +71,7 @@ The lookup time: 13.41519635310396 (jit mode)
 
 ## Experimental PyText
 
-This pipeline example shows the application with the existing `ScriptVocab` in pytext library. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
+This pipeline example shows the application with a `ScriptVocab` based on the torchtext vocab. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `from pytext.torchscript.vocab.ScriptVocabulary`
@@ -125,7 +125,7 @@ The lookup time: 34.08170719863847 (eager mode)
 
 ## Experimental FastText pretrained word vectors 
 
-This pipeline example shows the application with the pretained word vector from FastText:
+This pipeline example shows the application with the pretained word vector using our experimental FastText:
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `torchtext.experimental.vectors.FastText`
