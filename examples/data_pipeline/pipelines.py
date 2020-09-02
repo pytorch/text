@@ -8,7 +8,6 @@ from transforms import (
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
-    VectorTransform,
 )
 from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
@@ -95,7 +94,7 @@ def build_fasttext_vector_pipeline():
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
+    pipeline = TextSequentialTransforms(tokenizer, vector)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit fasttext pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline

@@ -103,6 +103,6 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline fasttext 
 
-The lookup time: 16.45024944096803 (eager mode with pybind)
-The lookup time: 23.96459424262866 (eager mode with torchbind)
-The lookup time: 19.34995342604816 (jit mode)
+The lookup time: 11.66778517421335 (eager mode with pybind)
+The lookup time: 16.93211114965379 (eager mode with torchbind)
+The lookup time: 13.58067196328193 (jit mode)
