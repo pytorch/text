@@ -100,7 +100,7 @@ class TestFunctional(TorchtextTestCase):
         assert basic_eng_norm.to_ivalue().is_jitable
 
         self.assertEqual(experimental_jit_tokens, ref_results)
-        self.assertEqual(eager_tokens, ref_results)
+        self.assertEqual([eager_tokens], ref_results)
         self.assertEqual(experimental_eager_tokens, ref_results)
 
         # test load and save
