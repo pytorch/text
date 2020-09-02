@@ -8,7 +8,6 @@ from transforms import (
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
-    VocabTransform,
     VectorTransform,
 )
 from torchtext.experimental.vocab import vocab_from_file
@@ -70,7 +69,7 @@ def build_text_vocab_pipeline(hf_vocab_file):
     vocab = vocab_from_file(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
+    pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit text vocab pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline

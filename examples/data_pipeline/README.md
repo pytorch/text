@@ -32,9 +32,9 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline text_vocab 
 
-The lookup time: 10.21763815311715 (eager mode with pybind)
-The lookup time: 17.28485624492168 (eager mode with torchbind)
-The lookup time: 10.25370063772425 (jit mode)
+The lookup time: 7.917075761593878 (eager mode with pybind)
+The lookup time: 14.26446240767836 (eager mode with torchbind)
+The lookup time: 8.678328827023506 (jit mode)
 
 
 ## PyText 
