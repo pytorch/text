@@ -6,19 +6,6 @@ import torch
 from torch import Tensor
 
 
-class TextClassificationPipeline(nn.Module):
-    r"""Text classification pipeline template
-    """
-
-    def __init__(self, label_transform, text_transform):
-        super(TextClassificationPipeline, self).__init__()
-        self.label_transform = label_transform
-        self.text_transform = text_transform
-
-    def forward(self, label_text_tuple):
-        return self.label_transform(label_text_tuple[0]), self.text_transform(label_text_tuple[1])
-
-
 class PretrainedSPTokenizer(nn.Module):
     r"""Tokenizer based on a pretained sentencepiece model
     """
@@ -27,11 +14,13 @@ class PretrainedSPTokenizer(nn.Module):
         super(PretrainedSPTokenizer, self).__init__()
         self.sp_model = sp_model
 
-    def forward(self, line: str) -> List[str]:
+    def forward(self, lines: List[str]) -> List[List[str]]:
         r"""
         """
-
-        return self.sp_model.EncodeAsPieces(line)
+        tokens: List[List[str]] = []
+        for line in lines:
+            tokens.append(self.sp_model.EncodeAsPieces(line))
+        return tokens
 
 
 class PretrainedSPVocab(nn.Module):
@@ -46,8 +35,11 @@ class PretrainedSPVocab(nn.Module):
         vocab_list = [self.sp_model.IdToPiece(i) for i in range(self.sp_model.GetPieceSize())]
         self.vocab = vocab(OrderedDict([(token, 1) for token in vocab_list]), unk_token=unk_token)
 
-    def forward(self, tokens: List[str]) -> List[int]:
-        return self.vocab.lookup_indices(tokens)
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices(tokens))
+        return ids
 
     def insert_token(self, token: str, index: int) -> None:
         self.vocab.insert_token(token, index)
@@ -61,24 +53,6 @@ class PretrainedSPVocab(nn.Module):
         return self
 
 
-class VocabTransform(nn.Module):
-    r"""Vocab transform
-    """
-
-    def __init__(self, vocab):
-        super(VocabTransform, self).__init__()
-        self.vocab = vocab
-
-    def forward(self, tokens: List[str]) -> List[int]:
-        return self.vocab.lookup_indices(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            vocab = self.vocab.to_ivalue()
-            return VocabTransform(vocab)
-        return self
-
-
 class PyTextVocabTransform(nn.Module):
     r"""Vocab transform
     """
@@ -87,8 +61,17 @@ class PyTextVocabTransform(nn.Module):
         super(PyTextVocabTransform, self).__init__()
         self.vocab = vocab
 
-    def forward(self, tokens):
-        return [self.vocab.idx[token] if token in self.vocab.idx.keys() else 0 for token in tokens]
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices_1d(tokens))
+        return ids
+
+    def to_ivalue(self):
+        if hasattr(self.vocab, 'to_ivalue'):
+            vocab = self.vocab.to_ivalue()
+            return PyTextScriptVocabTransform(vocab)
+        return self
 
 
 class PyTextScriptVocabTransform(nn.Module):
@@ -102,29 +85,6 @@ class PyTextScriptVocabTransform(nn.Module):
     def forward(self, tokens: List[str]) -> List[int]:
         return self.vocab.lookup_indices_1d(tokens)
 
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            vocab = self.vocab.to_ivalue()
-            return PyTextScriptVocabTransform(vocab)
-        return self
-
-class VectorTransform(nn.Module):
-    r"""Vector transform
-    """
-
-    def __init__(self, vector):
-        super(VectorTransform, self).__init__()
-        self.vector = vector
-
-    def forward(self, tokens: List[str]) -> Tensor:
-        return self.vector.lookup_vectors(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vector, 'to_ivalue'):
-            vector = self.vector.to_ivalue()
-            return VectorTransform(vector)
-        return self
-
 
 class ToLongTensor(nn.Module):
     r"""Convert a list of integers to long tensor
@@ -133,5 +93,24 @@ class ToLongTensor(nn.Module):
     def __init__(self):
         super(ToLongTensor, self).__init__()
 
-    def forward(self, tokens: List[int]) -> Tensor:
+    def forward(self, tokens: List[List[int]]) -> Tensor:
         return torch.tensor(tokens).to(torch.long)
+
+
+def iterate_batch(pipeline):
+    def func(data_batch):
+        return [pipeline(data) for data in data_batch]
+    return func
+
+
+class TextClassificationPipeline(nn.Module):
+    r"""Text classification pipeline template
+    """
+
+    def __init__(self, label_transform, text_transform):
+        super(TextClassificationPipeline, self).__init__()
+        self.label_transform = label_transform
+        self.text_transform = text_transform
+
+    def forward(self, label_text_tuple):
+        return self.label_transform(label_text_tuple[0]), self.text_transform(label_text_tuple[1])

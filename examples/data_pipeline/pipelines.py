@@ -2,21 +2,19 @@ import torch
 from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
-    VocabTransform,
     PyTextVocabTransform,
     PyTextScriptVocabTransform,
-    VectorTransform,
-    ToLongTensor,
+    iterate_batch,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
 )
-from torchtext.experimental.vocab import vocab_from_file_object
+from torchtext.experimental.functional import sequential_transforms
 from torchtext.experimental.vectors import FastText as FastTextExperimental
-from torchtext.experimental.functional import sequential_transforms, totensor
-
+from torchtext.experimental.vocab import vocab_from_file
 from torchtext.vocab import FastText
+
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
@@ -28,7 +26,9 @@ def build_sp_pipeline(spm_file):
     tokenizer = PretrainedSPTokenizer(load_sp_model(spm_file))
     vocab = PretrainedSPVocab(load_sp_model(spm_file))
 
-    pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
+    # Insert token in vocab to match a pretrained vocab
+    vocab.insert_token('<pad>', 1)
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit sentencepiece pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -46,7 +46,7 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
     pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
-    return pipeline, None, None
+    return iterate_batch(pipeline), None, None
 
 
 def build_experimental_torchtext_pipeline(hf_vocab_file):
@@ -54,7 +54,7 @@ def build_experimental_torchtext_pipeline(hf_vocab_file):
     f = open(hf_vocab_file, 'r')
     vocab = vocab_from_file_object(f)
 
-    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
+    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
 
     print('jit experimental torchtext pipeline success!')
@@ -100,8 +100,7 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
     vocab_list = [line.rstrip() for line in f]
 
     pipeline = TextSequentialTransforms(tokenizer,
-                                        PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)),
-                                        ToLongTensor())
+                                        PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit legacy PyText pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -123,9 +122,7 @@ def build_experimental_pytext_script_vocab_pipeline(vocab_file):
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer,
-                                        PyTextScriptVocabTransform(script_vocab(ordered_dict)),
-                                        ToLongTensor())
-
+                                        PyTextScriptVocabTransform(script_vocab(ordered_dict)))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit legacy PyText pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -145,17 +142,17 @@ def build_experimental_fasttext_vector_pipeline():
     tokenizer = basic_english_normalize()
     vector = FastTextExperimental()
 
-    pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
+    pipeline = TextSequentialTransforms(tokenizer, vector)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-    
+
     print('jit legacy fasttext pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
 def run_benchmark_lookup(text_classification_dataset, pipeline):
     t0 = time.monotonic()
-    for (label, text) in text_classification_dataset:
-        text = pipeline(text)
+    lines = [text for (label, text) in text_classification_dataset]
+    lines = pipeline(lines)
     print("Lookup time:", time.monotonic() - t0)
 
 

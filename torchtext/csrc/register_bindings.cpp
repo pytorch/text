@@ -1,12 +1,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <regex.h>
-#include <regex_tokenizer.h>
-#include <sentencepiece.h>
-#include <torch/csrc/utils/pybind.h>
+#include <regex_tokenizer.h>         // @manual
+#include <sentencepiece.h>           // @manual
+#include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
-#include <vectors.h>
-#include <vocab.h>
+#include <vectors.h> // @manual
+#include <vocab.h>   // @manual
 
 namespace torchtext {
 
@@ -63,6 +63,7 @@ PYBIND11_MODULE(_torchtext, m) {
   m.def("_load_token_and_vectors_from_file",
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
+  m.def("_load_vocab_from_raw_text_file", _load_vocab_from_raw_text_file);
 }
 
 // Registers our custom classes with torch.
