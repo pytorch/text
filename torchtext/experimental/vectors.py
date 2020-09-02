@@ -213,7 +213,7 @@ class Vectors(nn.Module):
         """
         vectors: List[Tensor] = []
         for tokens in tokens_list:
-            vectors.append(self.vector.lookup_vectors(tokens))
+            vectors.append(self.vectors.lookup_vectors(tokens))
         return vectors
 
     @torch.jit.export
