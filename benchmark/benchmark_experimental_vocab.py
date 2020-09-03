@@ -14,8 +14,7 @@ from torchtext.vocab import (
     build_vocab_from_iterator
 )
 from torchtext.experimental.transforms import basic_english_normalize
-
-
+from torchtext.vocab import build_vocab_from_iterator
 
 def _infer_shape(f):
     num_lines = 0
@@ -52,20 +51,17 @@ def legacy_vocab_from_file_object(file_like_object, **kwargs):
     from tqdm import tqdm
 
     tokenizer = basic_english_normalize()
-    ordered_dict = OrderedDict()
-    num_lines = _infer_shape(file_like_object)
 
-    for line in tqdm(file_like_object, unit_scale=0, unit="lines", total=num_lines):
-        tok_list = tokenizer(line)
+    def tokenize(line):
+        return tokenizer(line)
 
-        for token in tok_list:
-            if token in ordered_dict:
-                ordered_dict[token] += 1
-            else:
-                ordered_dict[token] = 1
+    def token_iterator(lines):
+        for line in lines:
+            for token in tokenize(line):
+                yield token
 
-    return VocabExperimental(ordered_dict, **kwargs)
-    
+    return build_vocab_from_iterator(token_iterator(file_like_object))
+
 
 def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True, is_legacy=True, num_iters=1):
     f = open(vocab_file_path, 'r')
@@ -82,7 +78,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
             for _ in range(num_iters):
                 tokenizer = basic_english_normalize()
                 jited_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-                vocab_from_raw_text_file(f, jited_tokenizer, num_cpus=40)
+                vocab_from_raw_text_file(f, jited_tokenizer, num_cpus=20)
             print("Construction time:", time.monotonic() - t0)
     else:
         for _ in range(num_iters):
