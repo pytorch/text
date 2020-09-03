@@ -28,17 +28,24 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
-:hidden:`PretrainedSPTokenizer`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:hidden:`pretrained_spm
+~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: PretrainedSPTokenizer
+.. autoclass:: pretrained_spm
     :members:
     :special-members: __init__
 
-:hidden:`PretrainedSPTransform`
+:hidden:`SentencePieceTokenizer`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: SentencePieceTokenizer
+    :members:
+    :special-members: __init__
+
+:hidden:`SentencePieceTransform`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: PretrainedSPTransform
+.. autoclass:: SentencePieceTransform
     :members:
     :special-members: __init__
 
