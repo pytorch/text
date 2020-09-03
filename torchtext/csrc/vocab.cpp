@@ -426,8 +426,8 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
             << version_str << std::endl;
 #endif
-  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
-                           version_str + ".");
+  throw std::runtime_error(
+      "Found unexpected version for serialized Vocab: " + version_str + ".");
 }
 
 } // namespace torchtext

@@ -14,14 +14,6 @@ from torchtext.vocab import (
     build_vocab_from_iterator
 )
 from torchtext.experimental.transforms import basic_english_normalize
-from torchtext.vocab import build_vocab_from_iterator
-
-def _infer_shape(f):
-    num_lines = 0
-    for line in f:
-        num_lines += 1
-    f.seek(0)
-    return num_lines
 
 
 def legacy_vocab_from_file_object(file_like_object, **kwargs):
@@ -48,8 +40,6 @@ def legacy_vocab_from_file_object(file_like_object, **kwargs):
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file_object(f, specials=('<unk>', '<pad>', '<eos>'), specials_first=False)
     """
-    from tqdm import tqdm
-
     tokenizer = basic_english_normalize()
 
     def tokenize(line):
