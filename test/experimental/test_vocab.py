@@ -216,7 +216,7 @@ class TestVocab(TorchtextTestCase):
         f = open(asset_path, 'r')
         v = vocab_from_file(f, unk_token='<new_unk>')
 
-        expected_itos = ['<new_unk>', 'c', 'a', 'b']
+        expected_itos = ['<new_unk>', 'a', 'b', 'c']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)

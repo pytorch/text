@@ -196,9 +196,12 @@ void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
 }
 
 // sorting using a custom object
-struct CompareFreq {
+struct CompareTokens {
   bool operator()(const std::pair<std::string, int64_t> &a,
-                  const std::pair<std::string, int64_t> &b) {
+                  const std::pair<std::string, int64_t> &b) { 
+    if (a.second == b.second){
+      return a.first < b.first;
+    }
     return a.second > b.second;
   }
 };
@@ -241,8 +244,8 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   }
 
   // sort tokens by freq
-  CompareFreq compare_freq;
-  std::sort(token_freq_pairs.begin(), token_freq_pairs.end(), compare_freq);
+  CompareTokens compare_tokens;
+  std::sort(token_freq_pairs.begin(), token_freq_pairs.end(), compare_tokens);
 
   // update unique tokens with correct order
   unique_tokens.clear();
