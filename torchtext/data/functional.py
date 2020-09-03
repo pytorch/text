@@ -58,7 +58,7 @@ def load_sp_model(spm):
     elif isinstance(spm, io.BufferedReader):
         return torch.ops.torchtext.load_sp_model_string(spm.read())
     else:
-        raise RuntimeError('the input spm is not supported.')
+        raise RuntimeError('the input of the load_sp_model func is not supported.')
 
 
 def sentencepiece_numericalizer(sp_model):
