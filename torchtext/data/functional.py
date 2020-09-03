@@ -1,5 +1,5 @@
 import re
-
+import io
 import torch
 
 
@@ -59,6 +59,7 @@ def load_sp_model(sp_m):
         return torch.ops.torchtext.load_sp_model_string(spm.read())
     else:
         raise RuntimeError('the input sp_m is not supported.')
+
 
 def sentencepiece_numericalizer(sp_model):
     r"""A sentencepiece model to numericalize a text sentence into
