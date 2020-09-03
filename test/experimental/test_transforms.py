@@ -28,7 +28,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(pipeline(test_sample), ref_results)
         self.assertEqual(jit_pipeline(test_sample), ref_results)
 
-        spm_transform = SentencePieceTransform(pretrained_spm(model_path))
+        spm_transform = SentencePieceTransform(load_sp_model(model_path))
         self.assertEqual(spm_transform.decode([[15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366, 144, 3689,
                                                9, 5602, 12114, 6, 560, 649, 5602, 12114]]), test_sample)
 
@@ -55,11 +55,11 @@ class TestTransforms(TorchtextTestCase):
         ref_results = [['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']]
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
-        spm_transform = SentencePieceTransform(pretrained_spm())
-        _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
+        spm_transform = SentencePieceTransform(pretrained_spm('text_bpe_25000'))
+        _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
         os.remove(_path)
         test_sample = ['the pretrained spm model names']
-        ref_results = [[9, 1546, 18811, 2849, 61, 2759, 2202]]
+        ref_results = [[13, 1465, 12824, 304, 24935, 5771, 3776]]
         self.assertEqual(spm_transform(test_sample), ref_results)
 
     def test_vocab_transform(self):
