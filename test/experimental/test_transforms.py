@@ -6,7 +6,6 @@ from torchtext.experimental.transforms import (
     VocabTransform,
     SentencePieceTransform,
     SentencePieceTokenizer,
-    ToLongTensor,
     TextSequentialTransforms,
     pretrained_spm,
 )
