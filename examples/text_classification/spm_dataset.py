@@ -3,19 +3,22 @@ import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.datasets.text_classification import URLS
 from torchtext.datasets import text_classification
-from torchtext.experimental.transforms import PretrainedSPTransform
+from torchtext.experimental.transforms import (
+    SentencePieceTransform,
+    pretrained_spm,
+)
 
 
 def _create_data_with_sp_transform(data_path):
 
     data = []
     labels = []
-    text_pipeline = PretrainedSPTransform('text_unigram_15000')
+    text_pipeline = SentencePieceTransform(pretrained_spm('text_unigram_15000'))
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:
             corpus = ' '.join(row[1:])
-            token_ids = text_pipeline(corpus)
+            token_ids = text_pipeline([corpus])[0]
             label = int(row[0]) - 1
             data.append((label, torch.tensor(token_ids)))
             labels.append(label)
