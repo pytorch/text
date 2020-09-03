@@ -17,11 +17,13 @@ class TestTransforms(TorchtextTestCase):
     def test_vocab_transform(self):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        vocab_transform = VocabTransform(vocab_from_file(f))
-        self.assertEqual(vocab_transform(['of', 'that', 'new']), [7, 18, 24])
-        jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
-        self.assertEqual(jit_vocab_transform(['of', 'that', 'new']), [7, 18, 24])
+        with open(asset_path, 'r') as f:
+            vocab_transform = VocabTransform(vocab_from_file(f))
+            self.assertEqual(vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
+                             [[21, 26, 20], [21, 26, 20, 26]])
+            jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
+            self.assertEqual(jit_vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
+                             [[21, 26, 20], [21, 26, 20, 26]])
 
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'
@@ -33,9 +35,10 @@ class TestTransforms(TorchtextTestCase):
             vector_transform = VectorTransform(FastText(root=dir_name, validate_file=False))
             jit_vector_transform = torch.jit.script(vector_transform.to_ivalue())
             # The first 3 entries in each vector.
-            expected_fasttext_simple_en = torch.tensor([[-0.065334, -0.093031, -0.017571], [-0.32423, -0.098845, -0.0073467]])
-            self.assertEqual(vector_transform(['the', 'world'])[:, 0:3], expected_fasttext_simple_en)
-            self.assertEqual(jit_vector_transform(['the', 'world'])[:, 0:3], expected_fasttext_simple_en)
+            expected_fasttext_simple_en = torch.tensor([[-0.065334, -0.093031, -0.017571],
+                                                        [-0.32423, -0.098845, -0.0073467]])
+            self.assertEqual(vector_transform([['the', 'world']])[0][:, 0:3], expected_fasttext_simple_en)
+            self.assertEqual(jit_vector_transform([['the', 'world']])[0][:, 0:3], expected_fasttext_simple_en)
 
     def test_padding_func(self):
         pad_transform = PadTransform(2)
