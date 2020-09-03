@@ -177,7 +177,7 @@ class TextSequentialTransforms(nn.Sequential):
 
 _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_50000',
                    'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
-                   'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
+
 
 def pretrained_spm(spm_model='text_unigram_25000'):
     r"""Generate a pretrained sentencepiece model.
