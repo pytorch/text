@@ -96,14 +96,18 @@ class BasicEnglishNormalize(nn.Module):
     def is_jitable(self):
         return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
 
-    def forward(self, line: str) -> List[str]:
+    def forward(self, lines: List[str]) -> List[List[str]]:
         r"""
         Args:
-            line (str): a line of text to tokenize.
+            lines (List[str]): a list of text to tokenize.
+
         Returns:
-            List[str]: a list of tokens after normalizing and splitting on whitespace.
+            List[List[str]]: a list of token list after normalizing and splitting on whitespace.
         """
-        return self.regex_tokenizer.forward(line)
+        tokens: List[List[str]] = []
+        for line in lines:
+            tokens.append(self.regex_tokenizer.forward(line))
+        return tokens
 
     def to_ivalue(self):
         r"""Return a JITable BasicEnglishNormalize.
@@ -126,14 +130,18 @@ class RegexTokenizer(nn.Module):
     def is_jitable(self):
         return not isinstance(self.regex_tokenizer, RegexTokenizerPybind)
 
-    def forward(self, line: str) -> List[str]:
+    def forward(self, lines: List[str]) -> List[List[str]]:
         r"""
         Args:
-            line (str): a line of text to tokenize.
+            lines (List[str]): a list of text to tokenize.
+
         Returns:
-            List[str]: a list of tokens after normalizing and splitting on whitespace.
+            List[List[str]]: a list of token list after normalizing and splitting on whitespace.
         """
-        return self.regex_tokenizer.forward(line)
+        tokens: List[List[str]] = []
+        for line in lines:
+            tokens.append(self.regex_tokenizer.forward(line))
+        return tokens
 
     def to_ivalue(self):
         r"""Return a JITable RegexTokenizer.
@@ -144,29 +152,20 @@ class RegexTokenizer(nn.Module):
 
 class TextSequentialTransforms(nn.Sequential):
     r"""A container to host a sequential text transforms.
-
         Example:
             >>> import torch
-            >>> from torchtext.experimental.transforms import PretrainedSPTransform, ToLongTensor, TextSequentialTransforms
-            >>> spm_transform = PretrainedSPTransform()
-            >>> to_tensor = ToLongTensor()
-            >>> txt_pipeline = TextSequentialTransforms(spm_transform, to_tensor)
+            >>> from torchtext.experimental.transforms import BasicEnglishNormalize, TextSequentialTransforms
+            >>> tokenizer = BasicEnglishNormalize()
+            >>> txt_pipeline = TextSequentialTransforms(tokenizer)
             >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
     """
-    def forward(self, line: str):
-        r"""
-        Args:
-            line: the input string
-
-        Examples:
-            >>> txt_pipeline('the pretrained sp model names')
-        """
+    def forward(self, input: List[str]):
         for module in self:
-            line = module(line)
-        return line
+            input = module(input)
+        return input
 
     def to_ivalue(self):
-        r"""Call to_ivalue func if any modules have the func.
+        r"""Return a JITable TextSequentialTransforms.
         """
         module_list = []
         for _idx, _module in enumerate(self):
@@ -341,17 +340,20 @@ class VocabTransform(nn.Module):
         super(VocabTransform, self).__init__()
         self.vocab = vocab
 
-    def forward(self, tokens: List[str]) -> List[int]:
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
         r"""
 
         Args:
-            tokens: a list of string tokens
+            tokens: a list of string token list
 
         Example:
-            >>> vocab_transform(['here', 'is', 'an', 'example'])
+            >>> vocab_transform([['here', 'is', 'an', 'example']])
 
         """
-        return self.vocab.lookup_indices(tokens)
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices(tokens))
+        return ids
 
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
@@ -377,17 +379,20 @@ class VectorTransform(nn.Module):
         super(VectorTransform, self).__init__()
         self.vector = vector
 
-    def forward(self, tokens: List[str]) -> Tensor:
+    def forward(self, tokens_list: List[List[str]]) -> List[Tensor]:
         r"""
 
         Args:
-            tokens: a list of string tokens
+            tokens: a list of string token list
 
         Example:
-            >>> vector_transform(['here', 'is', 'an', 'example'])
+            >>> vector_transform([['here', 'is', 'an', 'example']])
 
         """
-        return self.vector.lookup_vectors(tokens)
+        vectors: List[Tensor] = []
+        for tokens in tokens_list:
+            vectors.append(self.vector.lookup_vectors(tokens))
+        return vectors
 
     def to_ivalue(self):
         if hasattr(self.vector, 'to_ivalue'):
