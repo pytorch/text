@@ -39,26 +39,26 @@ def generate_sp_model(filename, vocab_size=20000,
     torch.ops.torchtext.generate_sp_model(filename, vocab_size, model_type, model_prefix)
 
 
-def load_sp_model(sp_m):
+def load_sp_model(spm):
     r"""Load a  sentencepiece model for file.
 
     Arguments:
-        sp_m: the file path or a file object saving the sentencepiece model.
+        spm: the file path or a file object saving the sentencepiece model.
 
     Outputs:
         output: a SentencePiece model.
 
     Examples:
-        >>> from torchtext.data.functional import load_sp_model
-        >>> sp_model = load_sp_model("m_user.model")
-        >>> sp_model = load_sp_model(open("m_user.model", 'rb'))
+        >>> from torchtext.data.functional import load_spmodel
+        >>> spmodel = load_spmodel("m_user.model")
+        >>> spmodel = load_spmodel(open("m_user.model", 'rb'))
     """
-    if isinstance(sp_m, str):
-        return torch.ops.torchtext.load_sp_model(spm)
-    elif isinstance(sp_m, io.BufferedReader):
-        return torch.ops.torchtext.load_sp_model_string(spm.read())
+    if isinstance(spm, str):
+        return torch.ops.torchtext.load_spmodel(spm)
+    elif isinstance(spm, io.BufferedReader):
+        return torch.ops.torchtext.load_spmodel_string(spm.read())
     else:
-        raise RuntimeError('the input sp_m is not supported.')
+        raise RuntimeError('the input spm is not supported.')
 
 
 def sentencepiece_numericalizer(sp_model):
