@@ -177,10 +177,10 @@ class TextSequentialTransforms(nn.Sequential):
 
 _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_50000',
                    'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
+                   'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
 
-
-class PretrainedSPTokenizer(nn.Module):
-    r"""Tokenizer based on a pretained sentencepiece model.
+def pretrained_spm(spm_model='text_unigram_25000'):
+    r"""Generate a pretrained sentencepiece model.
         The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
         Both BPE and unigram methods were used to train the model (for more details please refer to
         SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
@@ -197,106 +197,115 @@ class PretrainedSPTokenizer(nn.Module):
             Otherwise, the file path to the user-provided sentencepiece model is required.
 
     Examples:
+        >>> from torchtext.experimental.transforms import pretrained_spm
+        >>> sp_model = pretrained_spm('text_unigram_25000')
+
+    """
+    if spm_model in _pretrained_spm:
+        spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
+    try:
+        return load_sp_model(spm_model)
+    except:
+        raise RuntimeError('The pretrained sentencepiece model is not supported')
+
+
+class SentencePieceTokenizer(nn.Module):
+    r"""Tokenizer based on a pretained sentencepiece model.
+
+    Args:
+       spm_model: the sentencepiece model instance
+
+    Examples:
         >>> import torch
-        >>> from torchtext.experimental.transforms import PretrainedSPTokenizer
-        >>> spm_tokenizer = PretrainedSPTokenizer('text_unigram_25000')
-        >>> spm_tokenizer = PretrainedSPTokenizer('.data/text_unigram_25000.model')
+        >>> from torchtext.experimental.transforms import SentencePieceTokenizer
+        >>> from torchtext.experimental.transforms import pretrained_spm
+        >>> sp_model = pretrained_spm('text_unigram_25000')
+        >>> spm_tokenizer = SentencePieceTokenizer(sp_model)
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
     """
 
-    def __init__(self, spm_model='text_unigram_25000'):
-        super(PretrainedSPTokenizer, self).__init__()
-        if spm_model in _pretrained_spm:
-            spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-        try:
-            self.sp_model = load_sp_model(spm_model)
-        except:
-            raise RuntimeError('The pretrained sentencepiece model is not supported')
+    def __init__(self, spm_model):
+        super(SentencePieceTokenizer, self).__init__()
+        self.sp_model = load_sp_model(spm_model)
 
-    def forward(self, line: str) -> List[str]:
+    def forward(self, lines: List[str]) -> List[List[str]]:
         r"""
         Args:
-            line: the input string
+            lines: a list of the input strings
 
         Examples:
-            >>> spm_tokenizer('the pretrained sp model names')
-            >>> ['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']
+            >>> spm_tokenizer(['the pretrained sp model names'])
+            >>> [['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']]
         """
 
-        return self.sp_model.EncodeAsPieces(line)
+        tokens: List[List[str]] = []
+        for line in lines:
+            tokens.append(self.sp_model.EncodeAsPieces(line))
+        return tokens
 
     @torch.jit.export
-    def decode(self, tokens: List[str]) -> str:
+    def decode(self, tokens_list: List[List[str]]) -> List[str]:
         r"""
         Args:
-            tokens: the tokens list for decoder
+            tokens_list: the tokens list for decoder
 
         Examples:
-            >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names'])
-            >>> 'the pretrained sp model names'
+            >>> spm_transform.decoder([['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']])
+            >>> ['the pretrained sp model names']
         """
+        string_list: List[str] = []
+        for tokens in tokens_list:
+            string_list.append(self.sp_model.DecodePieces(tokens))
+        return string_list
 
-        return self.sp_model.DecodePieces(tokens)
 
-
-class PretrainedSPTransform(nn.Module):
-    r"""string to ids transform based on a pretained sentencepiece model
-        The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
-        Both BPE and unigram methods were used to train the model (for more details please refer to
-        SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
-        with a different size of the vocabulary (i.e. 15000, 25000, 50000).
+class SentencePieceTransform(nn.Module):
+    r"""String to ids transform based on a pretained sentencepiece model
 
     Args:
-       spm_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
-            - text_unigram_15000
-            - text_unigram_25000
-            - text_unigram_50000
-            - text_bpe_15000
-            - text_bpe_25000
-            - text_bpe_50000
-            Otherwise, the file path to the user-provided sentencepiece model is required.
+       spm_model: the sentencepiece model instance
 
     Examples:
         >>> import torch
-        >>> from torchtext.experimental.transforms import PretrainedSPTransform
-        >>> spm_transform = PretrainedSPTransform('text_unigram_25000')
-        >>> spm_transform = PretrainedSPTransform('.data/text_unigram_25000.model')
-        >>> jit_spm_transform = torch.jit.script(spm_transform)
+        >>> from torchtext.experimental.transforms import SentencePieceTransform
+        >>> from torchtext.experimental.transforms import pretrained_spm
+        >>> sp_model = pretrained_spm('text_unigram_25000')
+        >>> spm_transform = SentencePieceTransform(sp_model)
+        >>> jit_spm_tokenizer = torch.jit.script(spm_transform)
     """
 
-    def __init__(self, spm_model='text_unigram_25000'):
-        super(PretrainedSPTransform, self).__init__()
-        if spm_model in _pretrained_spm:
-            spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-        try:
-            self.sp_model = load_sp_model(spm_model)
-        except:
-            raise RuntimeError('The pretrained sentencepiece model is not supported')
+    def __init__(self, spm_model):
+        super(SentencePieceTransform, self).__init__()
+        self.sp_model = load_sp_model(spm_model)
 
-    def forward(self, line: str) -> List[int]:
+    def forward(self, lines: List[str]) -> List[List[int]]:
         r"""
         Args:
-            line: the input string
+            lines: a list of the input strings
 
         Examples:
-            >>> spm_transform('the pretrained sp model names')
-            >>> [9, 1546, 18811, 2849, 2759, 2202]
+            >>> spm_transform(['the pretrained sp model names'])
+            >>> [[9, 1546, 18811, 2849, 2759, 2202]]
         """
-
-        return self.sp_model.EncodeAsIds(line)
+        ids: List[List[int]] = []
+        for line in lines:
+            ids.append(self.sp_model.EncodeAsIds(line))
+        return ids
 
     @torch.jit.export
-    def decode(self, ids: List[int]) -> str:
+    def decode(self, ids: List[List[int]]) -> List[str]:
         r"""
         Args:
-            ids: the integer list for decoder
+            ids: a list of the integer list for decoder
 
         Examples:
-            >>> spm_transform.decoder([9, 1546, 18811, 2849, 2759, 2202])
-            >>> 'the pretrained sp model names'
+            >>> spm_transform.decoder([[9, 1546, 18811, 2849, 2759, 2202]])
+            >>> ['the pretrained sp model names']
         """
-
-        return self.sp_model.DecodeIds(ids)
+        string_list: List[str] = []
+        for _id in ids:
+            string_list.append(self.sp_model.DecodeIds(_id))
+        return string_list
 
 
 class ToLongTensor(nn.Module):
