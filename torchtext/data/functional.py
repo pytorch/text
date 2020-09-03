@@ -49,14 +49,14 @@ def load_sp_model(spm):
         output: a SentencePiece model.
 
     Examples:
-        >>> from torchtext.data.functional import load_spmodel
-        >>> spmodel = load_spmodel("m_user.model")
-        >>> spmodel = load_spmodel(open("m_user.model", 'rb'))
+        >>> from torchtext.data.functional import load_sp_model
+        >>> sp_model = load_sp_model("m_user.model")
+        >>> sp_model = load_sp_model(open("m_user.model", 'rb'))
     """
     if isinstance(spm, str):
-        return torch.ops.torchtext.load_spmodel(spm)
+        return torch.ops.torchtext.load_sp_model(spm)
     elif isinstance(spm, io.BufferedReader):
-        return torch.ops.torchtext.load_spmodel_string(spm.read())
+        return torch.ops.torchtext.load_sp_model_string(spm.read())
     else:
         raise RuntimeError('the input spm is not supported.')
 
