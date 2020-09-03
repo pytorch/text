@@ -1,7 +1,7 @@
-<new_unk>
+b
+a
+c
 a
 b
-c
-c
 a
 c
