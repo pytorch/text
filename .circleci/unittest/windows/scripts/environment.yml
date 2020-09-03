@@ -5,6 +5,7 @@ dependencies:
   - codecov
   - pip
   - pip:
+    - dataclasses
     - nltk
     - requests
     - revtok
