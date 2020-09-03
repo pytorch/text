@@ -226,7 +226,7 @@ class SentencePieceTokenizer(nn.Module):
 
     def __init__(self, spm_model):
         super(SentencePieceTokenizer, self).__init__()
-        self.sp_model = load_sp_model(spm_model)
+        self.sp_model = spm_model
 
     def forward(self, lines: List[str]) -> List[List[str]]:
         r"""
@@ -276,7 +276,7 @@ class SentencePieceTransform(nn.Module):
 
     def __init__(self, spm_model):
         super(SentencePieceTransform, self).__init__()
-        self.sp_model = load_sp_model(spm_model)
+        self.sp_model = spm_model
 
     def forward(self, lines: List[str]) -> List[List[int]]:
         r"""
