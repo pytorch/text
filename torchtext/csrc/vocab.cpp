@@ -1,10 +1,10 @@
-#include <ATen/Parallel.h>
+#include <ATen/Parallel.h> // @manual
 #include <common.h>
 #include <stdexcept>
 #include <string>
-#include <torch/csrc/jit/python/pybind_utils.h>
-#include <torch/torch.h>
-#include <vocab.h>
+#include <torch/csrc/jit/python/pybind_utils.h> // @manual
+#include <torch/torch.h>                        // @manual
+#include <vocab.h>                              // @manual
 
 namespace torchtext {
 

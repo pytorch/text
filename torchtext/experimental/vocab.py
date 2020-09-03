@@ -32,13 +32,13 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
         Vocab: a `Vocab` object.
 
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file_object
+        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file
         >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> f = open('vocab.txt', 'r')
         >>>     tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        >>> v = vocab_from_raw_text_file_object(f, jit_tokenizer)
+        >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
     """
     vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
@@ -46,7 +46,7 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
 
 def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
-    The `file_object` should contain tokens seperated by new lines. Note that the vocab
+    The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
     Format for txt file:
         token1
@@ -63,9 +63,9 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
     Returns:
         Vocab: a `Vocab` object.
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_file_object
+        >>> from torchtext.experimental.vocab import vocab_from_file
         >>> f = open('vocab.txt', 'r')
-        >>> v = vocab_from_file_object(f)
+        >>> v = vocab_from_file(f)
     """
     vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
@@ -128,15 +128,18 @@ class Vocab(nn.Module):
         return not isinstance(self.vocab, VocabPybind)
 
     @torch.jit.export
-    def __call__(self, tokens: List[str]) -> List[int]:
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
         r"""Calls the `lookup_indices` method
         Args:
-            tokens (List[str]): the tokens used to lookup their corresponding `indices`.
+            tokens (List[List[str]]): a list of tokens used to lookup their corresponding `indices`.
 
         Returns:
-            indices (List[int]): the 'indices` associated with `tokens`.
+            indices (List[List[int]]): the 'indices` associated with a list of tokens`.
         """
-        return self.lookup_indices(tokens)
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices(tokens))
+        return ids
 
     @torch.jit.export
     def __len__(self) -> int:
