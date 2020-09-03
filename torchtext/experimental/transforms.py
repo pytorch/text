@@ -203,10 +203,9 @@ def pretrained_spm(spm_model='text_unigram_25000'):
     """
     if spm_model in _pretrained_spm:
         spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-    try:
         return load_sp_model(spm_model)
-    except:
-        raise RuntimeError('The pretrained sentencepiece model is not supported')
+    else:
+        raise RuntimeError('The pretrained sentencepiece model is not valid')
 
 
 class SentencePieceTokenizer(nn.Module):

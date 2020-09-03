@@ -11,15 +11,16 @@ from torchtext.experimental.transforms import (
 )
 from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
+from torchtext.data.functional import load_sp_model
 import shutil
 import tempfile
 import os
 
 
 class TestTransforms(TorchtextTestCase):
-    def test_sentencepiece_pretrained_pipeline(self):
+    def test_sentencepiece_transform(self):
         model_path = get_asset_path('spm_example.model')
-        pipeline = TextSequentialTransforms(SentencePieceTransform(pretrained_spm(model_path)))
+        pipeline = TextSequentialTransforms(SentencePieceTransform(load_sp_model(model_path)))
         jit_pipeline = torch.jit.script(pipeline)
         test_sample = ['SentencePiece is an unsupervised text tokenizer and detokenizer']
         ref_results = [[15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
@@ -31,9 +32,9 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(spm_transform.decode([[15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366, 144, 3689,
                                                9, 5602, 12114, 6, 560, 649, 5602, 12114]]), test_sample)
 
-    def test_sentencepiece_pretrained_tokenizer_transform(self):
+    def test_sentencepiece_tokenizer(self):
         model_path = get_asset_path('spm_example.model')
-        spm_tokenizer = SentencePieceTokenizer(pretrained_spm(model_path))
+        spm_tokenizer = SentencePieceTokenizer(load_sp_model(model_path))
         jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
         test_sample = ['SentencePiece is an unsupervised text tokenizer and detokenizer']
         ref_results = [['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
