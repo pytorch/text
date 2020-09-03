@@ -78,7 +78,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
             for _ in range(num_iters):
                 tokenizer = basic_english_normalize()
                 jited_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-                vocab_from_raw_text_file(f, jited_tokenizer, num_cpus=20)
+                vocab_from_raw_text_file(f, jited_tokenizer, num_cpus=1)
             print("Construction time:", time.monotonic() - t0)
     else:
         for _ in range(num_iters):
