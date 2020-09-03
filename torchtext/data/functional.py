@@ -4,7 +4,7 @@ import torch
 
 
 __all__ = [
-    "generate_sp_model", "load_sp_model",
+    "generate_sp_model", "load_sp_model", "load_sp_model_string",
     "sentencepiece_numericalizer", "sentencepiece_tokenizer",
     "numericalize_tokens_from_iterator"
 ]
@@ -53,6 +53,22 @@ def load_sp_model(spm_path):
         >>> sp_model = load_sp_model("m_user.model")
     """
     return torch.ops.torchtext.load_sp_model(spm_path)
+
+
+def load_sp_model_string(spm_string):
+    r"""Load a  sentencepiece model for string.
+
+    Arguments:
+        spm_string: the string saving the sentencepiece model.
+
+    Outputs:
+        output: a SentencePiece model.
+
+    Examples:
+        >>> from torchtext.data.functional import load_sp_model_string
+        >>> sp_model = load_sp_model("m_user.model")
+    """
+    return torch.ops.torchtext.load_sp_model_string(spm_string)
 
 
 def sentencepiece_numericalizer(sp_model):
