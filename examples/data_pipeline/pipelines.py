@@ -3,15 +3,13 @@ from transforms import (
     PretrainedSPTokenizer,
     PretrainedSPVocab,
     PyTextVocabTransform,
-    ToLongTensor,
+    iterate_batch,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
-    VocabTransform,
-    VectorTransform,
 )
-from torchtext.experimental.vocab import vocab_from_file_object
+from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
@@ -26,7 +24,7 @@ def build_sp_pipeline(spm_file):
 
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = TextSequentialTransforms(tokenizer, vocab, ToLongTensor())
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit sentencepiece pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -44,7 +42,7 @@ def build_torchtext_vocab(vocab_file):
             yield token
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
     pipeline = sequential_transforms(tokenizer, vocab_func(vocab), totensor(dtype=torch.long))
-    return pipeline, None, None
+    return iterate_batch(pipeline), None, None
 
 
 def build_batch_torchtext_vocab(vocab_file):
@@ -67,10 +65,10 @@ def build_batch_torchtext_vocab(vocab_file):
 def build_text_vocab_pipeline(hf_vocab_file):
     tokenizer = basic_english_normalize()
     f = open(hf_vocab_file, 'r')
-    vocab = vocab_from_file_object(f)
+    vocab = vocab_from_file(f)
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequentialTransforms(tokenizer, VocabTransform(vocab), ToLongTensor())
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit text vocab pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -84,8 +82,7 @@ def build_pytext_vocab_pipeline(vocab_file):
 
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer,
-                                        PyTextVocabTransform(ScriptVocabulary(vocab_list)),
-                                        ToLongTensor())
+                                        PyTextVocabTransform(ScriptVocabulary(vocab_list)))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit PyText pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -96,7 +93,7 @@ def build_fasttext_vector_pipeline():
     vector = FastText()
 
     # Insert token in vocab to match a pretrained vocab
-    pipeline = TextSequentialTransforms(tokenizer, VectorTransform(vector))
+    pipeline = TextSequentialTransforms(tokenizer, vector)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit fasttext pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
@@ -104,8 +101,8 @@ def build_fasttext_vector_pipeline():
 
 def run_benchmark_lookup(text_classification_dataset, pipeline):
     t0 = time.monotonic()
-    for (label, text) in text_classification_dataset:
-        text = pipeline(text)
+    lines = [text for (label, text) in text_classification_dataset]
+    lines = pipeline(lines)
     print("Lookup time:", time.monotonic() - t0)
 
 
