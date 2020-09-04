@@ -54,7 +54,7 @@ class PretrainedSPVocab(nn.Module):
 
 
 class PyTextVocabTransform(nn.Module):
-    r"""PyTextVocabTransform transform
+    r"""Vocab transform
     """
 
     def __init__(self, vocab):
@@ -62,25 +62,15 @@ class PyTextVocabTransform(nn.Module):
         self.vocab = vocab
 
     def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
-        ids: List[List[int]] = self.vocab.lookup_all(tokens_list)
+        ids: List[List[int]] = []
+        for tokens in tokens_list:
+            ids.append(self.vocab.lookup_indices_1d(tokens))
         return ids
 
-
-class PyTextScriptVocabTransform(nn.Module):
-    r"""PyTextScriptVocabTransform transform
-    """
-
-    def __init__(self, vocab):
-        super(PyTextScriptVocabTransform, self).__init__()
-        self.vocab = vocab
-
-    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
-        return self.vocab.lookup_indices_2d(tokens_list)
-    
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
-            return PyTextScriptVocabTransform(vocab)
+            return PyTextVocabTransform(vocab)
         return self
 
 
