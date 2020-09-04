@@ -231,7 +231,7 @@ class TestVocab(TorchtextTestCase):
         jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>', num_cpus=1)
 
-        expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed', 
+        expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                          'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
                          'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
                          'unions', 'with', 'workers']
