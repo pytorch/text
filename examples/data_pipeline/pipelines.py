@@ -1,3 +1,4 @@
+from collections import Counter, OrderedDict
 import torch
 from transforms import (
     PretrainedSPTokenizer,
@@ -11,7 +12,12 @@ from torchtext.experimental.transforms import (
     TextSequentialTransforms,
 )
 from torchtext.data.utils import get_tokenizer
-from torchtext.experimental.functional import totensor, vocab_func, sequential_transforms
+from torchtext.experimental.functional import (
+    sequential_transforms,
+    tokenizer_func,
+    totensor,
+    vocab_func,
+)
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.experimental.vocab import vocab_from_file
 from torchtext.vocab import FastText
@@ -41,10 +47,12 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
-        for token in f:
-            yield token
+        for line in f:
+            for token in line:
+                yield token
+                
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    pipeline = sequential_transforms(tokenizer, vocab_func(vocab))
+    pipeline = sequential_transforms(tokenizer_func(tokenizer), vocab_func(vocab))
     return iterate_batch(pipeline), None, None
 
 
@@ -67,8 +75,10 @@ def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
-        for token in f:
-            yield token
+        for line in f:
+            for token in line:
+                yield token
+
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
     text_pipeline = sequential_transforms(tokenizer, vocab_func(vocab))
     label_pipeline = totensor(dtype=torch.long)
@@ -80,10 +90,14 @@ def build_legacy_pytext_vocab_pipeline(vocab_file):
 
     tokenizer = get_tokenizer("basic_english")
     f = open(vocab_file, 'r')
-    vocab_list = [line.rstrip() for line in f]
 
-    pipeline = sequential_transforms(tokenizer,
-                                     PyTextVocabTransform(Vocabulary(vocab_list)))
+    vocab_counter = Counter([token for line in f for token in line.rstrip()])
+    sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
+    vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
+    vocab_list.insert(0, "<unk>")
+
+    pipeline = sequential_transforms(tokenizer_func(tokenizer),
+                                     PyTextVocabTransform(Vocabulary(vocab_list, unk_token="<unk>")))
     return pipeline, None, None
 
 
@@ -92,9 +106,13 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
 
     tokenizer = basic_english_normalize()
     f = open(vocab_file, 'r')
-    vocab_list = [line.rstrip() for line in f]
+    
+    vocab_counter = Counter([token for line in f for token in line.rstrip()])
+    sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
+    vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
+    vocab_list.insert(0, "<unk>")
 
-    pipeline = TextSequentialTransforms(tokenizer,
+    pipeline = TextSequentialTransforms(tokenizer_func(tokenizer),
                                         PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit legacy PyText pipeline success!')
@@ -104,7 +122,6 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
 def build_experimental_pytext_script_vocab_pipeline(vocab_file):
     import os
     import sys
-    from collections import Counter, OrderedDict
     # this is needed because we want to add 'torchtext/examples/vocab' directory to the
     # `sys.path` variable in order to import the pytext_vocab (since its not a module)
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "vocab"))
@@ -112,7 +129,7 @@ def build_experimental_pytext_script_vocab_pipeline(vocab_file):
 
     tokenizer = basic_english_normalize()
     f = open(vocab_file, 'r')
-    vocab_counter = Counter([line.rstrip() for line in f])
+    vocab_counter = Counter([token for line in f for token in line.rstrip()])
     ordered_dict = OrderedDict(sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True))
 
     # Insert token in vocab to match a pretrained vocab
@@ -128,7 +145,7 @@ def build_legacy_fasttext_vector_pipeline():
     tokenizer = get_tokenizer("basic_english")
     vector = FastText()
 
-    pipeline = sequential_transforms(tokenizer, vector_func(vector))
+    pipeline = sequential_transforms(tokenizer_func(tokenizer), vector_func(vector))
     return pipeline, None, None
 
 
