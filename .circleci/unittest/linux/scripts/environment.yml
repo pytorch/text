@@ -6,6 +6,7 @@ dependencies:
   - pip
   - pip:
     - clang-format
+    - dataclasses
     - nltk
     - requests
     - revtok
