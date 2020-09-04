@@ -76,7 +76,7 @@ class PyTextScriptVocabTransform(nn.Module):
 
     def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
         return self.vocab.lookup_indices_2d(tokens_list)
-    
+
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
@@ -98,6 +98,27 @@ class ToLongTensor(nn.Module):
 def iterate_batch(pipeline):
     def func(data_batch):
         return [pipeline(data) for data in data_batch]
+    return func
+
+
+def vocab_func(vocab):
+    def func(tokens_list_iter):
+        return [vocab[tok] for tokens_list in tokens_list_iter for tok in tokens_list]
+
+    return func
+
+
+def vector_func(vector):
+    def func(tokens_list_iter):
+        return [vector.get_vecs_by_tokens(tokens_list) for tokens_list in tokens_list_iter]
+
+    return func
+
+
+def tokenizer_func(tokenizer):
+    def func(lines):
+        return [tokenizer(line) for line in lines]
+
     return func
 
 
