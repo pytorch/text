@@ -3,8 +3,22 @@ from torchtext.data.utils import ngrams_iterator
 
 
 def vocab_func(vocab):
-    def func(tok_iter):
-        return [vocab[tok] for tok in tok_iter]
+    def func(tokens_list_iter):
+        return [vocab[tok] for tokens_list in tokens_list_iter for tok in tokens_list]
+
+    return func
+
+
+def vector_func(vector):
+    def func(tokens_list_iter):
+        return [vector.get_vecs_by_tokens(tokens_list) for tokens_list in tokens_list_iter]
+
+    return func
+
+
+def tokenizer_func(tokenizer):
+    def func(lines):
+        return [tokenizer(line) for line in lines]
 
     return func
 
