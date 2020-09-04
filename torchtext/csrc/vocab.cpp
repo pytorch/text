@@ -179,8 +179,13 @@ void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
   std::string line;
   for (int64_t i = start_line; i < end_line; i++) {
     std::getline(fin, line);
+
+    auto line_list_ivalue = c10::IValue(std::vector<std::string>({line}));
     auto token_list =
-        module.forward(std::vector<c10::IValue>({c10::IValue(line)})).toList();
+        module.forward(std::vector<c10::IValue>({line_list_ivalue}))
+            .toList()
+            .get(0)
+            .toList();
 
     for (size_t i = 0; i < token_list.size(); i++) {
       c10::IValue token_ref = token_list.get(i);
@@ -429,8 +434,8 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
             << version_str << std::endl;
 #endif
-  throw std::runtime_error(
-      "Found unexpected version for serialized Vocab: " + version_str + ".");
+  throw std::runtime_error("Found unexpected version for serialized Vocab: " +
+                           version_str + ".");
 }
 
 } // namespace torchtext
