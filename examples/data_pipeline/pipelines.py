@@ -141,7 +141,6 @@ def build_experimental_pytext_script_vocab_pipeline(vocab_file):
 
 
 def build_legacy_fasttext_vector_pipeline():
-    from transforms import vector_func
     tokenizer = get_tokenizer("basic_english")
     vector = FastText()
 
