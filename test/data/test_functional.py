@@ -68,7 +68,7 @@ class TestFunctional(TorchtextTestCase):
     def test_sentencepiece_tokenizer(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         model_path = get_asset_path('spm_example.model')
-        sp_model = load_sp_model(model_path)
+        sp_model = load_sp_model(open(model_path, 'rb'))
         self.assertEqual(sp_model.GetPieceSize(), 20000)
         spm_generator = sentencepiece_tokenizer(sp_model)
 
