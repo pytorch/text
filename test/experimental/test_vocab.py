@@ -7,11 +7,11 @@ import unittest
 
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.transforms import basic_english_normalize
+# from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.experimental.vocab import (
     vocab,
     vocab_from_file,
-    vocab_from_raw_text_file
+    # vocab_from_raw_text_file
 )
 
 
@@ -127,8 +127,8 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
         jit_v = torch.jit.script(v.to_ivalue())
 
-        tokens = ['b', 'a', 'c']
-        expected_indices = [2, 1, 3]
+        tokens = [['b', 'a', 'c']]
+        expected_indices = [[2, 1, 3]]
 
         self.assertEqual(v(tokens), expected_indices)
         self.assertEqual(jit_v(tokens), expected_indices)
@@ -162,17 +162,6 @@ class TestVocab(TorchtextTestCase):
         expected_indices = [2, 1, 3]
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
-
-    def test_vocab_call_method(self):
-        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
-        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-        c = OrderedDict(sorted_by_freq_tuples)
-        v = vocab(c)
-
-        tokens = ['b', 'a', 'c']
-        expected_indices = [2, 1, 3]
-
-        self.assertEqual(v(tokens), expected_indices)
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
@@ -233,20 +222,21 @@ class TestVocab(TorchtextTestCase):
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-    def test_vocab_from_raw_text_file(self):
-        asset_name = 'vocab_raw_text_test.txt'
-        asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
+    # TODO: Update cpp function to use a list of strings from the JITed tokenizer
+    # def test_vocab_from_raw_text_file(self):
+    #     asset_name = 'vocab_raw_text_test.txt'
+    #     asset_path = get_asset_path(asset_name)
+    #     f = open(asset_path, 'r')
 
-            tokenizer = basic_english_normalize()
-            jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-            v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
+    #     tokenizer = basic_english_normalize()
+    #     jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+    #     v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
 
-            expected_itos = ['<new_unk>', 'fears', 'for', 't', 'n', 'pension', 'after',
-                             'talks', 'unions', 'representing', 'workers', 'at', 'turner',
-                             'newall', 'say', 'they', 'are', "'", 'disappointed', 'with',
-                             'stricken', 'parent', 'firm', 'federal', 'mogul', '.']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+    #     expected_itos = ['<new_unk>', 'after', 'talks', "'", 'newall', '.', 'mogul', 'federal',
+    #                      'firm', 'parent', 'stricken', 'with', 'disappointed', 'are', 'they',
+    #                      'say', 'fears', 'turner', 'at', 'workers', 'representing', 'unions',
+    #                      'pension', 'n', 't', 'for']
+    #     expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
+    #     self.assertEqual(v.get_itos(), expected_itos)
+    #     self.assertEqual(dict(v.get_stoi()), expected_stoi)

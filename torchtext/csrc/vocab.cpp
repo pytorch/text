@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <string>
 #include <torch/csrc/jit/python/pybind_utils.h> // @manual
-#include <torch/torch.h> // @manual
-#include <vocab.h> // @manual
+#include <torch/torch.h>                        // @manual
+#include <vocab.h>                              // @manual
 
 namespace torchtext {
 
@@ -150,7 +150,7 @@ int64_t _infer_lines(const std::string &file_path) {
 
 void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
                             const int64_t start_line, const int64_t end_line,
-                            std::shared_ptr<StringList> tokens) {
+                            std::shared_ptr<IndexDict> counter) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
   fin.seekg(offset);
@@ -160,13 +160,17 @@ void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
     fin >> token;
     fin >> std::ws;
 
-    tokens->push_back(token);
+    if ((*counter).find(token) == (*counter).end()) {
+      (*counter)[token] = 1;
+    } else {
+      (*counter)[token] += 1;
+    }
   }
 }
 
 void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
                                const int64_t start_line, const int64_t end_line,
-                               std::shared_ptr<StringList> tokens,
+                               std::shared_ptr<IndexDict> counter,
                                torch::jit::script::Module &module) {
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
@@ -181,38 +185,74 @@ void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
     for (size_t i = 0; i < token_list.size(); i++) {
       c10::IValue token_ref = token_list.get(i);
       std::string token = token_ref.toStringRef();
-      tokens->push_back(token);
+
+      if ((*counter).find(token) == (*counter).end()) {
+        (*counter)[token] = 1;
+      } else {
+        (*counter)[token] += 1;
+      }
     }
   }
 }
 
+// sorting using a custom object
+struct CompareTokens {
+  bool operator()(const std::pair<std::string, int64_t> &a,
+                  const std::pair<std::string, int64_t> &b) {
+    if (a.second == b.second) {
+      return a.first < b.first;
+    }
+    return a.second > b.second;
+  }
+};
+
 std::tuple<IndexDict, StringList>
-_concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
+_concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
                const std::string &unk_token, const int64_t min_freq,
                const int64_t num_lines) {
-  TORCH_CHECK(chunk_tokens.size() > 0,
+  TORCH_CHECK(chunk_counters.size() > 0,
               "There must be at least 1 chunk to concatenate!");
 
-  std::unordered_map<std::string, int64_t> tokens_freq;
-  IndexDict stoi;
-  StringList tokens;
-  stoi.reserve(num_lines);
-  tokens.reserve(num_lines);
+  IndexDict tokens_freq;
+  StringList unique_tokens;
+  unique_tokens.reserve(num_lines);
 
-  // create tokens frequency map
-  for (size_t i = 0; i < chunk_tokens.size(); i++) {
-    auto &subset_tokens = *chunk_tokens[i];
-    for (size_t j = 0; j < subset_tokens.size(); j++) {
-      // const auto &item = tokens_freq.find(subset_tokens[j]);
-      if (tokens_freq.find(subset_tokens[j]) != tokens_freq.end()) {
-        tokens_freq[subset_tokens[j]]++;
+  // concatenate all counters
+  for (size_t i = 0; i < chunk_counters.size(); i++) {
+    auto &cur_counter = *chunk_counters[i];
+    for (const auto &item : cur_counter) {
+      int64_t cur_token_freq = item.second;
+      if (tokens_freq.find(item.first) != tokens_freq.end()) {
+        tokens_freq[item.first] += cur_token_freq;
       } else {
-        tokens_freq[subset_tokens[j]] = 1;
+        tokens_freq[item.first] = cur_token_freq;
+      }
+
+      // add to tokens list only if we exceed min_freq for the first time
+      if (tokens_freq[item.first] - cur_token_freq < min_freq &&
+          tokens_freq[item.first] >= min_freq) {
+        unique_tokens.push_back(item.first);
       }
     }
   }
 
-  int64_t index = 0;
+  // create token freq pairs
+  std::vector<std::pair<std::string, int64_t>> token_freq_pairs;
+
+  for (std::string token : unique_tokens) {
+    token_freq_pairs.push_back(std::make_pair(token, tokens_freq[token]));
+  }
+
+  // sort tokens by freq
+  CompareTokens compare_tokens;
+  std::sort(token_freq_pairs.begin(), token_freq_pairs.end(), compare_tokens);
+
+  // update unique tokens with correct order
+  unique_tokens.clear();
+  for (const auto &token_freq_pair : token_freq_pairs) {
+    unique_tokens.push_back(token_freq_pair.first);
+  }
+
   // insert unk_token if not present
   if (tokens_freq.find(unk_token) == tokens_freq.end()) {
     std::cerr << "The `unk_token` " << unk_token
@@ -220,24 +260,20 @@ _concat_tokens(std::vector<std::shared_ptr<StringList>> chunk_tokens,
                  "to the beginning of the Vocab."
               << std::endl;
 
-    tokens.emplace_back(unk_token);
-    stoi[unk_token] = index;
+    unique_tokens.insert(unique_tokens.begin(), unk_token);
+  }
+
+  // create stoi
+  IndexDict stoi;
+  stoi.reserve(num_lines);
+  int64_t index = 0;
+
+  for (const auto &token : unique_tokens) {
+    stoi[token] = index;
     index++;
   }
 
-  // create tokens list and stoi map
-  for (size_t i = 0; i < chunk_tokens.size(); i++) {
-    auto &subset_tokens = *chunk_tokens[i];
-    for (size_t j = 0; j < subset_tokens.size(); j++) {
-      if (tokens_freq[subset_tokens[j]] >= min_freq &&
-          stoi.find(subset_tokens[j]) == stoi.end()) {
-        tokens.emplace_back(subset_tokens[j]);
-        stoi[subset_tokens[j]] = index;
-        index++;
-      }
-    }
-  }
-  return std::make_tuple(std::move(stoi), std::move(tokens));
+  return std::make_tuple(std::move(stoi), std::move(unique_tokens));
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
@@ -255,37 +291,37 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   std::vector<size_t> offsets;
   impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
-  std::vector<std::shared_ptr<StringList>> chunk_tokens;
+  std::vector<std::shared_ptr<IndexDict>> chunk_counters;
 
   std::mutex m;
   std::condition_variable cv;
-  std::atomic<int> counter(0);
+  std::atomic<int> thread_count(0);
 
   // create threads
   int64_t j = 0;
   for (int64_t i = 0; i < num_lines; i += chunk_size) {
-    auto tokens_ptr = std::make_shared<StringList>();
+    auto counter_ptr = std::make_shared<IndexDict>();
 
-    counter++;
-    at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
+    thread_count++;
+    at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
       parse_vocab_file_chunk(file_path, offsets[j], i,
-                             std::min(num_lines, i + chunk_size), tokens_ptr);
+                             std::min(num_lines, i + chunk_size), counter_ptr);
       std::lock_guard<std::mutex> lk(m);
-      counter--;
+      thread_count--;
       cv.notify_all();
     });
-    chunk_tokens.push_back(tokens_ptr);
+    chunk_counters.push_back(counter_ptr);
     j++;
   }
 
   // block until all threads finish execution
   std::unique_lock<std::mutex> lock(m);
-  cv.wait(lock, [&counter] { return counter == 0; });
+  cv.wait(lock, [&thread_count] { return thread_count == 0; });
 
   IndexDict stoi;
   StringList tokens;
   std::tie(stoi, tokens) =
-      _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines);
 
   int64_t unk_index = stoi.find(unk_token)->second;
 
@@ -307,38 +343,37 @@ Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
   std::vector<size_t> offsets;
   impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
-  std::vector<std::shared_ptr<StringList>> chunk_tokens;
+  std::vector<std::shared_ptr<IndexDict>> chunk_counters;
 
   std::mutex m;
   std::condition_variable cv;
-  std::atomic<int> counter(0);
+  std::atomic<int> thread_count(0);
 
   // create threads
   int64_t j = 0;
   for (int64_t i = 0; i < num_lines; i += chunk_size) {
-    auto tokens_ptr = std::make_shared<StringList>();
-
-    counter++;
-    at::launch([&, file_path, num_lines, chunk_size, j, i, tokens_ptr]() {
+    auto counter_ptr = std::make_shared<IndexDict>();
+    thread_count++;
+    at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
       parse_raw_text_file_chunk(file_path, offsets[j], i,
-                                std::min(num_lines, i + chunk_size), tokens_ptr,
-                                module);
+                                std::min(num_lines, i + chunk_size),
+                                counter_ptr, module);
       std::lock_guard<std::mutex> lk(m);
-      counter--;
+      thread_count--;
       cv.notify_all();
     });
-    chunk_tokens.push_back(tokens_ptr);
+    chunk_counters.push_back(counter_ptr);
     j++;
   }
 
   // block until all threads finish execution
   std::unique_lock<std::mutex> lock(m);
-  cv.wait(lock, [&counter] { return counter == 0; });
+  cv.wait(lock, [&thread_count] { return thread_count == 0; });
 
   IndexDict stoi;
   StringList tokens;
   std::tie(stoi, tokens) =
-      _concat_tokens(chunk_tokens, unk_token, min_freq, num_lines);
+      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines);
   int64_t unk_index = stoi.find(unk_token)->second;
 
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);

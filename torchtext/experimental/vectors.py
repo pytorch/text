@@ -203,15 +203,19 @@ class Vectors(nn.Module):
         return not isinstance(self.vectors, VectorsPybind)
 
     @torch.jit.export
-    def forward(self, tokens: List[str]) -> Tensor:
+    def forward(self, tokens_list: List[List[str]]) -> List[Tensor]:
         r"""Calls the `lookup_vectors` method
          Args:
-            tokens: a list of tokens
+            tokens: a list of string token list
 
         Returns:
-            vectors (Tensor): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if `tokens` is empty
+            vectors (List[Tensor]): returns a list of a 2-D tensor of shape=(len(tokens), vector_dim) or
+            an empty tensor if `tokens` is empty
         """
-        return self.lookup_vectors(tokens)
+        vectors: List[Tensor] = []
+        for tokens in tokens_list:
+            vectors.append(self.vectors.lookup_vectors(tokens))
+        return vectors
 
     @torch.jit.export
     def __getitem__(self, token: str) -> Tensor:

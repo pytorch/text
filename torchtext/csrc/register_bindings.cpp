@@ -1,12 +1,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h> // @manual
+#include <regex_tokenizer.h>         // @manual
+#include <sentencepiece.h>           // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
 #include <vectors.h> // @manual
-#include <vocab.h> // @manual
+#include <vocab.h>   // @manual
 
 namespace torchtext {
 
@@ -172,5 +172,10 @@ static auto registry =
         .op(torch::RegisterOperators::options()
                 .schema("torchtext::load_sp_model(str path) -> "
                         "__torch__.torch.classes.torchtext.SentencePiece model")
-                .catchAllKernel<decltype(load_sp_model), &load_sp_model>());
+                .catchAllKernel<decltype(load_sp_model), &load_sp_model>())
+        .op(torch::RegisterOperators::options()
+                .schema("torchtext::load_sp_model_string(str content) -> "
+                        "__torch__.torch.classes.torchtext.SentencePiece model")
+                .catchAllKernel<decltype(load_sp_model_string),
+                                &load_sp_model_string>());
 } // namespace torchtext
