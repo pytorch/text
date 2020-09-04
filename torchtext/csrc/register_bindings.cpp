@@ -174,5 +174,10 @@ static auto registry =
         .op(torch::RegisterOperators::options()
                 .schema("torchtext::load_sp_model(str path) -> "
                         "__torch__.torch.classes.torchtext.SentencePiece model")
-                .catchAllKernel<decltype(load_sp_model), &load_sp_model>());
+                .catchAllKernel<decltype(load_sp_model), &load_sp_model>())
+        .op(torch::RegisterOperators::options()
+                .schema("torchtext::load_sp_model_string(str content) -> "
+                        "__torch__.torch.classes.torchtext.SentencePiece model")
+                .catchAllKernel<decltype(load_sp_model_string),
+                                &load_sp_model_string>());
 } // namespace torchtext

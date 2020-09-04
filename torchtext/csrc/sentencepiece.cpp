@@ -74,4 +74,9 @@ c10::intrusive_ptr<SentencePiece> load_sp_model(const std::string &path) {
   return c10::make_intrusive<SentencePiece>(std::move(content));
 }
 
+c10::intrusive_ptr<SentencePiece>
+load_sp_model_string(const std::string &content) {
+  return c10::make_intrusive<SentencePiece>(std::move(content));
+}
+
 } // namespace torchtext
