@@ -307,28 +307,27 @@ class SentencePieceTransform(nn.Module):
         return string_list
 
 
-class ToLongTensor(nn.Module):
-    r"""Convert a list of integers to long tensor
+class AsTensor(nn.Module):
+    r"""Convert data to tensor
 
     Examples:
-        >>> from torchtext.experimental.transforms import ToLongTensor
-        >>> to_tensor = ToLongTensor()
+        >>> from torchtext.experimental.transforms import AsTensor
+        >>> as_tensor = AsTensor()
     """
 
     def __init__(self):
-        super(ToLongTensor, self).__init__()
+        super(AsTensor, self).__init__()
 
-    def forward(self, ids: List[List[int]]) -> Tensor:
+    def forward(self, data: List[List[int]]) -> Tensor:
         r"""
         Args:
-            ids: a list of ids
+            data: the data converted to tensor
 
         Examples:
-            >>> to_tensor = ToLongTensor()
-            >>> to_tensor([[9, 1546, 18811, 2849, 61, 2759, 2202]])
+            >>> as_tensor([[9, 1546, 18811, 2849, 61, 2759, 2202]])
             >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
         """
-        return torch.tensor(ids, dtype=torch.long)
+        return torch.as_tensor(data)
 
 
 class VocabTransform(nn.Module):
