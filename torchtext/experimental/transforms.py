@@ -325,7 +325,7 @@ class AsTensor(nn.Module):
 
         Examples:
             >>> as_tensor([[9, 1546, 18811, 2849, 61, 2759, 2202]])
-            >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
+            >>> tensor([[    9,  1546, 18811,  2849,    61,  2759,  2202]])
         """
         return torch.as_tensor(data)
 
