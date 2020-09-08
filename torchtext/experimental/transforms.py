@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import List
+from typing import List, Any
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
@@ -307,16 +307,16 @@ class SentencePieceTransform(nn.Module):
         return string_list
 
 
-class AsTensor(nn.Module):
+class ToLongTensor(nn.Module):
     r"""Convert data to tensor
 
     Examples:
-        >>> from torchtext.experimental.transforms import AsTensor
-        >>> as_tensor = AsTensor()
+        >>> from torchtext.experimental.transforms import ToLongTensor
+        >>> to_long_tensor = ToLongTensor()
     """
 
     def __init__(self):
-        super(AsTensor, self).__init__()
+        super(ToLongTensor, self).__init__()
 
     def forward(self, data: List[List[int]]) -> Tensor:
         r"""
@@ -324,10 +324,10 @@ class AsTensor(nn.Module):
             data: the data converted to tensor
 
         Examples:
-            >>> as_tensor([[9, 1546, 18811, 2849, 61, 2759, 2202]])
+            >>> to_long_tensor([[9, 1546, 18811, 2849, 61, 2759, 2202]])
             >>> tensor([[    9,  1546, 18811,  2849,    61,  2759,  2202]])
         """
-        return torch.as_tensor(data)
+        return torch.tensor(data, dtype=torch.long)
 
 
 class VocabTransform(nn.Module):
