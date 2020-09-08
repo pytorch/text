@@ -54,7 +54,7 @@ class PretrainedSPVocab(nn.Module):
 
 
 class PyTextVocabTransform(nn.Module):
-    r"""Vocab transform
+    r"""PyTextVocabTransform transform
     """
 
     def __init__(self, vocab):
@@ -62,15 +62,25 @@ class PyTextVocabTransform(nn.Module):
         self.vocab = vocab
 
     def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
-        ids: List[List[int]] = []
-        for tokens in tokens_list:
-            ids.append(self.vocab.lookup_indices_1d(tokens))
+        ids: List[List[int]] = self.vocab.lookup_all(tokens_list)
         return ids
+
+
+class PyTextScriptVocabTransform(nn.Module):
+    r"""PyTextScriptVocabTransform transform
+    """
+
+    def __init__(self, vocab):
+        super(PyTextScriptVocabTransform, self).__init__()
+        self.vocab = vocab
+
+    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
+        return self.vocab.lookup_indices_2d(tokens_list)
 
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
-            return PyTextVocabTransform(vocab)
+            return PyTextScriptVocabTransform(vocab)
         return self
 
 
@@ -88,6 +98,27 @@ class ToLongTensor(nn.Module):
 def iterate_batch(pipeline):
     def func(data_batch):
         return [pipeline(data) for data in data_batch]
+    return func
+
+
+def vocab_func(vocab):
+    def func(tokens_list_iter):
+        return [vocab[tok] for tokens_list in tokens_list_iter for tok in tokens_list]
+
+    return func
+
+
+def vector_func(vector):
+    def func(tokens_list_iter):
+        return [vector.get_vecs_by_tokens(tokens_list) for tokens_list in tokens_list_iter]
+
+    return func
+
+
+def tokenizer_func(tokenizer):
+    def func(lines):
+        return [tokenizer(line) for line in lines]
+
     return func
 
 
