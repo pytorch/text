@@ -43,16 +43,16 @@ torchtext.experimental.transforms
     :special-members: __init__
 
 :hidden:`SentencePieceTransform`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: SentencePieceTransform
     :members:
     :special-members: __init__
 
-:hidden:`AsTensor`
+:hidden:`ToLongTensor`
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: AsTensor
+.. autoclass:: ToLongTensor
 
 :hidden:`VocabTransform`
 ~~~~~~~~~~~~~~~~~~~~~~~
