@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import List, Any
+from typing import List
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
