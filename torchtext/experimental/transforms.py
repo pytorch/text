@@ -227,35 +227,28 @@ class SentencePieceTokenizer(nn.Module):
         super(SentencePieceTokenizer, self).__init__()
         self.sp_model = spm_model
 
-    def forward(self, lines: List[str]) -> List[List[str]]:
+    def forward(self, line: str) -> List[str]:
         r"""
         Args:
-            lines: a list of the input strings
+            line: the input sentence string
 
         Examples:
-            >>> spm_tokenizer(['the pretrained sp model names'])
-            >>> [['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']]
+            >>> spm_tokenizer('the pretrained sp model names')
+            >>> ['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']
         """
-
-        tokens: List[List[str]] = []
-        for line in lines:
-            tokens.append(self.sp_model.EncodeAsPieces(line))
-        return tokens
+        return self.sp_model.EncodeAsPieces(line)
 
     @torch.jit.export
-    def decode(self, tokens_list: List[List[str]]) -> List[str]:
+    def decode(self, tokens: List[str]) -> str:
         r"""
         Args:
-            tokens_list: the tokens list for decoder
+            tokens: the tokens list for decoder
 
         Examples:
-            >>> spm_transform.decoder([['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']])
-            >>> ['the pretrained sp model names']
+            >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names'])
+            >>> 'the pretrained sp model names'
         """
-        string_list: List[str] = []
-        for tokens in tokens_list:
-            string_list.append(self.sp_model.DecodePieces(tokens))
-        return string_list
+        return self.sp_model.DecodePieces(tokens)
 
 
 class SentencePieceTransform(nn.Module):
@@ -277,34 +270,28 @@ class SentencePieceTransform(nn.Module):
         super(SentencePieceTransform, self).__init__()
         self.sp_model = spm_model
 
-    def forward(self, lines: List[str]) -> List[List[int]]:
+    def forward(self, line: str) -> List[int]:
         r"""
         Args:
-            lines: a list of the input strings
+            line: the input sentence string
 
         Examples:
-            >>> spm_transform(['the pretrained sp model names'])
-            >>> [[9, 1546, 18811, 2849, 2759, 2202]]
+            >>> spm_transform('the pretrained sp model names')
+            >>> [9, 1546, 18811, 2849, 2759, 2202]
         """
-        ids: List[List[int]] = []
-        for line in lines:
-            ids.append(self.sp_model.EncodeAsIds(line))
-        return ids
+        return self.sp_model.EncodeAsIds(line)
 
     @torch.jit.export
-    def decode(self, ids: List[List[int]]) -> List[str]:
+    def decode(self, ids: List[int]) -> str:
         r"""
         Args:
-            ids: a list of the integer list for decoder
+            ids: the integers list for decoder
 
         Examples:
-            >>> spm_transform.decoder([[9, 1546, 18811, 2849, 2759, 2202]])
-            >>> ['the pretrained sp model names']
+            >>> spm_transform.decoder([9, 1546, 18811, 2849, 2759, 2202])
+            >>> 'the pretrained sp model names'
         """
-        string_list: List[str] = []
-        for _id in ids:
-            string_list.append(self.sp_model.DecodeIds(_id))
-        return string_list
+        return self.sp_model.DecodeIds(ids)
 
 
 class ToLongTensor(nn.Module):
