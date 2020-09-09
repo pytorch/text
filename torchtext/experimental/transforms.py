@@ -254,31 +254,32 @@ class VectorTransform(nn.Module):
 
 
 class PadTransform(nn.Module):
-    r"""Pad sequences
+    r"""Pad sequences. Add padding id to the end of a sequences such that the sequences will
+        have the same length.
 
     Args:
         pad_id: the id for padding token
-        bos_token_id: the id for bos token (Default: None)
-        eos_token_id: the id for eos token (Default: None)
+        eos_token_id: the token id for the end-of-sentence mark (Default: None)
         return_key_padding_mask: flag to output key_padding_mask as output (Defualt: True)
 
     Example:
-        >>> pad_transform = PadTransform(2)
+        >>> pad_id = 2
+        >>> pad_transform = PadTransform(pad_id)
         >>> seq_batch = [[5, 4, 5, 6, 7], [1, 3], [7, 5, 8]]
         >>> pad_seq, key_padding_mask = pad_transform(seq_batch)
         >>> jit_pad_transform = torch.jit.script(pad_transform)
     """
 
-    def __init__(self, pad_id, bos_token_id=None, eos_token_id=None, return_key_padding_mask=True):
+    def __init__(self, pad_id, eos_token_id=None, return_key_padding_mask=True):
         super(PadTransform, self).__init__()
         self.pad_id = pad_id
-        self.bos_token_id = bos_token_id
         self.eos_token_id = eos_token_id
         self.return_key_padding_mask = return_key_padding_mask
 
     @torch.jit.export
     def forward(self, seq_batch: List[List[int]]) -> Tuple[torch.Tensor, Optional[Tensor]]:
-        r"""
+        r"""Pad a list of integer lists. The individual integer list might have different length
+        such that the padding function will add padding id to the end of list for the same length.
 
         Args:
             seq_batch: a list of integer lists. Type: List[List[int]]
@@ -287,15 +288,11 @@ class PadTransform(nn.Module):
             padded_sequence, key_padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
         """
         max_seq_len = max([len(seq) for seq in seq_batch] + [0])
-        if self.bos_token_id is not None:
-            max_seq_len += 1
         if self.eos_token_id is not None:
             max_seq_len += 1
         key_padding_mask = torch.zeros(len(seq_batch), max_seq_len)
         output_batch = torch.ones(len(seq_batch), max_seq_len, dtype=torch.long) * self.pad_id
         for idx, seq in enumerate(seq_batch):
-            if self.bos_token_id is not None:
-                seq = [self.bos_token_id] + seq
             if self.eos_token_id is not None:
                 seq = seq + [self.eos_token_id]
             output_batch[idx][:len(seq)] = torch.tensor(seq, dtype=torch.long)
