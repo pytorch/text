@@ -2,6 +2,7 @@ import torch
 from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.transforms import (
+    basic_english_normalize,
     VectorTransform,
     VocabTransform,
     SentencePieceTransform,
