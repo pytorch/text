@@ -21,7 +21,7 @@ import os
 class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_transform(self):
         model_path = get_asset_path('spm_example.model')
-        pipeline = TextSequentialTransforms(SentencePieceTransform(load_sp_model(model_path)))
+        pipeline = SentencePieceTransform(load_sp_model(model_path))
         jit_pipeline = torch.jit.script(pipeline)
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
@@ -77,6 +77,15 @@ class TestTransforms(TorchtextTestCase):
             jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
             self.assertEqual(jit_vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
                              [[21, 26, 20], [21, 26, 20, 26]])
+
+    def test_text_sequential_transform(self):
+        asset_name = 'vocab_test2.txt'
+        asset_path = get_asset_path(asset_name)
+        with open(asset_path, 'r') as f:
+            pipeline = TextSequentialTransforms(basic_english_normalize(), vocab_from_file(f))
+            jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+            self.assertEqual(pipeline([['of that new']]), [[21, 26, 20]])
+            self.assertEqual(jit_pipeline([['of that new']]), [[21, 26, 20]])
 
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'
