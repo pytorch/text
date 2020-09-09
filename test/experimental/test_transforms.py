@@ -41,13 +41,14 @@ class TestTransforms(TorchtextTestCase):
             self.assertEqual(jit_vector_transform([['the', 'world']])[0][:, 0:3], expected_fasttext_simple_en)
 
     def test_padding_func(self):
-        pad_transform = PadTransform(2)
+        pad_id = 2
+        pad_transform = PadTransform(pad_id, eos_token_id=3)
         seq_batch = [[5, 4, 5, 6, 7], [1, 3], [7, 5, 8]]
         pad_seq, key_padding_mask = pad_transform(seq_batch)
-        expected_pad_seq = torch.tensor([[5, 4, 5, 6, 7], [1, 3, 2, 2, 2], [7, 5, 8, 2, 2]], dtype=torch.long)
-        expected_key_padding_mask = torch.tensor([[False, False, False, False, False],
-                                                  [False, False, True, True, True],
-                                                  [False, False, False, True, True]])
+        expected_pad_seq = torch.tensor([[5, 4, 5, 6, 7, 3], [1, 3, 3, 2, 2, 2], [7, 5, 8, 3, 2, 2]], dtype=torch.long)
+        expected_key_padding_mask = torch.tensor([[False, False, False, False, False, False],
+                                                  [False, False, False, True, True, True],
+                                                  [False, False, False, False, True, True]])
         self.assertEqual(pad_seq, expected_pad_seq)
         self.assertEqual(key_padding_mask, expected_key_padding_mask)
         jit_pad_transform = torch.jit.script(pad_transform)
