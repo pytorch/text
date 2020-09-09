@@ -214,7 +214,7 @@ struct CompareTokens {
 std::tuple<IndexDict, StringList>
 _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
                const std::string &unk_token, const int64_t min_freq,
-               const int64_t num_lines) {
+               const int64_t num_lines, const bool sort_tokens) {
   TORCH_CHECK(chunk_counters.size() > 0,
               "There must be at least 1 chunk to concatenate!");
 
@@ -249,8 +249,10 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   }
 
   // sort tokens by freq
-  CompareTokens compare_tokens;
-  std::sort(token_freq_pairs.begin(), token_freq_pairs.end(), compare_tokens);
+  if (sort_tokens) {
+    CompareTokens compare_tokens;
+    std::sort(token_freq_pairs.begin(), token_freq_pairs.end(), compare_tokens);
+  }
 
   // update unique tokens with correct order
   unique_tokens.clear();
@@ -326,7 +328,7 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   IndexDict stoi;
   StringList tokens;
   std::tie(stoi, tokens) =
-      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines);
+      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines, false);
 
   int64_t unk_index = stoi.find(unk_token)->second;
 
@@ -378,7 +380,7 @@ Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
   IndexDict stoi;
   StringList tokens;
   std::tie(stoi, tokens) =
-      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines);
+      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines, true);
   int64_t unk_index = stoi.find(unk_token)->second;
 
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
