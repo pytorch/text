@@ -54,19 +54,3 @@ class TestTransforms(TorchtextTestCase):
         jit_pad_transform = torch.jit.script(pad_transform)
         jit_pad_seq, jit_key_padding_mask = jit_pad_transform(seq_batch)
         self.assertEqual(jit_pad_seq, expected_pad_seq)
-
-    def test_padding_func_with_bos_eos(self):
-        pad_transform = PadTransform(2, bos_token_id=3, eos_token_id=4)
-        seq_batch = [[5, 4, 5, 6, 7], [1, 3], [7, 5, 8]]
-        pad_seq, key_padding_mask = pad_transform(seq_batch)
-        expected_pad_seq = torch.tensor([[3, 5, 4, 5, 6, 7, 4], [3, 1, 3, 4, 2, 2, 2], [3, 7, 5, 8, 4, 2, 2]], dtype=torch.long)
-        expected_key_padding_mask = torch.tensor([[False, False, False, False, False, False, False],
-                                                  [False, False, False, False, True, True, True],
-                                                  [False, False, False, False, False, True, True]])
-        self.assertEqual(pad_seq, expected_pad_seq)
-        self.assertEqual(key_padding_mask, expected_key_padding_mask)
-        jit_pad_transform = torch.jit.script(pad_transform)
-        jit_pad_seq, jit_key_padding_mask = jit_pad_transform(seq_batch)
-        self.assertEqual(jit_pad_seq, expected_pad_seq)
-        self.assertEqual(jit_key_padding_mask, expected_key_padding_mask)
-        self.assertEqual(jit_key_padding_mask, expected_key_padding_mask)
