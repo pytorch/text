@@ -286,6 +286,10 @@ class PadTransform(nn.Module):
 
         Outputs:
             padded_sequence, key_padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
+
+        Note:
+            The key_padding_mask tensor has the same shape as the output padded_sequence, with a value of False in
+            the position of non-pad values and a value of True in the position of pads.
         """
         max_seq_len = max([len(seq) for seq in seq_batch] + [0])
         if self.eos_token_id is not None:
