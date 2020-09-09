@@ -74,10 +74,10 @@ class TestTransforms(TorchtextTestCase):
         with open(asset_path, 'r') as f:
             vocab_transform = VocabTransform(vocab_from_file(f))
             self.assertEqual(vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
-                             [[21, 26, 20], [21, 26, 20, 26]])
+                             [[7, 18, 24], [7, 18, 24, 18]])
             jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
             self.assertEqual(jit_vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
-                             [[21, 26, 20], [21, 26, 20, 26]])
+                             [[7, 18, 24], [7, 18, 24, 18]])
 
     def test_text_sequential_transform(self):
         asset_name = 'vocab_test2.txt'
