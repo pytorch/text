@@ -305,14 +305,14 @@ class ToLongTensor(nn.Module):
     def __init__(self):
         super(ToLongTensor, self).__init__()
 
-    def forward(self, data: List[List[int]]) -> Tensor:
+    def forward(self, data: List[int]) -> Tensor:
         r"""
         Args:
             data: the data converted to tensor
 
         Examples:
-            >>> to_long_tensor([[9, 1546, 18811, 2849, 61, 2759, 2202]])
-            >>> tensor([[    9,  1546, 18811,  2849,    61,  2759,  2202]])
+            >>> to_long_tensor([9, 1546, 18811, 2849, 61, 2759, 2202])
+            >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
         """
         return torch.tensor(data, dtype=torch.long)
 

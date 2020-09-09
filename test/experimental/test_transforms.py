@@ -64,8 +64,8 @@ class TestTransforms(TorchtextTestCase):
 
     def test_to_long_tensor(self):
         to_long_tensor = ToLongTensor()
-        self.assertEqual(to_long_tensor([[1, 2], [3, 4]]), torch.tensor([[1, 2], [3, 4]]))
-        self.assertEqual(to_long_tensor([[1, 2], [3, 4]]).dtype, torch.int64)
+        self.assertEqual(to_long_tensor([1, 2, 3, 4]), torch.tensor([1, 2, 3, 4]))
+        self.assertEqual(to_long_tensor([1, 2, 3, 4]).dtype, torch.int64)
 
     def test_vocab_transform(self):
         asset_name = 'vocab_test2.txt'
