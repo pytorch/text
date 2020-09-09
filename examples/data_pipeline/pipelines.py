@@ -7,16 +7,17 @@ from transforms import (
     PyTextScriptVocabTransform,
     iterate_batch,
     tokenizer_func,
-    totensor,
     vocab_func,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
+    PadTransform,
 )
 from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.functional import (
     sequential_transforms,
+    totensor,
 )
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.experimental.vocab import vocab_from_file
@@ -32,10 +33,12 @@ from torchtext.data.functional import load_sp_model
 def build_sp_pipeline(spm_file):
     tokenizer = PretrainedSPTokenizer(load_sp_model(spm_file))
     vocab = PretrainedSPVocab(load_sp_model(spm_file))
-
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
-    pipeline = TextSequentialTransforms(tokenizer, vocab)
+
+    pad_id = -1
+    pad_func = PadTransform(pad_id)
+    pipeline = TextSequentialTransforms(tokenizer, vocab, pad_func)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit sentencepiece pipeline success!')
     return pipeline, pipeline.to_ivalue(), jit_pipeline
