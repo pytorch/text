@@ -23,7 +23,6 @@ from torchtext.vocab import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
-# from dataset import BatchTextClassificationData
 from torchtext.data.functional import load_sp_model
 from torch.utils.data import DataLoader
 
