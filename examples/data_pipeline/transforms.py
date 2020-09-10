@@ -68,8 +68,8 @@ class PyTextScriptVocabTransform(nn.Module):
         super(PyTextScriptVocabTransform, self).__init__()
         self.vocab = vocab
 
-    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
-        return self.vocab.lookup_indices_2d(tokens_list)
+    def forward(self, tokens: List[str]) -> List[int]:
+        return self.vocab.lookup_indices_1d(tokens)
 
     def to_ivalue(self):
         if hasattr(self.vocab, 'to_ivalue'):

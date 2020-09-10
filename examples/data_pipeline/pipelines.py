@@ -110,7 +110,7 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
     vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
     vocab_list.insert(0, "<unk>")
 
-    pipeline = TextSequentialTransforms(tokenizer_func(tokenizer),
+    pipeline = TextSequentialTransforms(tokenizer,
                                         PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit legacy PyText pipeline success!')
