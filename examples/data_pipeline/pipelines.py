@@ -5,9 +5,9 @@ from transforms import (
     PretrainedSPVocab,
     PyTextVocabTransform,
     PyTextScriptVocabTransform,
-    iterate_batch,
     tokenizer_func,
     vocab_func,
+    vector_func,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
@@ -16,7 +16,6 @@ from torchtext.experimental.transforms import (
 from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.functional import (
     sequential_transforms,
-    totensor,
 )
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.experimental.vocab import vocab_from_file
@@ -143,7 +142,7 @@ def build_legacy_fasttext_vector_pipeline():
     tokenizer = get_tokenizer("basic_english")
     vector = FastText()
 
-    pipeline = sequential_transforms(tokenizer_func(tokenizer), vector_func(vector))
+    pipeline = sequential_transforms(tokenizer, vector.get_vecs_by_tokens)
     return pipeline, None, None
 
 
