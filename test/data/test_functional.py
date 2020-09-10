@@ -83,9 +83,9 @@ class TestFunctional(TorchtextTestCase):
     # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_BasicEnglishNormalize(self):
-        test_sample = ['\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:']
-        ref_results = [["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-                        'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']]
+        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
         basic_eng_norm = basic_english_normalize()
         experimental_eager_tokens = basic_eng_norm(test_sample)
@@ -114,9 +114,9 @@ class TestFunctional(TorchtextTestCase):
     # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_RegexTokenizer(self):
-        test_sample = ['\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:']
-        ref_results = [["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
-                        'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']]
+        test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
+                       'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
         patterns_list = [
             (r'\'', ' \'  '),
             (r'\"', ''),
