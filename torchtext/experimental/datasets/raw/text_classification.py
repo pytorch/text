@@ -4,7 +4,7 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 
 URLS = {
     'AG_NEWS':
-        'https://drive.google.com/ag_news_csv.tar.gz',
+        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
     'SogouNews':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
     'DBpedia':
