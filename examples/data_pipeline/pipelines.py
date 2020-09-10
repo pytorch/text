@@ -7,7 +7,6 @@ from transforms import (
     PyTextScriptVocabTransform,
     tokenizer_func,
     vocab_func,
-    vector_func,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
