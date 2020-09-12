@@ -49,11 +49,6 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
-:hidden:`ToLongTensor`
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: ToLongTensor
-
 :hidden:`VocabTransform`
 ~~~~~~~~~~~~~~~~~~~~~~~
 

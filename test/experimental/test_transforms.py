@@ -7,7 +7,6 @@ from torchtext.experimental.transforms import (
     VocabTransform,
     SentencePieceTransform,
     SentencePieceTokenizer,
-    ToLongTensor,
     TextSequentialTransforms,
     pretrained_spm,
 )
@@ -62,11 +61,6 @@ class TestTransforms(TorchtextTestCase):
         test_sample = 'the pretrained spm model names'
         ref_results = [13, 1465, 12824, 304, 24935, 5771, 3776]
         self.assertEqual(spm_transform(test_sample), ref_results)
-
-    def test_to_long_tensor(self):
-        to_long_tensor = ToLongTensor()
-        self.assertEqual(to_long_tensor([1, 2, 3, 4]), torch.tensor([1, 2, 3, 4]))
-        self.assertEqual(to_long_tensor([1, 2, 3, 4]).dtype, torch.int64)
 
     def test_vocab_transform(self):
         asset_name = 'vocab_test2.txt'

@@ -294,29 +294,6 @@ class SentencePieceTransform(nn.Module):
         return self.sp_model.DecodeIds(ids)
 
 
-class ToLongTensor(nn.Module):
-    r"""Convert data to tensor
-
-    Examples:
-        >>> from torchtext.experimental.transforms import ToLongTensor
-        >>> to_long_tensor = ToLongTensor()
-    """
-
-    def __init__(self):
-        super(ToLongTensor, self).__init__()
-
-    def forward(self, data: List[int]) -> Tensor:
-        r"""
-        Args:
-            data: the data converted to tensor
-
-        Examples:
-            >>> to_long_tensor([9, 1546, 18811, 2849, 61, 2759, 2202])
-            >>> tensor([    9,  1546, 18811,  2849,    61,  2759,  2202])
-        """
-        return torch.tensor(data, dtype=torch.long)
-
-
 class VocabTransform(nn.Module):
     r"""Vocab transform
 
