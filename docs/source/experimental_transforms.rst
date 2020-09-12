@@ -35,10 +35,24 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
+:hidden: `sentencepiece_tokenizer`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: sentencepiece_tokenizer
+    :members:
+    :special-members: __init__
+
 :hidden:`SentencePieceTokenizer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: SentencePieceTokenizer
+    :members:
+    :special-members: __init__
+
+:hidden: `sentencepiece_transform`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: sentencepiece_transform
     :members:
     :special-members: __init__
 

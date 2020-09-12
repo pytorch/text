@@ -5,8 +5,8 @@ from torchtext.experimental.transforms import (
     basic_english_normalize,
     VectorTransform,
     VocabTransform,
-    SentencePieceTransform,
-    SentencePieceTokenizer,
+    sentencepiece_transform,
+    sentencepiece_tokenizer,
     TextSequentialTransforms,
     pretrained_spm,
 )
@@ -21,20 +21,19 @@ import os
 class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_transform(self):
         model_path = get_asset_path('spm_example.model')
-        pipeline = SentencePieceTransform(load_sp_model(model_path))
-        jit_pipeline = torch.jit.script(pipeline)
+        spm_transform = sentencepiece_transform(load_sp_model(model_path))
+        jit_spm_transform = torch.jit.script(spm_transform)
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
                        144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
-        self.assertEqual(pipeline(test_sample), ref_results)
-        self.assertEqual(jit_pipeline(test_sample), ref_results)
-
-        spm_transform = SentencePieceTransform(load_sp_model(model_path))
+        self.assertEqual(spm_transform(test_sample), ref_results)
+        self.assertEqual(jit_spm_transform(test_sample), ref_results)
         self.assertEqual(spm_transform.decode(ref_results), test_sample)
+        self.assertEqual(jit_spm_transform.decode(ref_results), test_sample)
 
     def test_sentencepiece_tokenizer(self):
         model_path = get_asset_path('spm_example.model')
-        spm_tokenizer = SentencePieceTokenizer(load_sp_model(model_path))
+        spm_tokenizer = sentencepiece_tokenizer(load_sp_model(model_path))
         jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
@@ -48,14 +47,14 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
     def test_builtin_pretrained_sentencepiece_transform(self):
-        spm_tokenizer = SentencePieceTokenizer(pretrained_spm())
+        spm_tokenizer = sentencepiece_tokenizer(pretrained_spm())
         _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
         os.remove(_path)
         test_sample = 'the pretrained spm model names'
         ref_results = ['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
-        spm_transform = SentencePieceTransform(pretrained_spm('text_bpe_25000'))
+        spm_transform = sentencepiece_transform(pretrained_spm('text_bpe_25000'))
         _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
         os.remove(_path)
         test_sample = 'the pretrained spm model names'

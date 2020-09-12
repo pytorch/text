@@ -208,8 +208,8 @@ def pretrained_spm(spm_model='text_unigram_25000'):
         raise RuntimeError('The pretrained sentencepiece model is not valid')
 
 
-class SentencePieceTokenizer(nn.Module):
-    r"""Tokenizer based on a pretained sentencepiece model.
+def sentencepiece_tokenizer(spm_model):
+    r"""factory function to generate SentencePieceTokenizer with pretrained sp model
 
     Args:
        spm_model: the sentencepiece model instance
@@ -219,8 +219,17 @@ class SentencePieceTokenizer(nn.Module):
         >>> from torchtext.experimental.transforms import SentencePieceTokenizer
         >>> from torchtext.experimental.transforms import pretrained_spm
         >>> sp_model = pretrained_spm('text_unigram_25000')
-        >>> spm_tokenizer = SentencePieceTokenizer(sp_model)
+        >>> spm_tokenizer = sentencepiece_tokenizer(sp_model)
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
+    """
+    return SentencePieceTokenizer(spm_model)
+
+
+class SentencePieceTokenizer(nn.Module):
+    r"""Tokenizer based on a pretained sentencepiece model.
+
+    Args:
+       spm_model: the sentencepiece model instance
     """
 
     def __init__(self, spm_model):
@@ -251,8 +260,8 @@ class SentencePieceTokenizer(nn.Module):
         return self.sp_model.DecodePieces(tokens)
 
 
-class SentencePieceTransform(nn.Module):
-    r"""String to ids transform based on a pretained sentencepiece model
+def sentencepiece_transform(spm_model):
+    r"""factory function to generate SentencePieceTransform with pretrained sp model
 
     Args:
        spm_model: the sentencepiece model instance
@@ -262,8 +271,17 @@ class SentencePieceTransform(nn.Module):
         >>> from torchtext.experimental.transforms import SentencePieceTransform
         >>> from torchtext.experimental.transforms import pretrained_spm
         >>> sp_model = pretrained_spm('text_unigram_25000')
-        >>> spm_transform = SentencePieceTransform(sp_model)
+        >>> spm_transform = sentencepiece_transform(sp_model)
         >>> jit_spm_tokenizer = torch.jit.script(spm_transform)
+    """
+    return SentencePieceTransform(spm_model)
+
+
+class SentencePieceTransform(nn.Module):
+    r"""String to ids transform based on a pretained sentencepiece model
+
+    Args:
+       spm_model: the sentencepiece model instance
     """
 
     def __init__(self, spm_model):
