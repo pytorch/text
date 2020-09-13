@@ -209,8 +209,8 @@ class Vectors(nn.Module):
             tokens: a list of string token list
 
         Returns:
-            vectors (List[Tensor]): returns a list of a 2-D tensor of shape=(len(tokens), vector_dim) or
-            an empty tensor if `tokens` is empty
+            vectors (List[Tensor]): returns a list of a 2-D tensor of shape=(len(tokens), vector_dim) or an
+            empty tensor if `tokens` is empty
         """
         vectors: List[Tensor] = []
         for tokens in tokens_list:

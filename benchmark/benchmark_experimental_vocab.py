@@ -19,7 +19,7 @@ from torchtext.experimental.transforms import basic_english_normalize
 def legacy_vocab_from_file_object(file_like_object, **kwargs):
     r"""Create a `Vocab` object from a file like object.
 
-    The `file_like_object` should contain tokens separated by new lines. Note that the vocab
+    The `file_like_object` should contain tokens seperated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
 
     Format for txt file:
