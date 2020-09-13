@@ -259,49 +259,47 @@ class PadTransform(nn.Module):
 
     Args:
         pad_id: the id for padding token
-        eos_token_id: the token id for the end-of-sentence mark (Default: None)
-        return_key_padding_mask: flag to output key_padding_mask as output (Defualt: True)
+        return_key_padding_mask: flag if to output padding_mask as output (Default: True)
 
     Example:
         >>> pad_id = 2
         >>> pad_transform = PadTransform(pad_id)
         >>> seq_batch = [[5, 4, 5, 6, 7], [1, 3], [7, 5, 8]]
-        >>> pad_seq, key_padding_mask = pad_transform(seq_batch)
+        >>> pad_seq, padding_mask = pad_transform(seq_batch)
         >>> jit_pad_transform = torch.jit.script(pad_transform)
     """
 
-    def __init__(self, pad_id, eos_token_id=None, return_key_padding_mask=True):
+    def __init__(self, pad_id, return_key_padding_mask=True):
         super(PadTransform, self).__init__()
         self.pad_id = pad_id
-        self.eos_token_id = eos_token_id
         self.return_key_padding_mask = return_key_padding_mask
 
     @torch.jit.export
-    def forward(self, seq_batch: List[List[int]]) -> Tuple[torch.Tensor, Optional[Tensor]]:
-        r"""Pad a list of integer lists. The individual integer list might have different length
-        such that the padding function will add padding id to the end of list for the same length.
+    def forward(self, seq_batch: List[Tensor]) -> Tuple[torch.Tensor, Optional[Tensor]]:
+        r"""Pad a list of tensors in the dim of (seq_dim, ...). The individual tensor has different length
+        (i.e. seq_dim) such that the padding function will add padding id to the end of list for the same length. It
+        assumes that the dimensions after seq_dim of the tensors are same. And the tensors have same dtype, which is
+        the dtype of output padded tensor.
 
         Args:
-            seq_batch: a list of integer lists. Type: List[List[int]]
+            seq_batch: a list of torch.tensor. Type: List[Tensor]
 
         Outputs:
-            padded_sequence, key_padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
+            padded_sequence, padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
 
         Note:
-            The key_padding_mask tensor has the same shape as the output padded_sequence, with a value of False in
-            the position of non-pad values and a value of True in the position of pads.
+            The padding_mask tensor has the same shape [len(seq_batch), max_seq_len], with a value of False in
+            the position of non-pad values and a value of True in the position of pads. len(seq_batch) is the number
+            of input sequences and max_seq_len is the maximum length of the input sequences.
         """
-        max_seq_len = max([len(seq) for seq in seq_batch] + [0])
-        if self.eos_token_id is not None:
-            max_seq_len += 1
-        key_padding_mask = torch.zeros(len(seq_batch), max_seq_len)
-        output_batch = torch.ones(len(seq_batch), max_seq_len, dtype=torch.long) * self.pad_id
+        max_seq_len = max([seq.size(0) for seq in seq_batch])
+        trailing_dims = seq_batch[0].size()[1:]
+        padding_mask = torch.zeros(len(seq_batch), max_seq_len)
+        output_batch = seq_batch[0].new_full((len(seq_batch), max_seq_len) + trailing_dims, self.pad_id)
         for idx, seq in enumerate(seq_batch):
-            if self.eos_token_id is not None:
-                seq = seq + [self.eos_token_id]
-            output_batch[idx][:len(seq)] = torch.tensor(seq, dtype=torch.long)
-            key_padding_mask[idx][len(seq):] = 1.0
+            output_batch[idx][:seq.size(0)] = seq
+            padding_mask[idx][seq.size(0):] = 1.0
         if self.return_key_padding_mask:
-            return output_batch, key_padding_mask.to(torch.bool)
+            return output_batch, padding_mask.to(torch.bool)
         else:
             return output_batch, None
