@@ -42,35 +42,31 @@ class TestTransforms(TorchtextTestCase):
 
     def test_padding_func(self):
         pad_id = 2
-        pad_transform = PadTransform(pad_id, eos_token_id=3)
+        pad_transform = PadTransform(pad_id)
         # Test torch.int64
         seq_batch = [torch.tensor([5, 4, 5, 6, 7]), torch.tensor([1, 3]), torch.tensor([7, 5, 8])]
         pad_seq, padding_mask = pad_transform(seq_batch)
-        expected_pad_seq = torch.tensor([[5, 4, 5, 6, 7, 3], [1, 3, 3, 2, 2, 2], [7, 5, 8, 3, 2, 2]], dtype=torch.long)
-        expected_padding_mask = torch.tensor([[False, False, False, False, False, False],
-                                              [False, False, False, True, True, True],
-                                              [False, False, False, False, True, True]])
+        expected_pad_seq = torch.tensor([[5, 4, 5, 6, 7], [1, 3, 2, 2, 2], [7, 5, 8, 2, 2]], dtype=torch.long)
+        expected_padding_mask = torch.tensor([[False, False, False, False, False],
+                                              [False, False, True, True, True],
+                                              [False, False, False, True, True]])
         self.assertEqual(pad_seq, expected_pad_seq)
         self.assertEqual(pad_seq.dtype, torch.long)
         self.assertEqual(padding_mask, expected_padding_mask)
         jit_pad_transform = torch.jit.script(pad_transform)
         jit_pad_seq, jit_padding_mask = jit_pad_transform(seq_batch)
         self.assertEqual(jit_pad_seq, expected_pad_seq)
+        self.assertEqual(jit_pad_seq.dtype, torch.long)
         self.assertEqual(jit_padding_mask, expected_padding_mask)
 
         # Test torch.float32
         seq_batch = [torch.tensor([5.0, 4.0, 5.0, 6.0, 7.0]), torch.tensor([1.0, 3.0]), torch.tensor([7.0, 5.0, 8.0])]
         pad_seq, padding_mask = pad_transform(seq_batch)
-        expected_pad_seq = torch.tensor([[5.0, 4.0, 5.0, 6.0, 7.0, 3.0],
-                                         [1.0, 3.0, 3.0, 2.0, 2.0, 2.0],
-                                         [7.0, 5.0, 8.0, 3.0, 2.0, 2.0]], dtype=torch.float32)
-        expected_padding_mask = torch.tensor([[False, False, False, False, False, False],
-                                              [False, False, False, True, True, True],
-                                              [False, False, False, False, True, True]])
+        expected_pad_seq = expected_pad_seq.to(torch.float32)
         self.assertEqual(pad_seq, expected_pad_seq)
         self.assertEqual(pad_seq.dtype, torch.float32)
         self.assertEqual(padding_mask, expected_padding_mask)
-        jit_pad_transform = torch.jit.script(pad_transform)
         jit_pad_seq, jit_padding_mask = jit_pad_transform(seq_batch)
         self.assertEqual(jit_pad_seq, expected_pad_seq)
+        self.assertEqual(jit_pad_seq.dtype, torch.float32)
         self.assertEqual(jit_padding_mask, expected_padding_mask)
