@@ -76,12 +76,12 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         tok_list = []
-        for raw_dict in raw_data['train']:
+        for (_context, _question, _answers, _ans_pos) in raw_data['train']:
             tok_ans = []
-            for item in raw_dict['answers']:
+            for item in _answers:
                 tok_ans += text_transform(item)
-            tok_list.append(text_transform(raw_dict['context']) +
-                            text_transform(raw_dict['question']) + tok_ans)
+            tok_list.append(text_transform(_context) +
+                            text_transform(_question) + tok_ans)
         vocab = build_vocab_from_iterator(tok_list)
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
