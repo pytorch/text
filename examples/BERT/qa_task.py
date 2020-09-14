@@ -14,13 +14,13 @@ from model import BertModel
 
 def process_raw_data(data):
     _data = []
-    for item in data:
+    for (context, question, answers, ans_pos) in data:
         right_length = True
-        for _idx in range(len(item['ans_pos'])):
-            if item['ans_pos'][_idx][1] + item['question'].size(0) + 2 >= args.bptt:
+        for _idx in range(len(ans_pos)):
+            if ans_pos[_idx][1] + question.size(0) + 2 >= args.bptt:
                 right_length = False
         if right_length:
-            _data.append(item)
+            _data.append((context, question, answers, ans_pos))
     return _data
 
 
@@ -28,9 +28,9 @@ def collate_batch(batch):
     seq_list = []
     ans_pos_list = []
     tok_type = []
-    for item in batch:
-        qa_item = torch.cat((torch.tensor([cls_id]), item['question'], torch.tensor([sep_id]),
-                             item['context'], torch.tensor([sep_id])))
+    for (context, question, answers, ans_pos) in batch:
+        qa_item = torch.cat((torch.tensor([cls_id]), question, torch.tensor([sep_id]),
+                             context, torch.tensor([sep_id])))
         if qa_item.size(0) > args.bptt:
             qa_item = qa_item[:args.bptt]
         elif qa_item.size(0) < args.bptt:
@@ -38,11 +38,11 @@ def collate_batch(batch):
                                  torch.tensor([pad_id] * (args.bptt -
                                               qa_item.size(0)))))
         seq_list.append(qa_item)
-        pos_list = [pos + item['question'].size(0) + 2 for pos in item['ans_pos']]  # 1 for sep and 1 for cls
+        pos_list = [pos + question.size(0) + 2 for pos in ans_pos]  # 1 for sep and 1 for cls
         ans_pos_list.append(pos_list)
-        tok_type.append(torch.cat((torch.zeros((item['question'].size(0) + 2)),
+        tok_type.append(torch.cat((torch.zeros((question.size(0) + 2)),
                                    torch.ones((args.bptt -
-                                               item['question'].size(0) - 2)))))
+                                               question.size(0) - 2)))))
     _ans_pos_list = []
     for pos in zip(*ans_pos_list):
         _ans_pos_list.append(torch.stack(list(pos)))
