@@ -226,40 +226,33 @@ class TestVocab(TorchtextTestCase):
     def test_vocab_from_file(self):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        v = vocab_from_file(f, unk_token='<new_unk>', pad_token='<new_pad>')
-
-        expected_itos = ['<new_unk>', '<new_pad>', 'b', 'a', 'c']
-        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        with open(asset_path, 'r') as f:
+            v = vocab_from_file(f, unk_token='<new_unk>', pad_token='<new_pad>')
+            expected_itos = ['<new_unk>', '<new_pad>', 'b', 'a', 'c']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_from_raw_text_file(self):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-
-        tokenizer = basic_english_normalize()
-        jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>', pad_token='<new_pad>')
-
-        expected_itos = ['<new_unk>', '<new_pad>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
-                         'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
-                         'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
-                         'unions', 'with', 'workers']
-        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        with open(asset_path, 'r') as f:
+            tokenizer = basic_english_normalize()
+            jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+            v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>', pad_token='<new_pad>')
+            expected_itos = ['<new_unk>', '<new_pad>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
+                             'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
+                             'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
+                             'unions', 'with', 'workers']
+            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
                     'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'freq_low', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T']]
         v = build_vocab_from_iterator(iterator)
-
         expected_itos = ['<unk>', '<pad>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', 'freq_low']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)

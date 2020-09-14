@@ -58,14 +58,12 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
 
 def build_experimental_torchtext_pipeline(hf_vocab_file):
     tokenizer = basic_english_normalize()
-    f = open(hf_vocab_file, 'r')
-    vocab = vocab_from_file(f)
-
-    pipeline = TextSequentialTransforms(tokenizer, vocab)
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-
-    print('jit experimental torchtext pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    with open(hf_vocab_file, 'r') as f:
+        vocab = vocab_from_file(f)
+        pipeline = TextSequentialTransforms(tokenizer, vocab)
+        jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+        print('jit experimental torchtext pipeline success!')
+        return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
 def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
@@ -89,37 +87,33 @@ def build_legacy_pytext_vocab_pipeline(vocab_file):
     from pytext.data.utils import Vocabulary
 
     tokenizer = get_tokenizer("basic_english")
-    f = open(vocab_file, 'r')
-
-    vocab_counter = Counter([token for line in f for token in line.rstrip()])
-    sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
-    vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
-    vocab_list.insert(0, "<unk>")
-
-    pipeline = sequential_transforms(tokenizer_func(tokenizer),
-                                     PyTextVocabTransform(Vocabulary(vocab_list, unk_token="<unk>")))
-    return pipeline, None, None
+    with open(vocab_file, 'r') as f:
+        vocab_counter = Counter([token for line in f for token in line.rstrip()])
+        sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
+        vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
+        vocab_list.insert(0, "<unk>")
+        pipeline = sequential_transforms(tokenizer_func(tokenizer),
+                                         PyTextVocabTransform(Vocabulary(vocab_list, unk_token="<unk>")))
+        return pipeline, None, None
 
 
 def build_legacy_pytext_script_vocab_pipeline(vocab_file):
     from pytext.torchscript.vocab import ScriptVocabulary
 
     tokenizer = basic_english_normalize()
-    f = open(vocab_file, 'r')
-
-    vocab_counter = Counter([token for line in f for token in line.rstrip()])
-    sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
-    vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
-    vocab_list.insert(0, "<unk>")
-
-    pipeline = TextSequentialTransforms(tokenizer_func(tokenizer),
-                                        PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-    print('jit legacy PyText pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    with open(vocab_file, 'r') as f:
+        vocab_counter = Counter([token for line in f for token in line.rstrip()])
+        sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
+        vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
+        vocab_list.insert(0, "<unk>")
+        pipeline = TextSequentialTransforms(tokenizer_func(tokenizer),
+                                            PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
+        jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+        print('jit legacy PyText pipeline success!')
+        return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
-def build_experimental_pytext_script_vocab_pipeline(vocab_file):
+def build_experimental_pytext_script_pipeline(vocab_file):
     import os
     import sys
     # this is needed because we want to add 'torchtext/examples/vocab' directory to the
@@ -199,7 +193,7 @@ if __name__ == "__main__":
     elif args.pipeline == 'experimental_torchtext':
         pipeline, torchbind_pipeline, jit_pipeline = build_experimental_torchtext_pipeline(args.vocab_filename)
     elif args.pipeline == 'experimental_pytext_script_vocab':
-        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_pytext_script_vocab_pipeline(args.vocab_filename)
+        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_pytext_script_pipeline(args.vocab_filename)
     elif args.pipeline == 'experimental_fasttext':
         pipeline, torchbind_pipeline, jit_pipeline = build_experimental_fasttext_vector_pipeline()
     elif args.pipeline == 'legacy_torchtext':
