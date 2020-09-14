@@ -265,14 +265,13 @@ class TestDataset(TorchtextTestCase):
         train_dataset, dev_dataset = SQuAD1()
         self.assertEqual(len(train_dataset), 87599)
         self.assertEqual(len(dev_dataset), 10570)
-        self.assertEqual(train_dataset[100]['question'],
+        context, question, answers, ans_pos = train_dataset[100]
+        self.assertEqual(question,
                          torch.tensor([7, 24, 86, 52, 2, 373, 887, 18, 12797, 11090, 1356, 2, 1788, 3273, 16]).long())
-        self.assertEqual(train_dataset[100]['ans_pos'][0],
-                         torch.tensor([72, 72]).long())
-        self.assertEqual(dev_dataset[100]['question'],
-                         torch.tensor([42, 27, 669, 7438, 17, 2, 1950, 3273, 17252, 389, 16]).long())
-        self.assertEqual(dev_dataset[100]['ans_pos'][0],
-                         torch.tensor([45, 48]).long())
+        self.assertEqual(ans_pos[0], torch.tensor([72, 72]).long())
+        context, question, answers, ans_pos = dev_dataset[100]
+        self.assertEqual(question, torch.tensor([42, 27, 669, 7438, 17, 2, 1950, 3273, 17252, 389, 16]).long())
+        self.assertEqual(ans_pos[0], torch.tensor([45, 48]).long())
 
         # Test API with a vocab input object
         old_vocab = train_dataset.get_vocab()
@@ -286,14 +285,13 @@ class TestDataset(TorchtextTestCase):
         train_dataset, dev_dataset = SQuAD2()
         self.assertEqual(len(train_dataset), 130319)
         self.assertEqual(len(dev_dataset), 11873)
-        self.assertEqual(train_dataset[200]['question'],
+        context, question, answers, ans_pos = train_dataset[200]
+        self.assertEqual(question,
                          torch.tensor([84, 50, 1421, 12, 5439, 4569, 17, 30, 2, 15202, 4754, 1421, 16]).long())
-        self.assertEqual(train_dataset[200]['ans_pos'][0],
-                         torch.tensor([9, 9]).long())
-        self.assertEqual(dev_dataset[200]['question'],
-                         torch.tensor([41, 29, 2, 66, 17016, 30, 0, 1955, 16]).long())
-        self.assertEqual(dev_dataset[200]['ans_pos'][0],
-                         torch.tensor([40, 46]).long())
+        self.assertEqual(ans_pos[0], torch.tensor([9, 9]).long())
+        context, question, answers, ans_pos = dev_dataset[200]
+        self.assertEqual(question, torch.tensor([41, 29, 2, 66, 17016, 30, 0, 1955, 16]).long())
+        self.assertEqual(ans_pos[0], torch.tensor([40, 46]).long())
 
         # Test API with a vocab input object
         old_vocab = train_dataset.get_vocab()
