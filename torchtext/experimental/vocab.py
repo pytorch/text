@@ -13,7 +13,7 @@ from torchtext._torchtext import (
 logger = logging.getLogger(__name__)
 
 
-def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', pad_token='<pad>', num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -26,6 +26,7 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         unk_token: The default unknown token to use. Default: '<unk>'.
+        pad_token: The default padding token to use. Default: '<pad>'.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
@@ -40,11 +41,11 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
     """
-    vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, pad_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
+def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', pad_token='<pad>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
     The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
@@ -58,6 +59,7 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         unk_token: The default unknown token to use. Default: '<unk>'.
+        pad_token: The default padding token to use. Default: '<pad>'.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
@@ -67,7 +69,7 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file(f)
     """
-    vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_object.name, unk_token, pad_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
@@ -88,21 +90,24 @@ def build_vocab_from_iterator(iterator):
     return word_vocab
 
 
-def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
+def vocab(ordered_dict, min_freq=1, unk_token='<unk>', pad_token='<pad>'):
     r"""Factory method for creating a vocab object which maps tokens to indices.
 
     Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
     Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
-    Additionally, the if the `unk_token` isn't found inside of the `ordered_dict`, it will be added to the end of the vocab.
+    Additionally, the if the `unk_token` isn't found inside of the `ordered_dict`, it will be added to the beginning of the vocab.
+    If the `pad_token` isn't found inside of the `ordered_dict`, it will be added to the beginning of the vocab.
 
     Arguments:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         unk_token: The default unknown token to use. Default: '<unk>'.
+        pad_token: The default padding token to use. Default: '<pad>'.
 
     Raises:
         ValueError: if a default `unk_token` isn't provided.
+        ValueError: if a default `pad_token` isn't provided.
 
     Examples:
         >>> from torchtext.experimental.vocab import vocab
@@ -116,6 +121,8 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
     """
     if not unk_token:
         raise ValueError("A default unk token wasn't provided.")
+    if not pad_token:
+        raise ValueError("A default pad token wasn't provided.")
 
     tokens = []
     for token, freq in ordered_dict.items():
@@ -126,7 +133,11 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         tokens.insert(0, unk_token)
         warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
                       "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
-    return Vocab(VocabPybind(tokens, unk_token))
+    if pad_token not in tokens:
+        tokens.insert(1, pad_token)
+        warnings.warn("The `pad_token` '{}' wasn't found in the `ordered_dict`. Adding the `pad_token` "
+                      "to the beginning of the Vocab.".format(pad_token), RuntimeWarning)
+    return Vocab(VocabPybind(tokens, unk_token, pad_token))
 
 
 class Vocab(nn.Module):
@@ -255,5 +266,5 @@ class Vocab(nn.Module):
     def to_ivalue(self):
         r"""Return a JITable Vocab.
         """
-        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
+        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_, self.vocab.pad_token_)
         return Vocab(cpp_vocab)
