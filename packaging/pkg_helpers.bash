@@ -34,7 +34,7 @@ setup_cuda() {
   # First, compute version suffixes.  By default, assume no version suffixes
   export VERSION_SUFFIX=""
   export PYTORCH_VERSION_SUFFIX=""
-  export WHEEL_DIR=""
+  export WHEEL_DIR="cpu/"
   # Wheel builds need suffixes (but not if they're on OS X, which never has suffix)
   if [[ "$BUILD_TYPE" == "wheel" ]] && [[ "$(uname)" != Darwin ]]; then
     # The default CUDA has no suffix
