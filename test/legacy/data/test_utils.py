@@ -1,10 +1,10 @@
 import io
 
-import torchtext.data as data
+import torchtext.legacy.data as data
 from torchtext.utils import unicode_csv_reader
 from torchtext.experimental.functional import ngrams_func
-from ..common.torchtext_test_case import TorchtextTestCase
-from ..common.assets import get_asset_path
+from ...common.torchtext_test_case import TorchtextTestCase
+from ...common.assets import get_asset_path
 
 
 class TestUtils(TorchtextTestCase):

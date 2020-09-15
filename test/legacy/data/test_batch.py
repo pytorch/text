@@ -1,7 +1,7 @@
 import torch
-import torchtext.data as data
+import torchtext.legacy.data as data
 
-from ..common.torchtext_test_case import TorchtextTestCase
+from ...common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDataset(TorchtextTestCase):
