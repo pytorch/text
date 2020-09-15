@@ -113,6 +113,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
 
 
 class Vocab(nn.Module):
+    __ignored_properties__ = ["is_jitable"]
     r"""Creates a vocab object which maps tokens to indices.
 
     Arguments:
