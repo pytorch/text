@@ -15,7 +15,7 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline sentencepiece
 
-The lookup time: 30.770548372063786 (eager mode with pybind)
+The lookup time: 30.77054837206378 (eager mode with pybind)
 The lookup time: 34.36592311505228 (eager mode with torchbind)
 The lookup time: 23.43273439211771 (jit mode)
 
