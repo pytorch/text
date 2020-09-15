@@ -18,13 +18,14 @@ def _create_data_from_json(data_path):
         for layer1 in raw_json_data:
             for layer2 in layer1['paragraphs']:
                 for layer3 in layer2['qas']:
-                    processed = {'context': layer2['context'], 'question': layer3['question'],
-                                 'answers': [item['text'] for item in layer3['answers']],
-                                 'answer_start': [item['answer_start'] for item in layer3['answers']]}
-                    if len(processed['answers']) == 0:
-                        processed['answers'] = [""]
-                        processed['answer_start'] = [-1]
-                    yield processed
+                    _context, _question = layer2['context'], layer3['question']
+                    _answers = [item['text'] for item in layer3['answers']]
+                    _answer_start = [item['answer_start'] for item in layer3['answers']]
+                    if len(_answers) == 0:
+                        _answers = [""]
+                        _answer_start = [-1]
+                    # yield the raw data in the order of context, question, answers, answer_start
+                    yield (_context, _question, _answers, _answer_start)
 
 
 class RawQuestionAnswerDataset(torch.utils.data.IterableDataset):
