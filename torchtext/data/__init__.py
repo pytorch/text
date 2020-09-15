@@ -1,5 +1,4 @@
 from .metrics import bleu_score
-from .pipeline import Pipeline
 from .utils import get_tokenizer, interleave_keys
 from .functional import generate_sp_model, \
     load_sp_model, \
@@ -8,7 +7,6 @@ from .functional import generate_sp_model, \
     numericalize_tokens_from_iterator
 
 __all__ = ["bleu_score",
-           "Pipeline",
            "get_tokenizer", "interleave_keys",
            "generate_sp_model", "load_sp_model",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer",
