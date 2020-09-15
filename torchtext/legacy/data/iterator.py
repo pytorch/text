@@ -4,7 +4,7 @@ import random
 import logging
 import warnings
 import torch
-from .utils import RandomShuffler
+from torchtext.data.utils import RandomShuffler
 from .batch import Batch
 from .dataset import Dataset
 

@@ -8,9 +8,9 @@ from functools import partial
 
 import torch.utils.data
 
-from .utils import RandomShuffler
+from torchtext.data.utils import RandomShuffler
 from .example import Example
-from ..utils import download_from_url, unicode_csv_reader
+from torchtext.utils import download_from_url, unicode_csv_reader
 
 
 class Dataset(torch.utils.data.Dataset):
