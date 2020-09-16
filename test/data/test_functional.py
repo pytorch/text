@@ -82,7 +82,7 @@ class TestFunctional(TorchtextTestCase):
 
     def test_sentencepiece_unsupported_input_type(self):
         with self.assertRaisesRegex(
-            RuntimeError,
+            TypeError,
             'Unsupported type for spm argument: dict. ' + \
             'Supported types are: str, io.BufferedReader'):
             sp_model = load_sp_model(dict())
