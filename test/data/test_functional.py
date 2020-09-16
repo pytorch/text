@@ -80,7 +80,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
-    def test_sentencepiece_unsupported_input(self):
+    def test_sentencepiece_unsupported_input_type(self):
         with self.assertRaisesRegex(
             RuntimeError,
             'Unsupported type for spm argument: dict. ' + \
