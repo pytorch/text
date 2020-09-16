@@ -3,7 +3,7 @@
 import os
 import glob
 import shutil
-import torchtext.data as data
+from torchtext.legacy import data
 from torchtext.datasets import AG_NEWS
 import torch
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -19,7 +19,7 @@ def conditional_remove(f):
 
 class TestDataset(TorchtextTestCase):
     def test_wikitext2_legacy(self):
-        from torchtext.datasets import WikiText2
+        from torchtext.legacy.datasets import WikiText2
         # smoke test to ensure wikitext2 works properly
 
         # NOTE
@@ -65,7 +65,7 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
     def test_penntreebank_legacy(self):
-        from torchtext.datasets import PennTreebank
+        from torchtext.legacy.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         TEXT = data.Field(lower=True, batch_first=True)
         ds = PennTreebank

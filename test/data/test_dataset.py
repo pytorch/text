@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import torchtext.data as data
+import torchtext.legacy.data as data
 import os
 import sys
 import tempfile
