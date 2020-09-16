@@ -59,8 +59,8 @@ def load_sp_model(spm):
         return torch.ops.torchtext.load_sp_model_string(spm.read())
     else:
         raise TypeError(
-            f'Unsupported type for spm argument: {type(spm).__name__}. ' + \
-            'Supported types are: ' + \
+            f'Unsupported type for spm argument: {type(spm).__name__}. ' +
+            'Supported types are: ' +
             ', '.join([
                 'str', 'io.BufferedReader'
             ]))

@@ -83,9 +83,10 @@ class TestFunctional(TorchtextTestCase):
     def test_sentencepiece_unsupported_input_type(self):
         with self.assertRaisesRegex(
             TypeError,
-            'Unsupported type for spm argument: dict. ' + \
-            'Supported types are: str, io.BufferedReader'):
-            sp_model = load_sp_model(dict())
+            'Unsupported type for spm argument: dict. '
+            'Supported types are: str, io.BufferedReader'
+        ):
+            load_sp_model(dict())
 
     # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
