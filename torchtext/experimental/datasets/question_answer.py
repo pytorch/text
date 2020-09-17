@@ -6,6 +6,7 @@ from torchtext.experimental.functional import (
     totensor,
     sequential_transforms,
 )
+import warnings
 
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
@@ -81,6 +82,7 @@ def _setup_datasets(dataset_name,
                 tok_ans += text_transform(item)
             tok_list.append(text_transform(_context) +
                             text_transform(_question) + tok_ans)
+        warnings.filterwarnings("ignore")
         vocab = build_vocab_from_iterator(tok_list)
     text_transform = sequential_transforms(text_transform, vocab, totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,

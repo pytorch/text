@@ -1,10 +1,10 @@
 import torch
 import logging
-
 from torchtext.experimental.datasets import raw
 from torchtext.experimental.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import totensor, sequential_transforms
+import warnings
 
 
 def build_vocab(data, transforms, index):
@@ -53,6 +53,7 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building src Vocab based on train data')
+        warnings.filterwarnings("ignore")
         src_vocab = build_vocab(raw_data["train"],
                                 src_text_vocab_transform,
                                 index=0)
@@ -65,6 +66,7 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building tgt Vocab based on train data')
+        warnings.filterwarnings("ignore")
         tgt_vocab = build_vocab(raw_data["train"],
                                 tgt_text_vocab_transform,
                                 index=1)
