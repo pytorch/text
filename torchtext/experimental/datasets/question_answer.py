@@ -1,10 +1,9 @@
 import torch
 from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import build_vocab_from_iterator
+from torchtext.experimental.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import question_answer as raw
 from torchtext.experimental.functional import (
     totensor,
-    vocab_func,
     sequential_transforms,
 )
 
@@ -83,7 +82,7 @@ def _setup_datasets(dataset_name,
             tok_list.append(text_transform(_context) +
                             text_transform(_question) + tok_ans)
         vocab = build_vocab_from_iterator(tok_list)
-    text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
+    text_transform = sequential_transforms(text_transform, vocab, totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)

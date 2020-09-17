@@ -2,9 +2,9 @@ import torch
 import logging
 
 from torchtext.experimental.datasets import raw
-from torchtext.vocab import Vocab, build_vocab_from_iterator
+from torchtext.experimental.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
-from ..functional import vocab_func, totensor, sequential_transforms
+from ..functional import totensor, sequential_transforms
 
 
 def build_vocab(data, transforms, index):
@@ -77,10 +77,10 @@ def _setup_datasets(dataset_name,
     datasets = []
     for key in data_select:
         src_text_transform = sequential_transforms(src_text_vocab_transform,
-                                                   vocab_func(src_vocab),
+                                                   src_vocab,
                                                    totensor(dtype=torch.long))
         tgt_text_transform = sequential_transforms(tgt_text_vocab_transform,
-                                                   vocab_func(tgt_vocab),
+                                                   tgt_vocab,
                                                    totensor(dtype=torch.long))
         datasets.append(
             TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
