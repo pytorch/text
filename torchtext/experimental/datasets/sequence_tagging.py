@@ -1,12 +1,11 @@
 import torch
-
 from torchtext.experimental.datasets import raw
-from torchtext.vocab import build_vocab_from_iterator
+from torchtext.experimental.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
-    vocab_func,
     totensor,
     sequential_transforms,
 )
+import warnings
 
 
 def _build_vocab(data):
@@ -43,6 +42,7 @@ def _setup_datasets(dataset_name,
     if vocabs is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
+        warnings.filterwarnings("ignore")
         vocabs = _build_vocab(raw_data["train"])
     else:
         if not isinstance(vocabs, list):
@@ -60,7 +60,7 @@ def _setup_datasets(dataset_name,
                 "in the data")
 
     transformers = [
-        sequential_transforms(vocab_func(vocabs[idx]),
+        sequential_transforms(vocabs[idx],
                               totensor(dtype=torch.long))
         for idx in range(len(vocabs))
     ]

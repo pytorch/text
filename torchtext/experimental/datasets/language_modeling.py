@@ -1,8 +1,9 @@
 import torch
 from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import build_vocab_from_iterator
+from torchtext.experimental.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import language_modeling as raw
-from torchtext.experimental.functional import vocab_func, totensor, sequential_transforms
+from torchtext.experimental.functional import totensor, sequential_transforms
+import warnings
 
 
 def build_vocab(data, transforms):
@@ -95,8 +96,9 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
+        warnings.filterwarnings("ignore")
         vocab = build_vocab(raw_data['train'], text_transform)
-    text_transform = sequential_transforms(text_transform, vocab_func(vocab),
+    text_transform = sequential_transforms(text_transform, vocab,
                                            totensor(dtype=torch.long))
     return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
                  for item in data_select)
