@@ -115,6 +115,6 @@ Legacy Torchtext | 11.677 | N/A | N/A
 Experimental Torchtext | 4.793 | 9.745 | 6.459
 Legacy PyText | 10.168 | 12.636 | 8.425
 Experimental PyText | 5.192 | 10.555 | 6.272 
-Legacy Torchtext with a batch of data | 5.192
-Legacy FastText pretrained word vectors | 22.947
+Legacy Torchtext with a batch of data | 5.192 | N/A | N/A
+Legacy FastText pretrained word vectors | 22.947 | N/A | N/A
 Experimental FastText pretrained word vectors | 11.949 | 18.100 | 14.058
