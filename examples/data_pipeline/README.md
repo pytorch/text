@@ -9,7 +9,6 @@ This pipeline example shows the application with a pretrained sentencepiece mode
 
 * `PretrainedSPTokenizer`
 * `PretrainedSPVocab` backed by `torchtext.experimental.vocab.Vocab`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 The command to run the pipeline:
 
@@ -22,7 +21,6 @@ This pipeline example shows the application with the existing `Vocab` in torchte
 
 * `basic_english` func from `torchtext.data.utils.get_tokenizer`
 * `torchtext.vocab.Vocab`
-* `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
 
 The command to run the pipeline:
 
@@ -35,7 +33,6 @@ This pipeline example shows the application with the vocab text file from Huggin
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `torchtext.experimental.vocab.Vocab`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 The command to run the pipeline:
 
@@ -48,7 +45,6 @@ This pipeline example shows the application with the existing `ScriptVocab` in p
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `from pytext.torchscript.vocab.ScriptVocabulary`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 With the dependency of `pytext` library, the command to run the pipeline:
 
@@ -61,7 +57,6 @@ This pipeline example shows the application with a `ScriptVocab` based on the to
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `from pytext.torchscript.vocab.ScriptVocabulary`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 With the dependency of `pytext` library, the command to run the pipeline:
 
@@ -76,7 +71,6 @@ For the text pipeline:
 
 * `basic_english` func from `torchtext.data.utils.get_tokenizer`
 * `torchtext.vocab.Vocab`
-* `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
 
 For the label pipeline:
 
@@ -116,11 +110,11 @@ Here are the time for lookup
 
 Pipelines | Eager Mode with Pybind | Eager Mode with Torchbind | JIT Mode
 ------------ | ------------- | ------------- | -------------
-SentencePiece | 30.770548372063786 | 34.36592311505228 | 23.43273439211771
-Legacy Torchtext | 8.690132656134665 | N/A | N/A
-Experimental Torchtext | 10.21763815311715 | 17.28485624492168 | 10.25370063772425
-Legacy PyText | 18.07144843228161 | 22.16066740499809 | 13.41519635310396
-Experimental PyText | 11.004039663821459 | 17.025434703100473 | 10.078087331261486
-Legacy Torchtext with a batch of data | 10.05315054487437
-Legacy FastText pretrained word vectors | 34.08170719863847
-Experimental FastText pretrained word vectors | 16.45024944096803 | 23.96459424262866 | 19.34995342604816
+SentencePiece | 19.555 | 22.798 | 17.579
+Legacy Torchtext | 11.677 | N/A | N/A
+Experimental Torchtext | 4.793 | 9.745 | 6.459
+Legacy PyText | 10.168 | 12.636 | 8.425
+Experimental PyText | 5.192 | 10.555 | 6.272 
+Legacy Torchtext with a batch of data | 5.192
+Legacy FastText pretrained word vectors | 22.947
+Experimental FastText pretrained word vectors | 11.949 | 18.100 | 14.058
