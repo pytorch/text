@@ -266,7 +266,7 @@ class PadTransform(nn.Module):
     Example:
         >>> pad_id = 2
         >>> pad_transform = PadTransform(pad_id)
-        >>> seq_batch = [[5, 4, 5, 6, 7], [1, 3], [7, 5, 8]]
+        >>> seq_batch = [torch.tensor([5, 4, 5, 6, 7]), torch.tensor([1, 3]), torch.tensor([7, 5, 8])]
         >>> pad_seq, padding_mask = pad_transform(seq_batch)
         >>> jit_pad_transform = torch.jit.script(pad_transform)
     """
@@ -295,12 +295,10 @@ class PadTransform(nn.Module):
             of input sequences and max_seq_len is the maximum length of the input sequences.
         """
         max_seq_len = max([seq.size(0) for seq in seq_batch])
-        trailing_dims = seq_batch[0].size()[1:]
         padding_mask = torch.zeros(len(seq_batch), max_seq_len)
-        output_batch = seq_batch[0].new_full((len(seq_batch), max_seq_len) + trailing_dims, self.pad_id)
         for idx, seq in enumerate(seq_batch):
-            output_batch[idx][:seq.size(0)] = seq
             padding_mask[idx][seq.size(0):] = 1.0
+        output_batch = torch.nn.utils.rnn.pad_sequence(seq_batch, batch_first=True, padding_value=float(self.pad_id))
         if self.return_key_padding_mask:
             return output_batch, padding_mask.to(torch.bool)
         else:
