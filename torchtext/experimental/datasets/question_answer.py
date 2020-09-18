@@ -69,20 +69,20 @@ def _setup_datasets(dataset_name,
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'dev'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, dev = raw.DATASETS[dataset_name](root=root)
-    raw_data = {'train': [item for item in train],
-                'dev': [item for item in dev]}
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        tok_list = []
-        for (_context, _question, _answers, _ans_pos) in raw_data['train']:
-            tok_ans = []
-            for item in _answers:
-                tok_ans += text_transform(item)
-            tok_list.append(text_transform(_context) +
-                            text_transform(_question) + tok_ans)
-        vocab = build_vocab_from_iterator(tok_list)
+
+        def apply_transform(data):
+            for (_context, _question, _answers, _ans_pos) in data:
+                tok_ans = []
+                for item in _answers:
+                    tok_ans += text_transform(item)
+                yield text_transform(_context) + text_transform(_question) + tok_ans
+        vocab = build_vocab_from_iterator(apply_transform(raw.DATASETS[dataset_name](root=root)[0]))
+    train, dev = raw.DATASETS[dataset_name](root=root)
+    raw_data = {'train': [item for item in train],
+                'dev': [item for item in dev]}
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}

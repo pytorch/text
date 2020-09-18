@@ -6,10 +6,10 @@ from torchtext.experimental.functional import vocab_func, totensor, sequential_t
 
 
 def build_vocab(data, transforms):
-    tok_list = []
-    for txt in data:
-        tok_list.append(transforms(txt))
-    return build_vocab_from_iterator(tok_list)
+    def apply_transforms(data):
+        for line in data:
+            yield transforms(line)
+    return build_vocab_from_iterator(apply_transforms(data))
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):
