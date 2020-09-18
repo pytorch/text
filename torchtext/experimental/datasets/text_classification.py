@@ -16,6 +16,7 @@ def build_vocab(data, transforms):
             yield transforms(line)
     return build_vocab_from_iterator(apply_transforms(data))
 
+
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
        Currently, we only support the following datasets:
