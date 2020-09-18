@@ -90,7 +90,7 @@ def _setup_datasets(
     if vocab is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = _build_vocab(raw_data["train"], text_transform)
+        vocab = build_vocab(raw_data["train"], text_transform)
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
