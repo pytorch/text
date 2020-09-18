@@ -542,8 +542,7 @@ pretrained_aliases = {
 """Mapping from string name to factory function"""
 
 
-def build_vocab_from_iterator(iterator, max_size=None, min_freq=1, specials=('<unk>', '<pad>'),
-                              vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
+def build_vocab_from_iterator(iterator):
     """
     Build a Vocab from an iterator.
 
@@ -556,5 +555,5 @@ def build_vocab_from_iterator(iterator, max_size=None, min_freq=1, specials=('<u
         for tokens in iterator:
             counter.update(tokens)
             t.update(1)
-    word_vocab = Vocab(counter, max_size, min_freq, specials, vectors, unk_init, vectors_cache, specials_first)
+    word_vocab = Vocab(counter)
     return word_vocab
