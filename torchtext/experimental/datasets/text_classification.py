@@ -10,11 +10,11 @@ from torchtext.experimental.functional import (
 )
 
 
-def build_vocab(data, transforms):
-    def apply_transforms(data):
-        for _, line in data:
-            yield transforms(line)
-    return build_vocab_from_iterator(apply_transforms(data))
+def _build_vocab(data, transforms):
+    tok_list = []
+    for _, txt in data:
+        tok_list.append(transforms(txt))
+    return build_vocab_from_iterator(tok_list)
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
@@ -91,7 +91,7 @@ def _setup_datasets(
     if vocab is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(raw_data["train"], text_transform)
+        vocab = _build_vocab(raw_data["train"], text_transform)
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
