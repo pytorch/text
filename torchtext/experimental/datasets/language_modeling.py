@@ -58,7 +58,6 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
                     data_select=('train', 'test', 'valid'), single_line=True):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
-    text_transform = sequential_transforms(tokenizer)
 
     if isinstance(data_select, str):
         data_select = (data_select,)
@@ -78,13 +77,20 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
             raise TypeError("Must pass a vocab if train is not selected.")
         # Build vocab from lines of text even if all to be concatenated
         # for better user experience
-        vocab = build_vocab(raw_iter['train'], text_transform)
+        vocab = build_vocab(raw_iter['train'], tokenizer)
         # Repopulate with fresh iterator
         raw_iter['train'] = raw.DATASETS[dataset_name](root=root, data_select='train')
 
     # Single-line dataset stores numericalized version of dataset. Let's
-    # avoid using extra memory by apply the transform now instead of later.
-    text_transform = sequential_transforms(text_transform, vocab_func(vocab))
+    # avoid using extra memory by applying the transforms now instead of later.
+    def text_transform(data, filter_empty=False):
+        for line in data:
+            ids = []
+            for token in tokenizer(line):
+                ids.append(vocab[token])
+            if filter_empty and len(ids) == 0:
+                continue
+            yield torch.tensor(ids, dtype=torch.long)
 
     raw_data = {}
     for name in raw_iter:
@@ -92,9 +98,9 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
         raw_data[name] = [torch.tensor(text_transform(txt), dtype=torch.long) for txt in raw_iter[name]]
         if single_line:
             # torch.cat doesn't work on empty Tensors
-            raw_data[name] = torch.cat(list(filter(lambda t: t.numel() > 0, raw_data[name])))
+            raw_data[name] = torch.cat(list(text_transform(raw_data[name], filter_empty=True)))
         else:
-            raw_data[name] = [torch.tensor(tokens) for tokens in raw_data[name]]
+            raw_data[name] = list(text_transform(raw_data[name]))
 
     return tuple(LanguageModelingDataset(raw_data[item], vocab, lambda x: x, single_line)
                  for item in data_select)
