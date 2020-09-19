@@ -7,8 +7,9 @@ import time
 def benchmark_construction(name, Dataset):
     t0 = time.perf_counter()
     print(name, end='')
-    Dataset()
+    d, = Dataset(data_select=('train',))
     print(" construction time {0:.2f}s".format(time.perf_counter() - t0))
+    del d
 
 
 if __name__ == "__main__":
