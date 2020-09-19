@@ -213,24 +213,22 @@ class TestVocab(TorchtextTestCase):
     def test_load_vocab_from_text_file(self):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            v = load_vocab_from_text_file(f, unk_token='<new_unk>')
-            expected_itos = ['<new_unk>', 'b', 'a', 'c']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        v = load_vocab_from_text_file(asset_path, unk_token='<new_unk>')
+        expected_itos = ['<new_unk>', 'b', 'a', 'c']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_build_vocab_from_text_file(self):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            tokenizer = basic_english_normalize()
-            jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-            v = build_vocab_from_text_file(f, jit_tokenizer, unk_token='<new_unk>')
-            expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
-                             'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
-                             'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
-                             'unions', 'with', 'workers']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        tokenizer = basic_english_normalize()
+        jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+        v = build_vocab_from_text_file(asset_path, jit_tokenizer, unk_token='<new_unk>')
+        expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
+                         'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
+                         'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
+                         'unions', 'with', 'workers']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
