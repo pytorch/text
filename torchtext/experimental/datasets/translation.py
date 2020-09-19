@@ -21,72 +21,75 @@ def _setup_datasets(dataset_name,
                     data_select=('train', 'test', 'valid'),
                     root='.data',
                     vocab=(None, None),
-                    tokenizer=None,
+                    tokenizer=(None, None),
                     removed_tokens=['<unk>']):
     src_vocab, tgt_vocab = vocab
-    if tokenizer is None:
+    if src_vocab is not None and not isinstance(src_vocab, Vocab):
+        raise TypeError("Passed src vocabulary is of type %s expected type Vocab".format(type(src_vocab)))
+    if tgt_vocab is not None and not isinstance(tgt_vocab, Vocab):
+        raise TypeError("Passed src vocabulary is of type %s expected type Vocab".format(type(tgt_vocab)))
+    if not isinstance(tokenizer, tuple) or len(tokenizer) != 2:
+        raise ValueError("tokenizer must be tuple of length two one for "
+                         "each source and target. %s passed instead".format(tokenizer))
+    src_tokenizer, tgt_tokenizer = tokenizer
+    if src_tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
+    if tgt_tokenizer is None:
         tgt_tokenizer = get_tokenizer("spacy", language='en_core_web_sm')
-    elif isinstance(tokenizer, tuple):
-        if len(tokenizer) == 2:
-            src_tokenizer, tgt_tokenizer = tokenizer
-        else:
-            raise ValueError("tokenizer must have length of two for"
-                             "source and target")
-    else:
-        raise ValueError(
-            "tokenizer must be an instance of tuple with length two"
-            "or None")
-    train, val, test = DATASETS[dataset_name](train_filenames=train_filenames,
-                                              valid_filenames=valid_filenames,
-                                              test_filenames=test_filenames,
-                                              root=root)
-    raw_data = {
-        "train": [line for line in train],
-        "valid": [line for line in val],
-        "test": [line for line in test]
-    }
-    src_text_vocab_transform = sequential_transforms(src_tokenizer)
-    tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
+
+    def build_raw_iter(raw_iter=None):
+        raw_iter_ = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                               valid_filenames=valid_filenames,
+                                               test_filenames=test_filenames,
+                                               root=root, data_select=data_select)
+        if raw_iter is None:
+            raw_iter = {}
+        for i, name in enumerate(data_select):
+            if name not in raw_iter:
+                raw_iter[name] = raw_iter_[i]
+        return raw_iter
+    raw_iter = build_raw_iter()
 
     if src_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building src Vocab based on train data')
-        src_vocab = build_vocab(raw_data["train"],
-                                src_text_vocab_transform,
+        logging.info('Building src Vocab based on train source data')
+        # pop train iterator to force repopulation
+        src_vocab = build_vocab(raw_data.pop("train"),
+                                src_tokenizer,
                                 index=0)
-    else:
-        if not isinstance(src_vocab, Vocab):
-            raise TypeError("Passed src vocabulary is not of type Vocab")
+    raw_iter = build_raw_iter()
     logging.info('src Vocab has {} entries'.format(len(src_vocab)))
 
     if tgt_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building tgt Vocab based on train data')
-        tgt_vocab = build_vocab(raw_data["train"],
-                                tgt_text_vocab_transform,
+        logging.info('Building tgt Vocab based on train source data')
+        tgt_vocab = build_vocab(raw_data.pop("train"),
+                                tgt_tokenizer,
                                 index=1)
-    else:
-        if not isinstance(tgt_vocab, Vocab):
-            raise TypeError("Passed tgt vocabulary is not of type Vocab")
+    raw_iter = build_raw_iter()
     logging.info('tgt Vocab has {} entries'.format(len(tgt_vocab)))
 
-    logging.info('Building datasets for {}'.format(data_select))
-    datasets = []
-    for key in data_select:
-        src_text_transform = sequential_transforms(src_text_vocab_transform,
-                                                   vocab_func(src_vocab),
-                                                   totensor(dtype=torch.long))
-        tgt_text_transform = sequential_transforms(tgt_text_vocab_transform,
-                                                   vocab_func(tgt_vocab),
-                                                   totensor(dtype=torch.long))
-        datasets.append(
-            TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
-                               (src_text_transform, tgt_text_transform)))
+    raw_data = {}
+    for name in raw_iter:
+        raw_data[name] = list(raw_iter[name])
 
-    return tuple(datasets)
+    def src_text_transform(line):
+        ids = []
+        for token in src_tokenizer(line):
+            ids.append(src_vocab[token])
+        return torch.tensor(ids, dtype=torch.long)
+
+    def tgt_text_transform(line):
+        ids = []
+        for token in tgt_tokenizer(line):
+            ids.append(tgt_vocab[token])
+        return torch.tensor(ids, dtype=torch.long)
+
+    logging.info('Building datasets for {}'.format(data_select))
+    return tuple(TranslationDataset(raw_data[name], (src_vocab, tgt_vocab),
+                                    (src_text_transform, tgt_text_transform)) for name in raw_data)
 
 
 class TranslationDataset(torch.utils.data.Dataset):
@@ -96,6 +99,7 @@ class TranslationDataset(torch.utils.data.Dataset):
              - WMT14
              - IWSLT
     """
+
     def __init__(self, data, vocab, transforms):
         """Initiate translation dataset.
 
@@ -139,7 +143,7 @@ class TranslationDataset(torch.utils.data.Dataset):
 def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             tokenizer=None,
+             tokenizer=(None, None),
              root='.data',
              vocab=(None, None),
              data_select=('train', 'valid', 'test'),
@@ -246,7 +250,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
-          tokenizer=None,
+          tokenizer=(None, None),
           root='.data',
           vocab=(None, None),
           data_select=('train', 'valid', 'test'),
@@ -443,7 +447,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
-          tokenizer=None,
+          tokenizer=(None, None),
           root='.data',
           vocab=(None, None),
           data_select=('train', 'valid', 'test'),
