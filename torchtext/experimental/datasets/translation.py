@@ -38,9 +38,9 @@ def _setup_datasets(dataset_name,
 
     def build_raw_iter(raw_iter=None):
         raw_iter_ = raw.translation.DATASETS[dataset_name](train_filenames=train_filenames,
-                                               valid_filenames=valid_filenames,
-                                               test_filenames=test_filenames,
-                                               root=root, data_select=data_select)
+                                                           valid_filenames=valid_filenames,
+                                                           test_filenames=test_filenames,
+                                                           root=root, data_select=data_select)
         if raw_iter is None:
             raw_iter = {}
         for i, name in enumerate(data_select):
@@ -53,8 +53,8 @@ def _setup_datasets(dataset_name,
     vocab_ = len(vocab) * [None]
     for i in range(len(vocab)):
         vocab_[i] = build_vocab(raw_iter.pop("train"),
-                               tokenizer[i],
-                               index=i)
+                                tokenizer[i],
+                                index=i)
         raw_iter = build_raw_iter()
     vocab = tuple(vocab_)
     logging.info('src Vocab has {} entries'.format(len(vocab[0])))
