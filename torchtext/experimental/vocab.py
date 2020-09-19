@@ -7,17 +7,18 @@ import torch.nn as nn
 from torchtext._torchtext import (
     Vocab as VocabPybind,
     _load_vocab_from_file,
-    _load_vocab_from_raw_text_file
+    _build_vocab_from_text_file
 )
 
 logger = logging.getLogger(__name__)
 
 
-def vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Build a `Vocab` object from a text file.
 
-    The `file_path` can contain any raw text. This function applies a generic JITed tokenizer in
-    parallel to each line of the text and uses the resulting tokens to construct a vocabulary.
+    The `file_path` can point to a text file containing any raw text. This function applies a
+    generic JITed tokenizer in parallel to each line of the text and uses the resulting tokens
+    to construct a vocabulary.
 
     Args:
         file_path (str): path to text file
@@ -25,7 +26,7 @@ def vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         unk_token: The unknown token to use. Default: '<unk>'.
-        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
+        num_cpus (int): the number of cpus to use to build the vocabulary. Default: 4.
 
     Returns:
         Vocab: a `Vocab` object.
@@ -37,25 +38,25 @@ def vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         >>> v = vocab_from_text_file(my_dataset.txt, jit_tokenizer)
     """
-    vocab_obj = _build_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_path, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
+def load_vocab_from_text_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
-    The `file_object` should contain tokens separated by new lines. Note that the vocab
-    will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
+    The `file_path` should point to a text file where each line represents a token. The vocab
+    will be created in the order that the tokens first appear in the file.
     Format for txt file:
         token1
         token2
         ...
         token_n
     Args:
-        file_object (FileObject): a file like object to read data from.
+        file_path (str): path to text file
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
-        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
+        unk_token: The unknown token to use. Default: '<unk>'.
+        num_cpus (int): the number of cpus to load the vocabulary. Default: 4.
 
     Returns:
         Vocab: a `Vocab` object.
@@ -64,7 +65,7 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file(f)
     """
-    vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_path, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
