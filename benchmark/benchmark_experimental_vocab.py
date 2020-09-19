@@ -120,8 +120,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
         # experimental Vocab construction
         print("Vocab Experimental")
         t0 = time.monotonic()
-        f = open(vocab_file_path, 'r')
-        v_experimental = vocab_from_file(f)
+        v_experimental = load_vocab_from_text_file(vocab_file_path)
         print("Construction time:", time.monotonic() - t0)
     else:
         print("Loading Vocab from AG News")
