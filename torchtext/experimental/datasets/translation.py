@@ -32,13 +32,12 @@ def _setup_datasets(dataset_name,
     if not isinstance(tokenizer, tuple) or len(tokenizer) != 2:
         raise ValueError("tokenizer must be tuple of length two. One for "
                          "source and target respectively. %s passed instead".format(tokenizer))
-    if tokenizer[0] is None:
-        tokenizer[0] = get_tokenizer("spacy", language='de_core_news_sm')
-    if tokenizer[1] is None:
-        tokenizer[1] = get_tokenizer("spacy", language='en_core_web_sm')
+    tokenizer = (
+        get_tokenizer("spacy", language='de_core_news_sm') if tokenizer[0] is None else tokenizer[0],
+        get_tokenizer("spacy", language='en_core_web_sm') if tokenizer[1] is None else tokenizer[1])
 
     def build_raw_iter(raw_iter=None):
-        raw_iter_ = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+        raw_iter_ = raw.translation.DATASETS[dataset_name](train_filenames=train_filenames,
                                                valid_filenames=valid_filenames,
                                                test_filenames=test_filenames,
                                                root=root, data_select=data_select)
@@ -51,11 +50,13 @@ def _setup_datasets(dataset_name,
     raw_iter = build_raw_iter()
 
     # pop train iterator to force repopulation
+    vocab_ = len(vocab) * [None]
     for i in range(len(vocab)):
-        vocab[i] = build_vocab(raw_data.pop("train"),
+        vocab_[i] = build_vocab(raw_iter.pop("train"),
                                tokenizer[i],
                                index=i)
         raw_iter = build_raw_iter()
+    vocab = tuple(vocab_)
     logging.info('src Vocab has {} entries'.format(len(vocab[0])))
     logging.info('tgt Vocab has {} entries'.format(len(vocab[1])))
 
@@ -224,6 +225,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            test_filenames=test_filenames,
                            tokenizer=tokenizer,
                            root=root,
+                           data_select=data_select,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
 
@@ -420,6 +422,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            test_filenames=test_filenames,
                            tokenizer=tokenizer,
                            root=root,
+                           data_select=data_select,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
 
@@ -529,10 +532,11 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            train_filenames=train_filenames,
                            valid_filenames=valid_filenames,
                            test_filenames=test_filenames,
+                           data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
 
 
-DATASETS = {'Multi30k': raw.Multi30k, 'IWSLT': raw.IWSLT, 'WMT14': raw.WMT14}
+DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}

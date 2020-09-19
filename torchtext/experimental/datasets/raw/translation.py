@@ -120,7 +120,8 @@ def _setup_datasets(dataset_name,
                     train_filenames,
                     valid_filenames,
                     test_filenames,
-                    root='.data'):
+                    root='.data',
+                    data_select=('train', 'test', 'valid')):
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
@@ -167,7 +168,7 @@ def _setup_datasets(dataset_name,
                 "Files are not found for data type {}".format(key))
 
     datasets = []
-    for key in data_filenames.keys():
+    for key in data_select:
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
@@ -180,6 +181,7 @@ def _setup_datasets(dataset_name,
 class RawTranslationIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
+
     def __init__(self, src_iterator, tgt_iterator):
         """Initiate text-classification dataset.
         """
@@ -213,7 +215,8 @@ class RawTranslationIterableDataset(torch.utils.data.IterableDataset):
 def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             root='.data'):
+             root='.data',
+             data_select=('train', 'test', 'valid')):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
         The available dataset include:
@@ -275,6 +278,13 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import Multi30k
@@ -284,7 +294,8 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            train_filenames=train_filenames,
                            valid_filenames=valid_filenames,
                            test_filenames=test_filenames,
-                           root=root)
+                           root=root,
+                           data_select=data_select)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -292,7 +303,8 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
-          root='.data'):
+          root='.data',
+          data_select=('train', 'test', 'valid')):
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -440,6 +452,13 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets.raw import IWSLT
@@ -456,6 +475,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         valid_filenames=valid_filenames,
         test_filenames=test_filenames,
         root=root,
+        data_select=data_select
     )
 
 
@@ -465,7 +485,8 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
-          root='.data'):
+          root='.data',
+          data_select=('train', 'test', 'valid')):
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -528,6 +549,13 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
 
     Examples:
         >>> from torchtext.datasets import WMT14
@@ -538,7 +566,8 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            train_filenames=train_filenames,
                            valid_filenames=valid_filenames,
                            test_filenames=test_filenames,
-                           root=root)
+                           root=root,
+                           data_select=data_select)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}
