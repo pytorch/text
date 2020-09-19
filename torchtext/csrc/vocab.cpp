@@ -335,7 +335,7 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
 
-Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
+Vocab _build_vocab_from_text_file(const std::string &file_path,
                                      const std::string &unk_token,
                                      const int64_t min_freq,
                                      const int64_t num_cpus, py::object fn) {
