@@ -66,6 +66,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
 
     if not single_line and dataset_name != 'WikiText103':
         raise TypeError('single_line must be True except for WikiText103')
+
     # WMTNewsCrawl will throw error if data_select isn't train
     raw_iter_ = raw.DATASETS[dataset_name](root=root, data_select=data_select)
     raw_iter = {}
