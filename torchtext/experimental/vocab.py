@@ -43,7 +43,7 @@ def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token
 
 
 def load_vocab_from_text_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
-    r"""Create a `Vocab` object from a text file.
+    r"""Create a `Vocab` object from a text file of tokens.
     The `file_path` should point to a text file where each line represents a token. The vocab
     will be created in the order that the tokens first appear in the file.
     Format for txt file:
@@ -61,9 +61,8 @@ def load_vocab_from_text_file(file_path, min_freq=1, unk_token='<unk>', num_cpus
     Returns:
         Vocab: a `Vocab` object.
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_file
-        >>> f = open('vocab.txt', 'r')
-        >>> v = vocab_from_file(f)
+        >>> from torchtext.experimental.vocab import load_vocab_from_text_file
+        >>> v = load_vocab_from_text_file('vocab.txt')
     """
     vocab_obj = _load_vocab_from_file(file_path, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)

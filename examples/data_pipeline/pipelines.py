@@ -19,7 +19,7 @@ from torchtext.experimental.functional import (
     sequential_transforms,
 )
 from torchtext.experimental.vectors import FastText as FastTextExperimental
-from torchtext.experimental.vocab import vocab_from_file
+from torchtext.experimental.vocab import load_vocab_from_text_file
 from torchtext.vocab import FastText
 
 import argparse
@@ -58,12 +58,11 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
 
 def build_experimental_torchtext_pipeline(hf_vocab_file):
     tokenizer = basic_english_normalize()
-    with open(hf_vocab_file, 'r') as f:
-        vocab = vocab_from_file(f)
-        pipeline = TextSequentialTransforms(tokenizer, vocab)
-        jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-        print('jit experimental torchtext pipeline success!')
-        return pipeline, pipeline.to_ivalue(), jit_pipeline
+    vocab = load_vocab_from_text_file(hf_vocab_file)
+    pipeline = TextSequentialTransforms(tokenizer, vocab)
+    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    print('jit experimental torchtext pipeline success!')
+    return pipeline, pipeline.to_ivalue(), jit_pipeline
 
 
 def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
