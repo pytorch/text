@@ -19,12 +19,12 @@ torchtext.experimental.vocab
 
 .. autofunction:: vocab
 
-:hidden:`vocab_from_file`
+:hidden:`load_vocab_from_text_file`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: vocab_from_file
+.. autofunction:: load_vocab_from_text_file
 
-:hidden:`vocab_from_raw_text_file`
+:hidden:`build_vocab_from_text_file`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: vocab_from_raw_text_file
+.. autofunction:: build_vocab_from_text_file

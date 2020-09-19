@@ -5,7 +5,7 @@ from torchtext.experimental.transforms import (
     VectorTransform,
     VocabTransform,
 )
-from torchtext.experimental.vocab import load_vocab_from_file
+from torchtext.experimental.vocab import load_vocab_from_text_file
 from torchtext.experimental.vectors import FastText
 import shutil
 import tempfile
@@ -16,7 +16,7 @@ class TestTransforms(TorchtextTestCase):
     def test_vocab_transform(self):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
-        vocab_transform = VocabTransform(vocab_from_file(asset_path))
+        vocab_transform = VocabTransform(vocab_from_text_file(asset_path))
         self.assertEqual(vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
                          [[7, 18, 24], [7, 18, 24, 18]])
         jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
