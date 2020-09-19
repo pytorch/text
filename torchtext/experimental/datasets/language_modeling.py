@@ -39,16 +39,9 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         self.vocab = vocab
         self.transforms = transforms
         self.single_line = single_line
-        if single_line:
-            self.data = torch.cat(tuple(transforms(row) for row in data), axis=0)
-        else:
-            self.data = data
 
     def __getitem__(self, i):
-        if self.single_line:
-            return self.data[i]
-        else:
-            return self.transforms(self.data[i])
+        return self.transforms(self.data[i])
 
     def __len__(self):
         return len(self.data)
@@ -68,37 +61,42 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     text_transform = sequential_transforms(tokenizer)
 
     if isinstance(data_select, str):
-        data_select = [data_select]
+        data_select = (data_select,)
     if not set(data_select).issubset(set(('train', 'valid', 'test'))):
         raise TypeError('Given data selection {} is not supported!'.format(data_select))
 
     if not single_line and dataset_name != 'WikiText103':
         raise TypeError('single_line must be True except for WikiText103')
-    if dataset_name == 'WMTNewsCrawl':
-        train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
-        if single_line:
-            raw_data = {'train': [" ".join([txt for txt in train]), ]}
-        else:
-            raw_data = {'train': [txt for txt in train]}
-    else:
-        train, test, valid = raw.DATASETS[dataset_name](root=root, data_select=('train', 'test', 'valid'))
-        # Cache raw text iterable dataset
-        if single_line:
-            raw_data = {'train': [" ".join([txt for txt in train]), ],
-                        'valid': [" ".join(txt for txt in valid), ],
-                        'test': [" ".join(txt for txt in test), ]}
-        else:
-            raw_data = {'train': [txt for txt in train],
-                        'valid': [txt for txt in valid],
-                        'test': [txt for txt in test]}
+    # WMTNewsCrawl will throw error if data_select isn't train
+    raw_iter_ = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_iter = {}
+    for i, name in enumerate(data_select):
+        raw_iter[name] = raw_iter_[i]
 
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocab = build_vocab(raw_data['train'], text_transform)
-    text_transform = sequential_transforms(text_transform, vocab_func(vocab),
-                                           totensor(dtype=torch.long))
-    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
+        # Build vocab from lines of text even if all to be concatenated
+        # for better user experience
+        vocab = build_vocab(raw_iter['train'], text_transform)
+        # Repopulate with fresh iterator
+        raw_iter['train'] = raw.DATASETS[dataset_name](root=root, data_select='train')
+
+    # Single-line dataset stores numericalized version of dataset. Let's
+    # avoid using extra memory by apply the transform now instead of later.
+    text_transform = sequential_transforms(text_transform, vocab_func(vocab))
+
+    raw_data = {}
+    for name in raw_iter:
+        # Materialize datasets
+        raw_data[name] = [torch.tensor(text_transform(txt), dtype=torch.long) for txt in raw_iter[name]]
+        if single_line:
+            # torch.cat doesn't work on empty Tensors
+            raw_data[name] = torch.cat(list(filter(lambda t: t.numel() > 0, raw_data[name])))
+        else:
+            raw_data[name] = [torch.tensor(tokens) for tokens in raw_data[name]]
+
+    return tuple(LanguageModelingDataset(raw_data[item], vocab, lambda x: x, single_line)
                  for item in data_select)
 
 
