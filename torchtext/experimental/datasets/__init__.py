@@ -27,4 +27,4 @@ DATASETS = {'WikiText2': WikiText2,
             'SQuAD1': SQuAD1,
             'SQuAD2': SQuAD2}
 
-__all__ = DATASETS.keys() + ['LanguageModelingDataset']
+__all__ = ['LanguageModelingDataset'] + DATASETS.keys()
