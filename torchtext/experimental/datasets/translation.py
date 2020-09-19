@@ -23,19 +23,19 @@ def _setup_datasets(dataset_name,
                     vocab=(None, None),
                     tokenizer=(None, None),
                     removed_tokens=['<unk>']):
-    src_vocab, tgt_vocab = vocab
-    if src_vocab is not None and not isinstance(src_vocab, Vocab):
+    if 'train' not in data_select and None in vocab:
+        raise TypeError("If train is not selected must pass Vocab for both source and target.")
+    if vocab[0] is not None and not isinstance(vocab[0], Vocab):
         raise TypeError("Passed src vocabulary is of type %s expected type Vocab".format(type(src_vocab)))
-    if tgt_vocab is not None and not isinstance(tgt_vocab, Vocab):
-        raise TypeError("Passed src vocabulary is of type %s expected type Vocab".format(type(tgt_vocab)))
+    if vocab[1] is not None and not isinstance(vocab[1], Vocab):
+        raise TypeError("Passed tgt vocabulary is of type %s expected type Vocab".format(type(tgt_vocab)))
     if not isinstance(tokenizer, tuple) or len(tokenizer) != 2:
-        raise ValueError("tokenizer must be tuple of length two one for "
-                         "each source and target. %s passed instead".format(tokenizer))
-    src_tokenizer, tgt_tokenizer = tokenizer
-    if src_tokenizer is None:
-        src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
-    if tgt_tokenizer is None:
-        tgt_tokenizer = get_tokenizer("spacy", language='en_core_web_sm')
+        raise ValueError("tokenizer must be tuple of length two. One for "
+                         "source and target respectively. %s passed instead".format(tokenizer))
+    if tokenizer[0] is None:
+        tokenizer[0] = get_tokenizer("spacy", language='de_core_news_sm')
+    if tokenizer[1] is None:
+        tokenizer[1] = get_tokenizer("spacy", language='en_core_web_sm')
 
     def build_raw_iter(raw_iter=None):
         raw_iter_ = raw.DATASETS[dataset_name](train_filenames=train_filenames,
@@ -50,46 +50,31 @@ def _setup_datasets(dataset_name,
         return raw_iter
     raw_iter = build_raw_iter()
 
-    if src_vocab is None:
-        if 'train' not in data_select:
-            raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building src Vocab based on train source data')
-        # pop train iterator to force repopulation
-        src_vocab = build_vocab(raw_data.pop("train"),
-                                src_tokenizer,
-                                index=0)
-    raw_iter = build_raw_iter()
-    logging.info('src Vocab has {} entries'.format(len(src_vocab)))
-
-    if tgt_vocab is None:
-        if 'train' not in data_select:
-            raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building tgt Vocab based on train source data')
-        tgt_vocab = build_vocab(raw_data.pop("train"),
-                                tgt_tokenizer,
-                                index=1)
-    raw_iter = build_raw_iter()
-    logging.info('tgt Vocab has {} entries'.format(len(tgt_vocab)))
+    # pop train iterator to force repopulation
+    for i in range(len(vocab)):
+        vocab[i] = build_vocab(raw_data.pop("train"),
+                               tokenizer[i],
+                               index=i)
+        raw_iter = build_raw_iter()
+    logging.info('src Vocab has {} entries'.format(len(vocab[0])))
+    logging.info('tgt Vocab has {} entries'.format(len(vocab[1])))
 
     raw_data = {}
     for name in raw_iter:
         raw_data[name] = list(raw_iter[name])
 
-    def src_text_transform(line):
-        ids = []
-        for token in src_tokenizer(line):
-            ids.append(src_vocab[token])
-        return torch.tensor(ids, dtype=torch.long)
-
-    def tgt_text_transform(line):
-        ids = []
-        for token in tgt_tokenizer(line):
-            ids.append(tgt_vocab[token])
-        return torch.tensor(ids, dtype=torch.long)
+    def build_transform(vocab, tokenizer):
+        def fn(line):
+            ids = []
+            for token in tokenizer(line):
+                ids.append(vocab[token])
+            return torch.tensor(ids, dtype=torch.long)
+        return fn
 
     logging.info('Building datasets for {}'.format(data_select))
-    return tuple(TranslationDataset(raw_data[name], (src_vocab, tgt_vocab),
-                                    (src_text_transform, tgt_text_transform)) for name in raw_data)
+    transforms = tuple(build_transform(v, t) for v, t in zip(vocab, tokenizer))
+    return tuple(TranslationDataset(data, vocab, transforms)
+                 for data in raw_data.values())
 
 
 class TranslationDataset(torch.utils.data.Dataset):
@@ -129,9 +114,7 @@ class TranslationDataset(torch.utils.data.Dataset):
         self.transforms = transforms
 
     def __getitem__(self, i):
-        source = self.transforms[0](self.data[i][0])
-        target = self.transforms[1](self.data[i][1])
-        return (source, target)
+        return tuple(map(self.transforms, self.data[i]))
 
     def __len__(self):
         return len(self.data)
