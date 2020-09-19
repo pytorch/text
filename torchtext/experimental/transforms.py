@@ -184,9 +184,8 @@ class VocabTransform(nn.Module):
 
     Example:
         >>> import torch
-        >>> from torchtext.experimental.vocab import vocab_from_file_object
-        >>> f = open('vocab.txt', 'r')
-        >>> vocab_transform = VocabTransform(vocab_from_file_object(f))
+        >>> from torchtext.experimental.vocab import load_vocab_from_text_file
+        >>> vocab_transform = VocabTransform(load_vocab_from_text_file('vocab.txt'))
         >>> jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
     """
 

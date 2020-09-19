@@ -6,8 +6,8 @@ import torch
 from torchtext.experimental.datasets import AG_NEWS
 from torchtext.experimental.vocab import (
     vocab as VocabExperimental,
-    vocab_from_file,
-    vocab_from_raw_text_file
+    load_vocab_from_text_file,
+    build_vocab_from_text_file
 )
 from torchtext.vocab import (
     Vocab,
