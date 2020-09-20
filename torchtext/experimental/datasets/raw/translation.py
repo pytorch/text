@@ -126,22 +126,26 @@ def _setup_datasets(dataset_name,
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
 
-    src_train, tgt_train = train_filenames
-    src_eval, tgt_eval = valid_filenames
-    src_test, tgt_test = test_filenames
+    filenames = {'train': train_filenames, 'valid': valid_filenames, 'test': test_filenames}
 
+    # We stand to download a lot of files for some of
+    # these datasets. Creating a subfolder makes that more
+    # manageable.
+    download_root = os.path.join(root, dataset_name)
+    os.makedirs(download_root, exist_ok=True)
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
         for f in URLS[dataset_name]:
-            dataset_tar = download_from_url(f, root=root)
+            dataset_tar = download_from_url(f, root=download_root)
             extracted_files.extend(extract_archive(dataset_tar))
     elif isinstance(URLS[dataset_name], str):
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        dataset_tar = download_from_url(URLS[dataset_name], root=download_root)
         extracted_files.extend(extract_archive(dataset_tar))
     else:
+        # This is a runtime error we use to test a static variable's content
         raise ValueError(
-            "URLS for {} has to be in a form or list or string".format(
-                dataset_name))
+            "URLS for {} has to either be a string or a list of strings. Got {} instead.".format(
+                dataset_name, type(URLS[dataset_name])))
 
     # Clean the xml and tag file in the archives
     file_archives = []
@@ -155,22 +159,15 @@ def _setup_datasets(dataset_name,
         else:
             file_archives.append(fname)
 
-    data_filenames = defaultdict(dict)
-    data_filenames = {
-        "train": _construct_filepaths(file_archives, src_train, tgt_train),
-        "valid": _construct_filepaths(file_archives, src_eval, tgt_eval),
-        "test": _construct_filepaths(file_archives, src_test, tgt_test)
-    }
-
-    for key in data_filenames.keys():
-        if len(data_filenames[key]) == 0 or data_filenames[key] is None:
-            raise FileNotFoundError(
-                "Files are not found for data type {}".format(key))
-
     datasets = []
     for key in data_select:
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
+        src, tgt = filenames[key]
+        data_filenames = _construct_filepaths(file_archives, src, tgt)
+        if len(data_filenames) == 0 or data_filenames is None:
+            raise FileNotFoundError(
+                "Files are not found for data type {}".format(key))
+        src_data_iter = _read_text_iterator(data_filenames[0])
+        tgt_data_iter = _read_text_iterator(data_filenames[1])
 
         datasets.append(
             RawTranslationIterableDataset(src_data_iter, tgt_data_iter))
@@ -202,11 +199,11 @@ class RawTranslationIterableDataset(torch.utils.data.IterableDataset):
             self.setup_iter()
 
         for i, item in enumerate(zip(self._src_iterator, self._tgt_iterator)):
-            if i >= self.start:
-                yield item
-            if (self.num_lines is not None) and (i == (self.start +
-                                                       self.num_lines)):
+            if i < self.start:
+                continue
+            if self.num_lines and i > self.start + self.num_lines:
                 break
+            yield item
 
     def get_iterator(self):
         return (self._src_iterator, self._tgt_iterator)
