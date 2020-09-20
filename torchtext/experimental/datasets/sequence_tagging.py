@@ -80,6 +80,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         - UDPOS
         - CoNLL2000Chunking
     """
+
     def __init__(self, data, vocabs, transforms):
         """Initiate sequence tagging dataset.
         Arguments:

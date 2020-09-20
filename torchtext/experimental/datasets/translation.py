@@ -38,9 +38,9 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
     train, val, test = raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                              valid_filenames=valid_filenames,
-                                              test_filenames=test_filenames,
-                                              root=root)
+                                                  valid_filenames=valid_filenames,
+                                                  test_filenames=test_filenames,
+                                                  root=root)
     raw_data = {
         "train": [line for line in train],
         "valid": [line for line in val],
@@ -96,6 +96,7 @@ class TranslationDataset(torch.utils.data.Dataset):
              - WMT14
              - IWSLT
     """
+
     def __init__(self, data, vocab, transforms):
         """Initiate translation dataset.
 
