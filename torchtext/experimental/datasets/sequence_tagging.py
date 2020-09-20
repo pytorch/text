@@ -33,7 +33,7 @@ def _setup_datasets(dataset_name,
     if not set(data_select).issubset(set(("train", "valid", "test"))):
         raise TypeError("Given data selection {} is not supported!".format(data_select))
 
-    train, val, test = DATASETS[dataset_name](root=root)
+    train, val, test = raw.DATASETS[dataset_name](root=root)
     raw_data = {
         "train": [line for line in train] if train else None,
         "valid": [line for line in val] if val else None,
@@ -166,4 +166,4 @@ def CoNLL2000Chunking(*args, **kwargs):
     return _setup_datasets(*(("CoNLL2000Chunking", ) + args), **kwargs)
 
 
-DATASETS = {"UDPOS": raw.UDPOS, "CoNLL2000Chunking": raw.CoNLL2000Chunking}
+DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
