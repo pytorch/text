@@ -62,7 +62,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
-                    data_select=('train', 'test', 'valid'), single_line=True):
+                    data_select=('train', 'valid', 'test'), single_line=True):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
@@ -81,7 +81,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
         else:
             raw_data = {'train': [txt for txt in train]}
     else:
-        train, test, valid = raw.DATASETS[dataset_name](root=root, data_select=('train', 'test', 'valid'))
+        train, valid, test = raw.DATASETS[dataset_name](root=root, data_select=('train', 'valid', 'test'))
         # Cache raw text iterable dataset
         if single_line:
             raw_data = {'train': [" ".join([txt for txt in train]), ],

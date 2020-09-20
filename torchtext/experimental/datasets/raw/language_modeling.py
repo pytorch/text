@@ -47,10 +47,10 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         return self._iterator
 
 
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), **kwargs):
+def _setup_datasets(dataset_name, root='.data', data_select=('train', 'valid', 'test'), **kwargs):
     if isinstance(data_select, str):
         data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test', 'valid'))):
+    if not set(data_select).issubset(set(('train', 'valid', 'test'))):
         raise TypeError('data_select is not supported!')
 
     if dataset_name == 'PennTreebank':
