@@ -42,9 +42,8 @@ Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus);
 Vocab _build_vocab_from_text_file(const std::string &file_path,
-                                     const std::string &unk_token,
-                                     const int64_t min_freq,
-                                     const int64_t num_cpus,
-                                     py::object tokenizer);
+                                  const std::string &unk_token,
+                                  const int64_t min_freq,
+                                  const int64_t num_cpus, py::object tokenizer);
 
 } // namespace torchtext
