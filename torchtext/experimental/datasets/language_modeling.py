@@ -36,6 +36,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         """
 
         super(LanguageModelingDataset, self).__init__()
+        self.data = data
         self.vocab = vocab
         self.transforms = transforms
         self.single_line = single_line
@@ -80,7 +81,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
         # for better user experience
         vocab = build_vocab(raw_iter['train'], tokenizer)
         # Repopulate with fresh iterator
-        raw_iter['train'] = raw.DATASETS[dataset_name](root=root, data_select='train')
+        raw_iter['train'], = raw.DATASETS[dataset_name](root=root, data_select='train')
 
     # Single-line dataset stores numericalized version of dataset. Let's
     # avoid using extra memory by applying the transforms now instead of later.
@@ -96,12 +97,11 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     raw_data = {}
     for name in raw_iter:
         # Materialize datasets
-        raw_data[name] = [torch.tensor(text_transform(txt), dtype=torch.long) for txt in raw_iter[name]]
         if single_line:
             # torch.cat doesn't work on empty Tensors
-            raw_data[name] = torch.cat(list(text_transform(raw_data[name], filter_empty=True)))
+            raw_data[name] = torch.cat(list(text_transform(raw_iter[name], filter_empty=True)))
         else:
-            raw_data[name] = list(text_transform(raw_data[name]))
+            raw_data[name] = list(text_transform(raw_iter[name]))
 
     return tuple(LanguageModelingDataset(raw_data[item], vocab, lambda x: x, single_line)
                  for item in data_select)
