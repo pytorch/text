@@ -2,6 +2,7 @@ import torch
 import logging
 import io
 from torchtext.utils import download_from_url, extract_archive
+from torchtext.experimental.datasets.raw.utils import process_data_select
 
 URLS = {
     'WikiText2':
@@ -48,10 +49,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 
 
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), **kwargs):
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test', 'valid'))):
-        raise TypeError('data_select is not supported!')
+    data_select = process_data_select(data_select)
 
     if dataset_name == 'PennTreebank':
         extracted_files = []

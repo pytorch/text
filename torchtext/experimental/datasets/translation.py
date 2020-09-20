@@ -18,7 +18,7 @@ def _setup_datasets(dataset_name,
                     train_filenames,
                     valid_filenames,
                     test_filenames,
-                    data_select=('train', 'test', 'valid'),
+                    data_select=('train', 'valid', 'test'),
                     root='.data',
                     vocab=(None, None),
                     tokenizer=(None, None)):
@@ -38,7 +38,7 @@ def _setup_datasets(dataset_name,
     def build_raw_iter(raw_iter):
         for i, name in enumerate(data_select):
             if name not in raw_iter:
-                raw_iter[name] = raw.translation.DATASETS[dataset_name](
+                raw_iter[name], = raw.translation.DATASETS[dataset_name](
                     train_filenames=train_filenames,
                     valid_filenames=valid_filenames,
                     test_filenames=test_filenames,
@@ -71,8 +71,7 @@ def _setup_datasets(dataset_name,
 
     logging.info('Building datasets for {}'.format(data_select))
     transforms = tuple(build_transform(v, t) for v, t in zip(vocab, tokenizer))
-    return tuple(TranslationDataset(data, vocab, transforms)
-                 for data in raw_data.values())
+    return tuple(TranslationDataset(raw_data[name], vocab, transforms) for name in data_select)
 
 
 class TranslationDataset(torch.utils.data.Dataset):

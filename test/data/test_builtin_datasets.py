@@ -129,8 +129,8 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure multi30k works properly
         train_dataset, valid_dataset, test_dataset = Multi30k()
         self.assertEqual(len(train_dataset), 29000)
-        self.assertEqual(len(valid_dataset), 1000)
-        self.assertEqual(len(test_dataset), 1014)
+        self.assertEqual(len(valid_dataset), 1014)
+        self.assertEqual(len(test_dataset), 1000)
 
         de_vocab, en_vocab = train_dataset.get_vocab()
         de_tokens_ids = [
@@ -146,13 +146,13 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(en_tokens_ids,
                          [17, 23, 1167, 806, 15, 55, 82, 334, 1337])
 
-        datafile = os.path.join(self.project_root, ".data", "train*")
+        datafile = os.path.join(self.project_root, ".data", "Multi30k", "train*")
         conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "val*")
+        datafile = os.path.join(self.project_root, ".data", "Multi30k", "val*")
         conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data", "test*")
+        datafile = os.path.join(self.project_root, ".data", "Multi30k", "test*")
         conditional_remove(datafile)
-        datafile = os.path.join(self.project_root, ".data",
+        datafile = os.path.join(self.project_root, ".data", "Multi30k",
                                 "multi30k_task*.tar.gz")
         conditional_remove(datafile)
 

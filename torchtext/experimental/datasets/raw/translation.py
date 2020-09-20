@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from torchtext.utils import (download_from_url, extract_archive,
                              unicode_csv_reader)
+from torchtext.experimental.datasets.raw.utils import process_data_select
 
 URLS = {
     'Multi30k': [
@@ -121,10 +122,11 @@ def _setup_datasets(dataset_name,
                     valid_filenames,
                     test_filenames,
                     root='.data',
-                    data_select=('train', 'test', 'valid')):
+                    data_select=('train', 'valid', 'test')):
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
+    data_select = process_data_select(data_select)
 
     filenames = {'train': train_filenames, 'valid': valid_filenames, 'test': test_filenames}
 
@@ -160,6 +162,8 @@ def _setup_datasets(dataset_name,
             file_archives.append(fname)
 
     datasets = []
+    print('data_select')
+    print(data_select)
     for key in data_select:
         src, tgt = filenames[key]
         data_filenames = _construct_filepaths(file_archives, src, tgt)
