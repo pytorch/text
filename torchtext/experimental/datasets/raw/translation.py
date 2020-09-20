@@ -131,7 +131,8 @@ def _setup_datasets(dataset_name,
     # We stand to download a lot of files for some of
     # these datasets. Creating a subfolder makes that more
     # manageable.
-    download_root = os.path.join(root, dataset_name)
+    download_root = root
+    # download_root = os.path.join(root, dataset_name)
     os.makedirs(download_root, exist_ok=True)
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
