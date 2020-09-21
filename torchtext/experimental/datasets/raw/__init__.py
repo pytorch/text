@@ -27,4 +27,4 @@ DATASETS = {'IMDB': IMDB,
             'SQuAD1': SQuAD1,
             'SQuAD2': SQuAD2}
 
-__all__ = list(map(str, DATASETS.keys()))
+__all__ = sorted(list(map(str, DATASETS.keys())))
