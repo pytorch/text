@@ -10,6 +10,12 @@ from torchtext._torchtext import (
     _load_vocab_from_raw_text_file
 )
 
+__all__ = [
+    'vocab_from_raw_text_file',
+    'vocab_from_file',
+    'vocab',
+    'Vocab',
+]
 logger = logging.getLogger(__name__)
 
 
