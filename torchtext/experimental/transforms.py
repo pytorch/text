@@ -6,8 +6,13 @@ from collections import OrderedDict
 from torch import Tensor
 
 __all__ = [
+    'basic_english_normalize',
+    'regex_tokenizer',
     'BasicEnglishNormalize',
-    'RegexTokenizer'
+    'RegexTokenizer',
+    'TextSequentialTransforms',
+    'VocabTransform',
+    'VectorTransform'
 ]
 
 

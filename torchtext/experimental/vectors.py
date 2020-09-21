@@ -14,6 +14,14 @@ from torchtext._torchtext import (
     _load_token_and_vectors_from_file
 )
 
+__all__ = [
+    'FastText',
+    'GloVe',
+    'vectors_from_file_object',
+    'vectors',
+    'Vectors'
+]
+
 logger = logging.getLogger(__name__)
 
 
