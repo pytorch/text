@@ -8,10 +8,10 @@ from ..functional import vocab_func, totensor, sequential_transforms
 
 
 def build_vocab(data, transforms, index):
-    tok_list = []
-    for line in data:
-        tok_list.append(transforms(line[index]))
-    return build_vocab_from_iterator(tok_list)
+    def apply_transforms(data):
+        for line in data:
+            yield transforms(line[index])
+    return build_vocab_from_iterator(apply_transforms(data))
 
 
 def _setup_datasets(dataset_name,
@@ -96,6 +96,7 @@ class TranslationDataset(torch.utils.data.Dataset):
              - WMT14
              - IWSLT
     """
+
     def __init__(self, data, vocab, transforms):
         """Initiate translation dataset.
 
