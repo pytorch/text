@@ -129,8 +129,8 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure multi30k works properly
         train_dataset, valid_dataset, test_dataset = Multi30k()
         self.assertEqual(len(train_dataset), 29000)
-        self.assertEqual(len(valid_dataset), 1000)
-        self.assertEqual(len(test_dataset), 1014)
+        self.assertEqual(len(valid_dataset), 1014)
+        self.assertEqual(len(test_dataset), 1000)
 
         de_vocab, en_vocab = train_dataset.get_vocab()
         de_tokens_ids = [
