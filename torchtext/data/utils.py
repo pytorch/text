@@ -41,7 +41,8 @@ _replacements = [' \'  ',
                  ' ',
                  ' ']
 
-_patterns_dict = list((re.compile(p), r) for p, r in zip(_patterns, _replacements))
+_patterns_dict = {p: r for p, r in zip(_patterns, _replacements)}
+_compiled_pattern = re.compile(r"(%s)" % '|'.join(map(re.escape, _patterns)))
 
 
 def _basic_english_normalize(line):
@@ -67,8 +68,7 @@ def _basic_english_normalize(line):
     """
 
     line = line.lower()
-    for pattern_re, replaced_str in _patterns_dict:
-        line = pattern_re.sub(replaced_str, line)
+    line = _compiled_pattern.sub(lambda mo: _patterns_dict[mo.string[mo.start():mo.end()]], line)
     return line.split()
 
 
