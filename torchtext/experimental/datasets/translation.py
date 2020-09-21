@@ -37,10 +37,10 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    train, val, test = DATASETS[dataset_name](train_filenames=train_filenames,
-                                              valid_filenames=valid_filenames,
-                                              test_filenames=test_filenames,
-                                              root=root)
+    train, val, test = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                                  valid_filenames=valid_filenames,
+                                                  test_filenames=test_filenames,
+                                                  root=root)
     raw_data = {
         "train": [line for line in train],
         "valid": [line for line in val],
@@ -552,4 +552,4 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            removed_tokens=removed_tokens)
 
 
-DATASETS = {'Multi30k': raw.Multi30k, 'IWSLT': raw.IWSLT, 'WMT14': raw.WMT14}
+DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}
