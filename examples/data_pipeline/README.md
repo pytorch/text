@@ -106,7 +106,7 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline fasttext 
 
-Here are the time for lookup
+Here are the time in seconds for the pipelines above:
 
 Pipelines | Eager Mode with Pybind | Eager Mode with Torchbind | JIT Mode
 ------------ | ------------- | ------------- | -------------
@@ -118,3 +118,5 @@ Experimental PyText | 5.192 | 10.555 | 6.272
 Legacy Torchtext with a batch of data | 5.192 | N/A | N/A
 Legacy FastText pretrained word vectors | 22.947 | N/A | N/A
 Experimental FastText pretrained word vectors | 11.949 | 18.100 | 14.058
+
+Please note that these numbers are for our development reference only.
