@@ -149,10 +149,12 @@ class TextSequentialTransforms(nn.Sequential):
 
         Example:
             >>> import torch
-            >>> from torchtext.experimental.transforms import BasicEnglishNormalize, TextSequentialTransforms
-            >>> tokenizer = BasicEnglishNormalize()
+            >>> from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms
+            >>> tokenizer = basic_english_normalize()
             >>> txt_pipeline = TextSequentialTransforms(tokenizer)
-            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
+            >>> txt_pipeline('here is an example')
+                ['here', 'is', 'an', 'example']
+            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline.to_ivalue())
     """
     def forward(self, input: str):
         for module in self:
