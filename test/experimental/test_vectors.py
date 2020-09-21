@@ -81,8 +81,8 @@ class TestVectors(TorchtextTestCase):
         vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
-        tokens_to_lookup = [['a', 'b', 'c']]
-        expected_vectors = [torch.stack((tensorA, tensorB, unk_tensor), 0)]
+        tokens_to_lookup = ['a', 'b', 'c']
+        expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
         vectors_by_tokens = vectors_obj(tokens_to_lookup)
         jit_vectors_by_tokens = jit_vectors_obj(tokens_to_lookup)
 
