@@ -20,6 +20,7 @@ def benchmark_raw_construction(name, Dataset):
     else:
         d = Dataset()  # data_select=('train',))
     print(" construction time {0:.2f}s".format(time.perf_counter() - t0))
+    print('len(d): ', len(d))
     del d
 
 

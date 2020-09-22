@@ -1,7 +1,7 @@
 import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.experimental.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     'AG_NEWS':
@@ -212,8 +212,8 @@ def IMDB(root='.data'):
     extracted_files = extract_archive(dataset_tar)
     train_iter = generate_imdb_data('train', extracted_files)
     test_iter = generate_imdb_data('test', extracted_files)
-    return (RawTextIterableDataset(train_iter),
-            RawTextIterableDataset(test_iter))
+    return (RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], train_iter),
+            RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], test_iter))
 
 
 DATASETS = {

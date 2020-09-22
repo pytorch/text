@@ -1,6 +1,7 @@
 import torch
 
 from torchtext.utils import download_from_url, extract_archive
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     "UDPOS":

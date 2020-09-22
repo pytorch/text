@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from torchtext.utils import (download_from_url, extract_archive,
                              unicode_csv_reader)
-from torchtext.experimental.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     'Multi30k': [
