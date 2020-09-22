@@ -1,4 +1,3 @@
-import torch
 import logging
 import io
 from torchtext.utils import download_from_url, extract_archive

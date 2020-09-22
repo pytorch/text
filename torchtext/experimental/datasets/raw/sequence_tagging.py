@@ -1,5 +1,3 @@
-import torch
-
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
@@ -66,7 +64,7 @@ def _setup_datasets(dataset_name, separator, root=".data"):
         if data_filenames[key] is not None:
             datasets.append(
                 RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
-                    _create_data_from_iob(data_filenames[key], separator)))
+                                       _create_data_from_iob(data_filenames[key], separator)))
         else:
             datasets.append(None)
 

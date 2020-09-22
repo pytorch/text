@@ -1,4 +1,3 @@
-import torch
 from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset

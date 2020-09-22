@@ -1,4 +1,3 @@
-import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
