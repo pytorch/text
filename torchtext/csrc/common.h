@@ -1,4 +1,11 @@
+#pragma once
+#include <string>
+#include <vector>
+
 namespace torchtext {
+typedef std::string const_string;
+typedef std::vector<std::string> StringList;
+typedef std::vector<const_string> ConstStringList;
 
 namespace impl {
 int64_t divup(int64_t x, int64_t y);

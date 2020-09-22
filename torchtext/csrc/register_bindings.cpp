@@ -1,3 +1,4 @@
+#include <common.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <regex.h>
@@ -22,7 +23,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("patterns_", &RegexTokenizer::patterns_)
       .def_readonly("replacements_", &RegexTokenizer::replacements_)
       .def_readonly("to_lower_", &RegexTokenizer::to_lower_)
-      .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
+      .def(py::init<ConstStringList, ConstStringList, bool>())
       .def("forward", &RegexTokenizer::forward);
 
   py::class_<SentencePiece>(m, "SentencePiece")
@@ -35,7 +36,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("IdToPiece", &SentencePiece::IdToPiece);
 
   py::class_<Vectors>(m, "Vectors")
-      .def(py::init<std::vector<std::string>, std::vector<int64_t>,
+      .def(py::init<ConstStringList, std::vector<int64_t>,
                     torch::Tensor, torch::Tensor>())
       .def_readonly("vectors_", &Vectors::vectors_)
       .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
@@ -46,7 +47,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("__len__", &Vectors::__len__);
 
   py::class_<Vocab>(m, "Vocab")
-      .def(py::init<std::vector<std::string>, std::string>())
+      .def(py::init<ConstStringList, std::string>())
       .def_readonly("itos_", &Vocab::itos_)
       .def_readonly("unk_token_", &Vocab::unk_token_)
       .def("__getitem__", &Vocab::__getitem__)
@@ -83,7 +84,7 @@ static auto regex =
 
 static auto regex_tokenizer =
     torch::class_<RegexTokenizer>("torchtext", "RegexTokenizer")
-        .def(torch::init<std::vector<std::string>, std::vector<std::string>,
+        .def(torch::init<ConstStringList, ConstStringList,
                          bool>())
         .def("forward", &RegexTokenizer::forward)
         .def_pickle(
@@ -149,7 +150,7 @@ static auto vocab =
 
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
-        .def(torch::init<std::vector<std::string>, std::vector<std::int64_t>,
+        .def(torch::init<ConstStringList, std::vector<std::int64_t>,
                          torch::Tensor, torch::Tensor>())
         .def("__getitem__", &Vectors::__getitem__)
         .def("lookup_vectors", &Vectors::lookup_vectors)

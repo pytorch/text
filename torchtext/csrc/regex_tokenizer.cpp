@@ -3,8 +3,8 @@
 
 namespace torchtext {
 
-RegexTokenizer::RegexTokenizer(const std::vector<std::string> &patterns,
-                               const std::vector<std::string> &replacements,
+RegexTokenizer::RegexTokenizer(ConstStringList patterns,
+                               ConstStringList replacements,
                                const bool to_lower = false)
     : patterns_(std::move(patterns)), replacements_(std::move(replacements)),
       to_lower_(to_lower) {
@@ -32,7 +32,7 @@ std::vector<std::string> RegexTokenizer::forward(std::string str) const {
   return tokens;
 }
 
-void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,
+void RegexTokenizer::split_(std::string &str, StringList &tokens,
                             const char &delimiter) const {
   std::stringstream ss(str);
   std::string token;

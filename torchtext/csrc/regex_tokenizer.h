@@ -1,5 +1,7 @@
+#pragma once
 #include <re2/re2.h>
 #include <torch/script.h>
+#include <common.h>
 
 namespace torchtext {
 
@@ -14,8 +16,8 @@ public:
   std::vector<std::string> replacements_;
   bool to_lower_;
 
-  explicit RegexTokenizer(const std::vector<std::string> &patterns,
-                          const std::vector<std::string> &replacements,
+  explicit RegexTokenizer(ConstStringList patterns,
+                          ConstStringList replacements,
                           const bool to_lower);
   std::vector<std::string> forward(std::string str) const;
 };

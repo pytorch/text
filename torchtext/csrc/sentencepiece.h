@@ -1,3 +1,4 @@
+#pragma once
 #include <sentencepiece_processor.h>
 #include <sentencepiece_trainer.h>
 #include <torch/script.h>
