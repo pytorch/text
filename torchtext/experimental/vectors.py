@@ -14,6 +14,14 @@ from torchtext._torchtext import (
     _load_token_and_vectors_from_file
 )
 
+__all__ = [
+    'FastText',
+    'GloVe',
+    'vectors_from_file_object',
+    'vectors',
+    'Vectors'
+]
+
 logger = logging.getLogger(__name__)
 
 
@@ -204,19 +212,16 @@ class Vectors(nn.Module):
         return not isinstance(self.vectors, VectorsPybind)
 
     @torch.jit.export
-    def forward(self, tokens_list: List[List[str]]) -> List[Tensor]:
+    def forward(self, tokens: List[str]) -> Tensor:
         r"""Calls the `lookup_vectors` method
          Args:
-            tokens: a list of string token list
+            tokens: a list of string tokens
 
         Returns:
-            vectors (List[Tensor]): returns a list of a 2-D tensor of shape=(len(tokens), vector_dim) or an
+            vectors (Tensor): returns a 2-D tensor of shape=(len(tokens), vector_dim) or an
             empty tensor if `tokens` is empty
         """
-        vectors: List[Tensor] = []
-        for tokens in tokens_list:
-            vectors.append(self.vectors.lookup_vectors(tokens))
-        return vectors
+        return self.vectors.lookup_vectors(tokens)
 
     @torch.jit.export
     def __getitem__(self, token: str) -> Tensor:
