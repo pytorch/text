@@ -1,6 +1,6 @@
 #pragma once
-#include <torch/script.h>
 #include <common.h>
+#include <torch/script.h>
 
 namespace torchtext {
 
@@ -8,7 +8,7 @@ typedef ska_ordered::order_preserving_flat_hash_map<std::string, torch::Tensor>
     VectorsMap;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexMap;
-typedef std::tuple<std::string, std::vector<int64_t>, StringList,
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VectorsStates;
 

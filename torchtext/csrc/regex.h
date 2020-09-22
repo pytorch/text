@@ -12,7 +12,7 @@ private:
 public:
   std::string re_str_;
 
-  Regex(const const_string &re_str);
-  std::string Sub(std::string str, const const_string &repl) const;
+  Regex(const_string re_str);
+  std::string Sub(std::string str, const_string repl) const;
 };
 } // namespace torchtext
