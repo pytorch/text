@@ -6,7 +6,7 @@ namespace torchtext {
 RegexTokenizer::RegexTokenizer(ConstStringList patterns,
                                ConstStringList replacements,
                                const bool to_lower = false)
-    : patterns_(std::move(patterns)), replacements_(std::move(replacements)),
+    : patterns_(patterns), replacements_(replacements),
       to_lower_(to_lower) {
   TORCH_CHECK(patterns.size() == replacements.size(),
               "Expected `patterns` and `replacements` to have same size!");

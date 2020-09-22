@@ -13,6 +13,6 @@ public:
   std::string re_str_;
 
   Regex(const_string re_str);
-  std::string Sub(std::string str, const_string repl) const;
+  std::string Sub(std::string str, std::string repl) const;
 };
 } // namespace torchtext
