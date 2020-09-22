@@ -7,7 +7,7 @@ namespace torchtext {
 
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexDict;
-typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VocabStates;
 
