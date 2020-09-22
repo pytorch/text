@@ -13,6 +13,11 @@ __all__ = [
     'BasicEnglishNormalize',
     'RegexTokenizer',
     'TextSequentialTransforms',
+    'load_pretrained_sp_model',
+    'sentencepiece_tokenizer',
+    'SentencePieceTokenizer',
+    'sentencepiece_transform',
+    'SentencePieceTransform',
     'VocabTransform',
     'VectorTransform'
 ]
@@ -182,7 +187,7 @@ _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_500
                    'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
 
 
-def pretrained_spm(spm_model='text_unigram_25000'):
+def load_pretrained_sp_model(spm_model='text_unigram_25000'):
     r"""Generate a pretrained sentencepiece model.
         The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
         Both BPE and unigram methods were used to train the model (for more details please refer to
@@ -200,8 +205,8 @@ def pretrained_spm(spm_model='text_unigram_25000'):
             Otherwise, the file path to the user-provided sentencepiece model is required.
 
     Examples:
-        >>> from torchtext.experimental.transforms import pretrained_spm
-        >>> sp_model = pretrained_spm('text_unigram_25000')
+        >>> from torchtext.experimental.transforms import load_pretrained_sp_model
+        >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
 
     """
     if spm_model in _pretrained_spm:
@@ -212,7 +217,7 @@ def pretrained_spm(spm_model='text_unigram_25000'):
 
 
 def sentencepiece_tokenizer(spm_model):
-    r"""factory function to generate SentencePieceTokenizer with pretrained sp model
+    r"""Factory function to generate SentencePieceTokenizer from a pretrained sp model
 
     Args:
        spm_model: the sentencepiece model instance
@@ -220,8 +225,8 @@ def sentencepiece_tokenizer(spm_model):
     Examples:
         >>> import torch
         >>> from torchtext.experimental.transforms import SentencePieceTokenizer
-        >>> from torchtext.experimental.transforms import pretrained_spm
-        >>> sp_model = pretrained_spm('text_unigram_25000')
+        >>> from torchtext.experimental.transforms import load_pretrained_sp_model
+        >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
         >>> spm_tokenizer = sentencepiece_tokenizer(sp_model)
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
     """
@@ -264,7 +269,7 @@ class SentencePieceTokenizer(nn.Module):
 
 
 def sentencepiece_transform(spm_model):
-    r"""factory function to generate SentencePieceTransform with pretrained sp model
+    r"""Factory function to generate SentencePieceTransform from a pretrained sp model
 
     Args:
        spm_model: the sentencepiece model instance
@@ -272,8 +277,8 @@ def sentencepiece_transform(spm_model):
     Examples:
         >>> import torch
         >>> from torchtext.experimental.transforms import SentencePieceTransform
-        >>> from torchtext.experimental.transforms import pretrained_spm
-        >>> sp_model = pretrained_spm('text_unigram_25000')
+        >>> from torchtext.experimental.transforms import load_pretrained_sp_model
+        >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
         >>> spm_transform = sentencepiece_transform(sp_model)
         >>> jit_spm_tokenizer = torch.jit.script(spm_transform)
     """
