@@ -18,7 +18,7 @@ def _create_data_with_sp_transform(data_path):
         reader = unicode_csv_reader(f)
         for row in reader:
             corpus = ' '.join(row[1:])
-            token_ids = text_pipeline([corpus])[0]
+            token_ids = text_pipeline(corpus)
             label = int(row[0]) - 1
             data.append((label, torch.tensor(token_ids)))
             labels.append(label)
