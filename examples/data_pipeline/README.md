@@ -9,15 +9,10 @@ This pipeline example shows the application with a pretrained sentencepiece mode
 
 * `PretrainedSPTokenizer`
 * `PretrainedSPVocab` backed by `torchtext.experimental.vocab.Vocab`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 The command to run the pipeline:
 
     python pipelines.py --pipeline sentencepiece
-
-The lookup time: 30.770548372063786 (eager mode with pybind)
-The lookup time: 34.36592311505228 (eager mode with torchbind)
-The lookup time: 23.43273439211771 (jit mode)
 
 
 ## Legacy Torchtext
@@ -26,13 +21,10 @@ This pipeline example shows the application with the existing `Vocab` in torchte
 
 * `basic_english` func from `torchtext.data.utils.get_tokenizer`
 * `torchtext.vocab.Vocab`
-* `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
 
 The command to run the pipeline:
 
     python pipelines.py --pipeline torchtext
-
-The lookup time: 8.690132656134665 (eager mode)
 
 
 ## Experimental Torchtext
@@ -41,15 +33,10 @@ This pipeline example shows the application with the vocab text file from Huggin
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `torchtext.experimental.vocab.Vocab`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 The command to run the pipeline:
 
     python pipelines.py --pipeline text_vocab 
-
-The lookup time: 10.21763815311715 (eager mode with pybind)
-The lookup time: 17.28485624492168 (eager mode with torchbind)
-The lookup time: 10.25370063772425 (jit mode)
 
 
 ## Legacy PyText
@@ -58,15 +45,10 @@ This pipeline example shows the application with the existing `ScriptVocab` in p
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `from pytext.torchscript.vocab.ScriptVocabulary`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 With the dependency of `pytext` library, the command to run the pipeline:
 
     python pipelines.py --pipeline pytext
-
-The lookup time: 18.07144843228161 (eager mode with pybind)
-The lookup time: 22.16066740499809 (eager mode with torchbind)
-The lookup time: 13.41519635310396 (jit mode)
 
 
 ## Experimental PyText
@@ -75,15 +57,10 @@ This pipeline example shows the application with a `ScriptVocab` based on the to
 
 * `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
 * `from pytext.torchscript.vocab.ScriptVocabulary`
-* `ToLongTensor` to convert a list of integers to `torch.tensor`
 
 With the dependency of `pytext` library, the command to run the pipeline:
 
     python pipelines.py --pipeline pytext
-
-The lookup time: 11.004039663821459 (eager mode with pybind)
-The lookup time: 17.025434703100473 (eager mode with torchbind)
-The lookup time: 10.078087331261486 (jit mode)
 
 
 ## Legacy Torchtext with a batch of data
@@ -94,7 +71,6 @@ For the text pipeline:
 
 * `basic_english` func from `torchtext.data.utils.get_tokenizer`
 * `torchtext.vocab.Vocab`
-* `torchtext.experimental.functional.totensor` to convert a list of integers to `torch.tensor`
 
 For the label pipeline:
 
@@ -105,8 +81,6 @@ And the text and label pipeline are passed to TextClassificationPipeline. Since 
 The command to run the pipeline:
 
     python pipelines.py --pipeline batch_torchtext
-
-The lookup time: 10.05315054487437 (eager mode)
 
 
 ## Legacy FastText pretrained word vectors 
@@ -120,8 +94,6 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline fasttext 
 
-The lookup time: 34.08170719863847 (eager mode)
-
 
 ## Experimental FastText pretrained word vectors 
 
@@ -134,6 +106,17 @@ The command to run the pipeline:
 
     python pipelines.py --pipeline fasttext 
 
-The lookup time: 16.45024944096803 (eager mode with pybind)
-The lookup time: 23.96459424262866 (eager mode with torchbind)
-The lookup time: 19.34995342604816 (jit mode)
+Here are the time in seconds for the pipelines above:
+
+Pipelines | Eager Mode with Pybind | Eager Mode with Torchbind | JIT Mode
+------------ | ------------- | ------------- | -------------
+SentencePiece | 19.555 | 22.798 | 17.579
+Legacy Torchtext | 11.677 | N/A | N/A
+Experimental Torchtext | 4.793 | 9.745 | 6.459
+Legacy PyText | 10.168 | 12.636 | 8.425
+Experimental PyText | 5.192 | 10.555 | 6.272 
+Legacy Torchtext with a batch of data | 5.192 | N/A | N/A
+Legacy FastText pretrained word vectors | 22.947 | N/A | N/A
+Experimental FastText pretrained word vectors | 11.949 | 18.100 | 14.058
+
+Please note that these numbers are for our development reference only.
