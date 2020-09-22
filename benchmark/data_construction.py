@@ -18,9 +18,7 @@ def benchmark_raw_construction(name, Dataset):
     if name in "WMTNewsCrawl":
         d = Dataset(data_select=('train',))
     else:
-        d = Dataset()  # data_select=('train',))
-    print(" construction time {0:.2f}s".format(time.perf_counter() - t0))
-    print('len(d[0]): ', len(d[0]))
+        d = Dataset()
     del d
 
 
