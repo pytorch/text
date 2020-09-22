@@ -217,7 +217,7 @@ def load_pretrained_sp_model(spm_model='text_unigram_25000'):
 
 
 def sentencepiece_tokenizer(spm_model):
-    r"""Factory function to generate SentencePieceTokenizer from a pretrained sp model
+    r"""Factory function to generate SentencePieceTokenizer from a pretrained SentencePiece model
 
     Args:
        spm_model: the sentencepiece model instance
@@ -269,7 +269,7 @@ class SentencePieceTokenizer(nn.Module):
 
 
 def sentencepiece_transform(spm_model):
-    r"""Factory function to generate SentencePieceTransform from a pretrained sp model
+    r"""Factory function to generate SentencePieceTransform from a pretrained SentencePiece model
 
     Args:
        spm_model: the sentencepiece model instance
