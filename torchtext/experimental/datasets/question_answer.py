@@ -82,7 +82,7 @@ def _setup_datasets(dataset_name,
                 for item in _answers:
                     tok_ans += text_transform(item)
                 yield text_transform(_context) + text_transform(_question) + tok_ans
-        vocab = build_vocab_from_iterator(apply_transform(raw_data['train']))
+        vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), len(raw_data['train']))
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}

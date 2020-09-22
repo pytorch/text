@@ -19,7 +19,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
     def setup_iter(self, start=0, num_lines=None):
         self.start = start
         self.num_lines = num_lines
-        if self.start + self.num_lines < self.full_num_lines:
+        if num_lines and self.start + self.num_lines > self.full_num_lines:
             raise ValueError("Requested start {} and num_lines {} exceeds available number of lines {}".format(
                 self.start, self.num_lines, self.full_num_lines))
         self.has_setup = True

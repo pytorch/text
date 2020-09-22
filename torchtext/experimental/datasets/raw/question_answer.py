@@ -36,8 +36,8 @@ def _setup_datasets(dataset_name, root='.data'):
                                          root=root) for key in select_to_index.keys()]
     train_iter = _create_data_from_json(extracted_files[0])
     dev_iter = _create_data_from_json(extracted_files[1])
-    return (RawQuestionAnswerDataset(dataset_name, NUM_LINES[dataset_name], train_iter),
-            RawQuestionAnswerDataset(dataset_name, NUM_LINES[dataset_name], dev_iter))
+    return (RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], train_iter),
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], dev_iter))
 
 
 def SQuAD1(*args, **kwargs):

@@ -14,7 +14,7 @@ def build_vocab(data, transforms):
     def apply_transforms(data):
         for _, line in data:
             yield transforms(line)
-    return build_vocab_from_iterator(apply_transforms(data))
+    return build_vocab_from_iterator(apply_transforms(data), len(data))
 
 
 class TextClassificationDataset(torch.utils.data.Dataset):
