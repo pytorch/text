@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from torchtext.utils import (download_from_url, extract_archive,
                              unicode_csv_reader)
+from torchtext.experimental.raw.common import RawTextIterableDataset
 
 URLS = {
     'Multi30k': [
@@ -172,7 +173,7 @@ def _setup_datasets(dataset_name,
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
         datasets.append(
-            RawTranslationIterableDataset(src_data_iter, tgt_data_iter))
+            RawTranslationIterableDataset(dataset_name, src_data_iter, tgt_data_iter))
 
     return tuple(datasets)
 
@@ -180,10 +181,12 @@ def _setup_datasets(dataset_name,
 class RawTranslationIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
-    def __init__(self, src_iterator, tgt_iterator):
+
+    def __init__(self, name, src_iterator, tgt_iterator):
         """Initiate text-classification dataset.
         """
         super(RawTranslationIterableDataset, self).__init__()
+        self.name = name
         self._src_iterator = src_iterator
         self._tgt_iterator = tgt_iterator
         self.has_setup = False
@@ -205,6 +208,9 @@ class RawTranslationIterableDataset(torch.utils.data.IterableDataset):
             if (self.num_lines is not None) and (i == (self.start +
                                                        self.num_lines)):
                 break
+
+    def __len__(self):
+        return NUM_LINES[self.name]
 
     def get_iterator(self):
         return (self._src_iterator, self._tgt_iterator)
@@ -541,4 +547,13 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            root=root)
 
 
-DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}
+DATASETS = {
+    'Multi30k': Multi30k,
+    'IWSLT': IWSLT,
+    'WMT14': WMT14
+}
+NUM_LINES = {
+    'Multi30k': 29000,
+    'IWSLT': 173939,
+    'WMT14': 4500966,
+}

@@ -64,8 +64,8 @@ def _setup_datasets(dataset_name, root='.data'):
                                          root=root) for key in select_to_index.keys()]
     train_iter = _create_data_from_json(extracted_files[0])
     dev_iter = _create_data_from_json(extracted_files[1])
-    return (RawQuestionAnswerDataset(train_iter),
-            RawQuestionAnswerDataset(dev_iter))
+    return (RawQuestionAnswerDataset(dataset_name, NUM_LINES[dataset_name], train_iter),
+            RawQuestionAnswerDataset(dataset_name, NUM_LINES[dataset_name], dev_iter))
 
 
 def SQuAD1(*args, **kwargs):
@@ -91,4 +91,8 @@ def SQuAD2(*args, **kwargs):
 DATASETS = {
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2
+}
+NUM_LINES = {
+    'SQuAD1': 87599,
+    'SQuAD2': 130319
 }

@@ -16,37 +16,6 @@ URLS = {
 }
 
 
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
-
-    def __init__(self, iterator, start=0, num_lines=None):
-        """Initiate language modeling dataset.
-        """
-        super(RawTextIterableDataset, self).__init__()
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = start
-        self.num_lines = num_lines
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if (self.num_lines is not None) and (i == (self.start + self.num_lines)):
-                break
-
-    def get_iterator(self):
-        return self._iterator
-
-
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), **kwargs):
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -84,7 +53,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'v
         logging.info('Creating {} data'.format(item))
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
-    return tuple(RawTextIterableDataset(data[item]) for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], data[item]) for item in data_select)
 
 
 def WikiText2(*args, **kwargs):
@@ -181,4 +150,10 @@ DATASETS = {
     'WikiText103': WikiText103,
     'PennTreebank': PennTreebank,
     'WMTNewsCrawl': WMTNewsCrawl
+}
+NUM_LINES = {
+    'WikiText2': 36718,
+    'WikiText103': 1801350,
+    'PennTreebank': 42068,
+    'WMTNewsCrawl': 17676013,
 }
