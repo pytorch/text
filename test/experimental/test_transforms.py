@@ -78,8 +78,8 @@ class TestTransforms(TorchtextTestCase):
         with open(asset_path, 'r') as f:
             pipeline = TextSequentialTransforms(basic_english_normalize(), vocab_from_file(f))
             jit_pipeline = torch.jit.script(pipeline.to_ivalue())
-            self.assertEqual(pipeline(['of that new']), [[7, 18, 24]])
-            self.assertEqual(jit_pipeline(['of that new']), [[7, 18, 24]])
+            self.assertEqual(pipeline('of that new'), [7, 18, 24])
+            self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
 
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'
