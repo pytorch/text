@@ -26,6 +26,8 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("forward", &RegexTokenizer::forward);
 
   py::class_<SentencePiece>(m, "SentencePiece")
+      .def(py::init<std::string>())
+      .def_readonly("content_", &SentencePiece::content_)
       .def("Encode", &SentencePiece::Encode)
       .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
       .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
@@ -108,6 +110,7 @@ static auto regex_tokenizer =
 
 static auto sentencepiece =
     torch::class_<SentencePiece>("torchtext", "SentencePiece")
+        .def(torch::init<std::string>())
         .def("Encode", &SentencePiece::Encode)
         .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
         .def("DecodeIds", &SentencePiece::DecodeIds)

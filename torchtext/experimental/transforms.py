@@ -1,11 +1,12 @@
 import torch
 import torch.nn as nn
 from typing import List
-from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
 from torch import Tensor
+from torchtext._torchtext import SentencePiece as SentencePieceCpp
+
 
 __all__ = [
     'basic_english_normalize',
@@ -16,8 +17,8 @@ __all__ = [
     'load_pretrained_sp_model',
     'sentencepiece_tokenizer',
     'SentencePieceTokenizer',
-    'sentencepiece_transform',
-    'SentencePieceTransform',
+    'sentencepiece_processor',
+    'SentencePieceProcessor',
     'VocabTransform',
     'VectorTransform'
 ]
@@ -211,7 +212,9 @@ def load_pretrained_sp_model(spm_model='text_unigram_25000'):
     """
     if spm_model in _pretrained_spm:
         spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-        return load_sp_model(spm_model)
+        with open(spm_model, 'rb') as f:
+            # return SentencePieceCpp(f.read())
+            return torch.classes.torchtext.SentencePiece(f.read())
     else:
         raise RuntimeError('The pretrained sentencepiece model is not valid')
 
@@ -228,7 +231,7 @@ def sentencepiece_tokenizer(spm_model):
         >>> from torchtext.experimental.transforms import load_pretrained_sp_model
         >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
         >>> spm_tokenizer = sentencepiece_tokenizer(sp_model)
-        >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
+        >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
     """
     return SentencePieceTokenizer(spm_model)
 
@@ -267,25 +270,29 @@ class SentencePieceTokenizer(nn.Module):
         """
         return self.sp_model.DecodePieces(tokens)
 
+#    def to_ivalue(self):
+#        cpp_spm = torch.classes.torchtext.SentencePiece(bytes(self.sp_model.content_, 'utf-8'))
+#        return SentencePieceProcessor(cpp_spm)
 
-def sentencepiece_transform(spm_model):
-    r"""Factory function to generate SentencePieceTransform from a pretrained SentencePiece model
+
+def sentencepiece_processor(spm_model):
+    r"""Factory function to generate SentencePieceProcessor from a pretrained SentencePiece model
 
     Args:
        spm_model: the sentencepiece model instance
 
     Examples:
         >>> import torch
-        >>> from torchtext.experimental.transforms import SentencePieceTransform
+        >>> from torchtext.experimental.transforms import SentencePieceProcessor
         >>> from torchtext.experimental.transforms import load_pretrained_sp_model
         >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
-        >>> spm_transform = sentencepiece_transform(sp_model)
-        >>> jit_spm_tokenizer = torch.jit.script(spm_transform)
+        >>> spm_transform = sentencepiece_processor(sp_model)
+        >>> jit_spm_tokenizer = torch.jit.script(spm_transform.to_ivalue())
     """
-    return SentencePieceTransform(spm_model)
+    return SentencePieceProcessor(spm_model)
 
 
-class SentencePieceTransform(nn.Module):
+class SentencePieceProcessor(nn.Module):
     r"""String to ids transform based on a pretained sentencepiece model
 
     Args:
@@ -293,7 +300,7 @@ class SentencePieceTransform(nn.Module):
     """
 
     def __init__(self, spm_model):
-        super(SentencePieceTransform, self).__init__()
+        super(SentencePieceProcessor, self).__init__()
         self.sp_model = spm_model
 
     def forward(self, line: str) -> List[int]:
@@ -302,7 +309,7 @@ class SentencePieceTransform(nn.Module):
             line: the input sentence string
 
         Examples:
-            >>> spm_transform('the pretrained sp model names')
+            >>> spm_processor('the pretrained sp model names')
             >>> [9, 1546, 18811, 2849, 2759, 2202]
         """
         return self.sp_model.EncodeAsIds(line)
@@ -314,10 +321,16 @@ class SentencePieceTransform(nn.Module):
             ids: the integers list for decoder
 
         Examples:
-            >>> spm_transform.decoder([9, 1546, 18811, 2849, 2759, 2202])
+            >>> spm_processor.decoder([9, 1546, 18811, 2849, 2759, 2202])
             >>> 'the pretrained sp model names'
         """
         return self.sp_model.DecodeIds(ids)
+
+#    def to_ivalue(self):
+#        cpp_spm = torch.classes.torchtext.SentencePiece(bytes(self.sp_model.content_, 'utf-8'))
+#        print(self.sp_model.content_)
+#        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.content_)
+#        return SentencePieceProcessor(cpp_spm)
 
 
 class VocabTransform(nn.Module):
