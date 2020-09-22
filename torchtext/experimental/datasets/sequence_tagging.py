@@ -9,7 +9,7 @@ from torchtext.experimental.functional import (
 )
 
 
-def _build_vocab(data):
+def build_vocab(data):
     total_columns = len(data[0])
     data_list = [[] for _ in range(total_columns)]
     vocabs = []
@@ -17,7 +17,6 @@ def _build_vocab(data):
     for line in data:
         for idx, col in enumerate(line):
             data_list[idx].append(col)
-
     for it in data_list:
         vocabs.append(build_vocab_from_iterator(it))
 
@@ -33,7 +32,7 @@ def _setup_datasets(dataset_name,
     if not set(data_select).issubset(set(("train", "valid", "test"))):
         raise TypeError("Given data selection {} is not supported!".format(data_select))
 
-    train, val, test = DATASETS[dataset_name](root=root)
+    train, val, test = raw.DATASETS[dataset_name](root=root)
     raw_data = {
         "train": [line for line in train] if train else None,
         "valid": [line for line in val] if val else None,
@@ -43,7 +42,7 @@ def _setup_datasets(dataset_name,
     if vocabs is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        vocabs = _build_vocab(raw_data["train"])
+        vocabs = build_vocab(raw_data["train"])
     else:
         if not isinstance(vocabs, list):
             raise TypeError("vocabs must be an instance of list")
@@ -80,6 +79,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         - UDPOS
         - CoNLL2000Chunking
     """
+
     def __init__(self, data, vocabs, transforms):
         """Initiate sequence tagging dataset.
         Arguments:
@@ -166,4 +166,4 @@ def CoNLL2000Chunking(*args, **kwargs):
     return _setup_datasets(*(("CoNLL2000Chunking", ) + args), **kwargs)
 
 
-DATASETS = {"UDPOS": raw.UDPOS, "CoNLL2000Chunking": raw.CoNLL2000Chunking}
+DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
