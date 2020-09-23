@@ -5,7 +5,7 @@ from torchtext.experimental.transforms import (
     basic_english_normalize,
     VectorTransform,
     VocabTransform,
-    sentencepiece_transform,
+    sentencepiece_processor,
     sentencepiece_tokenizer,
     TextSequentialTransforms,
     load_pretrained_sp_model,
@@ -19,9 +19,9 @@ import os
 
 
 class TestTransforms(TorchtextTestCase):
-    def test_sentencepiece_transform(self):
+    def test_sentencepiece_processor(self):
         model_path = get_asset_path('spm_example.model')
-        spm_transform = sentencepiece_transform(load_sp_model(model_path))
+        spm_transform = sentencepiece_processor(load_sp_model(model_path))
         jit_spm_transform = torch.jit.script(spm_transform)
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
@@ -46,7 +46,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
-    def test_builtin_pretrained_sentencepiece_transform(self):
+    def test_builtin_pretrained_sentencepiece_processor(self):
         spm_tokenizer = sentencepiece_tokenizer(load_pretrained_sp_model())
         _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
         os.remove(_path)
@@ -54,7 +54,7 @@ class TestTransforms(TorchtextTestCase):
         ref_results = ['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
-        spm_transform = sentencepiece_transform(load_pretrained_sp_model('text_bpe_25000'))
+        spm_transform = sentencepiece_processor(load_pretrained_sp_model('text_bpe_25000'))
         _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
         os.remove(_path)
         test_sample = 'the pretrained spm model names'
