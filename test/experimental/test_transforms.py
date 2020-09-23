@@ -9,10 +9,10 @@ from torchtext.experimental.transforms import (
     sentencepiece_tokenizer,
     TextSequentialTransforms,
     load_pretrained_sp_model,
+    load_sp_model,
 )
 from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
-from torchtext.data.functional import load_sp_model
 import shutil
 import tempfile
 import os

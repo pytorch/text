@@ -5,7 +5,8 @@ from torchtext.utils import download_from_url
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
 from torch import Tensor
-from torchtext._torchtext import SentencePiece as SentencePieceCpp
+from torchtext._torchtext import SentencePiece as SentencePiecePybind
+import io
 
 
 __all__ = [
@@ -15,6 +16,7 @@ __all__ = [
     'RegexTokenizer',
     'TextSequentialTransforms',
     'load_pretrained_sp_model',
+    'load_sp_model',
     'sentencepiece_tokenizer',
     'SentencePieceTokenizer',
     'sentencepiece_processor',
@@ -188,7 +190,7 @@ _pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_500
                    'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
 
 
-def load_pretrained_sp_model(spm_model='text_unigram_25000'):
+def load_pretrained_sp_model(sp_model='text_unigram_25000'):
     r"""Generate a pretrained sentencepiece model.
         The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
         Both BPE and unigram methods were used to train the model (for more details please refer to
@@ -196,7 +198,7 @@ def load_pretrained_sp_model(spm_model='text_unigram_25000'):
         with a different size of the vocabulary (i.e. 15000, 25000, 50000).
 
     Args:
-       spm_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
+       sp_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
             - text_unigram_15000
             - text_unigram_25000
             - text_unigram_50000
@@ -210,13 +212,39 @@ def load_pretrained_sp_model(spm_model='text_unigram_25000'):
         >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
 
     """
-    if spm_model in _pretrained_spm:
-        spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
-        with open(spm_model, 'rb') as f:
-            return SentencePieceCpp(f.read())
-            # return torch.classes.torchtext.SentencePiece(f.read())
+    if sp_model in _pretrained_spm:
+        sp_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(sp_model))
+        return load_sp_model(sp_model)
     else:
         raise RuntimeError('The pretrained sentencepiece model is not valid')
+
+
+def load_sp_model(sp_model):
+    r"""Load a  sentencepiece model for file.
+
+    Arguments:
+        sp_model: the file path or a file object saving the sentencepiece model.
+
+    Outputs:
+        output: a SentencePiece model.
+
+    Examples:
+        >>> from torchtext.experimental.transforms import load_sp_model
+        >>> sp_model = load_sp_model("m_user.model")
+        >>> sp_model = load_sp_model(open("m_user.model", 'rb'))
+    """
+    if isinstance(sp_model, str):
+        with open(sp_model, 'rb') as f:
+            return SentencePiecePybind(f.read())
+    elif isinstance(sp_model, io.BufferedReader):
+        return SentencePiecePybind(sp_model.read())
+    else:
+        raise TypeError(
+            f'Unsupported type for sp_model argument: {type(sp_model).__name__}. ' +
+            'Supported types are: ' +
+            ', '.join([
+                'str', 'io.BufferedReader'
+            ]))
 
 
 def sentencepiece_tokenizer(spm_model):
