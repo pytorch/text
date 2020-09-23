@@ -114,7 +114,7 @@ def UDPOS(*args, **kwargs):
     return _setup_datasets(*(("UDPOS", "\t") + args), **kwargs)
 
 
-def CoNLL2000Chunking(*args, **kwargs):
+def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
@@ -127,12 +127,9 @@ def CoNLL2000Chunking(*args, **kwargs):
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
-        >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
+        >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    if 'data_select' in kwargs:
-        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
-    else:
-        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **dict(kwargs, data_select=('train', 'test')))
+    return _setup_datasets("CoNLL2000Chunking", " ", root=".data", data_select=('train', 'test'))
 
 
 DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
