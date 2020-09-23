@@ -213,8 +213,8 @@ def load_pretrained_sp_model(spm_model='text_unigram_25000'):
     if spm_model in _pretrained_spm:
         spm_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(spm_model))
         with open(spm_model, 'rb') as f:
-            # return SentencePieceCpp(f.read())
-            return torch.classes.torchtext.SentencePiece(f.read())
+            return SentencePieceCpp(f.read())
+            # return torch.classes.torchtext.SentencePiece(f.read())
     else:
         raise RuntimeError('The pretrained sentencepiece model is not valid')
 
@@ -270,9 +270,9 @@ class SentencePieceTokenizer(nn.Module):
         """
         return self.sp_model.DecodePieces(tokens)
 
-#    def to_ivalue(self):
-#        cpp_spm = torch.classes.torchtext.SentencePiece(bytes(self.sp_model.content_, 'utf-8'))
-#        return SentencePieceProcessor(cpp_spm)
+    def to_ivalue(self):
+        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.content_)
+        return SentencePieceProcessor(cpp_spm)
 
 
 def sentencepiece_processor(spm_model):
@@ -326,11 +326,9 @@ class SentencePieceProcessor(nn.Module):
         """
         return self.sp_model.DecodeIds(ids)
 
-#    def to_ivalue(self):
-#        cpp_spm = torch.classes.torchtext.SentencePiece(bytes(self.sp_model.content_, 'utf-8'))
-#        print(self.sp_model.content_)
-#        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.content_)
-#        return SentencePieceProcessor(cpp_spm)
+    def to_ivalue(self):
+        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.content_)
+        return SentencePieceProcessor(cpp_spm)
 
 
 class VocabTransform(nn.Module):
