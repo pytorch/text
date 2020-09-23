@@ -247,11 +247,11 @@ def load_sp_model(sp_model):
             ]))
 
 
-def sentencepiece_tokenizer(spm_model):
+def sentencepiece_tokenizer(sp_model):
     r"""Factory function to generate SentencePieceTokenizer from a pretrained SentencePiece model
 
     Args:
-       spm_model: the sentencepiece model instance
+       sp_model: the sentencepiece model instance
 
     Examples:
         >>> import torch
@@ -261,7 +261,7 @@ def sentencepiece_tokenizer(spm_model):
         >>> spm_tokenizer = sentencepiece_tokenizer(sp_model)
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
     """
-    return SentencePieceTokenizer(spm_model)
+    return SentencePieceTokenizer(sp_model)
 
 
 class SentencePieceTokenizer(nn.Module):
@@ -299,15 +299,15 @@ class SentencePieceTokenizer(nn.Module):
         return self.sp_model.DecodePieces(tokens)
 
     def to_ivalue(self):
-        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
-        return SentencePieceProcessor(cpp_spm)
+        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
+        return SentencePieceProcessor(torchbind_spm)
 
 
-def sentencepiece_processor(spm_model):
+def sentencepiece_processor(sp_model):
     r"""Factory function to generate SentencePieceProcessor from a pretrained SentencePiece model
 
     Args:
-       spm_model: the sentencepiece model instance
+       sp_model: the sentencepiece model instance
 
     Examples:
         >>> import torch
@@ -317,7 +317,7 @@ def sentencepiece_processor(spm_model):
         >>> spm_processor = sentencepiece_processor(sp_model)
         >>> jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())
     """
-    return SentencePieceProcessor(spm_model)
+    return SentencePieceProcessor(sp_model)
 
 
 class SentencePieceProcessor(nn.Module):
@@ -355,8 +355,8 @@ class SentencePieceProcessor(nn.Module):
         return self.sp_model.DecodeIds(ids)
 
     def to_ivalue(self):
-        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
-        return SentencePieceProcessor(cpp_spm)
+        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
+        return SentencePieceProcessor(torchbind_spm)
 
 
 class VocabTransform(nn.Module):
