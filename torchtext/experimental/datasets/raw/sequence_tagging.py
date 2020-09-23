@@ -39,8 +39,11 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root=".data"):
-
+def _setup_datasets(dataset_name, separator, root=".data", data_select=('train', 'valid', 'test')):
+    if isinstance(data_select, str):
+        data_select = [data_select]
+    if not set(data_select).issubset(set(('train', 'valid', 'test'))):
+        raise TypeError('data_select is not supported!')
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
         for f in URLS[dataset_name]:
@@ -59,17 +62,7 @@ def _setup_datasets(dataset_name, separator, root=".data"):
         "valid": _construct_filepath(extracted_files, "dev.txt"),
         "test": _construct_filepath(extracted_files, "test.txt")
     }
-
-    datasets = []
-    for key in data_filenames.keys():
-        if data_filenames[key] is not None:
-            datasets.append(
-                RawSequenceTaggingIterableDataset(
-                    _create_data_from_iob(data_filenames[key], separator)))
-        else:
-            datasets.append(None)
-
-    return datasets
+    return tuple(RawSequenceTaggingIterableDataset(_create_data_from_iob(data_filenames[item], separator)) if data_filenames[item] is not None else None for item in data_select)
 
 
 class RawSequenceTaggingIterableDataset(torch.utils.data.IterableDataset):
@@ -110,9 +103,12 @@ def UDPOS(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+            By default, all the datasets (train, valid, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'valid', 'test') or just a string 'train'.
 
     Examples:
-        >>> from torchtext.datasets.raw import UDPOS
+        >>> from torchtext.experimental.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
     return _setup_datasets(*(("UDPOS", "\t") + args), **kwargs)
@@ -125,12 +121,18 @@ def CoNLL2000Chunking(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
-        >>> from torchtext.datasets.raw import CoNLL2000Chunking
+        >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
+    if 'data_select' in kwargs:
+        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
+    else:
+        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **dict(kwargs, data_select=('train', 'test')))
 
 
 DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}

@@ -32,11 +32,15 @@ def _setup_datasets(dataset_name,
     if not set(data_select).issubset(set(("train", "valid", "test"))):
         raise TypeError("Given data selection {} is not supported!".format(data_select))
 
-    train, val, test = raw.DATASETS[dataset_name](root=root)
+    if dataset_name == 'UDPOS':
+        train, val, test = raw.DATASETS[dataset_name](root=root)
+    elif dataset_name == 'CoNLL2000Chunking':
+        train, test = raw.DATASETS[dataset_name](root=root)
+        val = None
     raw_data = {
-        "train": [line for line in train] if train else None,
-        "valid": [line for line in val] if val else None,
-        "test": [line for line in test] if test else None
+        "train": [line for line in train] if train and 'train' in data_select else None,
+        "valid": [line for line in val] if val and 'valid' in data_select else None,
+        "test": [line for line in test] if test and 'test' in data_select else None
     }
 
     if vocabs is None:
@@ -63,14 +67,7 @@ def _setup_datasets(dataset_name,
                               totensor(dtype=torch.long))
         for idx in range(len(vocabs))
     ]
-
-    datasets = []
-    for item in data_select:
-        if raw_data[item] is not None:
-            datasets.append(
-                SequenceTaggingDataset(raw_data[item], vocabs, transformers))
-
-    return datasets
+    return tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in data_select if raw_data[item] is not None)
 
 
 class SequenceTaggingDataset(torch.utils.data.Dataset):
@@ -152,8 +149,8 @@ def CoNLL2000Chunking(*args, **kwargs):
             instance of List
             Default: None
         data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'valid', 'test'))
-            By default, all the three datasets (train, test, valid) are generated. Users
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
@@ -161,9 +158,12 @@ def CoNLL2000Chunking(*args, **kwargs):
 
     Examples:
         >>> from torchtext.datasets.raw import CoNLL2000Chunking
-        >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
+        >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets(*(("CoNLL2000Chunking", ) + args), **kwargs)
+    if 'data_select' in kwargs:
+        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
+    else:
+        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **dict(kwargs, data_select=('train', 'test')))
 
 
 DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
