@@ -300,7 +300,7 @@ class SentencePieceTokenizer(nn.Module):
 
     def to_ivalue(self):
         torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
-        return SentencePieceProcessor(torchbind_spm)
+        return SentencePieceTokenizer(torchbind_spm)
 
 
 def sentencepiece_processor(sp_model):
