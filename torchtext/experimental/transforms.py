@@ -271,7 +271,7 @@ class SentencePieceTokenizer(nn.Module):
         return self.sp_model.DecodePieces(tokens)
 
     def to_ivalue(self):
-        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.content_)
+        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
         return SentencePieceProcessor(cpp_spm)
 
 
@@ -286,8 +286,8 @@ def sentencepiece_processor(spm_model):
         >>> from torchtext.experimental.transforms import SentencePieceProcessor
         >>> from torchtext.experimental.transforms import load_pretrained_sp_model
         >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
-        >>> spm_transform = sentencepiece_processor(sp_model)
-        >>> jit_spm_tokenizer = torch.jit.script(spm_transform.to_ivalue())
+        >>> spm_processor = sentencepiece_processor(sp_model)
+        >>> jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())
     """
     return SentencePieceProcessor(spm_model)
 
@@ -327,7 +327,7 @@ class SentencePieceProcessor(nn.Module):
         return self.sp_model.DecodeIds(ids)
 
     def to_ivalue(self):
-        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.content_)
+        cpp_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
         return SentencePieceProcessor(cpp_spm)
 
 

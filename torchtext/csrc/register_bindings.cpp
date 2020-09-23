@@ -27,7 +27,9 @@ PYBIND11_MODULE(_torchtext, m) {
 
   py::class_<SentencePiece>(m, "SentencePiece")
       .def(py::init<std::string>())
-      .def_readonly("content_", &SentencePiece::content_)
+      .def(
+          "return_content",
+          [](const SentencePiece &self) { return py::bytes(self.content_); })
       .def("Encode", &SentencePiece::Encode)
       .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
       .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
@@ -35,6 +37,16 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("unk_id", &SentencePiece::unk_id)
       .def("PieceToId", &SentencePiece::PieceToId)
       .def("IdToPiece", &SentencePiece::IdToPiece);
+
+  //  py::class_<PySentencePiece>(m, "PySentencePiece")
+  //      .def(py::init<std::string>())
+  //      .def("Encode", &PySentencePiece::Encode)
+  //      .def("EncodeAsIds", &PySentencePiece::EncodeAsIds)
+  //      .def("EncodeAsPieces", &PySentencePiece::EncodeAsPieces)
+  //      .def("GetPieceSize", &PySentencePiece::GetPieceSize)
+  //      .def("unk_id", &PySentencePiece::unk_id)
+  //      .def("PieceToId", &PySentencePiece::PieceToId)
+  //      .def("IdToPiece", &PySentencePiece::IdToPiece);
 
   py::class_<Vectors>(m, "Vectors")
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,

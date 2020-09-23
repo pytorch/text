@@ -3,7 +3,7 @@
 namespace torchtext {
 
 SentencePiece::SentencePiece(const std::string &content) : content_(content) {
-  const auto status = processor_.LoadFromSerializedProto(content);
+  const auto status = processor_.LoadFromSerializedProto(content_);
   if (!status.ok()) {
     throw std::runtime_error("Failed to load SentencePiece model. Error: " +
                              status.ToString());

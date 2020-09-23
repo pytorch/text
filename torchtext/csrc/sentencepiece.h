@@ -1,11 +1,9 @@
-#include <pybind11/pybind11.h>
 #include <sentencepiece_processor.h>
 #include <sentencepiece_trainer.h>
 #include <torch/script.h>
 
 namespace torchtext {
 
-namespace py = pybind11;
 struct SentencePiece : torch::CustomClassHolder {
 private:
   sentencepiece::SentencePieceProcessor processor_;
@@ -16,7 +14,7 @@ public:
   // provide serialization mechanism, yet we still need to be able to serialize
   // the model so that we can save the scripted object. pickle will get the
   // serialized model from this content_ member, thus it needs to be public.
-  py::bytes content_;
+  std::string content_;
 
   explicit SentencePiece(const std::string &content);
   std::vector<std::string> Encode(const std::string &input) const;
