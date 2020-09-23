@@ -22,7 +22,7 @@ class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_processor(self):
         model_path = get_asset_path('spm_example.model')
         spm_transform = sentencepiece_processor(load_sp_model(model_path))
-        jit_spm_transform = torch.jit.script(spm_transform)
+        jit_spm_transform = torch.jit.script(spm_transform.to_ivalue())
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
                        144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
@@ -34,7 +34,7 @@ class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_tokenizer(self):
         model_path = get_asset_path('spm_example.model')
         spm_tokenizer = sentencepiece_tokenizer(load_sp_model(model_path))
-        jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
+        jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
                        '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
