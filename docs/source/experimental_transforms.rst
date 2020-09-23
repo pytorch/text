@@ -49,17 +49,17 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
-:hidden: `sentencepiece_transform`
+:hidden: `sentencepiece_processor`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: sentencepiece_transform
+.. autoclass:: sentencepiece_processor
     :members:
     :special-members: __init__
 
-:hidden:`SentencePieceTransform`
+:hidden:`SentencePieceProcessor`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: SentencePieceTransform
+.. autoclass:: SentencePieceProcessor
     :members:
     :special-members: __init__
 
