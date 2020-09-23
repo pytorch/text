@@ -40,10 +40,10 @@ def generate_sp_model(filename, vocab_size=20000,
 
 
 def load_sp_model(spm):
-    r"""Load a  sentencepiece model for file.
+    r"""Load a sentencepiece model for file.
 
     Arguments:
-        spm: the file path or a file object saving the sentencepiece model.
+        spm: a file path or a file opened in a binary text mode (io.BufferedReader) saving the sentencepiece model.
 
     Outputs:
         output: a SentencePiece model.
