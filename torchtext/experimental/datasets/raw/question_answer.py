@@ -57,15 +57,16 @@ class RawQuestionAnswerDataset(torch.utils.data.IterableDataset):
                 break
 
 
-def _setup_datasets(dataset_name, root='.data'):
+def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
+    if isinstance(data_select, str):
+        data_select = [data_select]
+    if not set(data_select).issubset(set(('train', 'test'))):
+        raise TypeError('data_select is not supported!')
     extracted_files = []
     select_to_index = {'train': 0, 'dev': 1}
     extracted_files = [download_from_url(URLS[dataset_name][select_to_index[key]],
                                          root=root) for key in select_to_index.keys()]
-    train_iter = _create_data_from_json(extracted_files[0])
-    dev_iter = _create_data_from_json(extracted_files[1])
-    return (RawQuestionAnswerDataset(train_iter),
-            RawQuestionAnswerDataset(dev_iter))
+    return tuple(RawQuestionAnswerDataset(_create_data_from_json(extracted_files[select_to_index[item]])) for item in data_select)
 
 
 def SQuAD1(*args, **kwargs):
@@ -75,6 +76,12 @@ def SQuAD1(*args, **kwargs):
                   'To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?',
                   ['Saint Bernadette Soubirous'],
                   [515])
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets (Default: ('train', 'dev'))
+            By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
+            for example ('train', 'dev') or just a string 'train'.
 
     Examples:
         >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD1()
@@ -92,6 +99,12 @@ def SQuAD2(*args, **kwargs):
                   'When did Beyonce start becoming popular?',
                   ['in the late 1990s'],
                   [269])
+
+    Arguments:
+        root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets (Default: ('train', 'dev'))
+            By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
+            for example ('train', 'dev') or just a string 'train'.
 
     Examples:
         >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD2()

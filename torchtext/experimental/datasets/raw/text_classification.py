@@ -88,7 +88,7 @@ def AG_NEWS(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -108,7 +108,7 @@ def SogouNews(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -129,7 +129,7 @@ def DBpedia(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -150,7 +150,7 @@ def YelpReviewPolarity(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -171,7 +171,7 @@ def YelpReviewFull(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -192,7 +192,7 @@ def YahooAnswers(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -213,7 +213,7 @@ def AmazonReviewPolarity(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -234,7 +234,7 @@ def AmazonReviewFull(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
@@ -265,7 +265,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
