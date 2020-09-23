@@ -76,7 +76,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
             cvs_path['train'] = fname
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
-    return tuple(RawTextIterableDataset(_create_data_from_csv(cvs_path[item])) for item in dataset)
+    return tuple(RawTextIterableDataset(_create_data_from_csv(cvs_path[item])) for item in data_select)
 
 
 def AG_NEWS(*args, **kwargs):
@@ -279,7 +279,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
         raise TypeError('data_select is not supported!')
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
-    return tuple(RawTextIterableDataset(generate_imdb_data(item, extracted_files)) for item in dataset)
+    return tuple(RawTextIterableDataset(generate_imdb_data(item, extracted_files)) for item in data_select)
 
 
 DATASETS = {
