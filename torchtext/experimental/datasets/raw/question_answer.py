@@ -57,10 +57,10 @@ class RawQuestionAnswerDataset(torch.utils.data.IterableDataset):
                 break
 
 
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
+def _setup_datasets(dataset_name, root='.data', data_select=('train', 'dev')):
     if isinstance(data_select, str):
         data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test'))):
+    if not set(data_select).issubset(set(('train', 'dev'))):
         raise TypeError('data_select is not supported!')
     extracted_files = []
     select_to_index = {'train': 0, 'dev': 1}
