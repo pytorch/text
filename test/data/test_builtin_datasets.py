@@ -95,7 +95,8 @@ class TestDataset(TorchtextTestCase):
         datadir = os.path.join(self.project_root, ".data")
         if not os.path.exists(datadir):
             os.makedirs(datadir)
-        try:
+
+        def _run_test():
             ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
             self.assertEqual(len(ag_news_train), 120000)
             self.assertEqual(len(ag_news_test), 7600)
@@ -103,11 +104,13 @@ class TestDataset(TorchtextTestCase):
                              torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053]).long())
             self.assertEqual(ag_news_test[-1][1][:10],
                              torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786]).long())
+        try:
+            _run_test()
         except KeyError:
             with self.assertRaisesRegex(KeyError, 'content-disposition'):
                 ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
         except:
-            ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
+            _run_test()
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
