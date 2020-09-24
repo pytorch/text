@@ -205,16 +205,19 @@ def load_pretrained_sp_model(sp_model='text_unigram_25000'):
             - text_bpe_15000
             - text_bpe_25000
             - text_bpe_50000
-            Otherwise, the file path to the user-provided sentencepiece model is required.
+
+    Outputs:
+        sp_model: a SentencePiece instance.
+        sp_model_path: the path to the downloaded sentencepiece model file
 
     Examples:
         >>> from torchtext.experimental.transforms import load_pretrained_sp_model
-        >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
+        >>> sp_model, sp_model_path = load_pretrained_sp_model('text_unigram_25000')
 
     """
     if sp_model in _pretrained_spm:
-        sp_model = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(sp_model))
-        return load_sp_model(sp_model)
+        sp_model_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(sp_model))
+        return load_sp_model(sp_model_path), sp_model_path
     else:
         raise RuntimeError('The pretrained sentencepiece model is not valid')
 
@@ -251,17 +254,16 @@ def sentencepiece_tokenizer(sp_model):
     r"""Factory function to generate SentencePieceTokenizer from a pretrained SentencePiece model
 
     Args:
-       sp_model: the sentencepiece model instance
+        sp_model: the file path or a file object saving the sentencepiece model.
 
     Examples:
         >>> import torch
-        >>> from torchtext.experimental.transforms import SentencePieceTokenizer
-        >>> from torchtext.experimental.transforms import load_pretrained_sp_model
-        >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
-        >>> spm_tokenizer = sentencepiece_tokenizer(sp_model)
+        >>> from torchtext.experimental.transforms import sentencepiece_tokenizer
+        >>> spm_tokenizer = sentencepiece_tokenizer('m_user.model')
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
     """
-    return SentencePieceTokenizer(sp_model)
+    spm = load_sp_model(sp_model)
+    return SentencePieceTokenizer(spm)
 
 
 class SentencePieceTokenizer(nn.Module):
@@ -307,17 +309,16 @@ def sentencepiece_processor(sp_model):
     r"""Factory function to generate SentencePieceProcessor from a pretrained SentencePiece model
 
     Args:
-       sp_model: the sentencepiece model instance
+        sp_model: the file path or a file object saving the sentencepiece model.
 
     Examples:
         >>> import torch
-        >>> from torchtext.experimental.transforms import SentencePieceProcessor
-        >>> from torchtext.experimental.transforms import load_pretrained_sp_model
-        >>> sp_model = load_pretrained_sp_model('text_unigram_25000')
-        >>> spm_processor = sentencepiece_processor(sp_model)
+        >>> from torchtext.experimental.transforms import sentencepiece_processor
+        >>> spm_processor = sentencepiece_processor('m_user.model')
         >>> jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())
     """
-    return SentencePieceProcessor(sp_model)
+    spm = load_sp_model(sp_model)
+    return SentencePieceProcessor(spm)
 
 
 class SentencePieceProcessor(nn.Module):

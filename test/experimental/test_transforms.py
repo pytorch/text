@@ -21,7 +21,7 @@ import os
 class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_processor(self):
         model_path = get_asset_path('spm_example.model')
-        spm_transform = sentencepiece_processor(load_sp_model(model_path))
+        spm_transform = sentencepiece_processor(model_path)
         jit_spm_transform = torch.jit.script(spm_transform.to_ivalue())
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
@@ -33,7 +33,7 @@ class TestTransforms(TorchtextTestCase):
 
     def test_sentencepiece_tokenizer(self):
         model_path = get_asset_path('spm_example.model')
-        spm_tokenizer = sentencepiece_tokenizer(load_sp_model(model_path))
+        spm_tokenizer = sentencepiece_tokenizer(model_path)
         jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
@@ -47,14 +47,16 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
     def test_builtin_pretrained_sentencepiece_processor(self):
-        spm_tokenizer = sentencepiece_tokenizer(load_pretrained_sp_model())
+        sp_model_path = load_pretrained_sp_model()[1]
+        spm_tokenizer = sentencepiece_tokenizer(sp_model_path)
         _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
         os.remove(_path)
         test_sample = 'the pretrained spm model names'
         ref_results = ['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
-        spm_transform = sentencepiece_processor(load_pretrained_sp_model('text_bpe_25000'))
+        sp_model_path = load_pretrained_sp_model('text_bpe_25000')[1]
+        spm_transform = sentencepiece_processor(sp_model_path)
         _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
         os.remove(_path)
         test_sample = 'the pretrained spm model names'
