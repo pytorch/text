@@ -104,7 +104,8 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(ag_news_test[-1][1][:10],
                              torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786]).long())
         except KeyError:
-            pass
+            with self.assertRaisesRegex(KeyError, 'content-disposition'):
+                ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
         except:
             ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
 
