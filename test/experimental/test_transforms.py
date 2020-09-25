@@ -8,7 +8,7 @@ from torchtext.experimental.transforms import (
     sentencepiece_processor,
     sentencepiece_tokenizer,
     TextSequentialTransforms,
-    load_pretrained_sp_model,
+    pretrained_spm,
 )
 from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
@@ -46,7 +46,7 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
     def test_builtin_pretrained_sentencepiece_processor(self):
-        sp_model_path = load_pretrained_sp_model()[1]
+        sp_model_path = torchtext.utils.download_from_url(pretrained_spm['text_unigram_25000'])
         spm_tokenizer = sentencepiece_tokenizer(sp_model_path)
         _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
         os.remove(_path)
@@ -54,7 +54,7 @@ class TestTransforms(TorchtextTestCase):
         ref_results = ['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
-        sp_model_path = load_pretrained_sp_model('text_bpe_25000')[1]
+        sp_model_path = torchtext.utils.download_from_url(pretrained_spm['text_bpe_25000'])
         spm_transform = sentencepiece_processor(sp_model_path)
         _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
         os.remove(_path)
