@@ -224,7 +224,7 @@ def load_sp_model(sp_model):
     Examples:
         >>> from torchtext.experimental.transforms import pretrained_spm
         >>> sp_model_path = torchtext.utils.download_from_url(pretrained_spm['text_unigram_25000'])
-        >>> sp_model, sp_model_path = load_pretrained_sp_model(sp_model_path)
+        >>> sp_model = load_sp_model(sp_model_path)
     """
     if isinstance(sp_model, str):
         with open(sp_model, 'rb') as f:
