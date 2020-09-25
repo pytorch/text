@@ -186,40 +186,13 @@ class TextSequentialTransforms(nn.Sequential):
         return TextSequentialTransforms(OrderedDict(module_list))
 
 
-_pretrained_spm = ['text_unigram_15000', 'text_unigram_25000', 'text_unigram_50000',
-                   'text_bpe_15000', 'text_bpe_25000', 'text_bpe_50000']
-
-
-def load_pretrained_sp_model(sp_model='text_unigram_25000'):
-    r"""Generate a pretrained sentencepiece model.
-        The model was trained with torchtext.datasets.WikiText103, torchtext.datasets.EnWik9 and BookCorpus.
-        Both BPE and unigram methods were used to train the model (for more details please refer to
-        SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
-        with a different size of the vocabulary (i.e. 15000, 25000, 50000).
-
-    Args:
-       sp_model: the pretrained sentencepiece model names. Default: 'text_unigram_25000'. The following pretrained sentencepiece models are provided:
-            - text_unigram_15000
-            - text_unigram_25000
-            - text_unigram_50000
-            - text_bpe_15000
-            - text_bpe_25000
-            - text_bpe_50000
-
-    Outputs:
-        sp_model: a SentencePiece instance.
-        sp_model_path: the path to the downloaded sentencepiece model file
-
-    Examples:
-        >>> from torchtext.experimental.transforms import load_pretrained_sp_model
-        >>> sp_model, sp_model_path = load_pretrained_sp_model('text_unigram_25000')
-
-    """
-    if sp_model in _pretrained_spm:
-        sp_model_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/{}.model'.format(sp_model))
-        return load_sp_model(sp_model_path), sp_model_path
-    else:
-        raise RuntimeError('The pretrained sentencepiece model is not valid')
+pretrained_spm = {
+    'text_unigram_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model',
+    'text_unigram_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model',
+    'text_unigram_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_50000.model',
+    'text_bpe_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_15000.model',
+    'text_bpe_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_25000.model',
+    'text_bpe_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_50000.model'}
 
 
 def load_sp_model(sp_model):
@@ -235,6 +208,23 @@ def load_sp_model(sp_model):
         >>> from torchtext.experimental.transforms import load_sp_model
         >>> sp_model = load_sp_model("m_user.model")
         >>> sp_model = load_sp_model(open("m_user.model", 'rb'))
+
+    Note: We also provide several pretrained sentencepiece models. The model was trained with torchtext.datasets.WikiText103,
+        torchtext.datasets.EnWik9 and BookCorpus. Both BPE and unigram methods were used to train the model (for more
+        details please refer to SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
+        with a different size of the vocabulary (i.e. 15000, 25000, 50000).
+        The following pretrained sentencepiece models are provided:
+            - text_unigram_15000
+            - text_unigram_25000
+            - text_unigram_50000
+            - text_bpe_15000
+            - text_bpe_25000
+            - text_bpe_50000
+
+    Examples:
+        >>> from torchtext.experimental.transforms import pretrained_spm
+        >>> sp_model_path = torchtext.utils.download_from_url(pretrained_spm['text_unigram_25000'])
+        >>> sp_model, sp_model_path = load_pretrained_sp_model(sp_model_path)
     """
     if isinstance(sp_model, str):
         with open(sp_model, 'rb') as f:
@@ -303,7 +293,7 @@ class SentencePieceTokenizer(nn.Module):
         return self.sp_model.DecodePieces(tokens)
 
     def to_ivalue(self):
-        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
+        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model._return_content())
         return SentencePieceTokenizer(torchbind_spm)
 
 
@@ -358,7 +348,7 @@ class SentencePieceProcessor(nn.Module):
         return self.sp_model.DecodeIds(ids)
 
     def to_ivalue(self):
-        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model.return_content())
+        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model._return_content())
         return SentencePieceProcessor(torchbind_spm)
 
 

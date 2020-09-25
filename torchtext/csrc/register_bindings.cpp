@@ -27,7 +27,7 @@ PYBIND11_MODULE(_torchtext, m) {
 
   py::class_<SentencePiece>(m, "SentencePiece")
       .def(py::init<std::string>())
-      .def("return_content",
+      .def("_return_content",
            [](const SentencePiece &self) { return py::bytes(self.content_); })
       .def("Encode", &SentencePiece::Encode)
       .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
