@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from typing import List
-from torchtext.utils import download_from_url
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
 from torch import Tensor
@@ -15,7 +14,7 @@ __all__ = [
     'BasicEnglishNormalize',
     'RegexTokenizer',
     'TextSequentialTransforms',
-    'load_pretrained_sp_model',
+    'pretrained_spm',
     'load_sp_model',
     'sentencepiece_tokenizer',
     'SentencePieceTokenizer',
