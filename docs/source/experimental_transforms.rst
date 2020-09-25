@@ -28,13 +28,6 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
-:hidden:`load_pretrained_sp_model`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: load_pretrained_sp_model 
-    :members:
-    :special-members: __init__
-
 :hidden:`load_sp_model`
 ~~~~~~~~~~~~~~~~~~~~~~~
 
