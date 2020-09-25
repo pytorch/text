@@ -4,7 +4,7 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.datasets.text_classification import URLS
 from torchtext.datasets import text_classification
 from torchtext.experimental.transforms import (
-    SentencePieceProcessor,
+    sentencepiece_processor,
     pretrained_sp_model,
 )
 
@@ -13,7 +13,8 @@ def _create_data_with_sp_transform(data_path):
 
     data = []
     labels = []
-    text_pipeline = SentencePieceProcessor(pretrained_sp_model['text_unigram_15000'])
+    spm_path = pretrained_sp_model['text_unigram_15000']
+    text_pipeline = sentencepiece_processor(download_from_url(spm_path))
     with io.open(data_path, encoding="utf8") as f:
         reader = unicode_csv_reader(f)
         for row in reader:

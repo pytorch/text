@@ -6,20 +6,6 @@ import torch
 from torch import Tensor
 
 
-class PretrainedSPTokenizer(nn.Module):
-    r"""Tokenizer based on a pretained sentencepiece model
-    """
-
-    def __init__(self, sp_model):
-        super(PretrainedSPTokenizer, self).__init__()
-        self.sp_model = sp_model
-
-    def forward(self, line: str) -> List[str]:
-        r"""
-        """
-        return self.sp_model.EncodeAsPieces(line)
-
-
 class PretrainedSPVocab(nn.Module):
     r"""Vocab based on a pretained sentencepiece model
     """
