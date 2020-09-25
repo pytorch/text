@@ -14,13 +14,13 @@ from model import BertModel
 
 def process_raw_data(data):
     _data = []
-    for item in data:
+    for (_context, _question, _answers, _ans_pos) in data:
         right_length = True
-        for _idx in range(len(item['ans_pos'])):
-            if item['ans_pos'][_idx][1] + item['question'].size(0) + 2 >= args.bptt:
+        for _idx in range(len(_ans_pos)):
+            if _ans_pos[_idx][1] + _question.size(0) + 2 >= args.bptt:
                 right_length = False
         if right_length:
-            _data.append(item)
+            _data.append((_context, _question, _answers, _ans_pos))
     return _data
 
 
@@ -28,9 +28,9 @@ def collate_batch(batch):
     seq_list = []
     ans_pos_list = []
     tok_type = []
-    for item in batch:
-        qa_item = torch.cat((torch.tensor([cls_id]), item['question'], torch.tensor([sep_id]),
-                             item['context'], torch.tensor([sep_id])))
+    for (_context, _question, _answers, _ans_pos) in batch:
+        qa_item = torch.cat((torch.tensor([cls_id]), _question, torch.tensor([sep_id]),
+                             _context, torch.tensor([sep_id])))
         if qa_item.size(0) > args.bptt:
             qa_item = qa_item[:args.bptt]
         elif qa_item.size(0) < args.bptt:
@@ -38,11 +38,11 @@ def collate_batch(batch):
                                  torch.tensor([pad_id] * (args.bptt -
                                               qa_item.size(0)))))
         seq_list.append(qa_item)
-        pos_list = [pos + item['question'].size(0) + 2 for pos in item['ans_pos']]  # 1 for sep and 1 for cls
+        pos_list = [pos + _question.size(0) + 2 for pos in _ans_pos]  # 1 for sep and 1 for cls
         ans_pos_list.append(pos_list)
-        tok_type.append(torch.cat((torch.zeros((item['question'].size(0) + 2)),
+        tok_type.append(torch.cat((torch.zeros((_question.size(0) + 2)),
                                    torch.ones((args.bptt -
-                                               item['question'].size(0) - 2)))))
+                                               _question.size(0) - 2)))))
     _ans_pos_list = []
     for pos in zip(*ans_pos_list):
         _ans_pos_list.append(torch.stack(list(pos)))
@@ -97,10 +97,10 @@ def train():
     dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
                             collate_fn=collate_batch)
     train_loss_log.append(0.0)
-    for idx, (seq_input, ans_pos, tok_type) in enumerate(dataloader):
+    for idx, (seq_input, _ans_pos, tok_type) in enumerate(dataloader):
         optimizer.zero_grad()
         start_pos, end_pos = model(seq_input, token_type_input=tok_type)
-        target_start_pos, target_end_pos = ans_pos[0].to(device).split(1, dim=-1)
+        target_start_pos, target_end_pos = _ans_pos[0].to(device).split(1, dim=-1)
         target_start_pos = target_start_pos.squeeze(-1)
         target_end_pos = target_end_pos.squeeze(-1)
         loss = (criterion(start_pos, target_start_pos) + criterion(end_pos, target_end_pos)) / 2

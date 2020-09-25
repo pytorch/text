@@ -20,9 +20,7 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         """Initiate question answer dataset.
 
         Arguments:
-            data: a dictionary of data.
-                For example {'context': context_data, 'answers': answers_data,
-                             'question': question_data, 'ans_pos': ans_pos_data}
+            data: a tuple of (context, question, answers, ans_pos).
             vocab: Vocabulary object used for dataset.
             transforms: a dictionary of transforms.
                 For example {'context': context_transform, 'answers': answers_transform,
@@ -35,20 +33,21 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         self.transforms = transforms
 
     def __getitem__(self, i):
-        _data = {'context': self.transforms['context'](self.data[i]['context']),
-                 'question': self.transforms['question'](self.data[i]['question']),
-                 'answers': [], 'ans_pos': []}
-        for idx in range(len(self.data[i]['answer_start'])):
-            _data['answers'].append(self.transforms['answers'](self.data[i]['answers'][idx]))
-            ans_start_idx = self.data[i]['answer_start'][idx]
+        raw_context, raw_question, raw_answers, raw_answer_start = self.data[i]
+        _context = self.transforms['context'](raw_context)
+        _question = self.transforms['question'](raw_question)
+        _answers, _ans_pos = [], []
+        for idx in range(len(raw_answer_start)):
+            _answers.append(self.transforms['answers'](raw_answers[idx]))
+            ans_start_idx = raw_answer_start[idx]
             if ans_start_idx == -1:  # No answer for this sample
-                _data['ans_pos'].append(self.transforms['ans_pos']([-1, -1]))
+                _ans_pos.append(self.transforms['ans_pos']([-1, -1]))
             else:
-                ans_start_token_idx = len(self.transforms['context'](self.data[i]['context'][:ans_start_idx]))
+                ans_start_token_idx = len(self.transforms['context'](raw_context[:ans_start_idx]))
                 ans_end_token_idx = ans_start_token_idx + \
-                    len(self.transforms['answers'](self.data[i]['answers'][idx])) - 1
-                _data['ans_pos'].append(self.transforms['ans_pos']([ans_start_token_idx, ans_end_token_idx]))
-        return _data
+                    len(self.transforms['answers'](raw_answers[idx])) - 1
+                _ans_pos.append(self.transforms['ans_pos']([ans_start_token_idx, ans_end_token_idx]))
+        return (_context, _question, _answers, _ans_pos)
 
     def __len__(self):
         return len(self.data)
@@ -77,12 +76,12 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         tok_list = []
-        for raw_dict in raw_data['train']:
+        for (_context, _question, _answers, _ans_pos) in raw_data['train']:
             tok_ans = []
-            for item in raw_dict['answers']:
+            for item in _answers:
                 tok_ans += text_transform(item)
-            tok_list.append(text_transform(raw_dict['context']) +
-                            text_transform(raw_dict['question']) + tok_ans)
+            tok_list.append(text_transform(_context) +
+                            text_transform(_question) + tok_ans)
         vocab = build_vocab_from_iterator(tok_list)
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,

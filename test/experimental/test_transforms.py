@@ -1,11 +1,9 @@
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
-from test.common.assets import get_asset_path
+from ..common.assets import get_asset_path
 from torchtext.experimental.transforms import (
     VectorTransform,
-    VocabTransform,
 )
-from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
 import shutil
 import tempfile
@@ -13,17 +11,6 @@ import os
 
 
 class TestTransforms(TorchtextTestCase):
-    def test_vocab_transform(self):
-        asset_name = 'vocab_test2.txt'
-        asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            vocab_transform = VocabTransform(vocab_from_file(f))
-            self.assertEqual(vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
-                             [[7, 18, 24], [7, 18, 24, 18]])
-            jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
-            self.assertEqual(jit_vocab_transform([['of', 'that', 'new'], ['of', 'that', 'new', 'that']]),
-                             [[7, 18, 24], [7, 18, 24, 18]])
-
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'
         asset_path = get_asset_path(asset_name)
