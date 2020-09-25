@@ -285,6 +285,8 @@ class SentencePieceTokenizer(nn.Module):
         Examples:
             >>> spm_tokenizer('the pretrained sp model names')
             >>> ['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']
+
+        Note: SentencePiece treats the input text just as a sequence of Unicode characters. Whitespace is also handled as a normal symbol. To handle the whitespace as a basic token explicitly, SentencePiece first escapes the whitespace with a meta symbol "▁" (U+2581) as follows.
         """
         return self.sp_model.EncodeAsPieces(line)
 
