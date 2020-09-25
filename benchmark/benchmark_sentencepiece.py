@@ -35,3 +35,15 @@ if __name__ == "__main__":
                         help='Dataset for performance benchmark')
     args = parser.parse_args()
     benchmark_sentencepiece(args)
+
+# Running with AG_NEWS
+# SentencePiece EncodeAsIds - torchbind
+# Sentencepiece processor time: 11.536989663727582
+# SentencePiece EncodeAsIds - pybind
+# Sentencepiece processor time: 11.38821320142597
+
+# Running with YelpReviewFull
+# SentencePiece EncodeAsIds - torchbind
+# Sentencepiece processor time: 224.23954573180526
+# SentencePiece EncodeAsIds - pybind
+# Sentencepiece processor time: 217.134037473239
