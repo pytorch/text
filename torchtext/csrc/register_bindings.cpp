@@ -26,9 +26,14 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("forward", &RegexTokenizer::forward);
 
   py::class_<SentencePiece>(m, "SentencePiece")
+      .def(py::init<std::string>())
+      .def("_return_content",
+           [](const SentencePiece &self) { return py::bytes(self.content_); })
       .def("Encode", &SentencePiece::Encode)
       .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
+      .def("DecodeIds", &SentencePiece::DecodeIds)
       .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
+      .def("DecodePieces", &SentencePiece::DecodePieces)
       .def("GetPieceSize", &SentencePiece::GetPieceSize)
       .def("unk_id", &SentencePiece::unk_id)
       .def("PieceToId", &SentencePiece::PieceToId)
@@ -108,9 +113,12 @@ static auto regex_tokenizer =
 
 static auto sentencepiece =
     torch::class_<SentencePiece>("torchtext", "SentencePiece")
+        .def(torch::init<std::string>())
         .def("Encode", &SentencePiece::Encode)
         .def("EncodeAsIds", &SentencePiece::EncodeAsIds)
+        .def("DecodeIds", &SentencePiece::DecodeIds)
         .def("EncodeAsPieces", &SentencePiece::EncodeAsPieces)
+        .def("DecodePieces", &SentencePiece::DecodePieces)
         .def("GetPieceSize", &SentencePiece::GetPieceSize)
         .def("unk_id", &SentencePiece::unk_id)
         .def("PieceToId", &SentencePiece::PieceToId)

@@ -10,6 +10,7 @@ popular datasets for natural language.
 
    self
    torchtext.data <data>
+   modules 
    data_utils
    data_functional
    data_metrics
