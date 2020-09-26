@@ -172,7 +172,6 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             object should be provided which will be used to process valid and/or test
             data.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
-
         The available dataset include:
             test_2016_flickr.cs
             test_2016_flickr.de
@@ -282,7 +281,6 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             object should be provided which will be used to process valid and/or test
             data.
         removed_tokens: removed tokens from output dataset (Default: '<unk>')
-
         The available datasets include:
             IWSLT16.TED.dev2010.ar-en.ar
             IWSLT16.TED.dev2010.ar-en.en
