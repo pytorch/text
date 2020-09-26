@@ -4,6 +4,9 @@ from typing import List
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
 from collections import OrderedDict
 from torch import Tensor
+from torchtext._torchtext import SentencePiece as SentencePiecePybind
+import io
+
 
 __all__ = [
     'basic_english_normalize',
@@ -11,6 +14,12 @@ __all__ = [
     'BasicEnglishNormalize',
     'RegexTokenizer',
     'TextSequentialTransforms',
+    'pretrained_sp_model',
+    'load_sp_model',
+    'sentencepiece_tokenizer',
+    'SentencePieceTokenizer',
+    'sentencepiece_processor',
+    'SentencePieceProcessor',
     'VocabTransform',
     'VectorTransform'
 ]
@@ -151,7 +160,6 @@ class RegexTokenizer(nn.Module):
 
 class TextSequentialTransforms(nn.Sequential):
     r"""A container to host a sequential text transforms.
-
         Example:
             >>> import torch
             >>> from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms
@@ -175,6 +183,172 @@ class TextSequentialTransforms(nn.Sequential):
                 _module = _module.to_ivalue()
             module_list.append((str(_idx), _module))
         return TextSequentialTransforms(OrderedDict(module_list))
+
+
+pretrained_sp_model = {
+    'text_unigram_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model',
+    'text_unigram_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model',
+    'text_unigram_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_50000.model',
+    'text_bpe_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_15000.model',
+    'text_bpe_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_25000.model',
+    'text_bpe_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_50000.model'}
+
+
+def load_sp_model(sp_model):
+    r"""Load a  sentencepiece model for file.
+
+    Arguments:
+        sp_model: the file path or a file object saving the sentencepiece model.
+
+    Outputs:
+        output: a SentencePiece model.
+
+    Examples:
+        >>> from torchtext.experimental.transforms import load_sp_model
+        >>> sp_model = load_sp_model("m_user.model")
+        >>> sp_model = load_sp_model(open("m_user.model", 'rb'))
+
+    Note: We also provide several pretrained sentencepiece models. The model was trained with torchtext.datasets.WikiText103,
+        torchtext.datasets.EnWik9 and BookCorpus. Both BPE and unigram methods were used to train the model (for more
+        details please refer to SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
+        with a different size of the vocabulary (i.e. 15000, 25000, 50000).
+        The following pretrained sentencepiece models are provided:
+            - text_unigram_15000
+            - text_unigram_25000
+            - text_unigram_50000
+            - text_bpe_15000
+            - text_bpe_25000
+            - text_bpe_50000
+
+    Examples:
+        >>> from torchtext.experimental.transforms import pretrained_sp_model
+        >>> sp_model_path = torchtext.utils.download_from_url(pretrained_sp_model['text_unigram_25000'])
+        >>> sp_model = load_sp_model(sp_model_path)
+    """
+    if isinstance(sp_model, str):
+        with open(sp_model, 'rb') as f:
+            return SentencePiecePybind(f.read())
+    elif isinstance(sp_model, io.BufferedReader):
+        return SentencePiecePybind(sp_model.read())
+    else:
+        raise TypeError(
+            f'Unsupported type for sp_model argument: {type(sp_model).__name__}. ' +
+            'Supported types are: ' +
+            ', '.join([
+                'str', 'io.BufferedReader'
+            ]))
+
+
+def sentencepiece_tokenizer(sp_model):
+    r"""Factory function to generate SentencePieceTokenizer from a pretrained SentencePiece model
+
+    Args:
+        sp_model: the file path or a file object saving the sentencepiece model.
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.experimental.transforms import sentencepiece_tokenizer
+        >>> spm_tokenizer = sentencepiece_tokenizer('m_user.model')
+        >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
+    """
+    spm = load_sp_model(sp_model)
+    return SentencePieceTokenizer(spm)
+
+
+class SentencePieceTokenizer(nn.Module):
+    r"""Tokenizer based on a pretained sentencepiece model.
+
+    Args:
+       spm_model: the sentencepiece model instance
+    """
+
+    def __init__(self, spm_model):
+        super(SentencePieceTokenizer, self).__init__()
+        self.sp_model = spm_model
+
+    def forward(self, line: str) -> List[str]:
+        r"""
+        Args:
+            line: the input sentence string
+
+        Examples:
+            >>> spm_tokenizer('the pretrained sp model names')
+            >>> ['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names']
+
+        Note: SentencePiece treats the input text just as a sequence of Unicode characters. Whitespace is also handled as a normal symbol. To handle the whitespace as a basic token explicitly, SentencePiece first escapes the whitespace with a meta symbol "▁" (U+2581) as follows.
+        """
+        return self.sp_model.EncodeAsPieces(line)
+
+    @torch.jit.export
+    def decode(self, tokens: List[str]) -> str:
+        r"""
+        Args:
+            tokens: the tokens list for decoder
+
+        Examples:
+            >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names'])
+            >>> 'the pretrained sp model names'
+        """
+        return self.sp_model.DecodePieces(tokens)
+
+    def to_ivalue(self):
+        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model._return_content())
+        return SentencePieceTokenizer(torchbind_spm)
+
+
+def sentencepiece_processor(sp_model):
+    r"""Factory function to generate SentencePieceProcessor from a pretrained SentencePiece model
+
+    Args:
+        sp_model: the file path or a file object saving the sentencepiece model.
+
+    Examples:
+        >>> import torch
+        >>> from torchtext.experimental.transforms import sentencepiece_processor
+        >>> spm_processor = sentencepiece_processor('m_user.model')
+        >>> jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())
+    """
+    spm = load_sp_model(sp_model)
+    return SentencePieceProcessor(spm)
+
+
+class SentencePieceProcessor(nn.Module):
+    r"""String to ids transform based on a pretained sentencepiece model
+
+    Args:
+       spm_model: the sentencepiece model instance
+    """
+
+    def __init__(self, spm_model):
+        super(SentencePieceProcessor, self).__init__()
+        self.sp_model = spm_model
+
+    def forward(self, line: str) -> List[int]:
+        r"""
+        Args:
+            line: the input sentence string
+
+        Examples:
+            >>> spm_processor('the pretrained sp model names')
+            >>> [9, 1546, 18811, 2849, 2759, 2202]
+        """
+        return self.sp_model.EncodeAsIds(line)
+
+    @torch.jit.export
+    def decode(self, ids: List[int]) -> str:
+        r"""
+        Args:
+            ids: the integers list for decoder
+
+        Examples:
+            >>> spm_processor.decoder([9, 1546, 18811, 2849, 2759, 2202])
+            >>> 'the pretrained sp model names'
+        """
+        return self.sp_model.DecodeIds(ids)
+
+    def to_ivalue(self):
+        torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model._return_content())
+        return SentencePieceProcessor(torchbind_spm)
 
 
 class VocabTransform(nn.Module):

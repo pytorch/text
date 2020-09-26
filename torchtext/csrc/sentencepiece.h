@@ -14,12 +14,14 @@ public:
   // provide serialization mechanism, yet we still need to be able to serialize
   // the model so that we can save the scripted object. pickle will get the
   // serialized model from this content_ member, thus it needs to be public.
-  const std::string content_;
+  std::string content_;
 
   explicit SentencePiece(const std::string &content);
   std::vector<std::string> Encode(const std::string &input) const;
   std::vector<int64_t> EncodeAsIds(const std::string &input) const;
+  std::string DecodeIds(const std::vector<int64_t> &ids) const;
   std::vector<std::string> EncodeAsPieces(const std::string &input) const;
+  std::string DecodePieces(const std::vector<std::string> &pieces) const;
   int64_t GetPieceSize() const;
   int64_t unk_id() const;
   int64_t PieceToId(const std::string &piece) const;

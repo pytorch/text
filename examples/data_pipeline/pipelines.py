@@ -1,7 +1,6 @@
 from collections import Counter, OrderedDict
 import torch
 from transforms import (
-    PretrainedSPTokenizer,
     PretrainedSPVocab,
     PyTextVocabTransform,
     PyTextScriptVocabTransform,
@@ -11,6 +10,8 @@ from transforms import (
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
+    sentencepiece_tokenizer,
+    load_sp_model,
 )
 from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.functional import (
@@ -23,12 +24,11 @@ from torchtext.vocab import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
-from torchtext.data.functional import load_sp_model
 from torch.utils.data import DataLoader
 
 
 def build_sp_pipeline(spm_file):
-    tokenizer = PretrainedSPTokenizer(load_sp_model(spm_file))
+    tokenizer = sentencepiece_tokenizer(spm_file)
     vocab = PretrainedSPVocab(load_sp_model(spm_file))
 
     # Insert token in vocab to match a pretrained vocab
