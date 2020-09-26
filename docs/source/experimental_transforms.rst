@@ -77,9 +77,9 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
-:hidden:` PadTransform`
+:hidden:` Pad`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: PadTransform 
+.. autoclass:: Pad 
     :members:
     :special-members: __init__

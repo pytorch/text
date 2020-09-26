@@ -10,7 +10,7 @@ from transforms import (
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
-    PadTransform,
+    Pad,
     sentencepiece_tokenizer,
     load_sp_model,
 )
@@ -35,7 +35,7 @@ def build_sp_pipeline(spm_file):
     vocab.insert_token('<pad>', 1)
 
     pad_id = -1
-    pad_func = PadTransform(pad_id)
+    pad_func = Pad(pad_id)
     pipeline = TextSequentialTransforms(tokenizer, vocab, pad_func)
     jit_pipeline = torch.jit.script(pipeline.to_ivalue())
     print('jit sentencepiece pipeline success!')

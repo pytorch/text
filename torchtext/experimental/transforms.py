@@ -424,7 +424,7 @@ class VectorTransform(nn.Module):
         return self
 
 
-class PadTransform(nn.Module):
+class Pad(nn.Module):
     r"""Pad sequences. Add padding id to the end of a sequences such that the sequences will
         have the same length.
 
@@ -434,14 +434,14 @@ class PadTransform(nn.Module):
 
     Example:
         >>> pad_id = 2
-        >>> pad_transform = PadTransform(pad_id)
+        >>> pad_transform = Pad(pad_id)
         >>> seq_batch = [torch.tensor([5, 4, 5, 6, 7]), torch.tensor([1, 3]), torch.tensor([7, 5, 8])]
         >>> pad_seq, padding_mask = pad_transform(seq_batch)
         >>> jit_pad_transform = torch.jit.script(pad_transform)
     """
 
     def __init__(self, pad_id, return_key_padding_mask=True):
-        super(PadTransform, self).__init__()
+        super(Pad, self).__init__()
         self.pad_id = pad_id
         self.return_key_padding_mask = return_key_padding_mask
 

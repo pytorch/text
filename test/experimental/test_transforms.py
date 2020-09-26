@@ -5,7 +5,7 @@ from torchtext.experimental.transforms import (
     basic_english_normalize,
     VectorTransform,
     VocabTransform,
-    PadTransform,
+    Pad,
     sentencepiece_processor,
     sentencepiece_tokenizer,
     TextSequentialTransforms,
@@ -101,7 +101,7 @@ class TestTransforms(TorchtextTestCase):
 
     def test_padding_func(self):
         pad_id = 2
-        pad_transform = PadTransform(pad_id)
+        pad_transform = Pad(pad_id)
         # Test torch.int64
         seq_batch = [torch.tensor([5, 4, 5, 6, 7]), torch.tensor([1, 3]), torch.tensor([7, 5, 8])]
         pad_seq, padding_mask = pad_transform(seq_batch)
