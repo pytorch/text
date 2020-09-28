@@ -172,8 +172,12 @@ def _setup_datasets(dataset_name,
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
+        def _iter(src_data_iter, tgt_data_iter):
+            for item in zip(src_data_iter, tgt_data_iter):
+                yield item
+
         datasets.append(
-            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], (src_data_iter, tgt_data_iter)))
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _iter(src_data_iter, tgt_data_iter)))
 
     return tuple(datasets)
 
