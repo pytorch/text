@@ -168,15 +168,17 @@ def _setup_datasets(dataset_name,
 
     datasets = []
     for key in data_filenames.keys():
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
-        def _iter(src_data_iter, tgt_data_iter):
-            for item in zip(src_data_iter, tgt_data_iter):
-                yield item
+        def fn(data_filename):
+            def _iter():
+                src_data_iter = _read_text_iterator(data_filename[0])
+                tgt_data_iter = _read_text_iterator(data_filename[1])
+                for item in zip(src_data_iter, tgt_data_iter):
+                    yield item
+            return _iter
 
         datasets.append(
-            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _iter(src_data_iter, tgt_data_iter)))
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], fn(data_filenames[key]), lazy=True))
 
     return tuple(datasets)
 
