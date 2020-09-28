@@ -95,7 +95,10 @@ def _setup_datasets(
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
-    label_transform = sequential_transforms(totensor(dtype=torch.long))
+    if dataset_name == 'IMDB':
+        label_transform = sequential_transforms(lambda x: 1 if x == 'pos' else 0, totensor(dtype=torch.long))
+    else:
+        label_transform = sequential_transforms(totensor(dtype=torch.long))
     return tuple(
         TextClassificationDataset(
             raw_data[item], vocab, (label_transform, text_transform)
