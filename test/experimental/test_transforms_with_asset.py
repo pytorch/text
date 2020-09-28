@@ -176,23 +176,6 @@ class TestTransformsWithAsset(TorchtextTestCase):
             self.assertEqual(pipeline('of that new'), [7, 18, 24])
             self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
 
-
-    # we separate out these errors because Windows runs into seg faults when propagating
-    # exceptions from C++ using pybind11
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_errors_vectors_cpp(self):
-        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
-        tokens = ['a', 'a', 'c']
-        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when tokens have duplicates
-            # TODO: use self.assertRaisesRegex() to check
-            # the key of the duplicate token in the error message
-            vectors(tokens, vecs)
-
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
