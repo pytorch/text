@@ -5,11 +5,8 @@ import platform
 import torch
 import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.experimental.vocab import (
     vocab,
-    vocab_from_file,
-    vocab_from_raw_text_file
 )
 
 

@@ -13,7 +13,6 @@ from torchtext.experimental.vocab import (
 import shutil
 import tempfile
 import os
-import platform
 from torchtext.experimental.vectors import (
     GloVe,
     vectors,
