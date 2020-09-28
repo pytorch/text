@@ -1,4 +1,3 @@
-import torch
 import logging
 
 from torchtext.experimental.datasets import raw
