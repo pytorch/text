@@ -221,7 +221,7 @@ def generate_imdb_data(key, extracted_files):
             continue
         elif key in fname and ('pos' in fname or 'neg' in fname):
             with io.open(fname, encoding="utf8") as f:
-                label = 1 if 'pos' in fname else 0
+                label = 'pos' if 'pos' in fname else 'neg'
                 yield label, f.read()
 
 
