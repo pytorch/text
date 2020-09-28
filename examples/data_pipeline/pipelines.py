@@ -1,18 +1,17 @@
 from collections import Counter, OrderedDict
 import torch
 from transforms import (
-    PretrainedSPTokenizer,
     PretrainedSPVocab,
     PyTextVocabTransform,
     PyTextScriptVocabTransform,
-    iterate_batch,
     tokenizer_func,
-    totensor,
     vocab_func,
 )
 from torchtext.experimental.transforms import (
     basic_english_normalize,
     TextSequentialTransforms,
+    sentencepiece_tokenizer,
+    load_sp_model,
 )
 from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.functional import (
@@ -25,12 +24,11 @@ from torchtext.vocab import FastText
 import argparse
 from torchtext.experimental.datasets.raw import text_classification as raw
 import time
-from dataset import BatchTextClassificationData
-from torchtext.data.functional import load_sp_model
+from torch.utils.data import DataLoader
 
 
 def build_sp_pipeline(spm_file):
-    tokenizer = PretrainedSPTokenizer(load_sp_model(spm_file))
+    tokenizer = sentencepiece_tokenizer(spm_file)
     vocab = PretrainedSPVocab(load_sp_model(spm_file))
 
     # Insert token in vocab to match a pretrained vocab
@@ -52,8 +50,8 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
                 yield token
 
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    pipeline = sequential_transforms(tokenizer_func(tokenizer), vocab_func(vocab))
-    return iterate_batch(pipeline), None, None
+    pipeline = sequential_transforms(tokenizer, vocab_func(vocab))
+    return pipeline, None, None
 
 
 def build_experimental_torchtext_pipeline(hf_vocab_file):
@@ -69,7 +67,6 @@ def build_experimental_torchtext_pipeline(hf_vocab_file):
 def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
-    from transforms import TextClassificationPipeline
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
@@ -78,9 +75,8 @@ def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
                 yield token
 
     vocab = build_vocab_from_iterator(token_iterator(vocab_file))
-    text_pipeline = sequential_transforms(tokenizer, vocab_func(vocab))
-    label_pipeline = totensor(dtype=torch.long)
-    return TextClassificationPipeline(label_pipeline, text_pipeline), None, None
+    text_pipeline = sequential_transforms(tokenizer_func(tokenizer), vocab_func(vocab))
+    return text_pipeline, None, None
 
 
 def build_legacy_pytext_vocab_pipeline(vocab_file):
@@ -106,7 +102,7 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
         sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
         vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
         vocab_list.insert(0, "<unk>")
-        pipeline = TextSequentialTransforms(tokenizer_func(tokenizer),
+        pipeline = TextSequentialTransforms(tokenizer,
                                             PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
         jit_pipeline = torch.jit.script(pipeline.to_ivalue())
         print('jit legacy PyText pipeline success!')
@@ -138,7 +134,7 @@ def build_legacy_fasttext_vector_pipeline():
     tokenizer = get_tokenizer("basic_english")
     vector = FastText()
 
-    pipeline = sequential_transforms(tokenizer_func(tokenizer), vector_func(vector))
+    pipeline = sequential_transforms(tokenizer, vector.get_vecs_by_tokens)
     return pipeline, None, None
 
 
@@ -155,25 +151,24 @@ def build_experimental_fasttext_vector_pipeline():
 
 def run_benchmark_lookup(text_classification_dataset, pipeline):
     t0 = time.monotonic()
-    lines = [text for (label, text) in text_classification_dataset]
-    lines = pipeline(lines)
+    for (label, text) in text_classification_dataset:
+        text = pipeline(text)
     print("Lookup time:", time.monotonic() - t0)
 
 
 def run_batch_benchmark_lookup(text_classification_dataset, pipeline):
+    def collate_fn(data_batch):
+        return [text for (label, text) in data_batch]
+    dataloader = DataLoader(text_classification_dataset, batch_size=16, shuffle=True, collate_fn=collate_fn)
     t0 = time.monotonic()
-    for items in text_classification_dataset:
-        items = list(map(pipeline, items))
+    for lines in dataloader:
+        lines = pipeline(lines)
     print("Lookup time:", time.monotonic() - t0)
 
 
 def generate_dataset(args):
-    if args.pipeline == 'legacy_batch_torchtext':
-        train = BatchTextClassificationData(args.dataset)
-        test = None
-    else:
-        train, test = raw.DATASETS[args.dataset]()
-    return train, test
+    train, test = raw.DATASETS[args.dataset]()
+    return [_data for _data in train], [_data for _data in test]
 
 
 if __name__ == "__main__":

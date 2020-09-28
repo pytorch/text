@@ -125,8 +125,8 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
         jit_v = torch.jit.script(v.to_ivalue())
 
-        tokens = [['b', 'a', 'c']]
-        expected_indices = [[2, 1, 3]]
+        tokens = ['b', 'a', 'c']
+        expected_indices = [2, 1, 3]
 
         self.assertEqual(v(tokens), expected_indices)
         self.assertEqual(jit_v(tokens), expected_indices)

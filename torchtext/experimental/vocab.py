@@ -10,6 +10,12 @@ from torchtext._torchtext import (
     _load_vocab_from_raw_text_file
 )
 
+__all__ = [
+    'vocab_from_raw_text_file',
+    'vocab_from_file',
+    'vocab',
+    'Vocab',
+]
 logger = logging.getLogger(__name__)
 
 
@@ -129,18 +135,15 @@ class Vocab(nn.Module):
         return not isinstance(self.vocab, VocabPybind)
 
     @torch.jit.export
-    def forward(self, tokens_list: List[List[str]]) -> List[List[int]]:
+    def forward(self, tokens: List[str]) -> List[int]:
         r"""Calls the `lookup_indices` method
         Args:
-            tokens (List[List[str]]): a list of tokens used to lookup their corresponding `indices`.
+            tokens (List[str]): a list of tokens used to lookup their corresponding `indices`.
 
         Returns:
-            indices (List[List[int]]): the 'indices` associated with a list of tokens`.
+            indices (List[int]): the 'indices` associated with a list of tokens`.
         """
-        ids: List[List[int]] = []
-        for tokens in tokens_list:
-            ids.append(self.vocab.lookup_indices(tokens))
-        return ids
+        return self.vocab.lookup_indices(tokens)
 
     @torch.jit.export
     def __len__(self) -> int:

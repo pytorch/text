@@ -1,9 +1,14 @@
 import torch
+from test.common.assets import get_asset_path
 from test.common.torchtext_test_case import TorchtextTestCase
-from ..common.assets import get_asset_path
 from torchtext.experimental.transforms import (
+    basic_english_normalize,
     VectorTransform,
+    VocabTransform,
+    sentencepiece_processor,
+    sentencepiece_tokenizer,
 )
+from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
 import shutil
 import tempfile
@@ -11,6 +16,33 @@ import os
 
 
 class TestTransforms(TorchtextTestCase):
+    def test_sentencepiece_processor(self):
+        model_path = get_asset_path('spm_example.model')
+        spm_transform = sentencepiece_processor(model_path)
+        jit_spm_transform = torch.jit.script(spm_transform.to_ivalue())
+        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
+                       144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
+        self.assertEqual(spm_transform(test_sample), ref_results)
+        self.assertEqual(jit_spm_transform(test_sample), ref_results)
+        self.assertEqual(spm_transform.decode(ref_results), test_sample)
+        self.assertEqual(jit_spm_transform.decode(ref_results), test_sample)
+
+    def test_sentencepiece_tokenizer(self):
+        model_path = get_asset_path('spm_example.model')
+        spm_tokenizer = sentencepiece_tokenizer(model_path)
+        jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
+        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+                       '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+                       '\u2581to', 'ken', 'izer', '\u2581and',
+                       '\u2581de', 'to', 'ken', 'izer']
+
+        self.assertEqual(spm_tokenizer(test_sample), ref_results)
+        self.assertEqual(spm_tokenizer.decode(ref_results), test_sample)
+        self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
+        self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
+
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'
         asset_path = get_asset_path(asset_name)
@@ -23,5 +55,5 @@ class TestTransforms(TorchtextTestCase):
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = torch.tensor([[-0.065334, -0.093031, -0.017571],
                                                         [-0.32423, -0.098845, -0.0073467]])
-            self.assertEqual(vector_transform([['the', 'world']])[0][:, 0:3], expected_fasttext_simple_en)
-            self.assertEqual(jit_vector_transform([['the', 'world']])[0][:, 0:3], expected_fasttext_simple_en)
+            self.assertEqual(vector_transform(['the', 'world'])[:, 0:3], expected_fasttext_simple_en)
+            self.assertEqual(jit_vector_transform(['the', 'world'])[:, 0:3], expected_fasttext_simple_en)

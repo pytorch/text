@@ -8,10 +8,10 @@ from ..functional import vocab_func, totensor, sequential_transforms
 
 
 def build_vocab(data, transforms, index):
-    tok_list = []
-    for line in data:
-        tok_list.append(transforms(line[index]))
-    return build_vocab_from_iterator(tok_list)
+    def apply_transforms(data):
+        for line in data:
+            yield transforms(line[index])
+    return build_vocab_from_iterator(apply_transforms(data))
 
 
 def _setup_datasets(dataset_name,
@@ -37,10 +37,10 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    train, val, test = DATASETS[dataset_name](train_filenames=train_filenames,
-                                              valid_filenames=valid_filenames,
-                                              test_filenames=test_filenames,
-                                              root=root)
+    train, val, test = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                                  valid_filenames=valid_filenames,
+                                                  test_filenames=test_filenames,
+                                                  root=root)
     raw_data = {
         "train": [line for line in train],
         "valid": [line for line in val],
@@ -96,6 +96,7 @@ class TranslationDataset(torch.utils.data.Dataset):
              - WMT14
              - IWSLT
     """
+
     def __init__(self, data, vocab, transforms):
         """Initiate translation dataset.
 
@@ -235,6 +236,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            train_filenames=train_filenames,
                            valid_filenames=valid_filenames,
                            test_filenames=test_filenames,
+                           data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
@@ -431,6 +433,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            train_filenames=train_filenames,
                            valid_filenames=valid_filenames,
                            test_filenames=test_filenames,
+                           data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
@@ -542,10 +545,11 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            train_filenames=train_filenames,
                            valid_filenames=valid_filenames,
                            test_filenames=test_filenames,
+                           data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
                            vocab=vocab,
                            removed_tokens=removed_tokens)
 
 
-DATASETS = {'Multi30k': raw.Multi30k, 'IWSLT': raw.IWSLT, 'WMT14': raw.WMT14}
+DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}

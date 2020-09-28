@@ -80,12 +80,20 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(spm_generator([test_sample]))[0],
                          ref_results)
 
+    def test_sentencepiece_unsupported_input_type(self):
+        with self.assertRaisesRegex(
+            TypeError,
+            'Unsupported type for spm argument: dict. '
+            'Supported types are: str, io.BufferedReader'
+        ):
+            load_sp_model(dict())
+
     # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_BasicEnglishNormalize(self):
-        test_sample = ['\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:']
-        ref_results = [["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-                        'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']]
+        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
         basic_eng_norm = basic_english_normalize()
         experimental_eager_tokens = basic_eng_norm(test_sample)
@@ -94,7 +102,7 @@ class TestFunctional(TorchtextTestCase):
         experimental_jit_tokens = jit_basic_eng_norm(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
-        eager_tokens = [basic_english_tokenizer(test_sample[0])]
+        eager_tokens = basic_english_tokenizer(test_sample)
 
         assert not basic_eng_norm.is_jitable
         assert basic_eng_norm.to_ivalue().is_jitable
@@ -114,9 +122,9 @@ class TestFunctional(TorchtextTestCase):
     # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_RegexTokenizer(self):
-        test_sample = ['\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:']
-        ref_results = [["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
-                        'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']]
+        test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
+                       'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
         patterns_list = [
             (r'\'', ' \'  '),
             (r'\"', ''),
