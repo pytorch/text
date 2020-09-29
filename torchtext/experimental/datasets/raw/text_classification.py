@@ -1,6 +1,6 @@
-import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     'AG_NEWS':
@@ -29,38 +29,6 @@ def _create_data_from_csv(data_path):
         reader = unicode_csv_reader(f)
         for row in reader:
             yield int(row[0]), ' '.join(row[1:])
-
-
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
-
-    def __init__(self, iterator):
-        """Initiate text-classification dataset.
-        """
-        super(RawTextIterableDataset, self).__init__()
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = 0
-        self.num_lines = None
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if self.num_lines is not None and i == (self.start + self.num_lines):
-                break
-
-    def get_iterator(self):
-        return self._iterator
 
 
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
@@ -252,7 +220,7 @@ def generate_imdb_data(key, extracted_files):
             continue
         elif key in fname and ('pos' in fname or 'neg' in fname):
             with io.open(fname, encoding="utf8") as f:
-                label = 1 if 'pos' in fname else 0
+                label = 'pos' if 'pos' in fname else 'neg'
                 yield label, f.read()
 
 
@@ -279,7 +247,14 @@ def IMDB(root='.data', data_select=('train', 'test')):
         raise TypeError('data_select is not supported!')
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
+<<<<<<< HEAD
     return tuple(RawTextIterableDataset(generate_imdb_data(item, extracted_files)) for item in data_select)
+=======
+    train_iter = generate_imdb_data('train', extracted_files)
+    test_iter = generate_imdb_data('test', extracted_files)
+    return (RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], train_iter),
+            RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], test_iter))
+>>>>>>> master
 
 
 DATASETS = {
@@ -292,4 +267,15 @@ DATASETS = {
     'AmazonReviewPolarity': AmazonReviewPolarity,
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
+}
+NUM_LINES = {
+    'AG_NEWS': 120000,
+    'SogouNews': 450000,
+    'DBpedia': 560000,
+    'YelpReviewPolarity': 560000,
+    'YelpReviewFull': 650000,
+    'YahooAnswers': 1400000,
+    'AmazonReviewPolarity': 3600000,
+    'AmazonReviewFull': 3000000,
+    'IMDB': 25000
 }

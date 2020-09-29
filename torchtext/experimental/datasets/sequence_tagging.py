@@ -18,7 +18,7 @@ def build_vocab(data):
         for idx, col in enumerate(line):
             data_list[idx].append(col)
     for it in data_list:
-        vocabs.append(build_vocab_from_iterator(it))
+        vocabs.append(build_vocab_from_iterator(it, len(it)))
 
     return vocabs
 
