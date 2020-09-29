@@ -13,9 +13,8 @@ def build_vocab(data, fn):
     return build_vocab_from_iterator(
         DataLoader(data,
                    collate_fn=fn,
-                   num_workers=torch.get_num_threads(),
-                   batch_size=1000),
-        num_lines=len(data) // 1000
+                   num_workers=torch.get_num_threads()),
+        num_lines=len(data)
     )
 
 
