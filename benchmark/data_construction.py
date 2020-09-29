@@ -23,5 +23,5 @@ def benchmark_raw_construction(name, Dataset):
 
 
 if __name__ == "__main__":
-    for name, Dataset in datasets.translation.DATASETS.items():
+    for name, Dataset in datasets.DATASETS.items():
         benchmark_construction(name, Dataset)
