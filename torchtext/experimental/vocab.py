@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, List
 import warnings
-
+from collections import Counter, OrderedDict
 import torch
 import torch.nn as nn
 from torchtext._torchtext import (
@@ -75,6 +75,25 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
     """
     vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
+
+
+def build_vocab_from_iterator(iterator, min_freq=1, unk_token='<unk>'):
+    """
+    Build a Vocab from an iterator.
+    Arguments:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+            Values less than 1 will be set to 1. Default: 1.
+        unk_token: The default unknown token to use. Default: '<unk>'.
+    """
+
+    counter = Counter()
+    for tokens in iterator:
+        counter.update(tokens)
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+    ordered_dict = OrderedDict(sorted_by_freq_tuples)
+    word_vocab = vocab(ordered_dict, min_freq=min_freq, unk_token=unk_token)
+    return word_vocab
 
 
 def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
