@@ -95,7 +95,7 @@ def regex_tokenizer(patterns_list):
 
 
 class BasicEnglishNormalize(nn.Module):
-    __ignored_properties__ = ["is_jitable"]
+    __jit_unused_properties__ = ["is_jitable"]
     r"""Basic normalization for a string sentence.
 
     Args:
@@ -127,7 +127,7 @@ class BasicEnglishNormalize(nn.Module):
 
 
 class RegexTokenizer(nn.Module):
-    __ignored_properties__ = ["is_jitable"]
+    __jit_unused_properties__ = ["is_jitable"]
     r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
 
     Args:
