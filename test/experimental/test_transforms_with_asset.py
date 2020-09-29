@@ -6,6 +6,7 @@ from torchtext.experimental.transforms import (
     basic_english_normalize,
     VocabTransform,
     PRETRAINED_SP_MODEL,
+    sentencepiece_processor,
     TextSequentialTransforms,
 )
 from torchtext.experimental.vocab import (
