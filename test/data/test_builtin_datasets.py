@@ -137,6 +137,7 @@ class TestDataset(TorchtextTestCase):
             de_vocab[token] for token in
             'Zwei Männer verpacken Donuts in Kunststofffolie'.split()
         ]
+        print(de_tokens_ids)
         self.assertEqual(de_tokens_ids, [19, 29, 18703, 4448, 5, 6240])
 
         en_tokens_ids = [

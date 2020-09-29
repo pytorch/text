@@ -1,4 +1,3 @@
-import torch
 import logging
 
 from torchtext.experimental.datasets import raw
@@ -21,8 +20,7 @@ def _setup_datasets(dataset_name,
                     data_select=('train', 'valid', 'test'),
                     root='.data',
                     vocab=(None, None),
-                    tokenizer=None,
-                    removed_tokens=['<unk>']):
+                    tokenizer=None):
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
@@ -143,8 +141,8 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              tokenizer=None,
              root='.data',
              vocab=(None, None),
-             data_select=('train', 'valid', 'test'),
-             removed_tokens=['<unk>']):
+             data_select=('train', 'valid', 'test')):
+
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
 
@@ -171,7 +169,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
+
         The available dataset include:
             test_2016_flickr.cs
             test_2016_flickr.de
@@ -239,8 +237,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
-                           vocab=vocab,
-                           removed_tokens=removed_tokens)
+                           vocab=vocab)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -251,8 +248,8 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           tokenizer=None,
           root='.data',
           vocab=(None, None),
-          data_select=('train', 'valid', 'test'),
-          removed_tokens=['<unk>']):
+          data_select=('train', 'valid', 'test')):
+
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -280,7 +277,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
+
         The available datasets include:
             IWSLT16.TED.dev2010.ar-en.ar
             IWSLT16.TED.dev2010.ar-en.en
@@ -436,8 +433,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
-                           vocab=vocab,
-                           removed_tokens=removed_tokens)
+                           vocab=vocab)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -449,8 +445,8 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           tokenizer=None,
           root='.data',
           vocab=(None, None),
-          data_select=('train', 'valid', 'test'),
-          removed_tokens=['<unk>']):
+          data_select=('train', 'valid', 'test')):
+
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -528,7 +524,6 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        removed_tokens: removed tokens from output dataset (Default: '<unk>')
 
     Examples:
         >>> from torchtext.datasets import WMT14
@@ -548,8 +543,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            data_select=data_select,
                            tokenizer=tokenizer,
                            root=root,
-                           vocab=vocab,
-                           removed_tokens=removed_tokens)
+                           vocab=vocab)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}
