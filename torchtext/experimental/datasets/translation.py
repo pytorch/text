@@ -6,13 +6,17 @@ from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
 from collections import Counter
+from torch.utils.data import DataLoader
 
 
-def build_vocab(data, transforms, index):
-    def apply_transforms(data):
-        for line in data:
-            yield transforms(line[index])
-    return build_vocab_from_iterator(apply_transforms(data), len(data))
+def build_vocab(data, fn):
+    return build_vocab_from_iterator(
+        DataLoader(data,
+                   collate_fn=fn,
+                   num_workers=torch.get_num_threads(),
+                   batch_size=1000),
+        num_lines=len(data) // 1000
+    )
 
 
 def _setup_datasets(dataset_name,
@@ -37,38 +41,32 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    train, val, test = raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                                  valid_filenames=valid_filenames,
-                                                  test_filenames=test_filenames,
-                                                  root=root)
 
-    def fn(lines):
+    def get_iter():
+        return raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                          valid_filenames=valid_filenames,
+                                          test_filenames=test_filenames,
+                                          root=root)
+    train, valid, test = get_iter()
+
+    def src_fn(lines):
         counter = Counter()
         for src, _ in lines:
             counter.update(src_tokenizer(src))
         return counter
 
-    print("START num_workers: ", torch.get_num_threads())
-    import time
-    t0 = time.perf_counter()
-    vocab = build_vocab_from_iterator(torch.utils.data.DataLoader(train, collate_fn=fn, num_workers=torch.get_num_threads(), batch_size=1000), num_lines=len(train) // 1000)
-    print('time.perf_counter - t0: ', time.perf_counter - t0)
-    import pdb; pdb.set_trace()
-    raw_data = {
-        "train": [line for line in train],
-        "valid": [line for line in val],
-        "test": [line for line in test]
-    }
-    src_text_vocab_transform = sequential_transforms(src_tokenizer)
-    tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
+    def tgt_fn(lines):
+        counter = Counter()
+        for _, tgt in lines:
+            counter.update(tgt_tokenizer(tgt))
+        return counter
 
     if src_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building src Vocab based on train data')
-        src_vocab = build_vocab(raw_data["train"],
-                                src_text_vocab_transform,
-                                index=0)
+        src_vocab = build_vocab(train, src_fn)
+        train, _, _ = get_iter()
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
@@ -78,15 +76,22 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building tgt Vocab based on train data')
-        tgt_vocab = build_vocab(raw_data["train"],
-                                tgt_text_vocab_transform,
-                                index=1)
+        tgt_vocab = build_vocab(train, tgt_fn)
+        train, _, _ = get_iter()
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
     logging.info('tgt Vocab has {} entries'.format(len(tgt_vocab)))
 
+    raw_data = {
+        "train": [line for line in train],
+        "valid": [line for line in val],
+        "test": [line for line in test]
+    }
+
     logging.info('Building datasets for {}'.format(data_select))
+    src_text_vocab_transform = sequential_transforms(src_tokenizer)
+    tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
     datasets = []
     for key in data_select:
         src_text_transform = sequential_transforms(src_text_vocab_transform,
@@ -157,7 +162,6 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              root='.data',
              vocab=(None, None),
              data_select=('train', 'valid', 'test')):
-
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
 
@@ -264,7 +268,6 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           root='.data',
           vocab=(None, None),
           data_select=('train', 'valid', 'test')):
-
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -461,7 +464,6 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           root='.data',
           vocab=(None, None),
           data_select=('train', 'valid', 'test')):
-
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
         The available datasets include:
