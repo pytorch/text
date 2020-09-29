@@ -8,9 +8,8 @@ def build_vocab(data, transforms):
     def apply_transforms(data):
         for line in data:
             tokens = transforms(line)
-            if len(tokens) > 0:
-                yield tokens
-    return build_vocab_from_iterator(apply_transforms(data))
+            yield tokens
+    return build_vocab_from_iterator(apply_transforms(data), len(data))
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):

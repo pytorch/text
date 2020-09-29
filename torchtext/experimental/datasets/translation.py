@@ -10,7 +10,7 @@ def build_vocab(data, transforms, index):
     def apply_transforms(data):
         for line in data:
             yield transforms(line[index])
-    return build_vocab_from_iterator(apply_transforms(data))
+    return build_vocab_from_iterator(apply_transforms(data), len(data))
 
 
 def _setup_datasets(dataset_name,
