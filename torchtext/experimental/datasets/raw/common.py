@@ -24,7 +24,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
                 raise RuntimeError("Given iterator doesn't support DataLoader.")
             chunk = int(self.num_lines / worker_info.num_workers)
             self.start = chunk * worker_info.id
-            num_lines = chunk
+            self.num_lines = chunk
             if worker_info.id == worker_info.num_workers - 1:
                 # The last worker needs to pick up some extra lines
                 # if the number of lines aren't exactly divisible
@@ -52,9 +52,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
             yield item
 
     def __len__(self):
-        if self.has_setup:
-            return self.num_lines
-        return self.full_num_lines
+        return self.num_lines
 
     def get_iterator(self):
         return self.iterator

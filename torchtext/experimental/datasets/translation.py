@@ -5,6 +5,7 @@ from torchtext.experimental.datasets import raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
+from collections import Counter
 
 
 def build_vocab(data, transforms, index):
@@ -40,6 +41,19 @@ def _setup_datasets(dataset_name,
                                                   valid_filenames=valid_filenames,
                                                   test_filenames=test_filenames,
                                                   root=root)
+
+    def fn(lines):
+        counter = Counter()
+        for src, _ in lines:
+            counter.update(src_tokenizer(src))
+        return counter
+
+    print("START num_workers: ", torch.get_num_threads())
+    import time
+    t0 = time.perf_counter()
+    vocab = build_vocab_from_iterator(torch.utils.data.DataLoader(train, collate_fn=fn, num_workers=torch.get_num_threads(), batch_size=1000), num_lines=len(train) // 1000)
+    print('time.perf_counter - t0: ', time.perf_counter - t0)
+    import pdb; pdb.set_trace()
     raw_data = {
         "train": [line for line in train],
         "valid": [line for line in val],
