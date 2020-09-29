@@ -43,11 +43,13 @@ def _setup_datasets(dataset_name,
             "or None")
 
     def get_iter():
-        return raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                          valid_filenames=valid_filenames,
-                                          test_filenames=test_filenames,
-                                          root=root)
-    train, valid, test = get_iter()
+        train, valid, test = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                                        valid_filenames=valid_filenames,
+                                                        test_filenames=test_filenames,
+                                                        root=root)
+        return {"train": train, "valid": valid, "test": test}
+
+    data_iter = get_iter()
 
     def src_fn(lines):
         counter = Counter()
@@ -65,8 +67,8 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building src Vocab based on train data')
-        src_vocab = build_vocab(train, src_fn)
-        train, _, _ = get_iter()
+        src_vocab = build_vocab(data_iter["train"], src_fn)
+        data_iter["train"] = get_iter()["train"]
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
@@ -76,32 +78,24 @@ def _setup_datasets(dataset_name,
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
         logging.info('Building tgt Vocab based on train data')
-        tgt_vocab = build_vocab(train, tgt_fn)
-        train, _, _ = get_iter()
+        tgt_vocab = build_vocab(data_iter["train"], tgt_fn)
+        data_iter["train"] = get_iter()["train"]
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
     logging.info('tgt Vocab has {} entries'.format(len(tgt_vocab)))
 
-    raw_data = {
-        "train": [line for line in train],
-        "valid": [line for line in val],
-        "test": [line for line in test]
-    }
-
     logging.info('Building datasets for {}'.format(data_select))
-    src_text_vocab_transform = sequential_transforms(src_tokenizer)
-    tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
     datasets = []
     for key in data_select:
-        src_text_transform = sequential_transforms(src_text_vocab_transform,
+        src_text_transform = sequential_transforms(src_tokenizer,
                                                    vocab_func(src_vocab),
                                                    totensor(dtype=torch.long))
-        tgt_text_transform = sequential_transforms(tgt_text_vocab_transform,
+        tgt_text_transform = sequential_transforms(tgt_tokenizer,
                                                    vocab_func(tgt_vocab),
                                                    totensor(dtype=torch.long))
         datasets.append(
-            TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
+            TranslationDataset(list(data_iter[key]), (src_vocab, tgt_vocab),
                                (src_text_transform, tgt_text_transform)))
 
     return tuple(datasets)
