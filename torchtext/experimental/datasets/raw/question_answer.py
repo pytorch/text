@@ -1,6 +1,6 @@
-import torch
 from torchtext.utils import download_from_url
 import json
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     'SQuAD1':
@@ -28,35 +28,6 @@ def _create_data_from_json(data_path):
                     yield (_context, _question, _answers, _answer_start)
 
 
-class RawQuestionAnswerDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw question answer iterable datasets.
-    """
-
-    def __init__(self, iterator):
-        """Initiate text-classification dataset.
-        """
-        super(RawQuestionAnswerDataset, self).__init__()
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = 0
-        self.num_lines = None
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if self.num_lines is not None and i == (self.start + self.num_lines):
-                break
-
-
 def _setup_datasets(dataset_name, root='.data'):
     extracted_files = []
     select_to_index = {'train': 0, 'dev': 1}
@@ -64,8 +35,8 @@ def _setup_datasets(dataset_name, root='.data'):
                                          root=root) for key in select_to_index.keys()]
     train_iter = _create_data_from_json(extracted_files[0])
     dev_iter = _create_data_from_json(extracted_files[1])
-    return (RawQuestionAnswerDataset(train_iter),
-            RawQuestionAnswerDataset(dev_iter))
+    return (RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], train_iter),
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], dev_iter))
 
 
 def SQuAD1(*args, **kwargs):
@@ -91,4 +62,8 @@ def SQuAD2(*args, **kwargs):
 DATASETS = {
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2
+}
+NUM_LINES = {
+    'SQuAD1': 87599,
+    'SQuAD2': 130319
 }
