@@ -2,6 +2,7 @@ import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
+from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
@@ -76,11 +77,7 @@ def _setup_datasets(
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
     text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
-
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(("train", "test"))):
-        raise TypeError("Given data selection {} is not supported!".format(data_select))
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
     train, test = raw.DATASETS[dataset_name](root=root)
     # Cache raw text iterable dataset
     raw_data = {

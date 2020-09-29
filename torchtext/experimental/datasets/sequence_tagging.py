@@ -1,5 +1,5 @@
 import torch
-
+from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
@@ -27,11 +27,7 @@ def _setup_datasets(dataset_name,
                     root=".data",
                     vocabs=None,
                     data_select=("train", "valid", "test")):
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(("train", "valid", "test"))):
-        raise TypeError("Given data selection {} is not supported!".format(data_select))
-
+    data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
     if dataset_name == 'UDPOS':
         train, val, test = raw.DATASETS[dataset_name](root=root)
     elif dataset_name == 'CoNLL2000Chunking':
