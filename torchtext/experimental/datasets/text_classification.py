@@ -77,7 +77,7 @@ def _setup_datasets(
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
     text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
-    data_select = check_default_set(data_select, target_select=('train', 'test'))
+    data_select = check_default_set(data_select, ('train', 'test'))
     train, test = raw.DATASETS[dataset_name](root=root)
     # Cache raw text iterable dataset
     raw_data = {

@@ -66,7 +66,7 @@ def _setup_datasets(dataset_name,
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
-    data_select = check_default_set(data_select, target_select=('train', 'dev'))
+    data_select = check_default_set(data_select, ('train', 'dev'))
     train, dev = raw.DATASETS[dataset_name](root=root)
     raw_data = {'train': [item for item in train],
                 'dev': [item for item in dev]}

@@ -1,6 +1,6 @@
 import torch
 import logging
-
+from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
@@ -22,6 +22,7 @@ def _setup_datasets(dataset_name,
                     root='.data',
                     vocab=(None, None),
                     tokenizer=None):
+    data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')

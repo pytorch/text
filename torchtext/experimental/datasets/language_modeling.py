@@ -66,7 +66,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
-    data_select = check_default_set(data_select, target_select=('train', 'test', 'valid'))
+    data_select = check_default_set(data_select, ('train', 'test', 'valid'))
 
     if not single_line and dataset_name != 'WikiText103':
         raise TypeError('single_line must be True except for WikiText103')

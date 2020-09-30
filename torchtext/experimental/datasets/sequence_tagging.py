@@ -27,7 +27,7 @@ def _setup_datasets(dataset_name,
                     root=".data",
                     vocabs=None,
                     data_select=("train", "valid", "test")):
-    data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
+    data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     if dataset_name == 'UDPOS':
         train, val, test = raw.DATASETS[dataset_name](root=root)
     elif dataset_name == 'CoNLL2000Chunking':
