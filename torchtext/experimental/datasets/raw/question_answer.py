@@ -37,7 +37,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'dev')):
     select_to_index = {'train': 0, 'dev': 1}
     extracted_files = [download_from_url(URLS[dataset_name][select_to_index[key]],
                                          root=root) for key in select_to_index.keys()]
-    return tuple(RawTextIterableDataset(_create_data_from_json(extracted_files[select_to_index[item]])) for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _create_data_from_json(extracted_files[select_to_index[item]])) for item in data_select)
 
 
 def SQuAD1(*args, **kwargs):

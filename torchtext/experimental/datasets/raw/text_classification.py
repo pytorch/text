@@ -44,7 +44,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
             cvs_path['train'] = fname
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
-    return tuple(RawTextIterableDataset(_create_data_from_csv(cvs_path[item])) for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _create_data_from_csv(cvs_path[item])) for item in data_select)
 
 
 def AG_NEWS(*args, **kwargs):
