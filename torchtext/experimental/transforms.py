@@ -453,7 +453,7 @@ class Pad(nn.Module):
         the dtype of output padded tensor.
 
         Args:
-            tensor_list: a list of torch.tensor. Type: List[Tensor]
+            tensor_list: a list of 1-D torch.tensor. Type: List[Tensor]
 
         Outputs:
             padded_sequence, padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
@@ -463,7 +463,13 @@ class Pad(nn.Module):
             the position of non-pad values and a value of True in the position of pads. len(tensor_list) is the number
             of input sequences and max_seq_len is the maximum length of the input sequences.
         """
-        max_seq_len = max([seq.size(0) for seq in tensor_list])
+        seq_len = []
+        for seq in tensor_list:
+            if seq.dim() == 1:
+                seq_len.append(seq.size(0))
+            else:
+                raise RuntimeError("Pad transform supports 1-D torch.tensor only")
+        max_seq_len = max(seq_len)
         padding_mask = torch.zeros(len(tensor_list), max_seq_len)
         for idx, seq in enumerate(tensor_list):
             padding_mask[idx][seq.size(0):] = 1.0
