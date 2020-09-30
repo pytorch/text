@@ -28,3 +28,8 @@ torchtext.experimental.vocab
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: vocab_from_raw_text_file
+
+:hidden:`build_vocab_from_iterator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: build_vocab_from_iterator
