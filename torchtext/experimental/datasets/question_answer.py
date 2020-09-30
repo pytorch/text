@@ -108,8 +108,7 @@ def SQuAD1(*args, **kwargs):
             could also choose any one of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
-            data. Note: we follow the convention of Stanford Question Answering datasets
-            and split the data with the names of 'train' and 'dev'.
+            data.
 
     Examples:
         >>> from torchtext.experimental.datasets import SQuAD1
@@ -143,8 +142,7 @@ def SQuAD2(*args, **kwargs):
             could also choose any one of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
-            data. Note: we follow the convention of Stanford Question Answering datasets
-            and split the data with the names of 'train' and 'dev'.
+            data.
 
     Examples:
         >>> from torchtext.experimental.datasets import SQuAD2
