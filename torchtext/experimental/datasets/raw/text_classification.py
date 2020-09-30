@@ -247,7 +247,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
         raise TypeError('data_select is not supported!')
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], generate_imdb_data(item, extracted_files)) for item in data_select)
+    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], generate_imdb_data(item, extracted_files)) for item in data_select)
 
 
 DATASETS = {
