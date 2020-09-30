@@ -5,7 +5,7 @@ def check_default_set(data_select, target_select):
     if isinstance(data_select, str):
         data_select = (data_select)
     if not set(data_select).issubset(set(target_select)):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+        raise TypeError('A subset of data selection {} is supported!'.format(target_select))
     return data_select
 
 
