@@ -435,8 +435,8 @@ class Pad(nn.Module):
     Example:
         >>> pad_id = 2
         >>> pad_transform = Pad(pad_id)
-        >>> seq_batch = [torch.tensor([5, 4, 5, 6, 7]), torch.tensor([1, 3]), torch.tensor([7, 5, 8])]
-        >>> pad_seq, padding_mask = pad_transform(seq_batch)
+        >>> tensor_list = [torch.tensor([5, 4, 5, 6, 7]), torch.tensor([1, 3]), torch.tensor([7, 5, 8])]
+        >>> pad_seq, padding_mask = pad_transform(tensor_list)
         >>> jit_pad_transform = torch.jit.script(pad_transform)
     """
 
@@ -446,28 +446,28 @@ class Pad(nn.Module):
         self.return_key_padding_mask = return_key_padding_mask
 
     @torch.jit.export
-    def forward(self, seq_batch: List[Tensor]) -> Tuple[torch.Tensor, Optional[Tensor]]:
+    def forward(self, tensor_list: List[Tensor]) -> Tuple[torch.Tensor, Optional[Tensor]]:
         r"""Pad a list of tensors in the dim of (seq_dim, ...). The individual tensor has different length
         (i.e. seq_dim) such that the padding function will add padding id to the end of list for the same length. It
         assumes that the dimensions after seq_dim of the tensors are same. And the tensors have same dtype, which is
         the dtype of output padded tensor.
 
         Args:
-            seq_batch: a list of torch.tensor. Type: List[Tensor]
+            tensor_list: a list of torch.tensor. Type: List[Tensor]
 
         Outputs:
             padded_sequence, padding_mask Type: Tuple[torch.Tensor, Optional[Tensor]]
 
         Note:
-            The padding_mask tensor has the same shape [len(seq_batch), max_seq_len], with a value of False in
-            the position of non-pad values and a value of True in the position of pads. len(seq_batch) is the number
+            The padding_mask tensor has the same shape [len(tensor_list), max_seq_len], with a value of False in
+            the position of non-pad values and a value of True in the position of pads. len(tensor_list) is the number
             of input sequences and max_seq_len is the maximum length of the input sequences.
         """
-        max_seq_len = max([seq.size(0) for seq in seq_batch])
-        padding_mask = torch.zeros(len(seq_batch), max_seq_len)
-        for idx, seq in enumerate(seq_batch):
+        max_seq_len = max([seq.size(0) for seq in tensor_list])
+        padding_mask = torch.zeros(len(tensor_list), max_seq_len)
+        for idx, seq in enumerate(tensor_list):
             padding_mask[idx][seq.size(0):] = 1.0
-        output_batch = torch.nn.utils.rnn.pad_sequence(seq_batch, batch_first=True, padding_value=float(self.pad_id))
+        output_batch = torch.nn.utils.rnn.pad_sequence(tensor_list, batch_first=True, padding_value=float(self.pad_id))
         if self.return_key_padding_mask:
             return output_batch, padding_mask.to(torch.bool)
         else:
