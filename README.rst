@@ -7,7 +7,7 @@
 .. image:: https://img.shields.io/badge/dynamic/json.svg?label=docs&url=https%3A%2F%2Fpypi.org%2Fpypi%2Ftorchtext%2Fjson&query=%24.info.version&colorB=brightgreen&prefix=v
     :target: https://pytorch.org/text/
 
-torchtext
+Torchtext
 +++++++++
 
 This repository consists of:
@@ -15,13 +15,13 @@ This repository consists of:
 * `torchtext.data <#data>`_: Generic data loaders, abstractions, and iterators for text (including vocabulary and word vectors)
 * `torchtext.datasets <#datasets>`_: Pre-built loaders for common NLP datasets
 
-Note: we are currently re-designing the torchtext library to make it more compatible with pytorch (e.g. ``torch.utils.data``). Several datasets have been written with the new abstractions in `torchtext.experimental <https://github.com/pytorch/text/tree/master/torchtext/experimental>`_ folder. We also created an issue to discuss the new abstraction, and users are welcome to leave feedback `link <https://github.com/pytorch/text/issues/664>`_. 
+Note: We are currently re-designing the torchtext library to make it more compatible with pytorch (e.g. ``torch.utils.data``). Several datasets have been written with the new abstractions in `torchtext.experimental <https://github.com/pytorch/text/tree/master/torchtext/experimental> folder. We also created an issue to discuss the new abstraction, and users are welcome to leave feedback link <https://github.com/pytorch/text/issues/664> . 
 
 
 Installation
 ============
 
-We recommend Anaconda as Python package management system. Please refer to `pytorch.org <https://pytorch.org/>`_ for the detail of PyTorch installation. The following is the corresponding ``torchtext`` versions and supported Python versions.
+We recommend Anaconda as Python package management system. Please refer to `pytorch.org <https://pytorch.org/> for the detail of PyTorch installation. The following is the corresponding ``torchtext`` versions and supported Python versions.
 
 .. csv-table:: Version Compatibility
    :header: "PyTorch version", "torchtext version", "Supported Python version"
@@ -40,6 +40,7 @@ Using pip;::
 
     pip install torchtext
 
+
 Optional requirements
 ---------------------
 
@@ -48,13 +49,14 @@ If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need 
     pip install spacy
     python -m spacy download en
 
-Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
+Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>(split from NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
     pip install sacremoses
 
 For torchtext 0.5 and below, ``sentencepiece``::
 
     conda install -c powerai sentencepiece
+
 
 Building from source
 --------------------
@@ -70,14 +72,14 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
 **Note**
 
 When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
-If you are using nightly build of PyTorch, checkout the environment it was built `here (conda) <https://github.com/pytorch/builder/tree/master/conda>`_ and `here (pip) <https://github.com/pytorch/builder/tree/master/manywheel>`_.
+If you are using nightly build of PyTorch, checkout the environment it was built `here (conda) <https://github.com/pytorch/builder/tree/master/conda>`_ and `here (pip) <https://github.com/pytorch/builder/tree/master/manywheel>.
 
-Documentation
+**Documentation**
 =============
 
-Find the documentation `here <https://pytorch.org/text/>`_.
+Find the documentation `here <https://pytorch.org/text/>.
 
-Data
+**Data**
 ====
 
 The data module provides the following:
@@ -95,6 +97,7 @@ The data module provides the following:
       ...    path='data/sentiment/train.json', format='json',
       ...    fields={'sentence_tokenized': ('text', data.Field(sequential=True)),
       ...            'sentiment_gold': ('labels', data.Field(sequential=False))})
+      
 
 * Ability to define a preprocessing pipeline:
 
@@ -144,7 +147,7 @@ The data module provides the following:
       >>> TEXT.build_vocab(train)
       >>> LABELS.build_vocab(train)
 
-Datasets
+**Datasets**
 ========
 
 The datasets module currently contains:
@@ -164,7 +167,7 @@ Others are planned or a work in progress:
 
 See the ``test`` directory for examples of dataset usage.
 
-Experimental Code
+**Experimental Code**
 =================
 
 We have re-written several datasets under ``torchtext.experimental.datasets``:
@@ -177,7 +180,8 @@ A new pattern is introduced in `Release v0.5.0 <https://github.com/pytorch/text/
 * Unsupervised learning dataset: Enwik9
 * Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull
 
-Disclaimer on Datasets
+
+**Disclaimer on Datasets**
 ======================
 
 This is a utility library that downloads and prepares public datasets. We do not host or distribute these datasets, vouch for their quality or fairness, or claim that you have license to use the dataset. It is your responsibility to determine whether you have permission to use the dataset under the dataset's license.
