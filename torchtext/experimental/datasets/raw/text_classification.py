@@ -1,10 +1,12 @@
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
+        {'train': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv',
+         'test': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/test.csv'},
     'SogouNews':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
     'DBpedia':
@@ -32,12 +34,12 @@ def _create_data_from_csv(data_path):
 
 
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('data_select is not supported!')
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
+    if dataset_name == 'AG_NEWS':
+        extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
     cvs_path = {}
     for fname in extracted_files:
         if fname.endswith('train.csv'):
@@ -241,10 +243,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test'))):
-        raise TypeError('data_select is not supported!')
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
     return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], generate_imdb_data(item, extracted_files)) for item in data_select)
