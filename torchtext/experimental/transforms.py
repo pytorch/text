@@ -463,7 +463,7 @@ class Pad(nn.Module):
             the position of non-pad values and a value of True in the position of pads. len(tensor_list) is the number
             of input sequences and max_seq_len is the maximum length of the input sequences.
         """
-        seq_len = []
+        seq_len: List[int] = []
         for seq in tensor_list:
             if seq.dim() == 1:
                 seq_len.append(seq.size(0))
