@@ -4,7 +4,8 @@ from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
+        {'train': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv',
+         'test': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/test.csv'},
     'SogouNews':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
     'DBpedia':
@@ -32,9 +33,11 @@ def _create_data_from_csv(data_path):
 
 
 def _setup_datasets(dataset_name, root='.data'):
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
-
+    if dataset_name == 'AG_NEWS':
+        extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
     for fname in extracted_files:
         if fname.endswith('train.csv'):
             train_csv_path = fname
