@@ -52,7 +52,7 @@ class TestDataset(TorchtextTestCase):
         cachefile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
         conditional_remove(cachefile)
 
-        train_dataset, test_dataset, valid_dataset = WikiText2()
+        train_dataset, valid_dataset, test_dataset = WikiText2()
         self.assertEqual(len(train_dataset), 2049990)
         self.assertEqual(len(test_dataset), 241859)
         self.assertEqual(len(valid_dataset), 214417)
@@ -80,7 +80,7 @@ class TestDataset(TorchtextTestCase):
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
-        train_dataset, test_dataset, valid_dataset = PennTreebank()
+        train_dataset, valid_dataset, test_dataset = PennTreebank()
         self.assertEqual(len(train_dataset), 924412)
         self.assertEqual(len(test_dataset), 82114)
         self.assertEqual(len(valid_dataset), 73339)
@@ -137,6 +137,7 @@ class TestDataset(TorchtextTestCase):
             de_vocab[token] for token in
             'Zwei Männer verpacken Donuts in Kunststofffolie'.split()
         ]
+        print(de_tokens_ids)
         self.assertEqual(de_tokens_ids, [19, 29, 18703, 4448, 5, 6240])
 
         en_tokens_ids = [

@@ -1,4 +1,3 @@
-import torch
 import logging
 
 from torchtext.experimental.datasets import raw
@@ -18,7 +17,7 @@ def _setup_datasets(dataset_name,
                     train_filenames,
                     valid_filenames,
                     test_filenames,
-                    data_select=('train', 'test', 'valid'),
+                    data_select=('train', 'valid', 'test'),
                     root='.data',
                     vocab=(None, None),
                     tokenizer=None):

@@ -61,7 +61,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
-                    data_select=('train', 'test', 'valid'), single_line=True):
+                    data_select=('train', 'valid', 'test'), single_line=True):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
@@ -72,6 +72,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
 
     if not single_line and dataset_name != 'WikiText103':
         raise TypeError('single_line must be True except for WikiText103')
+
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
