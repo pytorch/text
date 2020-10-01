@@ -98,14 +98,14 @@ class TestFunctional(TorchtextTestCase):
         basic_eng_norm = basic_english_normalize()
         experimental_eager_tokens = basic_eng_norm(test_sample)
 
-        jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())
+        jit_basic_eng_norm = torch.jit.script(basic_eng_norm)
         experimental_jit_tokens = jit_basic_eng_norm(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
         eager_tokens = basic_english_tokenizer(test_sample)
 
         assert not basic_eng_norm.is_jitable
-        assert basic_eng_norm.to_ivalue().is_jitable
+        assert basic_eng_norm.__prepare_scriptable__().is_jitable
 
         self.assertEqual(experimental_jit_tokens, ref_results)
         self.assertEqual(eager_tokens, ref_results)
@@ -113,7 +113,7 @@ class TestFunctional(TorchtextTestCase):
 
         # test load and save
         save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
-        torch.save(basic_eng_norm.to_ivalue(), save_path)
+        torch.save(basic_eng_norm, save_path)
         loaded_basic_eng_norm = torch.load(save_path)
 
         loaded_eager_tokens = loaded_basic_eng_norm(test_sample)
@@ -142,18 +142,18 @@ class TestFunctional(TorchtextTestCase):
         r_tokenizer = regex_tokenizer(patterns_list)
         eager_tokens = r_tokenizer(test_sample)
 
-        jit_r_tokenizer = torch.jit.script(r_tokenizer.to_ivalue())
+        jit_r_tokenizer = torch.jit.script(r_tokenizer)
         jit_tokens = jit_r_tokenizer(test_sample)
 
         assert not r_tokenizer.is_jitable
-        assert r_tokenizer.to_ivalue().is_jitable
+        assert r_tokenizer.__prepare_scriptable__().is_jitable
 
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(jit_tokens, ref_results)
 
         # test load and save
         save_path = os.path.join(self.test_dir, 'regex.pt')
-        torch.save(r_tokenizer.to_ivalue(), save_path)
+        torch.save(r_tokenizer, save_path)
         loaded_r_tokenizer = torch.load(save_path)
 
         loaded_eager_tokens = loaded_r_tokenizer(test_sample)

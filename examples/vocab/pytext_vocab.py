@@ -199,7 +199,7 @@ class ScriptVocab(Vocab):
                         unk_idx += 1
         return result
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         r"""Return a JITable ScriptVocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)

@@ -67,7 +67,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
             print("Loading from raw text file with basic_english_normalize tokenizer")
             for _ in range(num_iters):
                 tokenizer = basic_english_normalize()
-                jited_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+                jited_tokenizer = torch.jit.script(tokenizer)
                 vocab_from_raw_text_file(f, jited_tokenizer, num_cpus=1)
             print("Construction time:", time.monotonic() - t0)
     else:
@@ -140,7 +140,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
         t0 = time.monotonic()
         v_experimental = VocabExperimental(ordered_dict)
         print("Construction time:", time.monotonic() - t0)
-    jit_v_experimental = torch.jit.script(v_experimental.to_ivalue())
+    jit_v_experimental = torch.jit.script(v_experimental)
 
     # existing Vocab eager lookup
     print("Vocab - Eager Mode")
@@ -154,7 +154,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     _run_benchmark_lookup([tokens], v_experimental)
     _run_benchmark_lookup(tokens_lists, v_experimental)
 
-    jit_v_experimental = torch.jit.script(v_experimental.to_ivalue())
+    jit_v_experimental = torch.jit.script(v_experimental)
     # experimental Vocab jit lookup
     print("Vocab Experimental - Jit Mode")
     _run_benchmark_lookup(tokens, jit_v_experimental)

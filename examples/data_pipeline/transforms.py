@@ -24,7 +24,7 @@ class PretrainedSPVocab(nn.Module):
     def insert_token(self, token: str, index: int) -> None:
         self.vocab.insert_token(token, index)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         if hasattr(self.vocab, 'to_ivalue'):
             sp_model = self.sp_model
             new_module = PretrainedSPVocab(sp_model)
@@ -57,7 +57,7 @@ class PyTextScriptVocabTransform(nn.Module):
     def forward(self, tokens: List[str]) -> List[int]:
         return self.vocab.lookup_indices_1d(tokens)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         if hasattr(self.vocab, 'to_ivalue'):
             vocab = self.vocab.to_ivalue()
             return PyTextScriptVocabTransform(vocab)

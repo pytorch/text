@@ -276,7 +276,7 @@ class Vectors(nn.Module):
 
         return self.vectors.lookup_vectors(tokens)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         r"""Return a JITable Vectors.
         """
         stoi = self.vectors.get_stoi()
