@@ -1,11 +1,11 @@
 import torch
-from test.common.torchtext_test_case import TorchtextTestCase
 from test.common.assets import get_asset_path
+from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.transforms import (
     VectorTransform,
-    VocabTransform,
+    sentencepiece_processor,
+    sentencepiece_tokenizer,
 )
-from torchtext.experimental.vocab import vocab_from_file
 from torchtext.experimental.vectors import FastText
 import shutil
 import tempfile
@@ -13,16 +13,32 @@ import os
 
 
 class TestTransforms(TorchtextTestCase):
-    def test_vocab_transform(self):
-        asset_name = 'vocab_test2.txt'
-        asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            vocab_transform = VocabTransform(vocab_from_file(f))
-            self.assertEqual(vocab_transform(['of', 'that', 'new']),
-                             [7, 18, 24])
-            jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
-            self.assertEqual(jit_vocab_transform(['of', 'that', 'new', 'that']),
-                             [7, 18, 24, 18])
+    def test_sentencepiece_processor(self):
+        model_path = get_asset_path('spm_example.model')
+        spm_transform = sentencepiece_processor(model_path)
+        jit_spm_transform = torch.jit.script(spm_transform.to_ivalue())
+        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
+                       144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
+        self.assertEqual(spm_transform(test_sample), ref_results)
+        self.assertEqual(jit_spm_transform(test_sample), ref_results)
+        self.assertEqual(spm_transform.decode(ref_results), test_sample)
+        self.assertEqual(jit_spm_transform.decode(ref_results), test_sample)
+
+    def test_sentencepiece_tokenizer(self):
+        model_path = get_asset_path('spm_example.model')
+        spm_tokenizer = sentencepiece_tokenizer(model_path)
+        jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
+        test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
+                       '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
+                       '\u2581to', 'ken', 'izer', '\u2581and',
+                       '\u2581de', 'to', 'ken', 'izer']
+
+        self.assertEqual(spm_tokenizer(test_sample), ref_results)
+        self.assertEqual(spm_tokenizer.decode(ref_results), test_sample)
+        self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
+        self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'

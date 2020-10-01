@@ -1,6 +1,5 @@
-import torch
-
 from torchtext.utils import download_from_url, extract_archive
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     "UDPOS":
@@ -64,43 +63,12 @@ def _setup_datasets(dataset_name, separator, root=".data"):
     for key in data_filenames.keys():
         if data_filenames[key] is not None:
             datasets.append(
-                RawSequenceTaggingIterableDataset(
-                    _create_data_from_iob(data_filenames[key], separator)))
+                RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
+                                       _create_data_from_iob(data_filenames[key], separator)))
         else:
             datasets.append(None)
 
     return datasets
-
-
-class RawSequenceTaggingIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text sequence tagging iterable datasets.
-    """
-    def __init__(self, iterator):
-        super(RawSequenceTaggingIterableDataset).__init__()
-
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = 0
-        self.num_lines = None
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if (self.num_lines is not None) and (i == (self.start +
-                                                       self.num_lines)):
-                break
-
-    def get_iterator(self):
-        return self._iterator
 
 
 def UDPOS(*args, **kwargs):
@@ -133,4 +101,12 @@ def CoNLL2000Chunking(*args, **kwargs):
     return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
 
 
-DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
+DATASETS = {
+    "UDPOS": UDPOS,
+    "CoNLL2000Chunking": CoNLL2000Chunking
+}
+
+NUM_LINES = {
+    "UDPOS": 12543,
+    "CoNLL2000Chunking": 8936
+}

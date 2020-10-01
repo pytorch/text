@@ -1,10 +1,11 @@
-import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 
 URLS = {
     'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
+        {'train': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv',
+         'test': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/test.csv'},
     'SogouNews':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
     'DBpedia':
@@ -31,42 +32,12 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
-
-    def __init__(self, iterator):
-        """Initiate text-classification dataset.
-        """
-        super(RawTextIterableDataset, self).__init__()
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = 0
-        self.num_lines = None
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if self.num_lines is not None and i == (self.start + self.num_lines):
-                break
-
-    def get_iterator(self):
-        return self._iterator
-
-
 def _setup_datasets(dataset_name, root='.data'):
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
-
+    if dataset_name == 'AG_NEWS':
+        extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
     for fname in extracted_files:
         if fname.endswith('train.csv'):
             train_csv_path = fname
@@ -75,8 +46,8 @@ def _setup_datasets(dataset_name, root='.data'):
 
     train_iter = _create_data_from_csv(train_csv_path)
     test_iter = _create_data_from_csv(test_csv_path)
-    return (RawTextIterableDataset(train_iter),
-            RawTextIterableDataset(test_iter))
+    return (RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], train_iter),
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], test_iter))
 
 
 def AG_NEWS(*args, **kwargs):
@@ -221,7 +192,7 @@ def generate_imdb_data(key, extracted_files):
             continue
         elif key in fname and ('pos' in fname or 'neg' in fname):
             with io.open(fname, encoding="utf8") as f:
-                label = 1 if 'pos' in fname else 0
+                label = 'pos' if 'pos' in fname else 'neg'
                 yield label, f.read()
 
 
@@ -243,8 +214,8 @@ def IMDB(root='.data'):
     extracted_files = extract_archive(dataset_tar)
     train_iter = generate_imdb_data('train', extracted_files)
     test_iter = generate_imdb_data('test', extracted_files)
-    return (RawTextIterableDataset(train_iter),
-            RawTextIterableDataset(test_iter))
+    return (RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], train_iter),
+            RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], test_iter))
 
 
 DATASETS = {
@@ -257,4 +228,15 @@ DATASETS = {
     'AmazonReviewPolarity': AmazonReviewPolarity,
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
+}
+NUM_LINES = {
+    'AG_NEWS': 120000,
+    'SogouNews': 450000,
+    'DBpedia': 560000,
+    'YelpReviewPolarity': 560000,
+    'YelpReviewFull': 650000,
+    'YahooAnswers': 1400000,
+    'AmazonReviewPolarity': 3600000,
+    'AmazonReviewFull': 3000000,
+    'IMDB': 25000
 }
