@@ -120,9 +120,9 @@ def _setup_datasets(dataset_name,
                     train_filenames,
                     valid_filenames,
                     test_filenames,
-                    data_select=('train', 'test', 'valid'),
+                    data_select=('train', 'valid', 'test'),
                     root='.data'):
-    data_select = check_default_set(data_select, ('train', 'test', 'valid'))
+    data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
