@@ -90,7 +90,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
                  for item in data_select)
 
 
-def WikiText2(*args, **kwargs):
+def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -127,10 +127,10 @@ def WikiText2(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("WikiText2",) + args), **kwargs)
+    return _setup_datasets("WikiText2", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
 
 
-def WikiText103(*args, **kwargs):
+def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -167,10 +167,10 @@ def WikiText103(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("WikiText103",) + args), **kwargs)
+    return _setup_datasets("WikiText103", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
 
 
-def PennTreebank(*args, **kwargs):
+def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -207,10 +207,10 @@ def PennTreebank(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+    return _setup_datasets("PennTreebank", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
 
 
-def WMTNewsCrawl(*args, **kwargs):
+def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
     """ Defines WMTNewsCrawl datasets.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -224,7 +224,7 @@ def WMTNewsCrawl(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train',))
         single_line: whether to return all tokens in a single line.
             (Default: True)
@@ -238,7 +238,7 @@ def WMTNewsCrawl(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
+    return _setup_datasets("WMTNewsCrawl", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
 
 
 DATASETS = {
