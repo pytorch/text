@@ -89,7 +89,7 @@ def _setup_datasets(dataset_name,
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 
-def SQuAD1(*args, **kwargs):
+def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
     """ Defines SQuAD1 datasets.
 
     Create question answer dataset: SQuAD1
@@ -120,10 +120,10 @@ def SQuAD1(*args, **kwargs):
         >>> train, dev = SQuAD1(tokenizer=tokenizer)
     """
 
-    return _setup_datasets(*(('SQuAD1',) + args), **kwargs)
+    return _setup_datasets('SQuAD1', root=root, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
 
 
-def SQuAD2(*args, **kwargs):
+def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
     """ Defines SQuAD2 datasets.
 
     Create question answer dataset: SQuAD2
@@ -153,7 +153,7 @@ def SQuAD2(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
-    return _setup_datasets(*(('SQuAD2',) + args), **kwargs)
+    return _setup_datasets('SQuAD2', root=root, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
 
 
 DATASETS = {
