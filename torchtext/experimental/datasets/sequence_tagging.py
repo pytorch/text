@@ -31,7 +31,7 @@ def _setup_datasets(dataset_name,
     raw_iter_tuple = raw.DATASETS[dataset_name](root=root, data_select=data_select)
     raw_data = {}
     for name, raw_iter in zip(data_select, raw_iter_tuple):
-        raw_data[name] = list(train)
+        raw_data[name] = list(raw_iter)
 
     if vocabs is None:
         if "train" not in data_select:
