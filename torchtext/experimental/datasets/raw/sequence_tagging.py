@@ -1,5 +1,6 @@
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     "UDPOS":
@@ -39,10 +40,7 @@ def _construct_filepath(paths, file_suffix):
 
 
 def _setup_datasets(dataset_name, separator, root=".data", data_select=('train', 'valid', 'test')):
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'valid', 'test'))):
-        raise TypeError('data_select is not supported!')
+    data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
         for f in URLS[dataset_name]:
