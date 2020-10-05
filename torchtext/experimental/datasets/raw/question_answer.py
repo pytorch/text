@@ -1,6 +1,7 @@
 from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'SQuAD1':
@@ -29,10 +30,7 @@ def _create_data_from_json(data_path):
 
 
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'dev')):
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'dev'))):
-        raise TypeError('data_select is not supported!')
+    data_select = check_default_set(data_select, ('train', 'dev'))
     extracted_files = []
     select_to_index = {'train': 0, 'dev': 1}
     extracted_files = [download_from_url(URLS[dataset_name][select_to_index[key]],
