@@ -28,16 +28,10 @@ def _setup_datasets(dataset_name,
                     vocabs=None,
                     data_select=("train", "valid", "test")):
     data_select = check_default_set(data_select, ('train', 'valid', 'test'))
-    if dataset_name == 'UDPOS':
-        train, val, test = raw.DATASETS[dataset_name](root=root)
-    elif dataset_name == 'CoNLL2000Chunking':
-        train, test = raw.DATASETS[dataset_name](root=root)
-        val = None
-    raw_data = {
-        "train": [line for line in train] if train and 'train' in data_select else None,
-        "valid": [line for line in val] if val and 'valid' in data_select else None,
-        "test": [line for line in test] if test and 'test' in data_select else None
-    }
+    raw_iter_tuple = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_data = {}
+    for name, raw_iter in zip(data_select, raw_iter_tuple):
+        raw_data[name] = list(train)
 
     if vocabs is None:
         if "train" not in data_select:
@@ -63,7 +57,7 @@ def _setup_datasets(dataset_name,
                               totensor(dtype=torch.long))
         for idx in range(len(vocabs))
     ]
-    return tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in data_select if raw_data[item] is not None)
+    return tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in data_select)
 
 
 class SequenceTaggingDataset(torch.utils.data.Dataset):
