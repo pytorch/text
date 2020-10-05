@@ -197,7 +197,7 @@ def vectors(tokens, vectors, unk_tensor=None):
 
 
 class Vectors(nn.Module):
-    __ignored_properties__ = ["is_jitable"]
+    __jit_unused_properties__ = ["is_jitable"]
     r"""Creates a vectors object which maps tokens to vectors.
     Args:
         vectors (torch.classes.torchtext.Vectors or torchtext._torchtext.Vectors): a cpp vectors object.
