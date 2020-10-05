@@ -109,7 +109,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         return self.vocabs
 
 
-def UDPOS(*args, **kwargs):
+def UDPOS(root=".data", vocabs=None, data_select=("train", "valid", "test")):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training, validation, and test dataset
@@ -131,10 +131,10 @@ def UDPOS(*args, **kwargs):
         >>> from torchtext.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets(*(("UDPOS", ) + args), **kwargs)
+    return _setup_datasets("UDPOS", root, vocabs, data_select)
 
 
-def CoNLL2000Chunking(*args, **kwargs):
+def CoNLL2000Chunking(root=".data", vocabs=None, data_select=("train", "test")):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
@@ -156,10 +156,7 @@ def CoNLL2000Chunking(*args, **kwargs):
         >>> from torchtext.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    if 'data_select' in kwargs:
-        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
-    else:
-        return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **dict(kwargs, data_select=('train', 'test')))
+    return _setup_datasets("CoNLL2000Chunking", root, vocabs, data_select)
 
 
 DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
