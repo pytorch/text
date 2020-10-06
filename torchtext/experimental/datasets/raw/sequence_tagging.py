@@ -59,7 +59,9 @@ def _setup_datasets(dataset_name, separator, root=".data", data_select=('train',
         "valid": _construct_filepath(extracted_files, "dev.txt"),
         "test": _construct_filepath(extracted_files, "test.txt")
     }
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _create_data_from_iob(data_filenames[item], separator)) if data_filenames[item] is not None else None for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
+                 _create_data_from_iob(data_filenames[item], separator))
+                 if data_filenames[item] is not None else None for item in data_select)
 
 
 def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
