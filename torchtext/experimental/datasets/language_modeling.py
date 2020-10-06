@@ -216,7 +216,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
     return _setup_datasets("PennTreebank", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
 
 
-def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train'), single_line=True, year=None, language=None):
+def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train'), single_line=True, year=2010, language='en'):
     """ Defines WMTNewsCrawl datasets.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -247,7 +247,7 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train')
 
     """
 
-    return _setup_datasets("WMTNewsCrawl", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
+    return _setup_datasets("WMTNewsCrawl", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line, year=year, language=language)
 
 
 DATASETS = {
