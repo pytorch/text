@@ -62,7 +62,7 @@ def _setup_datasets(dataset_name, separator, root=".data", data_select=('train',
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _create_data_from_iob(data_filenames[item], separator)) if data_filenames[item] is not None else None for item in data_select)
 
 
-def UDPOS(*args, **kwargs):
+def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training and test dataset
@@ -77,7 +77,7 @@ def UDPOS(*args, **kwargs):
         >>> from torchtext.experimental.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets(*(("UDPOS", "\t") + args), **kwargs)
+    return _setup_datasets("UDPOS", "\t", root=root, data_select=data_select)
 
 
 def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
