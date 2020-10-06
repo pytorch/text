@@ -50,7 +50,7 @@ def _setup_datasets(dataset_name, root='.data'):
             RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], test_iter))
 
 
-def AG_NEWS(*args, **kwargs):
+def AG_NEWS(root='.data'):
     """ Defines AG_NEWS datasets.
 
     Create supervised learning dataset: AG_NEWS
@@ -64,10 +64,10 @@ def AG_NEWS(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
 
-    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
+    return _setup_datasets("AG_NEWS", root=root)
 
 
-def SogouNews(*args, **kwargs):
+def SogouNews(root='.data'):
     """ Defines SogouNews datasets.
 
     Create supervised learning dataset: SogouNews
@@ -81,10 +81,10 @@ def SogouNews(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
 
-    return _setup_datasets(*(("SogouNews",) + args), **kwargs)
+    return _setup_datasets("SogouNews", root=root)
 
 
-def DBpedia(*args, **kwargs):
+def DBpedia(root='.data'):
     """ Defines DBpedia datasets.
 
     Create supervised learning dataset: DBpedia
@@ -98,10 +98,10 @@ def DBpedia(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
 
-    return _setup_datasets(*(("DBpedia",) + args), **kwargs)
+    return _setup_datasets("DBpedia", root=root)
 
 
-def YelpReviewPolarity(*args, **kwargs):
+def YelpReviewPolarity(root='.data'):
     """ Defines YelpReviewPolarity datasets.
 
     Create supervised learning dataset: YelpReviewPolarity
@@ -115,10 +115,10 @@ def YelpReviewPolarity(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
 
-    return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
+    return _setup_datasets("YelpReviewPolarity", root=root)
 
 
-def YelpReviewFull(*args, **kwargs):
+def YelpReviewFull(root='.data'):
     """ Defines YelpReviewFull datasets.
 
     Create supervised learning dataset: YelpReviewFull
@@ -132,10 +132,10 @@ def YelpReviewFull(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
 
-    return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
+    return _setup_datasets("YelpReviewFull", root=root)
 
 
-def YahooAnswers(*args, **kwargs):
+def YahooAnswers(root='.data'):
     """ Defines YahooAnswers datasets.
 
     Create supervised learning dataset: YahooAnswers
@@ -149,10 +149,10 @@ def YahooAnswers(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
 
-    return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
+    return _setup_datasets("YahooAnswers", root=root)
 
 
-def AmazonReviewPolarity(*args, **kwargs):
+def AmazonReviewPolarity(root='.data'):
     """ Defines AmazonReviewPolarity datasets.
 
     Create supervised learning dataset: AmazonReviewPolarity
@@ -166,10 +166,10 @@ def AmazonReviewPolarity(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
 
-    return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
+    return _setup_datasets("AmazonReviewPolarity", root=root)
 
 
-def AmazonReviewFull(*args, **kwargs):
+def AmazonReviewFull(root='.data'):
     """ Defines AmazonReviewFull datasets.
 
     Create supervised learning dataset: AmazonReviewFull
@@ -183,7 +183,7 @@ def AmazonReviewFull(*args, **kwargs):
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
 
-    return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
+    return _setup_datasets("AmazonReviewFull", root=root)
 
 
 def generate_imdb_data(key, extracted_files):

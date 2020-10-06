@@ -39,24 +39,24 @@ def _setup_datasets(dataset_name, root='.data'):
             RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], dev_iter))
 
 
-def SQuAD1(*args, **kwargs):
+def SQuAD1(root='.data'):
     """ Defines SQuAD1 datasets.
 
     Examples:
         >>> train, dev = torchtext.experimental.datasets.raw.SQuAD1()
     """
 
-    return _setup_datasets(*(("SQuAD1",) + args), **kwargs)
+    return _setup_datasets("SQuAD1", root=root)
 
 
-def SQuAD2(*args, **kwargs):
+def SQuAD2(root='.data'):
     """ Defines SQuAD2 datasets.
 
     Examples:
         >>> train, dev = torchtext.experimental.datasets.raw.SQuAD2()
     """
 
-    return _setup_datasets(*(("SQuAD2",) + args), **kwargs)
+    return _setup_datasets("SQuAD2", root=root)
 
 
 DATASETS = {
