@@ -19,11 +19,6 @@ def conditional_remove(f):
 class TestDataset(TorchtextTestCase):
     def test_wikitext2_legacy(self):
         from torchtext.datasets import WikiText2
-        # smoke test to ensure wikitext2 works properly
-
-        # NOTE
-        # test_wikitext2 and test_wikitext2_legacy have some cache incompatibility.
-        # Keeping one's cache make the other fail. So we need to clean up the cache dir
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
         conditional_remove(cachedir)
 
@@ -41,11 +36,6 @@ class TestDataset(TorchtextTestCase):
 
     def test_wikitext2(self):
         from torchtext.experimental.datasets import WikiText2
-        # smoke test to ensure wikitext2 works properly
-
-        # NOTE
-        # test_wikitext2 and test_wikitext2_legacy have some cache incompatibility.
-        # Keeping one's cache make the other fail. So we need to clean up the cache dir
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
         conditional_remove(cachedir)
         cachefile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
