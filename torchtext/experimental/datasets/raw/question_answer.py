@@ -29,7 +29,7 @@ def _create_data_from_json(data_path):
                     yield (_context, _question, _answers, _answer_start)
 
 
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'dev')):
+def _setup_datasets(dataset_name, root, data_select):
     data_select = check_default_set(data_select, ('train', 'dev'))
     extracted_files = {key: download_from_url(URLS[dataset_name][key],
                                               root=root) for key in data_select}
@@ -37,7 +37,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'dev')):
                  _create_data_from_json(extracted_files[item])) for item in data_select)
 
 
-def SQuAD1(*args, **kwargs):
+def SQuAD1(root='.data', data_select=('train', 'dev')):
     """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD1.0.
     The iterator yields a tuple of (raw context, raw question, a list of raw answer, a list of answer positions in the raw context).
     For example, ('Architecturally, the school has a Catholic character. Atop the ...',
@@ -57,10 +57,10 @@ def SQuAD1(*args, **kwargs):
         >>>     print(idx, (context, question, answer, ans_pos))
     """
 
-    return _setup_datasets(*(("SQuAD1",) + args), **kwargs)
+    return _setup_datasets("SQuAD1", root, data_select)
 
 
-def SQuAD2(*args, **kwargs):
+def SQuAD2(root='.data', data_select=('train', 'dev')):
     """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD2.0.
     The iterator yields a tuple of (raw context, raw question, a list of raw answer, a list of answer positions in the raw context).
     For example, ('Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an ...',
@@ -80,7 +80,7 @@ def SQuAD2(*args, **kwargs):
         >>>     print(idx, (context, question, answer, ans_pos))
     """
 
-    return _setup_datasets(*(("SQuAD2",) + args), **kwargs)
+    return _setup_datasets("SQuAD2", root, data_select)
 
 
 DATASETS = {

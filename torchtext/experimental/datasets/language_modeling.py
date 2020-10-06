@@ -61,8 +61,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
-                    data_select=('train', 'test', 'valid'), single_line=True):
+def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_line, year, language):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
@@ -73,7 +72,10 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
+        if dataset_name == 'WMTNewsCrawl':
+            raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',), year=year, language=language)
+        else:
+            raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
         vocab = build_vocab(raw_train, tokenizer)
 
     def text_transform(line):
@@ -81,14 +83,17 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
 
     raw_data = {}
     for name in data_select:
-        raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name)
+        if dataset_name == 'WMTNewsCrawl':
+            raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name, year=year, language=language)
+        else:
+            raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name)
         raw_data[name] = [text_transform(txt) for txt in raw_data[name]]
 
     return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
                  for item in data_select)
 
 
-def WikiText2(*args, **kwargs):
+def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid')):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -109,10 +114,6 @@ def WikiText2(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        single_line: whether to return all tokens in a single line.
-            (Default: True)
-            By default, all lines in raw text file are concatenated into a single line.
-            Use `single_line = False` if one wants to get data line by line.
 
     Examples:
         >>> from torchtext.experimental.datasets import WikiText2
@@ -124,11 +125,10 @@ def WikiText2(*args, **kwargs):
                                        data_select='valid')
 
     """
+    return _setup_datasets("WikiText2", tokenizer, root, vocab, data_select, True, None, None)
 
-    return _setup_datasets(*(("WikiText2",) + args), **kwargs)
 
-
-def WikiText103(*args, **kwargs):
+def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -165,10 +165,10 @@ def WikiText103(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("WikiText103",) + args), **kwargs)
+    return _setup_datasets("WikiText103", tokenizer, root, vocab, data_select, single_line, None, None)
 
 
-def PennTreebank(*args, **kwargs):
+def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid')):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -189,10 +189,6 @@ def PennTreebank(*args, **kwargs):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        single_line: whether to return all tokens in a single line.
-            (Default: True)
-            By default, all lines in raw text file are concatenated into a single line.
-            Use `single_line = False` if one wants to get data line by line.
 
     Examples:
         >>> from torchtext.experimental.datasets import PennTreebank
@@ -205,10 +201,10 @@ def PennTreebank(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+    return _setup_datasets("PennTreebank", tokenizer, root, vocab, data_select, True, None, None)
 
 
-def WMTNewsCrawl(*args, **kwargs):
+def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train'), year=2010, language='en'):
     """ Defines WMTNewsCrawl datasets.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -222,12 +218,11 @@ def WMTNewsCrawl(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
+        data_select: a string or tuple for the returned datasets
             (Default: ('train',))
-        single_line: whether to return all tokens in a single line.
-            (Default: True)
-            By default, all lines in raw text file are concatenated into a single line.
-            Use `single_line = False` if one wants to get data line by line.
+        year: the year of the dataset (Default: 2010)
+        language: the language of the dataset (Default: 'en')
+
     Examples:
         >>> from torchtext.experimental.datasets import WMTNewsCrawl
         >>> from torchtext.data.utils import get_tokenizer
@@ -236,7 +231,7 @@ def WMTNewsCrawl(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
+    return _setup_datasets("WMTNewsCrawl", tokenizer, root, vocab, data_select, True, year, language)
 
 
 DATASETS = {
