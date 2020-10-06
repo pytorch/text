@@ -61,7 +61,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
 
 def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
-                    data_select=('train', 'test', 'valid'), single_line=True):
+                    data_select=('train', 'test', 'valid'), single_line=True, year=None, language=None):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
@@ -83,7 +83,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
 
     raw_data = {}
     for name in data_select:
-        raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name)
+        raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name, year=year, language=language)
         raw_data[name] = [text_transform(txt) for txt in raw_data[name]]
 
     return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
@@ -210,7 +210,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
     return _setup_datasets("PennTreebank", tokenizer=tokenizer, root=root, vocab=vocab, data_select=data_select, single_line=single_line)
 
 
-def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
+def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train'), single_line=True, year=None, language=None):
     """ Defines WMTNewsCrawl datasets.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -230,6 +230,9 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train',
             (Default: True)
             By default, all lines in raw text file are concatenated into a single line.
             Use `single_line = False` if one wants to get data line by line.
+        year: the year of the dataset (Default: 2010)
+        language: the language of the dataset (Default: 'en')
+
     Examples:
         >>> from torchtext.experimental.datasets import WMTNewsCrawl
         >>> from torchtext.data.utils import get_tokenizer

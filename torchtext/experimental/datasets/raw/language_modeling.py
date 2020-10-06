@@ -138,7 +138,7 @@ def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets.
             (Default: 'train')
-        year: the year of the data (Default: 2010)
+        year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
     """
 
