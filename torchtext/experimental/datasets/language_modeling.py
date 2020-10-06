@@ -229,6 +229,8 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train')
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, data_select='train')
 
+    Note: unlike other language modeling datasets, WMTNewsCrawl provides a single dataset based on the year and language. There
+        is no concept of train/valid/test for this case.
     """
 
     return _setup_datasets("WMTNewsCrawl", tokenizer, root, vocab, data_select, True, year, language)
