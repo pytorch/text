@@ -4,7 +4,6 @@ import os
 import glob
 import shutil
 import torchtext.data as data
-from torchtext.experimental.datasets import AG_NEWS
 import torch
 from ..common.torchtext_test_case import TorchtextTestCase
 
@@ -64,6 +63,10 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachedir)
         conditional_remove(cachefile)
 
+        # Add test for the subset of the standard datasets
+        train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
+        train_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
+
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
@@ -89,9 +92,13 @@ class TestDataset(TorchtextTestCase):
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
         self.assertEqual(tokens_ids, [2, 2550, 3344, 1125])
 
-    def test_text_classification(self):
-        # smoke test to ensure ag_news dataset works properly
+        # Add test for the subset of the standard datasets
+        train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
+        train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
 
+    def test_text_classification(self):
+        from torchtext.experimental.datasets import AG_NEWS
+        # smoke test to ensure ag_news dataset works properly
         datadir = os.path.join(self.project_root, ".data")
         if not os.path.exists(datadir):
             os.makedirs(datadir)
@@ -102,6 +109,10 @@ class TestDataset(TorchtextTestCase):
                          torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053]).long())
         self.assertEqual(ag_news_test[-1][1][:10],
                          torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786]).long())
+
+        # Add test for the subset of the standard datasets
+        train_dataset, = AG_NEWS(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.AG_NEWS(data_select=('train'))
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
@@ -123,6 +134,10 @@ class TestDataset(TorchtextTestCase):
         old_vocab = train_dataset.get_vocab()
         new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
+
+        # Add test for the subset of the standard datasets
+        train_dataset, = IMDB(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.IMDB(data_select=('train'))
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
@@ -155,6 +170,10 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data",
                                 "multi30k_task*.tar.gz")
         conditional_remove(datafile)
+
+        # Add test for the subset of the standard datasets
+        train_dataset, = Multi30k(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
 
     def test_udpos_sequence_tagging(self):
         from torchtext.experimental.datasets import UDPOS
@@ -214,6 +233,10 @@ class TestDataset(TorchtextTestCase):
         tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
         self.assertEqual(tokens_ids, [1206, 8, 69, 60, 157, 452])
 
+        # Add test for the subset of the standard datasets
+        train_dataset, = UDPOS(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.UDPOS(data_select=('train'))
+
     def test_conll_sequence_tagging(self):
         from torchtext.experimental.datasets import CoNLL2000Chunking
 
@@ -258,6 +281,10 @@ class TestDataset(TorchtextTestCase):
         tokens_ids = [word_vocab[token] for token in 'Two of them were being run'.split()]
         self.assertEqual(tokens_ids, [970, 5, 135, 43, 214, 690])
 
+        # Add test for the subset of the standard datasets
+        train_dataset, = CoNLL2000Chunking(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.CoNLL2000Chunking(data_select=('train'))
+
     def test_squad1(self):
         from torchtext.experimental.datasets import SQuAD1
         from torchtext.vocab import Vocab
@@ -278,6 +305,10 @@ class TestDataset(TorchtextTestCase):
         new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
         new_train_data, new_test_data = SQuAD1(vocab=new_vocab)
 
+        # Add test for the subset of the standard datasets
+        train_dataset, = SQuAD1(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.SQuAD1(data_select=('train'))
+
     def test_squad2(self):
         from torchtext.experimental.datasets import SQuAD2
         from torchtext.vocab import Vocab
@@ -297,3 +328,7 @@ class TestDataset(TorchtextTestCase):
         old_vocab = train_dataset.get_vocab()
         new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
         new_train_data, new_test_data = SQuAD2(vocab=new_vocab)
+
+        # Add test for the subset of the standard datasets
+        train_dataset, = SQuAD2(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.SQuAD2(data_select=('train'))
