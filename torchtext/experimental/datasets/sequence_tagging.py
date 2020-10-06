@@ -23,10 +23,7 @@ def build_vocab(data):
     return vocabs
 
 
-def _setup_datasets(dataset_name,
-                    root=".data",
-                    vocabs=None,
-                    data_select=("train", "valid", "test")):
+def _setup_datasets(dataset_name, root, vocabs, data_select):
     data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     raw_iter_tuple = raw.DATASETS[dataset_name](root=root, data_select=data_select)
     raw_data = {}

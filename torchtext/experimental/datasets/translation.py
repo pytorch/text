@@ -15,13 +15,8 @@ def build_vocab(data, transforms, index):
 
 
 def _setup_datasets(dataset_name,
-                    train_filenames,
-                    valid_filenames,
-                    test_filenames,
-                    data_select=('train', 'test', 'valid'),
-                    root='.data',
-                    vocab=(None, None),
-                    tokenizer=None):
+                    train_filenames, valid_filenames, test_filenames,
+                    data_select, root, vocab, tokenizer):
     data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
@@ -232,14 +227,8 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-    return _setup_datasets("Multi30k",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           data_select=data_select,
-                           tokenizer=tokenizer,
-                           root=root,
-                           vocab=vocab)
+    return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames,
+                           data_select, tokenizer, root, vocab)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -427,15 +416,8 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-
-    return _setup_datasets("IWSLT",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           data_select=data_select,
-                           tokenizer=tokenizer,
-                           root=root,
-                           vocab=vocab)
+    return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames,
+                           data_select, tokenizer, root, vocab)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -537,15 +519,8 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-
-    return _setup_datasets("WMT14",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           data_select=data_select,
-                           tokenizer=tokenizer,
-                           root=root,
-                           vocab=vocab)
+    return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames,
+                           data_select, tokenizer, root, vocab)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}

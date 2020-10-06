@@ -65,14 +65,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(
-    dataset_name,
-    root=".data",
-    ngrams=1,
-    vocab=None,
-    tokenizer=None,
-    data_select=("train", "test"),
-):
+def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
@@ -144,7 +137,7 @@ def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
 
     """
 
-    return _setup_datasets("AG_NEWS", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("AG_NEWS", root, ngrams, vocab, tokenizer, data_select)
 
 
 def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -188,7 +181,7 @@ def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('
 
     """
 
-    return _setup_datasets("SogouNews", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("SogouNews", root, ngrams, vocab, tokenizer, data_select)
 
 
 def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -241,7 +234,7 @@ def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
 
     """
 
-    return _setup_datasets("DBpedia", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("DBpedia", root, ngrams, vocab, tokenizer, data_select)
 
 
 def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -282,7 +275,7 @@ def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_
 
     """
 
-    return _setup_datasets("YelpReviewPolarity", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("YelpReviewPolarity", root, ngrams, vocab, tokenizer, data_select)
 
 
 def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -322,7 +315,7 @@ def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_sele
 
     """
 
-    return _setup_datasets("YelpReviewFull", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("YelpReviewFull", root, ngrams, vocab, tokenizer, data_select)
 
 
 def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -371,7 +364,7 @@ def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select
 
     """
 
-    return _setup_datasets("YahooAnswers", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("YahooAnswers", root, ngrams, vocab, tokenizer, data_select)
 
 
 def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -412,7 +405,7 @@ def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, dat
 
     """
 
-    return _setup_datasets("AmazonReviewPolarity", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("AmazonReviewPolarity", root, ngrams, vocab, tokenizer, data_select)
 
 
 def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -452,7 +445,7 @@ def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_se
 
     """
 
-    return _setup_datasets("AmazonReviewFull", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("AmazonReviewFull", root, ngrams, vocab, tokenizer, data_select)
 
 
 def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
@@ -494,7 +487,7 @@ def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train
 
     """
 
-    return _setup_datasets("IMDB", root=root, ngrams=ngrams, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets("IMDB", root, ngrams, vocab, tokenizer, data_select)
 
 
 DATASETS = {
