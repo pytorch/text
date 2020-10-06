@@ -75,7 +75,10 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',), year=year, language=language)
+        if dataset_name == 'WMTNewsCrawl':
+            raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',), year=year, language=language)
+        else:
+            raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
         vocab = build_vocab(raw_train, tokenizer)
 
     def text_transform(line):
@@ -83,7 +86,10 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
 
     raw_data = {}
     for name in data_select:
-        raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name, year=year, language=language)
+        if dataset_name == 'WMTNewsCrawl':
+            raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name, year=year, language=language)
+        else:
+            raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name)
         raw_data[name] = [text_transform(txt) for txt in raw_data[name]]
 
     return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
