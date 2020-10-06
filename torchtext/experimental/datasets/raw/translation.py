@@ -243,6 +243,11 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             Default: ('val.de', 'val.en')
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
+        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
@@ -404,6 +409,11 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
@@ -485,6 +495,11 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
