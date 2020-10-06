@@ -39,7 +39,7 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root=".data", data_select=('train', 'valid', 'test')):
+def _setup_datasets(dataset_name, separator, root, data_select):
     data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
@@ -79,7 +79,7 @@ def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
         >>> from torchtext.experimental.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets("UDPOS", "\t", root=root, data_select=data_select)
+    return _setup_datasets("UDPOS", "\t", root, data_select)
 
 
 def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
@@ -97,7 +97,7 @@ def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
         >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets("CoNLL2000Chunking", " ", root=root, data_select=data_select)
+    return _setup_datasets("CoNLL2000Chunking", " ", root, data_select)
 
 
 DATASETS = {

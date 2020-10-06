@@ -117,11 +117,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 
 def _setup_datasets(dataset_name,
-                    train_filenames,
-                    valid_filenames,
-                    test_filenames,
-                    data_select=('train', 'valid', 'test'),
-                    root='.data'):
+                    train_filenames, valid_filenames, test_filenames,
+                    data_select, root):
     data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
@@ -185,7 +182,7 @@ def _setup_datasets(dataset_name,
 def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             root='.data'):
+             data_select=('train', 'valid', 'test'), root='.data'):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
         The available dataset include:
@@ -252,11 +249,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         >>> from torchtext.datasets import Multi30k
         >>> train_dataset, valid_dataset, test_dataset = Multi30k()
     """
-    return _setup_datasets("Multi30k",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           root=root)
+    return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -264,7 +257,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
-          root='.data'):
+          data_select=('train', 'valid', 'test'), root='.data'):
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -421,14 +414,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
     tgt_language = train_filenames[1].split(".")[-1]
     languages = "-".join([src_language, tgt_language])
     URLS["IWSLT"] = URLS["IWSLT"].format(src_language, tgt_language, languages)
-
-    return _setup_datasets(
-        "IWSLT",
-        train_filenames=train_filenames,
-        valid_filenames=valid_filenames,
-        test_filenames=test_filenames,
-        root=root,
-    )
+    return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -437,7 +423,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
-          root='.data'):
+          data_select=('train', 'valid', 'test'), root='.data'):
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -505,12 +491,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         >>> from torchtext.datasets import WMT14
         >>> train_dataset, valid_dataset, test_dataset = WMT14()
     """
-
-    return _setup_datasets("WMT14",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           root=root)
+    return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
 DATASETS = {

@@ -17,7 +17,7 @@ URLS = {
 }
 
 
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), year=None, language=None):
+def _setup_datasets(dataset_name, root, data_select, year, language):
     data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -79,7 +79,7 @@ def WikiText2(root='.data', data_select=('train', 'test', 'valid')):
 
     """
 
-    return _setup_datasets("WikiText2", root=root, data_select=data_select)
+    return _setup_datasets("WikiText2", root, data_select, None, None)
 
 
 def WikiText103(root='.data', data_select=('train', 'test', 'valid')):
@@ -102,7 +102,7 @@ def WikiText103(root='.data', data_select=('train', 'test', 'valid')):
         >>> valid_dataset, = WikiText103(data_select='valid')
     """
 
-    return _setup_datasets("WikiText103", root=root, data_select=data_select)
+    return _setup_datasets("WikiText103", root, data_select, None, None)
 
 
 def PennTreebank(root='.data', data_select=('train', 'test', 'valid')):
@@ -128,7 +128,7 @@ def PennTreebank(root='.data', data_select=('train', 'test', 'valid')):
 
     """
 
-    return _setup_datasets("PennTreebank", root=root, data_select=data_select)
+    return _setup_datasets("PennTreebank", root, data_select, None, None)
 
 
 def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
@@ -144,7 +144,7 @@ def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
         language: the language of the dataset (Default: 'en')
     """
 
-    return _setup_datasets("WMTNewsCrawl", root=root, data_select=data_select, year=year, language=language)
+    return _setup_datasets("WMTNewsCrawl", root, data_select, year, language)
 
 
 DATASETS = {

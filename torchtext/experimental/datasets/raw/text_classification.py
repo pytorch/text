@@ -33,7 +33,7 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
+def _setup_datasets(dataset_name, root, data_select):
     data_select = check_default_set(data_select, target_select=('train', 'test'))
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
@@ -49,7 +49,7 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _create_data_from_csv(cvs_path[item])) for item in data_select)
 
 
-def AG_NEWS(root='.data'):
+def AG_NEWS(root='.data', data_select=('train', 'test')):
     """ Defines AG_NEWS datasets.
 
     Create supervised learning dataset: AG_NEWS
@@ -58,18 +58,18 @@ def AG_NEWS(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
+
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
 
-    return _setup_datasets("AG_NEWS", root=root)
+    return _setup_datasets("AG_NEWS", root, data_select)
 
 
-def SogouNews(root='.data'):
+def SogouNews(root='.data', data_select=('train', 'test')):
     """ Defines SogouNews datasets.
 
     Create supervised learning dataset: SogouNews
@@ -78,8 +78,7 @@ def SogouNews(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -87,10 +86,10 @@ def SogouNews(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
 
-    return _setup_datasets("SogouNews", root=root)
+    return _setup_datasets("SogouNews", root, data_select)
 
 
-def DBpedia(root='.data'):
+def DBpedia(root='.data', data_select=('train', 'test')):
     """ Defines DBpedia datasets.
 
     Create supervised learning dataset: DBpedia
@@ -99,8 +98,7 @@ def DBpedia(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -108,10 +106,10 @@ def DBpedia(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
 
-    return _setup_datasets("DBpedia", root=root)
+    return _setup_datasets("DBpedia", root, data_select)
 
 
-def YelpReviewPolarity(root='.data'):
+def YelpReviewPolarity(root='.data', data_select=('train', 'test')):
     """ Defines YelpReviewPolarity datasets.
 
     Create supervised learning dataset: YelpReviewPolarity
@@ -120,8 +118,7 @@ def YelpReviewPolarity(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -129,10 +126,10 @@ def YelpReviewPolarity(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
 
-    return _setup_datasets("YelpReviewPolarity", root=root)
+    return _setup_datasets("YelpReviewPolarity", root, data_select)
 
 
-def YelpReviewFull(root='.data'):
+def YelpReviewFull(root='.data', data_select=('train', 'test')):
     """ Defines YelpReviewFull datasets.
 
     Create supervised learning dataset: YelpReviewFull
@@ -141,8 +138,7 @@ def YelpReviewFull(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -150,10 +146,10 @@ def YelpReviewFull(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
 
-    return _setup_datasets("YelpReviewFull", root=root)
+    return _setup_datasets("YelpReviewFull", root, data_select)
 
 
-def YahooAnswers(root='.data'):
+def YahooAnswers(root='.data', data_select=('train', 'test')):
     """ Defines YahooAnswers datasets.
 
     Create supervised learning dataset: YahooAnswers
@@ -162,8 +158,7 @@ def YahooAnswers(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -171,10 +166,10 @@ def YahooAnswers(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
 
-    return _setup_datasets("YahooAnswers", root=root)
+    return _setup_datasets("YahooAnswers", root, data_select)
 
 
-def AmazonReviewPolarity(root='.data'):
+def AmazonReviewPolarity(root='.data', data_select=('train', 'test')):
     """ Defines AmazonReviewPolarity datasets.
 
     Create supervised learning dataset: AmazonReviewPolarity
@@ -183,8 +178,7 @@ def AmazonReviewPolarity(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -192,10 +186,10 @@ def AmazonReviewPolarity(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
 
-    return _setup_datasets("AmazonReviewPolarity", root=root)
+    return _setup_datasets("AmazonReviewPolarity", root, data_select)
 
 
-def AmazonReviewFull(root='.data'):
+def AmazonReviewFull(root='.data', data_select=('train', 'test')):
     """ Defines AmazonReviewFull datasets.
 
     Create supervised learning dataset: AmazonReviewFull
@@ -204,8 +198,7 @@ def AmazonReviewFull(root='.data'):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -213,7 +206,7 @@ def AmazonReviewFull(root='.data'):
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
 
-    return _setup_datasets("AmazonReviewFull", root=root)
+    return _setup_datasets("AmazonReviewFull", root, data_select)
 
 
 def generate_imdb_data(key, extracted_files):
@@ -235,8 +228,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets
-            (Default: ('train', 'test'))
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
