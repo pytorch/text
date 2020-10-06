@@ -5,11 +5,11 @@ from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'SQuAD1':
-        ['https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json',
-         'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json'],
+        {'train': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json',
+         'test': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json'},
     'SQuAD2':
-        ['https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json',
-         'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json']
+        {'train': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json',
+         'test': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json'}
 }
 
 
@@ -31,12 +31,10 @@ def _create_data_from_json(data_path):
 
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'dev')):
     data_select = check_default_set(data_select, ('train', 'dev'))
-    extracted_files = []
-    select_to_index = {'train': 0, 'dev': 1}
-    extracted_files = [download_from_url(URLS[dataset_name][select_to_index[key]],
-                                         root=root) for key in select_to_index.keys()]
+    extracted_files = {key: download_from_url(URLS[dataset_name][key],
+                                              root=root) for key in data_select}
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
-                 _create_data_from_json(extracted_files[select_to_index[item]])) for item in data_select)
+                 _create_data_from_json(extracted_files[item])) for item in data_select)
 
 
 def SQuAD1(*args, **kwargs):
