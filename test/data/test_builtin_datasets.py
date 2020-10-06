@@ -5,6 +5,7 @@ import glob
 import shutil
 import torchtext.data as data
 import torch
+import torchtext
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
