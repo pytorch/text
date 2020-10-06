@@ -2,6 +2,7 @@ import logging
 import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'WikiText2':
@@ -17,6 +18,7 @@ URLS = {
 
 
 def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), year=None, language=None):
+    data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     if isinstance(data_select, str):
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test', 'valid'))):
