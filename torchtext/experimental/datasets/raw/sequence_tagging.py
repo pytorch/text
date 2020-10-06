@@ -97,7 +97,7 @@ def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
         >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets("CoNLL2000Chunking", " ", root=".data", data_select=('train', 'test'))
+    return _setup_datasets("CoNLL2000Chunking", " ", root=root, data_select=data_select)
 
 
 DATASETS = {
