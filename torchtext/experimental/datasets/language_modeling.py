@@ -2,6 +2,7 @@ import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import language_modeling as raw
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 
 def build_vocab(data, transforms):
@@ -65,10 +66,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'valid', 'test'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+    data_select = check_default_set(data_select, ('train', 'test', 'valid'))
 
     if not single_line and dataset_name != 'WikiText103':
         raise TypeError('single_line must be True except for WikiText103')

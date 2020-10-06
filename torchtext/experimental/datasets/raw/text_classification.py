@@ -1,6 +1,7 @@
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'AG_NEWS':
@@ -32,22 +33,20 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-def _setup_datasets(dataset_name, root='.data'):
+def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test')):
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
+    cvs_path = {}
     for fname in extracted_files:
         if fname.endswith('train.csv'):
-            train_csv_path = fname
+            cvs_path['train'] = fname
         if fname.endswith('test.csv'):
-            test_csv_path = fname
-
-    train_iter = _create_data_from_csv(train_csv_path)
-    test_iter = _create_data_from_csv(test_csv_path)
-    return (RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], train_iter),
-            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], test_iter))
+            cvs_path['test'] = fname
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], _create_data_from_csv(cvs_path[item])) for item in data_select)
 
 
 def AG_NEWS(*args, **kwargs):
@@ -59,7 +58,10 @@ def AG_NEWS(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
@@ -76,6 +78,10 @@ def SogouNews(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
@@ -93,6 +99,10 @@ def DBpedia(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
@@ -110,6 +120,10 @@ def YelpReviewPolarity(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
@@ -127,6 +141,10 @@ def YelpReviewFull(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
@@ -144,6 +162,10 @@ def YahooAnswers(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
@@ -161,6 +183,10 @@ def AmazonReviewPolarity(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
@@ -178,6 +204,10 @@ def AmazonReviewFull(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
@@ -196,26 +226,27 @@ def generate_imdb_data(key, extracted_files):
                 yield label, f.read()
 
 
-def IMDB(root='.data'):
-    """ Defines IMDB datasets.
+def IMDB(root='.data', data_select=('train', 'test')):
+    """ Defines raw IMDB datasets.
 
     Create supervised learning dataset: IMDB
 
-    Separately returns the training and test dataset
+    Separately returns the raw training and test dataset
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets
+            (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
-    train_iter = generate_imdb_data('train', extracted_files)
-    test_iter = generate_imdb_data('test', extracted_files)
-    return (RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], train_iter),
-            RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], test_iter))
+    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"], generate_imdb_data(item, extracted_files)) for item in data_select)
 
 
 DATASETS = {

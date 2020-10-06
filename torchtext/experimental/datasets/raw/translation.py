@@ -3,10 +3,10 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-
 from torchtext.utils import (download_from_url, extract_archive,
                              unicode_csv_reader)
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'Multi30k': [
@@ -120,11 +120,12 @@ def _setup_datasets(dataset_name,
                     train_filenames,
                     valid_filenames,
                     test_filenames,
+                    data_select=('train', 'valid', 'test'),
                     root='.data'):
+    data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
-
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
@@ -167,7 +168,7 @@ def _setup_datasets(dataset_name,
                 "Files are not found for data type {}".format(key))
 
     datasets = []
-    for key in data_filenames.keys():
+    for key in data_select:
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 
