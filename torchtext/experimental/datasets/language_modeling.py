@@ -75,7 +75,7 @@ def _setup_datasets(dataset_name, tokenizer=None, root='.data', vocab=None,
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
+        raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',), year=year, language=language)
         vocab = build_vocab(raw_train, tokenizer)
 
     def text_transform(line):
