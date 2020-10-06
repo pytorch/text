@@ -6,10 +6,10 @@ from torchtext.experimental.datasets.raw.common import check_default_set
 URLS = {
     'SQuAD1':
         {'train': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json',
-         'test': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json'},
+         'dev': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json'},
     'SQuAD2':
         {'train': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json',
-         'test': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json'}
+         'dev': 'https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json'}
 }
 
 
