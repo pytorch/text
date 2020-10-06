@@ -56,11 +56,7 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name,
-                    root='.data',
-                    vocab=None,
-                    tokenizer=None,
-                    data_select=('train', 'dev')):
+def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
@@ -120,7 +116,7 @@ def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
         >>> train, dev = SQuAD1(tokenizer=tokenizer)
     """
 
-    return _setup_datasets('SQuAD1', root=root, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets('SQuAD1', root, vocab, tokenizer, data_select)
 
 
 def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
@@ -153,7 +149,7 @@ def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
-    return _setup_datasets('SQuAD2', root=root, vocab=vocab, tokenizer=tokenizer, data_select=data_select)
+    return _setup_datasets('SQuAD2', root, vocab, tokenizer, data_select)
 
 
 DATASETS = {
