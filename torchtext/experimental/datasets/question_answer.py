@@ -2,6 +2,7 @@ import torch
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import question_answer as raw
+from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.functional import (
     totensor,
     vocab_func,
@@ -56,19 +57,12 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name,
-                    root='.data',
-                    vocab=None,
-                    tokenizer=None,
-                    data_select=('train', 'dev')):
+def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'dev'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
+    data_select = check_default_set(data_select, ('train', 'dev'))
     train, dev = raw.DATASETS[dataset_name](root=root)
     raw_data = {'train': [item for item in train],
                 'dev': [item for item in dev]}
@@ -89,7 +83,7 @@ def _setup_datasets(dataset_name,
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 
-def SQuAD1(*args, **kwargs):
+def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
     """ Defines SQuAD1 datasets.
 
     Create question answer dataset: SQuAD1
@@ -120,10 +114,10 @@ def SQuAD1(*args, **kwargs):
         >>> train, dev = SQuAD1(tokenizer=tokenizer)
     """
 
-    return _setup_datasets(*(('SQuAD1',) + args), **kwargs)
+    return _setup_datasets('SQuAD1', root, vocab, tokenizer, data_select)
 
 
-def SQuAD2(*args, **kwargs):
+def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
     """ Defines SQuAD2 datasets.
 
     Create question answer dataset: SQuAD2
@@ -153,7 +147,7 @@ def SQuAD2(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
-    return _setup_datasets(*(('SQuAD2',) + args), **kwargs)
+    return _setup_datasets('SQuAD2', root, vocab, tokenizer, data_select)
 
 
 DATASETS = {
