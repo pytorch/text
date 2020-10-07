@@ -249,7 +249,7 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
       - run:
           name: smoke test
           command: |
