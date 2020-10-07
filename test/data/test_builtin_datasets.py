@@ -51,12 +51,12 @@ class TestDataset(TorchtextTestCase):
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
         self.assertEqual(tokens_ids, [2, 286, 503, 700])
 
-        conditional_remove(cachedir)
-        conditional_remove(cachefile)
-
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
         train_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
+
+        conditional_remove(cachedir)
+        conditional_remove(cachefile)
 
     def test_penntreebank_legacy(self):
         from torchtext.datasets import PennTreebank
@@ -152,6 +152,10 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(en_tokens_ids,
                          [17, 23, 1167, 806, 15, 55, 82, 334, 1337])
 
+        # Add test for the subset of the standard datasets
+        train_dataset, = Multi30k(data_select=('train'))
+        train_iter, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
+
         datafile = os.path.join(self.project_root, ".data", "train*")
         conditional_remove(datafile)
         datafile = os.path.join(self.project_root, ".data", "val*")
@@ -161,10 +165,6 @@ class TestDataset(TorchtextTestCase):
         datafile = os.path.join(self.project_root, ".data",
                                 "multi30k_task*.tar.gz")
         conditional_remove(datafile)
-
-        # Add test for the subset of the standard datasets
-        train_dataset, = Multi30k(data_select=('train'))
-        train_iter, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
 
     def test_udpos_sequence_tagging(self):
         from torchtext.experimental.datasets import UDPOS
