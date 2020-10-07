@@ -46,6 +46,9 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(len(train_dataset), 2049990)
         self.assertEqual(len(test_dataset), 241859)
         self.assertEqual(len(valid_dataset), 214417)
+        self.assertEqual(train_dataset[20:25], torch.tensor([5024, 89, 21, 3, 1838]).long())
+        self.assertEqual(test_dataset[30:35], torch.tensor([914, 4, 36, 11, 569]).long())
+        self.assertEqual(valid_dataset[40:45], torch.tensor([925, 8, 2, 150, 8575]).long())
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
@@ -53,7 +56,15 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
+        self.assertEqual(len(train_dataset), 2049990)
+        self.assertEqual(len(test_dataset), 241859)
+        self.assertEqual(train_dataset[20:25], torch.tensor([5024, 89, 21, 3, 1838]).long())
+        self.assertEqual(test_dataset[30:35], torch.tensor([914, 4, 36, 11, 569]).long())
         train_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
+        next(iter(train_iter))
+        self.assertEqual(next(iter(train_iter)), ' = Valkyria Chronicles III = \n')
+        next(iter(test_iter))
+        self.assertEqual(next(iter(test_iter)), ' = Robert <unk> = \n')
 
         conditional_remove(cachedir)
         conditional_remove(cachefile)
@@ -78,6 +89,9 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(len(train_dataset), 924412)
         self.assertEqual(len(test_dataset), 82114)
         self.assertEqual(len(valid_dataset), 73339)
+        self.assertEqual(train_dataset[20:25], torch.tensor([9919, 9920, 9921, 9922, 9188]).long())
+        self.assertEqual(test_dataset[30:35], torch.tensor([397, 93, 4, 16, 7]).long())
+        self.assertEqual(valid_dataset[40:45], torch.tensor([0, 0, 78, 426, 196]).long())
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
@@ -85,7 +99,15 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
+        self.assertEqual(len(train_dataset), 924412)
+        self.assertEqual(len(test_dataset), 82114)
+        self.assertEqual(train_dataset[20:25], torch.tensor([9919, 9920, 9921, 9922, 9188]).long())
+        self.assertEqual(test_dataset[30:35], torch.tensor([397, 93, 4, 16, 7]).long())
         train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
+        next(iter(train_iter))
+        self.assertEqual(next(iter(train_iter))[:15], ' aer banknote b')
+        next(iter(test_iter))
+        self.assertEqual(next(iter(test_iter))[:25], " no it was n't black mond")
 
     def test_text_classification(self):
         from torchtext.experimental.datasets import AG_NEWS
@@ -103,7 +125,13 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = AG_NEWS(data_select=('train'))
+        self.assertEqual(len(train_dataset), 120000)
+        self.assertEqual(train_dataset[-1][1][:10],
+                         torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053]).long())
         train_iter, = torchtext.experimental.datasets.raw.AG_NEWS(data_select=('train'))
+        label, text = next(iter(train_iter))
+        self.assertEqual(label, 3)
+        self.assertEqual(text[:25], 'Wall St. Bears Claw Back ')
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
@@ -128,7 +156,15 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = IMDB(data_select=('train'))
+        self.assertEqual(len(train_dataset), 25000)
+        self.assertEqual(train_dataset[0][1][:10],
+                         torch.tensor([13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92]).long())
+        self.assertEqual(train_dataset[-1][1][:10],
+                         torch.tensor([2, 71, 4555, 194, 3328, 15144, 42, 227, 148, 8]).long())
         train_iter, = torchtext.experimental.datasets.raw.IMDB(data_select=('train'))
+        label, text = next(iter(train_iter))
+        self.assertEqual(label, 'neg')
+        self.assertEqual(text[:25], 'I rented I AM CURIOUS-YEL')
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
@@ -137,6 +173,12 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(len(train_dataset), 29000)
         self.assertEqual(len(valid_dataset), 1014)
         self.assertEqual(len(test_dataset), 1000)
+        self.assertEqual(train_dataset[20], (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2]).long(),
+                                             torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3]).long()))
+        self.assertEqual(valid_dataset[30], (torch.tensor([3, 178, 25, 84, 1003, 56, 18, 153, 2]).long(),
+                                             torch.tensor([4, 23, 31, 80, 46, 1347, 5, 2, 118, 3]).long()))
+        self.assertEqual(test_dataset[40], (torch.tensor([3, 25, 5, 11, 3914, 1536, 20, 63, 2]).long(),
+                                            torch.tensor([4, 31, 19, 2, 746, 344, 1914, 5, 45, 3]).long()))
 
         de_vocab, en_vocab = train_dataset.get_vocab()
         de_tokens_ids = [
@@ -154,7 +196,13 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = Multi30k(data_select=('train'))
+        self.assertEqual(len(train_dataset), 29000)
+        self.assertEqual(train_dataset[20], (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2]).long(),
+                                             torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3]).long()))
         train_iter, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
+        language1, language2 = next(iter(train_iter))
+        self.assertEqual(language1, 'Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.')
+        self.assertEqual(language2, 'Two young  White males are outside near many bushes.')
 
         datafile = os.path.join(self.project_root, ".data", "train*")
         conditional_remove(datafile)
@@ -226,7 +274,13 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = UDPOS(data_select=('train'))
+        self.assertEqual(len(train_dataset), 12543)
+        self.assertEqual(train_dataset[0][0][:10],
+                         torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585]).long())
+        self.assertEqual(train_dataset[0][1][:10],
+                         torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8]).long())
         train_iter, = torchtext.experimental.datasets.raw.UDPOS(data_select=('train'))
+        self.assertEqual(next(iter(train_iter))[0][:5], ['Al', '-', 'Zaman', ':', 'American'])
 
     def test_conll_sequence_tagging(self):
         from torchtext.experimental.datasets import CoNLL2000Chunking
@@ -274,7 +328,13 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = CoNLL2000Chunking(data_select=('train'))
+        self.assertEqual(len(train_dataset), 8936)
+        self.assertEqual(train_dataset[0][0][:10],
+                         torch.tensor([11556, 9, 3, 1775, 17, 1164, 177, 6, 212, 317]).long())
+        self.assertEqual(train_dataset[0][1][:10],
+                         torch.tensor([2, 3, 5, 2, 17, 12, 16, 15, 13, 5]).long())
         train_iter, = torchtext.experimental.datasets.raw.CoNLL2000Chunking(data_select=('train'))
+        self.assertEqual(next(iter(train_iter))[0][:5], ['Confidence', 'in', 'the', 'pound', 'is'])
 
     def test_squad1(self):
         from torchtext.experimental.datasets import SQuAD1
@@ -298,7 +358,16 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = SQuAD1(data_select=('train'))
+        context, question, answers, ans_pos = train_dataset[100]
+        self.assertEqual(question,
+                         torch.tensor([7, 24, 86, 52, 2, 373, 887, 18, 12797, 11090, 1356, 2, 1788, 3273, 16]).long())
+        self.assertEqual(ans_pos[0], torch.tensor([72, 72]).long())
         train_iter, = torchtext.experimental.datasets.raw.SQuAD1(data_select=('train'))
+        context, question, answers, ans_pos = next(iter(train_iter))
+        self.assertEqual(context[:50], 'Architecturally, the school has a Catholic charact')
+        self.assertEqual(question[:50], 'To whom did the Virgin Mary allegedly appear in 18')
+        self.assertEqual(answers[0], 'Saint Bernadette Soubirous')
+        self.assertEqual(ans_pos[0], 515)
 
     def test_squad2(self):
         from torchtext.experimental.datasets import SQuAD2
@@ -322,4 +391,14 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = SQuAD2(data_select=('train'))
+        self.assertEqual(len(train_dataset), 130319)
+        context, question, answers, ans_pos = train_dataset[200]
+        self.assertEqual(question,
+                         torch.tensor([84, 50, 1421, 12, 5439, 4569, 17, 30, 2, 15202, 4754, 1421, 16]).long())
+        self.assertEqual(ans_pos[0], torch.tensor([9, 9]).long())
         train_iter, = torchtext.experimental.datasets.raw.SQuAD2(data_select=('train'))
+        context, question, answers, ans_pos = next(iter(train_iter))
+        self.assertEqual(context[:50], 'Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-Y')
+        self.assertEqual(question[:50], 'When did Beyonce start becoming popular?')
+        self.assertEqual(answers[0], 'in the late 1990s')
+        self.assertEqual(ans_pos[0], 269)
