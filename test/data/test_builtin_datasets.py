@@ -55,16 +55,16 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 286, 503, 700])
 
         # Add test for the subset of the standard datasets
+        train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
+        next(iter(train_dataset))
+        self.assertEqual(next(iter(train_dataset)), ' = Valkyria Chronicles III = \n')
+        next(iter(test_dataset))
+        self.assertEqual(next(iter(test_dataset)), ' = Robert <unk> = \n')
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
         self.assertEqual(len(train_dataset), 2049990)
         self.assertEqual(len(test_dataset), 241859)
         self.assertEqual(train_dataset[20:25], torch.tensor([5024, 89, 21, 3, 1838]).long())
         self.assertEqual(test_dataset[30:35], torch.tensor([914, 4, 36, 11, 569]).long())
-        train_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
-        next(iter(train_iter))
-        self.assertEqual(next(iter(train_iter)), ' = Valkyria Chronicles III = \n')
-        next(iter(test_iter))
-        self.assertEqual(next(iter(test_iter)), ' = Robert <unk> = \n')
 
         conditional_remove(cachedir)
         conditional_remove(cachefile)
@@ -195,14 +195,14 @@ class TestDataset(TorchtextTestCase):
                          [17, 23, 1167, 806, 15, 55, 82, 334, 1337])
 
         # Add test for the subset of the standard datasets
+        train_dataset, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
+        language1, language2 = next(iter(train_dataset))
+        self.assertEqual(language1, 'Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.')
+        self.assertEqual(language2, 'Two young  White males are outside near many bushes.')
         train_dataset, = Multi30k(data_select=('train'))
         self.assertEqual(len(train_dataset), 29000)
         self.assertEqual(train_dataset[20], (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2]).long(),
                                              torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3]).long()))
-        train_iter, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
-        language1, language2 = next(iter(train_iter))
-        self.assertEqual(language1, 'Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.')
-        self.assertEqual(language2, 'Two young  White males are outside near many bushes.')
 
         datafile = os.path.join(self.project_root, ".data", "train*")
         conditional_remove(datafile)
