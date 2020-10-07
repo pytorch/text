@@ -105,9 +105,9 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(test_dataset[30:35], torch.tensor([397, 93, 4, 16, 7]).long())
         train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
         next(iter(train_iter))
-        self.assertEqual(next(iter(train_iter))[:15], ' aer banknote b')
+        self.assertEqual(next(iter(train_iter))[:15], ' pierre <unk> N')
         next(iter(test_iter))
-        self.assertEqual(next(iter(test_iter))[:25], " no it was n't black mond")
+        self.assertEqual(next(iter(test_iter))[:25], ' but while the new york s')
 
     def test_text_classification(self):
         from torchtext.experimental.datasets import AG_NEWS
@@ -127,7 +127,7 @@ class TestDataset(TorchtextTestCase):
         train_dataset, = AG_NEWS(data_select=('train'))
         self.assertEqual(len(train_dataset), 120000)
         self.assertEqual(train_dataset[-1][1][:10],
-                         torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053]).long())
+                         torch.tensor([2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405]).long())
         train_iter, = torchtext.experimental.datasets.raw.AG_NEWS(data_select=('train'))
         label, text = next(iter(train_iter))
         self.assertEqual(label, 3)
