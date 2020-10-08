@@ -91,12 +91,12 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         train_dataset, test_dataset, valid_dataset = PennTreebank()
-        self.assertEqual(len(train_dataset), 924412)
-        self.assertEqual(len(test_dataset), 82114)
-        self.assertEqual(len(valid_dataset), 73339)
-        self.assertEqual(train_dataset[20:25], torch.tensor([9919, 9920, 9921, 9922, 9188], dtype=torch.int64))
-        self.assertEqual(test_dataset[30:35], torch.tensor([397, 93, 4, 16, 7], dtype=torch.int64))
-        self.assertEqual(valid_dataset[40:45], torch.tensor([0, 0, 78, 426, 196], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 924412, train_dataset[20:25],
+                              torch.tensor([9919, 9920, 9921, 9922, 9188], dtype=torch.int64))
+        self.helper_test_func(test_dataset, 82114, test_dataset[30:35],
+                              torch.tensor([397, 93, 4, 16, 7], dtype=torch.int64))
+        self.helper_test_func(valid_dataset, 73339, valid_dataset[40:45],
+                              torch.tensor([0, 0, 78, 426, 196], dtype=torch.int64))
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
@@ -104,15 +104,15 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
-        self.assertEqual(len(train_dataset), 924412)
-        self.assertEqual(len(test_dataset), 82114)
-        self.assertEqual(train_dataset[20:25], torch.tensor([9919, 9920, 9921, 9922, 9188], dtype=torch.int64))
-        self.assertEqual(test_dataset[30:35], torch.tensor([397, 93, 4, 16, 7], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 924412, train_dataset[20:25],
+                              torch.tensor([9919, 9920, 9921, 9922, 9188], dtype=torch.int64))
+        self.helper_test_func(test_dataset, 82114, test_dataset[30:35],
+                              torch.tensor([397, 93, 4, 16, 7], dtype=torch.int64))
         train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
         next(iter(train_iter))
-        self.assertEqual(next(iter(train_iter))[:15], ' pierre <unk> N')
+        self.helper_test_func(train_iter, 924412, next(iter(train_iter))[:15], ' pierre <unk> N')
         next(iter(test_iter))
-        self.assertEqual(next(iter(test_iter))[:25], ' but while the new york s')
+        self.helper_test_func(test_iter, 82114, next(iter(test_iter))[:25], ' but while the new york s')
         del train_dataset, test_dataset
 
     def test_text_classification(self):
@@ -121,23 +121,19 @@ class TestDataset(TorchtextTestCase):
         datadir = os.path.join(self.project_root, ".data")
         if not os.path.exists(datadir):
             os.makedirs(datadir)
-        ag_news_train, ag_news_test = AG_NEWS(root=datadir, ngrams=3)
-        self.assertEqual(len(ag_news_train), 120000)
-        self.assertEqual(len(ag_news_test), 7600)
-        self.assertEqual(ag_news_train[-1][1][:10],
-                         torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053], dtype=torch.int64))
-        self.assertEqual(ag_news_test[-1][1][:10],
-                         torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786], dtype=torch.int64))
+        train_dataset, test_dataset = AG_NEWS(root=datadir, ngrams=3)
+        self.helper_test_func(train_dataset, 120000, train_dataset[-1][1][:10],
+                              torch.tensor([3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053], dtype=torch.int64))
+        self.helper_test_func(test_dataset, 7600, test_dataset[-1][1][:10],
+                              torch.tensor([2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786], dtype=torch.int64))
 
         # Add test for the subset of the standard datasets
         train_dataset, = AG_NEWS(data_select=('train'))
-        self.assertEqual(len(train_dataset), 120000)
-        self.assertEqual(train_dataset[-1][1][:10],
-                         torch.tensor([2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 120000, train_dataset[-1][1][:10],
+                              torch.tensor([2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405], dtype=torch.int64))
         train_iter, = torchtext.experimental.datasets.raw.AG_NEWS(data_select=('train'))
         label, text = next(iter(train_iter))
-        self.assertEqual(label, 3)
-        self.assertEqual(text[:25], 'Wall St. Bears Claw Back ')
+        self.helper_test_func(train_iter, 120000, (label, text[:25]), (3, 'Wall St. Bears Claw Back '))
         del train_iter
 
     def test_imdb(self):
@@ -145,16 +141,10 @@ class TestDataset(TorchtextTestCase):
         from torchtext.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, test_dataset = IMDB()
-        self.assertEqual(len(train_dataset), 25000)
-        self.assertEqual(len(test_dataset), 25000)
-        self.assertEqual(train_dataset[0][1][:10],
-                         torch.tensor([13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92], dtype=torch.int64))
-        self.assertEqual(train_dataset[-1][1][:10],
-                         torch.tensor([2, 71, 4555, 194, 3328, 15144, 42, 227, 148, 8], dtype=torch.int64))
-        self.assertEqual(test_dataset[0][1][:10],
-                         torch.tensor([13, 125, 1051, 5, 246, 1652, 8, 277, 66, 20], dtype=torch.int64))
-        self.assertEqual(test_dataset[-1][1][:10],
-                         torch.tensor([13, 1035, 14, 21, 28, 2, 1051, 1275, 1008, 3], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 25000, train_dataset[0][1][:10],
+                              torch.tensor([13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92], dtype=torch.int64))
+        self.helper_test_func(test_dataset, 25000, test_dataset[0][1][:10],
+                              torch.tensor([13, 125, 1051, 5, 246, 1652, 8, 277, 66, 20], dtype=torch.int64))
 
         # Test API with a vocab input object
         old_vocab = train_dataset.get_vocab()
@@ -163,15 +153,12 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = IMDB(data_select=('train'))
-        self.assertEqual(len(train_dataset), 25000)
-        self.assertEqual(train_dataset[0][1][:10],
-                         torch.tensor([13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92], dtype=torch.int64))
-        self.assertEqual(train_dataset[-1][1][:10],
-                         torch.tensor([2, 71, 4555, 194, 3328, 15144, 42, 227, 148, 8], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 25000, train_dataset[0][1][:10],
+                              torch.tensor([13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92], dtype=torch.int64))
         train_iter, = torchtext.experimental.datasets.raw.IMDB(data_select=('train'))
         label, text = next(iter(train_iter))
-        self.assertEqual(label, 'neg')
-        self.assertEqual(text[:25], 'I rented I AM CURIOUS-YEL')
+        self.helper_test_func(train_iter, 25000, (label, text[:25]),
+                              ('neg', 'I rented I AM CURIOUS-YEL'))
         del train_dataset, test_dataset
 
     def test_multi30k(self):
