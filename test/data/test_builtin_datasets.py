@@ -47,11 +47,11 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
         train_dataset, test_dataset, valid_dataset = WikiText2()
-        self.helper_test_func(len(train_dataset), 36718, train_dataset[20:25],
+        self.helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
                               torch.tensor([5024, 89, 21, 3, 1838], dtype=torch.int64))
-        self.helper_test_func(len(test_dataset), 36718, test_dataset[30:35],
+        self.helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
                               torch.tensor([914, 4, 36, 11, 569], dtype=torch.int64))
-        self.helper_test_func(len(valid_dataset), 36718, valid_dataset[40:45],
+        self.helper_test_func(len(valid_dataset), 214417, valid_dataset[40:45],
                               torch.tensor([925, 8, 2, 150, 8575], dtype=torch.int64))
 
         vocab = train_dataset.get_vocab()
@@ -60,8 +60,8 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
-        self.helper_test_func(len(train_dataset), 2049990, next(iter(train_dataset)), ' \n')
-        self.helper_test_func(len(test_dataset), 241859, next(iter(test_dataset)), ' \n')
+        self.helper_test_func(len(train_dataset), 36718, next(iter(train_dataset)), ' \n')
+        self.helper_test_func(len(test_dataset), 36718, next(iter(test_dataset)), ' \n')
         del train_dataset, test_dataset
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
         self.helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
