@@ -18,6 +18,10 @@ def conditional_remove(f):
 
 
 class TestDataset(TorchtextTestCase):
+    def helper_test_func(self, dataset, target_length, results, target_results):
+        self.assertEqual(len(train_dataset), target_length)
+        self.assertEqual(results, target_results)
+
     def test_wikitext2_legacy(self):
         from torchtext.datasets import WikiText2
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
@@ -43,12 +47,12 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
         train_dataset, test_dataset, valid_dataset = WikiText2()
-        self.assertEqual(len(train_dataset), 2049990)
-        self.assertEqual(len(test_dataset), 241859)
-        self.assertEqual(len(valid_dataset), 214417)
-        self.assertEqual(train_dataset[20:25], torch.tensor([5024, 89, 21, 3, 1838], dtype=torch.int64))
-        self.assertEqual(test_dataset[30:35], torch.tensor([914, 4, 36, 11, 569], dtype=torch.int64))
-        self.assertEqual(valid_dataset[40:45], torch.tensor([925, 8, 2, 150, 8575], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 2049990, train_dataset[20:25],
+                              torch.tensor([5024, 89, 21, 3, 1838], dtype=torch.int64))
+        self.helper_test_func(test_dataset, 241859, test_dataset[30:35],
+                              torch.tensor([914, 4, 36, 11, 569], dtype=torch.int64))
+        self.helper_test_func(valid_dataset, 214417, valid_dataset[40:45],
+                              torch.tensor([925, 8, 2, 150, 8575], dtype=torch.int64))
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
@@ -57,15 +61,15 @@ class TestDataset(TorchtextTestCase):
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
         next(iter(train_dataset))
-        self.assertEqual(next(iter(train_dataset)), ' = Valkyria Chronicles III = \n')
+        self.helper_test_func(train_dataset, 2049990, next(iter(train_dataset)), ' = Valkyria Chronicles III = \n')
         next(iter(test_dataset))
-        self.assertEqual(next(iter(test_dataset)), ' = Robert <unk> = \n')
+        self.helper_test_func(test_dataset, 241859, next(iter(test_dataset)), ' = Robert <unk> = \n')
         del train_dataset, test_dataset
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
-        self.assertEqual(len(train_dataset), 2049990)
-        self.assertEqual(len(test_dataset), 241859)
-        self.assertEqual(train_dataset[20:25], torch.tensor([5024, 89, 21, 3, 1838], dtype=torch.int64))
-        self.assertEqual(test_dataset[30:35], torch.tensor([914, 4, 36, 11, 569], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 2049990, train_dataset[20:25],
+                              torch.tensor([5024, 89, 21, 3, 1838], dtype=torch.int64))
+        self.helper_test_func(test_dataset, 241859, test_dataset[30:35],
+                              torch.tensor([914, 4, 36, 11, 569], dtype=torch.int64))
 
         conditional_remove(cachedir)
         conditional_remove(cachefile)
@@ -134,7 +138,7 @@ class TestDataset(TorchtextTestCase):
         label, text = next(iter(train_iter))
         self.assertEqual(label, 3)
         self.assertEqual(text[:25], 'Wall St. Bears Claw Back ')
-        del train_dataset, test_dataset
+        del train_iter
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
@@ -341,7 +345,7 @@ class TestDataset(TorchtextTestCase):
                          torch.tensor([2, 3, 5, 2, 17, 12, 16, 15, 13, 5], dtype=torch.int64))
         train_iter, = torchtext.experimental.datasets.raw.CoNLL2000Chunking(data_select=('train'))
         self.assertEqual(next(iter(train_iter))[0][:5], ['Confidence', 'in', 'the', 'pound', 'is'])
-        del train_dataset, test_dataset
+        del train_iter
 
     def test_squad1(self):
         from torchtext.experimental.datasets import SQuAD1
@@ -375,7 +379,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(question[:50], 'To whom did the Virgin Mary allegedly appear in 18')
         self.assertEqual(answers[0], 'Saint Bernadette Soubirous')
         self.assertEqual(ans_pos[0], 515)
-        del train_dataset, test_dataset
+        del train_iter
 
     def test_squad2(self):
         from torchtext.experimental.datasets import SQuAD2
@@ -410,4 +414,4 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(question[:50], 'When did Beyonce start becoming popular?')
         self.assertEqual(answers[0], 'in the late 1990s')
         self.assertEqual(ans_pos[0], 269)
-        del train_dataset, test_dataset
+        del train_iter
