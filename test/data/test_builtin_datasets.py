@@ -19,7 +19,7 @@ def conditional_remove(f):
 
 class TestDataset(TorchtextTestCase):
     def helper_test_func(self, dataset, target_length, results, target_results):
-        self.assertEqual(len(train_dataset), target_length)
+        self.assertEqual(len(dataset), target_length)
         self.assertEqual(results, target_results)
 
     def test_wikitext2_legacy(self):
@@ -165,15 +165,15 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets import Multi30k
         # smoke test to ensure multi30k works properly
         train_dataset, valid_dataset, test_dataset = Multi30k()
-        self.assertEqual(len(train_dataset), 29000)
-        self.assertEqual(len(valid_dataset), 1014)
-        self.assertEqual(len(test_dataset), 1000)
-        self.assertEqual(train_dataset[20], (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2], dtype=torch.int64),
-                                             torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3], dtype=torch.int64)))
-        self.assertEqual(valid_dataset[30], (torch.tensor([3, 178, 25, 84, 1003, 56, 18, 153, 2], dtype=torch.int64),
-                                             torch.tensor([4, 23, 31, 80, 46, 1347, 5, 2, 118, 3], dtype=torch.int64)))
-        self.assertEqual(test_dataset[40], (torch.tensor([3, 25, 5, 11, 3914, 1536, 20, 63, 2], dtype=torch.int64),
-                                            torch.tensor([4, 31, 19, 2, 746, 344, 1914, 5, 45, 3], dtype=torch.int64)))
+        self.helper_test_func(train_dataset, 29000, train_dataset[20],
+                              (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2], dtype=torch.int64),
+                               torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3], dtype=torch.int64)))
+        self.helper_test_func(valid_dataset, 1014, valid_dataset[30],
+                              (torch.tensor([3, 178, 25, 84, 1003, 56, 18, 153, 2], dtype=torch.int64),
+                               torch.tensor([4, 23, 31, 80, 46, 1347, 5, 2, 118, 3], dtype=torch.int64)))
+        self.helper_test_func(test_dataset, 1000, test_dataset[40],
+                              (torch.tensor([3, 25, 5, 11, 3914, 1536, 20, 63, 2], dtype=torch.int64),
+                               torch.tensor([4, 31, 19, 2, 746, 344, 1914, 5, 45, 3], dtype=torch.int64)))
 
         de_vocab, en_vocab = train_dataset.get_vocab()
         de_tokens_ids = [
@@ -192,13 +192,15 @@ class TestDataset(TorchtextTestCase):
         # Add test for the subset of the standard datasets
         train_dataset, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
         language1, language2 = next(iter(train_dataset))
-        self.assertEqual(language1, 'Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.')
-        self.assertEqual(language2, 'Two young  White males are outside near many bushes.')
+        self.helper_test_func(train_dataset, 29000, (language1, language2),
+                              ('Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.',
+                               'Two young  White males are outside near many bushes.'))
         del train_dataset, test_dataset
         train_dataset, = Multi30k(data_select=('train'))
+        self.helper_test_func(train_dataset, 29000, train_dataset[20],
+                              (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2], dtype=torch.int64),
+                               torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3], dtype=torch.int64)))
         self.assertEqual(len(train_dataset), 29000)
-        self.assertEqual(train_dataset[20], (torch.tensor([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2], dtype=torch.int64),
-                                             torch.tensor([4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3], dtype=torch.int64)))
 
         datafile = os.path.join(self.project_root, ".data", "train*")
         conditional_remove(datafile)
@@ -215,47 +217,33 @@ class TestDataset(TorchtextTestCase):
 
         # smoke test to ensure imdb works properly
         train_dataset, valid_dataset, test_dataset = UDPOS()
-        self.assertEqual(len(train_dataset), 12543)
-        self.assertEqual(len(valid_dataset), 2002)
-        self.assertEqual(len(test_dataset), 2077)
-        self.assertEqual(train_dataset[0][0][:10],
-                         torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585], dtype=torch.int64))
-        self.assertEqual(train_dataset[0][1][:10],
-                         torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8], dtype=torch.int64))
-        self.assertEqual(train_dataset[0][2][:10],
-                         torch.tensor([5, 34, 5, 27, 7, 11, 14, 5, 5, 5], dtype=torch.int64))
-        self.assertEqual(train_dataset[-1][0][:10],
-                         torch.tensor([9, 32, 169, 436, 59, 192, 30, 6, 117, 17], dtype=torch.int64))
-        self.assertEqual(train_dataset[-1][1][:10],
-                         torch.tensor([5, 10, 11, 4, 11, 11, 3, 12, 11, 4], dtype=torch.int64))
-        self.assertEqual(train_dataset[-1][2][:10],
-                         torch.tensor([6, 20, 8, 10, 8, 8, 24, 13, 8, 15], dtype=torch.int64))
-
-        self.assertEqual(valid_dataset[0][0][:10],
-                         torch.tensor([746, 3, 10633, 656, 25, 1334, 45], dtype=torch.int64))
-        self.assertEqual(valid_dataset[0][1][:10],
-                         torch.tensor([6, 7, 8, 4, 7, 2, 3], dtype=torch.int64))
-        self.assertEqual(valid_dataset[0][2][:10],
-                         torch.tensor([3, 4, 5, 16, 4, 2, 27], dtype=torch.int64))
-        self.assertEqual(valid_dataset[-1][0][:10],
-                         torch.tensor([354, 4, 31, 17, 141, 421, 148, 6, 7, 78], dtype=torch.int64))
-        self.assertEqual(valid_dataset[-1][1][:10],
-                         torch.tensor([11, 3, 5, 4, 9, 2, 2, 12, 7, 11], dtype=torch.int64))
-        self.assertEqual(valid_dataset[-1][2][:10],
-                         torch.tensor([8, 12, 6, 15, 7, 2, 2, 13, 4, 8], dtype=torch.int64))
-
-        self.assertEqual(test_dataset[0][0][:10],
-                         torch.tensor([210, 54, 3115, 0, 12229, 0, 33], dtype=torch.int64))
-        self.assertEqual(test_dataset[0][1][:10],
-                         torch.tensor([5, 15, 8, 4, 6, 8, 3], dtype=torch.int64))
-        self.assertEqual(test_dataset[0][2][:10],
-                         torch.tensor([30, 3, 5, 14, 3, 5, 9], dtype=torch.int64))
-        self.assertEqual(test_dataset[-1][0][:10],
-                         torch.tensor([116, 0, 6, 11, 412, 10, 0, 4, 0, 6], dtype=torch.int64))
-        self.assertEqual(test_dataset[-1][1][:10],
-                         torch.tensor([5, 4, 12, 10, 9, 15, 4, 3, 4, 12], dtype=torch.int64))
-        self.assertEqual(test_dataset[-1][2][:10],
-                         torch.tensor([6, 16, 13, 16, 7, 3, 19, 12, 19, 13], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 12543, (train_dataset[0][0][:10], train_dataset[0][1][:10],
+                                                     train_dataset[0][2][:10], train_dataset[-1][0][:10],
+                                                     train_dataset[-1][1][:10], train_dataset[-1][2][:10]),
+                              (torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585], dtype=torch.int64),
+                               torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8], dtype=torch.int64),
+                               torch.tensor([5, 34, 5, 27, 7, 11, 14, 5, 5, 5], dtype=torch.int64),
+                               torch.tensor([9, 32, 169, 436, 59, 192, 30, 6, 117, 17], dtype=torch.int64),
+                               torch.tensor([5, 10, 11, 4, 11, 11, 3, 12, 11, 4], dtype=torch.int64),
+                               torch.tensor([6, 20, 8, 10, 8, 8, 24, 13, 8, 15], dtype=torch.int64)))
+        self.helper_test_func(valid_dataset, 2002, (valid_dataset[0][0][:10], valid_dataset[0][1][:10],
+                                                    valid_dataset[0][2][:10], valid_dataset[-1][0][:10],
+                                                    valid_dataset[-1][1][:10], valid_dataset[-1][2][:10]),
+                              (torch.tensor([746, 3, 10633, 656, 25, 1334, 45], dtype=torch.int64),
+                               torch.tensor([6, 7, 8, 4, 7, 2, 3], dtype=torch.int64),
+                               torch.tensor([3, 4, 5, 16, 4, 2, 27], dtype=torch.int64),
+                               torch.tensor([354, 4, 31, 17, 141, 421, 148, 6, 7, 78], dtype=torch.int64),
+                               torch.tensor([11, 3, 5, 4, 9, 2, 2, 12, 7, 11], dtype=torch.int64),
+                               torch.tensor([8, 12, 6, 15, 7, 2, 2, 13, 4, 8], dtype=torch.int64)))
+        self.helper_test_func(test_dataset, 2077, (test_dataset[0][0][:10], test_dataset[0][1][:10],
+                                                   test_dataset[0][2][:10], test_dataset[-1][0][:10],
+                                                   test_dataset[-1][1][:10], test_dataset[-1][2][:10]),
+                              (torch.tensor([210, 54, 3115, 0, 12229, 0, 33], dtype=torch.int64),
+                               torch.tensor([5, 15, 8, 4, 6, 8, 3], dtype=torch.int64),
+                               torch.tensor([30, 3, 5, 14, 3, 5, 9], dtype=torch.int64),
+                               torch.tensor([116, 0, 6, 11, 412, 10, 0, 4, 0, 6], dtype=torch.int64),
+                               torch.tensor([5, 4, 12, 10, 9, 15, 4, 3, 4, 12], dtype=torch.int64),
+                               torch.tensor([6, 16, 13, 16, 7, 3, 19, 12, 19, 13], dtype=torch.int64)))
 
         # Assert vocabs
         self.assertEqual(len(train_dataset.get_vocabs()), 3)
@@ -270,14 +258,12 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = UDPOS(data_select=('train'))
-        self.assertEqual(len(train_dataset), 12543)
-        self.assertEqual(train_dataset[0][0][:10],
-                         torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585], dtype=torch.int64))
-        self.assertEqual(train_dataset[0][1][:10],
-                         torch.tensor([8, 3, 8, 3, 9, 2, 4, 8, 8, 8], dtype=torch.int64))
+        self.helper_test_func(train_dataset, 12543, (train_dataset[0][0][:10], train_dataset[-1][2][:10]),
+                              (torch.tensor([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585], dtype=torch.int64),
+                               torch.tensor([6, 20, 8, 10, 8, 8, 24, 13, 8, 15], dtype=torch.int64)))
         train_iter, = torchtext.experimental.datasets.raw.UDPOS(data_select=('train'))
-        self.assertEqual(next(iter(train_iter))[0][:5], ['Al', '-', 'Zaman', ':', 'American'])
-        del train_dataset, test_dataset
+        self.helper_test_func(train_iter, 12543, next(iter(train_iter))[0][:5], ['Al', '-', 'Zaman', ':', 'American'])
+        del train_iter
 
     def test_conll_sequence_tagging(self):
         from torchtext.experimental.datasets import CoNLL2000Chunking
