@@ -1,5 +1,4 @@
 import os
-import platform
 import shutil
 import tempfile
 import uuid
@@ -7,18 +6,11 @@ import unittest
 
 import sentencepiece as spm
 import torch
-import torchtext.data as data
 from torchtext.data.functional import (
     generate_sp_model,
     load_sp_model,
     sentencepiece_numericalizer,
     sentencepiece_tokenizer,
-    custom_replace,
-    simple_space_split,
-)
-from torchtext.experimental.transforms import (
-    basic_english_normalize,
-    regex_tokenizer
 )
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -87,90 +79,6 @@ class TestFunctional(TorchtextTestCase):
             'Supported types are: str, io.BufferedReader'
         ):
             load_sp_model(dict())
-
-    # TODO(Nayef211): remove decorator once https://github.com/pytorch/pytorch/issues/38207 is closed
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_BasicEnglishNormalize(self):
-        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
-        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
-                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
-
-        basic_eng_norm = basic_english_normalize()
-        experimental_eager_tokens = basic_eng_norm(test_sample)
-
-        jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())
-        experimental_jit_tokens = jit_basic_eng_norm(test_sample)
-
-        basic_english_tokenizer = data.get_tokenizer("basic_english")
-        eager_tokens = basic_english_tokenizer(test_sample)
-
-        assert not basic_eng_norm.is_jitable
-        assert basic_eng_norm.to_ivalue().is_jitable
-
-        self.assertEqual(experimental_jit_tokens, ref_results)
-        self.assertEqual(eager_tokens, ref_results)
-        self.assertEqual(experimental_eager_tokens, ref_results)
-
-        # test load and save
-        save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
-        torch.save(basic_eng_norm.to_ivalue(), save_path)
-        loaded_basic_eng_norm = torch.load(save_path)
-
-        loaded_eager_tokens = loaded_basic_eng_norm(test_sample)
-        self.assertEqual(loaded_eager_tokens, ref_results)
-
-    # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_RegexTokenizer(self):
-        test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
-        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
-                       'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
-        patterns_list = [
-            (r'\'', ' \'  '),
-            (r'\"', ''),
-            (r'\.', ' . '),
-            (r'<br \/>', ' '),
-            (r',', ' , '),
-            (r'\(', ' ( '),
-            (r'\)', ' ) '),
-            (r'\!', ' ! '),
-            (r'\?', ' ? '),
-            (r'\;', ' '),
-            (r'\:', ' '),
-            (r'\s+', ' ')]
-
-        r_tokenizer = regex_tokenizer(patterns_list)
-        eager_tokens = r_tokenizer(test_sample)
-
-        jit_r_tokenizer = torch.jit.script(r_tokenizer.to_ivalue())
-        jit_tokens = jit_r_tokenizer(test_sample)
-
-        assert not r_tokenizer.is_jitable
-        assert r_tokenizer.to_ivalue().is_jitable
-
-        self.assertEqual(eager_tokens, ref_results)
-        self.assertEqual(jit_tokens, ref_results)
-
-        # test load and save
-        save_path = os.path.join(self.test_dir, 'regex.pt')
-        torch.save(r_tokenizer.to_ivalue(), save_path)
-        loaded_r_tokenizer = torch.load(save_path)
-
-        loaded_eager_tokens = loaded_r_tokenizer(test_sample)
-        self.assertEqual(loaded_eager_tokens, ref_results)
-
-    def test_custom_replace(self):
-        custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])
-        test_sample = ['test     cuStom   replace', 'with   uSer   instruction']
-        ref_results = ['test custom replace', 'with user instruction']
-        self.assertEqual(list(custom_replace_transform(test_sample)),
-                         ref_results)
-
-    def test_simple_space_split(self):
-        test_sample = ['test simple space split function']
-        ref_results = ['test', 'simple', 'space', 'split', 'function']
-        self.assertEqual(list(simple_space_split(test_sample))[0],
-                         ref_results)
 
 
 class ScriptableSP(torch.jit.ScriptModule):

@@ -3,7 +3,6 @@ from . import nn
 from . import datasets
 from . import utils
 from . import vocab
-from . import experimental
 
 
 try:
@@ -15,8 +14,7 @@ __all__ = ['data',
            'nn',
            'datasets',
            'utils',
-           'vocab',
-           'experimental']
+           'vocab']
 
 
 def _init_extension():

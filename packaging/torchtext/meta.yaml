@@ -31,7 +31,6 @@ test:
     - torchtext
     - torchtext.datasets
     - torchtext.data
-    - torchtext.experimental
 
   source_files:
     - test
