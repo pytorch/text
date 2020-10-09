@@ -12,7 +12,7 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 
 struct Vocab : torch::CustomClassHolder {
 private:
-  int64_t unk_index_;
+  int64_t unk_index_ = -1;
   IndexDict stoi_;
 
 public:
@@ -20,7 +20,7 @@ public:
   StringList itos_;
 
   explicit Vocab(const std::vector<std::string> &tokens);
-  explicit Vocab(const StringList &tokens, const IndexDict &stoi)
+  explicit Vocab(const StringList &tokens, const IndexDict &stoi);
   int64_t __len__() const;
   int64_t __getitem__(const std::string &token) const;
   void append_token(const std::string &token);
