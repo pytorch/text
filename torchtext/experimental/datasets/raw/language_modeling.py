@@ -142,6 +142,8 @@ def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
             (Default: 'train')
         year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
+
+    Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
 
     return _setup_datasets("WMTNewsCrawl", root, data_select, year, language)
