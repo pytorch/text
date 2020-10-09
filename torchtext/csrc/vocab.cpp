@@ -430,8 +430,6 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
         "Expected `integers` and `tensors` states to be empty.");
   }
 
-    return c10::make_intrusive<Vocab>(std::move(strings));
-  }
 #ifdef _MSC_VER
   std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
             << version_str << std::endl;
