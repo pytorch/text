@@ -134,7 +134,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        self.assertEqual(v.lookup_token(1), 'a')
+        self.assertEqual(v.lookup_token(0), 'a')
 
     def test_vocab_lookup_tokens(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -180,11 +180,11 @@ class TestVocab(TorchtextTestCase):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
+        vocab(c)
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting unk token to None
-            vocab(c)
-            vocab['not_in_vocab']
+            vocab(['not_in_vocab'])
 
     def test_vocab_load_and_save(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}

@@ -430,10 +430,6 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
         "Expected `integers` and `tensors` states to be empty.");
   }
 
-  if (version_str.compare("0.0.1") >= 0) {
-    std::string unk_token = strings.back();
-    strings.pop_back(); // remove last element which is unk_token
-
     return c10::make_intrusive<Vocab>(std::move(strings));
   }
 #ifdef _MSC_VER
