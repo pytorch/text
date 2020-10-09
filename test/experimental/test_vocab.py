@@ -192,7 +192,7 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
-
+        v.set_unk_index(1)
         expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
@@ -205,6 +205,7 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+        self.assertEqual(loaded_v.return_unk_index(), v.return_unk_index())
 
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',

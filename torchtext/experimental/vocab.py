@@ -263,4 +263,5 @@ class Vocab(nn.Module):
         r"""Return a JITable Vocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_)
+        cpp_vocab.set_unk_index(self.vocab.return_unk_index())
         return Vocab(cpp_vocab)

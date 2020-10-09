@@ -397,13 +397,13 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   std::vector<torch::Tensor> tensors;
 
   VocabStates states = std::make_tuple(self->version_str_, std::move(integers),
-                                       std::move(strings), std::move(tensors));
+                                       std::move(strings), self->return_unk_index(), std::move(tensors));
   return states;
 }
 
 c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  if (state_size != 4) {
+  if (state_size != 5) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Expected deserialized Vocab to have 4 states "
                  "but found "
@@ -417,7 +417,8 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto &version_str = std::get<0>(states);
   auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
-  auto &tensors = std::get<3>(states);
+  auto &integer = std::get<3>(states);
+  auto &tensors = std::get<4>(states);
 
   // check integers and tensors are empty
   if (integers.size() != 0 || tensors.size() != 0) {
@@ -430,8 +431,11 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
         "Expected `integers` and `tensors` states to be empty.");
   }
 
-  if (version_str.compare("0.0.1") >= 0)    
-    return c10::make_intrusive<Vocab>(std::move(strings));    
+  if (version_str.compare("0.0.1") >= 0) {
+    auto vocab_instance = c10::make_intrusive<Vocab>(std::move(strings));
+    vocab_instance->set_unk_index(integer);
+    return vocab_instance;
+  }
 #ifdef _MSC_VER
   std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
             << version_str << std::endl;
