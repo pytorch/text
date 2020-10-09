@@ -51,7 +51,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("__len__", &Vectors::__len__);
 
   py::class_<Vocab>(m, "Vocab")
-      .def(py::init<std::vector<std::string>, std::string>())
+      .def(py::init<std::vector<std::string>>())
       .def_readonly("itos_", &Vocab::itos_)
       .def("__getitem__", &Vocab::__getitem__)
       .def("__len__", &Vocab::__len__)
@@ -134,7 +134,7 @@ static auto sentencepiece =
 
 static auto vocab =
     torch::class_<Vocab>("torchtext", "Vocab")
-        .def(torch::init<StringList, std::string>())
+        .def(torch::init<StringList>())
         .def("__getitem__", &Vocab::__getitem__)
         .def("__len__", &Vocab::__len__)
         .def("insert_token", &Vocab::insert_token)
