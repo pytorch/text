@@ -17,13 +17,20 @@ class TestVocab(TorchtextTestCase):
         torch._C._jit_clear_class_registry()
         torch.jit._recursive.concrete_type_store = torch.jit._recursive.ConcreteTypeStore()
 
-    def test_has_unk(self):
+    def test_has_no_unk(self):
         c = OrderedDict()
         v = vocab(c)
+        self.assertEqual(v.return_unk_index(), -1)
 
         # check if unk is mapped to the first index
-        self.assertEqual(v['not_in_it'], 0)
-        self.assertEqual(v['<unk>'], 0)
+        with self.assertRaises(RuntimeError):
+            v['not_in_it']
+        with self.assertRaises(RuntimeError):
+            v['<unk>']
+
+        v.insert_token('not_in_it', 0)
+        v.set_unk_index(0)
+        self.assertEqual(v.return_unk_index(), 0)
 
     def test_new_unk(self):
         c = OrderedDict()
