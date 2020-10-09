@@ -32,14 +32,6 @@ class TestVocab(TorchtextTestCase):
         v.set_unk_index(0)
         self.assertEqual(v.return_unk_index(), 0)
 
-    def test_new_unk(self):
-        c = OrderedDict()
-        v = vocab(c, unk_token="<new_unk>")
-
-        # check if new_unk is mapped to the first index
-        self.assertEqual(v['<new_unk>'], 0)
-        self.assertEqual(v['not_in_it'], 0)
-
     def test_vocab_get_item(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
@@ -189,9 +181,10 @@ class TestVocab(TorchtextTestCase):
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
         c = OrderedDict(sorted_by_freq_tuples)
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             # Test proper error raised when setting unk token to None
-            vocab(c, unk_token=None)
+            vocab(c)
+            vocab['not_in_vocab']
 
     def test_vocab_load_and_save(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
