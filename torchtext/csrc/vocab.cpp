@@ -11,8 +11,7 @@ namespace torchtext {
 Vocab::Vocab(const StringList &tokens, const IndexDict &stoi)
     : stoi_(std::move(stoi)), itos_(std::move(tokens)) {}
 
-Vocab::Vocab(const StringList &tokens)
-    : itos_(std::move(tokens)) {
+Vocab::Vocab(const StringList &tokens) : itos_(std::move(tokens)) {
   stoi_.reserve(tokens.size());
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
@@ -26,7 +25,7 @@ Vocab::Vocab(const StringList &tokens)
     }
     stoi_[std::move(tokens[i])] = i;
   }
-  //unk_index_ = stoi_.find(unk_token)->second;
+  // unk_index_ = stoi_.find(unk_token)->second;
 }
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
@@ -35,13 +34,12 @@ int64_t Vocab::__getitem__(const std::string &token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
     return item->second;
-  }
-  else if (unk_index_ != -1) {
+  } else if (unk_index_ != -1) {
     return unk_index_;
-  }
-  else
-      throw std::runtime_error("UNK index has not been set up yet. Call set_unk_index() function to set up the UNK index");
-
+  } else
+    throw std::runtime_error(
+        "UNK index has not been set up yet. Call set_unk_index() function to "
+        "set up the UNK index");
 }
 
 void Vocab::append_token(const std::string &token) {
@@ -97,14 +95,13 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
 void Vocab::set_unk_index(const int64_t index) {
   if (unk_index_ != -1)
-    std::cerr << "UNK index has been assigned. You are resetting the UNK index here." 
-              << index << std::endl;
+    std::cerr
+        << "UNK index has been assigned. You are resetting the UNK index here."
+        << index << std::endl;
   unk_index_ = index;
 }
 
-int64_t Vocab::return_unk_index() const {
-  return unk_index_;
-}
+int64_t Vocab::return_unk_index() const { return unk_index_; }
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
@@ -221,8 +218,9 @@ struct CompareTokens {
 };
 
 std::tuple<IndexDict, StringList>
-_concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters, const int64_t min_freq,
-               const int64_t num_lines, const bool sort_tokens) {
+_concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
+               const int64_t min_freq, const int64_t num_lines,
+               const bool sort_tokens) {
   TORCH_CHECK(chunk_counters.size() > 0,
               "There must be at least 1 chunk to concatenate!");
 
@@ -271,7 +269,8 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters, const int
   // insert unk_token if not present
   // if (tokens_freq.find(unk_token) == tokens_freq.end()) {
   //   std::cerr << "The `unk_token` " << unk_token
-  //             << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
+  //             << " wasn't found in the `ordered_dict`. Adding the `unk_token`
+  //             "
   //                "to the beginning of the Vocab."
   //             << std::endl;
   //
