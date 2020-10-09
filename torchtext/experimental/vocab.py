@@ -194,7 +194,7 @@ class Vocab(nn.Module):
             index (int): the unknown index.
 
         """
-        self.vocab.return_unk_index()
+        return self.vocab.return_unk_index()
 
     @torch.jit.export
     def append_token(self, token: str) -> None:
