@@ -17,6 +17,9 @@ class TestVocab(TorchtextTestCase):
         torch._C._jit_clear_class_registry()
         torch.jit._recursive.concrete_type_store = torch.jit._recursive.ConcreteTypeStore()
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_has_no_unk(self):
         c = OrderedDict()
         v = vocab(c)
