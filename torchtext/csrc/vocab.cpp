@@ -25,7 +25,6 @@ Vocab::Vocab(const StringList &tokens) : itos_(std::move(tokens)) {
     }
     stoi_[std::move(tokens[i])] = i;
   }
-  // unk_index_ = stoi_.find(unk_token)->second;
 }
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
@@ -266,17 +265,6 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
     unique_tokens.push_back(token_freq_pair.first);
   }
 
-  // insert unk_token if not present
-  // if (tokens_freq.find(unk_token) == tokens_freq.end()) {
-  //   std::cerr << "The `unk_token` " << unk_token
-  //             << " wasn't found in the `ordered_dict`. Adding the `unk_token`
-  //             "
-  //                "to the beginning of the Vocab."
-  //             << std::endl;
-  //
-  // unique_tokens.insert(unique_tokens.begin(), unk_token);
-  // }
-
   // create stoi
   IndexDict stoi;
   stoi.reserve(num_lines);
@@ -396,8 +384,9 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   StringList strings = self->itos_;
   std::vector<torch::Tensor> tensors;
 
-  VocabStates states = std::make_tuple(self->version_str_, std::move(integers),
-                                       std::move(strings), self->return_unk_index(), std::move(tensors));
+  VocabStates states = std::make_tuple(
+      self->version_str_, std::move(integers), std::move(strings),
+      self->return_unk_index(), std::move(tensors));
   return states;
 }
 
