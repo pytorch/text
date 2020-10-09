@@ -178,6 +178,7 @@ class TestVocab(TorchtextTestCase):
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_errors_vocab_python(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
