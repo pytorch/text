@@ -95,6 +95,17 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   // unk_index_ = stoi_.find(unk_token_)->second;
 }
 
+void Vocab::set_unk_index(const int64_t index) {
+  if (unk_index_ != -1)
+    std::cerr << "UNK index has been assigned. You are resetting the UNK index here." 
+              << index << std::endl;
+  unk_index_ = index;
+}
+
+int64_t Vocab::return_unk_index() const {
+  return unk_index_;
+}
+
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
 #ifdef _MSC_VER

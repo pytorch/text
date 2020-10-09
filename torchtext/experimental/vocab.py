@@ -180,6 +180,24 @@ class Vocab(nn.Module):
         self.vocab.insert_token(token, index)
 
     @torch.jit.export
+    def set_unk_index(self, index: int) -> None:
+        r"""
+        Args:
+            index (int): the unknown index.
+
+        """
+        self.vocab.set_unk_index(index)
+
+    @torch.jit.export
+    def return_unk_index(self) -> int:
+        r"""
+        return:
+            index (int): the unknown index.
+
+        """
+        self.vocab.return_unk_index()
+
+    @torch.jit.export
     def append_token(self, token: str) -> None:
         r"""
         Args:
