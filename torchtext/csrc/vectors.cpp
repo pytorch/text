@@ -19,7 +19,7 @@ Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
                  const torch::Tensor &unk_tensor)
     : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
 
-Vectors::Vectors(const std::vector<std::string> &tokens,
+Vectors::Vectors(ConstStringList tokens,
                  const std::vector<std::int64_t> &indices,
                  const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
     : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
@@ -54,7 +54,7 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
   }
 }
 
-torch::Tensor Vectors::__getitem__(const std::string &token) {
+torch::Tensor Vectors::__getitem__(const_string token) {
   const auto &item = stovec_.find(token);
   if (item != stovec_.end()) {
     return item->second;
@@ -69,7 +69,7 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
   return unk_tensor_;
 }
 
-torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
+torch::Tensor Vectors::lookup_vectors(ConstStringList tokens) {
   std::vector<torch::Tensor> vectors;
   for (const std::string &token : tokens) {
     vectors.push_back(__getitem__(token));
@@ -77,8 +77,7 @@ torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
   return torch::stack(vectors, 0);
 }
 
-void Vectors::__setitem__(const std::string &token,
-                          const torch::Tensor &vector) {
+void Vectors::__setitem__(const_string token, const torch::Tensor &vector) {
   const auto &item_index = stoi_.find(token);
   if (item_index != stoi_.end()) {
     stovec_[token] = vector;

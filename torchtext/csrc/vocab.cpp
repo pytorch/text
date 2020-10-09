@@ -1,5 +1,4 @@
 #include <ATen/Parallel.h> // @manual
-#include <common.h>
 #include <stdexcept>
 #include <string>
 #include <torch/csrc/jit/python/pybind_utils.h> // @manual
@@ -8,12 +7,12 @@
 
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
-             const std::string &unk_token, const int64_t unk_index)
+Vocab::Vocab(ConstStringList tokens, const IndexDict &stoi,
+             const_string unk_token, const int64_t unk_index)
     : unk_index_(std::move(unk_index)), stoi_(std::move(stoi)),
       itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {}
 
-Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
+Vocab::Vocab(ConstStringList tokens, const_string unk_token)
     : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
   stoi_.reserve(tokens.size());
   for (std::size_t i = 0; i < tokens.size(); i++) {
@@ -33,7 +32,7 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
-int64_t Vocab::__getitem__(const std::string &token) const {
+int64_t Vocab::__getitem__(const_string token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
     return item->second;
@@ -41,7 +40,7 @@ int64_t Vocab::__getitem__(const std::string &token) const {
   return unk_index_;
 }
 
-void Vocab::append_token(const std::string &token) {
+void Vocab::append_token(const_string token) {
   if (stoi_.find(token) == stoi_.end()) {
     // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
     // on Windows where the size gets updated before the assign occurs.
@@ -53,7 +52,7 @@ void Vocab::append_token(const std::string &token) {
   }
 }
 
-void Vocab::insert_token(const std::string &token, const int64_t &index) {
+void Vocab::insert_token(const_string token, const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Specified index " << index
@@ -116,7 +115,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
   return tokens;
 }
 
-std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
+std::vector<int64_t> Vocab::lookup_indices(ConstStringList tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
     indices[i] = __getitem__(tokens[i]);
@@ -279,8 +278,8 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
 }
 
 constexpr int64_t GRAIN_SIZE = 13107;
-Vocab _load_vocab_from_file(const std::string &file_path,
-                            const std::string &unk_token,
+Vocab _load_vocab_from_file(const_string file_path,
+                            const_string unk_token,
                             const int64_t min_freq, const int64_t num_cpus) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
@@ -330,8 +329,8 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
 
-Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
-                                     const std::string &unk_token,
+Vocab _load_vocab_from_raw_text_file(const_string file_path,
+                                     const_string unk_token,
                                      const int64_t min_freq,
                                      const int64_t num_cpus, py::object fn) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
