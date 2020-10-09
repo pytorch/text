@@ -82,7 +82,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        self.assertEqual(len(v), 4)
+        self.assertEqual(len(v), 3)
 
     def test_vocab_basic(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
@@ -123,7 +123,7 @@ class TestVocab(TorchtextTestCase):
         jit_v = torch.jit.script(v.to_ivalue())
 
         tokens = ['b', 'a', 'c']
-        expected_indices = [2, 1, 3]
+        expected_indices = [1, 0, 2]
 
         self.assertEqual(v(tokens), expected_indices)
         self.assertEqual(jit_v(tokens), expected_indices)
@@ -142,7 +142,7 @@ class TestVocab(TorchtextTestCase):
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
 
-        indices = [2, 1, 3]
+        indices = [1, 0, 2]
         expected_tokens = ['b', 'a', 'c']
 
         self.assertEqual(v.lookup_tokens(indices), expected_tokens)
@@ -154,7 +154,7 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
 
         tokens = ['b', 'a', 'c']
-        expected_indices = [2, 1, 3]
+        expected_indices = [1, 0, 2]
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
 
