@@ -37,8 +37,8 @@ int64_t Vocab::__getitem__(const std::string &token) const {
     return fallback_index_;
   } else
     throw std::runtime_error(
-        "UNK index has not been set up yet. Call set_fallback_index() function to "
-        "set up the UNK index");
+        "The fallback index has not been set up yet. Call set_fallback_index() function to "
+        "set up the fallback index");
 }
 
 void Vocab::append_token(const std::string &token) {
