@@ -36,9 +36,9 @@ int64_t Vocab::__getitem__(const std::string &token) const {
   } else if (fallback_index_ != -1) {
     return fallback_index_;
   } else
-    throw std::runtime_error(
-        "The fallback index has not been set up yet. Call set_fallback_index() function to "
-        "set up the fallback index");
+    throw std::runtime_error("The fallback index has not been set up yet. Call "
+                             "set_fallback_index() function to "
+                             "set up the fallback index");
 }
 
 void Vocab::append_token(const std::string &token) {
