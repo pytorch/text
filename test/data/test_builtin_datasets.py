@@ -4,6 +4,7 @@ import os
 import glob
 import shutil
 import torchtext.data as data
+import torch
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -16,13 +17,16 @@ def conditional_remove(f):
 
 
 class TestDataset(TorchtextTestCase):
+    def _helper_test_func(self, length, target_length, results, target_results):
+        self.assertEqual(length, target_length)
+        if isinstance(target_results, list):
+            target_results = torch.tensor(target_results, dtype=torch.int64)
+        if isinstance(target_results, tuple):
+            target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
+        self.assertEqual(results, target_results)
+
     def test_wikitext2_legacy(self):
         from torchtext.datasets import WikiText2
-        # smoke test to ensure wikitext2 works properly
-
-        # NOTE
-        # test_wikitext2 and test_wikitext2_legacy have some cache incompatibility.
-        # Keeping one's cache make the other fail. So we need to clean up the cache dir
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
         conditional_remove(cachedir)
 
