@@ -190,7 +190,7 @@ class TestDataset(TorchtextTestCase):
         train_dataset, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
         self._helper_test_func(len(train_dataset), 29000, ' '.join(next(iter(train_dataset))),
                                ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.',
-                               'Two young  White males are outside near many bushes.']))
+                                         'Two young  White males are outside near many bushes.']))
         del train_dataset, test_dataset
         train_dataset, = Multi30k(data_select=('train'))
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
