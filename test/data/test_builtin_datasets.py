@@ -188,9 +188,9 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, = torchtext.experimental.datasets.raw.Multi30k(data_select=('train'))
-        self._helper_test_func(len(train_dataset), 29000, next(iter(train_dataset)),
-                               ('Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.',
-                                'Two young  White males are outside near many bushes.'))
+        self._helper_test_func(len(train_dataset), 29000, ' '.join(next(iter(train_dataset))),
+                               ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.',
+                               'Two young  White males are outside near many bushes.']))
         del train_dataset, test_dataset
         train_dataset, = Multi30k(data_select=('train'))
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
@@ -257,7 +257,8 @@ class TestDataset(TorchtextTestCase):
                                ([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585],
                                 [6, 20, 8, 10, 8, 8, 24, 13, 8, 15]))
         train_iter, = torchtext.experimental.datasets.raw.UDPOS(data_select=('train'))
-        self._helper_test_func(len(train_iter), 12543, next(iter(train_iter))[0][:5], ['Al', '-', 'Zaman', ':', 'American'])
+        self._helper_test_func(len(train_iter), 12543, ' '.join(next(iter(train_iter))[0][:5]),
+                               ' '.join(['Al', '-', 'Zaman', ':', 'American']))
         del train_iter
 
     def test_conll_sequence_tagging(self):
@@ -307,7 +308,8 @@ class TestDataset(TorchtextTestCase):
                                 [18, 17, 12, 19, 10, 6, 3, 3, 4, 4],
                                 [3, 5, 7, 7, 3, 2, 6, 6, 3, 2]))
         train_iter, = torchtext.experimental.datasets.raw.CoNLL2000Chunking(data_select=('train'))
-        self._helper_test_func(len(train_iter), 8936, next(iter(train_iter))[0][:5], ['Confidence', 'in', 'the', 'pound', 'is'])
+        self._helper_test_func(len(train_iter), 8936, ' '.join(next(iter(train_iter))[0][:5]),
+                               ' '.join(['Confidence', 'in', 'the', 'pound', 'is']))
         del train_iter
 
     def test_squad1(self):
