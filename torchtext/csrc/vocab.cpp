@@ -89,8 +89,9 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  if
-    index <= unk_index_ { unk_index_ = unk_index_ + 1; }
+  if (index <= unk_index_) {
+    unk_index_ = unk_index_ + 1;
+  }
 }
 
 void Vocab::set_unk_index(const int64_t index) {
