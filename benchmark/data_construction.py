@@ -1,6 +1,4 @@
-import torch
 from torchtext.experimental import datasets
-import torch.utils._benchmark as benchmark_utils
 import time
 
 
@@ -13,7 +11,6 @@ def benchmark_construction(name, Dataset):
 
 
 def benchmark_raw_construction(name, Dataset):
-    t0 = time.perf_counter()
     print(name, end='')
     if name in "WMTNewsCrawl":
         d = Dataset(data_select=('train',))

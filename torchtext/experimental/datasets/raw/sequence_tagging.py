@@ -72,7 +72,8 @@ def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
-            By default, all the datasets (train, valid, test) are generated. Users could also choose any one or two of them,
+            By default, all the datasets (train, valid, test) are generated.
+            Users could also choose any one or two of them,
             for example ('train', 'valid', 'test') or just a string 'train'.
 
     Examples:
