@@ -50,21 +50,25 @@ class TestVocab(TorchtextTestCase):
 
         # add item to end
         v = vocab(c)
+        v.set_unk_index(0)
         v.insert_token('b', 2)
 
         expected_itos = ['<unk>', 'a', 'b']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
+        self.assertEqual(v.return_unk_index(), 0)
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
         # add item to middle
         v = vocab(c)
+        v.set_unk_index(0)
         v.insert_token('b', 0)
 
         expected_itos = ['b', '<unk>', 'a']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
+        self.assertEqual(v.return_unk_index(), 1)
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
