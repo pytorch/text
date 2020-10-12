@@ -32,11 +32,11 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    _datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                           valid_filenames=valid_filenames,
-                                           test_filenames=test_filenames,
-                                           data_select=data_select, root=root)
-    raw_data = {_name: [line for line in _dataset] for _name, _dataset in zip(data_select, _datasets)}
+    raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                              valid_filenames=valid_filenames,
+                                              test_filenames=test_filenames,
+                                              data_select=data_select, root=root)
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
 

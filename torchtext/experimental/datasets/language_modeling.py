@@ -82,10 +82,10 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_li
         return torch.tensor([vocab[token] for token in tokenizer(line)], dtype=torch.long)
 
     if dataset_name == 'WMTNewsCrawl':
-        _datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select, year=year, language=language)
+        raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select, year=year, language=language)
     else:
-        _datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
-    raw_data = {_name: [text_transform(txt) for txt in _dataset] for _name, _dataset in zip(data_select, _datasets)}
+        raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(data_select, raw_datasets)}
 
     return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
                  for item in data_select)
