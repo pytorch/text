@@ -24,7 +24,7 @@ class TestDataset(TorchtextTestCase):
             target_results = torch.tensor(target_results, dtype=torch.int64)
         if isinstance(target_results, tuple):
             target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
-        self.assertEqual(results, torch.tensor(target_results, dtype=torch.int64))
+        self.assertEqual(results, target_results)
 
     def test_wikitext2_legacy(self):
         from torchtext.datasets import WikiText2
