@@ -20,9 +20,9 @@ def conditional_remove(f):
 class TestDataset(TorchtextTestCase):
     def _helper_test_func(self, length, target_length, results, target_results):
         self.assertEqual(length, target_length)
-        if instance(target_results, list):
+        if isinstance(target_results, list):
             target_results = torch.tensor(target_results, dtype=torch.int64)
-        if instance(target_results, tuple):
+        if isinstance(target_results, tuple):
             target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
         self.assertEqual(results, torch.tensor(target_results, dtype=torch.int64))
 
