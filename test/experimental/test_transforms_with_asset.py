@@ -2,8 +2,11 @@ import torch
 from test.common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
 from torchtext.experimental.transforms import (
+    sentencepiece_tokenizer,
+    basic_english_normalize,
     VocabTransform,
-    pretrained_sp_model,
+    PRETRAINED_SP_MODEL,
+    sentencepiece_processor,
     TextSequentialTransforms,
 )
 from torchtext.experimental.vocab import (
@@ -13,7 +16,6 @@ from torchtext.experimental.vocab import (
 import shutil
 import tempfile
 import os
-import platform
 from torchtext.experimental.vectors import (
     GloVe,
     vectors,
@@ -151,7 +153,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
             self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_builtin_pretrained_sentencepiece_processor(self):
-        sp_model_path = download_from_url(pretrained_sp_model['text_unigram_25000'])
+        sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_unigram_25000'])
         spm_tokenizer = sentencepiece_tokenizer(sp_model_path)
         _path = os.path.join(self.project_root, '.data', 'text_unigram_25000.model')
         os.remove(_path)
@@ -159,7 +161,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         ref_results = ['\u2581the', '\u2581pre', 'trained', '\u2581sp', 'm', '\u2581model', '\u2581names']
         self.assertEqual(spm_tokenizer(test_sample), ref_results)
 
-        sp_model_path = download_from_url(pretrained_sp_model['text_bpe_25000'])
+        sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
         spm_transform = sentencepiece_processor(sp_model_path)
         _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
         os.remove(_path)
@@ -175,23 +177,6 @@ class TestTransformsWithAsset(TorchtextTestCase):
             jit_pipeline = torch.jit.script(pipeline.to_ivalue())
             self.assertEqual(pipeline('of that new'), [7, 18, 24])
             self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
-
-
-    # we separate out these errors because Windows runs into seg faults when propagating
-    # exceptions from C++ using pybind11
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_errors_vectors_cpp(self):
-        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
-        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
-        tokens = ['a', 'a', 'c']
-        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when tokens have duplicates
-            # TODO: use self.assertRaisesRegex() to check
-            # the key of the duplicate token in the error message
-            vectors(tokens, vecs)
 
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'

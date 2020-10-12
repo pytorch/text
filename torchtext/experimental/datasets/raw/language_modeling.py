@@ -1,7 +1,8 @@
-import torch
 import logging
 import io
 from torchtext.utils import download_from_url, extract_archive
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'WikiText2':
@@ -16,38 +17,8 @@ URLS = {
 }
 
 
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
-
-    def __init__(self, iterator, start=0, num_lines=None):
-        """Initiate language modeling dataset.
-        """
-        super(RawTextIterableDataset, self).__init__()
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = start
-        self.num_lines = num_lines
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if (self.num_lines is not None) and (i == (self.start + self.num_lines)):
-                break
-
-    def get_iterator(self):
-        return self._iterator
-
-
-def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'valid'), **kwargs):
+def _setup_datasets(dataset_name, root, data_select, year, language):
+    data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     if isinstance(data_select, str):
         data_select = [data_select]
     if not set(data_select).issubset(set(('train', 'test', 'valid'))):
@@ -65,8 +36,6 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'v
                              "or ('train',), got {}.".format(data_select))
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
         extracted_files = extract_archive(dataset_tar)
-        year = kwargs.get('year', 2010)
-        language = kwargs.get('language', 'en')
         file_name = 'news.{}.{}.shuffled'.format(year, language)
         extracted_files = [f for f in extracted_files if file_name in f]
     else:
@@ -84,10 +53,10 @@ def _setup_datasets(dataset_name, root='.data', data_select=('train', 'test', 'v
         logging.info('Creating {} data'.format(item))
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
-    return tuple(RawTextIterableDataset(data[item]) for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], data[item]) for item in data_select)
 
 
-def WikiText2(*args, **kwargs):
+def WikiText2(root='.data', data_select=('train', 'test', 'valid')):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -110,10 +79,10 @@ def WikiText2(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("WikiText2",) + args), **kwargs)
+    return _setup_datasets("WikiText2", root, data_select, None, None)
 
 
-def WikiText103(*args, **kwargs):
+def WikiText103(root='.data', data_select=('train', 'test', 'valid')):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -133,10 +102,10 @@ def WikiText103(*args, **kwargs):
         >>> valid_dataset, = WikiText103(data_select='valid')
     """
 
-    return _setup_datasets(*(("WikiText103",) + args), **kwargs)
+    return _setup_datasets("WikiText103", root, data_select, None, None)
 
 
-def PennTreebank(*args, **kwargs):
+def PennTreebank(root='.data', data_select=('train', 'test', 'valid')):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -159,10 +128,10 @@ def PennTreebank(*args, **kwargs):
 
     """
 
-    return _setup_datasets(*(("PennTreebank",) + args), **kwargs)
+    return _setup_datasets("PennTreebank", root, data_select, None, None)
 
 
-def WMTNewsCrawl(*args, **kwargs):
+def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
     """ Defines WMT News Crawl.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -171,9 +140,13 @@ def WMTNewsCrawl(*args, **kwargs):
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets.
             (Default: 'train')
+        year: the year of the dataset (Default: 2010)
+        language: the language of the dataset (Default: 'en')
+
+    Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
 
-    return _setup_datasets(*(("WMTNewsCrawl",) + args), **kwargs)
+    return _setup_datasets("WMTNewsCrawl", root, data_select, year, language)
 
 
 DATASETS = {
@@ -181,4 +154,10 @@ DATASETS = {
     'WikiText103': WikiText103,
     'PennTreebank': PennTreebank,
     'WMTNewsCrawl': WMTNewsCrawl
+}
+NUM_LINES = {
+    'WikiText2': 36718,
+    'WikiText103': 1801350,
+    'PennTreebank': 42068,
+    'WMTNewsCrawl': 17676013,
 }

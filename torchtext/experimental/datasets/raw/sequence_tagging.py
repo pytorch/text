@@ -1,6 +1,6 @@
-import torch
-
 from torchtext.utils import download_from_url, extract_archive
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     "UDPOS":
@@ -39,8 +39,8 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root=".data"):
-
+def _setup_datasets(dataset_name, separator, root, data_select):
+    data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
     extracted_files = []
     if isinstance(URLS[dataset_name], list):
         for f in URLS[dataset_name]:
@@ -59,78 +59,54 @@ def _setup_datasets(dataset_name, separator, root=".data"):
         "valid": _construct_filepath(extracted_files, "dev.txt"),
         "test": _construct_filepath(extracted_files, "test.txt")
     }
-
-    datasets = []
-    for key in data_filenames.keys():
-        if data_filenames[key] is not None:
-            datasets.append(
-                RawSequenceTaggingIterableDataset(
-                    _create_data_from_iob(data_filenames[key], separator)))
-        else:
-            datasets.append(None)
-
-    return datasets
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
+                 _create_data_from_iob(data_filenames[item], separator))
+                 if data_filenames[item] is not None else None for item in data_select)
 
 
-class RawSequenceTaggingIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text sequence tagging iterable datasets.
-    """
-    def __init__(self, iterator):
-        super(RawSequenceTaggingIterableDataset).__init__()
-
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = 0
-        self.num_lines = None
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if (self.num_lines is not None) and (i == (self.start +
-                                                       self.num_lines)):
-                break
-
-    def get_iterator(self):
-        return self._iterator
-
-
-def UDPOS(*args, **kwargs):
+def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training and test dataset
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+            By default, all the datasets (train, valid, test) are generated.
+            Users could also choose any one or two of them,
+            for example ('train', 'valid', 'test') or just a string 'train'.
 
     Examples:
-        >>> from torchtext.datasets.raw import UDPOS
+        >>> from torchtext.experimental.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets(*(("UDPOS", "\t") + args), **kwargs)
+    return _setup_datasets("UDPOS", "\t", root, data_select)
 
 
-def CoNLL2000Chunking(*args, **kwargs):
+def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets (Default: ('train', 'test'))
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
-        >>> from torchtext.datasets.raw import CoNLL2000Chunking
-        >>> train_dataset, valid_dataset, test_dataset = CoNLL2000Chunking()
+        >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
+        >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets(*(("CoNLL2000Chunking", " ") + args), **kwargs)
+    return _setup_datasets("CoNLL2000Chunking", " ", root, data_select)
 
 
-DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}
+DATASETS = {
+    "UDPOS": UDPOS,
+    "CoNLL2000Chunking": CoNLL2000Chunking
+}
+
+NUM_LINES = {
+    "UDPOS": 12543,
+    "CoNLL2000Chunking": 8936
+}

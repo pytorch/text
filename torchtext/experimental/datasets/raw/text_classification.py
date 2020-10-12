@@ -1,10 +1,12 @@
-import torch
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'AG_NEWS':
-        'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUDNpeUdjb0wxRms',
+        {'train': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv',
+         'test': 'https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/test.csv'},
     'SogouNews':
         'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbUkVqNEszd0pHaFE',
     'DBpedia':
@@ -31,55 +33,24 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
-
-    def __init__(self, iterator):
-        """Initiate text-classification dataset.
-        """
-        super(RawTextIterableDataset, self).__init__()
-        self._iterator = iterator
-        self.has_setup = False
-        self.start = 0
-        self.num_lines = None
-
-    def setup_iter(self, start=0, num_lines=None):
-        self.start = start
-        self.num_lines = num_lines
-        self.has_setup = True
-
-    def __iter__(self):
-        if not self.has_setup:
-            self.setup_iter()
-
-        for i, item in enumerate(self._iterator):
-            if i >= self.start:
-                yield item
-            if self.num_lines is not None and i == (self.start + self.num_lines):
-                break
-
-    def get_iterator(self):
-        return self._iterator
-
-
-def _setup_datasets(dataset_name, root='.data'):
-    dataset_tar = download_from_url(URLS[dataset_name], root=root)
-    extracted_files = extract_archive(dataset_tar)
-
+def _setup_datasets(dataset_name, root, data_select):
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
+    if dataset_name == 'AG_NEWS':
+        extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        extracted_files = extract_archive(dataset_tar)
+    cvs_path = {}
     for fname in extracted_files:
         if fname.endswith('train.csv'):
-            train_csv_path = fname
+            cvs_path['train'] = fname
         if fname.endswith('test.csv'):
-            test_csv_path = fname
-
-    train_iter = _create_data_from_csv(train_csv_path)
-    test_iter = _create_data_from_csv(test_csv_path)
-    return (RawTextIterableDataset(train_iter),
-            RawTextIterableDataset(test_iter))
+            cvs_path['test'] = fname
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
+                                        _create_data_from_csv(cvs_path[item])) for item in data_select)
 
 
-def AG_NEWS(*args, **kwargs):
+def AG_NEWS(root='.data', data_select=('train', 'test')):
     """ Defines AG_NEWS datasets.
 
     Create supervised learning dataset: AG_NEWS
@@ -88,15 +59,18 @@ def AG_NEWS(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
 
-    return _setup_datasets(*(("AG_NEWS",) + args), **kwargs)
+    return _setup_datasets("AG_NEWS", root, data_select)
 
 
-def SogouNews(*args, **kwargs):
+def SogouNews(root='.data', data_select=('train', 'test')):
     """ Defines SogouNews datasets.
 
     Create supervised learning dataset: SogouNews
@@ -105,15 +79,18 @@ def SogouNews(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
 
-    return _setup_datasets(*(("SogouNews",) + args), **kwargs)
+    return _setup_datasets("SogouNews", root, data_select)
 
 
-def DBpedia(*args, **kwargs):
+def DBpedia(root='.data', data_select=('train', 'test')):
     """ Defines DBpedia datasets.
 
     Create supervised learning dataset: DBpedia
@@ -122,15 +99,18 @@ def DBpedia(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
 
-    return _setup_datasets(*(("DBpedia",) + args), **kwargs)
+    return _setup_datasets("DBpedia", root, data_select)
 
 
-def YelpReviewPolarity(*args, **kwargs):
+def YelpReviewPolarity(root='.data', data_select=('train', 'test')):
     """ Defines YelpReviewPolarity datasets.
 
     Create supervised learning dataset: YelpReviewPolarity
@@ -139,15 +119,18 @@ def YelpReviewPolarity(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
 
-    return _setup_datasets(*(("YelpReviewPolarity",) + args), **kwargs)
+    return _setup_datasets("YelpReviewPolarity", root, data_select)
 
 
-def YelpReviewFull(*args, **kwargs):
+def YelpReviewFull(root='.data', data_select=('train', 'test')):
     """ Defines YelpReviewFull datasets.
 
     Create supervised learning dataset: YelpReviewFull
@@ -156,15 +139,18 @@ def YelpReviewFull(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
 
-    return _setup_datasets(*(("YelpReviewFull",) + args), **kwargs)
+    return _setup_datasets("YelpReviewFull", root, data_select)
 
 
-def YahooAnswers(*args, **kwargs):
+def YahooAnswers(root='.data', data_select=('train', 'test')):
     """ Defines YahooAnswers datasets.
 
     Create supervised learning dataset: YahooAnswers
@@ -173,15 +159,18 @@ def YahooAnswers(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
 
-    return _setup_datasets(*(("YahooAnswers",) + args), **kwargs)
+    return _setup_datasets("YahooAnswers", root, data_select)
 
 
-def AmazonReviewPolarity(*args, **kwargs):
+def AmazonReviewPolarity(root='.data', data_select=('train', 'test')):
     """ Defines AmazonReviewPolarity datasets.
 
     Create supervised learning dataset: AmazonReviewPolarity
@@ -190,15 +179,18 @@ def AmazonReviewPolarity(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
 
-    return _setup_datasets(*(("AmazonReviewPolarity",) + args), **kwargs)
+    return _setup_datasets("AmazonReviewPolarity", root, data_select)
 
 
-def AmazonReviewFull(*args, **kwargs):
+def AmazonReviewFull(root='.data', data_select=('train', 'test')):
     """ Defines AmazonReviewFull datasets.
 
     Create supervised learning dataset: AmazonReviewFull
@@ -207,12 +199,15 @@ def AmazonReviewFull(*args, **kwargs):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
 
-    return _setup_datasets(*(("AmazonReviewFull",) + args), **kwargs)
+    return _setup_datasets("AmazonReviewFull", root, data_select)
 
 
 def generate_imdb_data(key, extracted_files):
@@ -221,30 +216,32 @@ def generate_imdb_data(key, extracted_files):
             continue
         elif key in fname and ('pos' in fname or 'neg' in fname):
             with io.open(fname, encoding="utf8") as f:
-                label = 1 if 'pos' in fname else 0
+                label = 'pos' if 'pos' in fname else 'neg'
                 yield label, f.read()
 
 
-def IMDB(root='.data'):
-    """ Defines IMDB datasets.
+def IMDB(root='.data', data_select=('train', 'test')):
+    """ Defines raw IMDB datasets.
 
     Create supervised learning dataset: IMDB
 
-    Separately returns the training and test dataset
+    Separately returns the raw training and test dataset
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
+        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
+            for example ('train', 'test') or just a string 'train'.
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-
+    data_select = check_default_set(data_select, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
     extracted_files = extract_archive(dataset_tar)
-    train_iter = generate_imdb_data('train', extracted_files)
-    test_iter = generate_imdb_data('test', extracted_files)
-    return (RawTextIterableDataset(train_iter),
-            RawTextIterableDataset(test_iter))
+    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"],
+                                        generate_imdb_data(item,
+                                                           extracted_files)) for item in data_select)
 
 
 DATASETS = {
@@ -257,4 +254,15 @@ DATASETS = {
     'AmazonReviewPolarity': AmazonReviewPolarity,
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
+}
+NUM_LINES = {
+    'AG_NEWS': 120000,
+    'SogouNews': 450000,
+    'DBpedia': 560000,
+    'YelpReviewPolarity': 560000,
+    'YelpReviewFull': 650000,
+    'YahooAnswers': 1400000,
+    'AmazonReviewPolarity': 3600000,
+    'AmazonReviewFull': 3000000,
+    'IMDB': 25000
 }

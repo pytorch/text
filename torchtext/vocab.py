@@ -542,16 +542,20 @@ pretrained_aliases = {
 """Mapping from string name to factory function"""
 
 
-def build_vocab_from_iterator(iterator):
+def build_vocab_from_iterator(iterator, num_lines=None):
     """
     Build a Vocab from an iterator.
 
     Arguments:
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+        num_lines: The expected number of elements returned by the iterator.
+            (Default: None)
+            Optionally, if known, the expected number of elements can be passed to
+            this factory function for improved progress reporting.
     """
 
     counter = Counter()
-    with tqdm(unit_scale=0, unit='lines') as t:
+    with tqdm(unit_scale=0, unit='lines', total=num_lines) as t:
         for tokens in iterator:
             counter.update(tokens)
             t.update(1)

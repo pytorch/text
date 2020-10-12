@@ -4,7 +4,7 @@ import os
 import glob
 import shutil
 import torchtext.data as data
-from torchtext.datasets import AG_NEWS
+from torchtext.experimental.datasets import AG_NEWS
 import torch
 from ..common.torchtext_test_case import TorchtextTestCase
 

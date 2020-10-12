@@ -14,7 +14,7 @@ __all__ = [
     'BasicEnglishNormalize',
     'RegexTokenizer',
     'TextSequentialTransforms',
-    'pretrained_sp_model',
+    'PRETRAINED_SP_MODEL',
     'load_sp_model',
     'sentencepiece_tokenizer',
     'SentencePieceTokenizer',
@@ -185,7 +185,7 @@ class TextSequentialTransforms(nn.Sequential):
         return TextSequentialTransforms(OrderedDict(module_list))
 
 
-pretrained_sp_model = {
+PRETRAINED_SP_MODEL = {
     'text_unigram_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model',
     'text_unigram_25000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model',
     'text_unigram_50000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_50000.model',
@@ -221,8 +221,8 @@ def load_sp_model(sp_model):
             - text_bpe_50000
 
     Examples:
-        >>> from torchtext.experimental.transforms import pretrained_sp_model
-        >>> sp_model_path = torchtext.utils.download_from_url(pretrained_sp_model['text_unigram_25000'])
+        >>> from torchtext.experimental.transforms import PRETRAINED_SP_MODEL
+        >>> sp_model_path = torchtext.utils.download_from_url(PRETRAINED_SP_MODEL['text_unigram_25000'])
         >>> sp_model = load_sp_model(sp_model_path)
     """
     if isinstance(sp_model, str):

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
+import platform
 import torch
+import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
     vectors,
@@ -128,3 +130,19 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(loaded_vectors_obj['a'], tensorA)
         self.assertEqual(loaded_vectors_obj['b'], tensorC)
         self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_errors_vectors_cpp(self):
+        tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
+        tensorC = torch.tensor([0, 0, 1], dtype=torch.float)
+        tokens = ['a', 'a', 'c']
+        vecs = torch.stack((tensorA, tensorB, tensorC), 0)
+
+        with self.assertRaises(RuntimeError):
+            # Test proper error raised when tokens have duplicates
+            # TODO: use self.assertRaisesRegex() to check
+            # the key of the duplicate token in the error message
+            vectors(tokens, vecs)
