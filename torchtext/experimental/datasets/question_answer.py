@@ -63,9 +63,8 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
     data_select = check_default_set(data_select, ('train', 'dev'))
-    train, dev = raw.DATASETS[dataset_name](root=root)
-    raw_data = {'train': [item for item in train],
-                'dev': [item for item in dev]}
+    _datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_data = {_name: [item for item in _dataset] for _name, _datasets in zip(data_select, _datasets)}
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
