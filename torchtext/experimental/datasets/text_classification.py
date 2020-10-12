@@ -71,12 +71,9 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
         tokenizer = get_tokenizer("basic_english")
     text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
     data_select = check_default_set(data_select, ('train', 'test'))
-    train, test = raw.DATASETS[dataset_name](root=root)
+    _datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
     # Cache raw text iterable dataset
-    raw_data = {
-        "train": [(label, txt) for (label, txt) in train],
-        "test": [(label, txt) for (label, txt) in test],
-    }
+    raw_data = {_name: [(label, txt) for (label, txt) in _dataset] for _name, _dataset in zip(data_select, _datasets)}
 
     if vocab is None:
         if "train" not in data_select:
