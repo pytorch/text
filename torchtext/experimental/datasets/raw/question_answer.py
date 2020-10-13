@@ -39,7 +39,8 @@ def _setup_datasets(dataset_name, root, data_select):
 
 def SQuAD1(root='.data', data_select=('train', 'dev')):
     """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD1.0.
-    The iterator yields a tuple of (raw context, raw question, a list of raw answer, a list of answer positions in the raw context).
+    The iterator yields a tuple of (raw context, raw question, a list of raw answer,
+    a list of answer positions in the raw context).
     For example, ('Architecturally, the school has a Catholic character. Atop the ...',
                   'To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?',
                   ['Saint Bernadette Soubirous'],
@@ -62,7 +63,8 @@ def SQuAD1(root='.data', data_select=('train', 'dev')):
 
 def SQuAD2(root='.data', data_select=('train', 'dev')):
     """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD2.0.
-    The iterator yields a tuple of (raw context, raw question, a list of raw answer, a list of answer positions in the raw context).
+    The iterator yields a tuple of (raw context, raw question, a list of raw answer,
+    a list of answer positions in the raw context).
     For example, ('Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an ...',
                   'When did Beyonce start becoming popular?',
                   ['in the late 1990s'],
