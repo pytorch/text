@@ -56,7 +56,7 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], data[item]) for item in data_select)
 
 
-def WikiText2(root='.data', data_select=('train', 'test', 'valid')):
+def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -64,8 +64,7 @@ def WikiText2(root='.data', data_select=('train', 'test', 'valid')):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid, 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -74,7 +73,7 @@ def WikiText2(root='.data', data_select=('train', 'test', 'valid')):
 
     Examples:
         >>> from torchtext.experimental.raw.datasets import WikiText2
-        >>> train_dataset, test_dataset, valid_dataset = WikiText2()
+        >>> train_dataset, valid_dataset, test_dataset = WikiText2()
         >>> valid_dataset, = WikiText2(data_select='valid')
 
     """
@@ -82,7 +81,7 @@ def WikiText2(root='.data', data_select=('train', 'test', 'valid')):
     return _setup_datasets("WikiText2", root, data_select, None, None)
 
 
-def WikiText103(root='.data', data_select=('train', 'test', 'valid')):
+def WikiText103(root='.data', data_select=('train', 'valid', 'test')):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -90,7 +89,7 @@ def WikiText103(root='.data', data_select=('train', 'test', 'valid')):
 
     Arguments:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: the returned datasets (Default: ('train', 'test','valid'))
+        data_select: the returned datasets. Default: ('train', 'valid','test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test').
             If 'train' is not in the tuple, an vocab object should be provided which will
@@ -98,14 +97,14 @@ def WikiText103(root='.data', data_select=('train', 'test', 'valid')):
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WikiText103
-        >>> train_dataset, test_dataset, valid_dataset = WikiText103()
+        >>> train_dataset, valid_dataset, test_dataset = WikiText103()
         >>> valid_dataset, = WikiText103(data_select='valid')
     """
 
     return _setup_datasets("WikiText103", root, data_select, None, None)
 
 
-def PennTreebank(root='.data', data_select=('train', 'test', 'valid')):
+def PennTreebank(root='.data', data_select=('train', 'valid', 'test')):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -115,7 +114,7 @@ def PennTreebank(root='.data', data_select=('train', 'test', 'valid')):
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, test, valid) are generated. Users
+            By default, all the three datasets ('train', 'valid', 'test') are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
@@ -123,7 +122,7 @@ def PennTreebank(root='.data', data_select=('train', 'test', 'valid')):
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import PennTreebank
-        >>> train_dataset, test_dataset, valid_dataset = PennTreebank()
+        >>> train_dataset, valid_dataset, test_dataset = PennTreebank()
         >>> valid_dataset, = PennTreebank(data_select='valid')
 
     """
