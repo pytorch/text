@@ -251,7 +251,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets import Multi30k
+        >>> from torchtext.experimental.raw.datasets import Multi30k
         >>> train_dataset, valid_dataset, test_dataset = Multi30k()
     """
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, data_select, root)
@@ -417,7 +417,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets.raw import IWSLT
+        >>> from torchtext.experimental.datasets.raw import IWSLT
         >>> train_dataset, valid_dataset, test_dataset = IWSLT()
     """
     src_language = train_filenames[0].split(".")[-1]
@@ -503,7 +503,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets import WMT14
+        >>> from torchtext.experimental.datasets.raw import WMT14
         >>> train_dataset, valid_dataset, test_dataset = WMT14()
     """
     return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames, data_select, root)
