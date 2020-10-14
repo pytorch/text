@@ -213,7 +213,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             val.5.en
 
     Examples:
-        >>> from torchtext.datasets import Multi30k
+        >>> from torchtext.experimental.datasets import Multi30k
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = (get_tokenizer("spacy", language='de'),
                          get_tokenizer("basic_english"))
@@ -399,7 +399,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             train.tags.fr-en.fr
 
     Examples:
-        >>> from torchtext.datasets import IWSLT
+        >>> from torchtext.experimental.datasets import IWSLT
         >>> from torchtext.data.utils import get_tokenizer
         >>> src_tokenizer = get_tokenizer("spacy", language='de')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
@@ -500,7 +500,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                       get_tokenizer("spacy", language='en_core_web_sm'))
 
     Examples:
-        >>> from torchtext.datasets import WMT14
+        >>> from torchtext.experimental.datasets import WMT14
         >>> from torchtext.data.utils import get_tokenizer
         >>> src_tokenizer = get_tokenizer("spacy", language='de')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
