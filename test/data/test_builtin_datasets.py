@@ -50,7 +50,7 @@ class TestDataset(TorchtextTestCase):
         cachefile = os.path.join(self.project_root, ".data", "wikitext-2-v1.zip")
         conditional_remove(cachefile)
 
-        train_dataset, test_dataset, valid_dataset = WikiText2()
+        train_dataset, valid_dataset, test_dataset = WikiText2()
         self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
                                [5024, 89, 21, 3, 1838])
         self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
@@ -92,7 +92,7 @@ class TestDataset(TorchtextTestCase):
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
-        train_dataset, test_dataset, valid_dataset = PennTreebank()
+        train_dataset, valid_dataset, test_dataset = PennTreebank()
         self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
                                [9919, 9920, 9921, 9922, 9188])
         self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],

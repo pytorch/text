@@ -91,7 +91,7 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_li
                  for item in data_select)
 
 
-def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid')):
+def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'valid', 'test')):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -105,8 +105,7 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 't
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid','test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -117,7 +116,7 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 't
         >>> from torchtext.experimental.datasets import WikiText2
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
+        >>> train_dataset, valid_dataset, test_dataset = WikiText2(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
                                        data_select='valid')
@@ -126,7 +125,7 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 't
     return _setup_datasets("WikiText2", tokenizer, root, vocab, data_select, True, None, None)
 
 
-def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
+def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 'valid', 'test'), single_line=True):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -140,8 +139,7 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -156,7 +154,7 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 
         >>> from torchtext.experimental.datasets import WikiText103
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = WikiText103(tokenizer=tokenizer)
+        >>> train_dataset, valid_dataset, test_dataset = WikiText103(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
                                          data_select='valid')
@@ -166,7 +164,7 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 
     return _setup_datasets("WikiText103", tokenizer, root, vocab, data_select, single_line, None, None)
 
 
-def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid')):
+def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train', 'valid', 'test')):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -180,8 +178,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -192,7 +189,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
         >>> from torchtext.experimental.datasets import PennTreebank
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
+        >>> train_dataset, valid_dataset, test_dataset = PennTreebank(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = PennTreebank(tokenizer=tokenizer, vocab=vocab,
                                           data_select='valid')
