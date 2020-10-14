@@ -251,7 +251,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.experimental.raw.datasets import Multi30k
+        >>> from torchtext.experimental.datasets.raw import Multi30k
         >>> train_dataset, valid_dataset, test_dataset = Multi30k()
     """
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, data_select, root)
