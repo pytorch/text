@@ -23,12 +23,8 @@ commands:
       - run:
           name: adding UPLOAD_CHANNEL to BASH_ENV
           command: |
-            our_upload_channel=nightly
-            # On tags upload to test instead
-            if [[ -n "${CIRCLE_TAG}" ]] || [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
-              our_upload_channel=test
-            fi
-            echo "export UPLOAD_CHANNEL=${our_upload_channel}" >> ${BASH_ENV}
+            # Hardcoded for release branch
+            echo "export UPLOAD_CHANNEL=test" >> ${BASH_ENV}
 
 binary_common: &binary_common
   parameters:
