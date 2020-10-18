@@ -179,22 +179,22 @@ class Vocab(nn.Module):
         self.vocab.insert_token(token, index)
 
     @torch.jit.export
-    def set_fallback_index(self, index: int) -> None:
+    def set_default_index(self, index: int) -> None:
         r"""
         Args:
             index (int): the unknown index.
 
         """
-        self.vocab.set_fallback_index(index)
+        self.vocab.set_default_index(index)
 
     @torch.jit.export
-    def return_fallback_index(self) -> int:
+    def return_default_index(self) -> int:
         r"""
         return:
             index (int): the unknown index.
 
         """
-        return self.vocab.return_fallback_index()
+        return self.vocab.return_default_index()
 
     @torch.jit.export
     def append_token(self, token: str) -> None:
@@ -263,5 +263,5 @@ class Vocab(nn.Module):
         r"""Return a JITable Vocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_)
-        cpp_vocab.set_fallback_index(self.vocab.return_fallback_index())
+        cpp_vocab.set_default_index(self.vocab.return_default_index())
         return Vocab(cpp_vocab)

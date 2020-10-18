@@ -33,12 +33,12 @@ int64_t Vocab::__getitem__(const std::string &token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
     return item->second;
-  } else if (fallback_index_ != -1) {
-    return fallback_index_;
+  } else if (default_index_ != -1) {
+    return default_index_;
   } else
-    throw std::runtime_error("The fallback index has not been set up yet. Call "
-                             "set_fallback_index() function to "
-                             "set up the fallback index");
+    throw std::runtime_error("The default index has not been set up yet. Call "
+                             "set_default_index() function to "
+                             "set up the default index");
 }
 
 void Vocab::append_token(const std::string &token) {
@@ -89,20 +89,20 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  if (fallback_index_ != -1 && index <= fallback_index_) {
-    fallback_index_ = fallback_index_ + 1;
+  if (default_index_ != -1 && index <= default_index_) {
+    default_index_ = default_index_ + 1;
   }
 }
 
-void Vocab::set_fallback_index(const int64_t index) {
-  if (fallback_index_ != -1)
+void Vocab::set_default_index(const int64_t index) {
+  if (default_index_ != -1)
     std::cerr
         << "UNK index has been assigned. You are resetting the UNK index here."
         << index << std::endl;
-  fallback_index_ = index;
+  default_index_ = index;
 }
 
-int64_t Vocab::return_fallback_index() const { return fallback_index_; }
+int64_t Vocab::return_default_index() const { return default_index_; }
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
@@ -388,7 +388,7 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
 
   VocabStates states = std::make_tuple(
       self->version_str_, std::move(integers), std::move(strings),
-      self->return_fallback_index(), std::move(tensors));
+      self->return_default_index(), std::move(tensors));
   return states;
 }
 
@@ -424,7 +424,7 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
   if (version_str.compare("0.0.1") >= 0) {
     auto vocab_instance = c10::make_intrusive<Vocab>(std::move(strings));
-    vocab_instance->set_fallback_index(integer);
+    vocab_instance->set_default_index(integer);
     return vocab_instance;
   }
 #ifdef _MSC_VER

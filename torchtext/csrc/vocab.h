@@ -12,7 +12,7 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 
 struct Vocab : torch::CustomClassHolder {
 private:
-  int64_t fallback_index_ = -1;
+  int64_t default_index_ = -1;
   IndexDict stoi_;
 
 public:
@@ -25,8 +25,8 @@ public:
   int64_t __getitem__(const std::string &token) const;
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
-  void set_fallback_index(const int64_t index);
-  int64_t return_fallback_index() const;
+  void set_default_index(const int64_t index);
+  int64_t return_default_index() const;
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);
   std::vector<int64_t> lookup_indices(const std::vector<std::string> &tokens);
