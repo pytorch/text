@@ -20,7 +20,7 @@ class Batch(object):
 
     def __init__(self, data=None, dataset=None, device=None):
         """Create a Batch from a list of examples."""
-        warnings.warn('{} class will be retired soon and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
+        warnings.warn('{} class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.'.format(self.__class__.__name__), UserWarning)
         if data is not None:
             self.batch_size = len(data)
             self.dataset = dataset
