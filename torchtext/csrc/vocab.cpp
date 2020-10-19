@@ -102,7 +102,7 @@ void Vocab::set_default_index(const int64_t index) {
   default_index_ = index;
 }
 
-int64_t Vocab::return_default_index() const { return default_index_; }
+int64_t Vocab::get_default_index() const { return default_index_; }
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
@@ -388,7 +388,7 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
 
   VocabStates states = std::make_tuple(
       self->version_str_, std::move(integers), std::move(strings),
-      self->return_default_index(), std::move(tensors));
+      self->get_default_index(), std::move(tensors));
   return states;
 }
 

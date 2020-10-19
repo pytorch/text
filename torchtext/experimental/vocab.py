@@ -188,13 +188,13 @@ class Vocab(nn.Module):
         self.vocab.set_default_index(index)
 
     @torch.jit.export
-    def return_default_index(self) -> int:
+    def get_default_index(self) -> int:
         r"""
         return:
             index (int): the unknown index.
 
         """
-        return self.vocab.return_default_index()
+        return self.vocab.get_default_index()
 
     @torch.jit.export
     def append_token(self, token: str) -> None:
@@ -263,5 +263,5 @@ class Vocab(nn.Module):
         r"""Return a JITable Vocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_)
-        cpp_vocab.set_default_index(self.vocab.return_default_index())
+        cpp_vocab.set_default_index(self.vocab.get_default_index())
         return Vocab(cpp_vocab)

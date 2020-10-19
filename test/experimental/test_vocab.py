@@ -23,7 +23,7 @@ class TestVocab(TorchtextTestCase):
     def test_has_no_unk(self):
         c = OrderedDict()
         v = vocab(c)
-        self.assertEqual(v.return_default_index(), -1)
+        self.assertEqual(v.get_default_index(), -1)
 
         # check if unk is mapped to the first index
         with self.assertRaises(RuntimeError):
@@ -33,7 +33,7 @@ class TestVocab(TorchtextTestCase):
 
         v.insert_token('not_in_it', 0)
         v.set_default_index(0)
-        self.assertEqual(v.return_default_index(), 0)
+        self.assertEqual(v.get_default_index(), 0)
 
     def test_vocab_get_item(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
@@ -56,7 +56,7 @@ class TestVocab(TorchtextTestCase):
         expected_itos = ['<unk>', 'a', 'b']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-        self.assertEqual(v.return_default_index(), 0)
+        self.assertEqual(v.get_default_index(), 0)
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
@@ -68,7 +68,7 @@ class TestVocab(TorchtextTestCase):
         expected_itos = ['b', '<unk>', 'a']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
-        self.assertEqual(v.return_default_index(), 1)
+        self.assertEqual(v.get_default_index(), 1)
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
@@ -215,7 +215,7 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
-        self.assertEqual(loaded_v.return_default_index(), v.return_default_index())
+        self.assertEqual(loaded_v.get_default_index(), v.get_default_index())
 
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
