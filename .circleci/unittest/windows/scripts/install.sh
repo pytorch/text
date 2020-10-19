@@ -15,8 +15,8 @@ cd "${root_dir}"
 eval "$(./conda/Scripts/conda.exe 'shell.bash' 'hook')"
 conda activate ./env
 
-printf "* Installing PyTorch nightly build\n"
-conda install -y -c pytorch-nightly pytorch cpuonly
+printf "* Installing PyTorch\n"
+conda install -y -c "pytorch-${UPLOAD_CHANNEL}" pytorch cpuonly
 
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
