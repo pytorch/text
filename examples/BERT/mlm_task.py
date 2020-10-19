@@ -123,7 +123,7 @@ def run_main(args, rank=None):
     try:
         vocab = torch.load(args.save_vocab)
     except:
-        train_dataset, test_dataset, valid_dataset = WLMDataset()
+        train_dataset, valid_dataset, test_dataset = WLMDataset()
         old_vocab = train_dataset.vocab
         vocab = torchtext.vocab.Vocab(counter=old_vocab.freqs,
                                       specials=['<unk>', '<pad>', '<MASK>'])
@@ -131,7 +131,7 @@ def run_main(args, rank=None):
             torch.save(vocab, f)
 
     if args.dataset == 'WikiText103' or args.dataset == 'WikiText2':
-        train_dataset, test_dataset, valid_dataset = WLMDataset(vocab=vocab)
+        train_dataset, valid_dataset, test_dataset = WLMDataset(vocab=vocab)
     elif args.dataset == 'WMTNewsCrawl':
         from torchtext.experimental.datasets import WikiText2
         test_dataset, valid_dataset = WikiText2(vocab=vocab, data_select=('test', 'valid'))
@@ -150,7 +150,7 @@ def run_main(args, rank=None):
         valid_dataset = LanguageModelingDataset(val_data, vocab)
         test_dataset = LanguageModelingDataset(test_data, vocab)
     elif args.dataset == 'BookCorpus':
-        train_dataset, test_dataset, valid_dataset = BookCorpus(vocab)
+        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab)
 
     train_data = process_raw_data(train_dataset.data, args)
     if rank is not None:
