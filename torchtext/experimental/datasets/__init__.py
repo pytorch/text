@@ -1,10 +1,10 @@
 from .language_modeling import LanguageModelingDataset, WikiText2, WikiText103, PennTreebank, WMTNewsCrawl  # NOQA
-from .text_classification import AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
+from .text_classification import TextClassificationDataset, AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
     YelpReviewFull, YahooAnswers, \
     AmazonReviewPolarity, AmazonReviewFull, IMDB
-from .sequence_tagging import UDPOS, CoNLL2000Chunking
-from .translation import Multi30k, IWSLT, WMT14
-from .question_answer import SQuAD1, SQuAD2
+from .sequence_tagging import SequenceTaggingDataset, UDPOS, CoNLL2000Chunking
+from .translation import TranslationDataset, Multi30k, IWSLT, WMT14
+from .question_answer import QuestionAnswerDataset, SQuAD1, SQuAD2
 
 DATASETS = {'WikiText2': WikiText2,
             'WikiText103': WikiText103,

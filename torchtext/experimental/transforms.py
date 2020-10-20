@@ -225,6 +225,7 @@ def load_sp_model(sp_model):
         >>> sp_model_path = torchtext.utils.download_from_url(PRETRAINED_SP_MODEL['text_unigram_25000'])
         >>> sp_model = load_sp_model(sp_model_path)
     """
+
     if isinstance(sp_model, str):
         with open(sp_model, 'rb') as f:
             return SentencePiecePybind(f.read())
