@@ -27,16 +27,6 @@ The following datasets are available:
     :local:
 
 
-Sentiment Analysis
-^^^^^^^^^^^^^^^^^^
-
-IMDb
-~~~~
-
-.. autoclass:: IMDB
-  :members: __init__
-
-
 Text Classification
 ^^^^^^^^^^^^^^^^^^^
 
@@ -51,64 +41,62 @@ AG_NEWS
 
 AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: AG_NEWS
-  :members: __init__
+.. autofunction:: AG_NEWS
+
 
 SogouNews
 ~~~~~~~~~
 
 SogouNews dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: SogouNews
-  :members: __init__
+.. autofunction:: SogouNews
 
 DBpedia
 ~~~~~~~
 
 DBpedia dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: DBpedia
-  :members: __init__
+.. autofunction:: DBpedia
 
 YelpReviewPolarity
 ~~~~~~~~~~~~~~~~~~
 
 YelpReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: YelpReviewPolarity
-  :members: __init__
+.. autofunction:: YelpReviewPolarity
 
 YelpReviewFull
 ~~~~~~~~~~~~~~
 
 YelpReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: YelpReviewFull
-  :members: __init__
+.. autofunction:: YelpReviewFull
 
 YahooAnswers
 ~~~~~~~~~~~~
 
 YahooAnswers dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: YahooAnswers
-  :members: __init__
+.. autofunction:: YahooAnswers
 
 AmazonReviewPolarity
 ~~~~~~~~~~~~~~~~~~~~
 
 AmazonReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: AmazonReviewPolarity
-  :members: __init__
+.. autofunction:: AmazonReviewPolarity
 
 AmazonReviewFull
 ~~~~~~~~~~~~~~~~
 
 AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
-.. autoclass:: AmazonReviewFull
-  :members: __init__
+.. autofunction:: AmazonReviewFull
+
+IMDb
+~~~~
+
+.. autofunction:: IMDB
 
 
 Language Modeling
@@ -123,29 +111,25 @@ Language modeling datasets are subclasses of ``LanguageModelingDataset`` class.
 WikiText-2
 ~~~~~~~~~~
 
-.. autoclass:: WikiText2
-  :members: __init__
+.. autofunction:: WikiText2
 
 
 WikiText103
 ~~~~~~~~~~~
 
-.. autoclass:: WikiText103
-  :members: __init__
+.. autofunction:: WikiText103
 
 
 PennTreebank
 ~~~~~~~~~~~~
 
-.. autoclass:: PennTreebank
-  :members: __init__
+.. autofunction:: PennTreebank
 
 
 WMTNewsCrawl
 ~~~~~~~~~~~~
 
-.. autoclass:: WMTNewsCrawl
-  :members: __init__
+.. autofunction:: WMTNewsCrawl
 
 
 Machine Translation
@@ -160,22 +144,19 @@ Language modeling datasets are subclasses of ``TranslationDataset`` class.
 Multi30k
 ~~~~~~~~
 
-.. autoclass:: Multi30k
-  :members: __init__
+.. autofunction:: Multi30k
 
 
 IWSLT
 ~~~~~
 
-.. autoclass:: IWSLT
-  :members: __init__
+.. autofunction:: IWSLT
 
 
 WMT14
 ~~~~~
 
-.. autoclass:: WMT14
-  :members: __init__
+.. autofunction:: WMT14
 
 
 Sequence Tagging
@@ -189,14 +170,12 @@ Language modeling datasets are subclasses of ``SequenceTaggingDataset`` class.
 UDPOS
 ~~~~~
 
-.. autoclass:: UDPOS
-  :members: __init__
+.. autofunction:: UDPOS
 
 CoNLL2000Chunking
-~~~~~
+~~~~~~~~~~~~~~~~~
 
-.. autoclass:: CoNLL2000Chunking
-  :members: __init__
+.. autofunction:: CoNLL2000Chunking
 
 Question Answer
 ^^^^^^^^^^^^^^^
@@ -210,12 +189,10 @@ Question answer datasets are subclasses of ``QuestionAnswerDataset`` class.
 SQuAD 1.0
 ~~~~~~~~~
 
-.. autoclass:: SQuAD1
-  :members: __init__
+.. autofunction:: SQuAD1
 
 
 SQuAD 2.0
 ~~~~~~~~~
 
-.. autoclass:: SQuAD2
-  :members: __init__
+.. autofunction:: SQuAD2
