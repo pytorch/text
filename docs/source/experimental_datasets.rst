@@ -33,13 +33,13 @@ Text Classification
 TextClassificationDataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Text classification datasets are subclasses of ``TextClassificationDataset`` class.
+
 .. autoclass:: TextClassificationDataset
   :members: __init__
 
 AG_NEWS
 ~~~~~~~
-
-AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
 
 .. autofunction:: AG_NEWS
 
@@ -47,49 +47,35 @@ AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
 SogouNews
 ~~~~~~~~~
 
-SogouNews dataset is subclass of ``TextClassificationDataset`` class.
-
 .. autofunction:: SogouNews
 
 DBpedia
 ~~~~~~~
-
-DBpedia dataset is subclass of ``TextClassificationDataset`` class.
 
 .. autofunction:: DBpedia
 
 YelpReviewPolarity
 ~~~~~~~~~~~~~~~~~~
 
-YelpReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
-
 .. autofunction:: YelpReviewPolarity
 
 YelpReviewFull
 ~~~~~~~~~~~~~~
-
-YelpReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
 .. autofunction:: YelpReviewFull
 
 YahooAnswers
 ~~~~~~~~~~~~
 
-YahooAnswers dataset is subclass of ``TextClassificationDataset`` class.
-
 .. autofunction:: YahooAnswers
 
 AmazonReviewPolarity
 ~~~~~~~~~~~~~~~~~~~~
 
-AmazonReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
-
 .. autofunction:: AmazonReviewPolarity
 
 AmazonReviewFull
 ~~~~~~~~~~~~~~~~
-
-AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
 
 .. autofunction:: AmazonReviewFull
 

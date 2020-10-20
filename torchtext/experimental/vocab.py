@@ -46,6 +46,7 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
     """
+
     vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
@@ -73,6 +74,7 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file(f)
     """
+
     vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
@@ -122,6 +124,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         >>> tokens = ['e', 'd', 'c', 'b', 'a']
         >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
     """
+
     if not unk_token:
         raise ValueError("A default unk token wasn't provided.")
 
