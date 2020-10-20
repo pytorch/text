@@ -74,6 +74,24 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_insert_existing_token(self):
+        c = OrderedDict({'a': 2, 'b': 2, 'c': 2})
+
+        # add item to end
+        v = vocab(c)
+        v.insert_token('<unk>', 2)
+        v.set_default_index(2)
+
+        with self.assertRaises(RuntimeError):
+            # Test proper error raised when setting a token out of bounds
+            v.insert_token('<unk>', 1)
+
+        v.insert_token('d', 1)
+        self.assertEqual(v['not_in_it'], 3)
+
     def test_vocab_append_token(self):
         c = OrderedDict({'a': 2})
         v = vocab(c)
