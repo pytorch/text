@@ -34,6 +34,8 @@ class TestVocab(TorchtextTestCase):
         v.insert_token('not_in_it', 0)
         v.set_default_index(0)
         self.assertEqual(v.get_default_index(), 0)
+        self.assertEqual(v['not_in_it'], 0)
+        self.assertEqual(v['<unk>'], 0)
 
     def test_vocab_get_item(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
