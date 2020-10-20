@@ -22,7 +22,7 @@ torchtext.experimental.transforms
     :special-members: __init__
 
 :hidden:`TextSequentialTransforms`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: TextSequentialTransforms
     :members:
@@ -31,19 +31,15 @@ torchtext.experimental.transforms
 :hidden:`load_sp_model`
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: load_sp_model 
-    :members:
-    :special-members: __init__
+.. autofunction:: load_sp_model 
 
 :hidden: `sentencepiece_tokenizer`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: sentencepiece_tokenizer
-    :members:
-    :special-members: __init__
+.. autofunction:: sentencepiece_tokenizer
 
 :hidden:`SentencePieceTokenizer`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: SentencePieceTokenizer
     :members:
@@ -52,26 +48,24 @@ torchtext.experimental.transforms
 :hidden: `sentencepiece_processor`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: sentencepiece_processor
-    :members:
-    :special-members: __init__
+.. autofunction:: sentencepiece_processor
 
 :hidden:`SentencePieceProcessor`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: SentencePieceProcessor
     :members:
     :special-members: __init__
 
 :hidden:`VocabTransform`
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: VocabTransform
     :members:
     :special-members: __init__
 
 :hidden:`VectorTransform`
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: VectorTransform
     :members:

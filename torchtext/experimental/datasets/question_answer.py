@@ -12,9 +12,10 @@ from torchtext.experimental.functional import (
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
     """Defines an abstract question answer datasets.
-       Currently, we only support the following datasets:
-             - SQuAD1
-             - SQuAD2
+    Currently, we only support the following datasets:
+
+        - SQuAD1
+        - SQuAD2
     """
 
     def __init__(self, data, vocab, transforms):
@@ -24,8 +25,8 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
             data: a tuple of (context, question, answers, ans_pos).
             vocab: Vocabulary object used for dataset.
             transforms: a dictionary of transforms.
-                For example {'context': context_transform, 'answers': answers_transform,
-                             'question': question_transform, 'ans_pos': ans_pos_transform}
+            For example {'context': context_transform, 'answers': answers_transform,
+                'question': question_transform, 'ans_pos': ans_pos_transform}
         """
 
         super(QuestionAnswerDataset, self).__init__()
@@ -146,6 +147,7 @@ def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
+
     return _setup_datasets('SQuAD2', root, vocab, tokenizer, data_select)
 
 
