@@ -12,7 +12,7 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 
 struct Vocab : torch::CustomClassHolder {
 private:
-  int64_t default_index_ = -1;
+  c10::optional<int64_t> default_index_ = {};
   IndexDict stoi_;
 
 public:

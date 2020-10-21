@@ -23,7 +23,8 @@ class TestVocab(TorchtextTestCase):
     def test_has_no_unk(self):
         c = OrderedDict()
         v = vocab(c)
-        self.assertEqual(v.get_default_index(), -1)
+        with self.assertRaisesRegex(RuntimeError, 'bad optional access'):
+            v.get_default_index()
 
         # check if unk is mapped to the first index
         with self.assertRaises(RuntimeError):
@@ -124,6 +125,9 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_vocab_jit(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
@@ -141,6 +145,9 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(jit_v.get_itos(), expected_itos)
         self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_vocab_forward(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)

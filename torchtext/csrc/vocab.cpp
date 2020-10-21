@@ -33,8 +33,8 @@ int64_t Vocab::__getitem__(const std::string &token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
     return item->second;
-  } else if (default_index_ != -1) {
-    return default_index_;
+  } else if (default_index_.has_value()) {
+    return default_index_.value();
   } else
     throw std::runtime_error("The default index has not been set up yet. Call "
                              "set_default_index() function to "
@@ -89,20 +89,20 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  if (default_index_ != -1 && index <= default_index_) {
-    default_index_ = default_index_ + 1;
+  if (default_index_.has_value() && index <= *default_index_) {
+    default_index_ = *default_index_ + 1;
   }
 }
 
 void Vocab::set_default_index(const int64_t index) {
-  if (default_index_ != -1)
+  if (default_index_.has_value())
     std::cerr
         << "UNK index has been assigned. You are resetting the UNK index here."
         << index << std::endl;
   default_index_ = index;
 }
 
-int64_t Vocab::get_default_index() const { return default_index_; }
+int64_t Vocab::get_default_index() const { return default_index_.value(); }
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
@@ -325,8 +325,6 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   StringList tokens;
   std::tie(stoi, tokens) =
       _concat_tokens(chunk_counters, min_freq, num_lines, false);
-
-  // int64_t unk_index = stoi.find(unk_token)->second;
 
   return Vocab(std::move(tokens), std::move(stoi));
 }
