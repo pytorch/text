@@ -10,8 +10,8 @@ from torchtext.experimental.transforms import (
     TextSequentialTransforms,
 )
 from torchtext.experimental.vocab import (
-    vocab_from_file,
-    vocab_from_raw_text_file,
+    load_vocab_from_file,
+    build_vocab_from_raw_text_file,
 )
 import shutil
 import tempfile
@@ -30,7 +30,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            vocab_transform = VocabTransform(vocab_from_file(f))
+            vocab_transform = VocabTransform(load_vocab_from_file(f))
             self.assertEqual(vocab_transform(['of', 'that', 'new']),
                              [7, 18, 24])
             jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
@@ -131,7 +131,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            v = vocab_from_file(f, unk_token='<new_unk>')
+            v = load_vocab_from_file(f, unk_token='<new_unk>')
             expected_itos = ['<new_unk>', 'b', 'a', 'c']
             expected_stoi = {x: index for index, x in enumerate(expected_itos)}
             self.assertEqual(v.get_itos(), expected_itos)
@@ -143,7 +143,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         with open(asset_path, 'r') as f:
             tokenizer = basic_english_normalize()
             jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-            v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
+            v = build_vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
             expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                              'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
                              'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
@@ -173,7 +173,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            pipeline = TextSequentialTransforms(basic_english_normalize(), vocab_from_file(f))
+            pipeline = TextSequentialTransforms(basic_english_normalize(), load_vocab_from_file(f))
             jit_pipeline = torch.jit.script(pipeline.to_ivalue())
             self.assertEqual(pipeline('of that new'), [7, 18, 24])
             self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
