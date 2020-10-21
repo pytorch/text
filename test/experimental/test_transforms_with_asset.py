@@ -18,9 +18,9 @@ import tempfile
 import os
 from torchtext.experimental.vectors import (
     GloVe,
-    vectors,
+    build_vectors,
     FastText,
-    vectors_from_file_object,
+    load_vectors_from_file_object,
 )
 from torchtext.utils import download_from_url
 
@@ -44,7 +44,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         with self.assertRaises(ValueError):
             # Test proper error raised when passing in empty tokens and vectors and
             # not passing in a user defined unk_tensor
-            vectors(tokens, vecs)
+            build_vectors(tokens, vecs)
 
         tensorA = torch.tensor([1, 0, 0], dtype=torch.int8)
         tokens = ['a']
@@ -52,7 +52,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
 
         with self.assertRaises(TypeError):
             # Test proper error raised when vector is not of type torch.float
-            vectors(tokens, vecs)
+            build_vectors(tokens, vecs)
 
         with tempfile.TemporaryDirectory() as dir_name:
             # Test proper error raised when incorrect filename or dim passed into GloVe
@@ -182,7 +182,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
         f = open(asset_path, 'r')
-        vectors_obj = vectors_from_file_object(f)
+        vectors_obj = load_vectors_from_file_object(f)
 
         expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)

@@ -17,8 +17,8 @@ from torchtext._torchtext import (
 __all__ = [
     'FastText',
     'GloVe',
-    'vectors_from_file_object',
-    'vectors',
+    'load_vectors_from_file_object',
+    'build_vectors',
     'Vectors'
 ]
 
@@ -144,7 +144,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     return vectors_obj
 
 
-def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, num_cpus=10):
+def load_vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, num_cpus=10):
     r"""Create a Vectors object from a csv file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
@@ -174,7 +174,7 @@ def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, n
     return Vectors(vectors_obj)
 
 
-def vectors(tokens, vectors, unk_tensor=None):
+def build_vectors(tokens, vectors, unk_tensor=None):
     r"""Factory method for creating a vectors object which maps tokens to vectors.
     Arguments:
         tokens (List[str]): a list of tokens.
