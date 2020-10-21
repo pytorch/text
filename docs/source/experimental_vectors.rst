@@ -19,10 +19,10 @@ torchtext.experimental.vectors
 
 .. autofunction:: build_vectors
 
-:hidden:`load_vectors_from_file_object`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:hidden:`load_vectors_from_file_path`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: load_vectors_from_file_object
+.. autofunction:: load_vectors_from_file_path
 
 :hidden:`FastText`
 ~~~~~~~~~~~~~~~~~~

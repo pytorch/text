@@ -20,7 +20,7 @@ from torchtext.experimental.vectors import (
     GloVe,
     build_vectors,
     FastText,
-    load_vectors_from_file_object,
+    load_vectors_from_file_path,
 )
 from torchtext.utils import download_from_url
 
@@ -181,8 +181,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        vectors_obj = load_vectors_from_file_object(f)
+        vectors_obj = load_vectors_from_file_path(asset_path)
 
         expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
