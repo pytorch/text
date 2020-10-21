@@ -1,11 +1,11 @@
 .. role:: hidden
     :class: hidden-section
 
-torchtext.models.multiheadattention
-==================================
+torchtext.nn.modules.multiheadattention
+=======================================
 
-.. automodule:: torchtext.models.multiheadattention
-.. currentmodule:: torchtext.models.multiheadattention
+.. automodule:: torchtext.nn.modules.multiheadattention
+.. currentmodule:: torchtext.nn.modules.multiheadattention
 
 :hidden:`MultiheadAttentionContainer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

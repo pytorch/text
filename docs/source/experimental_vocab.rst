@@ -8,24 +8,24 @@ torchtext.experimental.vocab
 .. currentmodule:: torchtext.experimental.vocab
 
 :hidden:`Vocab`
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. autoclass:: Vocab
     :members:
     :special-members:
 
 :hidden:`vocab`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. autofunction:: vocab
 
 :hidden:`vocab_from_file`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: vocab_from_file
 
 :hidden:`vocab_from_raw_text_file`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: vocab_from_raw_text_file
 
