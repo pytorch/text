@@ -169,6 +169,7 @@ class RegexTokenizer(nn.Module):
 
 class TextSequentialTransforms(nn.Sequential):
     r"""A container to host a sequential text transforms.
+
         Example:
             >>> import torch
             >>> from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms
