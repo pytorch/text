@@ -33,7 +33,7 @@ torchtext.experimental.transforms
 
 .. autofunction:: load_sp_model 
 
-:hidden: `sentencepiece_tokenizer`
+:hidden:`sentencepiece_tokenizer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: sentencepiece_tokenizer
@@ -45,7 +45,7 @@ torchtext.experimental.transforms
     :members:
     :special-members: __init__
 
-:hidden: `sentencepiece_processor`
+:hidden:`sentencepiece_processor`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: sentencepiece_processor
