@@ -49,7 +49,7 @@ class Vocab(object):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: 'torch.zeros'
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
             specials_first: Whether to add special tokens into the vocabulary at first.
                 If it is False, they are added into the vocabulary at last.
@@ -153,6 +153,7 @@ class Vocab(object):
             vectors: one of or a list containing instantiations of the
                 GloVe, CharNGram, or Vectors classes. Alternatively, one
                 of or a list of available pretrained vectors:
+
                 charngram.100d
                 fasttext.en.300d
                 fasttext.simple.300d
@@ -166,6 +167,7 @@ class Vocab(object):
                 glove.6B.100d
                 glove.6B.200d
                 glove.6B.300d
+
             Remaining keyword arguments: Passed to the constructor of Vectors classes.
         """
         if not isinstance(vectors, list):
@@ -209,7 +211,7 @@ class Vocab(object):
             dim: The dimensionality of the vectors.
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: 'torch.zeros'
         """
         self.vectors = torch.Tensor(len(self), dim)
         for i, token in enumerate(self.itos):
@@ -239,7 +241,7 @@ class SubwordVocab(Vocab):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: 'torch.zeros
         """
         try:
             import revtok
@@ -300,20 +302,21 @@ class Vectors(object):
                  url=None, unk_init=None, max_vectors=None):
         """
         Arguments:
-           name: name of the file that contains the vectors
-           cache: directory for cached vectors
-           url: url for download if vectors not found in cache
-           unk_init (callback): by default, initialize out-of-vocabulary word vectors
-               to zero vectors; can be any function that takes in a Tensor and
-               returns a Tensor of the same size
-           max_vectors (int): this can be used to limit the number of
-               pre-trained vectors loaded.
-               Most pre-trained vector sets are sorted
-               in the descending order of word frequency.
-               Thus, in situations where the entire set doesn't fit in memory,
-               or is not needed for another reason, passing `max_vectors`
-               can limit the size of the loaded set.
+
+            name: name of the file that contains the vectors
+            cache: directory for cached vectors
+            url: url for download if vectors not found in cache
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and returns a Tensor of the same size
+            max_vectors (int): this can be used to limit the number of
+                pre-trained vectors loaded.
+                Most pre-trained vector sets are sorted
+                in the descending order of word frequency.
+                Thus, in situations where the entire set doesn't fit in memory,
+                or is not needed for another reason, passing `max_vectors`
+                can limit the size of the loaded set.
         """
+
         cache = '.vector_cache' if cache is None else cache
         self.itos = None
         self.stoi = None
