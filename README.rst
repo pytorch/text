@@ -69,7 +69,7 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
     python setup.py clean install
 
     # OSX
-    MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++ python setup.py install
+    MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++ python setup.py clean install
 
     # or ``python setup.py develop`` if you are making modifications.
 
