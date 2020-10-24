@@ -64,7 +64,13 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
     git clone https://github.com/pytorch/text torchtext
     cd torchtext
     git submodule update --init --recursive
+
+    # Linux
     python setup.py clean install
+
+    # OSX
+    MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++ python setup.py clean install
+
     # or ``python setup.py develop`` if you are making modifications.
 
 **Note**
