@@ -206,6 +206,7 @@ class InProjContainer(torch.nn.Module):
             query_proj: a proj layer for query.
             key_proj: a proj layer for key.
             value_proj: a proj layer for value.
+
         """
 
         super(InProjContainer, self).__init__()
@@ -224,8 +225,10 @@ class InProjContainer(torch.nn.Module):
 
         Shape:
             - query, key, value: :math:`(S, N, E)`
-            - Output: :math:`(S, N, E)`
-            where S is the sequence length, N is the batch size, and E is the embedding dimension.
+            - Output: :math:`(S, N, E)`.
+
+            Note: S is the sequence length, N is the batch size, and E is the embedding dimension.
+
         """
         return self.query_proj(query), self.key_proj(key), self.value_proj(value)
 
