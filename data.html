@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.data &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.data.utils" href="data_utils.html" />
+    <link rel="next" title="torchtext.nn.modules.multiheadattention" href="nn_modules.html" />
     <link rel="prev" title="torchtext" href="index.html" /> 
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -187,17 +187,24 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -292,8 +299,8 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>~Dataset.sort_key</strong> (<em>callable</em>) – A key to use for sorting dataset examples for batching
 together examples with similar lengths to minimize padding.</p></li>
-<li><p><strong>~Dataset.examples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference internal" href="#torchtext.data.Example" title="torchtext.data.Example"><em>Example</em></a><em>)</em>) – The examples in this dataset.</p></li>
-<li><p><strong>~Dataset.fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>]</em>) – Contains the name of each column or field, together
+<li><p><strong>~Dataset.examples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>(</em><a class="reference internal" href="#torchtext.data.Example" title="torchtext.data.Example"><em>Example</em></a><em>)</em>) – The examples in this dataset.</p></li>
+<li><p><strong>~Dataset.fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>]</em>) – Contains the name of each column or field, together
 with the corresponding Field object. Two fields with the same Field object
 will have a shared vocabulary.</p></li>
 </ul>
@@ -307,9 +314,9 @@ will have a shared vocabulary.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>examples</strong> – List of Examples.</p></li>
-<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
+<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
 string is a field name, and the Field is the associated field.</p></li>
-<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Use only examples for which
+<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Use only examples for which
 filter_pred(example) is True, or use all examples if None.
 Default is None.</p></li>
 </ul>
@@ -324,8 +331,8 @@ Default is None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Folder to download data to.</p></li>
-<li><p><strong>check</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Folder whose existence indicates
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Folder to download data to.</p></li>
+<li><p><strong>check</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Folder whose existence indicates
 that the dataset has already been downloaded, or
 None to check the existence of root/{cls.name}.</p></li>
 </ul>
@@ -334,7 +341,7 @@ None to check the existence of root/{cls.name}.</p></li>
 <dd class="field-even"><p>Path to extracted dataset.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -345,7 +352,7 @@ None to check the existence of root/{cls.name}.</p></li>
 <dd><p>Remove unknown words from dataset examples with respect to given field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>field_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>)</em>) – Within example only the parts with field names in
+<dd class="field-odd"><p><strong>field_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>)</em>) – Within example only the parts with field names in
 field_names will have their unknown words deleted.</p>
 </dd>
 </dl>
@@ -358,16 +365,16 @@ field_names will have their unknown words deleted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>split_ratio</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><em>List of python:floats</em>) – a number [0, 1] denoting the amount
+<li><p><strong>split_ratio</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>List of python:floats</em>) – a number [0, 1] denoting the amount
 of data to be used for the training split (rest is used for test),
 or a list of numbers denoting the relative sizes of train, test and valid
 splits respectively. If the relative size for valid is missing, only the
 train-test split is returned. Default is 0.7 (for the train set).</p></li>
-<li><p><strong>stratified</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – whether the sampling should be stratified.
+<li><p><strong>stratified</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – whether the sampling should be stratified.
 Default is False.</p></li>
-<li><p><strong>strata_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – name of the examples Field stratified over.
+<li><p><strong>strata_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the examples Field stratified over.
 Default is ‘label’ for the conventional label field.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a>) – the random seed used for shuffling.
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a>) – the random seed used for shuffling.
 A return value of <cite>random.getstate()</cite>.</p></li>
 </ul>
 </dd>
@@ -388,14 +395,14 @@ test splits in that order, if the splits are provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Common prefix of the splits’ file paths, or None to use
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Common prefix of the splits’ file paths, or None to use
 the result of cls.download(root).</p></li>
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Root dataset storage directory. Default is ‘.data’.</p></li>
-<li><p><strong>train</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the train set, or None for no
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Root dataset storage directory. Default is ‘.data’.</p></li>
+<li><p><strong>train</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Suffix to add to path for the train set, or None for no
 train set. Default is None.</p></li>
-<li><p><strong>validation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the validation set, or None
+<li><p><strong>validation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Suffix to add to path for the validation set, or None
 for no validation set. Default is None.</p></li>
-<li><p><strong>test</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the test set, or None for no test
+<li><p><strong>test</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Suffix to add to path for the test set, or None for no test
 set. Default is None.</p></li>
 <li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of the
 Dataset (sub)class being used.</p></li>
@@ -427,10 +434,10 @@ test splits in that order, if provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Path to the data file.</p></li>
-<li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The format of the data file. One of “CSV”, “TSV”, or
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the data file.</p></li>
+<li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The format of the data file. One of “CSV”, “TSV”, or
 “JSON” (case-insensitive).</p></li>
-<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em>) – <p>tuple(str, Field)]:
+<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em>) – <p>tuple(str, Field)]:
 If using a list, the format must be CSV or TSV, and the values of the list
 should be tuples of (name, field).
 The fields should be in the same order as the columns in the CSV or TSV
@@ -441,8 +448,8 @@ Keys not present in the input dictionary are ignored.
 This allows the user to rename columns from their JSON/CSV/TSV key names
 and also enables selecting a subset of columns to load.</p>
 </p></li>
-<li><p><strong>skip_header</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to skip the first line of the input file.</p></li>
-<li><p><strong>csv_reader_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Parameters to pass to the csv reader.
+<li><p><strong>skip_header</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip the first line of the input file.</p></li>
+<li><p><strong>csv_reader_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Parameters to pass to the csv reader.
 Only relevant when format is csv or tsv.
 See
 <a class="reference external" href="https://docs.python.org/3/library/csv.html#csv.reader">https://docs.python.org/3/library/csv.html#csv.reader</a>
@@ -575,14 +582,14 @@ Affects iteration over batches. Default: False</p></li>
 <p>Postprocess the batch with user-provided Pipeline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</p>
+<dd class="field-odd"><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Processed object given the input and custom
 postprocessing Pipeline.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -684,10 +691,10 @@ included in the return value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em><em>, or </em><em>tuple of</em><em> (</em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em><em>)</em>) – List of tokenized and padded examples, or tuple of List of
+<li><p><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em><em>, or </em><em>tuple of</em><em> (</em><em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>)</em>) – List of tokenized and padded examples, or tuple of List of
 tokenized and padded examples and List of lengths of each
 example if self.include_lengths is True.</p></li>
-<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
 If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
@@ -723,7 +730,7 @@ will be optionally lowercased and passed to the user-provided
 <p>Pad, numericalize, and postprocess a batch and create a tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</p>
+<dd class="field-odd"><p><strong>batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a><em>)</em>) – A list of object from a batch of examples.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Processed object given the input
@@ -812,13 +819,13 @@ for examples on how to use this field.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nesting_field</strong> (<a class="reference internal" href="#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a>) – A field contained in this nested field.</p></li>
-<li><p><strong>use_vocab</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to use a Vocab object. If False, the data in this
+<li><p><strong>use_vocab</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a Vocab object. If False, the data in this
 field should already be numerical. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>init_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A token that will be prepended to every example using this
+<li><p><strong>init_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A token that will be prepended to every example using this
 field, or None for no initial token. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>eos_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A token that will be appended to every example using this
+<li><p><strong>eos_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – A token that will be appended to every example using this
 field, or None for no end-of-sentence token. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>fix_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – A fixed length that all examples using this field will be
+<li><p><strong>fix_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – A fixed length that all examples using this field will be
 padded to, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for flexible sequence lengths. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>dtype</strong> – The torch.dtype class that represents a batch of examples
 of this kind of data. Default: <code class="docutils literal notranslate"><span class="pre">torch.long</span></code>.</p></li>
@@ -839,9 +846,9 @@ used. If a non-serializable function is passed as an argument,
 the field will not be able to be serialized. Default: string.split.</p></li>
 <li><p><strong>tokenizer_language</strong> – The language of the tokenizer to be constructed.
 Various languages currently supported only in SpaCy.</p></li>
-<li><p><strong>pad_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string token used as padding. If <code class="docutils literal notranslate"><span class="pre">nesting_field</span></code> is
+<li><p><strong>pad_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The string token used as padding. If <code class="docutils literal notranslate"><span class="pre">nesting_field</span></code> is
 sequential, this will be set to its <code class="docutils literal notranslate"><span class="pre">pad_token</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;&lt;pad&gt;&quot;</span></code>.</p></li>
-<li><p><strong>pad_first</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Do the padding of the sequence at the beginning. Default:
+<li><p><strong>pad_first</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Do the padding of the sequence at the beginning. Default:
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
 </dd>
@@ -880,8 +887,8 @@ tensors will be stacked at the first dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em>) – List of tokenized and padded examples.</p></li>
-<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
+<li><p><strong>arr</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em>) – List of tokenized and padded examples.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
 If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
@@ -926,7 +933,7 @@ filling short examples with <code class="docutils literal notranslate"><span cla
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>minibatch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – Each element is a list of string if
+<dd class="field-odd"><p><strong>minibatch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – Each element is a list of string if
 <code class="docutils literal notranslate"><span class="pre">self.nesting_field.sequential</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, a list of list of string
 otherwise.</p>
 </dd>
@@ -934,7 +941,7 @@ otherwise.</p>
 <dd class="field-even"><p>The padded minibatch. or (padded, sentence_lens, word_lengths)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -949,13 +956,13 @@ the list is preprocessed using <code class="docutils literal notranslate"><span 
 list is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>xs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The input to preprocess.</p>
+<dd class="field-odd"><p><strong>xs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The input to preprocess.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The preprocessed list.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1078,7 +1085,7 @@ attribute of the Dataset, or defers to it if None.</p></li>
 <li><p><strong>~BPTTIterator.shuffle</strong> – Whether to shuffle examples between epochs.</p></li>
 <li><p><strong>~BPTTIterator.sort</strong> – Whether to sort examples according to self.sort_key.
 Note that shuffle and sort default to train and (not train).</p></li>
-<li><p><strong>~BPTTIterator.device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
+<li><p><strong>~BPTTIterator.device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>torch.device</em>) – A string or instance of <cite>torch.device</cite>
 specifying which device the Variables are going to be created on.
 If left as default, the tensors will be created on cpu. Default: None.</p></li>
 </ul>
@@ -1255,7 +1262,7 @@ text fields like machine translation or natural language inference.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="data_utils.html" class="btn btn-neutral float-right" title="torchtext.data.utils" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="nn_modules.html" class="btn btn-neutral float-right" title="torchtext.nn.modules.multiheadattention" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="torchtext" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
@@ -1344,6 +1351,7 @@ text fields like machine translation or natural language inference.</p>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
          <script src="_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

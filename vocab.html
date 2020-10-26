@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.vocab &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -187,17 +187,24 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -309,7 +316,7 @@ or custom pretrained vectors (see Vocab.load_vectors);
 or a list of aforementioned vectors</p></li>
 <li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size. Default: <a href="#id1"><span class="problematic" id="id2">torch.Tensor.zero_</span></a></p></li>
+returns a Tensor of the same size. Default: ‘torch.zeros’</p></li>
 <li><p><strong>vectors_cache</strong> – directory for cached vectors. Default: ‘.vector_cache’</p></li>
 <li><p><strong>specials_first</strong> – Whether to add special tokens into the vocabulary at first.
 If it is False, they are added into the vocabulary at last.
@@ -325,10 +332,10 @@ Default: True.</p></li>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>vectors</strong> – one of or a list containing instantiations of the
+<li><p><strong>vectors</strong> – <p>one of or a list containing instantiations of the
 GloVe, CharNGram, or Vectors classes. Alternatively, one
-of or a list of available pretrained vectors:
-charngram.100d
+of or a list of available pretrained vectors:</p>
+<p>charngram.100d
 fasttext.en.300d
 fasttext.simple.300d
 glove.42B.300d
@@ -340,7 +347,8 @@ glove.twitter.27B.200d
 glove.6B.50d
 glove.6B.100d
 glove.6B.200d
-glove.6B.300d</p></li>
+glove.6B.300d</p>
+</p></li>
 <li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of Vectors classes.</p></li>
 </ul>
 </dd>
@@ -363,7 +371,7 @@ vector[stoi[“string”]] should return the vector for “string”.</p></li>
 <li><p><strong>dim</strong> – The dimensionality of the vectors.</p></li>
 <li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size. Default: <a href="#id3"><span class="problematic" id="id4">torch.Tensor.zero_</span></a></p></li>
+returns a Tensor of the same size. Default: ‘torch.zeros’</p></li>
 </ul>
 </dd>
 </dl>
@@ -396,7 +404,7 @@ or custom pretrained vectors (see Vocab.load_vectors);
 or a list of aforementioned vectors</p></li>
 <li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
 to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size. Default: <a href="#id5"><span class="problematic" id="id6">torch.Tensor.zero_</span></a></p></li>
+returns a Tensor of the same size. Default: ‘torch.zeros</p></li>
 </ul>
 </dd>
 </dl>
@@ -420,9 +428,8 @@ returns a Tensor of the same size. Default: <a href="#id5"><span class="problema
 <li><p><strong>cache</strong> – directory for cached vectors</p></li>
 <li><p><strong>url</strong> – url for download if vectors not found in cache</p></li>
 <li><p><strong>unk_init</strong> (<em>callback</em>) – by default, initialize out-of-vocabulary word vectors
-to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</p></li>
-<li><p><strong>max_vectors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – this can be used to limit the number of
+to zero vectors; can be any function that takes in a Tensor and returns a Tensor of the same size</p></li>
+<li><p><strong>max_vectors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – this can be used to limit the number of
 pre-trained vectors loaded.
 Most pre-trained vector sets are sorted
 in the descending order of word frequency.
@@ -472,30 +479,7 @@ lower case will be looked up. Default: False.</p></li>
 <dl class="class">
 <dt id="torchtext.vocab.GloVe">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">GloVe</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#GloVe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="torchtext.vocab.GloVe.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#GloVe.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Arguments:
-name: name of the file that contains the vectors
-cache: directory for cached vectors
-url: url for download if vectors not found in cache
-unk_init (callback): by default, initialize out-of-vocabulary word vectors</p>
-<blockquote>
-<div><p>to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</p>
-</div></blockquote>
-<dl class="simple">
-<dt>max_vectors (int): this can be used to limit the number of</dt><dd><p>pre-trained vectors loaded.
-Most pre-trained vector sets are sorted
-in the descending order of word frequency.
-Thus, in situations where the entire set doesn’t fit in memory,
-or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="fasttext">
@@ -503,30 +487,7 @@ can limit the size of the loaded set.</p>
 <dl class="class">
 <dt id="torchtext.vocab.FastText">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">FastText</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#FastText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="torchtext.vocab.FastText.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#FastText.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Arguments:
-name: name of the file that contains the vectors
-cache: directory for cached vectors
-url: url for download if vectors not found in cache
-unk_init (callback): by default, initialize out-of-vocabulary word vectors</p>
-<blockquote>
-<div><p>to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</p>
-</div></blockquote>
-<dl class="simple">
-<dt>max_vectors (int): this can be used to limit the number of</dt><dd><p>pre-trained vectors loaded.
-Most pre-trained vector sets are sorted
-in the descending order of word frequency.
-Thus, in situations where the entire set doesn’t fit in memory,
-or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="charngram">
@@ -534,30 +495,7 @@ can limit the size of the loaded set.</p>
 <dl class="class">
 <dt id="torchtext.vocab.CharNGram">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">CharNGram</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#CharNGram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="torchtext.vocab.CharNGram.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#CharNGram.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Arguments:
-name: name of the file that contains the vectors
-cache: directory for cached vectors
-url: url for download if vectors not found in cache
-unk_init (callback): by default, initialize out-of-vocabulary word vectors</p>
-<blockquote>
-<div><p>to zero vectors; can be any function that takes in a Tensor and
-returns a Tensor of the same size</p>
-</div></blockquote>
-<dl class="simple">
-<dt>max_vectors (int): this can be used to limit the number of</dt><dd><p>pre-trained vectors loaded.
-Most pre-trained vector sets are sorted
-in the descending order of word frequency.
-Thus, in situations where the entire set doesn’t fit in memory,
-or is not needed for another reason, passing <cite>max_vectors</cite>
-can limit the size of the loaded set.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
+<dd></dd></dl>
 
 <div class="section" id="misc">
 <h3>Misc.<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h3>
@@ -567,11 +505,17 @@ can limit the size of the loaded set.</p>
 <h2><span class="hidden-section">build_vocab_from_iterator</span><a class="headerlink" href="#build-vocab-from-iterator" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.vocab.build_vocab_from_iterator">
-<code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">build_vocab_from_iterator</code><span class="sig-paren">(</span><em class="sig-param">iterator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#build_vocab_from_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">build_vocab_from_iterator</code><span class="sig-paren">(</span><em class="sig-param">iterator</em>, <em class="sig-param">num_lines=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab.html#build_vocab_from_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a Vocab from an iterator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>iterator</strong> – Iterator used to build Vocab. Must yield list or iterator of tokens.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterator</strong> – Iterator used to build Vocab. Must yield list or iterator of tokens.</p></li>
+<li><p><strong>num_lines</strong> – The expected number of elements returned by the iterator.
+(Default: None)
+Optionally, if known, the expected number of elements can be passed to
+this factory function for improved progress reporting.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -657,6 +601,7 @@ can limit the size of the loaded set.</p>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
          <script src="_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

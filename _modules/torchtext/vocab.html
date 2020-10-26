@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.vocab &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -185,17 +185,24 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -318,7 +325,7 @@
 <span class="sd">                or a list of aforementioned vectors</span>
 <span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
 <span class="sd">                to zero vectors; can be any function that takes in a Tensor and</span>
-<span class="sd">                returns a Tensor of the same size. Default: torch.Tensor.zero_</span>
+<span class="sd">                returns a Tensor of the same size. Default: &#39;torch.zeros&#39;</span>
 <span class="sd">            vectors_cache: directory for cached vectors. Default: &#39;.vector_cache&#39;</span>
 <span class="sd">            specials_first: Whether to add special tokens into the vocabulary at first.</span>
 <span class="sd">                If it is False, they are added into the vocabulary at last.</span>
@@ -405,6 +412,10 @@
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">lookup_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">indices</span>
+
     <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">words</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="k">if</span> <span class="n">sort</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">itos</span>
         <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
@@ -418,6 +429,7 @@
 <span class="sd">            vectors: one of or a list containing instantiations of the</span>
 <span class="sd">                GloVe, CharNGram, or Vectors classes. Alternatively, one</span>
 <span class="sd">                of or a list of available pretrained vectors:</span>
+
 <span class="sd">                charngram.100d</span>
 <span class="sd">                fasttext.en.300d</span>
 <span class="sd">                fasttext.simple.300d</span>
@@ -431,6 +443,7 @@
 <span class="sd">                glove.6B.100d</span>
 <span class="sd">                glove.6B.200d</span>
 <span class="sd">                glove.6B.300d</span>
+
 <span class="sd">            Remaining keyword arguments: Passed to the constructor of Vectors classes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -474,7 +487,7 @@
 <span class="sd">            dim: The dimensionality of the vectors.</span>
 <span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
 <span class="sd">                to zero vectors; can be any function that takes in a Tensor and</span>
-<span class="sd">                returns a Tensor of the same size. Default: torch.Tensor.zero_</span>
+<span class="sd">                returns a Tensor of the same size. Default: &#39;torch.zeros&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">dim</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">token</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">):</span>
@@ -504,7 +517,7 @@
 <span class="sd">                or a list of aforementioned vectors</span>
 <span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
 <span class="sd">                to zero vectors; can be any function that takes in a Tensor and</span>
-<span class="sd">                returns a Tensor of the same size. Default: torch.Tensor.zero_</span>
+<span class="sd">                returns a Tensor of the same size. Default: &#39;torch.zeros</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">revtok</span>
@@ -565,20 +578,21 @@
                  <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">           name: name of the file that contains the vectors</span>
-<span class="sd">           cache: directory for cached vectors</span>
-<span class="sd">           url: url for download if vectors not found in cache</span>
-<span class="sd">           unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
-<span class="sd">               to zero vectors; can be any function that takes in a Tensor and</span>
-<span class="sd">               returns a Tensor of the same size</span>
-<span class="sd">           max_vectors (int): this can be used to limit the number of</span>
-<span class="sd">               pre-trained vectors loaded.</span>
-<span class="sd">               Most pre-trained vector sets are sorted</span>
-<span class="sd">               in the descending order of word frequency.</span>
-<span class="sd">               Thus, in situations where the entire set doesn&#39;t fit in memory,</span>
-<span class="sd">               or is not needed for another reason, passing `max_vectors`</span>
-<span class="sd">               can limit the size of the loaded set.</span>
+
+<span class="sd">            name: name of the file that contains the vectors</span>
+<span class="sd">            cache: directory for cached vectors</span>
+<span class="sd">            url: url for download if vectors not found in cache</span>
+<span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
+<span class="sd">                to zero vectors; can be any function that takes in a Tensor and returns a Tensor of the same size</span>
+<span class="sd">            max_vectors (int): this can be used to limit the number of</span>
+<span class="sd">                pre-trained vectors loaded.</span>
+<span class="sd">                Most pre-trained vector sets are sorted</span>
+<span class="sd">                in the descending order of word frequency.</span>
+<span class="sd">                Thus, in situations where the entire set doesn&#39;t fit in memory,</span>
+<span class="sd">                or is not needed for another reason, passing `max_vectors`</span>
+<span class="sd">                can limit the size of the loaded set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">cache</span> <span class="o">=</span> <span class="s1">&#39;.vector_cache&#39;</span> <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="kc">None</span>
@@ -743,20 +757,20 @@
         <span class="s1">&#39;6B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.6B.zip&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="GloVe.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.GloVe.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;840B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;840B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;glove.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">d.txt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FastText"><a class="viewcode-back" href="../../vocab.html#torchtext.data.FastText">[docs]</a><span class="k">class</span> <span class="nc">FastText</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
 
     <span class="n">url_base</span> <span class="o">=</span> <span class="s1">&#39;https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.</span><span class="si">{}</span><span class="s1">.vec&#39;</span>
 
-<div class="viewcode-block" id="FastText.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.FastText.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">FastText</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FastText</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CharNGram"><a class="viewcode-back" href="../../vocab.html#torchtext.data.CharNGram">[docs]</a><span class="k">class</span> <span class="nc">CharNGram</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
@@ -765,8 +779,8 @@
     <span class="n">url</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/&#39;</span>
            <span class="s1">&#39;jmt_pre-trained_embeddings.tar.gz&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CharNGram.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.CharNGram.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CharNGram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CharNGram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
         <span class="n">vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
@@ -807,16 +821,20 @@
 <span class="sd">&quot;&quot;&quot;Mapping from string name to factory function&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="build_vocab_from_iterator"><a class="viewcode-back" href="../../vocab.html#torchtext.data.build_vocab_from_iterator">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iterator</span><span class="p">):</span>
+<div class="viewcode-block" id="build_vocab_from_iterator"><a class="viewcode-back" href="../../vocab.html#torchtext.data.build_vocab_from_iterator">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a Vocab from an iterator.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
+<span class="sd">        num_lines: The expected number of elements returned by the iterator.</span>
+<span class="sd">            (Default: None)</span>
+<span class="sd">            Optionally, if known, the expected number of elements can be passed to</span>
+<span class="sd">            this factory function for improved progress reporting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
-    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">num_lines</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
             <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
             <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -874,6 +892,7 @@
          <script src="../../_static/underscore.js"></script>
          <script src="../../_static/doctools.js"></script>
          <script src="../../_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

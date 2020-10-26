@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.datasets &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -187,17 +187,24 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -707,10 +714,9 @@ numericalizing the string tokens. label is an integer.
 </div>
 <div class="section" id="ag-news">
 <h3><a class="toc-backref" href="#id10">AG_NEWS</a><a class="headerlink" href="#ag-news" title="Permalink to this headline">¶</a></h3>
-<p>AG_NEWS dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.AG_NEWS">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AG_NEWS</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AG_NEWS</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines AG_NEWS datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><ul class="simple">
@@ -741,20 +747,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">AG_NEWS</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.AG_NEWS.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.AG_NEWS.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="sogounews">
 <h3><a class="toc-backref" href="#id11">SogouNews</a><a class="headerlink" href="#sogounews" title="Permalink to this headline">¶</a></h3>
-<p>SogouNews dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.SogouNews">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SogouNews</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SogouNews</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines SogouNews datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><ul class="simple">
@@ -786,20 +786,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">SogouNews</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.SogouNews.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.SogouNews.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="dbpedia">
 <h3><a class="toc-backref" href="#id12">DBpedia</a><a class="headerlink" href="#dbpedia" title="Permalink to this headline">¶</a></h3>
-<p>DBpedia dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.DBpedia">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">DBpedia</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">DBpedia</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines DBpedia datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><ul class="simple">
@@ -840,20 +834,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">DBpedia</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.DBpedia.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.DBpedia.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="yelpreviewpolarity">
 <h3><a class="toc-backref" href="#id13">YelpReviewPolarity</a><a class="headerlink" href="#yelpreviewpolarity" title="Permalink to this headline">¶</a></h3>
-<p>YelpReviewPolarity dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.YelpReviewPolarity">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewPolarity</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines YelpReviewPolarity datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><ul class="simple">
@@ -882,20 +870,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.YelpReviewPolarity.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="yelpreviewfull">
 <h3><a class="toc-backref" href="#id14">YelpReviewFull</a><a class="headerlink" href="#yelpreviewfull" title="Permalink to this headline">¶</a></h3>
-<p>YelpReviewFull dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.YelpReviewFull">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewFull</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewFull</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines YelpReviewFull datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><p>0 - 4 : rating classes (4 is highly recommended).</p>
@@ -921,20 +903,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.YelpReviewFull.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.YelpReviewFull.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="yahooanswers">
 <h3><a class="toc-backref" href="#id15">YahooAnswers</a><a class="headerlink" href="#yahooanswers" title="Permalink to this headline">¶</a></h3>
-<p>YahooAnswers dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.YahooAnswers">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YahooAnswers</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YahooAnswers</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines YahooAnswers datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><ul class="simple">
@@ -971,20 +947,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">YahooAnswers</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.YahooAnswers.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.YahooAnswers.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="amazonreviewpolarity">
 <h3><a class="toc-backref" href="#id16">AmazonReviewPolarity</a><a class="headerlink" href="#amazonreviewpolarity" title="Permalink to this headline">¶</a></h3>
-<p>AmazonReviewPolarity dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.AmazonReviewPolarity">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewPolarity</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines AmazonReviewPolarity datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><ul class="simple">
@@ -1013,20 +983,14 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.AmazonReviewPolarity.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
 <div class="section" id="amazonreviewfull">
 <h3><a class="toc-backref" href="#id17">AmazonReviewFull</a><a class="headerlink" href="#amazonreviewfull" title="Permalink to this headline">¶</a></h3>
-<p>AmazonReviewFull dataset is subclass of <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> class.</p>
-<dl class="class">
+<dl class="function">
 <dt id="torchtext.datasets.AmazonReviewFull">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewFull</code><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewFull</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Defines AmazonReviewFull datasets.</dt><dd><dl class="simple">
 <dt>The labels includes:</dt><dd><p>0 - 4 : rating classes (4 is highly recommended)</p>
@@ -1052,11 +1016,6 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="torchtext.datasets.AmazonReviewFull.__init__">
-<code class="sig-name descname">__init__</code><em class="property"> = &lt;method-wrapper '__init__' of function object&gt;</em><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
@@ -1376,9 +1335,9 @@ form
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>examples</strong> – List of Examples.</p></li>
-<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="data.html#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
+<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference internal" href="data.html#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
 string is a field name, and the Field is the associated field.</p></li>
-<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Use only examples for which
+<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Use only examples for which
 filter_pred(example) is True, or use all examples if None.
 Default is None.</p></li>
 </ul>
@@ -1412,10 +1371,7 @@ data.</p>
 <dt id="torchtext.datasets.CoNLL2000Chunking.splits">
 <em class="property">classmethod </em><code class="sig-name descname">splits</code><span class="sig-paren">(</span><em class="sig-param">fields</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">train='train.txt'</em>, <em class="sig-param">test='test.txt'</em>, <em class="sig-param">validation_frac=0.1</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sequence_tagging.html#CoNLL2000Chunking.splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.CoNLL2000Chunking.splits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downloads and loads the CoNLL 2000 Chunking dataset.
-NOTE: There is only a train and test dataset so we use</p>
-<blockquote>
-<div><p>10% of the train set as validation</p>
-</div></blockquote>
+NOTE: There is only a train and test dataset so we use 10% of the train set as validation</p>
 </dd></dl>
 
 </dd></dl>
@@ -1437,9 +1393,9 @@ NOTE: There is only a train and test dataset so we use</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>examples</strong> – List of Examples.</p></li>
-<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference internal" href="data.html#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
+<li><p><strong>fields</strong> (<em>List</em><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference internal" href="data.html#torchtext.data.Field" title="torchtext.data.Field"><em>Field</em></a><em>)</em><em>)</em>) – The Fields to use in this tuple. The
 string is a field name, and the Field is the associated field.</p></li>
-<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Use only examples for which
+<li><p><strong>filter_pred</strong> (<em>callable</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Use only examples for which
 filter_pred(example) is True, or use all examples if None.
 Default is None.</p></li>
 </ul>
@@ -1454,14 +1410,14 @@ Default is None.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Common prefix of the splits’ file paths, or None to use
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Common prefix of the splits’ file paths, or None to use
 the result of cls.download(root).</p></li>
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Root dataset storage directory. Default is ‘.data’.</p></li>
-<li><p><strong>train</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the train set, or None for no
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Root dataset storage directory. Default is ‘.data’.</p></li>
+<li><p><strong>train</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Suffix to add to path for the train set, or None for no
 train set. Default is None.</p></li>
-<li><p><strong>validation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the validation set, or None
+<li><p><strong>validation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Suffix to add to path for the validation set, or None
 for no validation set. Default is None.</p></li>
-<li><p><strong>test</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Suffix to add to path for the test set, or None for no test
+<li><p><strong>test</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Suffix to add to path for the test set, or None for no test
 set. Default is None.</p></li>
 <li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of the
 Dataset (sub)class being used.</p></li>
@@ -1634,6 +1590,7 @@ It’s part of Large Text Compression Benchmark project</p>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
          <script src="_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

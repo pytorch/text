@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -154,7 +154,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -186,17 +186,24 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -271,6 +278,24 @@
               
   <div class="section" id="torchtext">
 <h1>torchtext<a class="headerlink" href="#torchtext" title="Permalink to this headline">¶</a></h1>
+<p>This library is part of the <a class="reference external" href="http://pytorch.org/">PyTorch</a> project. PyTorch is an open source
+machine learning framework.</p>
+<p>Features described in this documentation are classified by release status:</p>
+<blockquote>
+<div><p><em>Stable:</em>  These features will be maintained long-term and there should generally
+be no major performance limitations or gaps in documentation.
+We also expect to maintain backwards compatibility (although
+breaking changes can happen and notice will be given one release ahead
+of time).</p>
+<p><em>Beta:</em>  Features are tagged as Beta because the API may change based on
+user feedback, because the performance needs to improve, or because
+coverage across operators is not yet complete. For Beta features, we are
+committing to seeing the feature through to the Stable classification.
+We are not, however, committing to backwards compatibility.</p>
+<p><em>Prototype:</em>  These features are typically not available as part of
+binary distributions like PyPI or Conda, except sometimes behind run-time
+flags, and are at an early stage for feedback and testing.</p>
+</div></blockquote>
 <p>The <a class="reference internal" href="#module-torchtext" title="torchtext"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtext</span></code></a> package consists of data processing utilities and
 popular datasets for natural language.</p>
 <div class="toctree-wrapper compound">
@@ -283,6 +308,12 @@ popular datasets for natural language.</p>
 <li class="toctree-l2"><a class="reference internal" href="data.html#iterators">Iterators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html#pipeline">Pipeline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nn_modules.html#multiheadattentioncontainer"><span class="hidden-section">MultiheadAttentionContainer</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn_modules.html#inprojcontainer"><span class="hidden-section">InProjContainer</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="nn_modules.html#scaleddotproduct"><span class="hidden-section">ScaledDotProduct</span></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a><ul>
@@ -333,36 +364,22 @@ popular datasets for natural language.</p>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#extract-archive"><span class="hidden-section">extract_archive</span></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#sentiment-analysis">Sentiment Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#text-classification">Text Classification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#language-modeling">Language Modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#machine-translation">Machine Translation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#sequence-tagging">Sequence Tagging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_datasets.html#question-answer">Question Answer</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="experimental_transforms.html#basicenglishnormalize"><span class="hidden-section">BasicEnglishNormalize</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_transforms.html#regextokenizer"><span class="hidden-section">RegexTokenizer</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#vector"><span class="hidden-section">Vector</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#vectors-from-file-object"><span class="hidden-section">vectors_from_file_object</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#fasttext"><span class="hidden-section">FastText</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_vectors.html#glove"><span class="hidden-section">GloVe</span></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="experimental_vocab.html#vocab"><span class="hidden-section">Vocab</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="experimental_vocab.html#vocab-from-file-object"><span class="hidden-section">vocab_from_file_object</span></a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 </div>
-<span class="target" id="module-torchtext"></span></div>
+<span class="target" id="module-torchtext"></span><div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
+</ul>
+</div>
+</div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
@@ -413,7 +430,9 @@ popular datasets for natural language.</p>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext</a></li>
+<li><a class="reference internal" href="#">torchtext</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
@@ -434,6 +453,7 @@ popular datasets for natural language.</p>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
          <script src="_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

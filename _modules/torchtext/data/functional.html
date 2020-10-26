@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.functional &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.data.functional &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -153,7 +153,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -185,17 +185,24 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -268,7 +275,7 @@
               
   <h1>Source code for torchtext.data.functional</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
-
+<span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 
 
@@ -308,11 +315,11 @@
     <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">generate_sp_model</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">,</span> <span class="n">model_type</span><span class="p">,</span> <span class="n">model_prefix</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_sp_model"><a class="viewcode-back" href="../../../data_functional.html#torchtext.data.functional.load_sp_model">[docs]</a><span class="k">def</span> <span class="nf">load_sp_model</span><span class="p">(</span><span class="n">spm_path</span><span class="p">):</span>
+<div class="viewcode-block" id="load_sp_model"><a class="viewcode-back" href="../../../data_functional.html#torchtext.data.functional.load_sp_model">[docs]</a><span class="k">def</span> <span class="nf">load_sp_model</span><span class="p">(</span><span class="n">spm</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load a  sentencepiece model for file.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        spm_path: the file path saving the sentencepiece model.</span>
+<span class="sd">        spm: the file path or a file object saving the sentencepiece model.</span>
 
 <span class="sd">    Outputs:</span>
 <span class="sd">        output: a SentencePiece model.</span>
@@ -320,8 +327,19 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.data.functional import load_sp_model</span>
 <span class="sd">        &gt;&gt;&gt; sp_model = load_sp_model(&quot;m_user.model&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; sp_model = load_sp_model(open(&quot;m_user.model&quot;, &#39;rb&#39;))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">load_sp_model</span><span class="p">(</span><span class="n">spm_path</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spm</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">load_sp_model</span><span class="p">(</span><span class="n">spm</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spm</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">load_sp_model_string</span><span class="p">(</span><span class="n">spm</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Unsupported type for spm argument: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">spm</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">. &#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;Supported types are: &#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;io.BufferedReader&#39;</span>
+            <span class="p">]))</span></div>
 
 
 <div class="viewcode-block" id="sentencepiece_numericalizer"><a class="viewcode-back" href="../../../data_functional.html#torchtext.data.functional.sentencepiece_numericalizer">[docs]</a><span class="k">def</span> <span class="nf">sentencepiece_numericalizer</span><span class="p">(</span><span class="n">sp_model</span><span class="p">):</span>
@@ -490,6 +508,7 @@
          <script src="../../../_static/underscore.js"></script>
          <script src="../../../_static/doctools.js"></script>
          <script src="../../../_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

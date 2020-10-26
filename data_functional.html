@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.functional &mdash; torchtext 0.8.0a0+c4a91f2 documentation</title>
+  <title>torchtext.data.functional &mdash; torchtext 0.8.0 documentation</title>
   
 
   
@@ -155,7 +155,7 @@
               
               
                 <div class="version">
-                  0.8.0a0+c4a91f2
+                  0.8.0
                 </div>
               
             
@@ -187,17 +187,24 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
 </ul>
 
             
@@ -308,11 +315,11 @@ bpe, char, word.</p></li>
 <h2><span class="hidden-section">load_sp_model</span><a class="headerlink" href="#load-sp-model" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.data.functional.load_sp_model">
-<code class="sig-prename descclassname">torchtext.data.functional.</code><code class="sig-name descname">load_sp_model</code><span class="sig-paren">(</span><em class="sig-param">spm_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/functional.html#load_sp_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.functional.load_sp_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.data.functional.</code><code class="sig-name descname">load_sp_model</code><span class="sig-paren">(</span><em class="sig-param">spm</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/functional.html#load_sp_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.functional.load_sp_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a  sentencepiece model for file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>spm_path</strong> – the file path saving the sentencepiece model.</p>
+<dd class="field-odd"><p><strong>spm</strong> – the file path or a file object saving the sentencepiece model.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -322,6 +329,7 @@ bpe, char, word.</p></li>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">load_sp_model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="s2">&quot;m_user.model&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;m_user.model&quot;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -531,6 +539,7 @@ bpe, char, word.</p></li>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
          <script src="_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   
