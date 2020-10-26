@@ -59,13 +59,16 @@ def _setup_datasets(dataset_name, root, vocabs, data_select):
 
 class SequenceTaggingDataset(torch.utils.data.Dataset):
     """Defines an abstraction for raw text sequence tagging iterable datasets.
+
     Currently, we only support the following datasets:
+
         - UDPOS
         - CoNLL2000Chunking
     """
 
     def __init__(self, data, vocabs, transforms):
         """Initiate sequence tagging dataset.
+
         Arguments:
             data: a list of word and its respective tags. Example:
                 [[word, POS, dep_parsing label, ...]]
@@ -74,7 +77,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
                 found in the data.
             transforms: a list of string transforms for words and tags.
                 The number of transforms must be the same as the number of columns
-                    found in the data.
+                found in the data.
         """
 
         super(SequenceTaggingDataset, self).__init__()
@@ -122,6 +125,7 @@ def UDPOS(root=".data", vocabs=None, data_select=("train", "valid", "test")):
         >>> from torchtext.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
+
     return _setup_datasets("UDPOS", root, vocabs, data_select)
 
 
@@ -147,6 +151,7 @@ def CoNLL2000Chunking(root=".data", vocabs=None, data_select=("train", "test")):
         >>> from torchtext.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
+
     return _setup_datasets("CoNLL2000Chunking", root, vocabs, data_select)
 
 

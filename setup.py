@@ -82,7 +82,7 @@ setup_info = dict(
     license='BSD',
 
     install_requires=[
-        'tqdm', 'requests', 'torch', 'numpy', 'sentencepiece'
+        'tqdm', 'requests', 'torch', 'numpy'
     ],
     python_requires='>=3.5',
     classifiers=[
