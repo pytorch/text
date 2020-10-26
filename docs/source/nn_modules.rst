@@ -10,14 +10,20 @@ torchtext.nn.modules.multiheadattention
 :hidden:`MultiheadAttentionContainer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: MultiheadAttentionContainer 
+.. autoclass:: MultiheadAttentionContainer
+    :members:
+    :special-members: __init__
 
 :hidden:`InProjContainer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: InProjContainer 
+.. autoclass:: InProjContainer 
+    :members:
+    :special-members: __init__
 
 :hidden:`ScaledDotProduct`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: ScaledDotProduct
+.. autoclass:: ScaledDotProduct 
+    :members:
+    :special-members: __init__
