@@ -1,3 +1,4 @@
+import torchtext
 from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
@@ -33,6 +34,9 @@ def _setup_datasets(dataset_name, root, data_select):
     data_select = check_default_set(data_select, ('train', 'dev'))
     extracted_files = {key: download_from_url(URLS[dataset_name][key],
                                               root=root) for key in data_select}
+    
+    print(extracted_files['train'], torchtext.utils._generate_hash_value(extracted_files['train'], hash_type="md5"))
+    print(extracted_files['dev'], torchtext.utils._generate_hash_value(extracted_files['dev'], hash_type="md5"))
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
                  _create_data_from_json(extracted_files[item])) for item in data_select)
 

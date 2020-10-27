@@ -1,3 +1,4 @@
+import torchtext
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
@@ -45,9 +46,11 @@ def _setup_datasets(dataset_name, separator, root, data_select):
     if isinstance(URLS[dataset_name], list):
         for f in URLS[dataset_name]:
             dataset_tar = download_from_url(f, root=root)
+            print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
             extracted_files.extend(extract_archive(dataset_tar))
     elif isinstance(URLS[dataset_name], str):
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
         extracted_files.extend(extract_archive(dataset_tar))
     else:
         raise ValueError(

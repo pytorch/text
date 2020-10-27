@@ -1,3 +1,4 @@
+import torchtext
 import logging
 import io
 from torchtext.utils import download_from_url, extract_archive
@@ -29,17 +30,21 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
         select_to_index = {'train': 0, 'test': 1, 'valid': 2}
         extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
                                              root=root) for key in data_select]
+        for item in extracted_files:
+            print(item, torchtext.utils._generate_hash_value(item, hash_type="md5"))
     elif dataset_name == 'WMTNewsCrawl':
         if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
             raise ValueError("WMTNewsCrawl only creates a training dataset. "
                              "data_select should be 'train' "
                              "or ('train',), got {}.".format(data_select))
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
         extracted_files = extract_archive(dataset_tar)
         file_name = 'news.{}.{}.shuffled'.format(year, language)
         extracted_files = [f for f in extracted_files if file_name in f]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
         extracted_files = extract_archive(dataset_tar)
 
     _path = {}

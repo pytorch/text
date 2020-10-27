@@ -10,15 +10,20 @@ def benchmark_construction(name, Dataset):
     del d
 
 
+def count_iterable(dataset):
+    iter_ = iter(dataset)
+    return sum(1 for _ in iter_)
+
+
 def benchmark_raw_construction(name, Dataset):
     print(name, end='')
-    if name in "WMTNewsCrawl":
-        d = Dataset(data_select=('train',))
-    else:
+    if name != "WMTNewsCrawl":
         d = Dataset()
+        for item in d:
+            print(item, count_iterable(item))
     del d
 
 
 if __name__ == "__main__":
-    for name, Dataset in datasets.DATASETS.items():
-        benchmark_construction(name, Dataset)
+    for name, Dataset in datasets.raw.DATASETS.items():
+        benchmark_raw_construction(name, Dataset)

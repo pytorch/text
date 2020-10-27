@@ -1,3 +1,4 @@
+import torchtext
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
@@ -37,9 +38,13 @@ def _setup_datasets(dataset_name, root, data_select):
     data_select = check_default_set(data_select, target_select=('train', 'test'))
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
+        for item in extracted_files:
+            print(item, torchtext.utils._generate_hash_value(item, hash_type="md5"))
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
         extracted_files = extract_archive(dataset_tar)
+
     cvs_path = {}
     for fname in extracted_files:
         if fname.endswith('train.csv'):
@@ -238,6 +243,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
     """
     data_select = check_default_set(data_select, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root)
+    print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
     extracted_files = extract_archive(dataset_tar)
     return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"],
                                         generate_imdb_data(item,
