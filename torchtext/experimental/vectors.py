@@ -65,21 +65,30 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
 
     Args:
         name (str): the name of the GloVe dataset to use. Options are:
+
             - 42B
             - 840B
             - twitter.27B
             - 6B
         dim (int): the dimension for the GloVe dataset to load. Options are:
+
             42B:
+
                 - 300
+
             840B:
+
                 - 300
+
             twitter.27B:
+
                 - 25
                 - 50
                 - 100
                 - 200
+
             6B:
+
                 - 50
                 - 100
                 - 200

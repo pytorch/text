@@ -21,14 +21,15 @@ def build_vocab(data, transforms):
 class TextClassificationDataset(torch.utils.data.Dataset):
     """Defines an abstract text classification datasets.
        Currently, we only support the following datasets:
-             - AG_NEWS
-             - SogouNews
-             - DBpedia
-             - YelpReviewPolarity
-             - YelpReviewFull
-             - YahooAnswers
-             - AmazonReviewPolarity
-             - AmazonReviewFull
+
+           - AG_NEWS
+           - SogouNews
+           - DBpedia
+           - YelpReviewPolarity
+           - YelpReviewFull
+           - YahooAnswers
+           - AmazonReviewPolarity
+           - AmazonReviewFull
     """
 
     def __init__(self, data, vocab, transforms):
