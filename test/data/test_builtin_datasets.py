@@ -1,20 +1,11 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
-import glob
-import shutil
 import torchtext.data as data
 import torch
 import torchtext
 from ..common.torchtext_test_case import TorchtextTestCase
-
-
-def conditional_remove(f):
-    for path in glob.glob(f):
-        if os.path.isfile(path):
-            os.remove(path)
-        elif os.path.isdir(path):
-            shutil.rmtree(path)
+from ..common.assets import conditional_remove
 
 
 class TestDataset(TorchtextTestCase):

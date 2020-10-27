@@ -1,6 +1,6 @@
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
-from ..common.assets import get_asset_path
+from ..common.assets import get_asset_path, conditional_remove
 from torchtext.experimental.transforms import (
     sentencepiece_tokenizer,
     basic_english_normalize,
@@ -23,6 +23,49 @@ from torchtext.experimental.vectors import (
     vectors_from_file_object,
 )
 from torchtext.utils import download_from_url
+
+
+class TestWithAsset(TorchtextTestCase):
+    def _helper_test_func(self, length, target_length, results, target_results):
+        self.assertEqual(length, target_length)
+        if isinstance(target_results, list):
+            target_results = torch.tensor(target_results, dtype=torch.int64)
+        if isinstance(target_results, tuple):
+            target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
+        self.assertEqual(results, target_results)
+
+    def test_wikitext103(self):
+        from torchtext.experimental.datasets import WikiText103
+        cachedir = os.path.join(self.project_root, ".data", "wikitext-103")
+        conditional_remove(cachedir)
+        cachefile = os.path.join(self.project_root, ".data", "wikitext-103-v1.zip")
+        conditional_remove(cachefile)
+
+        asset_name = 'wikitext103_vocab.pt'
+        asset_path = get_asset_path(asset_name)
+        with open(asset_path, 'rb') as f:
+            builtin_vocab = torch.load(f)
+        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=builtin_vocab)
+        self._helper_test_func(len(train_dataset), 101544324, train_dataset[20:25],
+                               [5481, 89, 22, 3, 1959])
+        self._helper_test_func(len(test_dataset), 242042, test_dataset[30:35],
+                               [710, 4, 35, 11, 507])
+        self._helper_test_func(len(valid_dataset), 214572, valid_dataset[40:45],
+                               [990, 8, 2, 139, 18186])
+
+        vocab = train_dataset.get_vocab()
+        tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
+        self.assertEqual(tokens_ids, [2, 320, 437, 687])
+
+        # Add test for the subset of the standard datasets
+        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, data_select=('train', 'test'))
+        self._helper_test_func(len(train_dataset), 101544324, train_dataset[20:25],
+                               [5481, 89, 22, 3, 1959])
+        self._helper_test_func(len(test_dataset), 242042, test_dataset[30:35],
+                               [710, 4, 35, 11, 507])
+
+        conditional_remove(cachedir)
+        conditional_remove(cachefile)
 
 
 class TestTransformsWithAsset(TorchtextTestCase):
