@@ -6,7 +6,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 export BUILD_TYPE="wheel"
 export NO_CUDA_PACKAGE=1
-setup_env 0.8.0
+setup_env 0.9.0
 setup_wheel_python
 pip_install numpy future
 setup_pip_pytorch_version

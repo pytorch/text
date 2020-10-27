@@ -33,7 +33,7 @@ popular datasets for natural language.
 
    self
    torchtext.data <data>
-   modules
+   nn_modules
    data_utils
    data_functional
    data_metrics
@@ -41,7 +41,6 @@ popular datasets for natural language.
    torchtext.vocab <vocab>
    torchtext.utils <utils>
    experimental_datasets
-   experimental_functional
    experimental_transforms
    experimental_vectors
    experimental_vocab

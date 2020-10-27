@@ -36,21 +36,18 @@ Pretrained Word Embeddings
 
 .. autoclass:: GloVe
     :members:
-    :special-members: __init__
 
 :hidden:`FastText`
 ~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: FastText
     :members:
-    :special-members: __init__
 
 :hidden:`CharNGram`
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: CharNGram
     :members:
-    :special-members: __init__
 
 Misc.
 -----

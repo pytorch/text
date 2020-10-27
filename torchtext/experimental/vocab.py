@@ -53,10 +53,12 @@ def vocab_from_file(file_object, min_freq=1, num_cpus=4):
     The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
     Format for txt file:
+
         token1
         token2
         ...
         token_n
+
     Args:
         file_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
@@ -65,6 +67,7 @@ def vocab_from_file(file_object, min_freq=1, num_cpus=4):
 
     Returns:
         Vocab: a `Vocab` object.
+
     Examples:
         >>> from torchtext.experimental.vocab import vocab_from_file
         >>> f = open('vocab.txt', 'r')
@@ -77,6 +80,7 @@ def vocab_from_file(file_object, min_freq=1, num_cpus=4):
 def build_vocab_from_iterator(iterator, min_freq=1):
     """
     Build a Vocab from an iterator.
+
     Arguments:
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
