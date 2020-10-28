@@ -27,5 +27,5 @@ def benchmark_raw_construction(name, Dataset):
 if __name__ == "__main__":
 #    for name, Dataset in datasets.raw.DATASETS.items():
 #        benchmark_raw_construction(name, Dataset)
-    benchmark_raw_construction('SQuAD1', datasets.raw.DATASETS['SQuAD1'])
-    benchmark_raw_construction('SQuAD2', datasets.raw.DATASETS['SQuAD2'])
+    benchmark_raw_construction('UDPOS', datasets.raw.DATASETS['UDPOS'])
+    benchmark_raw_construction('CoNLL2000Chunking', datasets.raw.DATASETS['CoNLL2000Chunking'])
