@@ -40,15 +40,12 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         self.vocab = vocab
         self.transforms = transforms
         self.single_line = single_line
-        self.data = data
+        self.data = tuple(filter(lambda t: t.numel() > 0, data))
         if single_line:
-            self.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, self.data)))
+            self.data = torch.cat(self.data)
 
     def __getitem__(self, i):
-        if self.single_line:
-            return self.data[i]
-        else:
-            return self.transforms(self.data[i])
+        return self.data[i]
 
     def __len__(self):
         return len(self.data)
