@@ -246,23 +246,6 @@ def extract_archive(from_path, to_path=None, overwrite=False):
             "We currently only support tar.gz, .tgz, .gz and zip achives.")
 
 
-def _generate_hash_value(file_path, hash_type="sha256"):
-    if hash_type == "sha256":
-        hash_func = hashlib.sha256()
-    elif hash_type == "md5":
-        hash_func = hashlib.md5()
-    else:
-        raise ValueError
-    file_obj = open(file_path, 'rb')
-    while True:
-        # Read by chunk to avoid filling memory
-        chunk = file_obj.read(1024 ** 2)
-        if not chunk:
-            break
-        hash_func.update(chunk)
-    return hash_func.hexdigest()
-
-
 def validate_file(file_obj, hash_value, hash_type="sha256"):
     """Validate a given file object with its hash.
 
@@ -275,4 +258,17 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
 
     """
 
-    return _generate_hash_value(file_obj, hash_type=hash_type) == hash_value
+    if hash_type == "sha256":
+        hash_func = hashlib.sha256()
+    elif hash_type == "md5":
+        hash_func = hashlib.md5()
+    else:
+        raise ValueError
+
+    while True:
+        # Read by chunk to avoid filling memory
+        chunk = file_obj.read(1024 ** 2)
+        if not chunk:
+            break
+        hash_func.update(chunk)
+    return hash_func.hexdigest() == hash_value
