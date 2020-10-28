@@ -1,4 +1,5 @@
 import torch
+import torchtext
 from test.common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path, conditional_remove
 from torchtext.experimental.transforms import (
