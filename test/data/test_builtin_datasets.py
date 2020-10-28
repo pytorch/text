@@ -9,6 +9,7 @@ from ..common.assets import conditional_remove
 
 
 class TestDataset(TorchtextTestCase):
+    @staticmethod
     def _helper_test_func(self, length, target_length, results, target_results):
         self.assertEqual(length, target_length)
         if isinstance(target_results, list):
