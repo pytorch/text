@@ -1,4 +1,3 @@
-import torchtext
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
@@ -244,7 +243,6 @@ def IMDB(root='.data', data_select=('train', 'test')):
     data_select = check_default_set(data_select, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root,
                                     hash_value=MD5['IMDB'], hash_type='md5')
-    print(dataset_tar, torchtext.utils._generate_hash_value(dataset_tar, hash_type="md5"))
     extracted_files = extract_archive(dataset_tar)
     return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
                                         generate_imdb_data(item,

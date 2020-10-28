@@ -65,7 +65,7 @@ class TestDataset(TorchtextTestCase):
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'test'))
         self._helper_test_func(len(train_dataset), 36718, next(iter(train_dataset)), ' \n')
-        self._helper_test_func(len(test_dataset), 36718, next(iter(test_dataset)), ' \n')
+        self._helper_test_func(len(test_dataset), 4358, next(iter(test_dataset)), ' \n')
         del train_dataset, test_dataset
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
         self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
@@ -112,7 +112,7 @@ class TestDataset(TorchtextTestCase):
                                [397, 93, 4, 16, 7])
         train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
         self._helper_test_func(len(train_iter), 42068, next(iter(train_iter))[:15], ' aer banknote b')
-        self._helper_test_func(len(test_iter), 42068, next(iter(test_iter))[:25], " no it was n't black mond")
+        self._helper_test_func(len(test_iter), 3761, next(iter(test_iter))[:25], " no it was n't black mond")
         del train_dataset, test_dataset
 
     def test_text_classification(self):
