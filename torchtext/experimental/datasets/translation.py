@@ -52,7 +52,7 @@ def _setup_datasets(dataset_name,
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
-    _logger.info('src Vocab has {} entries'.format(len(src_vocab)))
+    _logger.info('src Vocab has %d entries', len(src_vocab))
 
     if tgt_vocab is None:
         if 'train' not in data_select:
@@ -64,7 +64,7 @@ def _setup_datasets(dataset_name,
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
-    _logger.info('tgt Vocab has {} entries'.format(len(tgt_vocab)))
+    _logger.info('tgt Vocab has %d entries', len(tgt_vocab))
 
     _logger.info('Building datasets for {}'.format(data_select))
     datasets = []

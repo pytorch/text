@@ -81,7 +81,7 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_li
             raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
         _logger.info('Building Vocab based on train data')
         vocab = build_vocab(raw_train, tokenizer)
-    _logger.info('Vocab has {} entries'.format(len(vocab)))
+    _logger.info('Vocab has %d entries', len(vocab))
 
     def text_transform(line):
         return torch.tensor([vocab[token] for token in tokenizer(line)], dtype=torch.long)

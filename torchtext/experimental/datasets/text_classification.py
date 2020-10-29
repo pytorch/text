@@ -84,7 +84,7 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
             raise TypeError("Must pass a vocab if train is not selected.")
         _logger.info('Building Vocab based on train data')
         vocab = build_vocab(raw_data["train"], text_transform)
-    _logger.info('Vocab has {} entries'.format(len(vocab)))
+    _logger.info('Vocab has %d entries', len(vocab))
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
