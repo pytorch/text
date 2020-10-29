@@ -1,4 +1,5 @@
 import torch
+import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
@@ -79,7 +80,9 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
     if vocab is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
+        logging.info('Building Vocab based on train data')
         vocab = build_vocab(raw_data["train"], text_transform)
+    logging.info('Vocab has {} entries'.format(len(vocab)))
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
@@ -87,6 +90,7 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
         label_transform = sequential_transforms(lambda x: 1 if x == 'pos' else 0, totensor(dtype=torch.long))
     else:
         label_transform = sequential_transforms(totensor(dtype=torch.long))
+    logging.info('Building datasets for {}'.format(data_select))
     return tuple(
         TextClassificationDataset(
             raw_data[item], vocab, (label_transform, text_transform)

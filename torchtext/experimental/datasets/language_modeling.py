@@ -1,4 +1,5 @@
 import torch
+import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import language_modeling as raw
@@ -76,7 +77,9 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_li
             raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',), year=year, language=language)
         else:
             raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
+        logging.info('Building Vocab based on train data')
         vocab = build_vocab(raw_train, tokenizer)
+    logging.info('Vocab has {} entries'.format(len(vocab)))
 
     def text_transform(line):
         return torch.tensor([vocab[token] for token in tokenizer(line)], dtype=torch.long)
@@ -86,7 +89,7 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_li
     else:
         raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
     raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(data_select, raw_datasets)}
-
+    logging.info('Building datasets for {}'.format(data_select))
     return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
                  for item in data_select)
 
