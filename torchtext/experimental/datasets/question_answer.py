@@ -10,6 +10,8 @@ from torchtext.experimental.functional import (
     sequential_transforms,
 )
 
+_logger = logging.getLogger(__name__)
+
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
     """Defines an abstract question answer datasets.
@@ -77,13 +79,13 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
                 for item in _answers:
                     tok_ans += text_transform(item)
                 yield text_transform(_context) + text_transform(_question) + tok_ans
-        logging.info('Building Vocab based on train data')
+        _logger.info('Building Vocab based on train data')
         vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), len(raw_data['train']))
-    logging.info('Vocab has {} entries'.format(len(vocab)))
+    _logger.info('Vocab has {} entries'.format(len(vocab)))
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
-    logging.info('Building datasets for {}'.format(data_select))
+    _logger.info('Building datasets for {}'.format(data_select))
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 
