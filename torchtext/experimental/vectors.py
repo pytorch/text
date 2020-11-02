@@ -153,7 +153,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     return vectors_obj
 
 
-def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, num_cpus=10):
+def vectors_from_file_object(file_like_object, delimiter=",", num_cpus=10):
     r"""Create a Vectors object from a csv file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
@@ -167,7 +167,6 @@ def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, n
     Args:
         file_like_object (FileObject): a file like object to read data from.
         delimiter (char): a character to delimit between the token and the vector. Default value is ","
-        unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 10.
 
     Returns:
@@ -177,7 +176,7 @@ def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, n
         ValueError: if duplicate tokens are found in FastText file.
 
     """
-    vectors_obj, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name, delimiter, num_cpus, unk_tensor)
+    vectors_obj, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name, delimiter, num_cpus)
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     return Vectors(vectors_obj)
@@ -191,7 +190,7 @@ def vectors(tokens, vectors):
         vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
 
     Raises:
-        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
+        ValueError: if `vectors` is empty.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
     """

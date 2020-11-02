@@ -69,7 +69,7 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
   else
     throw std::runtime_error("The default tensor has not been set up yet. Call "
                              "set_default_tensor() function to "
-                             "set up the default tensor")
+                             "set up the default tensor");
 }
 
 torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
@@ -105,7 +105,7 @@ void set_default_tensor(const torch::Tensor default_tensor) {
     throw std::runtime_error(
         "The 1D default tensor has the length of " + default_tensor.size(0) +
         "but the vector tensors have the length of " + vectors_.size(1));
-  default_tensor_ = default_tensor 
+  default_tensor_ = default_tensor; 
 }
 
 torch::Tensor get_default_tensor(){return default_tensor_.value()}
@@ -226,7 +226,7 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 constexpr int64_t GRAIN_SIZE = 131072;
 std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
     const std::string &file_path, const std::string delimiter_str,
-    int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor) {
+    int64_t num_cpus) {
 
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");
@@ -282,15 +282,8 @@ std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
   std::tie(stoi, dup_tokens) =
       _concat_vectors(chunk_tokens, num_header_lines, num_lines);
 
-  torch::Tensor unk_tensor;
-  if (opt_unk_tensor) {
-    unk_tensor = *opt_unk_tensor;
-  } else {
-    unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
-  }
-
   auto result =
-      std::make_tuple(Vectors(stoi, data_tensor, unk_tensor), dup_tokens);
+      std::make_tuple(Vectors(stoi, data_tensor), dup_tokens);
   return result;
 }
 
@@ -309,7 +302,7 @@ VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
 
   std::vector<int64_t> integers = std::move(indices);
   std::vector<std::string> strings = std::move(tokens);
-  std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
+  std::vector<torch::Tensor> tensors{self->vectors_, self->default_tensor_};
 
   VectorsStates states =
       std::make_tuple(self->version_str_, std::move(integers),
