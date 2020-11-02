@@ -43,6 +43,9 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, num_cpus=
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
         >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
+        >>> v.insert_token('<unk>', 0)
+        >>> v.set_default_index(0)
+        >>> v.get_default_index()
     """
     vocab_obj = _load_vocab_from_raw_text_file(file_object.name, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
@@ -72,6 +75,9 @@ def vocab_from_file(file_object, min_freq=1, num_cpus=4):
         >>> from torchtext.experimental.vocab import vocab_from_file
         >>> f = open('vocab.txt', 'r')
         >>> v = vocab_from_file(f)
+        >>> v.insert_token('<unk>', 0)
+        >>> v.set_default_index(0)
+        >>> v.get_default_index()
     """
     vocab_obj = _load_vocab_from_file(file_object.name, min_freq, num_cpus)
     return Vocab(vocab_obj)
@@ -85,6 +91,16 @@ def build_vocab_from_iterator(iterator, min_freq=1):
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import build_vocab_from_iterator
+        >>> tokens = [['this', 'is', 'an', 'example', 'for', 'vocab']]
+        >>> v = build_vocab_from_iterator(tokens)
+        >>> v.insert_token('<unk>', 0)
+        >>> v.set_default_index(0)
+        >>> v.get_default_index()
+        >>> tokens_iter = iter([['this', 'is', 'an'], ['example', 'for', 'vocab']])
+        >>> v1 = build_vocab_from_iterator(tokens_iter)
     """
 
     counter = Counter()
@@ -114,6 +130,9 @@ def vocab(ordered_dict, min_freq=1):
         >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
         >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
         >>> v1 = vocab(ordered_dict)
+        >>> v1.insert_token('<unk>', 0)
+        >>> v1.set_default_index(0)
+        >>> v1.get_default_index()
         >>> tokens = ['e', 'd', 'c', 'b', 'a']
         >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
     """
