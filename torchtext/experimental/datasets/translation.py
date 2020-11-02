@@ -6,7 +6,7 @@ from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
 
-_logger = logging.getLogger(__name__)
+logger_ = logging.getLogger(__name__)
 
 
 def build_vocab(data, transforms, index):
@@ -45,28 +45,28 @@ def _setup_datasets(dataset_name,
     if src_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        _logger.info('Building src Vocab based on train data')
+        logger_.info('Building src Vocab based on train data')
         src_vocab = build_vocab(raw_data["train"],
                                 src_text_vocab_transform,
                                 index=0)
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
-    _logger.info('src Vocab has %d entries', len(src_vocab))
+    logger_.info('src Vocab has %d entries', len(src_vocab))
 
     if tgt_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        _logger.info('Building tgt Vocab based on train data')
+        logger_.info('Building tgt Vocab based on train data')
         tgt_vocab = build_vocab(raw_data["train"],
                                 tgt_text_vocab_transform,
                                 index=1)
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
-    _logger.info('tgt Vocab has %d entries', len(tgt_vocab))
+    logger_.info('tgt Vocab has %d entries', len(tgt_vocab))
 
-    _logger.info('Building datasets for {}'.format(data_select))
+    logger_.info('Building datasets for {}'.format(data_select))
     datasets = []
     for key in data_select:
         src_text_transform = sequential_transforms(src_text_vocab_transform,

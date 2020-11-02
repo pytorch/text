@@ -11,7 +11,7 @@ from torchtext.experimental.functional import (
     sequential_transforms,
 )
 
-_logger = logging.getLogger(__name__)
+logger_ = logging.getLogger(__name__)
 
 
 def build_vocab(data, transforms):
@@ -82,9 +82,9 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
     if vocab is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        _logger.info('Building Vocab based on train data')
+        logger_.info('Building Vocab based on train data')
         vocab = build_vocab(raw_data["train"], text_transform)
-    _logger.info('Vocab has %d entries', len(vocab))
+    logger_.info('Vocab has %d entries', len(vocab))
     text_transform = sequential_transforms(
         text_transform, vocab_func(vocab), totensor(dtype=torch.long)
     )
@@ -92,7 +92,7 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
         label_transform = sequential_transforms(lambda x: 1 if x == 'pos' else 0, totensor(dtype=torch.long))
     else:
         label_transform = sequential_transforms(totensor(dtype=torch.long))
-    _logger.info('Building datasets for {}'.format(data_select))
+    logger_.info('Building datasets for {}'.format(data_select))
     return tuple(
         TextClassificationDataset(
             raw_data[item], vocab, (label_transform, text_transform)
