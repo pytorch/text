@@ -43,7 +43,6 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,
                     torch::Tensor>())
       .def_readonly("vectors_", &Vectors::vectors_)
-      // .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
       .def("get_stoi", &Vectors::get_stoi)
       .def("__getitem__", &Vectors::__getitem__)
       .def("lookup_vectors", &Vectors::lookup_vectors)
