@@ -41,13 +41,15 @@ PYBIND11_MODULE(_torchtext, m) {
 
   py::class_<Vectors>(m, "Vectors")
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,
-                    torch::Tensor, torch::Tensor>())
+                    torch::Tensor>())
       .def_readonly("vectors_", &Vectors::vectors_)
-      .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
+      // .def_readonly("unk_tensor_", &Vectors::unk_tensor_)
       .def("get_stoi", &Vectors::get_stoi)
       .def("__getitem__", &Vectors::__getitem__)
       .def("lookup_vectors", &Vectors::lookup_vectors)
       .def("__setitem__", &Vectors::__setitem__)
+      .def("set_default_tensor", &Vectors::set_default_tensor)
+      .def("get_default_tensor", &Vectors::get_default_tensor)
       .def("__len__", &Vectors::__len__);
 
   py::class_<Vocab>(m, "Vocab")
@@ -158,11 +160,13 @@ static auto vocab =
 static auto vectors =
     torch::class_<Vectors>("torchtext", "Vectors")
         .def(torch::init<std::vector<std::string>, std::vector<std::int64_t>,
-                         torch::Tensor, torch::Tensor>())
+                         torch::Tensor>())
         .def("__getitem__", &Vectors::__getitem__)
         .def("lookup_vectors", &Vectors::lookup_vectors)
         .def("__setitem__", &Vectors::__setitem__)
         .def("__len__", &Vectors::__len__)
+        .def("set_default_tensor", &Vectors::set_default_tensor)
+        .def("get_default_tensor", &Vectors::get_default_tensor)
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {

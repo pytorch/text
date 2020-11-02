@@ -15,14 +15,13 @@
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
-                 const torch::Tensor &unk_tensor)
-    : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
+Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors)
+    : stoi_(stoi), vectors_(vectors) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
                  const std::vector<std::int64_t> &indices,
-                 const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
-    : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
+                 const torch::Tensor &vectors)
+    : vectors_(std::move(vectors)) {
   // guarding against size mismatch of tokens and indices
   if (static_cast<int>(tokens.size()) != indices.size()) {
 #ifdef _MSC_VER
@@ -65,8 +64,12 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
     auto vector = vectors_[item_index->second];
     stovec_[token] = vector;
     return vector;
-  }
-  return unk_tensor_;
+  } else if (default_tensor_.has_value())
+    return default_tensor_.value();
+  else
+    throw std::runtime_error("The default tensor has not been set up yet. Call "
+                             "set_default_tensor() function to "
+                             "set up the default tensor")
 }
 
 torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
@@ -93,7 +96,23 @@ void Vectors::__setitem__(const std::string &token,
   }
 }
 
-int64_t Vectors::__len__() { return stovec_.size(); }
+void set_default_tensor(const torch::Tensor token_tensor) {
+  if (default_tensor_.has_value())
+    std::cerr << "UNK tensor has been assigned. You are resetting the UNK "
+                 "tensor here."
+              << std::endl;
+  if (token_tensor.size(0) != vectors_.size(1))
+    throw std::runtime_error(
+        "The 1D default tensor has the length of " + token_tensor.size(0) +
+        "but the vector tensors have the length of " + vectors_.size(1));
+  default_tensor_ = token_tensor
+}
+
+torch::Tensor get_default_tensor(){return default_tensor_.value()}
+
+int64_t Vectors::__len__() {
+  return stovec_.size();
+}
 
 std::unordered_map<std::string, int64_t> Vectors::get_stoi() {
   std::unordered_map<std::string, int64_t> stoi;

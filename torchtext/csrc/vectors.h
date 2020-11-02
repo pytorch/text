@@ -17,19 +17,22 @@ public:
   IndexMap stoi_;
   VectorsMap stovec_;
   torch::Tensor vectors_;
-  torch::Tensor unk_tensor_;
+  // torch::Tensor unk_tensor_;
 
-  explicit Vectors(const IndexMap &stoi, const torch::Tensor vectors,
-                   const torch::Tensor &unk_tensor);
+  explicit Vectors(const IndexMap &stoi, const torch::Tensor vectors);
   explicit Vectors(const std::vector<std::string> &tokens,
                    const std::vector<std::int64_t> &indices,
-                   const torch::Tensor &vectors,
-                   const torch::Tensor &unk_tensor);
+                   const torch::Tensor &vectors);
   std::unordered_map<std::string, int64_t> get_stoi();
+  void set_default_tensor(const torch::Tensor token_tensor);
+  torch::Tensor get_default_tensor() const;
   torch::Tensor __getitem__(const std::string &token);
   torch::Tensor lookup_vectors(const std::vector<std::string> &tokens);
   void __setitem__(const std::string &token, const torch::Tensor &vector);
   int64_t __len__();
+
+private:
+  c10::optional<torch::Tensor> default_tensor_ = {};
 };
 
 c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states);
