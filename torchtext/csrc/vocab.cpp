@@ -374,7 +374,6 @@ Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
   StringList tokens;
   std::tie(stoi, tokens) =
       _concat_tokens(chunk_counters, min_freq, num_lines, true);
-  // int64_t unk_index = stoi.find(unk_token)->second;
 
   return Vocab(std::move(tokens), std::move(stoi));
 }
