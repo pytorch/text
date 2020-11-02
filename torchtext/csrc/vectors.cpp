@@ -96,16 +96,16 @@ void Vectors::__setitem__(const std::string &token,
   }
 }
 
-void set_default_tensor(const torch::Tensor token_tensor) {
+void set_default_tensor(const torch::Tensor default_tensor) {
   if (default_tensor_.has_value())
     std::cerr << "UNK tensor has been assigned. You are resetting the UNK "
                  "tensor here."
               << std::endl;
-  if (token_tensor.size(0) != vectors_.size(1))
+  if (default_tensor.size(0) != vectors_.size(1))
     throw std::runtime_error(
-        "The 1D default tensor has the length of " + token_tensor.size(0) +
+        "The 1D default tensor has the length of " + default_tensor.size(0) +
         "but the vector tensors have the length of " + vectors_.size(1));
-  default_tensor_ = token_tensor
+  default_tensor_ = default_tensor 
 }
 
 torch::Tensor get_default_tensor(){return default_tensor_.value()}

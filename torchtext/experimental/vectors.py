@@ -183,26 +183,26 @@ def vectors_from_file_object(file_like_object, delimiter=",", unk_tensor=None, n
     return Vectors(vectors_obj)
 
 
-def vectors(tokens, vectors, unk_tensor=None):
+def vectors(tokens, vectors):
     r"""Factory method for creating a vectors object which maps tokens to vectors.
+
     Arguments:
         tokens (List[str]): a list of tokens.
         vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
-        unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
+
     Raises:
         ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
     """
-    if unk_tensor is None and (vectors is None or not len(vectors)):
-        raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
+    if (vectors is None or not len(vectors)):
+        raise ValueError("The vectors list is empty.")
 
     if not vectors.dtype == torch.float:
         raise TypeError("`vectors` should be of data type `torch.float`.")
 
     indices = [i for i in range(len(tokens))]
-    unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-    return Vectors(VectorsPybind(tokens, indices, vectors, unk_tensor))
+    return Vectors(VectorsPybind(tokens, indices, vectors))
 
 
 class Vectors(nn.Module):
@@ -284,6 +284,22 @@ class Vectors(nn.Module):
             return torch.empty(0, 0)
 
         return self.vectors.lookup_vectors(tokens)
+
+    @torch.jit.export
+    def set_default_tensor(self, default_tensor: Tensor) -> None:
+        r"""
+        Args:
+            default_tensor (Tensor): the unknown token tensor.
+        """
+        self.vocab.set_default_tensor(default_tensor)
+
+    @torch.jit.export
+    def get_default_tensor(self) -> Tensor:
+        r"""
+        return:
+            default_tensor (Tensor): the unknown token tensor.
+        """
+        return self.vocab.get_default_tensor()
 
     def to_ivalue(self):
         r"""Return a JITable Vectors.
