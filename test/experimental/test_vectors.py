@@ -20,18 +20,17 @@ class TestVectors(TorchtextTestCase):
         vecs = torch.empty(0, dtype=torch.float)
         unk_tensor = torch.tensor([0], dtype=torch.float)
 
-        vectors_obj = vectors(tokens, vecs, unk_tensor)
+        vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
         self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
     def test_empty_unk(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
-        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
-
         tokens = ['a']
         vecs = tensorA.unsqueeze(0)
         vectors_obj = vectors(tokens, vecs)
-
-        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+        with self.assertRaises(RuntimeError):
+            vectors_obj['not_in_it']
 
     def test_vectors_basic(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
@@ -40,7 +39,8 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
 
         self.assertEqual(vectors_obj['a'], tensorA)
         self.assertEqual(vectors_obj['b'], tensorB)
@@ -53,7 +53,8 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
         assert not vectors_obj.is_jitable
@@ -70,7 +71,8 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
         tokens_to_lookup = ['a', 'b', 'c']
@@ -88,7 +90,8 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
 
         tokens_to_lookup = ['a', 'b', 'c']
         expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
@@ -102,7 +105,8 @@ class TestVectors(TorchtextTestCase):
 
         tokens = ['a']
         vecs = tensorA.unsqueeze(0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
 
         tensorB = torch.tensor([0, 1], dtype=torch.float)
         vectors_obj['b'] = tensorB
@@ -114,11 +118,12 @@ class TestVectors(TorchtextTestCase):
     def test_vectors_load_and_save(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
-        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(unk_tensor)
 
         tensorC = torch.tensor([1, 1], dtype=torch.float)
         vectors_obj['b'] = tensorC
@@ -129,7 +134,7 @@ class TestVectors(TorchtextTestCase):
 
         self.assertEqual(loaded_vectors_obj['a'], tensorA)
         self.assertEqual(loaded_vectors_obj['b'], tensorC)
-        self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(loaded_vectors_obj['not_in_it'], unk_tensor)
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
