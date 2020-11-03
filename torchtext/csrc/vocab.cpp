@@ -383,9 +383,13 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   StringList strings = self->itos_;
   std::vector<torch::Tensor> tensors;
 
+  c10::optional<torch::Tensor> default_index = {};
+  if (self->default_index_.has_value())
+    default_index = self->default_index_.value();
+
   VocabStates states = std::make_tuple(
       self->version_str_, std::move(integers), std::move(strings),
-      self->get_default_index(), std::move(tensors));
+      default_index, std::move(tensors));
   return states;
 }
 
@@ -405,7 +409,7 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
   auto &version_str = std::get<0>(states);
   auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
-  auto &integer = std::get<3>(states);
+  auto &default_index = std::get<3>(states);
   auto &tensors = std::get<4>(states);
 
   // check integers and tensors are empty
@@ -421,7 +425,9 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
 
   if (version_str.compare("0.0.1") >= 0) {
     auto vocab_instance = c10::make_intrusive<Vocab>(std::move(strings));
-    vocab_instance->set_default_index(integer);
+    if (default_index.has_value())
+        vocab_instance->set_default_index(default_index.value());
+
     return vocab_instance;
   }
 #ifdef _MSC_VER

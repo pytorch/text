@@ -12,12 +12,12 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 
 struct Vocab : torch::CustomClassHolder {
 private:
-  c10::optional<int64_t> default_index_ = {};
   IndexDict stoi_;
 
 public:
   const std::string version_str_ = "0.0.1";
   StringList itos_;
+  c10::optional<int64_t> default_index_ = {};
 
   explicit Vocab(const std::vector<std::string> &tokens);
   explicit Vocab(const StringList &tokens, const IndexDict &stoi);
