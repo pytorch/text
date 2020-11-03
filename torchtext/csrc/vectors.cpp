@@ -299,19 +299,23 @@ VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
 
   std::vector<int64_t> integers = std::move(indices);
   std::vector<std::string> strings = std::move(tokens);
-  std::vector<torch::Tensor> tensors{self->vectors_,
-                                     self->get_default_tensor()};
+  //std::vector<torch::Tensor> tensors{self->vectors_,
+  //                                   self->get_default_tensor()};
+
+  c10::optional<torch::Tensor> default_tensor = {};
+  if (self->default_tensor_.has_value())
+    default_tensor = self->default_tensor_.value();
 
   VectorsStates states =
       std::make_tuple(self->version_str_, std::move(integers),
-                      std::move(strings), std::move(tensors));
+                      std::move(strings), self->vectors_, default_tensor);
 
   return states;
 }
 
 c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  if (state_size != 4) {
+  if (state_size != 5) {
     throw std::runtime_error(
         "Expected deserialized Vectors to have 4 states but found only " +
         std::to_string(state_size) + " states.");
@@ -321,6 +325,7 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
   auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
   auto &tensors = std::get<3>(states);
+  auto &default_tensor = std::get<4>(states);
 
   if (version_str.compare("0.0.1") >= 0) {
     // check integers and tokens are same size
@@ -336,8 +341,9 @@ c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
     }
 
     auto vectors_instance = c10::make_intrusive<Vectors>(std::move(stoi),
-                                        std::move(tensors[0]));
-    vectors_instance->set_default_tensor(tensors[1]);
+                                        std::move(tensors));
+    if (default_tensor.has_value())
+        vectors_instance->set_default_tensor(default_tensor.value());
     return vectors_instance;
   }
 
