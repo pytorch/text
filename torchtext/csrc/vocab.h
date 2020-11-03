@@ -7,7 +7,7 @@ typedef std::vector<std::string> StringList;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexDict;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
-                   int64_t, std::vector<torch::Tensor>>
+                   c10::optional<int64_t>, std::vector<torch::Tensor>>
     VocabStates;
 
 struct Vocab : torch::CustomClassHolder {

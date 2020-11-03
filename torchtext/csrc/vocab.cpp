@@ -383,7 +383,7 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   StringList strings = self->itos_;
   std::vector<torch::Tensor> tensors;
 
-  c10::optional<torch::Tensor> default_index = {};
+  c10::optional<int64_t> default_index = {};
   if (self->default_index_.has_value())
     default_index = self->default_index_.value();
 
