@@ -191,6 +191,20 @@ def vectors(tokens, vectors):
         ValueError: if `vectors` is empty.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
+
+    Examples:
+        >>> tokens = ['a', 'b']
+        >>> vecs = torch.stack((torch.tensor([1, 0], dtype=torch.float),
+                                torch.tensor([0, 1], dtype=torch.float)), 0)
+        >>> vectors_obj = vectors(tokens, vecs)
+        >>> torch.save(vectors_obj.to_ivalue(), 'vector.pt')
+        >>> vectors_f = torch.load('vector.pt')
+        >>> vectors_obj(['a', 'b'])
+        >>> vectors_obj.set_default_tensor(torch.tensor([0, 0], dtype=torch.float))
+        >>> vectors_obj(['a', 'b', 'es', 'b', 'be'])
+        >>> vectors_obj.get_default_tensor()
+        >>> jit_vectors = torch.jit.script(vectors_obj.to_ivalue())
+
     """
     if (vectors is None or not len(vectors)):
         raise ValueError("The vectors list is empty.")
