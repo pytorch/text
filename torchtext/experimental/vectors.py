@@ -25,13 +25,12 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
+def FastText(language="en", root=".data", validate_file=True, num_cpus=32):
     r"""Create a FastText Vectors object.
 
     Args:
         language (str): the language to use for FastText. The list of supported languages options
                         can be found at https://fasttext.cc/docs/en/language-identification.html
-        unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token
         root (str): folder used to store downloaded files in. Default: '.data'.
         validate_file (bool): flag to determine whether to validate the downloaded files checksum.
                               Should be `False` when running tests with a local asset.
@@ -51,7 +50,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus, unk_tensor)
+    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
@@ -60,7 +59,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
     return vectors_obj
 
 
-def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
+def GloVe(name="840B", dim=300, root=".data", validate_file=True, num_cpus=32):
     r"""Create a GloVe Vectors object.
 
     Args:
@@ -93,7 +92,6 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
                 - 100
                 - 200
                 - 300
-        unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         root (str): folder used to store downloaded files in (.data)
         validate_file (bool): flag to determine whether to validate the downloaded files checksum.
                               Should be `False` when running tests with a local asset.
@@ -143,7 +141,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     extracted_file_paths = extract_archive(downloaded_file_path)
     # need to get the full path to the correct file in the case when multiple files are extracted with different dims
     extracted_file_path_with_correct_dim = [path for path in extracted_file_paths if file_name in path][0]
-    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ' ', num_cpus, unk_tensor)
+    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ' ', num_cpus)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens and dup_tokens != dup_token_glove_840b:
@@ -290,7 +288,7 @@ class Vectors(nn.Module):
         Args:
             default_tensor (Tensor): the unknown token tensor.
         """
-        self.vocab.set_default_tensor(default_tensor)
+        self.vectors.set_default_tensor(default_tensor)
 
     @torch.jit.export
     def get_default_tensor(self) -> Tensor:
@@ -298,14 +296,18 @@ class Vectors(nn.Module):
         return:
             default_tensor (Tensor): the unknown token tensor.
         """
-        return self.vocab.get_default_tensor()
+        return self.vectors.get_default_tensor()
 
     def to_ivalue(self):
         r"""Return a JITable Vectors.
         """
         stoi = self.vectors.get_stoi()
-        cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_, self.vectors.unk_tensor_)
-        return(Vectors(cpp_vectors))
+        cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_)
+        try:
+            cpp_vectors.set_default_tensor(self.vectors.get_default_tensor())
+            return(Vectors(cpp_vectors))
+        except RuntimeError:
+            return(Vectors(cpp_vectors))
 
 
 CHECKSUMS_GLOVE = {
