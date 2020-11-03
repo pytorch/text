@@ -12,6 +12,10 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
     VectorsStates;
 
 struct Vectors : torch::CustomClassHolder {
+
+private:
+  c10::optional<torch::Tensor> default_tensor_ = {};
+
 public:
   const std::string version_str_ = "0.0.1";
   IndexMap stoi_;
@@ -29,9 +33,6 @@ public:
   torch::Tensor lookup_vectors(const std::vector<std::string> &tokens);
   void __setitem__(const std::string &token, const torch::Tensor &vector);
   int64_t __len__();
-
-private:
-  c10::optional<torch::Tensor> default_tensor_ = {};
 };
 
 c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states);

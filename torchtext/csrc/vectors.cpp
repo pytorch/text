@@ -96,7 +96,7 @@ void Vectors::__setitem__(const std::string &token,
   }
 }
 
-void set_default_tensor(const torch::Tensor default_tensor) {
+void Vectors::set_default_tensor(const torch::Tensor default_tensor) {
   if (default_tensor_.has_value())
     std::cerr << "UNK tensor has been assigned. You are resetting the UNK "
                  "tensor here."
@@ -105,14 +105,12 @@ void set_default_tensor(const torch::Tensor default_tensor) {
     throw std::runtime_error(
         "The 1D default tensor has the length of " + default_tensor.size(0) +
         "but the vector tensors have the length of " + vectors_.size(1));
-  default_tensor_ = default_tensor; 
+  default_tensor_ = default_tensor;
 }
 
-torch::Tensor get_default_tensor(){return default_tensor_.value()}
+torch::Tensor Vectors::get_default_tensor() { return default_tensor_.value(); }
 
-int64_t Vectors::__len__() {
-  return stovec_.size();
-}
+int64_t Vectors::__len__() { return stovec_.size(); }
 
 std::unordered_map<std::string, int64_t> Vectors::get_stoi() {
   std::unordered_map<std::string, int64_t> stoi;
@@ -224,9 +222,10 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 }
 
 constexpr int64_t GRAIN_SIZE = 131072;
-std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
-    const std::string &file_path, const std::string delimiter_str,
-    int64_t num_cpus) {
+std::tuple<Vectors, std::vector<std::string>>
+_load_token_and_vectors_from_file(const std::string &file_path,
+                                  const std::string delimiter_str,
+                                  int64_t num_cpus) {
 
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");
@@ -282,8 +281,7 @@ std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
   std::tie(stoi, dup_tokens) =
       _concat_vectors(chunk_tokens, num_header_lines, num_lines);
 
-  auto result =
-      std::make_tuple(Vectors(stoi, data_tensor), dup_tokens);
+  auto result = std::make_tuple(Vectors(stoi, data_tensor), dup_tokens);
   return result;
 }
 
@@ -302,7 +300,8 @@ VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
 
   std::vector<int64_t> integers = std::move(indices);
   std::vector<std::string> strings = std::move(tokens);
-  std::vector<torch::Tensor> tensors{self->vectors_, self->default_tensor_};
+  std::vector<torch::Tensor> tensors{self->vectors_,
+                                     self->get_default_tensor()};
 
   VectorsStates states =
       std::make_tuple(self->version_str_, std::move(integers),
