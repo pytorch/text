@@ -103,13 +103,11 @@ void Vectors::set_default_tensor(const torch::Tensor default_tensor) {
               << std::endl;
   if (default_tensor.size(0) != vectors_.size(1))
     throw std::runtime_error(
-        "The 1D default tensor has the length of " +
-        static_cast<int>(default_tensor.size(0)) +
-        "but the vector tensors have the length of " + static_cast<int>(vectors_.size(1)));
+        "The default tensor's shape doesn't fit the vector tensor.");
   default_tensor_ = default_tensor;
 }
 
-torch::Tensor Vectors::get_default_tensor() { return default_tensor_.value(); }
+torch::Tensor Vectors::get_default_tensor() const { return default_tensor_.value(); }
 
 int64_t Vectors::__len__() { return stovec_.size(); }
 
