@@ -23,7 +23,7 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
                  const torch::Tensor &vectors)
     : vectors_(std::move(vectors)) {
   // guarding against size mismatch of tokens and indices
-  if (static_cast<int>(tokens.size()) != indices.size()) {
+  if (static_cast<int64_t>(tokens.size()) != static_cast<int64_t>(indices.size())) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Mismatching sizes for tokens and indices. "
                  "Size of tokens: "
@@ -103,8 +103,9 @@ void Vectors::set_default_tensor(const torch::Tensor default_tensor) {
               << std::endl;
   if (default_tensor.size(0) != vectors_.size(1))
     throw std::runtime_error(
-        "The 1D default tensor has the length of " + default_tensor.size(0) +
-        "but the vector tensors have the length of " + vectors_.size(1));
+        "The 1D default tensor has the length of " +
+        static_cast<int>(default_tensor.size(0)) +
+        "but the vector tensors have the length of " + static_cast<int>(vectors_.size(1)));
   default_tensor_ = default_tensor;
 }
 
