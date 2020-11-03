@@ -9,6 +9,7 @@ from torchtext.experimental.transforms import (
     sentencepiece_processor,
     TextSequentialTransforms,
 )
+from torch.utils.data import DataLoader
 from torchtext.experimental.vocab import (
     vocab_from_file,
     vocab_from_raw_text_file,
@@ -168,6 +169,21 @@ class TestTransformsWithAsset(TorchtextTestCase):
         test_sample = 'the pretrained spm model names'
         ref_results = [13, 1465, 12824, 304, 24935, 5771, 3776]
         self.assertEqual(spm_transform(test_sample), ref_results)
+
+    def test_sentencepiece_with_dataloader(self):
+        sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
+        spm_processor = sentencepiece_processor(sp_model_path)
+        _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
+        os.remove(_path)
+        example_strings = ['the pretrained spm model names'] * 64
+        ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
+
+        def batch_func(data):
+            return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
+
+        dataloader = DataLoader(example_strings, collate_fn=batch_func, batch_size=16)
+        for item in dataloader:
+            self.assertEqual(item, ref_results)
 
     def test_text_sequential_transform(self):
         asset_name = 'vocab_test2.txt'
