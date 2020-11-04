@@ -11,7 +11,7 @@ from torchtext.experimental.transforms import (
 )
 from torchtext.experimental.vocab import (
     load_vocab_from_file,
-    build_vocab_from_raw_text_file,
+    build_vocab_from_text_file,
 )
 import shutil
 import tempfile
@@ -143,7 +143,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         with open(asset_path, 'r') as f:
             tokenizer = basic_english_normalize()
             jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-            v = build_vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
+            v = build_vocab_from_text_file(f, jit_tokenizer, unk_token='<new_unk>')
             expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                              'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
                              'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',

@@ -7,11 +7,11 @@ import torch.nn as nn
 from torchtext._torchtext import (
     Vocab as VocabPybind,
     _load_vocab_from_file,
-    _build_vocab_from_raw_text_file
+    _build_vocab_from_text_file
 )
 
 __all__ = [
-    'build_vocab_from_raw_text_file',
+    'build_vocab_from_text_file',
     'load_vocab_from_file',
     'vocab',
     'Vocab',
@@ -19,7 +19,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def build_vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -38,15 +38,15 @@ def build_vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk
         Vocab: a `Vocab` object.
 
     Examples:
-        >>> from torchtext.experimental.vocab import build_vocab_from_raw_text_file
+        >>> from torchtext.experimental.vocab import build_vocab_from_text_file
         >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> f = open('vocab.txt', 'r')
         >>>     tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        >>> v = build_vocab_from_raw_text_file(f, jit_tokenizer)
+        >>> v = build_vocab_from_text_file(f, jit_tokenizer)
     """
-    vocab_obj = _build_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
