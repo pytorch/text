@@ -132,10 +132,16 @@ def run_main(args, rank=None):
 
     if args.dataset == 'WikiText103' or args.dataset == 'WikiText2':
         train_dataset, valid_dataset, test_dataset = WLMDataset(vocab=vocab)
+        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
+        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
+        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
     elif args.dataset == 'WMTNewsCrawl':
         from torchtext.experimental.datasets import WikiText2
         test_dataset, valid_dataset = WikiText2(vocab=vocab, data_select=('test', 'valid'))
+        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
+        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         train_dataset, = WLMDataset(vocab=vocab, data_select='train')
+        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
     elif args.dataset == 'EnWik9':
         enwik9 = EnWik9()
         idx1, idx2 = int(len(enwik9) * 0.8), int(len(enwik9) * 0.9)
