@@ -330,10 +330,10 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
 
-Vocab _build_vocab_from_raw_text_file(const std::string &file_path,
-                                      const std::string &unk_token,
-                                      const int64_t min_freq,
-                                      const int64_t num_cpus, py::object fn) {
+Vocab _build_vocab_from_text_file(const std::string &file_path,
+                                  const std::string &unk_token,
+                                  const int64_t min_freq,
+                                  const int64_t num_cpus, py::object fn) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
   torch::jit::script::Module module(*torch::jit::as_module(fn));
