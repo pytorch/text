@@ -46,13 +46,13 @@ class TestWithAsset(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'rb') as f:
             builtin_vocab = torch.load(f)
-        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=builtin_vocab)
-        self._helper_test_func(len(train_dataset), 101544324, train_dataset[20:25],
-                               [5481, 89, 22, 3, 1959])
-        self._helper_test_func(len(test_dataset), 242042, test_dataset[30:35],
-                               [710, 4, 35, 11, 507])
-        self._helper_test_func(len(valid_dataset), 214572, valid_dataset[40:45],
-                               [990, 8, 2, 139, 18186])
+        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=builtin_vocab, single_line=False)
+        self._helper_test_func(len(train_dataset), 1165026, train_dataset[20][:5],
+                               [10, 10, 822, 10, 10])
+        self._helper_test_func(len(test_dataset), 2891, test_dataset[18][30:35],
+                               [78, 593, 6, 8513, 4])
+        self._helper_test_func(len(valid_dataset), 2461, valid_dataset[11][40:45],
+                               [1486, 1155, 959, 4, 7554])
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
