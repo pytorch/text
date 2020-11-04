@@ -51,6 +51,9 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
         train_dataset, valid_dataset, test_dataset = WikiText2()
+        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
+        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
+        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
                                [5024, 89, 21, 3, 1838])
         self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
@@ -68,6 +71,8 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_dataset), 36718, next(iter(test_dataset)), ' \n')
         del train_dataset, test_dataset
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
+        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
+        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
                                [5024, 89, 21, 3, 1838])
         self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
@@ -93,6 +98,9 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         train_dataset, valid_dataset, test_dataset = PennTreebank()
+        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
+        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
+        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
                                [9919, 9920, 9921, 9922, 9188])
         self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],
@@ -106,6 +114,8 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
+        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
+        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
                                [9919, 9920, 9921, 9922, 9188])
         self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],
