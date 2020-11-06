@@ -181,7 +181,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         def batch_func(data):
             return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
 
-        dataloader = DataLoader(example_strings, collate_fn=batch_func, batch_size=16)
+        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2, collate_fn=batch_func)
         for item in dataloader:
             self.assertEqual(item, ref_results)
 
