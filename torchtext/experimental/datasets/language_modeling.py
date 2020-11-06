@@ -109,10 +109,6 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'v
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, valid_dataset, test_dataset = WikiText2(tokenizer=tokenizer)
-        >>> # convert dataset into a single line
-        >>> train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        >>> valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
-        >>> test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
                                        data_select='valid')
@@ -147,10 +143,6 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, valid_dataset, test_dataset = WikiText103(tokenizer=tokenizer)
-        >>> # convert dataset into a single line
-        >>> train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        >>> valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
-        >>> test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
                                          data_select='valid')
@@ -186,10 +178,6 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, valid_dataset, test_dataset = PennTreebank(tokenizer=tokenizer)
-        >>> # convert dataset into a single line
-        >>> train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        >>> valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
-        >>> test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = PennTreebank(tokenizer=tokenizer, vocab=vocab,
                                           data_select='valid')
@@ -223,8 +211,6 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train')
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, data_select='train')
-        >>> # convert dataset into a single line
-        >>> train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """

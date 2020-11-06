@@ -51,14 +51,14 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
         train_dataset, valid_dataset, test_dataset = WikiText2()
-        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
-        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
-        self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        valid_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 2049990, train_data[20:25],
                                [5024, 89, 21, 3, 1838])
-        self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 241859, test_data[30:35],
                                [914, 4, 36, 11, 569])
-        self._helper_test_func(len(valid_dataset), 214417, valid_dataset[40:45],
+        self._helper_test_func(len(valid_data), 214417, valid_data[40:45],
                                [925, 8, 2, 150, 8575])
 
         vocab = train_dataset.get_vocab()
@@ -71,11 +71,11 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_dataset), 36718, next(iter(test_dataset)), ' \n')
         del train_dataset, test_dataset
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
-        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
-        self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 2049990, train_data[20:25],
                                [5024, 89, 21, 3, 1838])
-        self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 241859, test_data[30:35],
                                [914, 4, 36, 11, 569])
 
         conditional_remove(cachedir)
@@ -98,14 +98,14 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         train_dataset, valid_dataset, test_dataset = PennTreebank()
-        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset.data)))
-        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
-        self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        valid_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 924412, train_data[20:25],
                                [9919, 9920, 9921, 9922, 9188])
-        self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 82114, test_data[30:35],
                                [397, 93, 4, 16, 7])
-        self._helper_test_func(len(valid_dataset), 73339, valid_dataset[40:45],
+        self._helper_test_func(len(valid_data), 73339, valid_data[40:45],
                                [0, 0, 78, 426, 196])
 
         vocab = train_dataset.get_vocab()
@@ -114,11 +114,11 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
-        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset.data)))
-        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset.data)))
-        self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 924412, train_data[20:25],
                                [9919, 9920, 9921, 9922, 9188])
-        self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 82114, test_data[30:35],
                                [397, 93, 4, 16, 7])
         train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
         self._helper_test_func(len(train_iter), 42068, next(iter(train_iter))[:15], ' aer banknote b')
