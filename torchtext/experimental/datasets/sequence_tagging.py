@@ -1,4 +1,5 @@
 import torch
+import logging
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import build_vocab_from_iterator
@@ -7,6 +8,8 @@ from torchtext.experimental.functional import (
     totensor,
     sequential_transforms,
 )
+
+logger_ = logging.getLogger(__name__)
 
 
 def build_vocab(data):
@@ -33,6 +36,7 @@ def _setup_datasets(dataset_name, root, vocabs, data_select):
     if vocabs is None:
         if "train" not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
+        logger_.info('Building Vocab based on train data')
         vocabs = build_vocab(raw_data["train"])
     else:
         if not isinstance(vocabs, list):
@@ -54,6 +58,7 @@ def _setup_datasets(dataset_name, root, vocabs, data_select):
                               totensor(dtype=torch.long))
         for idx in range(len(vocabs))
     ]
+    logger_.info('Building datasets for {}'.format(data_select))
     return tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in data_select)
 
 
