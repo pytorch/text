@@ -11,17 +11,17 @@ from torchtext.experimental.transforms import (
     TextSequentialTransforms,
 )
 from torchtext.experimental.vocab import (
-    vocab_from_file,
-    vocab_from_raw_text_file,
+    load_vocab_from_file,
+    build_vocab_from_text_file,
 )
 import shutil
 import tempfile
 import os
 from torchtext.experimental.vectors import (
     GloVe,
-    vectors,
+    build_vectors,
     FastText,
-    vectors_from_file_object,
+    load_vectors_from_file_path,
 )
 from torchtext.utils import download_from_url
 
@@ -77,7 +77,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            vocab_transform = VocabTransform(vocab_from_file(f))
+            vocab_transform = VocabTransform(load_vocab_from_file(f))
             self.assertEqual(vocab_transform(['of', 'that', 'new']),
                              [7, 18, 24])
             jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
@@ -91,7 +91,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         with self.assertRaises(ValueError):
             # Test proper error raised when passing in empty tokens and vectors and
             # not passing in a user defined unk_tensor
-            vectors(tokens, vecs)
+            build_vectors(tokens, vecs)
 
         tensorA = torch.tensor([1, 0, 0], dtype=torch.int8)
         tokens = ['a']
@@ -99,7 +99,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
 
         with self.assertRaises(TypeError):
             # Test proper error raised when vector is not of type torch.float
-            vectors(tokens, vecs)
+            build_vectors(tokens, vecs)
 
         with tempfile.TemporaryDirectory() as dir_name:
             # Test proper error raised when incorrect filename or dim passed into GloVe
@@ -178,7 +178,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            v = vocab_from_file(f, unk_token='<new_unk>')
+            v = load_vocab_from_file(f, unk_token='<new_unk>')
             expected_itos = ['<new_unk>', 'b', 'a', 'c']
             expected_stoi = {x: index for index, x in enumerate(expected_itos)}
             self.assertEqual(v.get_itos(), expected_itos)
@@ -190,7 +190,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         with open(asset_path, 'r') as f:
             tokenizer = basic_english_normalize()
             jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-            v = vocab_from_raw_text_file(f, jit_tokenizer, unk_token='<new_unk>')
+            v = build_vocab_from_text_file(f, jit_tokenizer, unk_token='<new_unk>')
             expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                              'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
                              'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
@@ -220,7 +220,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            pipeline = TextSequentialTransforms(basic_english_normalize(), vocab_from_file(f))
+            pipeline = TextSequentialTransforms(basic_english_normalize(), load_vocab_from_file(f))
             jit_pipeline = torch.jit.script(pipeline.to_ivalue())
             self.assertEqual(pipeline('of that new'), [7, 18, 24])
             self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
@@ -228,8 +228,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        vectors_obj = vectors_from_file_object(f)
+        vectors_obj = load_vectors_from_file_path(asset_path)
 
         expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
