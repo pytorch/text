@@ -17,8 +17,8 @@ from torchtext._torchtext import (
 __all__ = [
     'FastText',
     'GloVe',
-    'vectors_from_file_object',
-    'vectors',
+    'load_vectors_from_file_path',
+    'build_vectors',
     'Vectors'
 ]
 
@@ -151,7 +151,7 @@ def GloVe(name="840B", dim=300, root=".data", validate_file=True, num_cpus=32):
     return vectors_obj
 
 
-def vectors_from_file_object(file_like_object, delimiter=",", num_cpus=10):
+def load_vectors_from_file_path(filepath, delimiter=",", num_cpus=10):
     r"""Create a Vectors object from a csv file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
@@ -163,7 +163,7 @@ def vectors_from_file_object(file_like_object, delimiter=",", num_cpus=10):
         token_n<delimiter>num_m num_j num_k
 
     Args:
-        file_like_object (FileObject): a file like object to read data from.
+        filepath: a file path to read data from.
         delimiter (char): a character to delimit between the token and the vector. Default value is ","
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 10.
 
@@ -174,13 +174,13 @@ def vectors_from_file_object(file_like_object, delimiter=",", num_cpus=10):
         ValueError: if duplicate tokens are found in FastText file.
 
     """
-    vectors_obj, dup_tokens = _load_token_and_vectors_from_file(file_like_object.name, delimiter, num_cpus)
+    vectors_obj, dup_tokens = _load_token_and_vectors_from_file(filepath, delimiter, num_cpus)
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     return Vectors(vectors_obj)
 
 
-def vectors(tokens, vectors):
+def build_vectors(tokens, vectors):
     r"""Factory method for creating a vectors object which maps tokens to vectors.
 
     Arguments:
