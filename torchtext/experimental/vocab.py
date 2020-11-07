@@ -6,19 +6,19 @@ import torch.nn as nn
 from torchtext._torchtext import (
     Vocab as VocabPybind,
     _load_vocab_from_file,
-    _load_vocab_from_raw_text_file
+    _build_vocab_from_text_file
 )
 
 __all__ = [
-    'vocab_from_raw_text_file',
-    'vocab_from_file',
+    'build_vocab_from_text_file',
+    'load_vocab_from_file',
     'vocab',
     'Vocab',
 ]
 logger = logging.getLogger(__name__)
 
 
-def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, num_cpus=4):
+def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -36,22 +36,22 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, num_cpus=
         Vocab: a `Vocab` object.
 
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file
+        >>> from torchtext.experimental.vocab import build_vocab_from_text_file
         >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> f = open('vocab.txt', 'r')
         >>>     tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
+        >>> v = build_vocab_from_text_file(f, jit_tokenizer)
         >>> v.insert_token('<unk>', 0)
         >>> v.set_default_index(0)
         >>> v.get_default_index()
     """
-    vocab_obj = _load_vocab_from_raw_text_file(file_object.name, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_object.name, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def vocab_from_file(file_object, min_freq=1, num_cpus=4):
+def load_vocab_from_file(file_object, min_freq=1, num_cpus=4):
     r"""Create a `Vocab` object from a text file.
     The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
@@ -72,9 +72,9 @@ def vocab_from_file(file_object, min_freq=1, num_cpus=4):
         Vocab: a `Vocab` object.
 
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_file
+        >>> from torchtext.experimental.vocab import load_vocab_from_file
         >>> f = open('vocab.txt', 'r')
-        >>> v = vocab_from_file(f)
+        >>> v = load_vocab_from_file(f)
         >>> v.insert_token('<unk>', 0)
         >>> v.set_default_index(0)
         >>> v.get_default_index()

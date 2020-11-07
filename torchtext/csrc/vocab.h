@@ -38,9 +38,9 @@ c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states);
 VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self);
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const int64_t min_freq, const int64_t num_cpus);
-Vocab _load_vocab_from_raw_text_file(const std::string &file_path,
-                                     const int64_t min_freq,
-                                     const int64_t num_cpus,
-                                     py::object tokenizer);
+Vocab _build_vocab_from_text_file(const std::string &file_path,
+                                  const int64_t min_freq,
+                                  const int64_t num_cpus,
+                                  py::object tokenizer);
 
 } // namespace torchtext

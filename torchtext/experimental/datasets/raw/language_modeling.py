@@ -28,18 +28,19 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
         extracted_files = []
         select_to_index = {'train': 0, 'test': 1, 'valid': 2}
         extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
-                                             root=root) for key in data_select]
+                                             root=root, hash_value=MD5['PennTreebank'][key],
+                                             hash_type='md5') for key in data_select]
     elif dataset_name == 'WMTNewsCrawl':
         if not (data_select == ['train'] or set(data_select).issubset(set(('train',)))):
             raise ValueError("WMTNewsCrawl only creates a training dataset. "
                              "data_select should be 'train' "
                              "or ('train',), got {}.".format(data_select))
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5['WMTNewsCrawl'], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
         file_name = 'news.{}.{}.shuffled'.format(year, language)
         extracted_files = [f for f in extracted_files if file_name in f]
     else:
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
 
     _path = {}
@@ -53,7 +54,7 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
         logging.info('Creating {} data'.format(item))
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], data[item]) for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item], data[item]) for item in data_select)
 
 
 def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
@@ -155,8 +156,16 @@ DATASETS = {
     'WMTNewsCrawl': WMTNewsCrawl
 }
 NUM_LINES = {
-    'WikiText2': 36718,
-    'WikiText103': 1801350,
-    'PennTreebank': 42068,
-    'WMTNewsCrawl': 17676013,
+    'WikiText2': {'train': 36718, 'valid': 3760, 'test': 4358},
+    'WikiText103': {'train': 1801350, 'valid': 3760, 'test': 4358},
+    'PennTreebank': {'train': 42068, 'valid': 3370, 'test': 3761},
+    'WMTNewsCrawl': {'train': 17676013}
+}
+MD5 = {
+    'WikiText2': '542ccefacc6c27f945fb54453812b3cd',
+    'WikiText103': '9ddaacaf6af0710eda8c456decff7832',
+    'PennTreebank': {'train': 'f26c4b92c5fdc7b3f8c7cdcb991d8420',
+                     'valid': 'aa0affc06ff7c36e977d7cd49e3839bf',
+                     'test': '8b80168b89c18661a38ef683c0dc3721'},
+    'WMTNewsCrawl': '64150a352f3abe890a87f6c6838524a6'
 }
