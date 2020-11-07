@@ -181,8 +181,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
-        f = open(asset_path, 'r')
-        vectors_obj = load_vectors_from_file_path(f)
+        vectors_obj = load_vectors_from_file_path(asset_path)
         unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
         vectors_obj.set_default_tensor(unk_tensor)
 

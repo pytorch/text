@@ -18,11 +18,8 @@ class TestVectors(TorchtextTestCase):
     def test_empty_vectors(self):
         tokens = []
         vecs = torch.empty(0, dtype=torch.float)
-        unk_tensor = torch.tensor([0], dtype=torch.float)
-
-        vectors_obj = build_vectors(tokens, vecs)
-        vectors_obj.set_default_tensor(unk_tensor)
-        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
+        with self.assertRaises(ValueError):
+            build_vectors(tokens, vecs)
 
     def test_empty_unk(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)

@@ -10,6 +10,8 @@ from torchtext.experimental.vectors import FastText
 import shutil
 import tempfile
 import os
+import unittest
+import platform
 
 
 class TestTransforms(TorchtextTestCase):
@@ -40,6 +42,9 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(jit_spm_tokenizer(test_sample), ref_results)
         self.assertEqual(jit_spm_tokenizer.decode(ref_results), test_sample)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_vector_transform(self):
         asset_name = 'wiki.en.vec'
         asset_path = get_asset_path(asset_name)
