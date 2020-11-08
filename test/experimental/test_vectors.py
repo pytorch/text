@@ -5,7 +5,7 @@ import torch
 import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
-    vectors,
+    build_vectors,
 )
 
 
@@ -20,7 +20,7 @@ class TestVectors(TorchtextTestCase):
         vecs = torch.empty(0, dtype=torch.float)
         unk_tensor = torch.tensor([0], dtype=torch.float)
 
-        vectors_obj = vectors(tokens, vecs, unk_tensor)
+        vectors_obj = build_vectors(tokens, vecs, unk_tensor)
         self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
     def test_empty_unk(self):
@@ -29,7 +29,7 @@ class TestVectors(TorchtextTestCase):
 
         tokens = ['a']
         vecs = tensorA.unsqueeze(0)
-        vectors_obj = vectors(tokens, vecs)
+        vectors_obj = build_vectors(tokens, vecs)
 
         self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
@@ -40,7 +40,7 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
 
         self.assertEqual(vectors_obj['a'], tensorA)
         self.assertEqual(vectors_obj['b'], tensorB)
@@ -53,7 +53,7 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
         assert not vectors_obj.is_jitable
@@ -70,7 +70,7 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
         jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
 
         tokens_to_lookup = ['a', 'b', 'c']
@@ -88,7 +88,7 @@ class TestVectors(TorchtextTestCase):
         unk_tensor = torch.tensor([0, 0], dtype=torch.float)
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
 
         tokens_to_lookup = ['a', 'b', 'c']
         expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
@@ -102,7 +102,7 @@ class TestVectors(TorchtextTestCase):
 
         tokens = ['a']
         vecs = tensorA.unsqueeze(0)
-        vectors_obj = vectors(tokens, vecs, unk_tensor=unk_tensor)
+        vectors_obj = build_vectors(tokens, vecs, unk_tensor=unk_tensor)
 
         tensorB = torch.tensor([0, 1], dtype=torch.float)
         vectors_obj['b'] = tensorB
@@ -118,7 +118,7 @@ class TestVectors(TorchtextTestCase):
 
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
-        vectors_obj = vectors(tokens, vecs)
+        vectors_obj = build_vectors(tokens, vecs)
 
         tensorC = torch.tensor([1, 1], dtype=torch.float)
         vectors_obj['b'] = tensorC
@@ -145,4 +145,4 @@ class TestVectors(TorchtextTestCase):
             # Test proper error raised when tokens have duplicates
             # TODO: use self.assertRaisesRegex() to check
             # the key of the duplicate token in the error message
-            vectors(tokens, vecs)
+            build_vectors(tokens, vecs)

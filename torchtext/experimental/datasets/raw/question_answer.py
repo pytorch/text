@@ -31,9 +31,9 @@ def _create_data_from_json(data_path):
 
 def _setup_datasets(dataset_name, root, data_select):
     data_select = check_default_set(data_select, ('train', 'dev'))
-    extracted_files = {key: download_from_url(URLS[dataset_name][key],
-                                              root=root) for key in data_select}
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
+    extracted_files = {key: download_from_url(URLS[dataset_name][key], root=root,
+                                              hash_value=MD5[dataset_name][key], hash_type='md5') for key in data_select}
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
                  _create_data_from_json(extracted_files[item])) for item in data_select)
 
 
@@ -90,6 +90,10 @@ DATASETS = {
     'SQuAD2': SQuAD2
 }
 NUM_LINES = {
-    'SQuAD1': 87599,
-    'SQuAD2': 130319
+    'SQuAD1': {'train': 87599, 'dev': 10570},
+    'SQuAD2': {'train': 130319, 'dev': 11873}
+}
+MD5 = {
+    'SQuAD1': {'train': '981b29407e0affa3b1b156f72073b945', 'dev': '3e85deb501d4e538b6bc56f786231552'},
+    'SQuAD2': {'train': '62108c273c268d70893182d5cf8df740', 'dev': '246adae8b7002f8679c027697b0b7cf8'}
 }
