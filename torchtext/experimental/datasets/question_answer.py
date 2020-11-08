@@ -1,4 +1,5 @@
 import torch
+import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import question_answer as raw
@@ -8,6 +9,8 @@ from torchtext.experimental.functional import (
     vocab_func,
     sequential_transforms,
 )
+
+logger_ = logging.getLogger(__name__)
 
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
@@ -76,10 +79,13 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
                 for item in _answers:
                     tok_ans += text_transform(item)
                 yield text_transform(_context) + text_transform(_question) + tok_ans
+        logger_.info('Building Vocab based on train data')
         vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), len(raw_data['train']))
+    logger_.info('Vocab has %d entries', len(vocab))
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
+    logger_.info('Building datasets for {}'.format(data_select))
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 

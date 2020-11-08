@@ -18,7 +18,7 @@ def read(*names, **kwargs):
 
 
 def _get_version():
-    version = '0.8.0a0'
+    version = '0.9.0a0'
     sha = None
 
     try:
@@ -82,7 +82,7 @@ setup_info = dict(
     license='BSD',
 
     install_requires=[
-        'tqdm', 'requests', 'torch', 'numpy', 'sentencepiece'
+        'tqdm', 'requests', 'torch', 'numpy'
     ],
     python_requires='>=3.5',
     classifiers=[

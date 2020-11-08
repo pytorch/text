@@ -36,17 +36,21 @@ def _create_data_from_csv(data_path):
 def _setup_datasets(dataset_name, root, data_select):
     data_select = check_default_set(data_select, target_select=('train', 'test'))
     if dataset_name == 'AG_NEWS':
-        extracted_files = [download_from_url(URLS[dataset_name][item], root=root) for item in ('train', 'test')]
+        extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
+                                             hash_value=MD5['AG_NEWS'][item],
+                                             hash_type='md5') for item in ('train', 'test')]
     else:
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
+        dataset_tar = download_from_url(URLS[dataset_name], root=root,
+                                        hash_value=MD5[dataset_name], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
+
     cvs_path = {}
     for fname in extracted_files:
         if fname.endswith('train.csv'):
             cvs_path['train'] = fname
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name],
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
                                         _create_data_from_csv(cvs_path[item])) for item in data_select)
 
 
@@ -237,9 +241,10 @@ def IMDB(root='.data', data_select=('train', 'test')):
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
     data_select = check_default_set(data_select, target_select=('train', 'test'))
-    dataset_tar = download_from_url(URLS['IMDB'], root=root)
+    dataset_tar = download_from_url(URLS['IMDB'], root=root,
+                                    hash_value=MD5['IMDB'], hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"],
+    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
                                         generate_imdb_data(item,
                                                            extracted_files)) for item in data_select)
 
@@ -256,13 +261,24 @@ DATASETS = {
     'IMDB': IMDB
 }
 NUM_LINES = {
-    'AG_NEWS': 120000,
-    'SogouNews': 450000,
-    'DBpedia': 560000,
-    'YelpReviewPolarity': 560000,
-    'YelpReviewFull': 650000,
-    'YahooAnswers': 1400000,
-    'AmazonReviewPolarity': 3600000,
-    'AmazonReviewFull': 3000000,
-    'IMDB': 25000
+    'AG_NEWS': {'train': 120000, 'test': 7600},
+    'SogouNews': {'train': 450000, 'test': 60000},
+    'DBpedia': {'train': 560000, 'test': 70000},
+    'YelpReviewPolarity': {'train': 560000, 'test': 38000},
+    'YelpReviewFull': {'train': 650000, 'test': 50000},
+    'YahooAnswers': {'train': 1400000, 'test': 60000},
+    'AmazonReviewPolarity': {'train': 3600000, 'test': 400000},
+    'AmazonReviewFull': {'train': 3000000, 'test': 650000},
+    'IMDB': {'train': 25000, 'test': 25000}
+}
+MD5 = {
+    'AG_NEWS': {'train': 'b1a00f826fdfbd249f79597b59e1dc12', 'test': 'd52ea96a97a2d943681189a97654912d'},
+    'SogouNews': '0c1700ba70b73f964dd8de569d3fd03e',
+    'DBpedia': 'dca7b1ae12b1091090db52aa7ec5ca64',
+    'YelpReviewPolarity': '620c8ae4bd5a150b730f1ba9a7c6a4d3',
+    'YelpReviewFull': 'f7ddfafed1033f68ec72b9267863af6c',
+    'YahooAnswers': 'f3f9899b997a42beb24157e62e3eea8d',
+    'AmazonReviewPolarity': 'fe39f8b653cada45afd5792e0f0e8f9b',
+    'AmazonReviewFull': '57d28bd5d930e772930baddf36641c7c',
+    'IMDB': '7c2ac02c03563afcf9b574c7e56c153a'
 }
