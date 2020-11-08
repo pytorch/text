@@ -71,6 +71,9 @@ class TestTransformsWithAsset(TorchtextTestCase):
                 # incorrect dim
                 GloVe(name='6B', dim=500, root=dir_name, validate_file=False)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_glove(self):
         # copy the asset file into the expected download location
         # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
