@@ -16,6 +16,8 @@ from torchtext.experimental.vocab import (
 import shutil
 import tempfile
 import os
+import unittest
+import platform
 from torchtext.experimental.vectors import (
     GloVe,
     build_vectors,
@@ -192,6 +194,9 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(vectors_obj['b'], expected_tensorB)
         self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_fast_text(self):
         # copy the asset file into the expected download location
         # note that this is just a file with the first 100 entries of the FastText english dataset
