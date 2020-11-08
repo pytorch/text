@@ -21,6 +21,9 @@ class TestVectors(TorchtextTestCase):
         with self.assertRaises(ValueError):
             build_vectors(tokens, vecs)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_empty_unk(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tokens = ['a']
