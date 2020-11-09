@@ -49,6 +49,12 @@ _export_version(VERSION, SHA)
 
 print('-- Building version ' + VERSION)
 
+pytorch_package_version = os.getenv('PYTORCH_VERSION')
+
+pytorch_package_dep = 'torch'
+if pytorch_package_version is not None:
+    pytorch_package_dep += "==" + pytorch_package_version
+
 
 class clean(distutils.command.clean.clean):
     def run(self):
@@ -82,7 +88,7 @@ setup_info = dict(
     license='BSD',
 
     install_requires=[
-        'tqdm', 'requests', 'torch', 'numpy'
+        'tqdm', 'requests', pytorch_package_dep, 'numpy'
     ],
     python_requires='>=3.5',
     classifiers=[
