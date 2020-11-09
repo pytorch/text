@@ -116,17 +116,17 @@ class TranslationDataset(torch.utils.data.Dataset):
         """
 
         super(TranslationDataset, self).__init__()
-        self.data = data
+        self._data = data
         self.vocab = vocab
         self.transforms = transforms
 
     def __getitem__(self, i):
-        source = self.transforms[0](self.data[i][0])
-        target = self.transforms[1](self.data[i][1])
+        source = self.transforms[0](self._data[i][0])
+        target = self.transforms[1](self._data[i][1])
         return (source, target)
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data)
 
     def get_vocab(self):
         return self.vocab

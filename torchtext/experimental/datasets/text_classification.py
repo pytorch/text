@@ -46,21 +46,21 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         """
 
         super(TextClassificationDataset, self).__init__()
-        self.data = data
+        self._data = data
         self.vocab = vocab
         self.transforms = transforms  # (label_transforms, tokens_transforms)
 
     def __getitem__(self, i):
-        label = self.data[i][0]
-        txt = self.data[i][1]
+        label = self._data[i][0]
+        txt = self._data[i][1]
         return (self.transforms[0](label), self.transforms[1](txt))
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data)
 
     def get_labels(self):
         labels = []
-        for item in self.data:
+        for item in self._data:
             label = item[0]
             labels.append(self.transforms[0](label))
         return set(labels)

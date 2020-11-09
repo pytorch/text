@@ -33,12 +33,12 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         """
 
         super(QuestionAnswerDataset, self).__init__()
-        self.data = data
+        self._data = data
         self.vocab = vocab
         self.transforms = transforms
 
     def __getitem__(self, i):
-        raw_context, raw_question, raw_answers, raw_answer_start = self.data[i]
+        raw_context, raw_question, raw_answers, raw_answer_start = self._data[i]
         _context = self.transforms['context'](raw_context)
         _question = self.transforms['question'](raw_question)
         _answers, _ans_pos = [], []
@@ -55,7 +55,7 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         return (_context, _question, _answers, _ans_pos)
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data)
 
     def get_vocab(self):
         return self.vocab

@@ -42,16 +42,16 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         super(LanguageModelingDataset, self).__init__()
         self.vocab = vocab
         self.transform = transform
-        self.data = data
+        self._data = data
 
     def __getitem__(self, i):
-        return self.data[i]
+        return self._data[i]
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data)
 
     def __iter__(self):
-        for x in self.data:
+        for x in self._data:
             yield x
 
     def get_vocab(self):
