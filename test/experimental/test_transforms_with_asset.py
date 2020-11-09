@@ -25,11 +25,12 @@ from torchtext.experimental.vectors import (
 )
 from torchtext.utils import download_from_url
 
-
 # Windows doesn't support the nested function pickle
 # Move the batch function out of the test_sentencepiece_with_dataloader test
 sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
 spm_processor = sentencepiece_processor(sp_model_path)
+
+
 def batch_func(data):
     return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
 
