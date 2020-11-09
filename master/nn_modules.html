@@ -1,0 +1,760 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.nn.modules.multiheadattention &mdash; torchtext 0.8.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="torchtext.data.utils" href="data_utils.html" />
+    <link rel="prev" title="torchtext.data" href="data.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <div class="ecosystem-dropdown">
+              <a id="dropdownMenuButton" data-toggle="ecosystem-dropdown">
+                Ecosystem
+              </a>
+              <div class="ecosystem-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub"">
+                  <span class=dropdown-title>Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/ecosystem">
+                  <span class=dropdown-title>Tools & Libraries</span>
+                  <p>Explore the ecosystem of tools and libraries</p>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <div class="resources-dropdown">
+              <a id="resourcesDropdownButton" data-toggle="resources-dropdown">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources"">
+                  <span class=dropdown-title>Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class=dropdown-title>About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+
+  </div>
+</div>
+
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+
+            
+              
+              
+                <div class="version">
+                  0.8.0
+                </div>
+              
+            
+
+            
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+            
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+      <li>torchtext.nn.modules.multiheadattention</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+            
+            <a href="_sources/nn_modules.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <div class="section" id="module-torchtext.nn.modules.multiheadattention">
+<span id="torchtext-nn-modules-multiheadattention"></span><h1>torchtext.nn.modules.multiheadattention<a class="headerlink" href="#module-torchtext.nn.modules.multiheadattention" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="multiheadattentioncontainer">
+<h2><span class="hidden-section">MultiheadAttentionContainer</span><a class="headerlink" href="#multiheadattentioncontainer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.modules.multiheadattention.</code><code class="sig-name descname">MultiheadAttentionContainer</code><span class="sig-paren">(</span><em class="sig-param">nhead</em>, <em class="sig-param">in_proj_container</em>, <em class="sig-param">attention_layer</em>, <em class="sig-param">out_proj</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">nhead</em>, <em class="sig-param">in_proj_container</em>, <em class="sig-param">attention_layer</em>, <em class="sig-param">out_proj</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A multi-head attention container</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nhead</strong> – the number of heads in the multiheadattention model</p></li>
+<li><p><strong>in_proj_container</strong> – A container of multi-head in-projection linear layers (a.k.a nn.Linear).</p></li>
+<li><p><strong>attention_layer</strong> – The custom attention layer. The input sent from MHA container to the attention layer
+is in the shape of <cite>(…, L, N * H, E / H)</cite> for query and <cite>(…, S, N * H, E / H)</cite> for key/value
+while the  output shape of the attention layer is expected to be <cite>(…, L, N * H, E / H)</cite>.
+The attention_layer needs to support broadcast if users want the overall MultiheadAttentionContainer
+with broadcast.</p></li>
+<li><p><strong>out_proj</strong> – The multi-head out-projection layer (a.k.a nn.Linear).</p></li>
+<li><p><strong>batch_first</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the input and output tensors are provided
+as <cite>(…, N, L, E)</cite>. Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">bsz</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">64</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">in_proj_container</span> <span class="o">=</span> <span class="n">InProjContainer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">),</span>
+<span class="go">                                        torch.nn.Linear(embed_dim, embed_dim),</span>
+<span class="go">                                        torch.nn.Linear(embed_dim, embed_dim))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">MHA</span> <span class="o">=</span> <span class="n">MultiheadAttentionContainer</span><span class="p">(</span><span class="n">num_heads</span><span class="p">,</span>
+<span class="go">                                      in_proj_container,</span>
+<span class="go">                                      ScaledDotProduct(),</span>
+<span class="go">                                      torch.nn.Linear(embed_dim, embed_dim))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">21</span><span class="p">,</span> <span class="n">bsz</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span> <span class="n">bsz</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">attn_output</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">MHA</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">attn_output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">21</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em>, <em class="sig-param">attn_mask: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_k: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_v: Optional[torch.Tensor] = None</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key, value</strong> (<em>query</em><em>,</em>) – map a query and a set of key-value pairs to an output.
+See “Attention Is All You Need” for more details.</p></li>
+<li><p><strong>bias_k and bias_v</strong> (<em>attn_mask</em><em>,</em>) – keyword arguments passed to the attention layer.
+See the definitions in the attention.</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Shape:</dt><dd><ul class="simple">
+<li><p>Inputs:</p></li>
+<li><p>query: <span class="math notranslate nohighlight">\((..., L, N, E)\)</span></p></li>
+<li><p>key: <span class="math notranslate nohighlight">\((..., S, N, E)\)</span></p></li>
+<li><p>value: <span class="math notranslate nohighlight">\((..., S, N, E)\)</span></p></li>
+<li><p>attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.</p></li>
+<li><p>Outputs:</p></li>
+<li><p>attn_output: <span class="math notranslate nohighlight">\((..., L, N, E)\)</span></p></li>
+<li><p>attn_output_weights: <span class="math notranslate nohighlight">\((N * H, L, S)\)</span></p></li>
+</ul>
+<dl class="simple">
+<dt>Note: It’s optional to have the query/key/value inputs with more than three dimensions (for broadcast purpose).</dt><dd><p>The MultiheadAttentionContainer module will operate on the last three dimensions.</p>
+</dd>
+<dt>where where L is the target length, S is the sequence length, H is the number of attention heads,</dt><dd><p>N is the batch size, and E is the embedding dimension.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="inprojcontainer">
+<h2><span class="hidden-section">InProjContainer</span><a class="headerlink" href="#inprojcontainer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchtext.nn.modules.multiheadattention.InProjContainer">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.modules.multiheadattention.</code><code class="sig-name descname">InProjContainer</code><span class="sig-paren">(</span><em class="sig-param">query_proj</em>, <em class="sig-param">key_proj</em>, <em class="sig-param">value_proj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.InProjContainer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="torchtext.nn.modules.multiheadattention.InProjContainer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">query_proj</em>, <em class="sig-param">key_proj</em>, <em class="sig-param">value_proj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.InProjContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A in-proj container to process inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_proj</strong> – a proj layer for query.</p></li>
+<li><p><strong>key_proj</strong> – a proj layer for key.</p></li>
+<li><p><strong>value_proj</strong> – a proj layer for value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.nn.modules.multiheadattention.InProjContainer.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.InProjContainer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Projects the input sequences using in-proj layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key, value</strong> (<em>query</em><em>,</em>) – sequence to be projected</p>
+</dd>
+</dl>
+<dl>
+<dt>Shape:</dt><dd><ul class="simple">
+<li><p>query, key, value: <span class="math notranslate nohighlight">\((S, N, E)\)</span></p></li>
+<li><p>Output: <span class="math notranslate nohighlight">\((S, N, E)\)</span>.</p></li>
+</ul>
+<p>Note: S is the sequence length, N is the batch size, and E is the embedding dimension.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="scaleddotproduct">
+<h2><span class="hidden-section">ScaledDotProduct</span><a class="headerlink" href="#scaleddotproduct" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchtext.nn.modules.multiheadattention.ScaledDotProduct">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.modules.multiheadattention.</code><code class="sig-name descname">ScaledDotProduct</code><span class="sig-paren">(</span><em class="sig-param">dropout=0.0</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.ScaledDotProduct" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="torchtext.nn.modules.multiheadattention.ScaledDotProduct.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dropout=0.0</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.ScaledDotProduct.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes a projected query and key-value pair to apply
+scaled dot product attention.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dropout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – probability of dropping an attention weight.</p></li>
+<li><p><strong>batch_first</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the input and output tensors are provided
+as <cite>(batch, seq, feature)</cite>. Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SDP</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ScaledDotProduct</span><span class="p">(</span><span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">attn_output</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">SDP</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">attn_output</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">attn_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">torch.Size([21, 256, 3]) torch.Size([256, 21, 21])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.nn.modules.multiheadattention.ScaledDotProduct.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em>, <em class="sig-param">attn_mask: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_k: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_v: Optional[torch.Tensor] = None</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.ScaledDotProduct.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses a scaled dot product with the projected key-value pair to update
+the projected query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>Tensor</em>) – Projected query</p></li>
+<li><p><strong>key</strong> (<em>Tensor</em>) – Projected key</p></li>
+<li><p><strong>value</strong> (<em>Tensor</em>) – Projected value</p></li>
+<li><p><strong>attn_mask</strong> (<em>BoolTensor</em><em>, </em><em>optional</em>) – 3D mask that prevents attention to certain positions.</p></li>
+<li><p><strong>and bias_v</strong> (<em>bias_k</em>) – (Tensor, optional): one more key and value sequence to be added at
+sequence dim (dim=-3). Those are used for incremental decoding. Users should provide
+non-None to both arguments in order to activate them.</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Shape:</dt><dd><ul class="simple">
+<li><p>query: <span class="math notranslate nohighlight">\((..., L, N * H, E / H)\)</span></p></li>
+<li><p>key: <span class="math notranslate nohighlight">\((..., S, N * H, E / H)\)</span></p></li>
+<li><p>value: <span class="math notranslate nohighlight">\((..., S, N * H, E / H)\)</span></p></li>
+<li><dl class="simple">
+<dt>attn_mask: <span class="math notranslate nohighlight">\((N * H, L, S)\)</span>, positions with <code class="docutils literal notranslate"><span class="pre">True</span></code> are not allowed to attend</dt><dd><p>while <code class="docutils literal notranslate"><span class="pre">False</span></code> values will be unchanged.</p>
+</dd>
+</dl>
+</li>
+<li><p>bias_k and bias_v:bias: <span class="math notranslate nohighlight">\((1, N * H, E / H)\)</span></p></li>
+<li><p>Output: <span class="math notranslate nohighlight">\((..., L, N * H, E / H)\)</span>, <span class="math notranslate nohighlight">\((N * H, L, S)\)</span></p></li>
+</ul>
+<dl class="simple">
+<dt>Note: It’s optional to have the query/key/value inputs with more than three dimensions (for broadcast purpose).</dt><dd><p>The ScaledDotProduct module will operate on the last three dimensions.</p>
+</dd>
+</dl>
+<p>where L is the target length, S is the source length, H is the number
+of attention heads, N is the batch size, and E is the embedding dimension.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+             </article>
+             
+            </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="data_utils.html" class="btn btn-neutral float-right" title="torchtext.data.utils" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+      
+      
+        <a href="data.html" class="btn btn-neutral" title="torchtext.data" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+    </div>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">torchtext.nn.modules.multiheadattention</a><ul>
+<li><a class="reference internal" href="#multiheadattentioncontainer"><span class="hidden-section">MultiheadAttentionContainer</span></a></li>
+<li><a class="reference internal" href="#inprojcontainer"><span class="hidden-section">InProjContainer</span></a></li>
+<li><a class="reference internal" href="#scaleddotproduct"><span class="hidden-section">ScaledDotProduct</span></a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+         <script src="_static/jquery.js"></script>
+         <script src="_static/underscore.js"></script>
+         <script src="_static/doctools.js"></script>
+         <script src="_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+     
+
+  
+
+  <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Stay Connected</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/features">Features</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <a href="https://pytorch.org/docs/stable/index.html">Docs</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/resources">Resources</a>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>
