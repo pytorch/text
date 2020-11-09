@@ -17,8 +17,6 @@ from torchtext.experimental.vocab import (
 import shutil
 import tempfile
 import os
-import unittest
-import platform
 from torchtext.experimental.vectors import (
     GloVe,
     build_vectors,
@@ -26,6 +24,12 @@ from torchtext.experimental.vectors import (
     load_vectors_from_file_path,
 )
 from torchtext.utils import download_from_url
+
+
+# Windows doesn't support the nested function pickle
+# Move the batch function out of the test_sentencepiece_with_dataloader test
+def batch_func(data, spm_processor):
+    return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
 
 
 class TestTransformsWithAsset(TorchtextTestCase):
@@ -172,9 +176,6 @@ class TestTransformsWithAsset(TorchtextTestCase):
         ref_results = [13, 1465, 12824, 304, 24935, 5771, 3776]
         self.assertEqual(spm_transform(test_sample), ref_results)
 
-    # we separate out these errors because Windows runs into seg faults when propagating
-    # exceptions from C++ using pybind11
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_sentencepiece_with_dataloader(self):
         sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
         spm_processor = sentencepiece_processor(sp_model_path)
@@ -182,11 +183,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
         os.remove(_path)
         example_strings = ['the pretrained spm model names'] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
-
-        def batch_func(data):
-            return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
-
-        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2, collate_fn=batch_func)
+        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2,
+                                collate_fn=lambda data_: batch_func(data_, spm_processor))
         for item in dataloader:
             self.assertEqual(item, ref_results)
 
