@@ -28,7 +28,9 @@ from torchtext.utils import download_from_url
 
 # Windows doesn't support the nested function pickle
 # Move the batch function out of the test_sentencepiece_with_dataloader test
-def batch_func(data, spm_processor):
+sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
+spm_processor = sentencepiece_processor(sp_model_path)
+def batch_func(data):
     return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
 
 
@@ -177,16 +179,14 @@ class TestTransformsWithAsset(TorchtextTestCase):
         self.assertEqual(spm_transform(test_sample), ref_results)
 
     def test_sentencepiece_with_dataloader(self):
-        sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
-        spm_processor = sentencepiece_processor(sp_model_path)
-        _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
-        os.remove(_path)
         example_strings = ['the pretrained spm model names'] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
         dataloader = DataLoader(example_strings, batch_size=16, num_workers=2,
-                                collate_fn=lambda data_: batch_func(data_, spm_processor))
+                                collate_fn=batch_func)
         for item in dataloader:
             self.assertEqual(item, ref_results)
+        _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
+        os.remove(_path)
 
     def test_text_sequential_transform(self):
         asset_name = 'vocab_test2.txt'
