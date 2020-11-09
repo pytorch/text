@@ -186,8 +186,6 @@ class TestTransformsWithAsset(TorchtextTestCase):
                                 collate_fn=batch_func)
         for item in dataloader:
             self.assertEqual(item, ref_results)
-        _path = os.path.join(self.project_root, '.data', 'text_bpe_25000.model')
-        os.remove(_path)
 
     def test_text_sequential_transform(self):
         asset_name = 'vocab_test2.txt'
