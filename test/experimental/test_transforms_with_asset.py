@@ -17,6 +17,8 @@ from torchtext.experimental.vocab import (
 import shutil
 import tempfile
 import os
+import unittest
+import platform
 from torchtext.experimental.vectors import (
     GloVe,
     build_vectors,
@@ -179,6 +181,9 @@ class TestTransformsWithAsset(TorchtextTestCase):
         ref_results = [13, 1465, 12824, 304, 24935, 5771, 3776]
         self.assertEqual(spm_transform(test_sample), ref_results)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_sentencepiece_with_dataloader(self):
         example_strings = ['the pretrained spm model names'] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
