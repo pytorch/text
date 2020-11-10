@@ -182,7 +182,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_sentencepiece_with_dataloader(self):
         example_strings = ['the pretrained spm model names'] * 64
         ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
-        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2,
+        # dataloader = DataLoader(example_strings, batch_size=16, num_workers=2,
+        dataloader = DataLoader(example_strings, batch_size=16,
                                 collate_fn=batch_func)
         for item in dataloader:
             self.assertEqual(item, ref_results)
