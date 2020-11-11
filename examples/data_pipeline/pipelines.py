@@ -34,9 +34,9 @@ def build_sp_pipeline(spm_file):
     # Insert token in vocab to match a pretrained vocab
     vocab.insert_token('<pad>', 1)
     pipeline = TextSequentialTransforms(tokenizer, vocab)
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    jit_pipeline = torch.jit.script(pipeline)
     print('jit sentencepiece pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    return pipeline, pipeline, jit_pipeline
 
 
 def build_legacy_torchtext_vocab_pipeline(vocab_file):
@@ -59,9 +59,9 @@ def build_experimental_torchtext_pipeline(hf_vocab_file):
     with open(hf_vocab_file, 'r') as f:
         vocab = load_vocab_from_file(f)
         pipeline = TextSequentialTransforms(tokenizer, vocab)
-        jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+        jit_pipeline = torch.jit.script(pipeline)
         print('jit experimental torchtext pipeline success!')
-        return pipeline, pipeline.to_ivalue(), jit_pipeline
+        return pipeline, pipeline, jit_pipeline
 
 
 def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
@@ -104,9 +104,9 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
         vocab_list.insert(0, "<unk>")
         pipeline = TextSequentialTransforms(tokenizer,
                                             PyTextScriptVocabTransform(ScriptVocabulary(vocab_list)))
-        jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+        jit_pipeline = torch.jit.script(pipeline)
         print('jit legacy PyText pipeline success!')
-        return pipeline, pipeline.to_ivalue(), jit_pipeline
+        return pipeline, pipeline, jit_pipeline
 
 
 def build_experimental_pytext_script_pipeline(vocab_file):
@@ -125,9 +125,9 @@ def build_experimental_pytext_script_pipeline(vocab_file):
     # Insert token in vocab to match a pretrained vocab
     pipeline = TextSequentialTransforms(tokenizer,
                                         PyTextScriptVocabTransform(script_vocab(ordered_dict)))
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    jit_pipeline = torch.jit.script(pipeline)
     print('jit legacy PyText pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    return pipeline, pipeline, jit_pipeline
 
 
 def build_legacy_fasttext_vector_pipeline():
@@ -143,10 +143,10 @@ def build_experimental_fasttext_vector_pipeline():
     vector = FastTextExperimental()
 
     pipeline = TextSequentialTransforms(tokenizer, vector)
-    jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+    jit_pipeline = torch.jit.script(pipeline)
 
     print('jit legacy fasttext pipeline success!')
-    return pipeline, pipeline.to_ivalue(), jit_pipeline
+    return pipeline, pipeline, jit_pipeline
 
 
 def run_benchmark_lookup(text_classification_dataset, pipeline):
