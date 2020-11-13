@@ -288,6 +288,8 @@ class Vectors(nn.Module):
     def __prepare_scriptable__(self):
         r"""Return a JITable Vectors.
         """
+        if self.is_jitable:
+            return Vectors(self.vectors)
         stoi = self.vectors.get_stoi()
         cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_, self.vectors.unk_tensor_)
         return(Vectors(cpp_vectors))

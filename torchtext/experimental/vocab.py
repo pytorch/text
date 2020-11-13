@@ -267,5 +267,7 @@ class Vocab(nn.Module):
     def __prepare_scriptable__(self):
         r"""Return a JITable Vocab.
         """
+        if self.is_jitable:
+            return Vocab(self.vocab)
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
         return Vocab(cpp_vocab)
