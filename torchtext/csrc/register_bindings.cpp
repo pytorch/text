@@ -37,8 +37,17 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("GetPieceSize", &SentencePiece::GetPieceSize)
       .def("unk_id", &SentencePiece::unk_id)
       .def("PieceToId", &SentencePiece::PieceToId)
-      .def("IdToPiece", &SentencePiece::IdToPiece);
-
+      .def("IdToPiece", &SentencePiece::IdToPiece)
+      .def(py::pickle(
+          // __getstate__
+          [](std::string state) {
+            SentencePiece p(state);
+            return p;
+          },
+          // __setstate__
+          [](const SentencePiece &self) {
+            return py::bytes(self.content_);
+          }));
   py::class_<Vectors>(m, "Vectors")
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,
                     torch::Tensor, torch::Tensor>())
