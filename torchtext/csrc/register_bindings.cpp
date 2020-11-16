@@ -5,6 +5,7 @@
 #include <sentencepiece.h>           // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
+#include <torch/library.h> // @manual
 #include <vectors.h> // @manual
 #include <vocab.h>   // @manual
 
@@ -174,16 +175,14 @@ static auto vectors =
             });
 
 // Registers our custom op with torch.
-static auto registry =
-    torch::RegisterOperators()
-        .op("torchtext::generate_sp_model", &generate_sp_model)
-        .op(torch::RegisterOperators::options()
-                .schema("torchtext::load_sp_model(str path) -> "
-                        "__torch__.torch.classes.torchtext.SentencePiece model")
-                .catchAllKernel<decltype(load_sp_model), &load_sp_model>())
-        .op(torch::RegisterOperators::options()
-                .schema("torchtext::load_sp_model_string(str content) -> "
-                        "__torch__.torch.classes.torchtext.SentencePiece model")
-                .catchAllKernel<decltype(load_sp_model_string),
-                                &load_sp_model_string>());
+TORCH_LIBRARY_FRAGMENT(torchtext, m) {
+    m.def("generate_sp_model", generate_sp_model);
+    m.def("load_sp_model(str path) -> "
+          "__torch__.torch.classes.torchtext.SentencePiece model",
+          load_sp_model);
+    m.def("load_sp_model_string(str content) -> "
+          "__torch__.torch.classes.torchtext.SentencePiece model",
+          load_sp_model_string);
+}
+
 } // namespace torchtext
