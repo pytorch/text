@@ -46,13 +46,13 @@ class TestWithAsset(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'rb') as f:
             builtin_vocab = torch.load(f)
-        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=builtin_vocab, single_line=False)
-        self._helper_test_func(len(train_dataset), 1165026, train_dataset[20][:5],
-                               [10, 10, 822, 10, 10])
-        self._helper_test_func(len(test_dataset), 2891, test_dataset[18][30:35],
-                               [78, 593, 6, 8513, 4])
-        self._helper_test_func(len(valid_dataset), 2461, valid_dataset[11][40:45],
-                               [1486, 1155, 959, 4, 7554])
+        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=builtin_vocab)
+        self._helper_test_func(len(train_dataset), 1801350, train_dataset[10][:5],
+                               [2, 69, 12, 14, 265])
+        self._helper_test_func(len(test_dataset), 4358, test_dataset[28][:5],
+                               [10, 10, 10, 1329, 10])
+        self._helper_test_func(len(valid_dataset), 3760, valid_dataset[11][:5],
+                               [2, 25864, 5, 361, 4])
 
         vocab = train_dataset.get_vocab()
         tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
@@ -61,13 +61,12 @@ class TestWithAsset(TorchtextTestCase):
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText103(data_select=('train', 'test'))
         self._helper_test_func(len(train_dataset), 1801350, next(iter(train_dataset)), ' \n')
-        self._helper_test_func(len(test_dataset), 1801350, next(iter(test_dataset)), ' \n')
-        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, data_select=('train', 'test'), single_line=False)
-        self._helper_test_func(len(train_dataset), 1165026, train_dataset[20][:5],
-                               [10, 10, 822, 10, 10])
-        self._helper_test_func(len(test_dataset), 2891, test_dataset[18][30:35],
-                               [78, 593, 6, 8513, 4])
-
+        self._helper_test_func(len(test_dataset), 4358, next(iter(test_dataset)), ' \n')
+        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, data_select=('train', 'test'))
+        self._helper_test_func(len(train_dataset), 1801350, train_dataset[10][:5],
+                               [2, 69, 12, 14, 265])
+        self._helper_test_func(len(test_dataset), 4358, test_dataset[28][:5],
+                               [10, 10, 10, 1329, 10])
         conditional_remove(cachedir)
         conditional_remove(cachefile)
 
