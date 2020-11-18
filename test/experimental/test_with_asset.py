@@ -10,6 +10,7 @@ from torchtext.experimental.transforms import (
     sentencepiece_processor,
     TextSequentialTransforms,
 )
+from torch.utils.data import DataLoader
 from torchtext.experimental.vocab import (
     load_vocab_from_file,
     build_vocab_from_text_file,
@@ -17,6 +18,8 @@ from torchtext.experimental.vocab import (
 import shutil
 import tempfile
 import os
+import unittest
+import platform
 from torchtext.experimental.vectors import (
     GloVe,
     build_vectors,
@@ -214,6 +217,26 @@ class TestTransformsWithAsset(TorchtextTestCase):
         test_sample = 'the pretrained spm model names'
         ref_results = [13, 1465, 12824, 304, 24935, 5771, 3776]
         self.assertEqual(spm_transform(test_sample), ref_results)
+
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
+    def test_sentencepiece_with_dataloader(self):
+        example_strings = ['the pretrained spm model names'] * 64
+        ref_results = torch.tensor([[13, 1465, 12824, 304, 24935, 5771, 3776]] * 16, dtype=torch.long)
+
+        # Windows doesn't support the nested function pickle
+        # Move the batch function out of the test_sentencepiece_with_dataloader test
+        sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_bpe_25000'])
+        spm_processor = sentencepiece_processor(sp_model_path)
+
+        def batch_func(data):
+            return torch.tensor([spm_processor(text) for text in data], dtype=torch.long)
+
+        dataloader = DataLoader(example_strings, batch_size=16, num_workers=2,
+                                collate_fn=batch_func)
+        for item in dataloader:
+            self.assertEqual(item, ref_results)
 
     def test_text_sequential_transform(self):
         asset_name = 'vocab_test2.txt'
