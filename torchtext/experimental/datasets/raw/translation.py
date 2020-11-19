@@ -3,8 +3,7 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-from torchtext.utils import (download_from_url, extract_archive,
-                             unicode_csv_reader)
+from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 
@@ -69,9 +68,8 @@ URLS = {
 
 def _read_text_iterator(path):
     with io.open(path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            yield " ".join(row)
+        for row in f:
+            yield row
 
 
 def _clean_xml_file(f_xml):
@@ -516,7 +514,7 @@ DATASETS = {
 }
 NUM_LINES = {
     'Multi30k': {'train': 29000, 'valid': 1014, 'test': 1000},
-    'IWSLT': {'train': 173939, 'valid': 823, 'test': 1096},
+    'IWSLT': {'train': 196884, 'valid': 993, 'test': 1305},
     'WMT14': {'train': 4500966, 'valid': 3000, 'test': 3003}
 }
 MD5 = {
