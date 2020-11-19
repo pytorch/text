@@ -201,7 +201,8 @@ class ScaledDotProduct(torch.nn.Module):
 class InProjContainer(torch.nn.Module):
     def __init__(self, query_proj, key_proj, value_proj):
         r"""A in-proj container to project query/key/value in MultiheadAttention. This module happens before reshaping
-        the projected query/key/value into multiple heads.
+        the projected query/key/value into multiple heads. See the linear layers (bottom) of Multi-head Attention in
+        Fig 2 of Attention Is All You Need paper.
 
         Args:
             query_proj: a proj layer for query. A typical projection layer is torch.nn.Linear.
@@ -233,11 +234,12 @@ class InProjContainer(torch.nn.Module):
             >>> k = v = torch.rand((6, bsz, embed_dim))
             >>> q, k, v = in_proj_container(q, k, v)
 
-        Shape:
+        Shape when query/key/value_proj are nn.Linear:
             - query, key, value: :math:`(S, N, E)`, :math:`(S, N, E)`, :math:`(S, N, E)`
             - Outputs: :math:`(S, N, E)`, :math:`(S, N, E)`, :math:`(S, N, E)`
 
-            Note: S is the sequence length, N is the batch size, and E is the embedding dimension.
+            Note: S is the sequence length, N is the batch size, and E is the embedding dimension. When query/key/value_proj
+            are nn.Linear, the broadcast support is also valid here.
 
         """
         return self.query_proj(query), self.key_proj(key), self.value_proj(value)
