@@ -202,7 +202,7 @@ class InProjContainer(torch.nn.Module):
     def __init__(self, query_proj, key_proj, value_proj):
         r"""A in-proj container to project query/key/value in MultiheadAttention. This module happens before reshaping
         the projected query/key/value into multiple heads. See the linear layers (bottom) of Multi-head Attention in
-        Fig 2 of Attention Is All You Need paper.
+        Fig 2 of Attention Is All You Need paper. Also check the usage example in torchtext.nn.MultiheadAttentionContainer.
 
         Args:
             query_proj: a proj layer for query. A typical projection layer is torch.nn.Linear.
@@ -219,7 +219,8 @@ class InProjContainer(torch.nn.Module):
                 query: torch.Tensor,
                 key: torch.Tensor,
                 value: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        r"""Projects the input sequences using in-proj layers.
+        r"""Projects the input sequences using in-proj layers. query/key/value are simply passed to
+        the forward func of query/key/value_proj, respectively.
 
         Args:
             query, key, value (Tensors): sequence to be projected
@@ -233,13 +234,6 @@ class InProjContainer(torch.nn.Module):
             >>> q = torch.rand((5, bsz, embed_dim))
             >>> k = v = torch.rand((6, bsz, embed_dim))
             >>> q, k, v = in_proj_container(q, k, v)
-
-        Shape when query/key/value_proj are nn.Linear:
-            - query, key, value: :math:`(S, N, E)`, :math:`(S, N, E)`, :math:`(S, N, E)`
-            - Outputs: :math:`(S, N, E)`, :math:`(S, N, E)`, :math:`(S, N, E)`
-
-            Note: S is the sequence length, N is the batch size, and E is the embedding dimension. When query/key/value_proj
-            are nn.Linear, the broadcast support is also valid here.
 
         """
         return self.query_proj(query), self.key_proj(key), self.value_proj(value)
