@@ -16,7 +16,16 @@ PYBIND11_MODULE(_torchtext, m) {
   // Classes
   py::class_<Regex>(m, "Regex")
       .def(py::init<std::string>())
-      .def("Sub", &Regex::Sub);
+      .def("Sub", &Regex::Sub)
+      .def(py::pickle(
+          // __getstate__
+          [](const Regex &self) {
+            return self.re_str_;
+          },
+          // __setstate__
+          [](std::string state) {
+          return Regex(state);
+          }));
 
   py::class_<RegexTokenizer>(m, "RegexTokenizer")
       .def_readonly("patterns_", &RegexTokenizer::patterns_)
@@ -37,16 +46,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("GetPieceSize", &SentencePiece::GetPieceSize)
       .def("unk_id", &SentencePiece::unk_id)
       .def("PieceToId", &SentencePiece::PieceToId)
-      .def("IdToPiece", &SentencePiece::IdToPiece)
-      .def(py::pickle(
-          // __getstate__
-          [](const c10::intrusive_ptr<SentencePiece> &self) {
-            return self->content_;
-          },
-          // __setstate__
-          [](std::string state) {
-          return c10::make_intrusive<SentencePiece>(std::move(state));
-          }));
+      .def("IdToPiece", &SentencePiece::IdToPiece);
 
   py::class_<Vectors>(m, "Vectors")
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,
