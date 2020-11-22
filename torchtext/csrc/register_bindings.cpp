@@ -40,15 +40,14 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("IdToPiece", &SentencePiece::IdToPiece)
       .def(py::pickle(
           // __getstate__
-          [](const SentencePiece &self) {
-            return py::bytes(self.content_);
+          [](const c10::intrusive_ptr<SentencePiece> &self) {
+            return self->content_;
           },
           // __setstate__
           [](std::string state) {
-          //  return c10::make_intrusive<SentencePiece>(std::move(state));
-            SentencePiece p(state);
-            return p;
+          return c10::make_intrusive<SentencePiece>(std::move(state));
           }));
+
   py::class_<Vectors>(m, "Vectors")
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,
                     torch::Tensor, torch::Tensor>())
