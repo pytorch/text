@@ -88,7 +88,21 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("lookup_tokens", &Vocab::lookup_tokens)
       .def("lookup_indices", &Vocab::lookup_indices)
       .def("get_stoi", &Vocab::get_stoi)
-      .def("get_itos", &Vocab::get_itos);
+      .def("get_itos", &Vocab::get_itos)
+      .def(py::pickle(
+            // __setstate__
+            [](const Vocab &self) {
+              StringList strings = self.itos_;
+              strings.push_back(self.unk_token_);
+              return std::make_tuple(strings);
+            },
+            // __getstate__
+            [](std::tuple<StringList> states) {
+              auto strings = std::get<0>(states);
+              std::string unk_token = strings.back();
+              strings.pop_back(); // remove last element which is unk_token
+              return Vocab(std::move(strings), std::move(unk_token));
+            }));
 
   // Functions
   m.def("_load_token_and_vectors_from_file",
