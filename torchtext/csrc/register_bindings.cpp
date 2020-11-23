@@ -32,7 +32,24 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("replacements_", &RegexTokenizer::replacements_)
       .def_readonly("to_lower_", &RegexTokenizer::to_lower_)
       .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward);
+      .def("forward", &RegexTokenizer::forward)
+      .def(py::pickle(
+            // __setstate__
+            [](const RegexTokenizer &self) {
+              return std::make_tuple(self.patterns_, self.replacements_,
+                                     self.to_lower_);
+            },
+            // __getstate__
+            [](std::tuple<std::vector<std::string>, std::vector<std::string>,
+                          bool>
+                   states) {
+              auto patterns = std::get<0>(states);
+              auto replacements = std::get<1>(states);
+              auto to_lower = std::get<2>(states);
+
+              return RegexTokenizer(
+                  std::move(patterns), std::move(replacements), to_lower);
+            }));
 
   py::class_<SentencePiece>(m, "SentencePiece")
       .def(py::init<std::string>())
