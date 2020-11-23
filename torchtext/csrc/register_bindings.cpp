@@ -74,7 +74,33 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("__getitem__", &Vectors::__getitem__)
       .def("lookup_vectors", &Vectors::lookup_vectors)
       .def("__setitem__", &Vectors::__setitem__)
-      .def("__len__", &Vectors::__len__);
+      .def("__len__", &Vectors::__len__)
+      .def(py::pickle(
+            // __setstate__
+            [](const Vectors &self) {
+              std::vector<std::string> tokens;
+              std::vector<int64_t> indices;
+              for (const auto &item : self.stoi_) {
+                tokens.push_back(item.first);
+                indices.push_back(item.second);
+              }
+              std::vector<int64_t> integers = std::move(indices);
+              std::vector<std::string> strings = std::move(tokens);
+              std::vector<torch::Tensor> tensors{self.vectors_, self.unk_tensor_};
+              return std::make_tuple(std::move(integers), std::move(strings), std::move(tensors));
+            },
+            // __getstate__
+            [](std::tuple<std::vector<int64_t>, std::vector<std::string>, std::vector<torch::Tensor>> states) {
+              auto integers = std::get<0>(states);
+              auto strings = std::get<1>(states);
+              auto tensors = std::get<2>(states);
+              IndexMap stoi;
+              stoi.reserve(integers.size());
+              for (size_t i = 0; i < integers.size(); i++) {
+                stoi[strings[i]] = integers[i];
+              }
+              return Vectors(std::move(stoi), std::move(tensors[0]), std::move(tensors[1]));
+            }));
 
   py::class_<Vocab>(m, "Vocab")
       .def(py::init<std::vector<std::string>, std::string>())
