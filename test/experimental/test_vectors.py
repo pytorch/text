@@ -124,7 +124,7 @@ class TestVectors(TorchtextTestCase):
         vectors_obj['b'] = tensorC
 
         vector_path = os.path.join(self.test_dir, 'vectors.pt')
-        torch.save(vectors_obj.to_ivalue(), vector_path)
+        torch.save(vectors_obj, vector_path)
         loaded_vectors_obj = torch.load(vector_path)
 
         self.assertEqual(loaded_vectors_obj['a'], tensorA)

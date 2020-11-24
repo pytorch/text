@@ -200,7 +200,7 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
         vocab_path = os.path.join(self.test_dir, 'vocab.pt')
-        torch.save(v.to_ivalue(), vocab_path)
+        torch.save(v, vocab_path)
         loaded_v = torch.load(vocab_path)
 
         self.assertEqual(v.get_itos(), expected_itos)
