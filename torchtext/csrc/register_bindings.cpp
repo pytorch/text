@@ -16,40 +16,14 @@ PYBIND11_MODULE(_torchtext, m) {
   // Classes
   py::class_<Regex>(m, "Regex")
       .def(py::init<std::string>())
-      .def("Sub", &Regex::Sub)
-      .def(py::pickle(
-          // __getstate__
-          [](const Regex &self) {
-            return self.re_str_;
-          },
-          // __setstate__
-          [](std::string state) {
-          return Regex(state);
-          }));
+      .def("Sub", &Regex::Sub);
 
   py::class_<RegexTokenizer>(m, "RegexTokenizer")
       .def_readonly("patterns_", &RegexTokenizer::patterns_)
       .def_readonly("replacements_", &RegexTokenizer::replacements_)
       .def_readonly("to_lower_", &RegexTokenizer::to_lower_)
       .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward)
-      .def(py::pickle(
-            // __setstate__
-            [](const RegexTokenizer &self) {
-              return std::make_tuple(self.patterns_, self.replacements_,
-                                     self.to_lower_);
-            },
-            // __getstate__
-            [](std::tuple<std::vector<std::string>, std::vector<std::string>,
-                          bool>
-                   states) {
-              auto patterns = std::get<0>(states);
-              auto replacements = std::get<1>(states);
-              auto to_lower = std::get<2>(states);
-
-              return RegexTokenizer(
-                  std::move(patterns), std::move(replacements), to_lower);
-            }));
+      .def("forward", &RegexTokenizer::forward);
 
   py::class_<SentencePiece>(m, "SentencePiece")
       .def(py::init<std::string>())
@@ -76,31 +50,35 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("__setitem__", &Vectors::__setitem__)
       .def("__len__", &Vectors::__len__)
       .def(py::pickle(
-            // __setstate__
-            [](const Vectors &self) {
-              std::vector<std::string> tokens;
-              std::vector<int64_t> indices;
-              for (const auto &item : self.stoi_) {
-                tokens.push_back(item.first);
-                indices.push_back(item.second);
-              }
-              std::vector<int64_t> integers = std::move(indices);
-              std::vector<std::string> strings = std::move(tokens);
-              std::vector<torch::Tensor> tensors{self.vectors_, self.unk_tensor_};
-              return std::make_tuple(std::move(integers), std::move(strings), std::move(tensors));
-            },
-            // __getstate__
-            [](std::tuple<std::vector<int64_t>, std::vector<std::string>, std::vector<torch::Tensor>> states) {
-              auto integers = std::get<0>(states);
-              auto strings = std::get<1>(states);
-              auto tensors = std::get<2>(states);
-              IndexMap stoi;
-              stoi.reserve(integers.size());
-              for (size_t i = 0; i < integers.size(); i++) {
-                stoi[strings[i]] = integers[i];
-              }
-              return Vectors(std::move(stoi), std::move(tensors[0]), std::move(tensors[1]));
-            }));
+          // __setstate__
+          [](const Vectors &self) {
+            std::vector<std::string> tokens;
+            std::vector<int64_t> indices;
+            for (const auto &item : self.stoi_) {
+              tokens.push_back(item.first);
+              indices.push_back(item.second);
+            }
+            std::vector<int64_t> integers = std::move(indices);
+            std::vector<std::string> strings = std::move(tokens);
+            std::vector<torch::Tensor> tensors{self.vectors_, self.unk_tensor_};
+            return std::make_tuple(std::move(integers), std::move(strings),
+                                   std::move(tensors));
+          },
+          // __getstate__
+          [](std::tuple<std::vector<int64_t>, std::vector<std::string>,
+                        std::vector<torch::Tensor>>
+                 states) {
+            auto integers = std::get<0>(states);
+            auto strings = std::get<1>(states);
+            auto tensors = std::get<2>(states);
+            IndexMap stoi;
+            stoi.reserve(integers.size());
+            for (size_t i = 0; i < integers.size(); i++) {
+              stoi[strings[i]] = integers[i];
+            }
+            return Vectors(std::move(stoi), std::move(tensors[0]),
+                           std::move(tensors[1]));
+          }));
 
   py::class_<Vocab>(m, "Vocab")
       .def(py::init<std::vector<std::string>, std::string>())
@@ -116,19 +94,19 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("get_stoi", &Vocab::get_stoi)
       .def("get_itos", &Vocab::get_itos)
       .def(py::pickle(
-            // __setstate__
-            [](const Vocab &self) {
-              StringList strings = self.itos_;
-              strings.push_back(self.unk_token_);
-              return std::make_tuple(strings);
-            },
-            // __getstate__
-            [](std::tuple<StringList> states) {
-              auto strings = std::get<0>(states);
-              std::string unk_token = strings.back();
-              strings.pop_back(); // remove last element which is unk_token
-              return Vocab(std::move(strings), std::move(unk_token));
-            }));
+          // __setstate__
+          [](const Vocab &self) {
+            StringList strings = self.itos_;
+            strings.push_back(self.unk_token_);
+            return std::make_tuple(strings);
+          },
+          // __getstate__
+          [](std::tuple<StringList> states) {
+            auto strings = std::get<0>(states);
+            std::string unk_token = strings.back();
+            strings.pop_back(); // remove last element which is unk_token
+            return Vocab(std::move(strings), std::move(unk_token));
+          }));
 
   // Functions
   m.def("_load_token_and_vectors_from_file",
