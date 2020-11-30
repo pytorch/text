@@ -47,8 +47,8 @@ release history of the project:
   git checkout gh-pages
   rm stable
   ln -s 0.8 stable   # substitute the correct version number here
-  git commit -m"update stable to 0.8"
-  git push -u origin
+  git commit -m "update stable to 0.8"
+  git push -u upstream 
   ```
 - There is a simple top-level index.html that redirects to `stable/index.html`
   This is needed for naive links to https://pytorch.org/text. Any search
