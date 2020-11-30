@@ -137,11 +137,10 @@ def run_main(args, rank=None):
 
     if args.dataset == 'WikiText103':
         from torchtext.experimental.datasets import WikiText103
-        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=vocab,
-                                                                 single_line=False)
+        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=vocab)
     elif args.dataset == 'BookCorpus':
         from data import BookCorpus
-        train_dataset, test_dataset, valid_dataset = BookCorpus(vocab, min_sentence_len=60)
+        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab, min_sentence_len=60)
 
     if rank is not None:
         chunk_len = len(train_dataset.data) // args.world_size

@@ -1,4 +1,5 @@
 import torch
+import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import question_answer as raw
@@ -9,12 +10,15 @@ from torchtext.experimental.functional import (
     sequential_transforms,
 )
 
+logger_ = logging.getLogger(__name__)
+
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
     """Defines an abstract question answer datasets.
-       Currently, we only support the following datasets:
-             - SQuAD1
-             - SQuAD2
+    Currently, we only support the following datasets:
+
+        - SQuAD1
+        - SQuAD2
     """
 
     def __init__(self, data, vocab, transforms):
@@ -24,8 +28,8 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
             data: a tuple of (context, question, answers, ans_pos).
             vocab: Vocabulary object used for dataset.
             transforms: a dictionary of transforms.
-                For example {'context': context_transform, 'answers': answers_transform,
-                             'question': question_transform, 'ans_pos': ans_pos_transform}
+            For example {'context': context_transform, 'answers': answers_transform,
+                'question': question_transform, 'ans_pos': ans_pos_transform}
         """
 
         super(QuestionAnswerDataset, self).__init__()
@@ -63,9 +67,8 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
     data_select = check_default_set(data_select, ('train', 'dev'))
-    train, dev = raw.DATASETS[dataset_name](root=root)
-    raw_data = {'train': [item for item in train],
-                'dev': [item for item in dev]}
+    raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
@@ -76,10 +79,13 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
                 for item in _answers:
                     tok_ans += text_transform(item)
                 yield text_transform(_context) + text_transform(_question) + tok_ans
+        logger_.info('Building Vocab based on train data')
         vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), len(raw_data['train']))
+    logger_.info('Vocab has %d entries', len(vocab))
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
+    logger_.info('Building datasets for {}'.format(data_select))
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 
@@ -147,6 +153,7 @@ def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
+
     return _setup_datasets('SQuAD2', root, vocab, tokenizer, data_select)
 
 

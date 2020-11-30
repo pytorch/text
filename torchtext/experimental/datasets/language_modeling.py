@@ -1,8 +1,11 @@
 import torch
+import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import language_modeling as raw
 from torchtext.experimental.datasets.raw.common import check_default_set
+
+logger_ = logging.getLogger(__name__)
 
 
 def build_vocab(data, transforms):
@@ -24,7 +27,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, data, vocab, transforms, single_line):
+    def __init__(self, data, vocab, transform):
         """Initiate language modeling dataset.
 
         Arguments:
@@ -32,23 +35,17 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
                 numericalizing the string tokens.
                 torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
             vocab: Vocabulary object used for dataset.
-            transforms: Text string transforms.
+            transform: Text string transform.
 
         """
 
         super(LanguageModelingDataset, self).__init__()
         self.vocab = vocab
-        self.transforms = transforms
-        self.single_line = single_line
+        self.transform = transform
         self.data = data
-        if single_line:
-            self.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, self.data)))
 
     def __getitem__(self, i):
-        if self.single_line:
-            return self.data[i]
-        else:
-            return self.transforms(self.data[i])
+        return self.data[i]
 
     def __len__(self):
         return len(self.data)
@@ -61,14 +58,12 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_line, year, language):
+def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, year, language):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
     data_select = check_default_set(data_select, ('train', 'test', 'valid'))
 
-    if not single_line and dataset_name != 'WikiText103':
-        raise TypeError('single_line must be True except for WikiText103')
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
@@ -76,24 +71,24 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, data_select, single_li
             raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',), year=year, language=language)
         else:
             raw_train, = raw.DATASETS[dataset_name](root=root, data_select=('train',))
+        logger_.info('Building Vocab based on train data')
         vocab = build_vocab(raw_train, tokenizer)
+    logger_.info('Vocab has %d entries', len(vocab))
 
     def text_transform(line):
         return torch.tensor([vocab[token] for token in tokenizer(line)], dtype=torch.long)
 
-    raw_data = {}
-    for name in data_select:
-        if dataset_name == 'WMTNewsCrawl':
-            raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name, year=year, language=language)
-        else:
-            raw_data[name], = raw.DATASETS[dataset_name](root=root, data_select=name)
-        raw_data[name] = [text_transform(txt) for txt in raw_data[name]]
-
-    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform, single_line)
+    if dataset_name == 'WMTNewsCrawl':
+        raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select, year=year, language=language)
+    else:
+        raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(data_select, raw_datasets)}
+    logger_.info('Building datasets for {}'.format(data_select))
+    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform)
                  for item in data_select)
 
 
-def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid')):
+def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'valid', 'test')):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -107,8 +102,7 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 't
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid','test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -119,16 +113,16 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 't
         >>> from torchtext.experimental.datasets import WikiText2
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer)
+        >>> train_dataset, valid_dataset, test_dataset = WikiText2(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
                                        data_select='valid')
 
     """
-    return _setup_datasets("WikiText2", tokenizer, root, vocab, data_select, True, None, None)
+    return _setup_datasets("WikiText2", tokenizer, root, vocab, data_select, None, None)
 
 
-def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid'), single_line=True):
+def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 'valid', 'test')):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -142,33 +136,28 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
-        single_line: whether to return all tokens in a single line.
-            (Default: True)
-            By default, all lines in raw text file are concatenated into a single line.
-            Use `single_line = False` if one wants to get data line by line.
 
     Examples:
         >>> from torchtext.experimental.datasets import WikiText103
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = WikiText103(tokenizer=tokenizer)
+        >>> train_dataset, valid_dataset, test_dataset = WikiText103(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
                                          data_select='valid')
 
     """
 
-    return _setup_datasets("WikiText103", tokenizer, root, vocab, data_select, single_line, None, None)
+    return _setup_datasets("WikiText103", tokenizer, root, vocab, data_select, None, None)
 
 
-def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train', 'test', 'valid')):
+def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train', 'valid', 'test')):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -182,8 +171,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
-        data_select: a string or tupel for the returned datasets
-            (Default: ('train', 'test','valid'))
+        data_select: a string or tupel for the returned datasets. Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -194,14 +182,14 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
         >>> from torchtext.experimental.datasets import PennTreebank
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, test_dataset, valid_dataset = PennTreebank(tokenizer=tokenizer)
+        >>> train_dataset, valid_dataset, test_dataset = PennTreebank(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
         >>> valid_dataset, = PennTreebank(tokenizer=tokenizer, vocab=vocab,
                                           data_select='valid')
 
     """
 
-    return _setup_datasets("PennTreebank", tokenizer, root, vocab, data_select, True, None, None)
+    return _setup_datasets("PennTreebank", tokenizer, root, vocab, data_select, None, None)
 
 
 def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train'), year=2010, language='en'):
@@ -232,7 +220,7 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train')
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
 
-    return _setup_datasets("WMTNewsCrawl", tokenizer, root, vocab, data_select, True, year, language)
+    return _setup_datasets("WMTNewsCrawl", tokenizer, root, vocab, data_select, year, language)
 
 
 DATASETS = {

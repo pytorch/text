@@ -5,7 +5,6 @@ import tempfile
 import uuid
 import unittest
 
-import sentencepiece as spm
 import torch
 import torchtext.data as data
 from torchtext.data.functional import (
@@ -46,11 +45,8 @@ class TestFunctional(TorchtextTestCase):
             model_prefix = os.path.join(dir_name, f'spm_user_{uuid.uuid4()}')
             model_file = f'{model_prefix}.model'
             generate_sp_model(data_path, vocab_size=23456, model_prefix=model_prefix)
-
-            sp_user = spm.SentencePieceProcessor()
-            sp_user.Load(model_file)
-
-            self.assertEqual(len(sp_user), 23456)
+            sp_model = load_sp_model(model_file)
+            self.assertEqual(sp_model.GetPieceSize(), 23456)
 
     def test_sentencepiece_numericalizer(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'

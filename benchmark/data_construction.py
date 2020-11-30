@@ -1,6 +1,4 @@
-import torch
 from torchtext.experimental import datasets
-import torch.utils._benchmark as benchmark_utils
 import time
 
 

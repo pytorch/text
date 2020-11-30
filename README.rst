@@ -15,8 +15,11 @@ This repository consists of:
 * `torchtext.data <#data>`_: Generic data loaders, abstractions, and iterators for text (including vocabulary and word vectors)
 * `torchtext.datasets <#datasets>`_: Pre-built loaders for common NLP datasets
 
-Note: we are currently re-designing the torchtext library to make it more compatible with pytorch (e.g. ``torch.utils.data``). Several datasets have been written with the new abstractions in `torchtext.experimental <https://github.com/pytorch/text/tree/master/torchtext/experimental>`_ folder. We also created an issue to discuss the new abstraction, and users are welcome to leave feedback `link <https://github.com/pytorch/text/issues/664>`_. 
+Note: we are currently re-designing the torchtext library to make it more compatible with pytorch (e.g. ``torch.utils.data``). Several datasets have been written with the new abstractions in `torchtext.experimental <https://github.com/pytorch/text/tree/master/torchtext/experimental>`_ folder. We also created an issue to discuss the new abstraction, and users are welcome to leave feedback `link <https://github.com/pytorch/text/issues/664>`_. These prototype building blocks and datasets in the experimental folder are available in the nightly release only. The nightly packages are accessible via Pip and Conda for Windows, Mac, and Linux. For example, Linux users can install the nightly wheels with the following command::
 
+    pip install --pre torch torchtext -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html  
+
+For more detail instructions, please refer to `Install PyTorch <https://pytorch.org/get-started/locally/>`_. It should be noted that the new building blocks are still under development, and the APIs have not been solidified.
 
 Installation
 ============
@@ -28,15 +31,17 @@ We recommend Anaconda as Python package management system. Please refer to `pyto
    :widths: 10, 10, 10
 
    nightly build, master, 3.6+
-   1.5, 0.5, 3.5+
-   1.4, 0.4, "2.7, 3.5+"
+   1.7, 0.8, 3.6+
+   1.6, 0.7, 3.6+
+   1.5, 0.6, 3.5+
+   1.4, 0.5, "2.7, 3.5+"
    0.4 and below, 0.2.3, "2.7, 3.5+"
 
-Using conda;::
+Using conda::
 
     conda install -c pytorch torchtext
 
-Using pip;::
+Using pip::
 
     pip install torchtext
 
@@ -64,7 +69,13 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
     git clone https://github.com/pytorch/text torchtext
     cd torchtext
     git submodule update --init --recursive
+
+    # Linux
     python setup.py clean install
+
+    # OSX
+    MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++ python setup.py clean install
+
     # or ``python setup.py develop`` if you are making modifications.
 
 **Note**

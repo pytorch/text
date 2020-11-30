@@ -6,6 +6,8 @@ from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
 
+logger_ = logging.getLogger(__name__)
+
 
 def build_vocab(data, transforms, index):
     def apply_transforms(data):
@@ -32,43 +34,39 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    train, val, test = raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                                  valid_filenames=valid_filenames,
-                                                  test_filenames=test_filenames,
-                                                  root=root)
-    raw_data = {
-        "train": [line for line in train],
-        "valid": [line for line in val],
-        "test": [line for line in test]
-    }
+    raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                              valid_filenames=valid_filenames,
+                                              test_filenames=test_filenames,
+                                              data_select=data_select, root=root)
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
 
     if src_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building src Vocab based on train data')
+        logger_.info('Building src Vocab based on train data')
         src_vocab = build_vocab(raw_data["train"],
                                 src_text_vocab_transform,
                                 index=0)
     else:
         if not isinstance(src_vocab, Vocab):
             raise TypeError("Passed src vocabulary is not of type Vocab")
-    logging.info('src Vocab has {} entries'.format(len(src_vocab)))
+    logger_.info('src Vocab has %d entries', len(src_vocab))
 
     if tgt_vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
-        logging.info('Building tgt Vocab based on train data')
+        logger_.info('Building tgt Vocab based on train data')
         tgt_vocab = build_vocab(raw_data["train"],
                                 tgt_text_vocab_transform,
                                 index=1)
     else:
         if not isinstance(tgt_vocab, Vocab):
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
-    logging.info('tgt Vocab has {} entries'.format(len(tgt_vocab)))
+    logger_.info('tgt Vocab has %d entries', len(tgt_vocab))
 
-    logging.info('Building datasets for {}'.format(data_select))
+    logger_.info('Building datasets for {}'.format(data_select))
     datasets = []
     for key in data_select:
         src_text_transform = sequential_transforms(src_text_vocab_transform,
@@ -86,10 +84,12 @@ def _setup_datasets(dataset_name,
 
 class TranslationDataset(torch.utils.data.Dataset):
     """Defines a dataset for translation.
-       Currently, we only support the following datasets:
-             - Multi30k
-             - WMT14
-             - IWSLT
+
+    Currently, we only support the following datasets:
+
+        - Multi30k
+        - WMT14
+        - IWSLT
     """
 
     def __init__(self, data, vocab, transforms):
@@ -141,7 +141,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              tokenizer=None):
 
     """ Define translation datasets: Multi30k
-        Separately returns train/valid/test datasets as a tuple
+    Separately returns train/valid/test datasets as a tuple
 
     Arguments:
         train_filenames: the source and target filenames for training.
@@ -163,9 +163,10 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             It has to be in a form of tuple.
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
-                      get_tokenizer("spacy", language='en_core_web_sm'))
+            get_tokenizer("spacy", language='en_core_web_sm'))
 
         The available dataset include:
+
             test_2016_flickr.cs
             test_2016_flickr.de
             test_2016_flickr.en
@@ -217,7 +218,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             val.5.en
 
     Examples:
-        >>> from torchtext.datasets import Multi30k
+        >>> from torchtext.experimental.datasets import Multi30k
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = (get_tokenizer("spacy", language='de'),
                          get_tokenizer("basic_english"))
@@ -225,6 +226,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
+
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames,
                            data_select, root, vocab, tokenizer)
 
@@ -240,8 +242,8 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           tokenizer=None):
 
     """ Define translation datasets: IWSLT
-        Separately returns train/valid/test datasets
-        The available datasets include:
+    Separately returns train/valid/test datasets
+    The available datasets include:
 
     Arguments:
         train_filenames: the source and target filenames for training.
@@ -263,9 +265,10 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             It has to be in a form of tuple.
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
-                      get_tokenizer("spacy", language='en_core_web_sm'))
+            get_tokenizer("spacy", language='en_core_web_sm'))
 
         The available datasets include:
+
             IWSLT16.TED.dev2010.ar-en.ar
             IWSLT16.TED.dev2010.ar-en.en
             IWSLT16.TED.dev2010.cs-en.cs
@@ -403,7 +406,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             train.tags.fr-en.fr
 
     Examples:
-        >>> from torchtext.datasets import IWSLT
+        >>> from torchtext.experimental.datasets import IWSLT
         >>> from torchtext.data.utils import get_tokenizer
         >>> src_tokenizer = get_tokenizer("spacy", language='de')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
@@ -412,6 +415,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
+
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames,
                            data_select, root, vocab, tokenizer)
 
@@ -428,8 +432,9 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           tokenizer=None):
 
     """ Define translation datasets: WMT14
-        Separately returns train/valid/test datasets
-        The available datasets include:
+    Separately returns train/valid/test datasets
+    The available datasets include:
+
             newstest2016.en
             newstest2016.de
             newstest2015.en
@@ -501,10 +506,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         tokenizer: the tokenizer used to preprocess source and target raw text data.
             It has to be in a form of tuple.
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
-                      get_tokenizer("spacy", language='en_core_web_sm'))
+            get_tokenizer("spacy", language='en_core_web_sm'))
 
     Examples:
-        >>> from torchtext.datasets import WMT14
+        >>> from torchtext.experimental.datasets import WMT14
         >>> from torchtext.data.utils import get_tokenizer
         >>> src_tokenizer = get_tokenizer("spacy", language='de')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
@@ -513,6 +518,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
+
     return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames,
                            data_select, root, vocab, tokenizer)
 
