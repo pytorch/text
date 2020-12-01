@@ -178,9 +178,9 @@ class IWSLT(TranslationDataset):
             f_txt = f_orig.replace('.tags', '')
             with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
                     io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-                for l in fd_orig:
-                    if not any(tag in l for tag in xml_tags):
-                        fd_txt.write(l.strip() + '\n')
+                for line in fd_orig:
+                    if not any(tag in line for tag in xml_tags):
+                        fd_txt.write(line.strip() + '\n')
 
 
 class WMT14(TranslationDataset):
