@@ -51,33 +51,13 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("__len__", &Vectors::__len__)
       .def(py::pickle(
           // __setstate__
-          [](const Vectors &self) {
-            std::vector<std::string> tokens;
-            std::vector<int64_t> indices;
-            for (const auto &item : self.stoi_) {
-              tokens.push_back(item.first);
-              indices.push_back(item.second);
-            }
-            std::vector<int64_t> integers = std::move(indices);
-            std::vector<std::string> strings = std::move(tokens);
-            std::vector<torch::Tensor> tensors{self.vectors_, self.unk_tensor_};
-            return std::make_tuple(std::move(integers), std::move(strings),
-                                   std::move(tensors));
+          [](const Vectors &self) -> VectorsStates {
+            return _set_vectors_states(self);
           },
           // __getstate__
-          [](std::tuple<std::vector<int64_t>, std::vector<std::string>,
-                        std::vector<torch::Tensor>>
-                 states) {
-            auto integers = std::get<0>(states);
-            auto strings = std::get<1>(states);
-            auto tensors = std::get<2>(states);
-            IndexMap stoi;
-            stoi.reserve(integers.size());
-            for (size_t i = 0; i < integers.size(); i++) {
-              stoi[strings[i]] = integers[i];
-            }
-            return Vectors(std::move(stoi), std::move(tensors[0]),
-                           std::move(tensors[1]));
+          [](VectorsStates states) -> Vectors {
+            auto vectors = _get_vectors_from_states(states);
+            return *vectors;
           }));
 
   py::class_<Vocab>(m, "Vocab")
@@ -95,17 +75,13 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("get_itos", &Vocab::get_itos)
       .def(py::pickle(
           // __setstate__
-          [](const Vocab &self) {
-            StringList strings = self.itos_;
-            strings.push_back(self.unk_token_);
-            return std::make_tuple(strings);
+          [](const Vocab &self) -> VocabStates {
+            return _set_vocab_states(self);
           },
           // __getstate__
-          [](std::tuple<StringList> states) {
-            auto strings = std::get<0>(states);
-            std::string unk_token = strings.back();
-            strings.pop_back(); // remove last element which is unk_token
-            return Vocab(std::move(strings), std::move(unk_token));
+          [](VocabStates states) -> Vocab {
+            auto vocab = _get_vocab_from_states(states);
+            return *vocab;
           }));
 
   // Functions
@@ -192,7 +168,7 @@ static auto vocab =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-              return _set_vocab_states(self);
+              return _set_vocab_states(*self);
             },
             // __getstate__
             [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
@@ -210,7 +186,7 @@ static auto vectors =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
-              return _set_vectors_states(self);
+              return _set_vectors_states(*self);
             },
             // __getstate__
             [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {

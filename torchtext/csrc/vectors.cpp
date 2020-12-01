@@ -275,25 +275,25 @@ std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
   return result;
 }
 
-VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
+VectorsStates _set_vectors_states(const Vectors &self) {
   std::vector<std::string> tokens;
   std::vector<int64_t> indices;
-  tokens.reserve(self->stoi_.size());
-  indices.reserve(self->stoi_.size());
+  tokens.reserve(self.stoi_.size());
+  indices.reserve(self.stoi_.size());
 
   // construct tokens and index list
   // we need to store indices because the `vectors_` tensor may have gaps
-  for (const auto &item : self->stoi_) {
+  for (const auto &item : self.stoi_) {
     tokens.push_back(item.first);
     indices.push_back(item.second);
   }
 
   std::vector<int64_t> integers = std::move(indices);
   std::vector<std::string> strings = std::move(tokens);
-  std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
+  std::vector<torch::Tensor> tensors{self.vectors_, self.unk_tensor_};
 
   VectorsStates states =
-      std::make_tuple(self->version_str_, std::move(integers),
+      std::make_tuple(self.version_str_, std::move(integers),
                       std::move(strings), std::move(tensors));
 
   return states;
