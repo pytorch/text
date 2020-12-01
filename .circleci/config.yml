@@ -32,7 +32,7 @@ commands:
           name: Adding CONDA_CHANNEL_FLAGS to BASH_ENV
           command: |
               CONDA_CHANNEL_FLAGS=""
-              if [[ "$(python --version)" = *3.9* ]]; then
+              if [[ "${PYTHON_VERSION}" = *3.9* ]]; then
                 echo "export CONDA_CHANNEL_FLAGS=-c=conda-forge" >> ${BASH_ENV}
               fi
 
