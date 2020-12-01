@@ -1,5 +1,6 @@
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - flake8==3.7.9
   - codecov
