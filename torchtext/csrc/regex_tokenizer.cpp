@@ -44,4 +44,19 @@ void RegexTokenizer::split_(std::string &str, std::vector<std::string> &tokens,
   }
 }
 
+c10::intrusive_ptr<RegexTokenizer>
+_get_regex_tokenizer_from_states(RegexTokenizerStates states) {
+  auto &patterns = std::get<0>(states);
+  auto &replacements = std::get<1>(states);
+  auto &to_lower = std::get<2>(states);
+  return c10::make_intrusive<RegexTokenizer>(std::move(patterns),
+                                             std::move(replacements), to_lower);
+}
+
+RegexTokenizerStates _set_regex_tokenizer_states(const RegexTokenizer &self) {
+  RegexTokenizerStates states =
+      std::make_tuple(self.patterns_, self.replacements_, self.to_lower_);
+  return states;
+}
+
 } // namespace torchtext

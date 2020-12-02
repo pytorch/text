@@ -3,6 +3,9 @@
 
 namespace torchtext {
 
+typedef std::tuple<std::vector<std::string>, std::vector<std::string>, bool>
+    RegexTokenizerStates;
+
 struct RegexTokenizer : torch::CustomClassHolder {
 private:
   std::vector<RE2 *> compiled_patterns_;
@@ -19,5 +22,9 @@ public:
                           const bool to_lower);
   std::vector<std::string> forward(std::string str) const;
 };
+
+c10::intrusive_ptr<RegexTokenizer>
+_get_regex_tokenizer_from_states(RegexTokenizerStates states);
+RegexTokenizerStates _set_regex_tokenizer_states(const RegexTokenizer &self);
 
 } // namespace torchtext

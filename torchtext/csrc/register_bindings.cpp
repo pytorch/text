@@ -31,22 +31,13 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("forward", &RegexTokenizer::forward)
       .def(py::pickle(
           // __setstate__
-          [](const RegexTokenizer &self)
-              -> std::tuple<std::vector<std::string>, std::vector<std::string>,
-                            bool> {
-            return std::make_tuple(self.patterns_, self.replacements_,
-                                   self.to_lower_);
+          [](const RegexTokenizer &self) -> RegexTokenizerStates {
+            return _set_regex_tokenizer_states(self);
           },
           // __getstate__
-          [](std::tuple<std::vector<std::string>, std::vector<std::string>,
-                        bool>
-                 states) -> RegexTokenizer {
-            auto patterns = std::get<0>(states);
-            auto replacements = std::get<1>(states);
-            auto to_lower = std::get<2>(states);
-
-            return RegexTokenizer(std::move(patterns), std::move(replacements),
-                                  to_lower);
+          [](RegexTokenizerStates states) -> RegexTokenizer {
+            auto regex_tokenizer = _get_regex_tokenizer_from_states(states);
+            return *regex_tokenizer;
           }));
 
   py::class_<SentencePiece>(m, "SentencePiece")
@@ -138,21 +129,13 @@ static auto regex_tokenizer =
         .def_pickle(
             // __setstate__
             [](const c10::intrusive_ptr<RegexTokenizer> &self)
-                -> std::tuple<std::vector<std::string>,
-                              std::vector<std::string>, bool> {
-              return std::make_tuple(self->patterns_, self->replacements_,
-                                     self->to_lower_);
+                -> RegexTokenizerStates {
+              return _set_regex_tokenizer_states(*self);
             },
             // __getstate__
-            [](std::tuple<std::vector<std::string>, std::vector<std::string>,
-                          bool>
-                   states) -> c10::intrusive_ptr<RegexTokenizer> {
-              auto patterns = std::get<0>(states);
-              auto replacements = std::get<1>(states);
-              auto to_lower = std::get<2>(states);
-
-              return c10::make_intrusive<RegexTokenizer>(
-                  std::move(patterns), std::move(replacements), to_lower);
+            [](RegexTokenizerStates states)
+                -> c10::intrusive_ptr<RegexTokenizer> {
+              return _get_regex_tokenizer_from_states(states);
             });
 
 static auto sentencepiece =
