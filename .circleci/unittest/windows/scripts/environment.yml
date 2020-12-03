@@ -1,5 +1,6 @@
 channels:
   - defaults
+  # use conda-forge for python 3.9+
   - conda-forge
 dependencies:
   - flake8>=3.7.9
