@@ -107,13 +107,21 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, ref_results)
 
-        # test load and save
+        # test pybind load and save
+        save_path = os.path.join(self.test_dir, 'pybind_basic_english_normalize.pt')
+        torch.save(basic_eng_norm, save_path)
+        pybind_loaded_basic_eng_norm = torch.load(save_path)
+
+        pybind_loaded_eager_tokens = pybind_loaded_basic_eng_norm(test_sample)
+        self.assertEqual(pybind_loaded_eager_tokens, ref_results)
+
+        # test torchbind load and save
         save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
         torch.save(basic_eng_norm.to_ivalue(), save_path)
-        loaded_basic_eng_norm = torch.load(save_path)
+        torchbind_loaded_basic_eng_norm = torch.load(save_path)
 
-        loaded_eager_tokens = loaded_basic_eng_norm(test_sample)
-        self.assertEqual(loaded_eager_tokens, ref_results)
+        torchbind_loaded_eager_tokens = torchbind_loaded_basic_eng_norm(test_sample)
+        self.assertEqual(torchbind_loaded_eager_tokens, ref_results)
 
     # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
