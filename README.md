@@ -2,7 +2,7 @@
 
 ## Get started
 * install HuggingFace datasets. We copied it here to jump start. Eventually, we will build our own.
-> pip install -e text/dataframes/datasets
+> pip install -e stl_text/dataframes/datasets
 
 * install this package
 > pip install -e .
