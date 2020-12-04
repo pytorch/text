@@ -6,3 +6,6 @@
 
 * install this package
 > pip install -e .
+
+* run an example
+> python examples/hf_dataset_quick_tour.py
