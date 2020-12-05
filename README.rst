@@ -19,7 +19,7 @@ Note: we are currently re-designing the torchtext library to make it more compat
 
     pip install --pre torch torchtext -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html  
 
-For more detail instructions, please refer to `Install PyTorch <https://pytorch.org/get-started/locally/>`_. It should be noted that the new building blocks are still under development, and the APIs have not been solidified.
+For more detailed instructions, please refer to `Install PyTorch <https://pytorch.org/get-started/locally/>`_. It should be noted that the new building blocks are still under development, and the APIs have not been solidified.
 
 Installation
 ============
@@ -81,7 +81,7 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
 **Note**
 
 When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
-If you are using nightly build of PyTorch, checkout the environment it was built `here (conda) <https://github.com/pytorch/builder/tree/master/conda>`_ and `here (pip) <https://github.com/pytorch/builder/tree/master/manywheel>`_.
+If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/master/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/master/manywheel>`_.
 
 Documentation
 =============
