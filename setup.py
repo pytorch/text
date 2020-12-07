@@ -14,8 +14,8 @@ with open(REQUIREMENTS) as f:
     reqs = f.read()
 
 setuptools.setup(
-    name="torchtext",
-    version="1.0.0",
+    name="stl_text",
+    version="0.0.1",
     author="Facebook",
     license="BSD",
     packages=setuptools.find_packages(),

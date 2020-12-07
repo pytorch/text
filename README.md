@@ -2,7 +2,7 @@
 
 ## Get started
 * install HuggingFace datasets. We copied it here to jump start. Eventually, we will build our own.
-> pip install -e text/dataframes/datasets
+> pip install -e stl_text/dataframes/datasets
 
 * install PyTorch and torchtext nightlies as some of the tasks depend on the prototype work in torchtext library.
 
@@ -16,3 +16,6 @@ More detailed instructions are available [here](https://pytorch.org/).
 
 * install this package
 > pip install -e .
+
+* run an example
+> python examples/hf_dataset_quick_tour.py
