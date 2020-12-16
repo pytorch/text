@@ -199,10 +199,17 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-        vocab_path = os.path.join(self.test_dir, 'vocab.pt')
+        # test pybind load and save
+        vocab_path = os.path.join(self.test_dir, 'vocab_pybind.pt')
+        torch.save(v, vocab_path)
+        loaded_v = torch.load(vocab_path)
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+
+        # test torchscript load and save
+        vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
         torch.save(v.to_ivalue(), vocab_path)
         loaded_v = torch.load(vocab_path)
-
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
 

@@ -107,13 +107,17 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, ref_results)
 
-        # test load and save
-        save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
+        # test pybind load and save
+        save_path = os.path.join(self.test_dir, 'basic_english_normalize_pybind.pt')
+        torch.save(basic_eng_norm, save_path)
+        loaded_basic_eng_norm = torch.load(save_path)
+        self.assertEqual(loaded_basic_eng_norm(test_sample), ref_results)
+
+        # test torchscript load and save
+        save_path = os.path.join(self.test_dir, 'basic_english_normalize_torchscrip.pt')
         torch.save(basic_eng_norm.to_ivalue(), save_path)
         loaded_basic_eng_norm = torch.load(save_path)
-
-        loaded_eager_tokens = loaded_basic_eng_norm(test_sample)
-        self.assertEqual(loaded_eager_tokens, ref_results)
+        self.assertEqual(loaded_basic_eng_norm(test_sample), ref_results)
 
     # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
@@ -147,11 +151,17 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(jit_tokens, ref_results)
 
-        # test load and save
-        save_path = os.path.join(self.test_dir, 'regex.pt')
+        # test pybind load and save
+        save_path = os.path.join(self.test_dir, 'regex_pybind.pt')
+        torch.save(r_tokenizer, save_path)
+        loaded_r_tokenizer = torch.load(save_path)
+        loaded_eager_tokens = loaded_r_tokenizer(test_sample)
+        self.assertEqual(loaded_eager_tokens, ref_results)
+
+        # test torchscript load and save
+        save_path = os.path.join(self.test_dir, 'regex_torchscript.pt')
         torch.save(r_tokenizer.to_ivalue(), save_path)
         loaded_r_tokenizer = torch.load(save_path)
-
         loaded_eager_tokens = loaded_r_tokenizer(test_sample)
         self.assertEqual(loaded_eager_tokens, ref_results)
 

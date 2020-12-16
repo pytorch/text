@@ -379,7 +379,7 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
 }
 
-VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
+VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self) {
   std::vector<int64_t> integers;
   StringList strings = self->itos_;
   strings.push_back(self->unk_token_);
@@ -390,7 +390,7 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   return states;
 }
 
-c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
+c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 4) {
 #ifdef _MSC_VER
