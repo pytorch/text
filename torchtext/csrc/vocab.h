@@ -1,4 +1,3 @@
-#include <pybind11/pybind11.h>
 #include <torch/script.h>
 
 namespace torchtext {
@@ -45,6 +44,6 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const std::string &unk_token,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
-                                  py::object tokenizer);
+                                  torch::jit::script::Module tokenizer);
 
 } // namespace torchtext
