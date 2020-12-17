@@ -176,7 +176,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
         [](const c10::intrusive_ptr<SentencePiece> &self) -> torch::Tensor {
           auto *data = static_cast<void*>(const_cast<char*>(self->content_.data()));
           auto numel = static_cast<int64_t>(self->content_.size());
-          return torch::from_blob(data, {numel}, {torch::kUInt8});
+          return torch::from_blob(data, {numel}, {torch::kUInt8}).clone();
         },
         // __setstate__
         [](torch::Tensor state) -> c10::intrusive_ptr<SentencePiece> {
