@@ -3,6 +3,7 @@
 #include <regex.h>
 #include <regex_tokenizer.h>         // @manual
 #include <sentencepiece.h>           // @manual
+#include <torch/csrc/jit/python/pybind_utils.h> // @manual
 #include <torch/csrc/utils/pybind.h> // @manual
 #include <torch/script.h>
 #include <vectors.h> // @manual
@@ -11,6 +12,18 @@
 namespace torchtext {
 
 namespace py = pybind11;
+
+namespace {
+Vocab build_vocab_from_text_file(const std::string &file_path,
+                                 const std::string &unk_token,
+                                 const int64_t min_freq,
+                                 const int64_t num_cpus,
+                                 py::object fn) {
+  torch::jit::script::Module module(*torch::jit::as_module(fn));
+  return _build_vocab_from_text_file(file_path, unk_token, min_freq, num_cpus, module);
+}
+} // namespace
+
 // Registers our custom classes with pybind11.
 PYBIND11_MODULE(_torchtext, m) {
   // Classes
@@ -68,7 +81,7 @@ PYBIND11_MODULE(_torchtext, m) {
   m.def("_load_token_and_vectors_from_file",
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
-  m.def("_build_vocab_from_text_file", _build_vocab_from_text_file);
+  m.def("_build_vocab_from_text_file", &build_vocab_from_text_file);
 }
 
 TORCH_LIBRARY_FRAGMENT(torchtext, m) {
