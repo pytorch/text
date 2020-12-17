@@ -57,7 +57,6 @@ class TestTransforms(TorchtextTestCase):
 
     def test_sentencepiece_load_and_save(self):
         model_path = get_asset_path('spm_example.model')
-        spm = sentencepiece_tokenizer((model_path))
         input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         expected = [
             '▁Sent', 'ence', 'P', 'ie', 'ce', '▁is',
@@ -66,14 +65,16 @@ class TestTransforms(TorchtextTestCase):
             '▁de', 'to', 'ken', 'izer',
         ]
 
-        # test pybind load and save
-        save_path = os.path.join(self.test_dir, 'spm_pybind.pt')
-        torch.save(spm, save_path)
-        loaded_spm = torch.load(save_path)
-        self.assertEqual(expected, loaded_spm(input))
+        with self.subTest('pybind'):
+            save_path = os.path.join(self.test_dir, 'spm_pybind.pt')
+            spm = sentencepiece_tokenizer((model_path))
+            torch.save(spm, save_path)
+            loaded_spm = torch.load(save_path)
+            self.assertEqual(expected, loaded_spm(input))
 
-        # test torchscript load and save
-        save_path = os.path.join(self.test_dir, 'spm_torchscript.pt')
-        torch.save(spm.to_ivalue(), save_path)
-        loaded_spm = torch.load(save_path)
-        self.assertEqual(expected, loaded_spm(input))
+        with self.subTest('torchscript'):
+            save_path = os.path.join(self.test_dir, 'spm_torchscript.pt')
+            spm = sentencepiece_tokenizer((model_path)).to_ivalue()
+            torch.save(spm, save_path)
+            loaded_spm = torch.load(save_path)
+            self.assertEqual(expected, loaded_spm(input))

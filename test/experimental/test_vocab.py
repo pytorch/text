@@ -199,19 +199,19 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-        # test pybind load and save
-        vocab_path = os.path.join(self.test_dir, 'vocab_pybind.pt')
-        torch.save(v, vocab_path)
-        loaded_v = torch.load(vocab_path)
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+        with self.subTest('pybind'):
+            vocab_path = os.path.join(self.test_dir, 'vocab_pybind.pt')
+            torch.save(v, vocab_path)
+            loaded_v = torch.load(vocab_path)
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
 
-        # test torchscript load and save
-        vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
-        torch.save(v.to_ivalue(), vocab_path)
-        loaded_v = torch.load(vocab_path)
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+        with self.subTest('torchscript'):
+            vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
+            torch.save(v.to_ivalue(), vocab_path)
+            loaded_v = torch.load(vocab_path)
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
 
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
