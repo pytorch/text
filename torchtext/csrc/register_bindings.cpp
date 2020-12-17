@@ -72,11 +72,11 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(py::pickle(
            // __getstate__
            [](const c10::intrusive_ptr<SentencePiece> &self) -> py::bytes{
-             return py::bytes(_serialize_sentence_piece(self));
+             return py::bytes(self->content_);
            },
            // __setstate__
            [](py::bytes state) -> c10::intrusive_ptr<SentencePiece> {
-             return _deserialize_sentence_piece(std::string(state));
+             return c10::make_intrusive<SentencePiece>(std::string(state));
            }));
 
   py::class_<Vectors, c10::intrusive_ptr<Vectors>>(m, "Vectors")
@@ -168,13 +168,21 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def("PieceToId", &SentencePiece::PieceToId)
     .def("IdToPiece", &SentencePiece::IdToPiece)
     .def_pickle(
+        // The underlying content of SentencePiece contains byte string,
+        // and returing it as std::string cause UTF8 decoding error.
+        // Since TorchScript does not support byte string, we use byte Tensor to
+        // pass around the data.
         // __getstate__
-        [](const c10::intrusive_ptr<SentencePiece> &self) -> std::string {
-          return self->content_;
+        [](const c10::intrusive_ptr<SentencePiece> &self) -> torch::Tensor {
+          auto *data = static_cast<void*>(const_cast<char*>(self->content_.data()));
+          auto numel = self->content_.size();
+          return torch::from_blob(data, {numel}, {torch::kUInt8});
         },
         // __setstate__
-        [](std::string state) -> c10::intrusive_ptr<SentencePiece> {
-          return c10::make_intrusive<SentencePiece>(std::move(state));
+        [](torch::Tensor state) -> c10::intrusive_ptr<SentencePiece> {
+          auto *data = static_cast<char*>(state.data_ptr());
+          auto numel = state.size(0);
+          return c10::make_intrusive<SentencePiece>(std::string(data, numel));
         });
 
   m.class_<Vectors>("Vectors")
