@@ -48,7 +48,7 @@ RegexTokenizerStates _serialize_regex_tokenizer(const c10::intrusive_ptr<RegexTo
   return std::make_tuple(self->patterns_, self->replacements_, self->to_lower_);
 }
 
-c10::intrusive_ptr<RegexTokenizer> _deserialize_regex_tokenizer(RegexTokenizerStates states) {
+c10::intrusive_ptr<RegexTokenizer> _deserialize_regex_tokenizer(RegexTokenizerStates &&states) {
   return c10::make_intrusive<RegexTokenizer>(
       std::move(std::get<0>(states)),
       std::move(std::get<1>(states)),

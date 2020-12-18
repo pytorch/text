@@ -37,7 +37,7 @@ PYBIND11_MODULE(_torchtext, m) {
           },
           // __setstate__
           [](std::string state) -> c10::intrusive_ptr<Regex> {
-            return _deserialize_regex(state);
+            return _deserialize_regex(std::move(state));
           }));
 
   py::class_<RegexTokenizer, c10::intrusive_ptr<RegexTokenizer>>(m, "RegexTokenizer")
@@ -53,7 +53,7 @@ PYBIND11_MODULE(_torchtext, m) {
           },
           // __setstate__
           [](RegexTokenizerStates states) -> c10::intrusive_ptr<RegexTokenizer> {
-            return _deserialize_regex_tokenizer(states);
+            return _deserialize_regex_tokenizer(std::move(states));
           }));
 
   py::class_<SentencePiece, c10::intrusive_ptr<SentencePiece>>(m, "SentencePiece")
@@ -119,7 +119,7 @@ PYBIND11_MODULE(_torchtext, m) {
           },
           // __setstate__
           [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
-              return _deserialize_vocab(states);
+            return _deserialize_vocab(states);
           }));
 
   // Functions
@@ -140,7 +140,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
         },
         // __setstate__
         [](std::string state) -> c10::intrusive_ptr<Regex> {
-          return _deserialize_regex(state);
+          return _deserialize_regex(std::move(state));
         });
 
   m.class_<RegexTokenizer>("RegexTokenizer")
@@ -153,7 +153,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
         },
         // __setstate__
         [](RegexTokenizerStates states) -> c10::intrusive_ptr<RegexTokenizer> {
-          return _deserialize_regex_tokenizer(states);
+          return _deserialize_regex_tokenizer(std::move(states));
         });
 
   m.class_<SentencePiece>("SentencePiece")

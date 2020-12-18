@@ -24,6 +24,6 @@ public:
 };
 
 RegexTokenizerStates _serialize_regex_tokenizer(const c10::intrusive_ptr<RegexTokenizer> &self);
-c10::intrusive_ptr<RegexTokenizer> _deserialize_regex_tokenizer(RegexTokenizerStates states);
+c10::intrusive_ptr<RegexTokenizer> _deserialize_regex_tokenizer(RegexTokenizerStates &&states);
 
 } // namespace torchtext
