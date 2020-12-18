@@ -38,6 +38,7 @@ test:
 
   requires:
     - pytest
+    - cpuonly
 
 about:
   home: https://github.com/pytorch/text
