@@ -237,7 +237,7 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-${UPLOAD_CHANNEL} pytorch
+            conda install -v -y -c pytorch-${UPLOAD_CHANNEL} pytorch cpuonly
             conda install -v -y -c file://$HOME/workspace/conda-bld torchtext
       - run:
           name: smoke test
@@ -299,7 +299,7 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-"${UPLOAD_CHANNEL}" pytorch
+            conda install -v -y -c pytorch-"${UPLOAD_CHANNEL}" pytorch cpuonly
             conda install -v -y -c ~/workspace/conda-bld torchtext
       - run:
           name: smoke test
@@ -467,6 +467,63 @@ jobs:
       - run:
           name: Run style check
           command: .circleci/unittest/linux/scripts/run_style_checks.sh
+  build_docs:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - designate_upload_channel
+      - checkout
+      - run:
+          name: install binaries
+          command: |
+            set -x
+            conda install make
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
+      - run:
+          name: Build docs
+          command: |
+            set -x
+            pushd docs
+            pip install -r requirements.txt
+            make html
+            popd
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - "*"
+
+  upload_docs:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Generate netrc
+          command: |
+            # set credentials for https pushing
+            # requires the org-member context
+            cat > ~/.netrc \<<DONE
+              machine github.com
+              login pytorchbot
+              password ${GITHUB_PYTORCHBOT_TOKEN}
+            DONE
+      - run:
+          name: Upload docs
+          command: |
+            # Don't use "checkout" step since it uses ssh, which cannot git push
+            # https://circleci.com/docs/2.0/configuration-reference/#checkout
+            set -ex
+            tag=${CIRCLE_TAG:1:5}
+            target=${tag:-master}
+            ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
+
 
 workflows:
   build:

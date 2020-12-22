@@ -11,4 +11,12 @@ std::string Regex::Sub(std::string str, const std::string &repl) const {
   return str;
 }
 
+std::string _serialize_regex(const c10::intrusive_ptr<Regex> &self) {
+  return self->re_str_;
+}
+
+c10::intrusive_ptr<Regex> _deserialize_regex(std::string &&state) {
+  return c10::make_intrusive<Regex>(std::move(state));
+}
+
 } // namespace torchtext
