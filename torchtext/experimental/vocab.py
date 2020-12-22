@@ -85,7 +85,7 @@ def build_vocab_from_iterator(iterator, min_freq=1, unk_token='<unk>'):
     """
     Build a Vocab from an iterator.
 
-    Arguments:
+    Args:
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
@@ -108,7 +108,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
     Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
     Additionally, the if the `unk_token` isn't found inside of the `ordered_dict`, it will be added to the end of the vocab.
 
-    Arguments:
+    Args:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
@@ -147,7 +147,7 @@ class Vocab(nn.Module):
     __jit_unused_properties__ = ["is_jitable"]
     r"""Creates a vocab object which maps tokens to indices.
 
-    Arguments:
+    Args:
         vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.
     """
 

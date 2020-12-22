@@ -38,7 +38,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
 
-    Arguments:
+    Args:
         url: the url of the file from URL header. (None)
         root: download folder used to store the file in (.data)
         overwrite: overwrite existing files (False)
@@ -136,7 +136,7 @@ def unicode_csv_reader(unicode_csv_data, **kwargs):
     Borrowed and slightly modified from the Python docs:
     https://docs.python.org/2/library/csv.html#csv-examples
 
-    Arguments:
+    Args:
         unicode_csv_data: unicode csv data (see example below)
 
     Examples:
@@ -171,7 +171,7 @@ def utf_8_encoder(unicode_csv_data):
 def extract_archive(from_path, to_path=None, overwrite=False):
     """Extract archive.
 
-    Arguments:
+    Args:
         from_path: the path of the archive.
         to_path: the root path of the extracted files (directory of from_path)
         overwrite: overwrite existing files (False)

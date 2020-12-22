@@ -95,7 +95,7 @@ class TranslationDataset(torch.utils.data.Dataset):
     def __init__(self, data, vocab, transforms):
         """Initiate translation dataset.
 
-        Arguments:
+        Args:
             data: a tuple of source and target tensors, which include token ids
                 numericalizing the string tokens.
                 [(src_tensor0, tgt_tensor0), (src_tensor1, tgt_tensor1)]
@@ -143,7 +143,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.de', 'train.en')
         valid_filenames: the source and target filenames for valid.
@@ -245,7 +245,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
     Separately returns train/valid/test datasets
     The available datasets include:
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.de-en.de', 'train.de-en.en')
         valid_filenames: the source and target filenames for valid.
@@ -486,7 +486,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             newstest2015.tok.bpe.32000.de
             train.tok.clean.bpe.32000.de
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
         valid_filenames: the source and target filenames for valid.

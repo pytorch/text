@@ -12,7 +12,7 @@ class Pipeline(object):
     def __init__(self, convert_token=None):
         """Create a pipeline.
 
-        Arguments:
+        Args:
             convert_token: The function to apply to input sequence data.
                 If None, the identity function is used. Default: None
         """
@@ -28,7 +28,7 @@ class Pipeline(object):
     def __call__(self, x, *args):
         """Apply the the current Pipeline(s) to an input.
 
-        Arguments:
+        Args:
             x: The input to process with the Pipeline(s).
             Positional arguments: Forwarded to the `call` function
                 of the Pipeline(s).
@@ -43,7 +43,7 @@ class Pipeline(object):
         applying the `convert_token` function to all input elements is
         returned.
 
-        Arguments:
+        Args:
             x: The input to apply the convert_token function to.
             Positional arguments: Forwarded to the `convert_token` function
                 of the current Pipeline.
@@ -55,7 +55,7 @@ class Pipeline(object):
     def add_before(self, pipeline):
         """Add a Pipeline to be applied before this processing pipeline.
 
-        Arguments:
+        Args:
             pipeline: The Pipeline or callable to apply before this
                 Pipeline.
         """
@@ -67,7 +67,7 @@ class Pipeline(object):
     def add_after(self, pipeline):
         """Add a Pipeline to be applied after this processing pipeline.
 
-        Arguments:
+        Args:
             pipeline: The Pipeline or callable to apply after this
                 Pipeline.
         """

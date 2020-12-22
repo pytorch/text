@@ -234,7 +234,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             val.5.de
             val.5.en
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.de', 'train.en')
         valid_filenames: the source and target filenames for valid.
@@ -400,7 +400,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             train.tags.fr-en.en
             train.tags.fr-en.fr
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.de-en.de', 'train.de-en.en')
         valid_filenames: the source and target filenames for valid.
@@ -486,7 +486,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             newstest2015.tok.bpe.32000.de
             train.tok.clean.bpe.32000.de
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
         valid_filenames: the source and target filenames for valid.
