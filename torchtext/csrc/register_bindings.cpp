@@ -27,18 +27,36 @@ Vocab build_vocab_from_text_file(const std::string &file_path,
 // Registers our custom classes with pybind11.
 PYBIND11_MODULE(_torchtext, m) {
   // Classes
-  py::class_<Regex>(m, "Regex")
+  py::class_<Regex, c10::intrusive_ptr<Regex>>(m, "Regex")
       .def(py::init<std::string>())
-      .def("Sub", &Regex::Sub);
+      .def("Sub", &Regex::Sub)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<Regex> &self) -> std::string {
+            return _serialize_regex(self);
+          },
+          // __setstate__
+          [](std::string state) -> c10::intrusive_ptr<Regex> {
+            return _deserialize_regex(std::move(state));
+          }));
 
-  py::class_<RegexTokenizer>(m, "RegexTokenizer")
+  py::class_<RegexTokenizer, c10::intrusive_ptr<RegexTokenizer>>(m, "RegexTokenizer")
       .def_readonly("patterns_", &RegexTokenizer::patterns_)
       .def_readonly("replacements_", &RegexTokenizer::replacements_)
       .def_readonly("to_lower_", &RegexTokenizer::to_lower_)
       .def(py::init<std::vector<std::string>, std::vector<std::string>, bool>())
-      .def("forward", &RegexTokenizer::forward);
+      .def("forward", &RegexTokenizer::forward)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<RegexTokenizer> &self) -> RegexTokenizerStates {
+            return _serialize_regex_tokenizer(self);
+          },
+          // __setstate__
+          [](RegexTokenizerStates states) -> c10::intrusive_ptr<RegexTokenizer> {
+            return _deserialize_regex_tokenizer(std::move(states));
+          }));
 
-  py::class_<SentencePiece>(m, "SentencePiece")
+  py::class_<SentencePiece, c10::intrusive_ptr<SentencePiece>>(m, "SentencePiece")
       .def(py::init<std::string>())
       .def("_return_content",
            [](const SentencePiece &self) { return py::bytes(self.content_); })
@@ -50,9 +68,18 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("GetPieceSize", &SentencePiece::GetPieceSize)
       .def("unk_id", &SentencePiece::unk_id)
       .def("PieceToId", &SentencePiece::PieceToId)
-      .def("IdToPiece", &SentencePiece::IdToPiece);
+      .def("IdToPiece", &SentencePiece::IdToPiece)
+      .def(py::pickle(
+           // __getstate__
+           [](const c10::intrusive_ptr<SentencePiece> &self) -> py::bytes{
+             return py::bytes(self->content_);
+           },
+           // __setstate__
+           [](py::bytes state) -> c10::intrusive_ptr<SentencePiece> {
+             return c10::make_intrusive<SentencePiece>(std::string(state));
+           }));
 
-  py::class_<Vectors>(m, "Vectors")
+  py::class_<Vectors, c10::intrusive_ptr<Vectors>>(m, "Vectors")
       .def(py::init<std::vector<std::string>, std::vector<int64_t>,
                     torch::Tensor, torch::Tensor>())
       .def_readonly("vectors_", &Vectors::vectors_)
@@ -61,9 +88,18 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("__getitem__", &Vectors::__getitem__)
       .def("lookup_vectors", &Vectors::lookup_vectors)
       .def("__setitem__", &Vectors::__setitem__)
-      .def("__len__", &Vectors::__len__);
+      .def("__len__", &Vectors::__len__)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
+            return _serialize_vectors(self);
+          },
+          // __setstate__
+          [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
+            return _deserialize_vectors(states);
+          }));
 
-  py::class_<Vocab>(m, "Vocab")
+  py::class_<Vocab, c10::intrusive_ptr<Vocab>>(m, "Vocab")
       .def(py::init<std::vector<std::string>, std::string>())
       .def_readonly("itos_", &Vocab::itos_)
       .def_readonly("unk_token_", &Vocab::unk_token_)
@@ -75,7 +111,16 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("lookup_tokens", &Vocab::lookup_tokens)
       .def("lookup_indices", &Vocab::lookup_indices)
       .def("get_stoi", &Vocab::get_stoi)
-      .def("get_itos", &Vocab::get_itos);
+      .def("get_itos", &Vocab::get_itos)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
+            return _serialize_vocab(self);
+          },
+          // __setstate__
+          [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
+            return _deserialize_vocab(states);
+          }));
 
   // Functions
   m.def("_load_token_and_vectors_from_file",
@@ -91,32 +136,26 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def_pickle(
         // __getstate__
         [](const c10::intrusive_ptr<Regex> &self) -> std::string {
-          return self->re_str_;
+          return _serialize_regex(self);
         },
         // __setstate__
         [](std::string state) -> c10::intrusive_ptr<Regex> {
-          return c10::make_intrusive<Regex>(std::move(state));
+          return _deserialize_regex(std::move(state));
         });
 
-  using RegexTokenizerState = std::tuple<std::vector<std::string>, std::vector<std::string>, bool>;
   m.class_<RegexTokenizer>("RegexTokenizer")
     .def(torch::init<std::vector<std::string>, std::vector<std::string>, bool>())
     .def("forward", &RegexTokenizer::forward)
     .def_pickle(
         // __getstate__
-        [](const c10::intrusive_ptr<RegexTokenizer> &self) -> RegexTokenizerState {
-          return std::make_tuple(
-                 self->patterns_,
-                 self->replacements_,
-                 self->to_lower_);
+        [](const c10::intrusive_ptr<RegexTokenizer> &self) -> RegexTokenizerStates {
+          return _serialize_regex_tokenizer(self);
         },
         // __setstate__
-        [](RegexTokenizerState state) -> c10::intrusive_ptr<RegexTokenizer> {
-          return c10::make_intrusive<RegexTokenizer>(
-                 std::move(std::get<0>(state)),
-                 std::move(std::get<1>(state)),
-                 std::get<2>(state));
+        [](RegexTokenizerStates states) -> c10::intrusive_ptr<RegexTokenizer> {
+          return _deserialize_regex_tokenizer(std::move(states));
         });
+
   m.class_<SentencePiece>("SentencePiece")
     .def(torch::init<std::string>())
     .def("Encode", &SentencePiece::Encode)
@@ -129,13 +168,21 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def("PieceToId", &SentencePiece::PieceToId)
     .def("IdToPiece", &SentencePiece::IdToPiece)
     .def_pickle(
+        // The underlying content of SentencePiece contains byte string,
+        // and returing it as std::string cause UTF8 decoding error.
+        // Since TorchScript does not support byte string, we use byte Tensor to
+        // pass around the data.
         // __getstate__
-        [](const c10::intrusive_ptr<SentencePiece> &self) -> std::string {
-          return self->content_;
+        [](const c10::intrusive_ptr<SentencePiece> &self) -> torch::Tensor {
+          auto *data = static_cast<void*>(const_cast<char*>(self->content_.data()));
+          auto numel = static_cast<int64_t>(self->content_.size());
+          return torch::from_blob(data, {numel}, {torch::kUInt8}).clone();
         },
         // __setstate__
-        [](std::string state) -> c10::intrusive_ptr<SentencePiece> {
-          return c10::make_intrusive<SentencePiece>(std::move(state));
+        [](torch::Tensor state) -> c10::intrusive_ptr<SentencePiece> {
+          auto *data = static_cast<char*>(state.data_ptr());
+          auto numel = state.size(0);
+          return c10::make_intrusive<SentencePiece>(std::string(data, numel));
         });
 
   m.class_<Vectors>("Vectors")
@@ -147,11 +194,11 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def_pickle(
         // __getstate__
         [](const c10::intrusive_ptr<Vectors> &self) -> VectorsStates {
-          return _set_vectors_states(self);
+          return _serialize_vectors(self);
         },
         // __setstate__
         [](VectorsStates states) -> c10::intrusive_ptr<Vectors> {
-          return _get_vectors_from_states(states);
+          return _deserialize_vectors(states);
         });
 
   m.class_<Vocab>("Vocab")
@@ -168,11 +215,11 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def_pickle(
         // __getstate__
         [](const c10::intrusive_ptr<Vocab> &self) -> VocabStates {
-          return _set_vocab_states(self);
+          return _serialize_vocab(self);
         },
         // __setstate__
         [](VocabStates states) -> c10::intrusive_ptr<Vocab> {
-          return _get_vocab_from_states(states);
+          return _deserialize_vocab(states);
         });
 
   m.def("torchtext::generate_sp_model", &generate_sp_model);
