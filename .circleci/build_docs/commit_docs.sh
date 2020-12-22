@@ -17,7 +17,6 @@ echo "committing docs from ${src} to ${target}"
 
 pushd $src
 git checkout gh-pages
-git pull
 mkdir -p ./"${target}"
 rm -rf ./"${target}"/*
 cp -r "${src}/docs/build/html/"* ./"$target"
