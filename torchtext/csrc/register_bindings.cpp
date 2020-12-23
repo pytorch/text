@@ -206,6 +206,8 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def("__getitem__", &Vocab::__getitem__)
     .def("__len__", &Vocab::__len__)
     .def("insert_token", &Vocab::insert_token)
+    .def("set_default_index", &Vocab::set_default_index)
+    .def("get_default_index", &Vocab::get_default_index)
     .def("append_token", &Vocab::append_token)
     .def("lookup_token", &Vocab::lookup_token)
     .def("lookup_tokens", &Vocab::lookup_tokens)
