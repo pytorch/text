@@ -125,7 +125,7 @@ class TestVectors(TorchtextTestCase):
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
-        vectors_obj.set_default_tensor(unk_tensor)
+        vectors_obj.set_default_tensor(expected_unk_tensor)
 
         vectors_obj['b'] = tensorC
 
@@ -141,6 +141,7 @@ class TestVectors(TorchtextTestCase):
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
+        vectors_obj.set_default_tensor(expected_unk_tensor)
 
         with self.subTest('pybind'):
             vector_path = os.path.join(self.test_dir, 'vectors_pybind.pt')
