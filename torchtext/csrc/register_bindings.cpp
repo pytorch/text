@@ -15,12 +15,11 @@ namespace py = pybind11;
 
 namespace {
 Vocab build_vocab_from_text_file(const std::string &file_path,
-                                 const std::string &unk_token,
                                  const int64_t min_freq,
                                  const int64_t num_cpus,
                                  py::object fn) {
   torch::jit::script::Module module(*torch::jit::as_module(fn));
-  return _build_vocab_from_text_file(file_path, unk_token, min_freq, num_cpus, module);
+  return _build_vocab_from_text_file(file_path, min_freq, num_cpus, module);
 }
 } // namespace
 
@@ -100,7 +99,7 @@ PYBIND11_MODULE(_torchtext, m) {
           }));
 
   py::class_<Vocab, c10::intrusive_ptr<Vocab>>(m, "Vocab")
-      .def(py::init<std::vector<std::string>, std::string>())
+      .def(py::init<std::vector<std::string>>())
       .def_readonly("itos_", &Vocab::itos_)
       .def("__getitem__", &Vocab::__getitem__)
       .def("__len__", &Vocab::__len__)
@@ -203,7 +202,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
         });
 
   m.class_<Vocab>("Vocab")
-    .def(torch::init<StringList, std::string>())
+    .def(torch::init<StringList>())
     .def("__getitem__", &Vocab::__getitem__)
     .def("__len__", &Vocab::__len__)
     .def("insert_token", &Vocab::insert_token)
