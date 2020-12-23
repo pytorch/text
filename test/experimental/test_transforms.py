@@ -54,3 +54,27 @@ class TestTransforms(TorchtextTestCase):
                                                         [-0.32423, -0.098845, -0.0073467]])
             self.assertEqual(vector_transform(['the', 'world'])[:, 0:3], expected_fasttext_simple_en)
             self.assertEqual(jit_vector_transform(['the', 'world'])[:, 0:3], expected_fasttext_simple_en)
+
+    def test_sentencepiece_load_and_save(self):
+        model_path = get_asset_path('spm_example.model')
+        input = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
+        expected = [
+            '▁Sent', 'ence', 'P', 'ie', 'ce', '▁is',
+            '▁an', '▁un', 'super', 'vis', 'ed', '▁text',
+            '▁to', 'ken', 'izer', '▁and',
+            '▁de', 'to', 'ken', 'izer',
+        ]
+
+        with self.subTest('pybind'):
+            save_path = os.path.join(self.test_dir, 'spm_pybind.pt')
+            spm = sentencepiece_tokenizer((model_path))
+            torch.save(spm, save_path)
+            loaded_spm = torch.load(save_path)
+            self.assertEqual(expected, loaded_spm(input))
+
+        with self.subTest('torchscript'):
+            save_path = os.path.join(self.test_dir, 'spm_torchscript.pt')
+            spm = sentencepiece_tokenizer((model_path)).to_ivalue()
+            torch.save(spm, save_path)
+            loaded_spm = torch.load(save_path)
+            self.assertEqual(expected, loaded_spm(input))
