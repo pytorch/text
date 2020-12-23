@@ -22,6 +22,7 @@ public:
   explicit Vocab(const StringList &tokens, const IndexDict &stoi);
   int64_t __len__() const;
   int64_t __getitem__(const std::string &token) const;
+  void __setitem__(const std::string &token, const int64_t &index);
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
   void set_default_index(const int64_t index);

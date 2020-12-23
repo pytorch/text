@@ -40,6 +40,21 @@ int64_t Vocab::__getitem__(const std::string &token) const {
                              "set up the default index");
 }
 
+void __setitem__(const std::string &token, const int64_t &index) {
+  if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Specified index " << index
+              << " is out of bounds of the size of stoi dictionary: "
+              << stoi_.size() << std::endl;
+#endif
+    throw std::runtime_error(
+        "Specified index " + std::to_string(index) +
+        " is out of bounds of the size of stoi dictionary: " +
+        std::to_string(stoi_.size()) + ".");
+  }
+
+}
+
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
     // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
