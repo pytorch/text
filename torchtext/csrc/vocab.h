@@ -1,4 +1,3 @@
-#include <pybind11/pybind11.h>
 #include <torch/script.h>
 
 namespace torchtext {
@@ -34,13 +33,14 @@ public:
   std::vector<std::string> get_itos() const;
 };
 
-c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states);
-VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self);
+VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self);
+c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
+
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const int64_t min_freq, const int64_t num_cpus);
 Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
-                                  py::object tokenizer);
+                                  torch::jit::script::Module tokenizer);
 
 } // namespace torchtext

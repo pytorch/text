@@ -2,7 +2,6 @@
 #include <common.h>
 #include <stdexcept>
 #include <string>
-#include <torch/csrc/jit/python/pybind_utils.h> // @manual
 #include <torch/torch.h>                        // @manual
 #include <vocab.h>                              // @manual
 
@@ -331,10 +330,9 @@ Vocab _load_vocab_from_file(const std::string &file_path,
 
 Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const int64_t min_freq,
-                                  const int64_t num_cpus, py::object fn) {
+                                  const int64_t num_cpus,
+                                  torch::jit::script::Module tokenizer) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
-
-  torch::jit::script::Module module(*torch::jit::as_module(fn));
   int64_t num_lines = _infer_lines(file_path);
   int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
@@ -357,7 +355,7 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
     at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
       parse_raw_text_file_chunk(file_path, offsets[j], i,
                                 std::min(num_lines, i + chunk_size),
-                                counter_ptr, module);
+                                counter_ptr, tokenizer);
       std::lock_guard<std::mutex> lk(m);
       thread_count--;
       cv.notify_all();
@@ -378,7 +376,7 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
   return Vocab(std::move(tokens), std::move(stoi));
 }
 
-VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
+VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self) {
   std::vector<int64_t> integers;
   StringList strings = self->itos_;
   std::vector<torch::Tensor> tensors;
@@ -393,7 +391,7 @@ VocabStates _set_vocab_states(const c10::intrusive_ptr<Vocab> &self) {
   return states;
 }
 
-c10::intrusive_ptr<Vocab> _get_vocab_from_states(VocabStates states) {
+c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 5) {
 #ifdef _MSC_VER
