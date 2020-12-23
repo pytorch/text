@@ -1,0 +1,1183 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.vocab &mdash; torchtext 0.9.0.dev20201223 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-orange-arrow">
+                Docs
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/index.html">
+                  <span class="dropdown-title">PyTorch</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/audio/stable/index.html">
+                  <span class="dropdown-title">torchaudio</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/text/stable/index.html">
+                  <span class="dropdown-title">torchtext</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/torchvision/">
+                  <span class="dropdown-title">torchvision</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/elastic/">
+                  <span class="dropdown-title">TorchElastic</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/serve/">
+                  <span class="dropdown-title">TorchServe</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/xla">
+                  <span class="dropdown-title">PyTorch on XLA Devices</span>
+                  <p></p>
+                </a>
+            </div>
+          </li>
+
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class="dropdown-title">About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/#community-module">
+                  <span class="dropdown-title">Community</span>
+                  <p>Join the PyTorch developer community to contribute, learn, and get your questions answered.</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources">
+                  <span class="dropdown-title">Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://discuss.pytorch.org/" target="_blank">
+                  <span class="dropdown-title">Forums</span>
+                  <p>A place to discuss PyTorch code, issues, install, research</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub">
+                  <span class="dropdown-title">Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+  </div>
+</div>
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+
+            
+              
+              
+                <div class="version">
+                  0.9.0.dev20201223
+                </div>
+              
+            
+
+            
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+            
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../index.html">Module code</a> &gt;</li>
+        
+      <li>torchtext.vocab</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for torchtext.vocab</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">reporthook</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Vocab"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab">[docs]</a><span class="k">class</span> <span class="nc">Vocab</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines a vocabulary object that will be used to numericalize a field.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        freqs: A collections.Counter object holding the frequencies of tokens</span>
+<span class="sd">            in the data used to build the Vocab.</span>
+<span class="sd">        stoi: A collections.defaultdict instance mapping token strings to</span>
+<span class="sd">            numerical identifiers.</span>
+<span class="sd">        itos: A list of token strings indexed by their numerical identifiers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO (@mttk): Populate classs with default values of special symbols</span>
+    <span class="n">UNK</span> <span class="o">=</span> <span class="s1">&#39;&lt;unk&gt;&#39;</span>
+
+<div class="viewcode-block" id="Vocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">),</span>
+                 <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vectors_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials_first</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Vocab object from a collections.Counter.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            counter: collections.Counter object holding the frequencies of</span>
+<span class="sd">                each value found in the data.</span>
+<span class="sd">            max_size: The maximum size of the vocabulary, or None for no</span>
+<span class="sd">                maximum. Default: None.</span>
+<span class="sd">            min_freq: The minimum frequency needed to include a token in the</span>
+<span class="sd">                vocabulary. Values less than 1 will be set to 1. Default: 1.</span>
+<span class="sd">            specials: The list of special tokens (e.g., padding or eos) that</span>
+<span class="sd">                will be prepended to the vocabulary. Default: [&#39;&lt;unk&#39;&gt;, &#39;&lt;pad&gt;&#39;]</span>
+<span class="sd">            vectors: One of either the available pretrained vectors</span>
+<span class="sd">                or custom pretrained vectors (see Vocab.load_vectors);</span>
+<span class="sd">                or a list of aforementioned vectors</span>
+<span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
+<span class="sd">                to zero vectors; can be any function that takes in a Tensor and</span>
+<span class="sd">                returns a Tensor of the same size. Default: &#39;torch.zeros&#39;</span>
+<span class="sd">            vectors_cache: directory for cached vectors. Default: &#39;.vector_cache&#39;</span>
+<span class="sd">            specials_first: Whether to add special tokens into the vocabulary at first.</span>
+<span class="sd">                If it is False, they are added into the vocabulary at last.</span>
+<span class="sd">                Default: True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="n">counter</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">min_freq</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_freq</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">specials_first</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">specials</span><span class="p">)</span>
+            <span class="c1"># only extend max size if specials are prepended</span>
+            <span class="n">max_size</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">max_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">max_size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">specials</span><span class="p">)</span>
+
+        <span class="c1"># frequencies of special tokens are not counted when building vocabulary</span>
+        <span class="c1"># in frequency order</span>
+        <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">specials</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">counter</span><span class="p">[</span><span class="n">tok</span><span class="p">]</span>
+
+        <span class="c1"># sort by frequency, then alphabetically</span>
+        <span class="n">words_and_frequencies</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">words_and_frequencies</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">freq</span> <span class="ow">in</span> <span class="n">words_and_frequencies</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">freq</span> <span class="o">&lt;</span> <span class="n">min_freq</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_size</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Vocab</span><span class="o">.</span><span class="n">UNK</span> <span class="ow">in</span> <span class="n">specials</span><span class="p">:</span>  <span class="c1"># hard-coded for now</span>
+            <span class="n">unk_index</span> <span class="o">=</span> <span class="n">specials</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">Vocab</span><span class="o">.</span><span class="n">UNK</span><span class="p">)</span>  <span class="c1"># position in list</span>
+            <span class="c1"># account for ordering of specials, set variable</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unk_index</span> <span class="o">=</span> <span class="n">unk_index</span> <span class="k">if</span> <span class="n">specials_first</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="o">+</span> <span class="n">unk_index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_unk_index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">specials_first</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">specials</span><span class="p">))</span>
+
+        <span class="c1"># stoi is simply a reverse dict for itos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">tok</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tok</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">vectors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_vectors</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="n">unk_init</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">vectors_cache</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">unk_init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">vectors_cache</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">_default_unk_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_index</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Vocab</span><span class="o">.</span><span class="n">UNK</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># avoid picking defaultdict</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="c1"># cast to regular dict</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;stoi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">attrs</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unk_index&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stoi</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stoi</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_unk_index</span><span class="p">)</span>
+        <span class="n">stoi</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;stoi&#39;</span><span class="p">])</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;stoi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stoi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">freqs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">stoi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">itos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">vectors</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">lookup_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">indices</span>
+
+    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="k">if</span> <span class="n">sort</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">itos</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="Vocab.load_vectors"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.load_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">load_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            vectors: one of or a list containing instantiations of the</span>
+<span class="sd">                GloVe, CharNGram, or Vectors classes. Alternatively, one</span>
+<span class="sd">                of or a list of available pretrained vectors:</span>
+
+<span class="sd">                charngram.100d</span>
+<span class="sd">                fasttext.en.300d</span>
+<span class="sd">                fasttext.simple.300d</span>
+<span class="sd">                glove.42B.300d</span>
+<span class="sd">                glove.840B.300d</span>
+<span class="sd">                glove.twitter.27B.25d</span>
+<span class="sd">                glove.twitter.27B.50d</span>
+<span class="sd">                glove.twitter.27B.100d</span>
+<span class="sd">                glove.twitter.27B.200d</span>
+<span class="sd">                glove.6B.50d</span>
+<span class="sd">                glove.6B.100d</span>
+<span class="sd">                glove.6B.200d</span>
+<span class="sd">                glove.6B.300d</span>
+
+<span class="sd">            Remaining keyword arguments: Passed to the constructor of Vectors classes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">vectors</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">vector</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vectors</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># Convert the string pretrained vector identifier</span>
+                <span class="c1"># to a Vectors object</span>
+                <span class="k">if</span> <span class="n">vector</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pretrained_aliases</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Got string input vector </span><span class="si">{}</span><span class="s2">, but allowed pretrained &quot;</span>
+                        <span class="s2">&quot;vectors are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">vector</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">pretrained_aliases</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+                <span class="n">vectors</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">pretrained_aliases</span><span class="p">[</span><span class="n">vector</span><span class="p">](</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">Vectors</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Got input vectors of type </span><span class="si">{}</span><span class="s2">, expected str or &quot;</span>
+                    <span class="s2">&quot;Vectors object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">vector</span><span class="p">)))</span>
+
+        <span class="n">tot_dim</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">dim</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">tot_dim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">token</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">):</span>
+            <span class="n">start_dim</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">:</span>
+                <span class="n">end_dim</span> <span class="o">=</span> <span class="n">start_dim</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">dim</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">start_dim</span><span class="p">:</span><span class="n">end_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+                <span class="n">start_dim</span> <span class="o">=</span> <span class="n">end_dim</span>
+            <span class="k">assert</span><span class="p">(</span><span class="n">start_dim</span> <span class="o">==</span> <span class="n">tot_dim</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.set_vectors"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.set_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">set_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stoi</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">zero_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the vectors for the Vocab instance from a collection of Tensors.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            stoi: A dictionary of string to the index of the associated vector</span>
+<span class="sd">                in the `vectors` input argument.</span>
+<span class="sd">            vectors: An indexed iterable (or other structure supporting __getitem__) that</span>
+<span class="sd">                given an input index, returns a FloatTensor representing the vector</span>
+<span class="sd">                for the token associated with the index. For example,</span>
+<span class="sd">                vector[stoi[&quot;string&quot;]] should return the vector for &quot;string&quot;.</span>
+<span class="sd">            dim: The dimensionality of the vectors.</span>
+<span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
+<span class="sd">                to zero vectors; can be any function that takes in a Tensor and</span>
+<span class="sd">                returns a Tensor of the same size. Default: &#39;torch.zeros&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">dim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">token</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">):</span>
+            <span class="n">wv_index</span> <span class="o">=</span> <span class="n">stoi</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">wv_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vectors</span><span class="p">[</span><span class="n">wv_index</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">unk_init</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="SubwordVocab"><a class="viewcode-back" href="../../vocab.html#torchtext.data.SubwordVocab">[docs]</a><span class="k">class</span> <span class="nc">SubwordVocab</span><span class="p">(</span><span class="n">Vocab</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SubwordVocab.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.SubwordVocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">),</span>
+                 <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">zero_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a revtok subword vocabulary from a collections.Counter.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            counter: collections.Counter object holding the frequencies of</span>
+<span class="sd">                each word found in the data.</span>
+<span class="sd">            max_size: The maximum size of the subword vocabulary, or None for no</span>
+<span class="sd">                maximum. Default: None.</span>
+<span class="sd">            specials: The list of special tokens (e.g., padding or eos) that</span>
+<span class="sd">                will be prepended to the vocabulary in addition to an &lt;unk&gt;</span>
+<span class="sd">                token.</span>
+<span class="sd">            vectors: One of either the available pretrained vectors</span>
+<span class="sd">                or custom pretrained vectors (see Vocab.load_vectors);</span>
+<span class="sd">                or a list of aforementioned vectors</span>
+<span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
+<span class="sd">                to zero vectors; can be any function that takes in a Tensor and</span>
+<span class="sd">                returns a Tensor of the same size. Default: &#39;torch.zeros</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">revtok</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install revtok.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="c1"># Hardcode unk_index as subword_vocab has no specials_first argument</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">specials</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">SubwordVocab</span><span class="o">.</span><span class="n">UNK</span><span class="p">)</span>
+                          <span class="k">if</span> <span class="n">SubwordVocab</span><span class="o">.</span><span class="n">UNK</span> <span class="ow">in</span> <span class="n">specials</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_unk_index</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">tok</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tok</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">specials</span><span class="p">)})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="n">specials</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment</span> <span class="o">=</span> <span class="n">revtok</span><span class="o">.</span><span class="n">SubwordSegmenter</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="n">max_size</span><span class="p">)</span>
+
+        <span class="n">max_size</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">max_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">max_size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span>
+
+        <span class="c1"># sort by frequency/entropy, then alphabetically</span>
+        <span class="n">toks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segment</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                      <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="k">for</span> <span class="n">tok</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">toks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_size</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">tok</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">vectors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_vectors</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="n">unk_init</span><span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_infer_shape</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="n">num_lines</span><span class="p">,</span> <span class="n">vector_dim</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">vector_dim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">vector</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="c1"># Assuming word, [vector] format</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># The header present in some (w2v) formats contains two elements.</span>
+                <span class="n">vector_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+                <span class="n">num_lines</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># First element read</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_lines</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">num_lines</span><span class="p">,</span> <span class="n">vector_dim</span>
+
+
+<div class="viewcode-block" id="Vectors"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vectors">[docs]</a><span class="k">class</span> <span class="nc">Vectors</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Vectors.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vectors.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+
+<span class="sd">            name: name of the file that contains the vectors</span>
+<span class="sd">            cache: directory for cached vectors</span>
+<span class="sd">            url: url for download if vectors not found in cache</span>
+<span class="sd">            unk_init (callback): by default, initialize out-of-vocabulary word vectors</span>
+<span class="sd">                to zero vectors; can be any function that takes in a Tensor and returns a Tensor of the same size</span>
+<span class="sd">            max_vectors (int): this can be used to limit the number of</span>
+<span class="sd">                pre-trained vectors loaded.</span>
+<span class="sd">                Most pre-trained vector sets are sorted</span>
+<span class="sd">                in the descending order of word frequency.</span>
+<span class="sd">                Thus, in situations where the entire set doesn&#39;t fit in memory,</span>
+<span class="sd">                or is not needed for another reason, passing `max_vectors`</span>
+<span class="sd">                can limit the size of the loaded set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cache</span> <span class="o">=</span> <span class="s1">&#39;.vector_cache&#39;</span> <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">zero_</span> <span class="k">if</span> <span class="n">unk_init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">unk_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="n">max_vectors</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">token</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">ssl</span>
+        <span class="n">ssl</span><span class="o">.</span><span class="n">_create_default_https_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">_create_unverified_context</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="k">if</span> <span class="n">max_vectors</span><span class="p">:</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">.pt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_vectors</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;.pt&#39;</span>
+            <span class="n">path_pt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="o">+</span> <span class="n">file_suffix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">max_vectors</span><span class="p">:</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">.pt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_vectors</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">file_suffix</span> <span class="o">=</span> <span class="s1">&#39;.pt&#39;</span>
+            <span class="n">path_pt</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file_suffix</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_pt</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">url</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Downloading vectors from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+                    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">reporthook</span><span class="o">=</span><span class="n">reporthook</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># remove the partial zip file</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="n">e</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Extracting vectors into </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache</span><span class="p">))</span>
+                <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;zip&#39;</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
+                        <span class="n">zf</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;gz&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.tar.gz&#39;</span><span class="p">):</span>
+                        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+                            <span class="n">tar</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;no vectors found at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading vectors from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;gz&#39;</span><span class="p">:</span>
+                <span class="n">open_file</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">open_file</span> <span class="o">=</span> <span class="nb">open</span>
+
+            <span class="n">vectors_loaded</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">with</span> <span class="n">open_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">num_lines</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">_infer_shape</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">max_vectors</span> <span class="ow">or</span> <span class="n">max_vectors</span> <span class="o">&gt;</span> <span class="n">num_lines</span><span class="p">:</span>
+                    <span class="n">max_vectors</span> <span class="o">=</span> <span class="n">num_lines</span>
+
+                <span class="n">itos</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">max_vectors</span><span class="p">,</span> <span class="n">dim</span><span class="p">)),</span> <span class="kc">None</span>
+
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">max_vectors</span><span class="p">):</span>
+                    <span class="c1"># Explicitly splitting on &quot; &quot; is important, so we don&#39;t</span>
+                    <span class="c1"># get rid of Unicode non-breaking spaces in the vectors.</span>
+                    <span class="n">entries</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+                    <span class="n">word</span><span class="p">,</span> <span class="n">entries</span> <span class="o">=</span> <span class="n">entries</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">entries</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Skipping token </span><span class="si">{}</span><span class="s2"> with 1-dimensional &quot;</span>
+                                       <span class="s2">&quot;vector </span><span class="si">{}</span><span class="s2">; likely a header&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">entries</span><span class="p">))</span>
+                        <span class="k">continue</span>
+                    <span class="k">elif</span> <span class="n">dim</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                            <span class="s2">&quot;Vector for token </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> dimensions, but previously &quot;</span>
+                            <span class="s2">&quot;read vectors have </span><span class="si">{}</span><span class="s2"> dimensions. All vectors must have &quot;</span>
+                            <span class="s2">&quot;the same number of dimensions.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">),</span>
+                                                                    <span class="n">dim</span><span class="p">))</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                            <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Skipping non-UTF8 token </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">word</span><span class="p">)))</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">vectors</span><span class="p">[</span><span class="n">vectors_loaded</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">])</span>
+                    <span class="n">vectors_loaded</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">itos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">vectors_loaded</span> <span class="o">==</span> <span class="n">max_vectors</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span> <span class="o">=</span> <span class="n">itos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span> <span class="o">=</span> <span class="p">{</span><span class="n">word</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">itos</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">dim</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving vectors to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">path_pt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading vectors from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_pt</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">itos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_pt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Vectors.get_vecs_by_tokens"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vectors.get_vecs_by_tokens">[docs]</a>    <span class="k">def</span> <span class="nf">get_vecs_by_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Look up embedding vectors of tokens.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            tokens: a token or a list of tokens. if `tokens` is a string,</span>
+<span class="sd">                returns a 1-D tensor of shape `self.dim`; if `tokens` is a</span>
+<span class="sd">                list of strings, returns a 2-D tensor of shape=(len(tokens),</span>
+<span class="sd">                self.dim).</span>
+<span class="sd">            lower_case_backup : Whether to look up the token in the lower case.</span>
+<span class="sd">                If False, each token in the original case will be looked up;</span>
+<span class="sd">                if True, each token in the original case will be looked up first,</span>
+<span class="sd">                if not found in the keys of the property `stoi`, the token in the</span>
+<span class="sd">                lower case will be looked up. Default: False.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; examples = [&#39;chip&#39;, &#39;baby&#39;, &#39;Beautiful&#39;]</span>
+<span class="sd">            &gt;&gt;&gt; vec = text.vocab.GloVe(name=&#39;6B&#39;, dim=50)</span>
+<span class="sd">            &gt;&gt;&gt; ret = vec.get_vecs_by_tokens(tokens, lower_case_backup=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_reduce</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">tokens</span><span class="p">]</span>
+            <span class="n">to_reduce</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lower_case_backup</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span>
+                       <span class="k">else</span> <span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+                       <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+
+        <span class="n">vecs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">to_reduce</span> <span class="k">else</span> <span class="n">vecs</span></div></div>
+
+
+<div class="viewcode-block" id="GloVe"><a class="viewcode-back" href="../../vocab.html#torchtext.data.GloVe">[docs]</a><span class="k">class</span> <span class="nc">GloVe</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;42B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.42B.300d.zip&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;840B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.840B.300d.zip&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;twitter.27B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.twitter.27B.zip&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;6B&#39;</span><span class="p">:</span> <span class="s1">&#39;http://nlp.stanford.edu/data/glove.6B.zip&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;840B&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;glove.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">d.txt&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FastText"><a class="viewcode-back" href="../../vocab.html#torchtext.data.FastText">[docs]</a><span class="k">class</span> <span class="nc">FastText</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
+
+    <span class="n">url_base</span> <span class="o">=</span> <span class="s1">&#39;https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.</span><span class="si">{}</span><span class="s1">.vec&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FastText</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CharNGram"><a class="viewcode-back" href="../../vocab.html#torchtext.data.CharNGram">[docs]</a><span class="k">class</span> <span class="nc">CharNGram</span><span class="p">(</span><span class="n">Vectors</span><span class="p">):</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;charNgram.txt&#39;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;http://www.logos.t.u-tokyo.ac.jp/~hassy/publications/arxiv2016jmt/&#39;</span>
+           <span class="s1">&#39;jmt_pre-trained_embeddings.tar.gz&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CharNGram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="n">vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;&lt;unk&gt;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="n">chars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#BEGIN#&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;#END#&#39;</span><span class="p">]</span>
+        <span class="n">num_vectors</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">grams</span> <span class="o">=</span> <span class="p">[</span><span class="n">chars</span><span class="p">[</span><span class="n">i</span><span class="p">:(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">end</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">grams</span><span class="p">:</span>
+                <span class="n">gram_key</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">gram-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gram</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">gram_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">:</span>
+                    <span class="n">vector</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">gram_key</span><span class="p">]]</span>
+                    <span class="n">num_vectors</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">num_vectors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">vector</span> <span class="o">/=</span> <span class="n">num_vectors</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_init</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vector</span></div>
+
+
+<span class="n">pretrained_aliases</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;charngram.100d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">CharNGram</span><span class="p">),</span>
+    <span class="s2">&quot;fasttext.en.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">FastText</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;fasttext.simple.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">FastText</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.42B.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;42B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;300&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.840B.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;840B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;300&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.twitter.27B.25d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;twitter.27B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;25&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.twitter.27B.50d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;twitter.27B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;50&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.twitter.27B.100d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;twitter.27B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;100&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.twitter.27B.200d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;twitter.27B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;200&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.6B.50d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;50&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.6B.100d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;100&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.6B.200d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;200&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;glove.6B.300d&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">GloVe</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;6B&quot;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;300&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;Mapping from string name to factory function&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="build_vocab_from_iterator"><a class="viewcode-back" href="../../vocab.html#torchtext.data.build_vocab_from_iterator">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a Vocab from an iterator.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
+<span class="sd">        num_lines: The expected number of elements returned by the iterator.</span>
+<span class="sd">            (Default: None)</span>
+<span class="sd">            Optionally, if known, the expected number of elements can be passed to</span>
+<span class="sd">            this factory function for improved progress reporting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">num_lines</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+            <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">word_vocab</span> <span class="o">=</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">word_vocab</span></div>
+</pre></div>
+
+             </article>
+             
+            </div>
+            <footer>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+         <script src="../../_static/jquery.js"></script>
+         <script src="../../_static/underscore.js"></script>
+         <script src="../../_static/doctools.js"></script>
+         <script src="../../_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+     
+
+  
+
+  <script type="text/javascript" src="../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Stay Connected</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="../../_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="resources-mobile-menu-title" class="active">
+            Docs
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/docs/stable/index.html">PyTorch</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/audio/stable/index.html">torchaudio</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/text/stable/index.html">torchtext</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/docs/stable/torchvision/">torchvision</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/elastic/">TorchElastic</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/serve/">TorchServe</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/xla">PyTorch on XLA Devices</a>
+            </li>
+          </ul>
+
+          <li class="resources-mobile-menu-title">
+            Resources
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/resources">Developer Resources</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/features">About</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/hub">Models (Beta)</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/#community-module">Community</a>
+            </li>
+
+            <li>
+              <a href="https://discuss.pytorch.org/">Forums</a>
+            </li>
+          </ul>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="../../_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>

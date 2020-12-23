@@ -1,0 +1,1358 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.data.field &mdash; torchtext 0.9.0.dev20201223 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-orange-arrow">
+                Docs
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/index.html">
+                  <span class="dropdown-title">PyTorch</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/audio/stable/index.html">
+                  <span class="dropdown-title">torchaudio</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/text/stable/index.html">
+                  <span class="dropdown-title">torchtext</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/torchvision/">
+                  <span class="dropdown-title">torchvision</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/elastic/">
+                  <span class="dropdown-title">TorchElastic</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/serve/">
+                  <span class="dropdown-title">TorchServe</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/xla">
+                  <span class="dropdown-title">PyTorch on XLA Devices</span>
+                  <p></p>
+                </a>
+            </div>
+          </li>
+
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class="dropdown-title">About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/#community-module">
+                  <span class="dropdown-title">Community</span>
+                  <p>Join the PyTorch developer community to contribute, learn, and get your questions answered.</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources">
+                  <span class="dropdown-title">Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://discuss.pytorch.org/" target="_blank">
+                  <span class="dropdown-title">Forums</span>
+                  <p>A place to discuss PyTorch code, issues, install, research</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub">
+                  <span class="dropdown-title">Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+  </div>
+</div>
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+
+            
+              
+              
+                <div class="version">
+                  0.9.0.dev20201223
+                </div>
+              
+            
+
+            
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+            
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>torchtext.data.field</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for torchtext.data.field</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf8</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span><span class="p">,</span> <span class="n">dtype_to_attr</span><span class="p">,</span> <span class="n">is_tokenizer_serializable</span>
+<span class="kn">from</span> <span class="nn">..vocab</span> <span class="kn">import</span> <span class="n">Vocab</span><span class="p">,</span> <span class="n">SubwordVocab</span>
+
+
+<div class="viewcode-block" id="RawField"><a class="viewcode-back" href="../../../data.html#torchtext.data.RawField">[docs]</a><span class="k">class</span> <span class="nc">RawField</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Defines a general datatype.</span>
+
+<span class="sd">    Every dataset consists of one or more types of data. For instance, a text</span>
+<span class="sd">    classification dataset contains sentences and their classes, while a</span>
+<span class="sd">    machine translation dataset contains paired examples of text in two</span>
+<span class="sd">    languages. Each of these types of data is represented by a RawField object.</span>
+<span class="sd">    A RawField object does not assume any property of the data type and</span>
+<span class="sd">    it holds parameters relating to how a datatype should be processed.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        preprocessing: The Pipeline that will be applied to examples</span>
+<span class="sd">            using this field before creating an example.</span>
+<span class="sd">            Default: None.</span>
+<span class="sd">        postprocessing: A Pipeline that will be applied to a list of examples</span>
+<span class="sd">            using this field before assigning to a batch.</span>
+<span class="sd">            Function signature: (batch(list)) -&gt; object</span>
+<span class="sd">            Default: None.</span>
+<span class="sd">        is_target: Whether this field is a target variable.</span>
+<span class="sd">            Affects iteration over batches. Default: False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RawField.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.RawField.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">postprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_target</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span> <span class="o">=</span> <span class="n">preprocessing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span> <span class="o">=</span> <span class="n">postprocessing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_target</span> <span class="o">=</span> <span class="n">is_target</span></div>
+
+<div class="viewcode-block" id="RawField.preprocess"><a class="viewcode-back" href="../../../data.html#torchtext.data.RawField.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Preprocess an example if the `preprocessing` Pipeline is provided. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="RawField.process"><a class="viewcode-back" href="../../../data.html#torchtext.data.RawField.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Process a list of examples to create a batch.</span>
+
+<span class="sd">        Postprocess the batch with user-provided Pipeline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch (list(object)): A list of object from a batch of examples.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            object: Processed object given the input and custom</span>
+<span class="sd">            postprocessing Pipeline.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">batch</span></div></div>
+
+
+<div class="viewcode-block" id="Field"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field">[docs]</a><span class="k">class</span> <span class="nc">Field</span><span class="p">(</span><span class="n">RawField</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines a datatype together with instructions for converting to Tensor.</span>
+
+<span class="sd">    Field class models common text processing datatypes that can be represented</span>
+<span class="sd">    by tensors.  It holds a Vocab object that defines the set of possible values</span>
+<span class="sd">    for elements of the field and their corresponding numerical representations.</span>
+<span class="sd">    The Field object also holds other parameters relating to how a datatype</span>
+<span class="sd">    should be numericalized, such as a tokenization method and the kind of</span>
+<span class="sd">    Tensor that should be produced.</span>
+
+<span class="sd">    If a Field is shared between two columns in a dataset (e.g., question and</span>
+<span class="sd">    answer in a QA dataset), then they will have a shared vocabulary.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        sequential: Whether the datatype represents sequential data. If False,</span>
+<span class="sd">            no tokenization is applied. Default: True.</span>
+<span class="sd">        use_vocab: Whether to use a Vocab object. If False, the data in this</span>
+<span class="sd">            field should already be numerical. Default: True.</span>
+<span class="sd">        init_token: A token that will be prepended to every example using this</span>
+<span class="sd">            field, or None for no initial token. Default: None.</span>
+<span class="sd">        eos_token: A token that will be appended to every example using this</span>
+<span class="sd">            field, or None for no end-of-sentence token. Default: None.</span>
+<span class="sd">        fix_length: A fixed length that all examples using this field will be</span>
+<span class="sd">            padded to, or None for flexible sequence lengths. Default: None.</span>
+<span class="sd">        dtype: The torch.dtype class that represents a batch of examples</span>
+<span class="sd">            of this kind of data. Default: torch.long.</span>
+<span class="sd">        preprocessing: The Pipeline that will be applied to examples</span>
+<span class="sd">            using this field after tokenizing but before numericalizing. Many</span>
+<span class="sd">            Datasets replace this attribute with a custom preprocessor.</span>
+<span class="sd">            Default: None.</span>
+<span class="sd">        postprocessing: A Pipeline that will be applied to examples using</span>
+<span class="sd">            this field after numericalizing but before the numbers are turned</span>
+<span class="sd">            into a Tensor. The pipeline function takes the batch as a list, and</span>
+<span class="sd">            the field&#39;s Vocab.</span>
+<span class="sd">            Default: None.</span>
+<span class="sd">        lower: Whether to lowercase the text in this field. Default: False.</span>
+<span class="sd">        tokenize: The function used to tokenize strings using this field into</span>
+<span class="sd">            sequential examples. If &quot;spacy&quot;, the SpaCy tokenizer is</span>
+<span class="sd">            used. If a non-serializable function is passed as an argument,</span>
+<span class="sd">            the field will not be able to be serialized. Default: string.split.</span>
+<span class="sd">        tokenizer_language: The language of the tokenizer to be constructed.</span>
+<span class="sd">            Various languages currently supported only in SpaCy.</span>
+<span class="sd">        include_lengths: Whether to return a tuple of a padded minibatch and</span>
+<span class="sd">            a list containing the lengths of each examples, or just a padded</span>
+<span class="sd">            minibatch. Default: False.</span>
+<span class="sd">        batch_first: Whether to produce tensors with the batch dimension first.</span>
+<span class="sd">            Default: False.</span>
+<span class="sd">        pad_token: The string token used as padding. Default: &quot;&lt;pad&gt;&quot;.</span>
+<span class="sd">        unk_token: The string token used to represent OOV words. Default: &quot;&lt;unk&gt;&quot;.</span>
+<span class="sd">        pad_first: Do the padding of the sequence at the beginning. Default: False.</span>
+<span class="sd">        truncate_first: Do the truncating of the sequence at the beginning. Default: False</span>
+<span class="sd">        stop_words: Tokens to discard during the preprocessing step. Default: None</span>
+<span class="sd">        is_target: Whether this field is a target variable.</span>
+<span class="sd">            Affects iteration over batches. Default: False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vocab_cls</span> <span class="o">=</span> <span class="n">Vocab</span>
+    <span class="c1"># Dictionary mapping PyTorch tensor dtypes to the appropriate Python</span>
+    <span class="c1"># numeric type.</span>
+    <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">double</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">half</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">int8</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">int16</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">short</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">,</span> <span class="s1">&#39;tokenize&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Field.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequential</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_vocab</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">init_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">eos_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fix_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span>
+                 <span class="n">preprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">postprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">tokenize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer_language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">include_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">batch_first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pad_token</span><span class="o">=</span><span class="s2">&quot;&lt;pad&gt;&quot;</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="s2">&quot;&lt;unk&gt;&quot;</span><span class="p">,</span>
+                 <span class="n">pad_first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">truncate_first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stop_words</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">is_target</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span> <span class="o">=</span> <span class="n">sequential</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_vocab</span> <span class="o">=</span> <span class="n">use_vocab</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span> <span class="o">=</span> <span class="n">init_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="o">=</span> <span class="n">eos_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span> <span class="o">=</span> <span class="n">unk_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fix_length</span> <span class="o">=</span> <span class="n">fix_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span> <span class="o">=</span> <span class="n">preprocessing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span> <span class="o">=</span> <span class="n">postprocessing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower</span> <span class="o">=</span> <span class="n">lower</span>
+        <span class="c1"># store params to construct tokenizer for serialization</span>
+        <span class="c1"># in case the tokenizer isn&#39;t picklable (e.g. spacy)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">tokenize</span><span class="p">,</span> <span class="n">tokenizer_language</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="n">tokenize</span><span class="p">,</span> <span class="n">tokenizer_language</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span> <span class="o">=</span> <span class="n">include_lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_first</span> <span class="o">=</span> <span class="n">batch_first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="n">pad_token</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_first</span> <span class="o">=</span> <span class="n">pad_first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">truncate_first</span> <span class="o">=</span> <span class="n">truncate_first</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stop_words</span><span class="p">)</span> <span class="k">if</span> <span class="n">stop_words</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Stop words must be convertible to a set&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_target</span> <span class="o">=</span> <span class="n">is_target</span></div>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">str_type</span> <span class="o">=</span> <span class="n">dtype_to_attr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_tokenizer_serializable</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenizer_args</span><span class="p">):</span>
+            <span class="n">tokenize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># signal to restore in `__setstate__`</span>
+            <span class="n">tokenize</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">}</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">str_type</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tokenize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokenize</span>
+
+        <span class="k">return</span> <span class="n">attrs</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;tokenize&#39;</span><span class="p">]:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;tokenize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="o">*</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;tokenizer_args&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># we don&#39;t expect this to be called often</span>
+        <span class="k">return</span> <span class="mi">42</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">RawField</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="vm">__dict__</span>
+
+<div class="viewcode-block" id="Field.preprocess"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load a single example using this field, tokenizing if necessary.</span>
+
+<span class="sd">        If `sequential=True`, the input will be tokenized. Then the input</span>
+<span class="sd">        will be optionally lowercased and passed to the user-provided</span>
+<span class="sd">        `preprocessing` Pipeline.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lower</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_vocab</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_words</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_words</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="Field.process"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Process a list of examples to create a torch.Tensor.</span>
+
+<span class="sd">        Pad, numericalize, and postprocess a batch and create a tensor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch (list(object)): A list of object from a batch of examples.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.autograd.Variable: Processed object given the input</span>
+<span class="sd">            and custom postprocessing Pipeline.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">padded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numericalize</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tensor</span></div>
+
+<div class="viewcode-block" id="Field.pad"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.pad">[docs]</a>    <span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minibatch</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pad a batch of examples using this field.</span>
+
+<span class="sd">        Pads to self.fix_length if provided, otherwise pads to the length of</span>
+<span class="sd">        the longest example in the batch. Prepends self.init_token and appends</span>
+<span class="sd">        self.eos_token if those attributes are not None. Returns a tuple of the</span>
+<span class="sd">        padded list and a list containing lengths of each example if</span>
+<span class="sd">        `self.include_lengths` is `True` and `self.sequential` is `True`, else just</span>
+<span class="sd">        returns the padded list. If `self.sequential` is `False`, no padding is applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">minibatch</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">minibatch</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">minibatch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_length</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="n">padded</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">minibatch</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_first</span><span class="p">:</span>
+                <span class="n">padded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                    <span class="o">+</span> <span class="p">([]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">init_token</span><span class="p">])</span>
+                    <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="n">max_len</span><span class="p">:]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">truncate_first</span> <span class="k">else</span> <span class="n">x</span><span class="p">[:</span><span class="n">max_len</span><span class="p">])</span>
+                    <span class="o">+</span> <span class="p">([]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">padded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">([]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">init_token</span><span class="p">])</span>
+                    <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="n">max_len</span><span class="p">:]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">truncate_first</span> <span class="k">else</span> <span class="n">x</span><span class="p">[:</span><span class="n">max_len</span><span class="p">])</span>
+                    <span class="o">+</span> <span class="p">([]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">])</span>
+                    <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+            <span class="n">lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">padded</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">lengths</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">padded</span></div>
+
+<div class="viewcode-block" id="Field.build_vocab"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.build_vocab">[docs]</a>    <span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct the Vocab object for this field from one or more datasets.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            Positional arguments: Dataset objects or other iterable data</span>
+<span class="sd">                sources from which to construct the Vocab object that</span>
+<span class="sd">                represents the set of possible values for this field. If</span>
+<span class="sd">                a Dataset object is provided, all columns corresponding</span>
+<span class="sd">                to this field are used; individual columns can also be</span>
+<span class="sd">                provided directly.</span>
+<span class="sd">            Remaining keyword arguments: Passed to the constructor of Vocab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+                <span class="n">sources</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span>
+                            <span class="n">arg</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">specials</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span>
+            <span class="n">tok</span> <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">]</span> <span class="o">+</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;specials&#39;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="n">tok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab_cls</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="n">specials</span><span class="o">=</span><span class="n">specials</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Field.numericalize"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.numericalize">[docs]</a>    <span class="k">def</span> <span class="nf">numericalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Turn a batch of examples that use this field into a Variable.</span>
+
+<span class="sd">        If the field has include_lengths=True, a tensor of lengths will be</span>
+<span class="sd">        included in the return value.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            arr (List[List[str]], or tuple of (List[List[str]], List[int])):</span>
+<span class="sd">                List of tokenized and padded examples, or tuple of List of</span>
+<span class="sd">                tokenized and padded examples and List of lengths of each</span>
+<span class="sd">                example if self.include_lengths is True.</span>
+<span class="sd">            device (str or torch.device): A string or instance of `torch.device`</span>
+<span class="sd">                specifying which device the Variables are going to be created on.</span>
+<span class="sd">                If left as default, the tensors will be created on cpu. Default: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Field has include_lengths set to True, but &quot;</span>
+                             <span class="s2">&quot;input data is not a tuple of &quot;</span>
+                             <span class="s2">&quot;(data batch, batch lengths).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">arr</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">=</span> <span class="n">arr</span>
+            <span class="n">lengths</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">lengths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_vocab</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">]</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Specified Field dtype </span><span class="si">{}</span><span class="s2"> can not be used with &quot;</span>
+                    <span class="s2">&quot;use_vocab=False because we do not know how to numericalize it. &quot;</span>
+                    <span class="s2">&quot;Please raise an issue at &quot;</span>
+                    <span class="s2">&quot;https://github.com/pytorch/text/issues&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="n">numericalization_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span>
+            <span class="c1"># It doesn&#39;t make sense to explicitly coerce to a numeric type if</span>
+            <span class="c1"># the data is sequential, since it&#39;s unclear how to coerce padding tokens</span>
+            <span class="c1"># to a numeric type.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">numericalization_func</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                       <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">var</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_first</span><span class="p">:</span>
+            <span class="n">var</span><span class="o">.</span><span class="n">t_</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">var</span><span class="p">,</span> <span class="n">lengths</span>
+        <span class="k">return</span> <span class="n">var</span></div></div>
+
+
+<div class="viewcode-block" id="ReversibleField"><a class="viewcode-back" href="../../../data.html#torchtext.data.ReversibleField">[docs]</a><span class="k">class</span> <span class="nc">ReversibleField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
+<div class="viewcode-block" id="ReversibleField.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.ReversibleField.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tokenize&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_revtok</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_revtok</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tokenize&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;tokenize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;revtok&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;unk_token&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;unk_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39; UNK &#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ReversibleField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_revtok</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">revtok</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install revtok.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_first</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_of</span><span class="p">(</span><span class="n">batch</span><span class="p">):</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">itos</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">]</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>  <span class="c1"># denumericalize</span>
+
+        <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="n">t</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">sentence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sentence</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="p">[</span><span class="n">trim</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>  <span class="c1"># trim past frst eos</span>
+
+        <span class="k">def</span> <span class="nf">filter_special</span><span class="p">(</span><span class="n">tok</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">tok</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">init_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">)</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="p">[</span><span class="nb">filter</span><span class="p">(</span><span class="n">filter_special</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_revtok</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">revtok</span><span class="o">.</span><span class="n">detokenize</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SubwordField"><a class="viewcode-back" href="../../../data.html#torchtext.data.SubwordField">[docs]</a><span class="k">class</span> <span class="nc">SubwordField</span><span class="p">(</span><span class="n">ReversibleField</span><span class="p">):</span>
+    <span class="n">vocab_cls</span> <span class="o">=</span> <span class="n">SubwordVocab</span>
+
+<div class="viewcode-block" id="SubwordField.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.SubwordField.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;tokenize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;subword&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;unk_token&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;unk_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;�&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SubwordField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SubwordField.segment"><a class="viewcode-back" href="../../../data.html#torchtext.data.SubwordField.segment">[docs]</a>    <span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Segment one or more datasets with this subword field.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            Positional arguments: Dataset objects or other indexable</span>
+<span class="sd">                mutable sequences to segment. If a Dataset object is provided,</span>
+<span class="sd">                all columns corresponding to this field are used; individual</span>
+<span class="sd">                columns can also be provided directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+                <span class="n">sources</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span>
+                            <span class="n">arg</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;segmenting&#39;</span><span class="p">):</span>
+                <span class="n">x</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NestedField"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField">[docs]</a><span class="k">class</span> <span class="nc">NestedField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A nested field.</span>
+
+<span class="sd">    A nested field holds another field (called *nesting field*), accepts an untokenized</span>
+<span class="sd">    string or a list string tokens and groups and treats them as one field as described</span>
+<span class="sd">    by the nesting field. Every token will be preprocessed, padded, etc. in the manner</span>
+<span class="sd">    specified by the nesting field. Note that this means a nested field always has</span>
+<span class="sd">    ``sequential=True``. The two fields&#39; vocabularies will be shared. Their</span>
+<span class="sd">    numericalization results will be stacked into a single tensor. And NestedField will</span>
+<span class="sd">    share the same include_lengths with nesting_field, so one shouldn&#39;t specify the</span>
+<span class="sd">    include_lengths in the nesting_field. This field is</span>
+<span class="sd">    primarily used to implement character embeddings. See ``tests/data/test_field.py``</span>
+<span class="sd">    for examples on how to use this field.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        nesting_field (Field): A field contained in this nested field.</span>
+<span class="sd">        use_vocab (bool): Whether to use a Vocab object. If False, the data in this</span>
+<span class="sd">            field should already be numerical. Default: ``True``.</span>
+<span class="sd">        init_token (str): A token that will be prepended to every example using this</span>
+<span class="sd">            field, or None for no initial token. Default: ``None``.</span>
+<span class="sd">        eos_token (str): A token that will be appended to every example using this</span>
+<span class="sd">            field, or None for no end-of-sentence token. Default: ``None``.</span>
+<span class="sd">        fix_length (int): A fixed length that all examples using this field will be</span>
+<span class="sd">            padded to, or ``None`` for flexible sequence lengths. Default: ``None``.</span>
+<span class="sd">        dtype: The torch.dtype class that represents a batch of examples</span>
+<span class="sd">            of this kind of data. Default: ``torch.long``.</span>
+<span class="sd">        preprocessing (Pipeline): The Pipeline that will be applied to examples</span>
+<span class="sd">            using this field after tokenizing but before numericalizing. Many</span>
+<span class="sd">            Datasets replace this attribute with a custom preprocessor.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        postprocessing (Pipeline): A Pipeline that will be applied to examples using</span>
+<span class="sd">            this field after numericalizing but before the numbers are turned</span>
+<span class="sd">            into a Tensor. The pipeline function takes the batch as a list, and</span>
+<span class="sd">            the field&#39;s Vocab. Default: ``None``.</span>
+<span class="sd">        include_lengths: Whether to return a tuple of a padded minibatch and</span>
+<span class="sd">            a list containing the lengths of each examples, or just a padded</span>
+<span class="sd">            minibatch. Default: False.</span>
+<span class="sd">        tokenize: The function used to tokenize strings using this field into</span>
+<span class="sd">            sequential examples. If &quot;spacy&quot;, the SpaCy tokenizer is</span>
+<span class="sd">            used. If a non-serializable function is passed as an argument,</span>
+<span class="sd">            the field will not be able to be serialized. Default: string.split.</span>
+<span class="sd">        tokenizer_language: The language of the tokenizer to be constructed.</span>
+<span class="sd">            Various languages currently supported only in SpaCy.</span>
+<span class="sd">        pad_token (str): The string token used as padding. If ``nesting_field`` is</span>
+<span class="sd">            sequential, this will be set to its ``pad_token``. Default: ``&quot;&lt;pad&gt;&quot;``.</span>
+<span class="sd">        pad_first (bool): Do the padding of the sequence at the beginning. Default:</span>
+<span class="sd">            ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NestedField.__init__"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nesting_field</span><span class="p">,</span> <span class="n">use_vocab</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">init_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eos_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fix_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">preprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">postprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer_language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span>
+                 <span class="n">include_lengths</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pad_token</span><span class="o">=</span><span class="s1">&#39;&lt;pad&gt;&#39;</span><span class="p">,</span>
+                 <span class="n">pad_first</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">truncate_first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nesting_field</span><span class="p">,</span> <span class="n">NestedField</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;nesting field must not be another NestedField&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nesting_field</span><span class="o">.</span><span class="n">include_lengths</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;nesting field cannot have include_lengths=True&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nesting_field</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+            <span class="n">pad_token</span> <span class="o">=</span> <span class="n">nesting_field</span><span class="o">.</span><span class="n">pad_token</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NestedField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">use_vocab</span><span class="o">=</span><span class="n">use_vocab</span><span class="p">,</span>
+            <span class="n">init_token</span><span class="o">=</span><span class="n">init_token</span><span class="p">,</span>
+            <span class="n">eos_token</span><span class="o">=</span><span class="n">eos_token</span><span class="p">,</span>
+            <span class="n">fix_length</span><span class="o">=</span><span class="n">fix_length</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">preprocessing</span><span class="o">=</span><span class="n">preprocessing</span><span class="p">,</span>
+            <span class="n">postprocessing</span><span class="o">=</span><span class="n">postprocessing</span><span class="p">,</span>
+            <span class="n">lower</span><span class="o">=</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span>
+            <span class="n">tokenize</span><span class="o">=</span><span class="n">tokenize</span><span class="p">,</span>
+            <span class="n">tokenizer_language</span><span class="o">=</span><span class="n">tokenizer_language</span><span class="p">,</span>
+            <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">pad_token</span><span class="o">=</span><span class="n">pad_token</span><span class="p">,</span>
+            <span class="n">unk_token</span><span class="o">=</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">unk_token</span><span class="p">,</span>
+            <span class="n">pad_first</span><span class="o">=</span><span class="n">pad_first</span><span class="p">,</span>
+            <span class="n">truncate_first</span><span class="o">=</span><span class="n">truncate_first</span><span class="p">,</span>
+            <span class="n">include_lengths</span><span class="o">=</span><span class="n">include_lengths</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span> <span class="o">=</span> <span class="n">nesting_field</span>
+        <span class="c1"># in case the user forget to do that</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">batch_first</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="NestedField.preprocess"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Preprocess a single example.</span>
+
+<span class="sd">        Firstly, tokenization and the supplied preprocessing pipeline is applied. Since</span>
+<span class="sd">        this field is always sequential, the result is a list. Then, each element of</span>
+<span class="sd">        the list is preprocessed using ``self.nesting_field.preprocess`` and the resulting</span>
+<span class="sd">        list is returned.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            xs (list or str): The input to preprocess.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The preprocessed list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">(</span><span class="n">NestedField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">xs</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="NestedField.pad"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField.pad">[docs]</a>    <span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minibatch</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pad a batch of examples using this field.</span>
+
+<span class="sd">        If ``self.nesting_field.sequential`` is ``False``, each example in the batch must</span>
+<span class="sd">        be a list of string tokens, and pads them as if by a ``Field`` with</span>
+<span class="sd">        ``sequential=True``. Otherwise, each example must be a list of list of tokens.</span>
+<span class="sd">        Using ``self.nesting_field``, pads the list of tokens to</span>
+<span class="sd">        ``self.nesting_field.fix_length`` if provided, or otherwise to the length of the</span>
+<span class="sd">        longest list of tokens in the batch. Next, using this field, pads the result by</span>
+<span class="sd">        filling short examples with ``self.nesting_field.pad_token``.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; import pprint</span>
+<span class="sd">            &gt;&gt;&gt; pp = pprint.PrettyPrinter(indent=4)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; nesting_field = Field(pad_token=&#39;&lt;c&gt;&#39;, init_token=&#39;&lt;w&gt;&#39;, eos_token=&#39;&lt;/w&gt;&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; field = NestedField(nesting_field, init_token=&#39;&lt;s&gt;&#39;, eos_token=&#39;&lt;/s&gt;&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; minibatch = [</span>
+<span class="sd">            ...     [list(&#39;john&#39;), list(&#39;loves&#39;), list(&#39;mary&#39;)],</span>
+<span class="sd">            ...     [list(&#39;mary&#39;), list(&#39;cries&#39;)],</span>
+<span class="sd">            ... ]</span>
+<span class="sd">            &gt;&gt;&gt; padded = field.pad(minibatch)</span>
+<span class="sd">            &gt;&gt;&gt; pp.pprint(padded)</span>
+<span class="sd">            [   [   [&#39;&lt;w&gt;&#39;, &#39;&lt;s&gt;&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;j&#39;, &#39;o&#39;, &#39;h&#39;, &#39;n&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;l&#39;, &#39;o&#39;, &#39;v&#39;, &#39;e&#39;, &#39;s&#39;, &#39;&lt;/w&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;m&#39;, &#39;a&#39;, &#39;r&#39;, &#39;y&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;&lt;/s&gt;&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;]],</span>
+<span class="sd">                [   [&#39;&lt;w&gt;&#39;, &#39;&lt;s&gt;&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;m&#39;, &#39;a&#39;, &#39;r&#39;, &#39;y&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;c&#39;, &#39;r&#39;, &#39;i&#39;, &#39;e&#39;, &#39;s&#39;, &#39;&lt;/w&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;&lt;/s&gt;&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
+<span class="sd">                    [&#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;]]]</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            minibatch (list): Each element is a list of string if</span>
+<span class="sd">                ``self.nesting_field.sequential`` is ``False``, a list of list of string</span>
+<span class="sd">                otherwise.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The padded minibatch. or (padded, sentence_lens, word_lengths)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">minibatch</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">sequential</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">NestedField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span>
+
+        <span class="c1"># Save values of attributes to be monkeypatched</span>
+        <span class="n">old_pad_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span>
+        <span class="n">old_init_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span>
+        <span class="n">old_eos_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span>
+        <span class="n">old_fix_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">fix_length</span>
+        <span class="c1"># Monkeypatch the attributes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">fix_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">minibatch</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span> <span class="n">ex</span><span class="p">)</span>
+            <span class="n">fix_len</span> <span class="o">=</span> <span class="n">max_len</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">init_token</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">eos_token</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">fix_length</span> <span class="o">=</span> <span class="n">fix_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">fix_length</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># self.init_token = self.nesting_field.pad([[self.init_token]])[0]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">init_token</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># self.eos_token = self.nesting_field.pad([[self.eos_token]])[0]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">]</span>
+        <span class="c1"># Do padding</span>
+        <span class="n">old_include_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">include_lengths</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">padded</span><span class="p">,</span> <span class="n">sentence_lengths</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">NestedField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">minibatch</span><span class="p">)</span>
+        <span class="n">padded_with_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">padded</span><span class="p">]</span>
+        <span class="n">word_lengths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">final_padded</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">max_sen_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">padded</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">pad</span><span class="p">,</span> <span class="n">lens</span><span class="p">),</span> <span class="n">sentence_len</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">padded_with_lengths</span><span class="p">,</span> <span class="n">sentence_lengths</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">sentence_len</span> <span class="o">==</span> <span class="n">max_sen_len</span><span class="p">:</span>
+                <span class="n">lens</span> <span class="o">=</span> <span class="n">lens</span>
+                <span class="n">pad</span> <span class="o">=</span> <span class="n">pad</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_first</span><span class="p">:</span>
+                <span class="n">lens</span><span class="p">[:(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">))</span>
+                <span class="n">pad</span><span class="p">[:(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lens</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">):]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">))</span>
+                <span class="n">pad</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">):]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_sen_len</span> <span class="o">-</span> <span class="n">sentence_len</span><span class="p">))</span>
+            <span class="n">word_lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lens</span><span class="p">)</span>
+            <span class="n">final_padded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span>
+        <span class="n">padded</span> <span class="o">=</span> <span class="n">final_padded</span>
+
+        <span class="c1"># Restore monkeypatched attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">fix_length</span> <span class="o">=</span> <span class="n">old_fix_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="n">old_pad_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_token</span> <span class="o">=</span> <span class="n">old_init_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="o">=</span> <span class="n">old_eos_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span> <span class="o">=</span> <span class="n">old_include_lengths</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">padded</span><span class="p">,</span> <span class="n">sentence_lengths</span><span class="p">,</span> <span class="n">word_lengths</span>
+        <span class="k">return</span> <span class="n">padded</span></div>
+
+<div class="viewcode-block" id="NestedField.build_vocab"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField.build_vocab">[docs]</a>    <span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Construct the Vocab object for nesting field and combine it with this field&#39;s vocab.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            Positional arguments: Dataset objects or other iterable data</span>
+<span class="sd">                sources from which to construct the Vocab object that</span>
+<span class="sd">                represents the set of possible values for the nesting field. If</span>
+<span class="sd">                a Dataset object is provided, all columns corresponding</span>
+<span class="sd">                to this field are used; individual columns can also be</span>
+<span class="sd">                provided directly.</span>
+<span class="sd">            Remaining keyword arguments: Passed to the constructor of Vocab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+                <span class="n">sources</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">arg</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                     <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="n">flattened</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+            <span class="n">flattened</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">old_vectors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">old_unk_init</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">old_vectors_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;vectors&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">old_vectors</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;vectors&quot;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;vectors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;unk_init&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">old_unk_init</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;unk_init&quot;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;unk_init&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;vectors_cache&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">old_vectors_cache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;vectors_cache&quot;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;vectors_cache&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># just build vocab and does not load vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="o">*</span><span class="n">flattened</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NestedField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">vocab</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">freqs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">old_vectors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">load_vectors</span><span class="p">(</span><span class="n">old_vectors</span><span class="p">,</span>
+                                    <span class="n">unk_init</span><span class="o">=</span><span class="n">old_unk_init</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">old_vectors_cache</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span></div>
+
+<div class="viewcode-block" id="NestedField.numericalize"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField.numericalize">[docs]</a>    <span class="k">def</span> <span class="nf">numericalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrs</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert a padded minibatch into a variable tensor.</span>
+
+<span class="sd">        Each item in the minibatch will be numericalized independently and the resulting</span>
+<span class="sd">        tensors will be stacked at the first dimension.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            arr (List[List[str]]): List of tokenized and padded examples.</span>
+<span class="sd">            device (str or torch.device): A string or instance of `torch.device`</span>
+<span class="sd">                specifying which device the Variables are going to be created on.</span>
+<span class="sd">                If left as default, the tensors will be created on cpu. Default: None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numericalized</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">include_lengths</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span><span class="p">:</span>
+            <span class="n">arrs</span><span class="p">,</span> <span class="n">sentence_lengths</span><span class="p">,</span> <span class="n">word_lengths</span> <span class="o">=</span> <span class="n">arrs</span>
+
+        <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrs</span><span class="p">:</span>
+            <span class="n">numericalized_ex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">numericalize</span><span class="p">(</span>
+                <span class="n">arr</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">numericalized</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">numericalized_ex</span><span class="p">)</span>
+        <span class="n">padded_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">numericalized</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesting_field</span><span class="o">.</span><span class="n">include_lengths</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_lengths</span><span class="p">:</span>
+            <span class="n">sentence_lengths</span> <span class="o">=</span> \
+                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sentence_lengths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">word_lengths</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">word_lengths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">padded_batch</span><span class="p">,</span> <span class="n">sentence_lengths</span><span class="p">,</span> <span class="n">word_lengths</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">padded_batch</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">LabelField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Label field.</span>
+
+<span class="sd">    A label field is a shallow wrapper around a standard field designed to hold labels</span>
+<span class="sd">    for a classification task. Its only use is to set the unk_token and sequential to</span>
+<span class="sd">    `None` by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># whichever value is set for sequential, unk_token, and is_target</span>
+        <span class="c1"># will be overwritten</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sequential&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;unk_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;is_target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">LabelField</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+             </article>
+             
+            </div>
+            <footer>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+         <script src="../../../_static/jquery.js"></script>
+         <script src="../../../_static/underscore.js"></script>
+         <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+     
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../../_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Stay Connected</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="../../../_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="resources-mobile-menu-title" class="active">
+            Docs
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/docs/stable/index.html">PyTorch</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/audio/stable/index.html">torchaudio</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/text/stable/index.html">torchtext</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/docs/stable/torchvision/">torchvision</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/elastic/">TorchElastic</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/serve/">TorchServe</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/xla">PyTorch on XLA Devices</a>
+            </li>
+          </ul>
+
+          <li class="resources-mobile-menu-title">
+            Resources
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/resources">Developer Resources</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/features">About</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/hub">Models (Beta)</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/#community-module">Community</a>
+            </li>
+
+            <li>
+              <a href="https://discuss.pytorch.org/">Forums</a>
+            </li>
+          </ul>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="../../../_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>

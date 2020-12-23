@@ -1,0 +1,1063 @@
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchtext.experimental.transforms &mdash; torchtext 0.9.0.dev20201223 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+  <!-- Preload the theme fonts -->
+
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+<!-- Preload the katex fonts -->
+
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Main-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size4-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+</head>
+
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+  <div class="container">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="active">
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-orange-arrow">
+                Docs
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/index.html">
+                  <span class="dropdown-title">PyTorch</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/audio/stable/index.html">
+                  <span class="dropdown-title">torchaudio</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/text/stable/index.html">
+                  <span class="dropdown-title">torchtext</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/docs/stable/torchvision/">
+                  <span class="dropdown-title">torchvision</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/elastic/">
+                  <span class="dropdown-title">TorchElastic</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/serve/">
+                  <span class="dropdown-title">TorchServe</span>
+                  <p></p>
+                </a>
+                <a class="doc-dropdown-option nav-dropdown-item" href="https://pytorch.org/xla">
+                  <span class="dropdown-title">PyTorch on XLA Devices</span>
+                  <p></p>
+                </a>
+            </div>
+          </li>
+
+          <li>
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="resource-option with-down-arrow">
+                Resources
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/features">
+                  <span class="dropdown-title">About</span>
+                  <p>Learn about PyTorch’s features and capabilities</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/#community-module">
+                  <span class="dropdown-title">Community</span>
+                  <p>Join the PyTorch developer community to contribute, learn, and get your questions answered.</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources">
+                  <span class="dropdown-title">Developer Resources</span>
+                  <p>Find resources and get questions answered</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://discuss.pytorch.org/" target="_blank">
+                  <span class="dropdown-title">Forums</span>
+                  <p>A place to discuss PyTorch code, issues, install, research</p>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/hub">
+                  <span class="dropdown-title">Models (Beta)</span>
+                  <p>Discover, publish, and reuse pre-trained models</p>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu"></a>
+    </div>
+  </div>
+</div>
+
+<body class="pytorch-body">
+
+   
+
+    
+
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+      <div class="pytorch-side-scroll">
+        <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          <div class="pytorch-left-menu-search">
+            
+
+            
+              
+              
+                <div class="version">
+                  0.9.0.dev20201223
+                </div>
+              
+            
+
+            
+
+
+  
+
+
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+            
+          </div>
+
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/text">torchtext</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/vision">torchvision</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/elastic/">TorchElastic</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pytorch.org/serve">TorchServe</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://pytorch.org/xla/">PyTorch on XLA Devices</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="pytorch-container">
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+          
+            Docs
+          
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>torchtext.experimental.transforms</li>
+    
+    
+      <li class="pytorch-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+</div>
+        </div>
+
+        <div class="pytorch-shortcuts-wrapper" id="pytorch-shortcuts-wrapper">
+          Shortcuts
+        </div>
+      </div>
+
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        <div class="pytorch-content-left">
+
+        
+          
+          <div class="rst-content">
+          
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for torchtext.experimental.transforms</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">RegexTokenizer</span> <span class="k">as</span> <span class="n">RegexTokenizerPybind</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">SentencePiece</span> <span class="k">as</span> <span class="n">SentencePiecePybind</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;basic_english_normalize&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;regex_tokenizer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BasicEnglishNormalize&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;RegexTokenizer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TextSequentialTransforms&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PRETRAINED_SP_MODEL&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;load_sp_model&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sentencepiece_tokenizer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SentencePieceTokenizer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sentencepiece_processor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SentencePieceProcessor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VocabTransform&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;VectorTransform&#39;</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">basic_english_normalize</span><span class="p">():</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Basic normalization for a string sentence.</span>
+
+<span class="sd">    Normalization includes</span>
+<span class="sd">        - lowercasing</span>
+<span class="sd">        - complete some basic text normalization for English words as follows:</span>
+
+<span class="sd">            - add spaces before and after &#39;\&#39;&#39;</span>
+<span class="sd">            - remove &#39;\&quot;&#39;,</span>
+<span class="sd">            - add spaces before and after &#39;.&#39;</span>
+<span class="sd">            - replace &#39;&lt;br \/&gt;&#39;with single space</span>
+<span class="sd">            - add spaces before and after &#39;,&#39;</span>
+<span class="sd">            - add spaces before and after &#39;(&#39;</span>
+<span class="sd">            - add spaces before and after &#39;)&#39;</span>
+<span class="sd">            - add spaces before and after &#39;!&#39;</span>
+<span class="sd">            - add spaces before and after &#39;?&#39;</span>
+<span class="sd">            - replace &#39;;&#39; with single space</span>
+<span class="sd">            - replace &#39;:&#39; with single space</span>
+<span class="sd">            - replace multiple spaces with single space</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import basic_english_normalize</span>
+<span class="sd">        &gt;&gt;&gt; test_sample = &#39;Basic English Normalization for a Line of Text&#39;</span>
+<span class="sd">        &gt;&gt;&gt; basic_eng_norm = basic_english_normalize()</span>
+<span class="sd">        &gt;&gt;&gt; jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; tokens = jit_basic_eng_norm(test_sample)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">patterns_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; </span><span class="se">\&#39;</span><span class="s1">  &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">,</span> <span class="s1">&#39; . &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;br \/&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39; , &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\(&#39;</span><span class="p">,</span> <span class="s1">&#39; ( &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\)&#39;</span><span class="p">,</span> <span class="s1">&#39; ) &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\!&#39;</span><span class="p">,</span> <span class="s1">&#39; ! &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\?&#39;</span><span class="p">,</span> <span class="s1">&#39; ? &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\;&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\:&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)]</span>
+
+    <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">patterns_list</span><span class="p">]</span>
+    <span class="n">replacements</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">patterns_list</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">BasicEnglishNormalize</span><span class="p">(</span><span class="n">RegexTokenizerPybind</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="n">replacements</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">regex_tokenizer</span><span class="p">(</span><span class="n">patterns_list</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        patterns_list (List[Tuple[str, str]]): a list of tuples (ordered pairs) which contain the regex pattern string</span>
+<span class="sd">        as the first element and the replacement string as the second element.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import regex_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; test_sample = &#39;Basic Regex Tokenization for a Line of Text&#39;</span>
+<span class="sd">        &gt;&gt;&gt; patterns_list = [</span>
+<span class="sd">            (r&#39;\&#39;&#39;, &#39; \&#39;  &#39;),</span>
+<span class="sd">            (r&#39;\&quot;&#39;, &#39;&#39;)]</span>
+<span class="sd">        &gt;&gt;&gt; reg_tokenizer = regex_tokenizer(patterns_list)</span>
+<span class="sd">        &gt;&gt;&gt; jit_reg_tokenizer = torch.jit.script(reg_tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; tokens = jit_reg_tokenizer(test_sample)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">patterns_list</span><span class="p">]</span>
+    <span class="n">replacements</span> <span class="o">=</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">patterns_list</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">RegexTokenizer</span><span class="p">(</span><span class="n">RegexTokenizerPybind</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="n">replacements</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="BasicEnglishNormalize"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.BasicEnglishNormalize">[docs]</a><span class="k">class</span> <span class="nc">BasicEnglishNormalize</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Basic normalization for a string sentence.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BasicEnglishNormalize.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.BasicEnglishNormalize.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_tokenizer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BasicEnglishNormalize</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">regex_tokenizer</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_jitable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="p">,</span> <span class="n">RegexTokenizerPybind</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BasicEnglishNormalize.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.BasicEnglishNormalize.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            lines (str): a text string to tokenize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: a token list after normalizing and splitting on whitespace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasicEnglishNormalize.to_ivalue"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.BasicEnglishNormalize.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable BasicEnglishNormalize.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">patterns_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">replacements_</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">BasicEnglishNormalize</span><span class="p">(</span><span class="n">regex_tokenizer</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RegexTokenizer"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.RegexTokenizer">[docs]</a><span class="k">class</span> <span class="nc">RegexTokenizer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RegexTokenizer.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.RegexTokenizer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex_tokenzier</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RegexTokenizer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">regex_tokenzier</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_jitable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="p">,</span> <span class="n">RegexTokenizerPybind</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RegexTokenizer.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.RegexTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            lines (str): a text string to tokenize.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: a token list after regex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegexTokenizer.to_ivalue"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.RegexTokenizer.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable RegexTokenizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">patterns_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">replacements_</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">RegexTokenizer</span><span class="p">(</span><span class="n">regex_tokenizer</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TextSequentialTransforms"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.TextSequentialTransforms">[docs]</a><span class="k">class</span> <span class="nc">TextSequentialTransforms</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;A container to host a sequential text transforms.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; import torch</span>
+<span class="sd">            &gt;&gt;&gt; from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms</span>
+<span class="sd">            &gt;&gt;&gt; tokenizer = basic_english_normalize()</span>
+<span class="sd">            &gt;&gt;&gt; txt_pipeline = TextSequentialTransforms(tokenizer)</span>
+<span class="sd">            &gt;&gt;&gt; txt_pipeline(&#39;here is an example&#39;)</span>
+<span class="sd">                [&#39;here&#39;, &#39;is&#39;, &#39;an&#39;, &#39;example&#39;]</span>
+<span class="sd">            &gt;&gt;&gt; jit_txt_pipeline = torch.jit.script(txt_pipeline.to_ivalue())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TextSequentialTransforms.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.TextSequentialTransforms.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">input</span></div>
+
+<div class="viewcode-block" id="TextSequentialTransforms.to_ivalue"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.TextSequentialTransforms.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable TextSequentialTransforms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">module_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_module</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_module</span><span class="p">,</span> <span class="s1">&#39;to_ivalue&#39;</span><span class="p">):</span>
+                <span class="n">_module</span> <span class="o">=</span> <span class="n">_module</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">()</span>
+            <span class="n">module_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">_idx</span><span class="p">),</span> <span class="n">_module</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">TextSequentialTransforms</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">(</span><span class="n">module_list</span><span class="p">))</span></div></div>
+
+
+<span class="n">PRETRAINED_SP_MODEL</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;text_unigram_15000&#39;</span><span class="p">:</span> <span class="s1">&#39;https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;text_unigram_25000&#39;</span><span class="p">:</span> <span class="s1">&#39;https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;text_unigram_50000&#39;</span><span class="p">:</span> <span class="s1">&#39;https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_50000.model&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;text_bpe_15000&#39;</span><span class="p">:</span> <span class="s1">&#39;https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_15000.model&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;text_bpe_25000&#39;</span><span class="p">:</span> <span class="s1">&#39;https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_25000.model&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;text_bpe_50000&#39;</span><span class="p">:</span> <span class="s1">&#39;https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_bpe_50000.model&#39;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="load_sp_model"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.load_sp_model">[docs]</a><span class="k">def</span> <span class="nf">load_sp_model</span><span class="p">(</span><span class="n">sp_model</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load a  sentencepiece model for file.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        sp_model: the file path or a file object saving the sentencepiece model.</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        output: a SentencePiece model.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import load_sp_model</span>
+<span class="sd">        &gt;&gt;&gt; sp_model = load_sp_model(&quot;m_user.model&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; sp_model = load_sp_model(open(&quot;m_user.model&quot;, &#39;rb&#39;))</span>
+
+<span class="sd">    Note: We also provide several pretrained sentencepiece models. The model was trained with torchtext.datasets.WikiText103,</span>
+<span class="sd">        torchtext.datasets.EnWik9 and BookCorpus. Both BPE and unigram methods were used to train the model (for more</span>
+<span class="sd">        details please refer to SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model</span>
+<span class="sd">        with a different size of the vocabulary (i.e. 15000, 25000, 50000).</span>
+<span class="sd">        The following pretrained sentencepiece models are provided:</span>
+
+<span class="sd">            - text_unigram_15000</span>
+<span class="sd">            - text_unigram_25000</span>
+<span class="sd">            - text_unigram_50000</span>
+<span class="sd">            - text_bpe_15000</span>
+<span class="sd">            - text_bpe_25000</span>
+<span class="sd">            - text_bpe_50000</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import PRETRAINED_SP_MODEL</span>
+<span class="sd">        &gt;&gt;&gt; sp_model_path = torchtext.utils.download_from_url(PRETRAINED_SP_MODEL[&#39;text_unigram_25000&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; sp_model = load_sp_model(sp_model_path)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sp_model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sp_model</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SentencePiecePybind</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sp_model</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">BufferedReader</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SentencePiecePybind</span><span class="p">(</span><span class="n">sp_model</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Unsupported type for sp_model argument: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">. &#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;Supported types are: &#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;io.BufferedReader&#39;</span>
+            <span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="sentencepiece_tokenizer"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.sentencepiece_tokenizer">[docs]</a><span class="k">def</span> <span class="nf">sentencepiece_tokenizer</span><span class="p">(</span><span class="n">sp_model</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Factory function to generate SentencePieceTokenizer from a pretrained SentencePiece model</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sp_model: the file path or a file object saving the sentencepiece model.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import sentencepiece_tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; spm_tokenizer = sentencepiece_tokenizer(&#39;m_user.model&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spm</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">SentencePieceTokenizer</span><span class="p">(</span><span class="n">spm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SentencePieceTokenizer"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceTokenizer">[docs]</a><span class="k">class</span> <span class="nc">SentencePieceTokenizer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Tokenizer based on a pretained sentencepiece model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       spm_model: the sentencepiece model instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SentencePieceTokenizer.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceTokenizer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spm_model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SentencePieceTokenizer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">spm_model</span></div>
+
+<div class="viewcode-block" id="SentencePieceTokenizer.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            line: the input sentence string</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; spm_tokenizer(&#39;the pretrained sp model names&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; [&#39;▁the&#39;, &#39;▁pre&#39;, &#39;trained&#39;, &#39;▁sp&#39;, &#39;▁model&#39;, &#39;▁names&#39;]</span>
+
+<span class="sd">        Note: SentencePiece treats the input text just as a sequence of Unicode characters. Whitespace is also handled as a normal symbol. To handle the whitespace as a basic token explicitly, SentencePiece first escapes the whitespace with a meta symbol &quot;▁&quot; (U+2581) as follows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">EncodeAsPieces</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SentencePieceTokenizer.decode"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceTokenizer.decode">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tokens: the tokens list for decoder</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; spm_transform.decoder([&#39;▁the&#39;, &#39;▁pre&#39;, &#39;trained&#39;, &#39;▁sp&#39;, &#39;▁model&#39;, &#39;▁names&#39;])</span>
+<span class="sd">            &gt;&gt;&gt; &#39;the pretrained sp model names&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">DecodePieces</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">torchbind_spm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">SentencePiece</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">_return_content</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">SentencePieceTokenizer</span><span class="p">(</span><span class="n">torchbind_spm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sentencepiece_processor"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.sentencepiece_processor">[docs]</a><span class="k">def</span> <span class="nf">sentencepiece_processor</span><span class="p">(</span><span class="n">sp_model</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Factory function to generate SentencePieceProcessor from a pretrained SentencePiece model</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sp_model: the file path or a file object saving the sentencepiece model.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import sentencepiece_processor</span>
+<span class="sd">        &gt;&gt;&gt; spm_processor = sentencepiece_processor(&#39;m_user.model&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spm</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">SentencePieceProcessor</span><span class="p">(</span><span class="n">spm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SentencePieceProcessor"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceProcessor">[docs]</a><span class="k">class</span> <span class="nc">SentencePieceProcessor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;String to ids transform based on a pretained sentencepiece model</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       spm_model: the sentencepiece model instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SentencePieceProcessor.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceProcessor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spm_model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SentencePieceProcessor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">spm_model</span></div>
+
+<div class="viewcode-block" id="SentencePieceProcessor.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceProcessor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            line: the input sentence string</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; spm_processor(&#39;the pretrained sp model names&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; [9, 1546, 18811, 2849, 2759, 2202]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">EncodeAsIds</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SentencePieceProcessor.decode"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.SentencePieceProcessor.decode">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ids: the integers list for decoder</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; spm_processor.decoder([9, 1546, 18811, 2849, 2759, 2202])</span>
+<span class="sd">            &gt;&gt;&gt; &#39;the pretrained sp model names&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">DecodeIds</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">torchbind_spm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">SentencePiece</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">_return_content</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">SentencePieceProcessor</span><span class="p">(</span><span class="n">torchbind_spm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VocabTransform"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VocabTransform">[docs]</a><span class="k">class</span> <span class="nc">VocabTransform</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Vocab transform</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vocab: an instance of torchtext.experimental.vocab.Vocab class.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vocab import vocab_from_file_object</span>
+<span class="sd">        &gt;&gt;&gt; f = open(&#39;vocab.txt&#39;, &#39;r&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; vocab_transform = VocabTransform(vocab_from_file_object(f))</span>
+<span class="sd">        &gt;&gt;&gt; jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VocabTransform.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VocabTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VocabTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span></div>
+
+<div class="viewcode-block" id="VocabTransform.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VocabTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tokens: a string token list</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; vocab_transform([&#39;here&#39;, &#39;is&#39;, &#39;an&#39;, &#39;example&#39;])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">,</span> <span class="s1">&#39;to_ivalue&#39;</span><span class="p">):</span>
+            <span class="n">vocab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">VocabTransform</span><span class="p">(</span><span class="n">vocab</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="VectorTransform"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VectorTransform">[docs]</a><span class="k">class</span> <span class="nc">VectorTransform</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Vector transform</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vector: an instance of torchtext.experimental.vectors.Vectors class.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vectors import FastText</span>
+<span class="sd">        &gt;&gt;&gt; vector_transform = VectorTransform(FastText())</span>
+<span class="sd">        &gt;&gt;&gt; jit_vector_transform = torch.jit.script(vector_transform.to_ivalue())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="VectorTransform.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VectorTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VectorTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vector</span> <span class="o">=</span> <span class="n">vector</span></div>
+
+<div class="viewcode-block" id="VectorTransform.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VectorTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tokens: a string token list</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; vector_transform([&#39;here&#39;, &#39;is&#39;, &#39;an&#39;, &#39;example&#39;])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">lookup_vectors</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">,</span> <span class="s1">&#39;to_ivalue&#39;</span><span class="p">):</span>
+            <span class="n">vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">VectorTransform</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+</pre></div>
+
+             </article>
+             
+            </div>
+            <footer>
+  
+
+  
+
+    <hr>
+
+  
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Torch Contributors.
+
+    </p>
+  </div>
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </div>
+     
+
+</footer>
+
+          </div>
+        </div>
+
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  
+
+
+  
+
+     
+       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+         <script src="../../../_static/jquery.js"></script>
+         <script src="../../../_static/underscore.js"></script>
+         <script src="../../../_static/doctools.js"></script>
+         <script src="../../../_static/language_data.js"></script>
+         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+     
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../../_static/js/vendor/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+  <!-- Begin Footer -->
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h2>Docs</h2>
+          <p>Access comprehensive developer documentation for PyTorch</p>
+          <a class="with-right-arrow" href="https://pytorch.org/docs/stable/index.html">View Docs</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Tutorials</h2>
+          <p>Get in-depth tutorials for beginners and advanced developers</p>
+          <a class="with-right-arrow" href="https://pytorch.org/tutorials">View Tutorials</a>
+        </div>
+
+        <div class="col-md-4 text-center">
+          <h2>Resources</h2>
+          <p>Find development resources and get your questions answered</p>
+          <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-logo-wrapper">
+        <a href="https://pytorch.org/" class="footer-logo"></a>
+      </div>
+
+      <div class="footer-links-wrapper">
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/">PyTorch</a></li>
+            <li><a href="https://pytorch.org/get-started">Get Started</a></li>
+            <li><a href="https://pytorch.org/features">Features</a></li>
+            <li><a href="https://pytorch.org/ecosystem">Ecosystem</a></li>
+            <li><a href="https://pytorch.org/blog/">Blog</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/blob/master/CONTRIBUTING.md">Contributing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <ul>
+            <li class="list-title"><a href="https://pytorch.org/resources">Resources</a></li>
+            <li><a href="https://pytorch.org/tutorials">Tutorials</a></li>
+            <li><a href="https://pytorch.org/docs/stable/index.html">Docs</a></li>
+            <li><a href="https://discuss.pytorch.org" target="_blank">Discuss</a></li>
+            <li><a href="https://github.com/pytorch/pytorch/issues" target="_blank">Github Issues</a></li>
+            <li><a href="https://pytorch.org/assets/brand-guidelines/PyTorch-Brand-Guidelines.pdf" target="_blank">Brand Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col follow-us-col">
+          <ul>
+            <li class="list-title">Stay Connected</li>
+            <li>
+              <div id="mc_embed_signup">
+                <form
+                  action="https://twitter.us14.list-manage.com/subscribe/post?u=75419c71fe0a935e53dfa4a3f&id=91d0dccd39"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  class="email-subscribe-form validate"
+                  target="_blank"
+                  novalidate>
+                  <div id="mc_embed_signup_scroll" class="email-subscribe-form-fields-wrapper">
+                    <div class="mc-field-group">
+                      <label for="mce-EMAIL" style="display:none;">Email Address</label>
+                      <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Email Address">
+                    </div>
+
+                    <div id="mce-responses" class="clear">
+                      <div class="response" id="mce-error-response" style="display:none"></div>
+                      <div class="response" id="mce-success-response" style="display:none"></div>
+                    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_75419c71fe0a935e53dfa4a3f_91d0dccd39" tabindex="-1" value=""></div>
+
+                    <div class="clear">
+                      <input type="submit" value="" name="subscribe" id="mc-embedded-subscribe" class="button email-subscribe-button">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </li>
+          </ul>
+
+          <div class="footer-social-icons">
+            <a href="https://www.facebook.com/pytorch" target="_blank" class="facebook"></a>
+            <a href="https://twitter.com/pytorch" target="_blank" class="twitter"></a>
+            <a href="https://www.youtube.com/pytorch" target="_blank" class="youtube"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="../../../_static/images/pytorch-x.svg">
+  </div>
+</div>
+
+  <!-- End Footer -->
+
+  <!-- Begin Mobile Menu -->
+
+  <div class="mobile-main-menu">
+    <div class="container-fluid">
+      <div class="container">
+        <div class="mobile-main-menu-header-container">
+          <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+          <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-main-menu-links-container">
+      <div class="main-menu">
+        <ul>
+          <li>
+            <a href="https://pytorch.org/get-started">Get Started</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/ecosystem">Ecosystem</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/mobile">Mobile</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/hub">PyTorch Hub</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/tutorials">Tutorials</a>
+          </li>
+
+          <li class="resources-mobile-menu-title" class="active">
+            Docs
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/docs/stable/index.html">PyTorch</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/audio/stable/index.html">torchaudio</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/text/stable/index.html">torchtext</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/docs/stable/torchvision/">torchvision</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/elastic/">TorchElastic</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/serve/">TorchServe</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/xla">PyTorch on XLA Devices</a>
+            </li>
+          </ul>
+
+          <li class="resources-mobile-menu-title">
+            Resources
+          </li>
+
+          <ul class="resources-mobile-menu-items">
+            <li>
+              <a href="https://pytorch.org/resources">Developer Resources</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/features">About</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/hub">Models (Beta)</a>
+            </li>
+
+            <li>
+              <a href="https://pytorch.org/#community-module">Community</a>
+            </li>
+
+            <li>
+              <a href="https://discuss.pytorch.org/">Forums</a>
+            </li>
+          </ul>
+
+          <li>
+            <a href="https://github.com/pytorch/pytorch">Github</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Mobile Menu -->
+
+  <script type="text/javascript" src="../../../_static/js/vendor/anchor.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      pytorchAnchors.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+</body>
+</html>
