@@ -40,7 +40,7 @@ int64_t Vocab::__getitem__(const std::string &token) const {
                              "set up the default index");
 }
 
-void __setitem__(const std::string &token, const int64_t &index) {
+void Vocab::__setitem__(const std::string &token, const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(stoi_.size())) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Specified index " << index
