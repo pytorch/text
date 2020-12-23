@@ -20,8 +20,6 @@ import platform
 import shutil
 import tempfile
 import os
-import unittest
-import platform
 from torchtext.experimental.vectors import (
     GloVe,
     build_vectors,
@@ -185,7 +183,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
-            v = load_vocab_from_file(f, unk_token='<new_unk>')
+            v = load_vocab_from_file(f)
             v.insert_token('<new_unk>', 0)
             expected_itos = ['<new_unk>', 'b', 'a', 'c']
             expected_stoi = {x: index for index, x in enumerate(expected_itos)}
