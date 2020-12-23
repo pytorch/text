@@ -284,7 +284,7 @@ _load_token_and_vectors_from_file(const std::string &file_path,
   return result;
 }
 
-VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
+VectorsStates _serialize_vectors(const c10::intrusive_ptr<Vectors> &self) {
   std::vector<std::string> tokens;
   std::vector<int64_t> indices;
   tokens.reserve(self->stoi_.size());
@@ -313,7 +313,7 @@ VectorsStates _set_vectors_states(const c10::intrusive_ptr<Vectors> &self) {
   return states;
 }
 
-c10::intrusive_ptr<Vectors> _get_vectors_from_states(VectorsStates states) {
+c10::intrusive_ptr<Vectors> _deserialize_vectors(VectorsStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 5) {
     throw std::runtime_error(

@@ -1,20 +1,11 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
-import glob
-import shutil
 import torchtext.data as data
 import torch
 import torchtext
 from ..common.torchtext_test_case import TorchtextTestCase
-
-
-def conditional_remove(f):
-    for path in glob.glob(f):
-        if os.path.isfile(path):
-            os.remove(path)
-        elif os.path.isdir(path):
-            shutil.rmtree(path)
+from ..common.assets import conditional_remove
 
 
 class TestDataset(TorchtextTestCase):
@@ -51,11 +42,14 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
         train_dataset, valid_dataset, test_dataset = WikiText2()
-        self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        valid_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 2049990, train_data[20:25],
                                [5024, 89, 21, 3, 1838])
-        self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 241859, test_data[30:35],
                                [914, 4, 36, 11, 569])
-        self._helper_test_func(len(valid_dataset), 214417, valid_dataset[40:45],
+        self._helper_test_func(len(valid_data), 214417, valid_data[40:45],
                                [925, 8, 2, 150, 8575])
 
         vocab = train_dataset.get_vocab()
@@ -69,9 +63,11 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 4358, next(iter(test_iter)), ' \n')
         del train_iter, valid_iter, test_iter
         train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
-        self._helper_test_func(len(train_dataset), 2049990, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 2049990, train_data[20:25],
                                [5024, 89, 21, 3, 1838])
-        self._helper_test_func(len(test_dataset), 241859, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 241859, test_data[30:35],
                                [914, 4, 36, 11, 569])
 
         conditional_remove(cachedir)
@@ -94,11 +90,14 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         train_dataset, valid_dataset, test_dataset = PennTreebank()
-        self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        valid_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 924412, train_data[20:25],
                                [9919, 9920, 9921, 9922, 9188])
-        self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 82114, test_data[30:35],
                                [397, 93, 4, 16, 7])
-        self._helper_test_func(len(valid_dataset), 73339, valid_dataset[40:45],
+        self._helper_test_func(len(valid_data), 73339, valid_data[40:45],
                                [0, 0, 78, 426, 196])
 
         vocab = train_dataset.get_vocab()
@@ -107,9 +106,11 @@ class TestDataset(TorchtextTestCase):
 
         # Add test for the subset of the standard datasets
         train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
-        self._helper_test_func(len(train_dataset), 924412, train_dataset[20:25],
+        train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
+        test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
+        self._helper_test_func(len(train_data), 924412, train_data[20:25],
                                [9919, 9920, 9921, 9922, 9188])
-        self._helper_test_func(len(test_dataset), 82114, test_dataset[30:35],
+        self._helper_test_func(len(test_data), 82114, test_data[30:35],
                                [397, 93, 4, 16, 7])
         train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
         self._helper_test_func(len(train_iter), 42068, next(iter(train_iter))[:15], ' aer banknote b')
@@ -166,42 +167,42 @@ class TestDataset(TorchtextTestCase):
         # smoke test to ensure multi30k works properly
         train_dataset, valid_dataset, test_dataset = Multi30k()
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
-                               ([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2],
-                                [4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3]))
+                               ([4, 444, 2531, 47, 17480, 7423, 8, 158, 10, 12, 5849, 3, 2],
+                                [5, 61, 530, 137, 1494, 10, 9, 280, 6, 2, 3749, 4, 3]))
         self._helper_test_func(len(valid_dataset), 1014, valid_dataset[30],
-                               ([3, 178, 25, 84, 1003, 56, 18, 153, 2],
-                                [4, 23, 31, 80, 46, 1347, 5, 2, 118, 3]))
+                               ([4, 179, 26, 85, 1005, 57, 19, 154, 3, 2],
+                                [5, 24, 32, 81, 47, 1348, 6, 2, 119, 4, 3]))
         self._helper_test_func(len(test_dataset), 1000, test_dataset[40],
-                               ([3, 25, 5, 11, 3914, 1536, 20, 63, 2],
-                                [4, 31, 19, 2, 746, 344, 1914, 5, 45, 3]))
+                               ([4, 26, 6, 12, 3915, 1538, 21, 64, 3, 2],
+                                [5, 32, 20, 2, 747, 345, 1915, 6, 46, 4, 3]))
 
         de_vocab, en_vocab = train_dataset.get_vocab()
         de_tokens_ids = [
             de_vocab[token] for token in
             'Zwei Männer verpacken Donuts in Kunststofffolie'.split()
         ]
-        self.assertEqual(de_tokens_ids, [19, 29, 18703, 4448, 5, 6240])
+        self.assertEqual(de_tokens_ids, [20, 30, 18705, 4448, 6, 6241])
 
         en_tokens_ids = [
             en_vocab[token] for token in
             'Two young White males are outside near many bushes'.split()
         ]
         self.assertEqual(en_tokens_ids,
-                         [17, 23, 1167, 806, 15, 55, 82, 334, 1337])
+                         [18, 24, 1168, 807, 16, 56, 83, 335, 1338])
 
         # Add test for the subset of the standard datasets
         train_iter, valid_iter = torchtext.experimental.datasets.raw.Multi30k(data_select=('train', 'valid'))
         self._helper_test_func(len(train_iter), 29000, ' '.join(next(iter(train_iter))),
-                               ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.',
-                                         'Two young  White males are outside near many bushes.']))
+                               ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.\n',
+                                         'Two young, White males are outside near many bushes.\n']))
         self._helper_test_func(len(valid_iter), 1014, ' '.join(next(iter(valid_iter))),
-                               ' '.join(['Eine Gruppe von Männern lädt Baumwolle auf einen Lastwagen',
-                                         'A group of men are loading cotton onto a truck']))
+                               ' '.join(['Eine Gruppe von Männern lädt Baumwolle auf einen Lastwagen\n',
+                                         'A group of men are loading cotton onto a truck\n']))
         del train_iter, valid_iter
         train_dataset, = Multi30k(data_select=('train'))
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
-                               ([3, 443, 2530, 46, 17478, 7422, 7, 157, 9, 11, 5848, 2],
-                                [4, 60, 529, 136, 1493, 9, 8, 279, 5, 2, 3748, 3]))
+                               ([4, 444, 2531, 47, 17480, 7423, 8, 158, 10, 12, 5849, 3, 2],
+                                [5, 61, 530, 137, 1494, 10, 9, 280, 6, 2, 3749, 4, 3]))
 
         datafile = os.path.join(self.project_root, ".data", "train*")
         conditional_remove(datafile)

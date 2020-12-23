@@ -115,26 +115,50 @@ class TestVectors(TorchtextTestCase):
         self.assertEqual(vectors_obj['b'], tensorB)
         self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
-    def test_vectors_load_and_save(self):
+    def test_vectors_update(self):
         tensorA = torch.tensor([1, 0], dtype=torch.float)
         tensorB = torch.tensor([0, 1], dtype=torch.float)
-        unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+        tensorC = torch.tensor([1, 1], dtype=torch.float)
+
+        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
 
         tokens = ['a', 'b']
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
         vectors_obj.set_default_tensor(unk_tensor)
 
-        tensorC = torch.tensor([1, 1], dtype=torch.float)
         vectors_obj['b'] = tensorC
 
-        vector_path = os.path.join(self.test_dir, 'vectors.pt')
-        torch.save(vectors_obj.to_ivalue(), vector_path)
-        loaded_vectors_obj = torch.load(vector_path)
+        self.assertEqual(vectors_obj['a'], tensorA)
+        self.assertEqual(vectors_obj['b'], tensorC)
+        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
 
-        self.assertEqual(loaded_vectors_obj['a'], tensorA)
-        self.assertEqual(loaded_vectors_obj['b'], tensorC)
-        self.assertEqual(loaded_vectors_obj['not_in_it'], unk_tensor)
+    def test_vectors_load_and_save(self):
+        tensorA = torch.tensor([1, 0], dtype=torch.float)
+        tensorB = torch.tensor([0, 1], dtype=torch.float)
+        expected_unk_tensor = torch.tensor([0, 0], dtype=torch.float)
+
+        tokens = ['a', 'b']
+        vecs = torch.stack((tensorA, tensorB), 0)
+        vectors_obj = build_vectors(tokens, vecs)
+
+        with self.subTest('pybind'):
+            vector_path = os.path.join(self.test_dir, 'vectors_pybind.pt')
+            torch.save(vectors_obj, vector_path)
+            loaded_vectors_obj = torch.load(vector_path)
+
+            self.assertEqual(loaded_vectors_obj['a'], tensorA)
+            self.assertEqual(loaded_vectors_obj['b'], tensorB)
+            self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
+
+        with self.subTest('torchscript'):
+            vector_path = os.path.join(self.test_dir, 'vectors_torchscript.pt')
+            torch.save(vectors_obj.to_ivalue(), vector_path)
+            loaded_vectors_obj = torch.load(vector_path)
+
+            self.assertEqual(loaded_vectors_obj['a'], tensorA)
+            self.assertEqual(loaded_vectors_obj['b'], tensorB)
+            self.assertEqual(loaded_vectors_obj['not_in_it'], expected_unk_tensor)
 
     # we separate out these errors because Windows runs into seg faults when propagating
     # exceptions from C++ using pybind11
