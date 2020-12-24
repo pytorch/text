@@ -27,7 +27,7 @@ def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_tok
     in the file (and not by the frequency of tokens).
 
     Args:
-        file_object (FileObject): a file object to read data from.
+        file_object (io.TextIOWrapper): a file opened in a text mode to read data from.
         jited_tokenizer (ScriptModule): a tokenizer that has been JITed using `torch.jit.script`
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
@@ -62,7 +62,7 @@ def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4)
         token_n
 
     Args:
-        file_object (FileObject): a file like object to read data from.
+        file_object (io.TextIOWrapper): a file opened in a text mode to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
         unk_token: The default unknown token to use. Default: '<unk>'.
