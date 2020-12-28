@@ -162,6 +162,17 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(iter(test_iter))[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
+    def test_iwslt(self):
+        from torchtext.experimental.datasets import IWSLT
+        from torchtext.data.utils import get_tokenizer
+
+        src_tokenizer = get_tokenizer("spacy", language='de')
+        tgt_tokenizer = get_tokenizer("basic_english")
+        train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer, tgt_tokenizer))
+        self.assertEqual(len(train_dataset),196884)
+        self.assertEqual(len(valid_dataset),993)
+        self.assertEqual(len(test_dataset),1305)
+
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
         # smoke test to ensure multi30k works properly

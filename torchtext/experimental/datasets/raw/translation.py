@@ -62,7 +62,7 @@ URLS = {
     'WMT14':
     'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
     'IWSLT':
-    'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
+    'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
 }
 
 
@@ -125,14 +125,26 @@ def _setup_datasets(dataset_name,
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    extracted_files = []
+    extracted_files = []  # list of paths to the extracted files
     if isinstance(URLS[dataset_name], list):
         for idx, f in enumerate(URLS[dataset_name]):
-            dataset_tar = download_from_url(f, root=root, hash_value=MD5[dataset_name][idx], hash_type='md5')
+            dataset_tar = download_from_url(
+                f, root=root, hash_value=MD5[dataset_name][idx], hash_type='md5')
             extracted_files.extend(extract_archive(dataset_tar))
     elif isinstance(URLS[dataset_name], str):
-        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], hash_type='md5')
-        extracted_files.extend(extract_archive(dataset_tar))
+        dataset_tar = download_from_url(URLS[dataset_name])
+        extracted_dataset_tar = extract_archive(dataset_tar)
+        if dataset_name == 'IWSLT':
+            # IWSLT dataset's url downloads a multilingual tgz.
+            # We need to take an extra step to pick out the specific language pair from it.
+            src_language = train_filenames[0].split(".")[-1]
+            tgt_language = train_filenames[1].split(".")[-1]
+            languages = "-".join([src_language, tgt_language])
+            iwslt_tar = '.data/2016-01/texts/{}/{}/{}.tgz'
+            iwslt_tar = iwslt_tar.format(
+                src_language, tgt_language, languages)
+            extracted_dataset_tar = extract_archive(iwslt_tar)
+        extracted_files.extend(extracted_dataset_tar)
     else:
         raise ValueError(
             "URLS for {} has to be in a form or list or string".format(
@@ -418,10 +430,6 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         >>> from torchtext.experimental.datasets.raw import IWSLT
         >>> train_dataset, valid_dataset, test_dataset = IWSLT()
     """
-    src_language = train_filenames[0].split(".")[-1]
-    tgt_language = train_filenames[1].split(".")[-1]
-    languages = "-".join([src_language, tgt_language])
-    URLS["IWSLT"] = URLS["IWSLT"].format(src_language, tgt_language, languages)
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
