@@ -25,6 +25,7 @@ public:
   void __setitem__(const std::string &token, const int64_t &index);
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
+  void _delete_token(const std::string &token);
   void set_default_index(const int64_t index);
   int64_t get_default_index() const;
   std::string lookup_token(const int64_t &index);

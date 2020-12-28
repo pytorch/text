@@ -108,6 +108,31 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   }
 }
 
+void Vocab::_delete_token(const std::string &token) {
+  const auto &item = stoi_.find(token);
+  // if item already in stoi we throw an error
+  if (item == stoi_.end()) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Token " << token
+              << " doesn't exist in the Vocab"
+              << std::endl;
+#endif
+    throw std::runtime_error("Token " + token +
+                             " doesn't exist in the Vocab" + ".");
+  }
+  for (size_t i = item->second + 1; i < itos_.size(); i++) {
+    stoi_[itos_[i]] = i - 1;
+  }
+  stoi_.erase(token);
+  itos_.erase(itos_.begin() + item->second);
+
+  // need to update unk_index in case token equals unk_token or token
+  // inserted before unk_token
+  if (default_index_.has_value() && item->second < *default_index_) {
+    default_index_ = default_index_.value() - 1;
+  }
+}
+
 void Vocab::set_default_index(const int64_t index) {
   if (default_index_.has_value())
     std::cerr
