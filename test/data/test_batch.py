@@ -37,7 +37,7 @@ class TestDataset(TorchtextTestCase):
         batch = next(iter(itr))
         (x1, x2), y = batch
         x = (x1, x2)[fld_order.index("float")]
-        self.assertEquals(y.data[0], 1)
-        self.assertEquals(y.data[1], 12)
+        self.assertEqual(y.data[0], 1)
+        self.assertEqual(y.data[1], 12)
         self.assertAlmostEqual(x.data[0], 0.1, places=4)
         self.assertAlmostEqual(x.data[1], 0.5, places=4)

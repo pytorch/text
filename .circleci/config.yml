@@ -467,6 +467,63 @@ jobs:
       - run:
           name: Run style check
           command: .circleci/unittest/linux/scripts/run_style_checks.sh
+  build_docs:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - designate_upload_channel
+      - checkout
+      - run:
+          name: install binaries
+          command: |
+            set -x
+            conda install make
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
+      - run:
+          name: Build docs
+          command: |
+            set -x
+            pushd docs
+            pip install -r requirements.txt
+            make html
+            popd
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - "*"
+
+  upload_docs:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Generate netrc
+          command: |
+            # set credentials for https pushing
+            # requires the org-member context
+            cat > ~/.netrc \<<DONE
+              machine github.com
+              login pytorchbot
+              password ${GITHUB_PYTORCHBOT_TOKEN}
+            DONE
+      - run:
+          name: Upload docs
+          command: |
+            # Don't use "checkout" step since it uses ssh, which cannot git push
+            # https://circleci.com/docs/2.0/configuration-reference/#checkout
+            set -ex
+            tag=${CIRCLE_TAG:1:5}
+            target=${tag:-master}
+            ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
+
 
 workflows:
   build:
@@ -526,6 +583,22 @@ workflows:
       - binary_windows_conda:
           name: binary_windows_conda_py3.8
           python_version: '3.8'
+      - build_docs:
+          name: build_docs
+          python_version: '3.8'
+          requires:
+          - binary_linux_wheel_py3.8
+      - upload_docs:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: upload_docs
+          python_version: '3.8'
+          requires:
+          - build_docs
   unittest:
     jobs:
       - unittest_linux:
