@@ -48,6 +48,26 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
 
+    def test_vocab_set_item(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+
+        v.set_default_index(0)
+        v['b'] = 1
+        self.assertEqual(v['<unk>'], 0)
+        self.assertEqual(v['a'], 2)
+        self.assertEqual(v['b'], 1)
+        self.assertEqual(v['not_in_it'], 0)
+
+        v.set_default_index(1)
+        v['a'] = 0
+        self.assertEqual(v['<unk>'], 1)
+        self.assertEqual(v['a'], 0)
+        self.assertEqual(v['b'], 2)
+        self.assertEqual(v['not_in_it'], 2)
+
     def test_vocab_insert_token(self):
         c = OrderedDict({'<unk>': 2, 'a': 2})
 

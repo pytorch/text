@@ -53,6 +53,12 @@ void Vocab::__setitem__(const std::string &token, const int64_t &index) {
         std::to_string(stoi_.size()) + ".");
   }
 
+  const auto &item = stoi_.find(token);
+  if (item != stoi_.end()) {
+    _delete_token(token);
+  }
+
+  insert_token(token, index);
 }
 
 void Vocab::append_token(const std::string &token) {
