@@ -7,7 +7,7 @@ from torchtext.data.utils import ngrams_iterator
 def _compute_ngram_counter(tokens, max_n):
     """ Create a Counter with a count of unique n-grams in the tokens list
 
-    Arguments:
+    Args:
         tokens: a list of tokens (typically a string split on whitespaces)
         max_n: the maximum order of n-gram wanted
 
@@ -36,7 +36,7 @@ def bleu_score(candidate_corpus, references_corpus, max_n=4, weights=[0.25] * 4)
     """Computes the BLEU score between a candidate translation corpus and a references
     translation corpus. Based on https://www.aclweb.org/anthology/P02-1040.pdf
 
-    Arguments:
+    Args:
         candidate_corpus: an iterable of candidate translations. Each translation is an
             iterable of tokens
         references_corpus: an iterable of iterables of reference translations. Each

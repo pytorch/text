@@ -274,7 +274,7 @@ class Field(RawField):
     def build_vocab(self, *args, **kwargs):
         """Construct the Vocab object for this field from one or more datasets.
 
-        Arguments:
+        Args:
             Positional arguments: Dataset objects or other iterable data
                 sources from which to construct the Vocab object that
                 represents the set of possible values for this field. If
@@ -311,7 +311,7 @@ class Field(RawField):
         If the field has include_lengths=True, a tensor of lengths will be
         included in the return value.
 
-        Arguments:
+        Args:
             arr (List[List[str]], or tuple of (List[List[str]], List[int])):
                 List of tokenized and padded examples, or tuple of List of
                 tokenized and padded examples and List of lengths of each
@@ -423,7 +423,7 @@ class SubwordField(ReversibleField):
     def segment(self, *args):
         """Segment one or more datasets with this subword field.
 
-        Arguments:
+        Args:
             Positional arguments: Dataset objects or other indexable
                 mutable sequences to segment. If a Dataset object is provided,
                 all columns corresponding to this field are used; individual
@@ -455,7 +455,7 @@ class NestedField(Field):
     primarily used to implement character embeddings. See ``tests/data/test_field.py``
     for examples on how to use this field.
 
-    Arguments:
+    Args:
         nesting_field (Field): A field contained in this nested field.
         use_vocab (bool): Whether to use a Vocab object. If False, the data in this
             field should already be numerical. Default: ``True``.
@@ -533,7 +533,7 @@ class NestedField(Field):
         the list is preprocessed using ``self.nesting_field.preprocess`` and the resulting
         list is returned.
 
-        Arguments:
+        Args:
             xs (list or str): The input to preprocess.
 
         Returns:
@@ -576,7 +576,7 @@ class NestedField(Field):
                     ['<w>', '</s>', '</w>', '<c>', '<c>', '<c>', '<c>'],
                     ['<c>', '<c>', '<c>', '<c>', '<c>', '<c>', '<c>']]]
 
-        Arguments:
+        Args:
             minibatch (list): Each element is a list of string if
                 ``self.nesting_field.sequential`` is ``False``, a list of list of string
                 otherwise.
@@ -646,7 +646,7 @@ class NestedField(Field):
     def build_vocab(self, *args, **kwargs):
         """Construct the Vocab object for nesting field and combine it with this field's vocab.
 
-        Arguments:
+        Args:
             Positional arguments: Dataset objects or other iterable data
                 sources from which to construct the Vocab object that
                 represents the set of possible values for the nesting field. If
@@ -697,7 +697,7 @@ class NestedField(Field):
         Each item in the minibatch will be numericalized independently and the resulting
         tensors will be stacked at the first dimension.
 
-        Arguments:
+        Args:
             arr (List[List[str]]): List of tokenized and padded examples.
             device (str or torch.device): A string or instance of `torch.device`
                 specifying which device the Variables are going to be created on.

@@ -24,7 +24,7 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
     def __init__(self, data, vocab, transforms):
         """Initiate question answer dataset.
 
-        Arguments:
+        Args:
             data: a tuple of (context, question, answers, ans_pos).
             vocab: Vocabulary object used for dataset.
             transforms: a dictionary of transforms.
@@ -96,7 +96,7 @@ def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
 
     Separately returns the train and dev dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
@@ -130,7 +130,7 @@ def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
 
     Separately returns the train and dev dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.

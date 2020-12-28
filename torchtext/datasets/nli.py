@@ -51,7 +51,7 @@ class NLIDataset(data.TabularDataset):
 
         This is the most flexible way to use the dataset.
 
-        Arguments:
+        Args:
             text_field: The field that will be used for premise and hypothesis
                 data.
             label_field: The field that will be used for label data.
@@ -96,7 +96,7 @@ class NLIDataset(data.TabularDataset):
         This is the simplest way to use the dataset, and assumes common
         defaults for field, vocabulary, and iterator parameters.
 
-        Arguments:
+        Args:
             batch_size: Batch size.
             device: Device to create batches on. Use -1 for CPU and None for
                 the currently active GPU device.

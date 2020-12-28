@@ -78,7 +78,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def __init__(self, vocab, data, labels):
         """Initiate text-classification dataset.
 
-        Arguments:
+        Args:
             vocab: Vocabulary object used for dataset.
             data: a list of label/tokens tuple. tokens are a tensor after
                 numericalizing the string tokens. label is an integer.
@@ -154,7 +154,7 @@ def AG_NEWS(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -183,7 +183,7 @@ def SogouNews(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -221,7 +221,7 @@ def DBpedia(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -247,7 +247,7 @@ def YelpReviewPolarity(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -272,7 +272,7 @@ def YelpReviewFull(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -306,7 +306,7 @@ def YahooAnswers(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -332,7 +332,7 @@ def AmazonReviewPolarity(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -357,7 +357,7 @@ def AmazonReviewFull(*args, **kwargs):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the dataset are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
