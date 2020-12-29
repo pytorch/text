@@ -164,11 +164,8 @@ class TestDataset(TorchtextTestCase):
 
     def test_iwslt(self):
         from torchtext.experimental.datasets import IWSLT
-        from torchtext.data.utils import get_tokenizer
 
-        src_tokenizer = get_tokenizer("spacy", language='de')
-        tgt_tokenizer = get_tokenizer("basic_english")
-        train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer, tgt_tokenizer))
+        train_dataset, valid_dataset, test_dataset = IWSLT()
 
         self.assertEqual(len(train_dataset),196884)
         self.assertEqual(len(valid_dataset),993)
@@ -185,12 +182,11 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(en_sentence,expected_en_sentence)
 
         assert_nth_pair_is_equal(0, (['David', 'Gallo', ':', 'Das', 'ist', 'Bill', 'Lange', '.', 'Ich', 'bin', 'Dave', 'Gallo', '.', '\n'],
-                                    ['david', 'gallo', 'this', 'is', 'bill', 'lange', '.', 'i', "'", 'm', 'dave', 'gallo', '.']))
+                                    ['David', 'Gallo', ':', 'This', 'is', 'Bill', 'Lange', '.', 'I', "'m", 'Dave', 'Gallo', '.', '\n']))
         assert_nth_pair_is_equal(10, (['Die', 'meisten', 'Tiere', 'leben', 'in', 'den', 'Ozeanen', '.', '\n'],
-                                    ['most', 'of', 'the', 'animals', 'are', 'in', 'the', 'oceans', '.']))
+                                    ['Most', 'of', 'the', 'animals', 'are', 'in', 'the', 'oceans', '.', '\n']))
         assert_nth_pair_is_equal(20, (['Es', 'ist', 'einer', 'meiner', 'Lieblinge', ',', 'weil', 'es', 'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
-                                    ['it', "'", 's', 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'", 's', 'got', 'all', 'sorts', 'of', 'working', 'parts', '.']))
-        
+                                    ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s", 'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
         datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
         conditional_remove(datafile)
 
