@@ -169,9 +169,32 @@ class TestDataset(TorchtextTestCase):
         src_tokenizer = get_tokenizer("spacy", language='de')
         tgt_tokenizer = get_tokenizer("basic_english")
         train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer, tgt_tokenizer))
+
         self.assertEqual(len(train_dataset),196884)
         self.assertEqual(len(valid_dataset),993)
         self.assertEqual(len(test_dataset),1305)
+
+        de_vocab, en_vocab = train_dataset.get_vocab()
+
+        def assert_nth_pair_is_equal(n, expected_sentence_pair):
+            de_sentence = [de_vocab.itos[index] for index in train_dataset[n][0]]
+            en_sentence = [en_vocab.itos[index] for index in train_dataset[n][1]]
+            expected_de_sentence, expected_en_sentence = expected_sentence_pair
+
+            self.assertEqual(de_sentence, expected_de_sentence)
+            self.assertEqual(en_sentence,expected_en_sentence)
+
+        assert_nth_pair_is_equal(0, (['David', 'Gallo', ':', 'Das', 'ist', 'Bill', 'Lange', '.', 'Ich', 'bin', 'Dave', 'Gallo', '.', '\n'],
+                                    ['david', 'gallo', 'this', 'is', 'bill', 'lange', '.', 'i', "'", 'm', 'dave', 'gallo', '.']))
+        assert_nth_pair_is_equal(10, (['Die', 'meisten', 'Tiere', 'leben', 'in', 'den', 'Ozeanen', '.', '\n'],
+                                    ['most', 'of', 'the', 'animals', 'are', 'in', 'the', 'oceans', '.']))
+        assert_nth_pair_is_equal(20, (['Es', 'ist', 'einer', 'meiner', 'Lieblinge', ',', 'weil', 'es', 'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
+                                    ['it', "'", 's', 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'", 's', 'got', 'all', 'sorts', 'of', 'working', 'parts', '.']))
+        
+        datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
+        conditional_remove(datafile)
+
+
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
