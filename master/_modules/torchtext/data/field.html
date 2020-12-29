@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.field &mdash; torchtext 0.9.0.dev20201228 documentation</title>
+  <title>torchtext.data.field &mdash; torchtext 0.9.0.dev20201229 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20201228
+                  0.9.0.dev20201229
                 </div>
               
             
@@ -583,7 +583,7 @@
 <div class="viewcode-block" id="Field.build_vocab"><a class="viewcode-back" href="../../../data.html#torchtext.data.Field.build_vocab">[docs]</a>    <span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct the Vocab object for this field from one or more datasets.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            Positional arguments: Dataset objects or other iterable data</span>
 <span class="sd">                sources from which to construct the Vocab object that</span>
 <span class="sd">                represents the set of possible values for this field. If</span>
@@ -620,7 +620,7 @@
 <span class="sd">        If the field has include_lengths=True, a tensor of lengths will be</span>
 <span class="sd">        included in the return value.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            arr (List[List[str]], or tuple of (List[List[str]], List[int])):</span>
 <span class="sd">                List of tokenized and padded examples, or tuple of List of</span>
 <span class="sd">                tokenized and padded examples and List of lengths of each</span>
@@ -732,7 +732,7 @@
 <div class="viewcode-block" id="SubwordField.segment"><a class="viewcode-back" href="../../../data.html#torchtext.data.SubwordField.segment">[docs]</a>    <span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Segment one or more datasets with this subword field.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            Positional arguments: Dataset objects or other indexable</span>
 <span class="sd">                mutable sequences to segment. If a Dataset object is provided,</span>
 <span class="sd">                all columns corresponding to this field are used; individual</span>
@@ -764,7 +764,7 @@
 <span class="sd">    primarily used to implement character embeddings. See ``tests/data/test_field.py``</span>
 <span class="sd">    for examples on how to use this field.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        nesting_field (Field): A field contained in this nested field.</span>
 <span class="sd">        use_vocab (bool): Whether to use a Vocab object. If False, the data in this</span>
 <span class="sd">            field should already be numerical. Default: ``True``.</span>
@@ -842,7 +842,7 @@
 <span class="sd">        the list is preprocessed using ``self.nesting_field.preprocess`` and the resulting</span>
 <span class="sd">        list is returned.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            xs (list or str): The input to preprocess.</span>
 
 <span class="sd">        Returns:</span>
@@ -885,7 +885,7 @@
 <span class="sd">                    [&#39;&lt;w&gt;&#39;, &#39;&lt;/s&gt;&#39;, &#39;&lt;/w&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;],</span>
 <span class="sd">                    [&#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;, &#39;&lt;c&gt;&#39;]]]</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            minibatch (list): Each element is a list of string if</span>
 <span class="sd">                ``self.nesting_field.sequential`` is ``False``, a list of list of string</span>
 <span class="sd">                otherwise.</span>
@@ -955,7 +955,7 @@
 <div class="viewcode-block" id="NestedField.build_vocab"><a class="viewcode-back" href="../../../data.html#torchtext.data.NestedField.build_vocab">[docs]</a>    <span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct the Vocab object for nesting field and combine it with this field&#39;s vocab.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            Positional arguments: Dataset objects or other iterable data</span>
 <span class="sd">                sources from which to construct the Vocab object that</span>
 <span class="sd">                represents the set of possible values for the nesting field. If</span>
@@ -1006,7 +1006,7 @@
 <span class="sd">        Each item in the minibatch will be numericalized independently and the resulting</span>
 <span class="sd">        tensors will be stacked at the first dimension.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            arr (List[List[str]]): List of tokenized and padded examples.</span>
 <span class="sd">            device (str or torch.device): A string or instance of `torch.device`</span>
 <span class="sd">                specifying which device the Variables are going to be created on.</span>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.language_modeling &mdash; torchtext 0.9.0.dev20201228 documentation</title>
+  <title>torchtext.datasets.language_modeling &mdash; torchtext 0.9.0.dev20201229 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20201228
+                  0.9.0.dev20201229
                 </div>
               
             
@@ -318,7 +318,7 @@
                  <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a LanguageModelingDataset given a path and a field.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            path: Path to the data file.</span>
 <span class="sd">            text_field: The field that will be used for text data.</span>
 <span class="sd">            newline_eos: Whether to add an &lt;eos&gt; token for every newline in the</span>
@@ -353,7 +353,7 @@
 
 <span class="sd">        This is the most flexible way to use the dataset.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            text_field: The field that will be used for text data.</span>
 <span class="sd">            root: The root directory that the dataset&#39;s zip archive will be</span>
 <span class="sd">                expanded into; therefore the directory in whose wikitext-2</span>
@@ -376,7 +376,7 @@
 <span class="sd">        This is the simplest way to use the dataset, and assumes common</span>
 <span class="sd">        defaults for field, vocabulary, and iterator parameters.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            batch_size: Batch size.</span>
 <span class="sd">            bptt_len: Length of sequences for backpropagation through time.</span>
 <span class="sd">            device: Device to create batches on. Use -1 for CPU and None for</span>
@@ -414,7 +414,7 @@
 
 <span class="sd">        This is the most flexible way to use the dataset.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            text_field: The field that will be used for text data.</span>
 <span class="sd">            root: The root directory that the dataset&#39;s zip archive will be</span>
 <span class="sd">                expanded into; therefore the directory in whose wikitext-103</span>
@@ -437,7 +437,7 @@
 <span class="sd">        This is the simplest way to use the dataset, and assumes common</span>
 <span class="sd">        defaults for field, vocabulary, and iterator parameters.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            batch_size: Batch size.</span>
 <span class="sd">            bptt_len: Length of sequences for backpropagation through time.</span>
 <span class="sd">            device: Device to create batches on. Use -1 for CPU and None for</span>
@@ -483,7 +483,7 @@
                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create dataset objects for splits of the Penn Treebank dataset.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            text_field: The field that will be used for text data.</span>
 <span class="sd">            root: The root directory where the data files will be stored.</span>
 <span class="sd">            train: The filename of the train data. Default: &#39;ptb.train.txt&#39;.</span>
@@ -504,7 +504,7 @@
 <span class="sd">        This is the simplest way to use the dataset, and assumes common</span>
 <span class="sd">        defaults for field, vocabulary, and iterator parameters.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            batch_size: Batch size.</span>
 <span class="sd">            bptt_len: Length of sequences for backpropagation through time.</span>
 <span class="sd">            device: Device to create batches on. Use -1 for CPU and None for</span>

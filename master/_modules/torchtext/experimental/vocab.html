@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20201228 documentation</title>
+  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20201229 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20201228
+                  0.9.0.dev20201229
                 </div>
               
             
@@ -394,7 +394,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a Vocab from an iterator.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
 <span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
 <span class="sd">            Values less than 1 will be set to 1. Default: 1.</span>
@@ -417,7 +417,7 @@
 <span class="sd">    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.</span>
 <span class="sd">    Additionally, the if the `unk_token` isn&#39;t found inside of the `ordered_dict`, it will be added to the end of the vocab.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.</span>
 <span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
 <span class="sd">            Values less than 1 will be set to 1. Default: 1.</span>
@@ -456,7 +456,7 @@
     <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates a vocab object which maps tokens to indices.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

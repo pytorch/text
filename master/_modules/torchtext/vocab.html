@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab &mdash; torchtext 0.9.0.dev20201228 documentation</title>
+  <title>torchtext.vocab &mdash; torchtext 0.9.0.dev20201229 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20201228
+                  0.9.0.dev20201229
                 </div>
               
             
@@ -344,7 +344,7 @@
                  <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vectors_cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">specials_first</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a Vocab object from a collections.Counter.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            counter: collections.Counter object holding the frequencies of</span>
 <span class="sd">                each value found in the data.</span>
 <span class="sd">            max_size: The maximum size of the vocabulary, or None for no</span>
@@ -458,7 +458,7 @@
 
 <div class="viewcode-block" id="Vocab.load_vectors"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vocab.load_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">load_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            vectors: one of or a list containing instantiations of the</span>
 <span class="sd">                GloVe, CharNGram, or Vectors classes. Alternatively, one</span>
 <span class="sd">                of or a list of available pretrained vectors:</span>
@@ -510,7 +510,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the vectors for the Vocab instance from a collection of Tensors.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            stoi: A dictionary of string to the index of the associated vector</span>
 <span class="sd">                in the `vectors` input argument.</span>
 <span class="sd">            vectors: An indexed iterable (or other structure supporting __getitem__) that</span>
@@ -537,7 +537,7 @@
                  <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">zero_</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a revtok subword vocabulary from a collections.Counter.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            counter: collections.Counter object holding the frequencies of</span>
 <span class="sd">                each word found in the data.</span>
 <span class="sd">            max_size: The maximum size of the subword vocabulary, or None for no</span>
@@ -610,7 +610,7 @@
 <div class="viewcode-block" id="Vectors.__init__"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vectors.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unk_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 
 <span class="sd">            name: name of the file that contains the vectors</span>
 <span class="sd">            cache: directory for cached vectors</span>
@@ -749,7 +749,7 @@
 <div class="viewcode-block" id="Vectors.get_vecs_by_tokens"><a class="viewcode-back" href="../../vocab.html#torchtext.data.Vectors.get_vecs_by_tokens">[docs]</a>    <span class="k">def</span> <span class="nf">get_vecs_by_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">lower_case_backup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Look up embedding vectors of tokens.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            tokens: a token or a list of tokens. if `tokens` is a string,</span>
 <span class="sd">                returns a 1-D tensor of shape `self.dim`; if `tokens` is a</span>
 <span class="sd">                list of strings, returns a 2-D tensor of shape=(len(tokens),</span>
@@ -858,7 +858,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a Vocab from an iterator.</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
 <span class="sd">        num_lines: The expected number of elements returned by the iterator.</span>
 <span class="sd">            (Default: None)</span>

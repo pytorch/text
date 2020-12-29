@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.sst &mdash; torchtext 0.9.0.dev20201228 documentation</title>
+  <title>torchtext.datasets.sst &mdash; torchtext 0.9.0.dev20201229 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20201228
+                  0.9.0.dev20201229
                 </div>
               
             
@@ -326,7 +326,7 @@
                  <span class="n">fine_grained</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create an SST dataset instance given a path and fields.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            path: Path to the data file</span>
 <span class="sd">            text_field: The field that will be used for text data.</span>
 <span class="sd">            label_field: The field that will be used for label data.</span>
@@ -358,7 +358,7 @@
                <span class="n">train_subtrees</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create dataset objects for splits of the SST dataset.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            text_field: The field that will be used for the sentence.</span>
 <span class="sd">            label_field: The field that will be used for label data.</span>
 <span class="sd">            root: The root directory that the dataset&#39;s zip archive will be</span>
@@ -390,7 +390,7 @@
     <span class="k">def</span> <span class="nf">iters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create iterator objects for splits of the SST dataset.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            batch_size: Batch_size</span>
 <span class="sd">            device: Device to create batches on. Use - 1 for CPU and None for</span>
 <span class="sd">                the currently active GPU device.</span>

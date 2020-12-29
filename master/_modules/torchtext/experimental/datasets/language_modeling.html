@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.language_modeling &mdash; torchtext 0.9.0.dev20201228 documentation</title>
+  <title>torchtext.experimental.datasets.language_modeling &mdash; torchtext 0.9.0.dev20201229 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20201228
+                  0.9.0.dev20201229
                 </div>
               
             
@@ -339,7 +339,7 @@
 <div class="viewcode-block" id="LanguageModelingDataset.__init__"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.LanguageModelingDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initiate language modeling dataset.</span>
 
-<span class="sd">        Arguments:</span>
+<span class="sd">        Args:</span>
 <span class="sd">            data: a tensor of tokens. tokens are ids after</span>
 <span class="sd">                numericalizing the string tokens.</span>
 <span class="sd">                torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()</span>
@@ -403,7 +403,7 @@
 <span class="sd">    Create language modeling dataset: WikiText2</span>
 <span class="sd">    Separately returns the train/test/valid set</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
 <span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
 <span class="sd">            is supported as well (see example below). A custom tokenizer is callable</span>
@@ -437,7 +437,7 @@
 <span class="sd">    Create language modeling dataset: WikiText103</span>
 <span class="sd">    Separately returns the train/test/valid set</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
 <span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
 <span class="sd">            is supported as well (see example below). A custom tokenizer is callable</span>
@@ -472,7 +472,7 @@
 <span class="sd">    Create language modeling dataset: PennTreebank</span>
 <span class="sd">    Separately returns the train/test/valid set</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
 <span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
 <span class="sd">            is supported as well (see example below). A custom tokenizer is callable</span>
@@ -507,7 +507,7 @@
 <span class="sd">    Create language modeling dataset: WMTNewsCrawl</span>
 <span class="sd">    returns the train set</span>
 
-<span class="sd">    Arguments:</span>
+<span class="sd">    Args:</span>
 <span class="sd">        tokenizer: the tokenizer used to preprocess raw text data.</span>
 <span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
 <span class="sd">            is supported as well (see example below). A custom tokenizer is callable</span>
