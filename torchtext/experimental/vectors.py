@@ -185,7 +185,7 @@ def load_vectors_from_file_path(filepath, delimiter=",", unk_tensor=None, num_cp
 
 def build_vectors(tokens, vectors, unk_tensor=None):
     r"""Factory method for creating a vectors object which maps tokens to vectors.
-    Arguments:
+    Args:
         tokens (List[str]): a list of tokens.
         vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
         unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
