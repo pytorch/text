@@ -167,9 +167,9 @@ class TestDataset(TorchtextTestCase):
 
         train_dataset, valid_dataset, test_dataset = IWSLT()
 
-        self.assertEqual(len(train_dataset),196884)
-        self.assertEqual(len(valid_dataset),993)
-        self.assertEqual(len(test_dataset),1305)
+        self.assertEqual(len(train_dataset), 196884)
+        self.assertEqual(len(valid_dataset), 993)
+        self.assertEqual(len(test_dataset), 1305)
 
         de_vocab, en_vocab = train_dataset.get_vocab()
 
@@ -179,18 +179,16 @@ class TestDataset(TorchtextTestCase):
             expected_de_sentence, expected_en_sentence = expected_sentence_pair
 
             self.assertEqual(de_sentence, expected_de_sentence)
-            self.assertEqual(en_sentence,expected_en_sentence)
+            self.assertEqual(en_sentence, expected_en_sentence)
 
         assert_nth_pair_is_equal(0, (['David', 'Gallo', ':', 'Das', 'ist', 'Bill', 'Lange', '.', 'Ich', 'bin', 'Dave', 'Gallo', '.', '\n'],
-                                    ['David', 'Gallo', ':', 'This', 'is', 'Bill', 'Lange', '.', 'I', "'m", 'Dave', 'Gallo', '.', '\n']))
+                                     ['David', 'Gallo', ':', 'This', 'is', 'Bill', 'Lange', '.', 'I', "'m", 'Dave', 'Gallo', '.', '\n']))
         assert_nth_pair_is_equal(10, (['Die', 'meisten', 'Tiere', 'leben', 'in', 'den', 'Ozeanen', '.', '\n'],
-                                    ['Most', 'of', 'the', 'animals', 'are', 'in', 'the', 'oceans', '.', '\n']))
+                                      ['Most', 'of', 'the', 'animals', 'are', 'in', 'the', 'oceans', '.', '\n']))
         assert_nth_pair_is_equal(20, (['Es', 'ist', 'einer', 'meiner', 'Lieblinge', ',', 'weil', 'es', 'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
-                                    ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s", 'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
+                                      ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s", 'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
         datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
         conditional_remove(datafile)
-
-
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
