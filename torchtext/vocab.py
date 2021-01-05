@@ -35,7 +35,7 @@ class Vocab(object):
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
-        Arguments:
+        Args:
             counter: collections.Counter object holding the frequencies of
                 each value found in the data.
             max_size: The maximum size of the vocabulary, or None for no
@@ -149,7 +149,7 @@ class Vocab(object):
 
     def load_vectors(self, vectors, **kwargs):
         """
-        Arguments:
+        Args:
             vectors: one of or a list containing instantiations of the
                 GloVe, CharNGram, or Vectors classes. Alternatively, one
                 of or a list of available pretrained vectors:
@@ -201,7 +201,7 @@ class Vocab(object):
         """
         Set the vectors for the Vocab instance from a collection of Tensors.
 
-        Arguments:
+        Args:
             stoi: A dictionary of string to the index of the associated vector
                 in the `vectors` input argument.
             vectors: An indexed iterable (or other structure supporting __getitem__) that
@@ -228,7 +228,7 @@ class SubwordVocab(Vocab):
                  vectors=None, unk_init=torch.Tensor.zero_):
         """Create a revtok subword vocabulary from a collections.Counter.
 
-        Arguments:
+        Args:
             counter: collections.Counter object holding the frequencies of
                 each word found in the data.
             max_size: The maximum size of the subword vocabulary, or None for no
@@ -301,7 +301,7 @@ class Vectors(object):
     def __init__(self, name, cache=None,
                  url=None, unk_init=None, max_vectors=None):
         """
-        Arguments:
+        Args:
 
             name: name of the file that contains the vectors
             cache: directory for cached vectors
@@ -440,7 +440,7 @@ class Vectors(object):
     def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
         """Look up embedding vectors of tokens.
 
-        Arguments:
+        Args:
             tokens: a token or a list of tokens. if `tokens` is a string,
                 returns a 1-D tensor of shape `self.dim`; if `tokens` is a
                 list of strings, returns a 2-D tensor of shape=(len(tokens),
@@ -549,7 +549,7 @@ def build_vocab_from_iterator(iterator, num_lines=None):
     """
     Build a Vocab from an iterator.
 
-    Arguments:
+    Args:
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         num_lines: The expected number of elements returned by the iterator.
             (Default: None)

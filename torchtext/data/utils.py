@@ -76,7 +76,7 @@ def get_tokenizer(tokenizer, language='en'):
     r"""
     Generate tokenizer function for a string sentence.
 
-    Arguments:
+    Args:
         tokenizer: the name of tokenizer function. If None, it returns split()
             function, which splits the string sentence by space.
             If basic_english, it returns _basic_english_normalize() function,
@@ -205,7 +205,7 @@ def dtype_to_attr(dtype):
 def ngrams_iterator(token_list, ngrams):
     """Return an iterator that yields the given tokens and their ngrams.
 
-    Arguments:
+    Args:
         token_list: A list of tokens
         ngrams: the number of ngrams.
 

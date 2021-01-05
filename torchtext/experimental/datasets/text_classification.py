@@ -38,7 +38,7 @@ class TextClassificationDataset(torch.utils.data.Dataset):
     def __init__(self, data, vocab, transforms):
         """Initiate text-classification dataset.
 
-        Arguments:
+        Args:
             data: a list of label and text tring tuple. label is an integer.
                 [(label1, text1), (label2, text2), (label2, text3)]
             vocab: Vocabulary object used for dataset.
@@ -113,7 +113,7 @@ def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -157,7 +157,7 @@ def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -210,7 +210,7 @@ def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -251,7 +251,7 @@ def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -291,7 +291,7 @@ def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_sele
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -340,7 +340,7 @@ def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -381,7 +381,7 @@ def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, dat
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -421,7 +421,7 @@ def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_se
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1
@@ -462,7 +462,7 @@ def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         ngrams: a contiguous sequence of n items from s string text.
             Default: 1

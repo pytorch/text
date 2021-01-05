@@ -17,7 +17,7 @@ class SST(data.Dataset):
                  fine_grained=False, **kwargs):
         """Create an SST dataset instance given a path and fields.
 
-        Arguments:
+        Args:
             path: Path to the data file
             text_field: The field that will be used for text data.
             label_field: The field that will be used for label data.
@@ -49,7 +49,7 @@ class SST(data.Dataset):
                train_subtrees=False, **kwargs):
         """Create dataset objects for splits of the SST dataset.
 
-        Arguments:
+        Args:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
             root: The root directory that the dataset's zip archive will be
@@ -81,7 +81,7 @@ class SST(data.Dataset):
     def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
         """Create iterator objects for splits of the SST dataset.
 
-        Arguments:
+        Args:
             batch_size: Batch_size
             device: Device to create batches on. Use - 1 for CPU and None for
                 the currently active GPU device.
