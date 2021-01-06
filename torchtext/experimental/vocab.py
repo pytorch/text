@@ -202,6 +202,18 @@ class Vocab(nn.Module):
         self.vocab[token] = index
 
     @torch.jit.export
+    def __delitem__(self, token: str) -> None:
+        r"""Delete token from vocab and shift all the following tokens to left by 1.
+
+        Args:
+            token (str): the token to be deleted.
+
+        Raises:
+            RuntimeError: if `token` is not in the vocab.
+        """
+        del self.vocab[token]
+
+    @torch.jit.export
     def insert_token(self, token: str, index: int) -> None:
         r"""
         Args:

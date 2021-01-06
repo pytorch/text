@@ -48,6 +48,9 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_vocab_set_item(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
@@ -55,18 +58,17 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c, min_freq=2)
 
         v.set_default_index(0)
-        v['b'] = 1
+        with self.assertRaises(RuntimeError):
+            v['b'] = 1
+        del v['b']
         self.assertEqual(v['<unk>'], 0)
-        self.assertEqual(v['a'], 2)
-        self.assertEqual(v['b'], 1)
+        self.assertEqual(v['a'], 1)
         self.assertEqual(v['not_in_it'], 0)
 
-        v.set_default_index(1)
-        v['a'] = 0
-        self.assertEqual(v['<unk>'], 1)
-        self.assertEqual(v['a'], 0)
-        self.assertEqual(v['b'], 2)
-        self.assertEqual(v['not_in_it'], 2)
+        v['b'] = 1
+        self.assertEqual(v['<unk>'], 0)
+        self.assertEqual(v['b'], 1)
+        self.assertEqual(v['not_in_it'], 0)
 
     def test_vocab_insert_token(self):
         c = OrderedDict({'<unk>': 2, 'a': 2})
