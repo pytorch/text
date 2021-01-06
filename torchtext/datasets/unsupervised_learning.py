@@ -85,7 +85,7 @@ class EnWik9(torch.utils.data.Dataset):
     def __init__(self, begin_line=0, num_lines=6348957, root='.data'):
         """Initiate EnWik9 dataset.
 
-        Arguments:
+        Args:
             begin_line: the number of beginning line. Default: 0
             num_lines: the number of lines to be loaded. Default: 6348957
             root: Directory where the datasets are saved. Default: ".data"

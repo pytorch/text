@@ -69,7 +69,7 @@ def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
             By default, all the datasets (train, valid, test) are generated.
@@ -88,7 +88,7 @@ def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,

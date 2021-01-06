@@ -61,7 +61,7 @@ def AG_NEWS(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -81,7 +81,7 @@ def SogouNews(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -101,7 +101,7 @@ def DBpedia(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -121,7 +121,7 @@ def YelpReviewPolarity(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -141,7 +141,7 @@ def YelpReviewFull(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -161,7 +161,7 @@ def YahooAnswers(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -181,7 +181,7 @@ def AmazonReviewPolarity(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -201,7 +201,7 @@ def AmazonReviewFull(root='.data', data_select=('train', 'test')):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
@@ -231,7 +231,7 @@ def IMDB(root='.data', data_select=('train', 'test')):
 
     Separately returns the raw training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,

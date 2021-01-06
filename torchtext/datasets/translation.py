@@ -17,7 +17,7 @@ class TranslationDataset(data.Dataset):
     def __init__(self, path, exts, fields, **kwargs):
         """Create a TranslationDataset given paths and fields.
 
-        Arguments:
+        Args:
             path: Common prefix of paths to the data files for both languages.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
@@ -46,7 +46,7 @@ class TranslationDataset(data.Dataset):
                train='train', validation='val', test='test', **kwargs):
         """Create dataset objects for splits of a TranslationDataset.
 
-        Arguments:
+        Args:
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -87,7 +87,7 @@ class Multi30k(TranslationDataset):
                train='train', validation='val', test='test2016', **kwargs):
         """Create dataset objects for splits of the Multi30k dataset.
 
-        Arguments:
+        Args:
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -127,7 +127,7 @@ class IWSLT(TranslationDataset):
                test='IWSLT16.TED.tst2014', **kwargs):
         """Create dataset objects for splits of the IWSLT dataset.
 
-        Arguments:
+        Args:
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -201,7 +201,7 @@ class WMT14(TranslationDataset):
                test='newstest2014.tok.bpe.32000', **kwargs):
         """Create dataset objects for splits of the WMT 2014 dataset.
 
-        Arguments:
+        Args:
             exts: A tuple containing the extensions for each language. Must be
                 either ('.en', '.de') or the reverse.
             fields: A tuple containing the fields that will be used for data

@@ -30,7 +30,7 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
     def __init__(self, data, vocab, transform):
         """Initiate language modeling dataset.
 
-        Arguments:
+        Args:
             data: a tensor of tokens. tokens are ids after
                 numericalizing the string tokens.
                 torch.tensor([token_id_1, token_id_2, token_id_3, token_id1]).long()
@@ -94,7 +94,7 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, data_select=('train', 'v
     Create language modeling dataset: WikiText2
     Separately returns the train/test/valid set
 
-    Arguments:
+    Args:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
@@ -128,7 +128,7 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, data_select=('train', 
     Create language modeling dataset: WikiText103
     Separately returns the train/test/valid set
 
-    Arguments:
+    Args:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
@@ -163,7 +163,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, data_select=('train',
     Create language modeling dataset: PennTreebank
     Separately returns the train/test/valid set
 
-    Arguments:
+    Args:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable
@@ -198,7 +198,7 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, data_select=('train')
     Create language modeling dataset: WMTNewsCrawl
     returns the train set
 
-    Arguments:
+    Args:
         tokenizer: the tokenizer used to preprocess raw text data.
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well (see example below). A custom tokenizer is callable

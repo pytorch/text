@@ -46,7 +46,7 @@ def SQuAD1(root='.data', data_select=('train', 'dev')):
                   ['Saint Bernadette Soubirous'],
                   [515])
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets (Default: ('train', 'dev'))
             By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
@@ -70,7 +70,7 @@ def SQuAD2(root='.data', data_select=('train', 'dev')):
                   ['in the late 1990s'],
                   [269])
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets (Default: ('train', 'dev'))
             By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,

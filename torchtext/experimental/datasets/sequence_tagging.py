@@ -74,7 +74,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
     def __init__(self, data, vocabs, transforms):
         """Initiate sequence tagging dataset.
 
-        Arguments:
+        Args:
             data: a list of word and its respective tags. Example:
                 [[word, POS, dep_parsing label, ...]]
             vocabs: a list of vocabularies for its respective tags.
@@ -113,7 +113,7 @@ def UDPOS(root=".data", vocabs=None, data_select=("train", "valid", "test")):
 
     Separately returns the training, validation, and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         vocabs: A list of voabularies for each columns in the dataset. Must be in an
             instance of List
@@ -139,7 +139,7 @@ def CoNLL2000Chunking(root=".data", vocabs=None, data_select=("train", "test")):
 
     Separately returns the training and test dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         vocabs: A list of voabularies for each columns in the dataset. Must be in an
             instance of List
