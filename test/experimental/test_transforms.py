@@ -74,7 +74,7 @@ class TestTransforms(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'spm_torchscript.pt')
-            spm = sentencepiece_tokenizer((model_path)).to_ivalue()
+            spm = sentencepiece_tokenizer((model_path)).__prepare_scriptable__()
             torch.save(spm, save_path)
             loaded_spm = torch.load(save_path)
             self.assertEqual(expected, loaded_spm(input))
