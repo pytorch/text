@@ -191,13 +191,15 @@ class Vocab(nn.Module):
 
     @torch.jit.export
     def __setitem__(self, token: str, index: int) -> None:
-        r"""
+        r"""Set token to a specific index. The original token assigned to index is
+        replaced by the new token.
+
         Args:
             token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
 
         Raises:
-            RuntimeError: if `index` not between [0, Vocab.size()] or if token already exists in the vocab.
+            RuntimeError: if `index` not between [0, Vocab.size()]
         """
         self.vocab[token] = index
 
