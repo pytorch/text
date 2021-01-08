@@ -59,8 +59,14 @@ void Vocab::__setitem__(const std::string &token, const int64_t &index) {
         "Token " + token +
         " has already been in the Vocab. Please delete it first by call del func.");
   }
-  item->first = token;
+
+  if (index == static_cast<int64_t>(stoi_.size())) append_token(token);
+  else {
+  auto it = stoi_.find(itos_[index]); 
+  stoi_.erase(it);
+  stoi_[token] = index;
   itos_[index] = token;
+  }
 }
 
 void Vocab::append_token(const std::string &token) {

@@ -64,11 +64,13 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['not_in_it'], 0)
+        self.assertEqual(v['b'], 0)
 
         v['b'] = 1
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['b'], 1)
         self.assertEqual(v['not_in_it'], 0)
+        self.assertEqual(v['a'], 0)
 
     def test_vocab_insert_token(self):
         c = OrderedDict({'<unk>': 2, 'a': 2})
