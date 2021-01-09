@@ -393,12 +393,6 @@ class VocabTransform(nn.Module):
 
         return self.vocab.lookup_indices(tokens)
 
-    def __prepare_scriptable__(self):
-        if hasattr(self.vocab, '__prepare_scriptable__'):
-            vocab = self.vocab.__prepare_scriptable__()
-            return VocabTransform(vocab)
-        return self
-
 
 class VectorTransform(nn.Module):
     r"""Vector transform
@@ -429,9 +423,3 @@ class VectorTransform(nn.Module):
         """
 
         return self.vector.lookup_vectors(tokens)
-
-    def __prepare_scriptable__(self):
-        if hasattr(self.vector, '__prepare_scriptable__'):
-            vector = self.vector.__prepare_scriptable__()
-            return VectorTransform(vector)
-        return self
