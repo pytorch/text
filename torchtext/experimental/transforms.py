@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from typing import List
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
-from collections import OrderedDict
 from torch import Tensor
 from torchtext._torchtext import SentencePiece as SentencePiecePybind
 import io
@@ -187,17 +186,6 @@ class TextSequentialTransforms(nn.Sequential):
         for module in self:
             input = module(input)
         return input
-
-    def __prepare_scriptable__(self):
-        r"""Return a JITable TextSequentialTransforms.
-        """
-
-        module_list = []
-        for _idx, _module in enumerate(self):
-            if hasattr(_module, '__prepare_scriptable__'):
-                _module = _module.__prepare_scriptable__()
-            module_list.append((str(_idx), _module))
-        return TextSequentialTransforms(OrderedDict(module_list))
 
 
 PRETRAINED_SP_MODEL = {
