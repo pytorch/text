@@ -110,6 +110,8 @@ class TestVocab(TorchtextTestCase):
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         assert not v.is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         assert v.__prepare_scriptable__().is_jitable
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
@@ -208,6 +210,8 @@ class TestVocab(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
             torch.save(v.__prepare_scriptable__(), vocab_path)
             loaded_v = torch.load(vocab_path)
             self.assertEqual(v.get_itos(), expected_itos)

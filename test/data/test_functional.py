@@ -101,6 +101,8 @@ class TestFunctional(TorchtextTestCase):
         eager_tokens = basic_english_tokenizer(test_sample)
 
         assert not basic_eng_norm.is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         assert basic_eng_norm.__prepare_scriptable__().is_jitable
 
         self.assertEqual(experimental_jit_tokens, ref_results)
@@ -121,6 +123,8 @@ class TestFunctional(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'ben_torchscrip.pt')
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
             ben = basic_english_normalize().__prepare_scriptable__()
             torch.save(ben, save_path)
             loaded_ben = torch.load(save_path)
@@ -153,6 +157,8 @@ class TestFunctional(TorchtextTestCase):
         jit_tokens = jit_r_tokenizer(test_sample)
 
         assert not r_tokenizer.is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         assert r_tokenizer.__prepare_scriptable__().is_jitable
 
         self.assertEqual(eager_tokens, ref_results)
@@ -186,6 +192,8 @@ class TestFunctional(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'regex_torchscript.pt')
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
             tokenizer = regex_tokenizer(patterns_list).__prepare_scriptable__()
             torch.save(tokenizer, save_path)
             loaded_tokenizer = torch.load(save_path)

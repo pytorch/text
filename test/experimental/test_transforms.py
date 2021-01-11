@@ -74,6 +74,8 @@ class TestTransforms(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'spm_torchscript.pt')
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
             spm = sentencepiece_tokenizer((model_path)).__prepare_scriptable__()
             torch.save(spm, save_path)
             loaded_spm = torch.load(save_path)

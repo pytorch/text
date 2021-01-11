@@ -57,6 +57,8 @@ class TestVectors(TorchtextTestCase):
         jit_vectors_obj = torch.jit.script(vectors_obj)
 
         assert not vectors_obj.is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
         assert vectors_obj.__prepare_scriptable__().is_jitable
 
         self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
@@ -148,6 +150,8 @@ class TestVectors(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             vector_path = os.path.join(self.test_dir, 'vectors_torchscript.pt')
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
             torch.save(vectors_obj.__prepare_scriptable__(), vector_path)
             loaded_vectors_obj = torch.load(vector_path)
 
