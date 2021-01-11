@@ -55,8 +55,7 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
     return tuple(RawTextIterableDataset(dataset_name,
-                                        NUM_LINES[dataset_name][item],
-                                        data[item]) for item in data_select)
+                                        NUM_LINES[dataset_name][item], data[item]) for item in data_select)
 
 
 def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
@@ -65,7 +64,7 @@ def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
     Create language modeling dataset: WikiText2
     Separately returns the train/test/valid set
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tupel for the returned datasets. Default: ('train', 'valid, 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -90,7 +89,7 @@ def WikiText103(root='.data', data_select=('train', 'valid', 'test')):
     Create language modeling dataset: WikiText103
     Separately returns the train/test/valid set
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: the returned datasets. Default: ('train', 'valid','test')
             By default, all the three datasets (train, test, valid) are generated. Users
@@ -113,7 +112,7 @@ def PennTreebank(root='.data', data_select=('train', 'valid', 'test')):
     Create language modeling dataset: PennTreebank
     Separately returns the train/test/valid set
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
@@ -138,7 +137,7 @@ def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
 
     Create language modeling dataset: WMTNewsCrawl
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         data_select: a string or tuple for the returned datasets.
             (Default: 'train')

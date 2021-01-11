@@ -209,7 +209,7 @@ PRETRAINED_SP_MODEL = {
 def load_sp_model(sp_model):
     r"""Load a  sentencepiece model for file.
 
-    Arguments:
+    Args:
         sp_model: the file path or a file object saving the sentencepiece model.
 
     Outputs:

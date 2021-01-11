@@ -29,7 +29,7 @@ class Dataset(torch.utils.data.Dataset):
     def __init__(self, examples, fields, filter_pred=None):
         """Create a dataset from a list of Examples and Fields.
 
-        Arguments:
+        Args:
             examples: List of Examples.
             fields (List(tuple(str, Field))): The Fields to use in this tuple. The
                 string is a field name, and the Field is the associated field.
@@ -55,7 +55,7 @@ class Dataset(torch.utils.data.Dataset):
                test=None, **kwargs):
         """Create Dataset objects for multiple splits of a dataset.
 
-        Arguments:
+        Args:
             path (str): Common prefix of the splits' file paths, or None to use
                 the result of cls.download(root).
             root (str): Root dataset storage directory. Default is '.data'.
@@ -87,7 +87,7 @@ class Dataset(torch.utils.data.Dataset):
               random_state=None):
         """Create train-test(-valid?) splits from the instance's examples.
 
-        Arguments:
+        Args:
             split_ratio (float or List of floats): a number [0, 1] denoting the amount
                 of data to be used for the training split (rest is used for test),
                 or a list of numbers denoting the relative sizes of train, test and valid
@@ -157,7 +157,7 @@ class Dataset(torch.utils.data.Dataset):
     def download(cls, root, check=None):
         """Download and unzip an online archive (.zip, .gz, or .tgz).
 
-        Arguments:
+        Args:
             root (str): Folder to download data to.
             check (str or None): Folder whose existence indicates
                 that the dataset has already been downloaded, or
@@ -201,7 +201,7 @@ class Dataset(torch.utils.data.Dataset):
     def filter_examples(self, field_names):
         """Remove unknown words from dataset examples with respect to given field.
 
-        Arguments:
+        Args:
             field_names (list(str)): Within example only the parts with field names in
                 field_names will have their unknown words deleted.
         """
@@ -221,7 +221,7 @@ class TabularDataset(Dataset):
                  csv_reader_params={}, **kwargs):
         """Create a TabularDataset given a path, file format, and field list.
 
-        Arguments:
+        Args:
             path (str): Path to the data file.
             format (str): The format of the data file. One of "CSV", "TSV", or
                 "JSON" (case-insensitive).
@@ -325,7 +325,7 @@ def stratify(examples, strata_field):
 def rationed_split(examples, train_ratio, test_ratio, val_ratio, rnd):
     """Create a random permutation of examples, then split them by ratios
 
-    Arguments:
+    Args:
         examples: a list of data
         train_ratio, test_ratio, val_ratio: split fractions.
         rnd: a random shuffler

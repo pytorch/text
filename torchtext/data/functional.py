@@ -21,7 +21,7 @@ def generate_sp_model(filename, vocab_size=20000,
                       model_prefix='m_user'):
     r"""Train a SentencePiece tokenizer.
 
-    Arguments:
+    Args:
         filename: the data file for training SentencePiece model.
         vocab_size: the size of vocabulary (Default: 20,000).
         model_type: the type of SentencePiece model, including unigram,
@@ -42,7 +42,7 @@ def generate_sp_model(filename, vocab_size=20000,
 def load_sp_model(spm):
     r"""Load a  sentencepiece model for file.
 
-    Arguments:
+    Args:
         spm: the file path or a file object saving the sentencepiece model.
 
     Outputs:
@@ -70,7 +70,7 @@ def sentencepiece_numericalizer(sp_model):
     r"""A sentencepiece model to numericalize a text sentence into
        a generator over the ids.
 
-    Arguments:
+    Args:
         sp_model: a SentencePiece model.
 
     Outputs:
@@ -96,7 +96,7 @@ def sentencepiece_tokenizer(sp_model):
     r"""A sentencepiece model to tokenize a text sentence into
        a generator over the tokens.
 
-    Arguments:
+    Args:
         sp_model: a SentencePiece model.
 
     Outputs:
@@ -157,7 +157,7 @@ def simple_space_split(iterator):
 def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
     r"""Yield a list of ids from an token iterator with a vocab.
 
-    Arguments:
+    Args:
         vocab: the vocabulary convert token into id.
         iterator: the iterator yield a list of tokens.
         removed_tokens: removed tokens from output dataset (Default: None)

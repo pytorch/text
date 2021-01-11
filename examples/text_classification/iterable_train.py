@@ -60,7 +60,7 @@ def train_and_valid(lr_, num_epoch, train_data_, valid_data_):
     r"""
     Here we use SGD optimizer to train the model.
 
-    Arguments:
+    Args:
         lr_: learning rate
         num_epoch: the number of epoches for training the model
         train_data_: the data used to train the model
@@ -108,7 +108,7 @@ def train_and_valid(lr_, num_epoch, train_data_, valid_data_):
 
 def test(data_):
     r"""
-    Arguments:
+    Args:
         data_: the data used to train the model
     """
     data = DataLoader(
@@ -137,7 +137,7 @@ def get_csv_iterator(data_path, ngrams, vocab, start=0, num_lines=None):
     Generate an iterator to read CSV file.
     The yield values are an integer for the label and a tensor for the text part.
 
-    Arguments:
+    Args:
         data_path: a path for the data file.
         ngrams: the number used for ngrams.
         vocab: a vocab object saving the string-to-index information
@@ -171,7 +171,7 @@ class Dataset(torch.utils.data.IterableDataset):
     An iterable dataset to save the data. This dataset supports multi-processing
     to load the data.
 
-    Arguments:
+    Args:
         iterator: the iterator to read data.
         num_lines: the number of lines read by the individual iterator.
     """
