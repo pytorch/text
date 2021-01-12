@@ -202,7 +202,8 @@ class InProjContainer(torch.nn.Module):
     def __init__(self, query_proj, key_proj, value_proj):
         r"""A in-proj container to project query/key/value in MultiheadAttention. This module happens before reshaping
         the projected query/key/value into multiple heads. See the linear layers (bottom) of Multi-head Attention in
-        Fig 2 of Attention Is All You Need paper. Also check the usage example in torchtext.nn.MultiheadAttentionContainer.
+        Fig 2 of Attention Is All You Need paper. Also check the usage example
+        in torchtext.nn.MultiheadAttentionContainer.
 
         Args:
             query_proj: a proj layer for query. A typical projection layer is torch.nn.Linear.
