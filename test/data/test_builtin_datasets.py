@@ -181,12 +181,18 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(de_sentence, expected_de_sentence)
             self.assertEqual(en_sentence, expected_en_sentence)
 
-        assert_nth_pair_is_equal(0, (['David', 'Gallo', ':', 'Das', 'ist', 'Bill', 'Lange', '.', 'Ich', 'bin', 'Dave', 'Gallo', '.', '\n'],
-                                     ['David', 'Gallo', ':', 'This', 'is', 'Bill', 'Lange', '.', 'I', "'m", 'Dave', 'Gallo', '.', '\n']))
-        assert_nth_pair_is_equal(10, (['Die', 'meisten', 'Tiere', 'leben', 'in', 'den', 'Ozeanen', '.', '\n'],
-                                      ['Most', 'of', 'the', 'animals', 'are', 'in', 'the', 'oceans', '.', '\n']))
-        assert_nth_pair_is_equal(20, (['Es', 'ist', 'einer', 'meiner', 'Lieblinge', ',', 'weil', 'es', 'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
-                                      ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s", 'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
+        assert_nth_pair_is_equal(0, (['David', 'Gallo', ':', 'Das', 'ist', 'Bill', 'Lange',
+                                      '.', 'Ich', 'bin', 'Dave', 'Gallo', '.', '\n'],
+                                     ['David', 'Gallo', ':', 'This', 'is', 'Bill', 'Lange',
+                                      '.', 'I', "'m", 'Dave', 'Gallo', '.', '\n']))
+        assert_nth_pair_is_equal(10, (['Die', 'meisten', 'Tiere', 'leben', 'in',
+                                       'den', 'Ozeanen', '.', '\n'],
+                                      ['Most', 'of', 'the', 'animals', 'are', 'in',
+                                       'the', 'oceans', '.', '\n']))
+        assert_nth_pair_is_equal(20, (['Es', 'ist', 'einer', 'meiner', 'Lieblinge', ',', 'weil', 'es',
+                                       'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
+                                      ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s",
+                                       'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
         datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
         conditional_remove(datafile)
 
