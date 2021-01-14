@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets &mdash; torchtext 0.9.0.dev20210113 documentation</title>
+  <title>torchtext.datasets &mdash; torchtext 0.9.0.dev20210114 documentation</title>
   
 
   
@@ -184,7 +184,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210113
+                  0.9.0.dev20210114
                 </div>
               
             
@@ -605,6 +605,27 @@ set. Default: ‘ptb.test.txt’.</p></li>
 <dt id="torchtext.datasets.SST">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SST</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">text_field</em>, <em class="sig-param">label_field</em>, <em class="sig-param">subtrees=False</em>, <em class="sig-param">fine_grained=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sst.html#SST"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SST" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="torchtext.datasets.SST.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">text_field</em>, <em class="sig-param">label_field</em>, <em class="sig-param">subtrees=False</em>, <em class="sig-param">fine_grained=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sst.html#SST.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SST.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an SST dataset instance given a path and fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Path to the data file</p></li>
+<li><p><strong>text_field</strong> – The field that will be used for text data.</p></li>
+<li><p><strong>label_field</strong> – The field that will be used for label data.</p></li>
+<li><p><strong>subtrees</strong> – Whether to include sentiment-tagged subphrases
+in addition to complete examples. Default: False.</p></li>
+<li><p><strong>fine_grained</strong> – Whether to use 5-class instead of 3-class
+labeling. Default: False.</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of
+data.Dataset.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="torchtext.datasets.SST.iters">
 <em class="property">classmethod </em><code class="sig-name descname">iters</code><span class="sig-paren">(</span><em class="sig-param">batch_size=32</em>, <em class="sig-param">device=0</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vectors=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sst.html#SST.iters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SST.iters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create iterator objects for splits of the SST dataset.</p>
@@ -660,6 +681,23 @@ Dataset.</p></li>
 <dt id="torchtext.datasets.IMDB">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">IMDB</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">text_field</em>, <em class="sig-param">label_field</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IMDB" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="torchtext.datasets.IMDB.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">text_field</em>, <em class="sig-param">label_field</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IMDB.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an IMDB dataset instance given a path and fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Path to the dataset’s highest level directory</p></li>
+<li><p><strong>text_field</strong> – The field that will be used for text data.</p></li>
+<li><p><strong>label_field</strong> – The field that will be used for label data.</p></li>
+<li><p><strong>keyword arguments</strong> (<em>Remaining</em>) – Passed to the constructor of
+data.Dataset.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="torchtext.datasets.IMDB.iters">
 <em class="property">classmethod </em><code class="sig-name descname">iters</code><span class="sig-paren">(</span><em class="sig-param">batch_size=32</em>, <em class="sig-param">device=0</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vectors=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB.iters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IMDB.iters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create iterator objects for splits of the IMDB dataset.</p>

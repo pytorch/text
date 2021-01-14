@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.imdb &mdash; torchtext 0.9.0.dev20210113 documentation</title>
+  <title>torchtext.datasets.imdb &mdash; torchtext 0.9.0.dev20210114 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210113
+                  0.9.0.dev20210114
                 </div>
               
             
@@ -324,7 +324,7 @@
     <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="IMDB.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IMDB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create an IMDB dataset instance given a path and fields.</span>
 
 <span class="sd">        Args:</span>
@@ -343,7 +343,7 @@
                     <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
                 <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Example</span><span class="o">.</span><span class="n">fromlist</span><span class="p">([</span><span class="n">text</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">fields</span><span class="p">))</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">IMDB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IMDB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IMDB.splits"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IMDB.splits">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">text_field</span><span class="p">,</span> <span class="n">label_field</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span>
