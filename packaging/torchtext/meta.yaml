@@ -25,6 +25,8 @@ requirements:
 
 build:
   string: py{{py}}
+  script_env:
+    - BUILD_VERSION
 
 test:
   imports:
