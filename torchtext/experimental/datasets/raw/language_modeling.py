@@ -54,7 +54,8 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
         logging.info('Creating {} data'.format(item))
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item], data[item]) for item in data_select)
+    return tuple(RawTextIterableDataset(dataset_name,
+                                        NUM_LINES[dataset_name][item], data[item]) for item in data_select)
 
 
 def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
