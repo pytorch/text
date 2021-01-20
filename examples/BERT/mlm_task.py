@@ -8,6 +8,9 @@ from utils import run_demo, run_ddp, wrap_up
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
+from torchtext.experimental.transforms import basic_english_normalize
+from torchtext.experimental.transforms import sentencepiece_tokenizer
+from transforms import PretrainedSPVocab
 
 
 def collate_batch(batch_data, args, mask_id, cls_id):
@@ -32,12 +35,11 @@ def process_raw_data(raw_data, args):
     return raw_data
 
 
-def evaluate(data_source, model, vocab, ntokens, criterion, args, device):
+def evaluate(data_source, model, special_token_id, ntokens, criterion, args, device):
     # Turn on evaluation mode which disables dropout.
     model.eval()
     total_loss = 0.
-    mask_id = vocab.stoi['<MASK>']
-    cls_id = vocab.stoi['<cls>']
+    mask_id, cls_id = special_token_id
     dataloader = DataLoader(data_source, batch_size=args.batch_size * args.bptt,
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, cls_id))
     with torch.no_grad():
@@ -56,13 +58,12 @@ def evaluate(data_source, model, vocab, ntokens, criterion, args, device):
     return total_loss / ((len(data_source) - 1) / args.bptt / args.batch_size)
 
 
-def train(model, vocab, train_loss_log, train_data,
+def train(model, special_token_id, train_loss_log, train_data,
           optimizer, criterion, ntokens, epoch, scheduler, args, device, rank=None):
     model.train()
     total_loss = 0.
     start_time = time.time()
-    mask_id = vocab.stoi['<MASK>']
-    cls_id = vocab.stoi['<cls>']
+    mask_id, cls_id = special_token_id
     train_loss_log.append(0.0)
     dataloader = DataLoader(train_data, batch_size=args.batch_size * args.bptt,
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, cls_id))
@@ -120,24 +121,34 @@ def run_main(args, rank=None):
     else:
         print("dataset for MLM task is not supported")
 
-    try:
+    # Set up tokenizer and vocab
+    if args.spm_path != 'None':
+        tokenizer = sentencepiece_tokenizer(args.spm_path)
+        vocab = PretrainedSPVocab(args.spm_path)
+        special_token_id = vocab(['<MASK>', '<cls>'])
+    elif args.save_vocab != 'None':
+        tokenizer = basic_english_normalize()
         vocab = torch.load(args.save_vocab)
-    except:
+        special_token_id = (vocab.stoi['<MASK>'], vocab.stoi['<cls>'])
+    else:
+        tokenizer = basic_english_normalize()
         train_dataset, valid_dataset, test_dataset = WLMDataset()
         old_vocab = train_dataset.vocab
         vocab = torchtext.vocab.Vocab(counter=old_vocab.freqs,
                                       specials=['<unk>', '<pad>', '<MASK>'])
         with open(args.save_vocab, 'wb') as f:
             torch.save(vocab, f)
+        special_token_id = (vocab.stoi['<MASK>'], vocab.stoi['<cls>'])
+    ntokens = len(vocab)
 
     if args.dataset == 'WikiText103' or args.dataset == 'WikiText2':
-        train_dataset, valid_dataset, test_dataset = WLMDataset(vocab=vocab)
+        train_dataset, valid_dataset, test_dataset = WLMDataset(tokenizer=tokenizer, vocab=vocab)
         train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
         valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
         test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
     elif args.dataset == 'WMTNewsCrawl':
         from torchtext.experimental.datasets import WikiText2
-        test_dataset, valid_dataset = WikiText2(vocab=vocab, data_select=('test', 'valid'))
+        test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer, vocab=vocab, data_select=('test', 'valid'))
         valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
         test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
         train_dataset, = WLMDataset(vocab=vocab, data_select='train')
@@ -156,7 +167,7 @@ def run_main(args, rank=None):
         valid_dataset = LanguageModelingDataset(val_data, vocab)
         test_dataset = LanguageModelingDataset(test_data, vocab)
     elif args.dataset == 'BookCorpus':
-        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab)
+        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab, tokenizer=tokenizer)
 
     train_data = process_raw_data(train_dataset.data, args)
     if rank is not None:
@@ -166,7 +177,6 @@ def run_main(args, rank=None):
     val_data = process_raw_data(valid_dataset.data, args)
     test_data = process_raw_data(test_dataset.data, args)
 
-    ntokens = len(train_dataset.get_vocab())
     if args.checkpoint != 'None':
         model = torch.load(args.checkpoint)
     else:
@@ -184,9 +194,9 @@ def run_main(args, rank=None):
 
     for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
-        train(model, train_dataset.vocab, train_loss_log, train_data,
+        train(model, special_token_id, train_loss_log, train_data,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
-        val_loss = evaluate(val_data, model, train_dataset.vocab, ntokens, criterion, args, device)
+        val_loss = evaluate(val_data, model, special_token_id, ntokens, criterion, args, device)
         if (rank is None) or (rank == 0):
             val_loss_log.append(val_loss)
             print('-' * 89)
@@ -211,13 +221,13 @@ def run_main(args, rank=None):
         map_location = {'cuda:%d' % x: 'cuda:%d' % y for x, y in device_pairs}
         model.load_state_dict(
             torch.load(args.save, map_location=map_location))
-        test_loss = evaluate(test_data, model, train_dataset.vocab, ntokens, criterion, args, device)
+        test_loss = evaluate(test_data, model, special_token_id, ntokens, criterion, args, device)
         if rank == 0:
             wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'mlm_loss.txt', 'full_mlm_model.pt')
     else:
         with open(args.save, 'rb') as f:
             model = torch.load(f)
-        test_loss = evaluate(test_data, model, train_dataset.vocab, ntokens, criterion, args, device)
+        test_loss = evaluate(test_data, model, special_token_id, ntokens, criterion, args, device)
         wrap_up(train_loss_log, val_loss_log, test_loss, args, model, 'mlm_loss.txt', 'full_mlm_model.pt')
 
 
@@ -253,6 +263,8 @@ if __name__ == "__main__":
                         help='path to save the final model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
+    parser.add_argument('--spm-path', type=str, default='None',
+                        help='path to load the sentencepiece model')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')
     parser.add_argument('--dataset', type=str, default='WikiText2',
