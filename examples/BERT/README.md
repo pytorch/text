@@ -19,6 +19,10 @@ or run the tasks on a SLURM powered cluster with Distributed Data Parallel (DDP)
 The result ppl of mlm_task is 18.97899 for the test set.
 The result loss of ns_task is 0.05446 for the test set.
 
+We also add support to use SentencePiece for processing the string text data. Please note that the vocabulary in the SentencePiece case is different from the previous one. So you have to train the model from scratch.
+    python mlm_task.py --epochs 1 --spm-path '.data/text_unigram_25000.model'
+    python ns_task.py --epochs 1 --spm-path '.data/text_unigram_25000.model'
+
 ## Fine-tune pre-trained BERT for question-answer task
 
 With SQuAD dataset, the pre-trained BERT is used for question-answer task:
