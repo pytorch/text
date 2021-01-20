@@ -7,6 +7,9 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from model import NextSentenceTask, BertModel
 from utils import run_demo, run_ddp, wrap_up
+from torchtext.experimental.transforms import basic_english_normalize
+from torchtext.experimental.transforms import sentencepiece_tokenizer
+from transforms import PretrainedSPVocab
 
 
 def process_raw_data(whole_data, args):
@@ -57,9 +60,10 @@ def collate_batch(batch, args, cls_id, sep_id, pad_id):
     return seq_input, tok_type, torch.tensor(same_sentence_labels).long().contiguous()
 
 
-def evaluate(data_source, model, device, criterion, cls_id, sep_id, pad_id, args):
+def evaluate(data_source, model, device, criterion, special_token_id, args):
     model.eval()
     total_loss = 0.
+    cls_id, pad_id, sep_id = special_token_id
     batch_size = args.batch_size
     dataloader = DataLoader(data_source, batch_size=batch_size, shuffle=True,
                             collate_fn=lambda b: collate_batch(b, args, cls_id, sep_id, pad_id))
@@ -81,9 +85,10 @@ def evaluate(data_source, model, device, criterion, cls_id, sep_id, pad_id, args
 
 
 def train(train_dataset, model, train_loss_log, device, optimizer, criterion,
-          epoch, scheduler, cls_id, sep_id, pad_id, args, rank=None):
+          epoch, scheduler, special_token_id, args, rank=None):
     model.train()
     total_loss = 0.
+    cls_id, pad_id, sep_id = special_token_id
     start_time = time.time()
     batch_size = args.batch_size
     dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
@@ -130,17 +135,22 @@ def run_main(args, rank=None):
         device = list(range(rank * n, (rank + 1) * n))
     else:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    vocab = torch.load(args.save_vocab)
-    cls_id = vocab.stoi['<cls>']
-    pad_id = vocab.stoi['<pad>']
-    sep_id = vocab.stoi['<sep>']
+
+    if args.spm_path != 'None':
+        tokenizer = sentencepiece_tokenizer(args.spm_path)
+        vocab = PretrainedSPVocab(args.spm_path)
+        special_token_id = vocab(['<cls>', '<pad>', '<sep>'])
+    else:
+        tokenizer = basic_english_normalize()
+        vocab = torch.load(args.save_vocab)
+        special_token_id = (vocab.stoi['<cls>'], vocab.stoi['<pad>'], vocab.stoi['<sep>'])
 
     if args.dataset == 'WikiText103':
         from torchtext.experimental.datasets import WikiText103
-        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=vocab)
+        train_dataset, valid_dataset, test_dataset = WikiText103(tokenizer=tokenizer, vocab=vocab)
     elif args.dataset == 'BookCorpus':
         from data import BookCorpus
-        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab, min_sentence_len=60)
+        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab, tokenizer=tokenizer, min_sentence_len=60)
 
     if rank is not None:
         chunk_len = len(train_dataset.data) // args.world_size
@@ -167,9 +177,9 @@ def run_main(args, rank=None):
     for epoch in range(1, args.epochs + 1):
         epoch_start_time = time.time()
         train(process_raw_data(train_dataset, args), model, train_loss_log, device, optimizer,
-              criterion, epoch, scheduler, cls_id, sep_id, pad_id, args, rank)
+              criterion, epoch, scheduler, special_token_id, args, rank)
         val_loss = evaluate(process_raw_data(valid_dataset, args), model, device, criterion,
-                            cls_id, sep_id, pad_id, args)
+                            special_token_id, args)
         val_loss_log.append(val_loss)
 
         if (rank is None) or (rank == 0):
@@ -195,7 +205,7 @@ def run_main(args, rank=None):
         map_location = {'cuda:%d' % x: 'cuda:%d' % y for x, y in device_pairs}
         model.load_state_dict(torch.load(args.save, map_location=map_location))
         test_loss = evaluate(process_raw_data(test_dataset, args), model, device, criterion,
-                             cls_id, sep_id, pad_id, args)
+                             special_token_id, args)
         if rank == 0:
             wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'ns_loss.txt', 'ns_model.pt')
     else:
@@ -203,7 +213,7 @@ def run_main(args, rank=None):
             model = torch.load(f)
 
         test_loss = evaluate(process_raw_data(test_dataset, args), model, device, criterion,
-                             cls_id, sep_id, pad_id, args)
+                             special_token_id, args)
         wrap_up(train_loss_log, val_loss_log, test_loss, args, model, 'ns_loss.txt', 'ns_model.pt')
 
 
@@ -235,6 +245,8 @@ if __name__ == "__main__":
                         help='path to save the bert model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
+    parser.add_argument('--spm-path', type=str, default='None',
+                        help='path to load the sentencepiece model')
     parser.add_argument('--bert-model', type=str, default='mlm_bert.pt',
                         help='path to save the pretrained bert')
     parser.add_argument('--frac_ns', type=float, default=0.5,
