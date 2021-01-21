@@ -4,8 +4,7 @@ import logging
 from torchtext.data.utils import get_tokenizer
 import random
 from torchtext.experimental.datasets import LanguageModelingDataset
-from torch.utils.data.datasets import ListDirFilesIterableDataset, \
-    LoadFilesFromDiskIterableDataset
+from torch.utils.data.datasets import ListDirFilesIterableDataset, LoadFilesFromDiskIterableDataset
 
 
 ###################################################################
@@ -61,7 +60,7 @@ def CC100(data_directory, languages):
 
     Examples:
         >>> from data import CC100
-        >>> dataset = CC100('/datasets01/cc100/031720/', {'ss_SZ', 'ln_CD', 'sc_IT'})
+        >>> dataset = CC100('/datasets01/cc100/031720/', {'ss_SZ.txt', 'ln_CD.txt', 'sc_IT.txt'})
         >>> for rec in dataset:
                 print(rec[0], rec[1].read())
     """
