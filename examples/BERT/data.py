@@ -61,7 +61,7 @@ def CC100(data_directory, languages):
 
     Examples:
         >>> from data import CC100
-        >>> dataset = CC100('/datasets01/cc100/031720/', ['ss_SZ', 'ln_CD', 'sc_IT'])
+        >>> dataset = CC100('/datasets01/cc100/031720/', {'ss_SZ', 'ln_CD', 'sc_IT'})
         >>> for rec in dataset:
                 print(rec[0], rec[1].read())
     """
