@@ -55,15 +55,28 @@ def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
                      for d in data_select)
 
 
-def CC100(data_directory, languages):
-    """
+class CC100(torch.utils.data.IterableDataset):
+    def __init__(self, data_directory, languages, chunk=16):
+        """
 
-    Examples:
-        >>> from data import CC100
-        >>> dataset = CC100('/datasets01/cc100/031720/', {'ss_SZ.txt', 'ln_CD.txt', 'sc_IT.txt'})
-        >>> for rec in dataset:
-                print(rec[0], rec[1].read())
-    """
+        Examples:
+            >>> from data import CC100
+            >>> dataset = CC100('/datasets01/cc100/031720/', {'zh_TW.txt', 'ja_XX.txt'}, chunk=10)
+            >>> for rec in dataset:
+            >>>     print(rec)
+        """
 
-    file_paths = ListDirFilesIterableDataset(data_directory, languages)
-    return LoadFilesFromDiskIterableDataset(file_paths)
+        file_paths = ListDirFilesIterableDataset(data_directory, languages)
+        self.dataset_list = [item[1] for item in LoadFilesFromDiskIterableDataset(file_paths)]
+        self.chunk = chunk
+        self._count = 0
+        self._current_dataset = 0
+
+    def __iter__(self):
+        for i, dataset in enumerate(self.dataset_list):
+            _count = 0
+            for _count in range(self.chunk):
+                _text = dataset.readline()
+                while _text == b'\n':
+                    _text = dataset.readline()
+                yield _text.decode('utf-8')
