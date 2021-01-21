@@ -10,6 +10,9 @@ from model import QuestionAnswerTask
 from metrics import compute_qa_exact, compute_qa_f1
 from utils import print_loss_log
 from model import BertModel
+from torchtext.experimental.transforms import basic_english_normalize
+from torchtext.experimental.transforms import sentencepiece_tokenizer
+from transforms import PretrainedSPVocab
 
 
 def process_raw_data(data):
@@ -143,6 +146,8 @@ if __name__ == "__main__":
                         help='path to save the final bert model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
+    parser.add_argument('--spm-path', type=str, default='None',
+                        help='path to load the sentencepiece model')
     parser.add_argument('--bert-model', type=str, default='ns_bert.pt',
                         help='path to save the pretrained bert')
     parser.add_argument('--emsize', type=int, default=768,
@@ -158,19 +163,25 @@ if __name__ == "__main__":
     args = parser.parse_args()
     torch.manual_seed(args.seed)
 
-    try:
+    if args.spm_path != 'None':
+        tokenizer = sentencepiece_tokenizer(args.spm_path)
+        vocab = PretrainedSPVocab(args.spm_path)
+        special_token_id = vocab(['<cls>', '<pad>', '<sep>'])
+    elif args.save_vocab != 'None':
+        tokenizer = basic_english_normalize()
         vocab = torch.load(args.save_vocab)
-    except:
-        train_dataset, dev_dataset = SQuAD1()
+        special_token_id = (vocab.stoi['<cls>'], vocab.stoi['<pad>'], vocab.stoi['<sep>'])
+    else:
+        tokenizer = basic_english_normalize()
+        train_dataset, dev_dataset = SQuAD1(vocab=vocab, tokenizer=tokenizer)
         old_vocab = train_dataset.vocab
         vocab = torchtext.vocab.Vocab(counter=old_vocab.freqs,
                                       specials=['<unk>', '<pad>', '<MASK>'])
         with open(args.save_vocab, 'wb') as f:
             torch.save(vocab, f)
-    pad_id = vocab.stoi['<pad>']
-    sep_id = vocab.stoi['<sep>']
-    cls_id = vocab.stoi['<cls>']
-    train_dataset, dev_dataset = SQuAD1(vocab=vocab)
+        special_token_id = (vocab.stoi['<cls>'], vocab.stoi['<pad>'], vocab.stoi['<sep>'])
+    cls_id, pad_id, sep_id = special_token_id
+    train_dataset, dev_dataset = SQuAD1(vocab=vocab, tokenizer=tokenizer)
     train_dataset = process_raw_data(train_dataset)
     dev_dataset = process_raw_data(dev_dataset)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

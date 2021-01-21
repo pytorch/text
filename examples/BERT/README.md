@@ -19,10 +19,6 @@ or run the tasks on a SLURM powered cluster with Distributed Data Parallel (DDP)
 The result ppl of mlm_task is 18.97899 for the test set.
 The result loss of ns_task is 0.05446 for the test set.
 
-We also add support to use SentencePiece for processing the string text data. Please note that the vocabulary in the SentencePiece case is different from the previous one. So you have to train the model from scratch.
-    python mlm_task.py --epochs 1 --spm-path '.data/text_unigram_25000.model'
-    python ns_task.py --epochs 1 --spm-path '.data/text_unigram_25000.model'
-
 ## Fine-tune pre-trained BERT for question-answer task
 
 With SQuAD dataset, the pre-trained BERT is used for question-answer task:
@@ -120,6 +116,14 @@ An example train/valid/test printout with the pretrained BERT model in question-
     =========================================================================================
     | End of training | test loss  1.61 | exact   66.124% | f1   76.373% 
     =========================================================================================
+
+## Process raw text data with a SentencePiece model 
+
+We support to use SentencePiece for processing the string text data in all the three workflows. Please note that the vocabulary in the SentencePiece case is different from the one above so you have to train the BERT model from scratch. A pretrained SentencePiece model with 25000 words based on the unigram model is available [here](https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_25000.model). 
+
+    python mlm_task.py --epochs 1 --spm-path '.data/text_unigram_25000.model'
+    python ns_task.py --epochs 1 --spm-path '.data/text_unigram_25000.model'
+    python qa_task.py  --bert-model ns_bert.pt --epochs 3 --spm-path '.data/text_unigram_25000.mode'
 
 ## Structure of the example
 
