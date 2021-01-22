@@ -84,7 +84,7 @@ def run_main(args, rank=None):
     ntokens = len(vocab)
 
     # dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
-    dataset = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=20, chunk=50)
+    dataset = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=500)
 
     model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
     model = model.to(device)
@@ -113,11 +113,11 @@ if __name__ == "__main__":
                         help='initial learning rate')
     parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=8,
+    parser.add_argument('--epochs', type=int, default=3,
                         help='upper epoch limit')
-    parser.add_argument('--batch_size', type=int, default=16, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                         help='batch size')
-    parser.add_argument('--bptt', type=int, default=160,
+    parser.add_argument('--bptt', type=int, default=128,
                         help='max. sequence length')
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout applied to layers (0 = no dropout)')
