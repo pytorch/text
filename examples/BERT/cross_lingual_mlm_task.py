@@ -263,7 +263,7 @@ if __name__ == "__main__":
                         help='path to save the final model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
-    parser.add_argument('--spm-path', type=str, default='None',
+    parser.add_argument('--spm-path', type=str, default='./sentencepiece.xlmr.model',
                         help='path to load the sentencepiece model')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')
@@ -275,7 +275,22 @@ if __name__ == "__main__":
                         help='the world size to initiate DPP')
     args = parser.parse_args()
 
-    if args.parallel == 'DDP':
-        run_demo(run_ddp, run_main, args)
-    else:
-        run_main(args)
+#    if args.parallel == 'DDP':
+#        run_demo(run_ddp, run_main, args)
+#    else:
+#        run_main(args)
+    from data import CC100
+    dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=10)
+    tokenizer = sentencepiece_tokenizer(args.spm_path)
+    vocab = PretrainedSPVocab(args.spm_path)
+    mask_id = vocab(['<MASK>'])
+
+    def collate_batch(batch):
+        output_tensor = []
+        for line in batch:
+            output_tensor += vocab(tokenizer(line))
+        return torch.tensor(output_tensor)
+    dataloader = DataLoader(dataset, batch_size=10,
+                            shuffle=False, collate_fn=collate_batch)
+    for item in dataloader:
+        print(item.size(), item)
