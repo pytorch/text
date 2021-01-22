@@ -169,6 +169,7 @@ class MLMTask(nn.Module):
         self.mlm_head = Linear(ninp, ntoken)
 
     def forward(self, src, token_type_input=None):
+        src = src.transpose(0, 1)  # Wrap up by nn.DataParallel
         output = self.bert_model(src, token_type_input)
         output = self.mlm_span(output)
         output = self.activation(output)
@@ -189,7 +190,6 @@ class CrossLingualMLMTask(nn.Module):
         self.mlm_head = Linear(ninp, ntoken)
 
     def forward(self, src, language_type):
-        src = src.transpose(0, 1)  # Wrap up by nn.DataParallel
         output = self.xlmr_model(src, language_type)
         output = self.mlm_span(output)
         output = self.activation(output)

@@ -82,7 +82,8 @@ def run_main(args, rank=None):
     mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
+    #dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
+    dataset = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=20, chunk=50)
     # train_data = process_raw_data(train_dataset.data, args)
 
     model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
