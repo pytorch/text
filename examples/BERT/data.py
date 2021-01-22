@@ -70,6 +70,7 @@ class CC100(torch.utils.data.IterableDataset):
         self.dataset_list = [item for item in LoadFilesFromDiskIterableDataset(file_paths)]
         self.start_line = start_line
         self.chunk = chunk
+        self.nlanguage = len(languages)
         self._count = 0
         self._current_dataset = 0
 
@@ -80,6 +81,9 @@ class CC100(torch.utils.data.IterableDataset):
             for _count in range(self.chunk):
                 _text = self.readline(dataset_handle)
                 yield language_id, _text.decode('utf-8')
+
+    def __len__(self):
+        return self.chunk * self.nlanguage
 
     def setup_dataset(self, dataset_handle):
         for _count in range(self.start_line):

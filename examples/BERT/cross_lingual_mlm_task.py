@@ -3,81 +3,54 @@ import time
 import math
 import torch
 import torch.nn as nn
-from model import MLMTask
-from utils import run_demo, run_ddp, wrap_up
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
+from data import CC100
+from model import CrossLingualMLMTask
 from torch.utils.data import DataLoader
-from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from transforms import PretrainedSPVocab
 
 
-def collate_batch(batch_data, args, mask_id, cls_id):
-    batch_data = torch.tensor(batch_data).long().view(args.batch_size, -1).t().contiguous()
+def collate_batch(batch_data, args, mask_id, tokenizer, vocab):
+    output_tensor = []
+    language_type = []
+    for (language_id, line) in batch_data:
+        ids = vocab(tokenizer(line))
+        output_tensor += ids
+        language_type += [language_id] * len(ids)
+
+    nseq = len(output_tensor) // args.batch_size
+    batch_data = torch.tensor(output_tensor[:(args.batch_size * nseq)],
+                              dtype=torch.long).view(args.batch_size, -1).t().contiguous()
+    language_type = torch.tensor(language_type[:(args.batch_size * nseq)],
+                                 dtype=torch.long).view(args.batch_size, -1).t().contiguous()
+
     # Generate masks with args.mask_frac
-    data_len = batch_data.size(0)
-    ones_num = int(data_len * args.mask_frac)
-    zeros_num = data_len - ones_num
+    nseq = batch_data.size(0)
+    ones_num = int(nseq * args.mask_frac)
+    zeros_num = nseq - ones_num
     lm_mask = torch.cat([torch.zeros(zeros_num), torch.ones(ones_num)])
-    lm_mask = lm_mask[torch.randperm(data_len)]
-    batch_data = torch.cat((torch.tensor([[cls_id] * batch_data.size(1)]).long(), batch_data))
-    lm_mask = torch.cat((torch.tensor([0.0]), lm_mask))
+    lm_mask = lm_mask[torch.randperm(nseq)]
 
     targets = torch.stack([batch_data[i] for i in range(lm_mask.size(0)) if lm_mask[i]]).view(-1)
     batch_data = batch_data.masked_fill(lm_mask.bool().unsqueeze(1), mask_id)
-    return batch_data, lm_mask, targets
+    return batch_data, language_type, lm_mask, targets
 
 
-def process_raw_data(raw_data, args):
-    _num = raw_data.size(0) // (args.batch_size * args.bptt)
-    raw_data = raw_data[:(_num * args.batch_size * args.bptt)]
-    return raw_data
-
-
-def evaluate(data_source, model, special_token_id, ntokens, criterion, args, device):
-    # Turn on evaluation mode which disables dropout.
-    model.eval()
-    total_loss = 0.
-    mask_id, cls_id = special_token_id
-    dataloader = DataLoader(data_source, batch_size=args.batch_size * args.bptt,
-                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, cls_id))
-    with torch.no_grad():
-        for batch, (data, lm_mask, targets) in enumerate(dataloader):
-            if args.parallel == 'DDP':
-                data = data.to(device[0])
-                targets = targets.to(device[0])
-            else:
-                data = data.to(device)
-                targets = targets.to(device)
-            data = data.transpose(0, 1)  # Wrap up by DDP or DataParallel
-            output = model(data)
-            output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
-            output_flat = output.view(-1, ntokens)
-            total_loss += criterion(output_flat, targets).item()
-    return total_loss / ((len(data_source) - 1) / args.bptt / args.batch_size)
-
-
-def train(model, special_token_id, train_loss_log, train_data,
+def train(model, mask_id, train_loss_log, train_data, tokenizer, vocab,
           optimizer, criterion, ntokens, epoch, scheduler, args, device, rank=None):
     model.train()
     total_loss = 0.
     start_time = time.time()
-    mask_id, cls_id = special_token_id
     train_loss_log.append(0.0)
-    dataloader = DataLoader(train_data, batch_size=args.batch_size * args.bptt,
-                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, cls_id))
+    dataloader = DataLoader(train_data, batch_size=args.batch_size,
+                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, tokenizer, vocab))
 
-    for batch, (data, lm_mask, targets) in enumerate(dataloader):
+    for batch, (data, language_type, lm_mask, targets) in enumerate(dataloader):
         optimizer.zero_grad()
-        if args.parallel == 'DDP':
-            data = data.to(device[0])
-            targets = targets.to(device[0])
-        else:
-            data = data.to(device)
-            targets = targets.to(device)
-        data = data.transpose(0, 1)  # Wrap up by DDP or DataParallel
-        output = model(data)
+        data = data.to(device)
+        language_type = language_type.to(device)
+        targets = targets.to(device)
+        output = model(data, language_type)
         output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
         loss = criterion(output.view(-1, ntokens), targets)
         loss.backward()
@@ -101,134 +74,28 @@ def train(model, special_token_id, train_loss_log, train_data,
 
 def run_main(args, rank=None):
     torch.manual_seed(args.seed)
-    if args.parallel == 'DDP':
-        n = torch.cuda.device_count() // args.world_size
-        device = list(range(rank * n, (rank + 1) * n))
-    else:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    import torchtext
-    if args.dataset == 'WikiText103':
-        from torchtext.experimental.datasets import WikiText103 as WLMDataset
-    elif args.dataset == 'WikiText2':
-        from torchtext.experimental.datasets import WikiText2 as WLMDataset
-    elif args.dataset == 'WMTNewsCrawl':
-        from data import WMTNewsCrawl as WLMDataset
-    elif args.dataset == 'EnWik9':
-        from torchtext.datasets import EnWik9
-    elif args.dataset == 'BookCorpus':
-        from data import BookCorpus
-    else:
-        print("dataset for MLM task is not supported")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Set up tokenizer and vocab
-    if args.spm_path != 'None':
-        tokenizer = sentencepiece_tokenizer(args.spm_path)
-        vocab = PretrainedSPVocab(args.spm_path)
-        special_token_id = vocab(['<MASK>', '<cls>'])
-    elif args.save_vocab != 'None':
-        tokenizer = basic_english_normalize()
-        vocab = torch.load(args.save_vocab)
-        special_token_id = (vocab.stoi['<MASK>'], vocab.stoi['<cls>'])
-    else:
-        tokenizer = basic_english_normalize()
-        train_dataset, valid_dataset, test_dataset = WLMDataset()
-        old_vocab = train_dataset.vocab
-        vocab = torchtext.vocab.Vocab(counter=old_vocab.freqs,
-                                      specials=['<unk>', '<pad>', '<MASK>'])
-        with open(args.save_vocab, 'wb') as f:
-            torch.save(vocab, f)
-        special_token_id = (vocab.stoi['<MASK>'], vocab.stoi['<cls>'])
+    tokenizer = sentencepiece_tokenizer(args.spm_path)
+    vocab = PretrainedSPVocab(args.spm_path)
+    mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    if args.dataset == 'WikiText103' or args.dataset == 'WikiText2':
-        train_dataset, valid_dataset, test_dataset = WLMDataset(tokenizer=tokenizer, vocab=vocab)
-        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
-        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
-        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
-    elif args.dataset == 'WMTNewsCrawl':
-        from torchtext.experimental.datasets import WikiText2
-        test_dataset, valid_dataset = WikiText2(tokenizer=tokenizer, vocab=vocab, data_select=('test', 'valid'))
-        valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
-        test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
-        train_dataset, = WLMDataset(vocab=vocab, data_select='train')
-        train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
-    elif args.dataset == 'EnWik9':
-        enwik9 = EnWik9()
-        idx1, idx2 = int(len(enwik9) * 0.8), int(len(enwik9) * 0.9)
-        train_data = torch.tensor([vocab.stoi[_id]
-                                  for _id in enwik9[0:idx1]]).long()
-        val_data = torch.tensor([vocab.stoi[_id]
-                                 for _id in enwik9[idx1:idx2]]).long()
-        test_data = torch.tensor([vocab.stoi[_id]
-                                 for _id in enwik9[idx2:]]).long()
-        from torchtext.experimental.datasets import LanguageModelingDataset
-        train_dataset = LanguageModelingDataset(train_data, vocab)
-        valid_dataset = LanguageModelingDataset(val_data, vocab)
-        test_dataset = LanguageModelingDataset(test_data, vocab)
-    elif args.dataset == 'BookCorpus':
-        train_dataset, valid_dataset, test_dataset = BookCorpus(vocab, tokenizer=tokenizer)
+    dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
+    # train_data = process_raw_data(train_dataset.data, args)
 
-    train_data = process_raw_data(train_dataset.data, args)
-    if rank is not None:
-        # Chunk training data by rank for different gpus
-        chunk_len = len(train_data) // args.world_size
-        train_data = train_data[(rank * chunk_len):((rank + 1) * chunk_len)]
-    val_data = process_raw_data(valid_dataset.data, args)
-    test_data = process_raw_data(test_dataset.data, args)
-
-    if args.checkpoint != 'None':
-        model = torch.load(args.checkpoint)
-    else:
-        model = MLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
-    if args.parallel == 'DDP':
-        model = model.to(device[0])
-        model = DDP(model, device_ids=device)
-    else:
-        model = model.to(device)
+    model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
+    model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
-    best_val_loss = None
-    train_loss_log, val_loss_log = [], []
+    train_loss_log = []
 
     for epoch in range(1, args.epochs + 1):
-        epoch_start_time = time.time()
-        train(model, special_token_id, train_loss_log, train_data,
+        # epoch_start_time = time.time()
+        train(model, mask_id, train_loss_log, dataset, tokenizer, vocab,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
-        val_loss = evaluate(val_data, model, special_token_id, ntokens, criterion, args, device)
-        if (rank is None) or (rank == 0):
-            val_loss_log.append(val_loss)
-            print('-' * 89)
-            print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
-                  'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
-                                             val_loss, math.exp(val_loss)))
-            print('-' * 89)
-        if not best_val_loss or val_loss < best_val_loss:
-            if rank is None:
-                with open(args.save, 'wb') as f:
-                    torch.save(model, f)
-            elif rank == 0:
-                with open(args.save, 'wb') as f:
-                    torch.save(model.state_dict(), f)
-            best_val_loss = val_loss
-        else:
-            scheduler.step()
-    if args.parallel == 'DDP':
-        dist.barrier()
-        rank0_devices = [x - rank * len(device) for x in device]
-        device_pairs = zip(rank0_devices, device)
-        map_location = {'cuda:%d' % x: 'cuda:%d' % y for x, y in device_pairs}
-        model.load_state_dict(
-            torch.load(args.save, map_location=map_location))
-        test_loss = evaluate(test_data, model, special_token_id, ntokens, criterion, args, device)
-        if rank == 0:
-            wrap_up(train_loss_log, val_loss_log, test_loss, args, model.module, 'mlm_loss.txt', 'full_mlm_model.pt')
-    else:
-        with open(args.save, 'rb') as f:
-            model = torch.load(f)
-        test_loss = evaluate(test_data, model, special_token_id, ntokens, criterion, args, device)
-        wrap_up(train_loss_log, val_loss_log, test_loss, args, model, 'mlm_loss.txt', 'full_mlm_model.pt')
 
 
 if __name__ == "__main__":
@@ -247,7 +114,7 @@ if __name__ == "__main__":
                         help='gradient clipping')
     parser.add_argument('--epochs', type=int, default=8,
                         help='upper epoch limit')
-    parser.add_argument('--batch_size', type=int, default=32, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=16, metavar='N',
                         help='batch size')
     parser.add_argument('--bptt', type=int, default=128,
                         help='sequence length')
@@ -275,26 +142,23 @@ if __name__ == "__main__":
                         help='the world size to initiate DPP')
     args = parser.parse_args()
 
-#    if args.parallel == 'DDP':
-#        run_demo(run_ddp, run_main, args)
-#    else:
-#        run_main(args)
-    from data import CC100
-    dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=10)
-    tokenizer = sentencepiece_tokenizer(args.spm_path)
-    vocab = PretrainedSPVocab(args.spm_path)
-    mask_id = vocab(['<MASK>'])
-
-    def collate_batch(batch):
-        output_tensor = []
-        language_type = []
-        for (language_id, line) in batch:
-            ids = vocab(tokenizer(line))
-            output_tensor += ids
-            language_type += [language_id] * len(ids)
-        return torch.tensor(output_tensor), torch.tensor(language_type)
-    dataloader = DataLoader(dataset, batch_size=10,
-                            shuffle=False, collate_fn=collate_batch)
-    for (token, language_token) in dataloader:
-        print(token.size(), token)
-        print(language_token.size(), language_token)
+    run_main(args)
+#    from data import CC100
+#    dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=30)
+#    tokenizer = sentencepiece_tokenizer(args.spm_path)
+#    vocab = PretrainedSPVocab(args.spm_path)
+#    mask_id = vocab(['<MASK>'])
+#
+#    def collate_batch(batch):
+#        output_tensor = []
+#        language_type = []
+#        for (language_id, line) in batch:
+#            ids = vocab(tokenizer(line))
+#            output_tensor += ids
+#            language_type += [language_id] * len(ids)
+#        return torch.tensor(output_tensor), torch.tensor(language_type)
+#    dataloader = DataLoader(dataset, batch_size=8,
+#                            shuffle=False, collate_fn=collate_batch)
+#    for (token, language_token) in dataloader:
+#        print(token.size(), token)
+#        print(language_token.size(), language_token)
