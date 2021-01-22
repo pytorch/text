@@ -26,11 +26,10 @@ def collate_batch(batch_data, args, mask_id, tokenizer, vocab):
 
     # Generate masks with args.mask_frac
     nseq = batch_data.size(0)
-    ones_num = int(nseq * args.mask_frac)
+    ones_num = max(1, int(nseq * args.mask_frac))  # To ensure targets is not empty
     zeros_num = nseq - ones_num
     lm_mask = torch.cat([torch.zeros(zeros_num), torch.ones(ones_num)])
     lm_mask = lm_mask[torch.randperm(nseq)]
-
     targets = torch.stack([batch_data[i] for i in range(lm_mask.size(0)) if lm_mask[i]]).view(-1)
     batch_data = batch_data.masked_fill(lm_mask.bool().unsqueeze(1), mask_id)
     return batch_data, language_type, lm_mask, targets
