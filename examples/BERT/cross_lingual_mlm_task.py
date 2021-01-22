@@ -287,10 +287,14 @@ if __name__ == "__main__":
 
     def collate_batch(batch):
         output_tensor = []
-        for line in batch:
-            output_tensor += vocab(tokenizer(line))
-        return torch.tensor(output_tensor)
+        language_type = []
+        for (language_id, line) in batch:
+            ids = vocab(tokenizer(line))
+            output_tensor += ids
+            language_type += [language_id] * len(ids)
+        return torch.tensor(output_tensor), torch.tensor(language_type)
     dataloader = DataLoader(dataset, batch_size=10,
                             shuffle=False, collate_fn=collate_batch)
-    for item in dataloader:
-        print(item.size(), item)
+    for (token, language_token) in dataloader:
+        print(token.size(), token)
+        print(language_token.size(), language_token)
