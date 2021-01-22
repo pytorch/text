@@ -61,7 +61,7 @@ class CC100(torch.utils.data.IterableDataset):
 
         Examples:
             >>> from data import CC100
-            >>> dataset = CC100('/datasets01/cc100/031720/', {'zh_CN.txt', 'ja_XX.txt'}, start_line=300, chunk=10)
+            >>> dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=10)
             >>> for rec in dataset:
             >>>     print(rec)
         """
