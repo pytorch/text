@@ -86,6 +86,12 @@ class CC100(torch.utils.data.IterableDataset):
 
     def readline(self, dataset_handle):
         _text = dataset_handle.readline()
+        if not _text:
+            dataset_handle.seek(0)
+            _text = dataset_handle.readline()
         while _text == b'\n':
             _text = dataset_handle.readline()
+            if not _text:
+                dataset_handle.seek(0)
+                _text = dataset_handle.readline()
         return _text
