@@ -15,6 +15,8 @@ def collate_batch(batch_data, args, mask_id, tokenizer, vocab):
     language_type = []
     for (language_id, line) in batch_data:
         ids = vocab(tokenizer(line))
+        if len(ids) > args.bptt:  # Control the max length of the sequences
+            ids = ids[:args.bptt]
         output_tensor += ids
         language_type += [language_id] * len(ids)
 
@@ -63,7 +65,7 @@ def train(model, mask_id, train_loss_log, train_data, tokenizer, vocab,
                 train_loss_log[-1] = cur_loss
                 print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:05.5f} | ms/batch {:5.2f} | '
                       'loss {:5.2f} | ppl {:8.2f}'.format(epoch, batch,
-                                                          len(train_data) // (args.bptt * args.batch_size),
+                                                          len(train_data) // args.batch_size,
                                                           scheduler.get_last_lr()[0],
                                                           elapsed * 1000 / args.log_interval,
                                                           cur_loss, math.exp(cur_loss)))
@@ -81,9 +83,8 @@ def run_main(args, rank=None):
     mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    #dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
+    # dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
     dataset = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=20, chunk=50)
-    # train_data = process_raw_data(train_dataset.data, args)
 
     model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
     model = model.to(device)
@@ -116,8 +117,8 @@ if __name__ == "__main__":
                         help='upper epoch limit')
     parser.add_argument('--batch_size', type=int, default=16, metavar='N',
                         help='batch size')
-    parser.add_argument('--bptt', type=int, default=128,
-                        help='sequence length')
+    parser.add_argument('--bptt', type=int, default=160,
+                        help='max. sequence length')
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='dropout applied to layers (0 = no dropout)')
     parser.add_argument('--seed', type=int, default=5431916812,
@@ -143,22 +144,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_main(args)
-#    from data import CC100
-#    dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=30)
-#    tokenizer = sentencepiece_tokenizer(args.spm_path)
-#    vocab = PretrainedSPVocab(args.spm_path)
-#    mask_id = vocab(['<MASK>'])
-#
-#    def collate_batch(batch):
-#        output_tensor = []
-#        language_type = []
-#        for (language_id, line) in batch:
-#            ids = vocab(tokenizer(line))
-#            output_tensor += ids
-#            language_type += [language_id] * len(ids)
-#        return torch.tensor(output_tensor), torch.tensor(language_type)
-#    dataloader = DataLoader(dataset, batch_size=8,
-#                            shuffle=False, collate_fn=collate_batch)
-#    for (token, language_token) in dataloader:
-#        print(token.size(), token)
-#        print(language_token.size(), language_token)
