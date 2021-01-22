@@ -1,5 +1,4 @@
 import glob
-import os
 import torch
 import logging
 from torchtext.data.utils import get_tokenizer
@@ -105,15 +104,26 @@ class CC100(torch.utils.data.IterableDataset):
         return -1
 
 
-language_list = ['af_ZA', 'cs_CZ', 'fi_FI', 'hr_HR', 'km_KH', 'mg_MG', 'om_KE', 'sd_PK', 'ta_IN_rom', 'vi_VN',
-                 'am_ET', 'cy_GB', 'fr_XX', 'ht_HT', 'kn_IN', 'mk_MK', 'or_IN', 'si_LK', 'te_IN', 'wo_SN',
-                 'ar_AR', 'da_DK', 'fy_NL', 'hu_HU', 'ko_KR', 'ml_IN', 'pa_IN', 'sk_SK', 'te_IN_rom', 'xh_ZA',
-                 'as_IN', 'de_DE', 'ga_IE', 'hy_AM', 'ku_TR', 'mn_MN', 'pl_PL', 'sl_SI', 'th_TH', 'yi_DE',
-                 'az_AZ', 'el_GR', 'gd_GB', 'id_ID', 'ky_KG', 'mr_IN', 'ps_AF', 'so_SO', 'tl_XX', 'yo_NG',
-                 'be_BY', 'en_XX', 'gl_ES', 'ig_NG', 'la_VA', 'ms_MY', 'pt_XX', 'sq_AL', 'tn_BW', 'zh_CN',
-                 'bg_BG', 'eo_EO', 'gn_PY', 'is_IS', 'lg_UG', 'my_MM', 'qu_PE', 'sr_RS', 'tr_TR', 'zh_TW',
-                 'bn_IN', 'es_XX', 'gu_IN', 'it_IT', 'li_NL', 'my_MM_zaw', 'rm_CH', 'ss_SZ', 'ug_CN',
-                 'bn_IN_rom', 'et_EE', 'ha_NG', 'ja_XX', 'ln_CD', 'ne_NP', 'ro_RO', 'su_ID', 'uk_UA',
-                 'br_FR', 'eu_ES', 'he_IL', 'jv_ID', 'lo_LA', 'nl_XX', 'ru_RU', 'sv_SE', 'ur_PK',
-                 'bs_BA', 'fa_IR', 'hi_IN', 'ka_GE', 'lt_LT', 'no_XX', 'sa_IN', 'sw_KE', 'ur_PK_rom',
-                 'ca_ES', 'ff_NG', 'hi_IN_rom', 'kk_KZ', 'lv_LV', 'ns_ZA', 'sc_IT', 'ta_IN', 'uz_UZ']
+language_list = ['af_ZA', 'am_ET', 'ar_AR', 'as_IN', 'az_AZ',
+                 'be_BY', 'bg_BG', 'bn_IN', 'bn_IN_rom', 'br_FR',
+                 'bs_BA', 'ca_ES', 'cs_CZ', 'cy_GB', 'da_DK',
+                 'de_DE', 'el_GR', 'en_XX', 'eo_EO', 'es_XX',
+                 'et_EE', 'eu_ES', 'fa_IR', 'ff_NG', 'fi_FI',
+                 'fr_XX', 'fy_NL', 'ga_IE', 'gd_GB', 'gl_ES',
+                 'gn_PY', 'gu_IN', 'ha_NG', 'he_IL', 'hi_IN',
+                 'hi_IN_rom', 'hr_HR', 'ht_HT', 'hu_HU', 'hy_AM',
+                 'id_ID', 'ig_NG', 'is_IS', 'it_IT', 'ja_XX',
+                 'jv_ID', 'ka_GE', 'kk_KZ', 'km_KH', 'kn_IN',
+                 'ko_KR', 'ku_TR', 'ky_KG', 'la_VA', 'lg_UG',
+                 'li_NL', 'ln_CD', 'lo_LA', 'lt_LT', 'lv_LV',
+                 'mg_MG', 'mk_MK', 'ml_IN', 'mn_MN', 'mr_IN',
+                 'ms_MY', 'my_MM', 'my_MM_zaw', 'ne_NP', 'nl_XX',
+                 'no_XX', 'ns_ZA', 'om_KE', 'or_IN', 'pa_IN',
+                 'pl_PL', 'ps_AF', 'pt_XX', 'qu_PE', 'rm_CH',
+                 'ro_RO', 'ru_RU', 'sa_IN', 'sc_IT', 'sd_PK',
+                 'si_LK', 'sk_SK', 'sl_SI', 'so_SO', 'sq_AL',
+                 'sr_RS', 'ss_SZ', 'su_ID', 'sv_SE', 'sw_KE',
+                 'ta_IN', 'ta_IN_rom', 'te_IN', 'te_IN_rom', 'th_TH',
+                 'tl_XX', 'tn_BW', 'tr_TR', 'ug_CN', 'uk_UA',
+                 'ur_PK', 'ur_PK_rom', 'uz_UZ', 'vi_VN', 'wo_SN',
+                 'xh_ZA', 'yi_DE', 'yo_NG', 'zh_CN', 'zh_TW']
