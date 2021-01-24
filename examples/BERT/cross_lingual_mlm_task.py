@@ -109,7 +109,7 @@ if __name__ == "__main__":
                         help='number of layers')
     parser.add_argument('--nhead', type=int, default=12,
                         help='the number of heads in the encoder/decoder of the transformer model')
-    parser.add_argument('--lr', type=float, default=6,
+    parser.add_argument('--lr', type=float, default=1.0,
                         help='initial learning rate')
     parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
