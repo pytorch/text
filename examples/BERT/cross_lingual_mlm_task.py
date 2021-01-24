@@ -100,12 +100,6 @@ def run_main(args, rank=None):
     mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=50)
-    # train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=5)
-    from torchtext.experimental.datasets.raw import WikiText2
-    val_data, = WikiText2(data_select='valid')
-    val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
-
     model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
@@ -115,6 +109,12 @@ def run_main(args, rank=None):
     train_loss_log, val_loss_log = [], []
 
     for epoch in range(1, args.epochs + 1):
+        train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=50)
+        # train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=5)
+        from torchtext.experimental.datasets.raw import WikiText2
+        val_data, = WikiText2(data_select='valid')
+        val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
+
         epoch_start_time = time.time()
         train(model, mask_id, train_loss_log, train_data, tokenizer, vocab,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
