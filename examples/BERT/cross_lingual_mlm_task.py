@@ -100,7 +100,7 @@ def run_main(args, rank=None):
     mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=500)
+    train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=50)
     # train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=5)
     from torchtext.experimental.datasets.raw import WikiText2
     val_data, = WikiText2(data_select='valid')
@@ -148,7 +148,7 @@ if __name__ == "__main__":
                         help='initial learning rate')
     parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
-    parser.add_argument('--epochs', type=int, default=3,
+    parser.add_argument('--epochs', type=int, default=6,
                         help='upper epoch limit')
     parser.add_argument('--batch_size', type=int, default=16, metavar='N',
                         help='batch size')
