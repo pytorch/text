@@ -135,7 +135,7 @@ def run_main(args, rank=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='PyTorch Wikitext-2 Transformer Language Model')
+    parser = argparse.ArgumentParser(description='PyTorch Cross-lingual XLM MLM')
     parser.add_argument('--emsize', type=int, default=768,
                         help='size of word embeddings')
     parser.add_argument('--nhid', type=int, default=3072,
@@ -160,22 +160,12 @@ if __name__ == "__main__":
                         help='random seed')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='report interval')
-    parser.add_argument('--checkpoint', type=str, default='None',
-                        help='path to load the checkpoint')
     parser.add_argument('--save', type=str, default='cross_lingual_mlm_bert.pt',
                         help='path to save the final model')
-    parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
-                        help='path to save the vocab')
     parser.add_argument('--spm-path', type=str, default='./sentencepiece.xlmr.model',
                         help='path to load the sentencepiece model')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')
-    parser.add_argument('--dataset', type=str, default='WikiText2',
-                        help='dataset used for MLM task')
-    parser.add_argument('--parallel', type=str, default='None',
-                        help='Use DataParallel to train model')
-    parser.add_argument('--world_size', type=int, default=8,
-                        help='the world size to initiate DPP')
     args = parser.parse_args()
 
     run_main(args)
