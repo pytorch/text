@@ -37,6 +37,23 @@ def collate_batch(batch_data, args, mask_id, tokenizer, vocab):
     return batch_data, language_type, lm_mask, targets
 
 
+def evaluate(data_source, model, mask_id, ntokens, criterion, args, device, tokenizer, vocab):
+    # Turn on evaluation mode which disables dropout.
+    model.eval()
+    total_loss = 0.
+    dataloader = DataLoader(data_source, batch_size=args.batch_size,
+                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, tokenizer, vocab))
+    with torch.no_grad():
+        for batch, (data, language_type, lm_mask, targets) in enumerate(dataloader):
+            data = data.to(device)
+            language_type = language_type.to(device)
+            targets = targets.to(device)
+            output = model(data, language_type)
+            output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
+            total_loss += criterion(output.view(-1, ntokens), targets).item()
+    return total_loss / ((len(data_source) - 1) / args.batch_size)
+
+
 def train(model, mask_id, train_loss_log, train_data, tokenizer, vocab,
           optimizer, criterion, ntokens, epoch, scheduler, args, device, rank=None):
     model.train()
@@ -83,20 +100,38 @@ def run_main(args, rank=None):
     mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    # dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=300)
-    dataset = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=500)
+    train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=500)
+    # train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=5)
+    from torchtext.experimental.datasets.raw import WikiText2
+    val_data, = WikiText2(data_select='valid')
+    val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
 
     model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
-    train_loss_log = []
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 6.0, gamma=0.1)
+    best_val_loss = None
+    train_loss_log, val_loss_log = [], []
 
     for epoch in range(1, args.epochs + 1):
-        # epoch_start_time = time.time()
-        train(model, mask_id, train_loss_log, dataset, tokenizer, vocab,
+        epoch_start_time = time.time()
+        train(model, mask_id, train_loss_log, train_data, tokenizer, vocab,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
+
+        val_loss = evaluate(val_data, model, mask_id, ntokens, criterion, args, device, tokenizer, vocab)
+        val_loss_log.append(val_loss)
+        print('-' * 89)
+        print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
+              'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
+                                         val_loss, math.exp(val_loss)))
+        print('-' * 89)
+        if not best_val_loss or val_loss < best_val_loss:
+            with open(args.save, 'wb') as f:
+                torch.save(model, f)
+            best_val_loss = val_loss
+        else:
+            scheduler.step()
 
 
 if __name__ == "__main__":
@@ -127,7 +162,7 @@ if __name__ == "__main__":
                         help='report interval')
     parser.add_argument('--checkpoint', type=str, default='None',
                         help='path to load the checkpoint')
-    parser.add_argument('--save', type=str, default='mlm_bert.pt',
+    parser.add_argument('--save', type=str, default='cross_lingual_mlm_bert.pt',
                         help='path to save the final model')
     parser.add_argument('--save-vocab', type=str, default='torchtext_bert_vocab.pt',
                         help='path to save the vocab')
