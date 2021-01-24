@@ -109,8 +109,8 @@ def run_main(args, rank=None):
     model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
     best_val_loss = None
     train_loss_log, val_loss_log = [], []
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
                         help='number of layers')
     parser.add_argument('--nhead', type=int, default=12,
                         help='the number of heads in the encoder/decoder of the transformer model')
-    parser.add_argument('--lr', type=float, default=6.0,
+    parser.add_argument('--lr', type=float, default=0.001,
                         help='initial learning rate')
     parser.add_argument('--clip', type=float, default=0.1,
                         help='gradient clipping')
