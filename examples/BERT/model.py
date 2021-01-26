@@ -134,7 +134,7 @@ class XLMRModel(nn.Module):
     def __init__(self, ntoken, ninp, nhead, nhid, nlayers, dropout=0.5):
         super(XLMRModel, self).__init__()
         self.model_type = 'Transformer'
-        self.xlmr_embed = XLMREmbedding(ntoken, ninp)
+        self.xlmr_embed = XLMREmbedding(ntoken, ninp, dropout)
         encoder_layers = TransformerEncoderLayer(ninp, nhead, nhid, dropout)
         self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
         self.ninp = ninp
@@ -171,7 +171,7 @@ class CrossLingualMLMTask(nn.Module):
 
     def __init__(self, ntoken, ninp, nhead, nhid, nlayers, dropout=0.5):
         super(CrossLingualMLMTask, self).__init__()
-        self.xlmr_model = XLMRModel(ntoken, ninp, nhead, nhid, nlayers, dropout=0.5)
+        self.xlmr_model = XLMRModel(ntoken, ninp, nhead, nhid, nlayers, dropout=dropout)
         self.mlm_span = Linear(ninp, ninp)
         self.activation = F.gelu
         self.norm_layer = LayerNorm(ninp, eps=1e-12)
