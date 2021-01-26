@@ -141,3 +141,12 @@ This file provides two metrics (F1 and exact score) for question-answer task
 ### utils.py
 
 This file provides a few utils used by the three tasks.
+
+
+## Multilingual Masked Language Modeling (MLM) with XLM-R
+
+This example also shows a cross-lingual MLM task with XLM-R. The workflow requires a pretrained SentencePiece model for preprocessing the text strings, which is available to download from [link](https://pytorch.s3.amazonaws.com/models/text/torchtext_bert_example/sentencepiece.xlmr.model).
+
+To run the workflow with 3000 lines from each of the 100 languages (CC-100 dataset)
+
+    python cross_lingual_mlm_task.py --num_lines 3000 

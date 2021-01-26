@@ -49,6 +49,21 @@ class BertEmbedding(nn.Module):
         return self.dropout(self.norm(src))
 
 
+class XLMREmbedding(nn.Module):
+    def __init__(self, ntoken, ninp, dropout=0.5):
+        super(XLMREmbedding, self).__init__()
+        self.ninp = ninp
+        self.ntoken = ntoken
+        self.pos_embed = PositionalEncoding(ninp)
+        self.embed = nn.Embedding(ntoken, ninp)
+        self.norm = LayerNorm(ninp)
+        self.dropout = Dropout(dropout)
+
+    def forward(self, src):
+        src = self.embed(src) + self.pos_embed(src)
+        return self.dropout(self.norm(src))
+
+
 class TransformerEncoderLayer(nn.Module):
     def __init__(self, d_model, nhead, dim_feedforward=2048,
                  dropout=0.1, activation="gelu"):
@@ -113,6 +128,23 @@ class BertModel(nn.Module):
         return output
 
 
+class XLMRModel(nn.Module):
+    """Contain a XLM-R encoder."""
+
+    def __init__(self, ntoken, ninp, nhead, nhid, nlayers, dropout=0.5):
+        super(XLMRModel, self).__init__()
+        self.model_type = 'Transformer'
+        self.xlmr_embed = XLMREmbedding(ntoken, ninp, dropout)
+        encoder_layers = TransformerEncoderLayer(ninp, nhead, nhid, dropout)
+        self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
+        self.ninp = ninp
+
+    def forward(self, src):
+        src = self.xlmr_embed(src)
+        output = self.transformer_encoder(src)
+        return output
+
+
 class MLMTask(nn.Module):
     """Contain a transformer encoder plus MLM head."""
 
@@ -127,6 +159,26 @@ class MLMTask(nn.Module):
     def forward(self, src, token_type_input=None):
         src = src.transpose(0, 1)  # Wrap up by nn.DataParallel
         output = self.bert_model(src, token_type_input)
+        output = self.mlm_span(output)
+        output = self.activation(output)
+        output = self.norm_layer(output)
+        output = self.mlm_head(output)
+        return output
+
+
+class CrossLingualMLMTask(nn.Module):
+    """Contain a transformer encoder plus MLM head."""
+
+    def __init__(self, ntoken, ninp, nhead, nhid, nlayers, dropout=0.5):
+        super(CrossLingualMLMTask, self).__init__()
+        self.xlmr_model = XLMRModel(ntoken, ninp, nhead, nhid, nlayers, dropout=dropout)
+        self.mlm_span = Linear(ninp, ninp)
+        self.activation = F.gelu
+        self.norm_layer = LayerNorm(ninp, eps=1e-12)
+        self.mlm_head = Linear(ninp, ntoken)
+
+    def forward(self, src):
+        output = self.xlmr_model(src)
         output = self.mlm_span(output)
         output = self.activation(output)
         output = self.norm_layer(output)
