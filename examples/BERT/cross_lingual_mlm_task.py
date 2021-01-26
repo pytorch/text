@@ -102,7 +102,7 @@ def run_main(args, rank=None):
     train_loss_log, val_loss_log = [], []
 
     for epoch in range(1, args.epochs + 1):
-        train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=50)
+        train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=args.start_line, num_lines=args.num_lines)
         # train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=5)
         from torchtext.experimental.datasets.raw import WikiText2
         val_data, = WikiText2(data_select='valid')
@@ -143,6 +143,10 @@ if __name__ == "__main__":
                         help='gradient clipping')
     parser.add_argument('--epochs', type=int, default=6,
                         help='upper epoch limit')
+    parser.add_argument('--start_line', type=int, default=0,
+                        help='the starting line to read text in each file')
+    parser.add_argument('--num_lines', type=int, default=50,
+                        help='the number of lines to read')
     parser.add_argument('--batch_size', type=int, default=8, metavar='N',
                         help='batch size')
     parser.add_argument('--bptt', type=int, default=128,
@@ -151,7 +155,7 @@ if __name__ == "__main__":
                         help='dropout applied to layers (0 = no dropout)')
     parser.add_argument('--seed', type=int, default=5431916812,
                         help='random seed')
-    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
+    parser.add_argument('--log-interval', type=int, default=10,
                         help='report interval')
     parser.add_argument('--save', type=str, default='cross_lingual_mlm_bert.pt',
                         help='path to save the final model')

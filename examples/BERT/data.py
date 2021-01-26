@@ -56,18 +56,18 @@ def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
 
 
 class CC100(torch.utils.data.IterableDataset):
-    def __init__(self, data_directory, languages, start_line=0, chunk=16, reset_iterator=False):
+    def __init__(self, data_directory, languages, start_line=0, num_lines=16, reset_iterator=False):
         """
         Args:
             data_directory: directory to save the data files
             languages: a unix style filter string set for filtering filename
             start_line: the starting line
-            chunk: the number of output lines
-            reset_iterator: reset file handle and continuously read text until the chunk number
+            num_lines: the number of output lines
+            reset_iterator: reset file handle and continuously read text until the number of lines
 
         Examples:
             >>> from data import CC100
-            >>> dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, chunk=10)
+            >>> dataset = CC100('/datasets01/cc100/031720/', {'as_IN.txt', 'om_KE.txt', 'su_ID.txt'}, start_line=300, num_lines=10)
             >>> for rec in dataset:
             >>>     print(rec)
         """
@@ -75,7 +75,7 @@ class CC100(torch.utils.data.IterableDataset):
         file_paths = ListDirFilesIterableDataset(data_directory, languages)
         self.dataset_list = [item for item in LoadFilesFromDiskIterableDataset(file_paths)]
         self.start_line = start_line
-        self.chunk = chunk
+        self.num_lines = num_lines
         self.reset_iterator = reset_iterator
         self._count = 0
         self._current_dataset = 0
@@ -84,7 +84,7 @@ class CC100(torch.utils.data.IterableDataset):
         for i, (filename, dataset_handle) in enumerate(self.dataset_list):
             language_id = self.find_language_id(filename)
             self.setup_dataset(dataset_handle)
-            for _count in range(self.chunk):
+            for _count in range(self.num_lines):
                 _text = self.readline(dataset_handle)
                 if not _text:
                     if self.reset_iterator:
@@ -95,7 +95,7 @@ class CC100(torch.utils.data.IterableDataset):
                 yield language_id, _text.decode('utf-8')
 
     def __len__(self):
-        return self.chunk * len(self.dataset_list)
+        return self.num_lines * len(self.dataset_list)
 
     def setup_dataset(self, dataset_handle):
         for _count in range(self.start_line):
