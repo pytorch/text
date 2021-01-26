@@ -56,8 +56,14 @@ def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
 
 
 class CC100(torch.utils.data.IterableDataset):
-    def __init__(self, data_directory, languages, start_line=0, chunk=16):
+    def __init__(self, data_directory, languages, start_line=0, chunk=16, reset_iterator=False):
         """
+        Args:
+            data_directory: directory to save the data files
+            languages: a unix style filter string set for filtering filename
+            start_line: the starting line
+            chunk: the number of output lines
+            reset_iterator: reset file handle and continuously read text until the chunk number
 
         Examples:
             >>> from data import CC100
@@ -70,6 +76,7 @@ class CC100(torch.utils.data.IterableDataset):
         self.dataset_list = [item for item in LoadFilesFromDiskIterableDataset(file_paths)]
         self.start_line = start_line
         self.chunk = chunk
+        self.reset_iterator = reset_iterator
         self._count = 0
         self._current_dataset = 0
 
@@ -79,6 +86,12 @@ class CC100(torch.utils.data.IterableDataset):
             self.setup_dataset(dataset_handle)
             for _count in range(self.chunk):
                 _text = self.readline(dataset_handle)
+                if not _text:
+                    if self.reset_iterator:
+                        dataset_handle.seek(0)
+                        _text = self.readline(dataset_handle)
+                    else:
+                        continue
                 yield language_id, _text.decode('utf-8')
 
     def __len__(self):
@@ -88,16 +101,11 @@ class CC100(torch.utils.data.IterableDataset):
         for _count in range(self.start_line):
             _text = self.readline(dataset_handle)
 
+    # readline skips newline
     def readline(self, dataset_handle):
         _text = dataset_handle.readline()
-        if not _text:
-            dataset_handle.seek(0)
-            _text = dataset_handle.readline()
         while _text == b'\n':
             _text = dataset_handle.readline()
-            if not _text:
-                dataset_handle.seek(0)
-                _text = dataset_handle.readline()
         return _text
 
     def find_language_id(self, file_name):
