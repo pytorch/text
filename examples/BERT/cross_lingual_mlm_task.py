@@ -12,19 +12,15 @@ from transforms import PretrainedSPVocab
 
 def collate_batch(batch_data, args, mask_id, tokenizer, vocab):
     output_tensor = []
-    language_type = []
     for (language_id, line) in batch_data:
         ids = vocab(tokenizer(line))
         if len(ids) > args.bptt:  # Control the max length of the sequences
             ids = ids[:args.bptt]
         output_tensor += ids
-        language_type += [language_id] * len(ids)
 
     nseq = len(output_tensor) // args.batch_size
     batch_data = torch.tensor(output_tensor[:(args.batch_size * nseq)],
                               dtype=torch.long).view(args.batch_size, -1).t().contiguous()
-    language_type = torch.tensor(language_type[:(args.batch_size * nseq)],
-                                 dtype=torch.long).view(args.batch_size, -1).t().contiguous()
 
     # Generate masks with args.mask_frac
     nseq = batch_data.size(0)
@@ -34,7 +30,7 @@ def collate_batch(batch_data, args, mask_id, tokenizer, vocab):
     lm_mask = lm_mask[torch.randperm(nseq)]
     targets = torch.stack([batch_data[i] for i in range(lm_mask.size(0)) if lm_mask[i]]).view(-1)
     batch_data = batch_data.masked_fill(lm_mask.bool().unsqueeze(1), mask_id)
-    return batch_data, language_type, lm_mask, targets
+    return batch_data, lm_mask, targets
 
 
 def evaluate(data_source, model, mask_id, ntokens, criterion, args, device, tokenizer, vocab):
@@ -44,11 +40,10 @@ def evaluate(data_source, model, mask_id, ntokens, criterion, args, device, toke
     dataloader = DataLoader(data_source, batch_size=args.batch_size,
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, tokenizer, vocab))
     with torch.no_grad():
-        for batch, (data, language_type, lm_mask, targets) in enumerate(dataloader):
+        for batch, (data, lm_mask, targets) in enumerate(dataloader):
             data = data.to(device)
-            language_type = language_type.to(device)
             targets = targets.to(device)
-            output = model(data, language_type)
+            output = model(data)
             output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
             total_loss += criterion(output.view(-1, ntokens), targets).item()
     return total_loss / ((len(data_source) - 1) / args.batch_size)
@@ -63,12 +58,11 @@ def train(model, mask_id, train_loss_log, train_data, tokenizer, vocab,
     dataloader = DataLoader(train_data, batch_size=args.batch_size,
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, tokenizer, vocab))
 
-    for batch, (data, language_type, lm_mask, targets) in enumerate(dataloader):
+    for batch, (data, lm_mask, targets) in enumerate(dataloader):
         optimizer.zero_grad()
         data = data.to(device)
-        language_type = language_type.to(device)
         targets = targets.to(device)
-        output = model(data, language_type)
+        output = model(data)
         output = torch.stack([output[i] for i in range(lm_mask.size(0)) if lm_mask[i]])
         loss = criterion(output.view(-1, ntokens), targets)
         loss.backward()
@@ -100,7 +94,7 @@ def run_main(args, rank=None):
     mask_id = vocab(['<MASK>'])[0]
     ntokens = len(vocab)
 
-    model = CrossLingualMLMTask(ntokens, args.emsize, 115, args.nhead, args.nhid, args.nlayers, args.dropout)
+    model = CrossLingualMLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
