@@ -135,14 +135,23 @@ def run_main(args, rank=None):
     if args.eval_ref != 'None':
         from fairseq.models.roberta import XLMRModel
         from model import BatchFirstModel
-        ref_model = XLMRModel.from_pretrained('./xlmr.large', checkpoint_file='model.pt')
+        ref_model = XLMRModel.from_pretrained(args.eval_ref, checkpoint_file='model.pt')
         ref_model.eval()
 
         def text_transform(x: str) -> List:
             return ref_model.encode(x).tolist()
         model = BatchFirstModel(ref_model.model.encoder)
-        ref_ntokens, mask_id, pad_id = 250002, 7021, 1  # from fairseq XLM-R model
+        model = model.to(device)
+        # ref_ntokens, mask_id, pad_id = 250002, 7021, 1  # from fairseq XLM-R model
+        # from fairseq XLM-R model
+        # <mask> is attached to the end of the dictionary at the index 250001
+        ref_ntokens, mask_id, pad_id = 250002, 250001, 1
+        criterion = nn.CrossEntropyLoss(ignore_index=pad_id)
         val_loss = evaluate(val_data, model, mask_id, pad_id, ref_ntokens, criterion, args, device, text_transform)
+        print('-' * 89)
+        print('| reference model | valid loss {:5.2f} | '
+              'valid ppl {:8.2f}'.format(val_loss, math.exp(val_loss)))
+        print('-' * 89)
 
 
 if __name__ == "__main__":

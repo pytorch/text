@@ -234,4 +234,7 @@ class BatchFirstModel(nn.Module):
         self.nn_model = nn_model
 
     def forward(self, x):
-        return self.nn_model(x.transpose(0, 1)).transpose(0, 1)
+#        return self.nn_model(x)[0]
+        outputs = self.nn_model(x.transpose(0, 1))
+        # print("outputs - ", outputs, outputs[0].size())
+        return outputs[0].transpose(0, 1)
