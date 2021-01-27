@@ -225,16 +225,3 @@ class QuestionAnswerTask(nn.Module):
         start_pos = start_pos.squeeze(-1)
         end_pos = end_pos.squeeze(-1)
         return start_pos, end_pos
-
-
-class BatchFirstModel(nn.Module):
-    "Model accepts batch-first input while the batch dim is at position 1 for the input and output"
-    def __init__(self, nn_model):
-        super(BatchFirstModel, self).__init__()
-        self.nn_model = nn_model
-
-    def forward(self, x):
-#        return self.nn_model(x)[0]
-        outputs = self.nn_model(x.transpose(0, 1))
-        # print("outputs - ", outputs, outputs[0].size())
-        return outputs[0].transpose(0, 1)

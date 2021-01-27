@@ -16,7 +16,6 @@ def collate_batch(batch_data, args, mask_id, pad_id, text_transform):
     output_tensor = []
     mask_tensor = []
     for (language_id, line) in batch_data:
-        # ids = vocab(tokenizer(line))
         ids = text_transform(line)
         if len(ids) > args.bptt:  # Control the max length of the sequences
             ids = ids[:args.bptt]
@@ -36,10 +35,7 @@ def collate_batch(batch_data, args, mask_id, pad_id, text_transform):
 
 
 def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, device, text_transform):
-    # Turn on evaluation mode which disables dropout.
-    model.eval()
     total_loss = 0.
-    # dataloader = DataLoader(data_source, batch_size=args.batch_size,
     dataloader = DataLoader(data_source, batch_size=1,  # Set batch # to 1 for inference
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, text_transform))
     with torch.no_grad():
@@ -48,7 +44,6 @@ def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, devi
             targets = targets.to(device)
             output = model(data)
             total_loss += criterion(output.view(-1, ntokens), targets.view(-1)).item()
-    # return total_loss / ((len(data_source) - 1) / args.batch_size)
     return total_loss / (len(data_source) - 1)  # Set batch # to 1 for inference
 
 
@@ -93,7 +88,9 @@ def run_main(args, rank=None):
     # Set up tokenizer and vocab
     tokenizer = sentencepiece_tokenizer(args.spm_path)
     vocab = PretrainedSPVocab(args.spm_path)
-    text_transform = lambda x: vocab(tokenizer(x))
+
+    def text_transform(x: str) -> List:
+        return vocab(tokenizer(x))
     mask_id = vocab(['<MASK>'])[0]
     pad_id = vocab(['pad'])[0]
     ntokens = len(vocab)
@@ -108,7 +105,6 @@ def run_main(args, rank=None):
 
     for epoch in range(1, args.epochs + 1):
         train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=args.start_line, num_lines=args.num_lines)
-        # train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=200, chunk=5)
         from torchtext.experimental.datasets.raw import WikiText2
         val_data, = WikiText2(data_select='valid')
         val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
@@ -117,6 +113,8 @@ def run_main(args, rank=None):
         train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
 
+        # Turn on evaluation mode which disables dropout.
+        model.eval()
         val_loss = evaluate(val_data, model, mask_id, pad_id, ntokens, criterion, args, device, text_transform)
         val_loss_log.append(val_loss)
         print('-' * 89)
@@ -134,20 +132,27 @@ def run_main(args, rank=None):
     # Run reference XLM-R model from fairseq
     if args.eval_ref != 'None':
         from fairseq.models.roberta import XLMRModel
-        from model import BatchFirstModel
         ref_model = XLMRModel.from_pretrained(args.eval_ref, checkpoint_file='model.pt')
         ref_model.eval()
 
         def text_transform(x: str) -> List:
             return ref_model.encode(x).tolist()
-        model = BatchFirstModel(ref_model.model.encoder)
+        model = ref_model.model.encoder
         model = model.to(device)
-        # ref_ntokens, mask_id, pad_id = 250002, 7021, 1  # from fairseq XLM-R model
+        # Turn on evaluation mode which disables dropout.
+        model.eval()
         # from fairseq XLM-R model
         # <mask> is attached to the end of the dictionary at the index 250001
         ref_ntokens, mask_id, pad_id = 250002, 250001, 1
         criterion = nn.CrossEntropyLoss(ignore_index=pad_id)
-        val_loss = evaluate(val_data, model, mask_id, pad_id, ref_ntokens, criterion, args, device, text_transform)
+
+        # fairseq XLM-R requires batch-first input sequence
+        def model_forward(nn_model):
+            def _forward(x):
+                return nn_model(x.transpose(0, 1))[0].transpose(0, 1)
+            return _forward
+        val_loss = evaluate(val_data, model_forward(model), mask_id, pad_id, ref_ntokens,
+                            criterion, args, device, text_transform)
         print('-' * 89)
         print('| reference model | valid loss {:5.2f} | '
               'valid ppl {:8.2f}'.format(val_loss, math.exp(val_loss)))
