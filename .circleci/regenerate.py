@@ -171,3 +171,4 @@ if __name__ == "__main__":
             build_workflows=build_workflows,
             unittest_workflows=unittest_workflows,
         ))
+        f.write("\n")
