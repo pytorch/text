@@ -11,11 +11,12 @@ from transforms import PretrainedSPVocab
 from torch.nn.utils.rnn import pad_sequence
 
 
-def collate_batch(batch_data, args, mask_id, pad_id, tokenizer, vocab):
+def collate_batch(batch_data, args, mask_id, pad_id, text_transform):
     output_tensor = []
     mask_tensor = []
     for (language_id, line) in batch_data:
-        ids = vocab(tokenizer(line))
+        # ids = vocab(tokenizer(line))
+        ids = text_transform(line)
         if len(ids) > args.bptt:  # Control the max length of the sequences
             ids = ids[:args.bptt]
         output_tensor.append(torch.tensor(ids, dtype=torch.long))
@@ -33,12 +34,12 @@ def collate_batch(batch_data, args, mask_id, pad_id, tokenizer, vocab):
     return batch_data, targets
 
 
-def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, device, tokenizer, vocab):
+def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, device, text_transform):
     # Turn on evaluation mode which disables dropout.
     model.eval()
     total_loss = 0.
     dataloader = DataLoader(data_source, batch_size=args.batch_size,
-                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, tokenizer, vocab))
+                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, text_transform))
     with torch.no_grad():
         for batch, (data, targets) in enumerate(dataloader):
             data = data.to(device)
@@ -48,14 +49,14 @@ def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, devi
     return total_loss / ((len(data_source) - 1) / args.batch_size)
 
 
-def train(model, mask_id, pad_id, train_loss_log, train_data, tokenizer, vocab,
+def train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
           optimizer, criterion, ntokens, epoch, scheduler, args, device, rank=None):
     model.train()
     total_loss = 0.
     start_time = time.time()
     train_loss_log.append(0.0)
     dataloader = DataLoader(train_data, batch_size=args.batch_size,
-                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, tokenizer, vocab))
+                            shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, text_transform))
 
     for batch, (data, targets) in enumerate(dataloader):
         optimizer.zero_grad()
@@ -89,6 +90,7 @@ def run_main(args, rank=None):
     # Set up tokenizer and vocab
     tokenizer = sentencepiece_tokenizer(args.spm_path)
     vocab = PretrainedSPVocab(args.spm_path)
+    text_transform = lambda x: vocab(tokenizer(x))
     mask_id = vocab(['<MASK>'])[0]
     pad_id = vocab(['pad'])[0]
     ntokens = len(vocab)
@@ -109,10 +111,10 @@ def run_main(args, rank=None):
         val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
 
         epoch_start_time = time.time()
-        train(model, mask_id, pad_id, train_loss_log, train_data, tokenizer, vocab,
+        train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
               optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
 
-        val_loss = evaluate(val_data, model, mask_id, pad_id, ntokens, criterion, args, device, tokenizer, vocab)
+        val_loss = evaluate(val_data, model, mask_id, pad_id, ntokens, criterion, args, device, text_transform)
         val_loss_log.append(val_loss)
         print('-' * 89)
         print('| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.2f} | '
@@ -125,6 +127,14 @@ def run_main(args, rank=None):
             best_val_loss = val_loss
         else:
             scheduler.step()
+
+    # Run reference XLM-R model from fairseq
+    if args.eval_ref != 'None':
+        from fairseq.models.roberta import XLMRModel
+        xlmr_model = XLMRModel.from_pretrained('./xlmr.large', checkpoint_file='model.pt')
+        xlmr_model.eval()
+        text_transform = xlmr_model.encode()
+        val_loss = evaluate(val_data, xlmr_model, mask_id, pad_id, ntokens, criterion, args, device, text_transform)
 
 
 if __name__ == "__main__":
@@ -161,6 +171,8 @@ if __name__ == "__main__":
                         help='path to save the final model')
     parser.add_argument('--spm-path', type=str, default='./sentencepiece.xlmr.model',
                         help='path to load the sentencepiece model')
+    parser.add_argument('--eval_ref', type=str, default='None',
+                        help='path to load the reference model for evaluation')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')
     args = parser.parse_args()
