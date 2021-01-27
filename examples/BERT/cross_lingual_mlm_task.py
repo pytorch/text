@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from transforms import PretrainedSPVocab
 from torch.nn.utils.rnn import pad_sequence
+from typing import List
 
 
 def collate_batch(batch_data, args, mask_id, pad_id, text_transform):
@@ -38,7 +39,8 @@ def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, devi
     # Turn on evaluation mode which disables dropout.
     model.eval()
     total_loss = 0.
-    dataloader = DataLoader(data_source, batch_size=args.batch_size,
+    # dataloader = DataLoader(data_source, batch_size=args.batch_size,
+    dataloader = DataLoader(data_source, batch_size=1,  # Set batch # to 1 for inference
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, text_transform))
     with torch.no_grad():
         for batch, (data, targets) in enumerate(dataloader):
@@ -46,7 +48,8 @@ def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, devi
             targets = targets.to(device)
             output = model(data)
             total_loss += criterion(output.view(-1, ntokens), targets.view(-1)).item()
-    return total_loss / ((len(data_source) - 1) / args.batch_size)
+    # return total_loss / ((len(data_source) - 1) / args.batch_size)
+    return total_loss / (len(data_source) - 1)  # Set batch # to 1 for inference
 
 
 def train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
@@ -131,10 +134,15 @@ def run_main(args, rank=None):
     # Run reference XLM-R model from fairseq
     if args.eval_ref != 'None':
         from fairseq.models.roberta import XLMRModel
-        xlmr_model = XLMRModel.from_pretrained('./xlmr.large', checkpoint_file='model.pt')
-        xlmr_model.eval()
-        text_transform = xlmr_model.encode()
-        val_loss = evaluate(val_data, xlmr_model, mask_id, pad_id, ntokens, criterion, args, device, text_transform)
+        from model import BatchFirstModel
+        ref_model = XLMRModel.from_pretrained('./xlmr.large', checkpoint_file='model.pt')
+        ref_model.eval()
+
+        def text_transform(x: str) -> List:
+            return ref_model.encode(x).tolist()
+        model = BatchFirstModel(ref_model.model.encoder)
+        ref_ntokens, mask_id, pad_id = 250002, 7021, 1  # from fairseq XLM-R model
+        val_loss = evaluate(val_data, model, mask_id, pad_id, ref_ntokens, criterion, args, device, text_transform)
 
 
 if __name__ == "__main__":
