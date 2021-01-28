@@ -43,7 +43,8 @@ class BertEmbedding(nn.Module):
         self.norm = LayerNorm(ninp)
         self.dropout = Dropout(dropout)
 
-    def forward(self, src, token_type_input):
+    def forward(self, seq_inputs):
+        src, token_type_input = seq_inputs
         src = self.embed(src) + self.pos_embed(src) \
             + self.tok_type_embed(src, token_type_input)
         return self.dropout(self.norm(src))
@@ -107,8 +108,8 @@ class BertModel(nn.Module):
         self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
         self.ninp = ninp
 
-    def forward(self, src, token_type_input):
-        src = self.bert_embed(src, token_type_input)
+    def forward(self, seq_inputs):
+        src = self.bert_embed(seq_inputs)
         output = self.transformer_encoder(src)
         return output
 
@@ -127,7 +128,7 @@ class MLMTask(nn.Module):
 
     def forward(self, src, token_type_input=None):
         src = src.transpose(0, 1)  # Wrap up by nn.DataParallel
-        output = self.bert_model(src, token_type_input)
+        output = self.bert_model((src, token_type_input))
         output = self.mlm_span(output)
         output = self.activation(output)
         output = self.norm_layer(output)
@@ -148,7 +149,7 @@ class NextSentenceTask(nn.Module):
 
     def forward(self, src, token_type_input):
         src = src.transpose(0, 1)  # Wrap up by nn.DataParallel
-        output = self.bert_model(src, token_type_input)
+        output = self.bert_model((src, token_type_input))
         # Send the first <'cls'> seq to a classifier
         output = self.activation(self.linear_layer(output[0]))
         output = self.ns_span(output)
@@ -165,7 +166,7 @@ class QuestionAnswerTask(nn.Module):
         self.qa_span = Linear(bert_model.ninp, 2)
 
     def forward(self, src, token_type_input):
-        output = self.bert_model(src, token_type_input)
+        output = self.bert_model((src, token_type_input))
         # transpose output (S, N, E) to (N, S, E)
         output = output.transpose(0, 1)
         output = self.activation(output)
