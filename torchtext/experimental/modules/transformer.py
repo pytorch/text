@@ -60,13 +60,13 @@ class TransformerEncoder(nn.Module):
     def __init__(self, ntoken, embed_dim=768, nhead=12, feedforward_dim=3072, nlayers=12, dropout=0.2):
         super(TransformerEncoder, self).__init__()
         self.model_type = 'Transformer'
-        self.transformer_encoder_embedding = build_transformer_encoder_embedding(ntoken, embed_dim)
-        encoder_layer = build_transformer_encoder_layer(embed_dim, nhead, feedforward_dim, dropout)
+        self.transformer_encoder_embedding = self.build_transformer_encoder_embedding(ntoken, embed_dim)
+        encoder_layer = self.build_transformer_encoder_layer(embed_dim, nhead, feedforward_dim, dropout)
         self.encoder_layers = ModuleList([copy.deepcopy(encoder_layer) for i in range(nlayers)])
         self.embed_dim = embed_dim
 
-    def forward(self, src, token_type_input):
-        src = self.transformer_encoder_embedding(src, token_type_input)
+    def forward(self, src):
+        src = self.transformer_encoder_embedding(src)
         output = self.encoder_layers(src)
         return output
 
