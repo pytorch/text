@@ -41,8 +41,8 @@ class RobertaModel(nn.Module):
         output = self.transformer_encoder(src)
         return output
 
-    def encode(self, input_src: str) -> List[int]:
-        return self.transform(input_src)
+    def encode(self, input_src: str) -> torch.Tensor:
+        return torch.tensor(self.transform(input_src), dtype=torch.long)
 
 
 # [TODO] Add torch.hub support
@@ -54,6 +54,8 @@ def xlmr_base_model(directory='./', checkpoint_file='model.pt', args_file='args.
     Examples:
         >>> from torchtext.experimental.models import xlmr_base_model
         >>> xlmr_base_model = xlmr_base_model()
+        >>> xlmr_base_model.encode('this is an example')
+        >>> tensor([  903,    83,   142, 27781]) 
     '''
     if not files_exist([checkpoint_file, args_file, tokenizer_file, vocab_file], root=directory):
         tar_file = download_from_url(PRETRAINED['xlmr.base'], root=directory,
