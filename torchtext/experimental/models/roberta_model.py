@@ -55,7 +55,7 @@ def xlmr_base_model(directory='./', checkpoint_file='model.pt', args_file='args.
         >>> from torchtext.experimental.models import xlmr_base_model
         >>> xlmr_base_model = xlmr_base_model()
     '''
-    if files_exist([checkpoint_file, args_file, tokenizer_file, vocab_file], root=directory):
+    if not files_exist([checkpoint_file, args_file, tokenizer_file, vocab_file], root=directory):
         tar_file = download_from_url(PRETRAINED['xlmr.base'], root=directory,
                                      hash_value=MD5['xlmr.base'], hash_type='md5')
         extracted_files = extract_archive(tar_file, to_path=directory)
