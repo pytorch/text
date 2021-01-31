@@ -10,6 +10,8 @@ import sys
 import zipfile
 import gzip
 from typing import List
+import argparse
+import json
 
 
 def reporthook(t):
@@ -280,7 +282,7 @@ def files_exist(filenames: List[str], root: str = '.data'):
 
     Args:
         filenames: the names of the files
-        root: download folder used to store the file in (.data)
+        root: download folder used to store the file in (Default: .data)
 
     Examples:
         >>> torchtext.utils.files_exist(['vocab.txt'])
@@ -291,3 +293,22 @@ def files_exist(filenames: List[str], root: str = '.data'):
         if not os.path.exists(os.path.join(root, _file)):
             return False
     return True
+
+
+def load_args_from_json(filename: str, root: str = '.data'):
+    """Load arguments from a json file
+
+    Args:
+        filename: the name of the file
+        root: download folder used to store the file in (Default: .data)
+
+    Examples:
+        >>> args = torchtext.utils.load_args_from_json('args.json')
+    """
+
+    with open(os.path.join(root, filename), 'rt') as f:
+        t_args = argparse.Namespace()
+        t_args.__dict__.update(json.load(f))
+        parser = argparse.ArgumentParser()
+        args = parser.parse_args(namespace=t_args)
+    return args
