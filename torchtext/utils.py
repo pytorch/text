@@ -9,6 +9,7 @@ import re
 import sys
 import zipfile
 import gzip
+from typing import List
 
 
 def reporthook(t):
@@ -272,3 +273,21 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
             break
         hash_func.update(chunk)
     return hash_func.hexdigest() == hash_value
+
+
+def files_exist(filenames: List[str], root: str = '.data'):
+    """Check if files exist in the root directory
+
+    Args:
+        filenames: the names of the files
+        root: download folder used to store the file in (.data)
+
+    Examples:
+        >>> torchtext.utils.files_exist(['vocab.txt'])
+        >>> True
+
+    """
+    for _file in filenames:
+        if not os.path.exists(os.path.join(root, _file)):
+            return False
+    return True
