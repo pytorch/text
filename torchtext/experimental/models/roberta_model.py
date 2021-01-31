@@ -70,4 +70,4 @@ def xlmr_base_model(directory='./', checkpoint_file='model.pt', args_file='args.
 
 
 PRETRAINED = {'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr.base.tar.gz'}
-MD5 = {'xlmr.base': 'c33ae5b2377624dc077b659bbad222f3'}
+MD5 = {'xlmr.base': 'adf75f3d20c8a876533b206ccb3a7cb6'}
