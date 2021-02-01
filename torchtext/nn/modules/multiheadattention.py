@@ -200,12 +200,15 @@ class ScaledDotProduct(torch.nn.Module):
 
 class InProjContainer(torch.nn.Module):
     def __init__(self, query_proj, key_proj, value_proj):
-        r"""A in-proj container to process inputs.
+        r"""A in-proj container to project query/key/value in MultiheadAttention. This module happens before reshaping
+        the projected query/key/value into multiple heads. See the linear layers (bottom) of Multi-head Attention in
+        Fig 2 of Attention Is All You Need paper. Also check the usage example
+        in torchtext.nn.MultiheadAttentionContainer.
 
         Args:
-            query_proj: a proj layer for query.
-            key_proj: a proj layer for key.
-            value_proj: a proj layer for value.
+            query_proj: a proj layer for query. A typical projection layer is torch.nn.Linear.
+            key_proj: a proj layer for key. A typical projection layer is torch.nn.Linear.
+            value_proj: a proj layer for value. A typical projection layer is torch.nn.Linear.
         """
 
         super(InProjContainer, self).__init__()
@@ -217,15 +220,22 @@ class InProjContainer(torch.nn.Module):
                 query: torch.Tensor,
                 key: torch.Tensor,
                 value: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        r"""Projects the input sequences using in-proj layers.
+        r"""Projects the input sequences using in-proj layers. query/key/value are simply passed to
+        the forward func of query/key/value_proj, respectively.
 
         Args:
             query, key, value (Tensors): sequence to be projected
 
-        Shape:
-            - query, key, value: :math:`(S, N, E)`
-            - Output: :math:`(S, N, E)`
-            where S is the sequence length, N is the batch size, and E is the embedding dimension.
+        Examples::
+            >>> from torchtext.nn import InProjContainer
+            >>> embed_dim, bsz = 10, 64
+            >>> in_proj_container = InProjContainer(torch.nn.Linear(embed_dim, embed_dim),
+                                                    torch.nn.Linear(embed_dim, embed_dim),
+                                                    torch.nn.Linear(embed_dim, embed_dim))
+            >>> q = torch.rand((5, bsz, embed_dim))
+            >>> k = v = torch.rand((6, bsz, embed_dim))
+            >>> q, k, v = in_proj_container(q, k, v)
+
         """
         return self.query_proj(query), self.key_proj(key), self.value_proj(value)
 

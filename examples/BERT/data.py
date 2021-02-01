@@ -10,7 +10,7 @@ from torchtext.experimental.datasets import LanguageModelingDataset
 # Set up dataset for book corpus
 ###################################################################
 def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
-               data_select=('train', 'test', 'valid'), removed_tokens=[],
+               data_select=('train', 'valid', 'test'), removed_tokens=[],
                min_sentence_len=None):
 
     if isinstance(data_select, str):

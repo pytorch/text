@@ -11,7 +11,7 @@ def predict(text, model, dictionary, ngrams):
     The input text is numericalized with the vocab and then sent to
     the model for inference.
 
-    Arguments:
+    Args:
         text: a sample text string
         model: the trained model
         dictionary: a vocab object for the information of string-to-index

@@ -74,13 +74,13 @@ SST
 ~~~
 
 .. autoclass:: SST
-  :members: splits, iters
+  :members: __init__, splits, iters
 
 IMDb
 ~~~~
 
 .. autoclass:: IMDB
-  :members: splits, iters
+  :members: __init__, splits, iters
 
 
 Text Classification
@@ -95,66 +95,42 @@ TextClassificationDataset
 AG_NEWS
 ~~~~~~~
 
-AG_NEWS dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: AG_NEWS
-  :members: __init__
+.. autofunction:: AG_NEWS
 
 SogouNews
 ~~~~~~~~~
 
-SogouNews dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: SogouNews
-  :members: __init__
+.. autofunction:: SogouNews
 
 DBpedia
 ~~~~~~~
 
-DBpedia dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: DBpedia
-  :members: __init__
+.. autofunction::  DBpedia
 
 YelpReviewPolarity
 ~~~~~~~~~~~~~~~~~~
 
-YelpReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: YelpReviewPolarity
-  :members: __init__
+.. autofunction:: YelpReviewPolarity
 
 YelpReviewFull
 ~~~~~~~~~~~~~~
 
-YelpReviewFull dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: YelpReviewFull
-  :members: __init__
+.. autofunction:: YelpReviewFull
 
 YahooAnswers
 ~~~~~~~~~~~~
 
-YahooAnswers dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: YahooAnswers
-  :members: __init__
+.. autofunction:: YahooAnswers
 
 AmazonReviewPolarity
 ~~~~~~~~~~~~~~~~~~~~
 
-AmazonReviewPolarity dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: AmazonReviewPolarity
-  :members: __init__
+.. autofunction:: AmazonReviewPolarity
 
 AmazonReviewFull
 ~~~~~~~~~~~~~~~~
 
-AmazonReviewFull dataset is subclass of ``TextClassificationDataset`` class.
-
-.. autoclass:: AmazonReviewFull
-  :members: __init__
+.. autofunction:: AmazonReviewFull
 
 
 Question Classification

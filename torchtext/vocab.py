@@ -35,7 +35,7 @@ class Vocab(object):
                  vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
         """Create a Vocab object from a collections.Counter.
 
-        Arguments:
+        Args:
             counter: collections.Counter object holding the frequencies of
                 each value found in the data.
             max_size: The maximum size of the vocabulary, or None for no
@@ -49,7 +49,7 @@ class Vocab(object):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: 'torch.zeros'
             vectors_cache: directory for cached vectors. Default: '.vector_cache'
             specials_first: Whether to add special tokens into the vocabulary at first.
                 If it is False, they are added into the vocabulary at last.
@@ -149,10 +149,11 @@ class Vocab(object):
 
     def load_vectors(self, vectors, **kwargs):
         """
-        Arguments:
+        Args:
             vectors: one of or a list containing instantiations of the
                 GloVe, CharNGram, or Vectors classes. Alternatively, one
                 of or a list of available pretrained vectors:
+
                 charngram.100d
                 fasttext.en.300d
                 fasttext.simple.300d
@@ -166,6 +167,7 @@ class Vocab(object):
                 glove.6B.100d
                 glove.6B.200d
                 glove.6B.300d
+
             Remaining keyword arguments: Passed to the constructor of Vectors classes.
         """
         if not isinstance(vectors, list):
@@ -199,7 +201,7 @@ class Vocab(object):
         """
         Set the vectors for the Vocab instance from a collection of Tensors.
 
-        Arguments:
+        Args:
             stoi: A dictionary of string to the index of the associated vector
                 in the `vectors` input argument.
             vectors: An indexed iterable (or other structure supporting __getitem__) that
@@ -209,7 +211,7 @@ class Vocab(object):
             dim: The dimensionality of the vectors.
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: 'torch.zeros'
         """
         self.vectors = torch.Tensor(len(self), dim)
         for i, token in enumerate(self.itos):
@@ -226,7 +228,7 @@ class SubwordVocab(Vocab):
                  vectors=None, unk_init=torch.Tensor.zero_):
         """Create a revtok subword vocabulary from a collections.Counter.
 
-        Arguments:
+        Args:
             counter: collections.Counter object holding the frequencies of
                 each word found in the data.
             max_size: The maximum size of the subword vocabulary, or None for no
@@ -239,7 +241,7 @@ class SubwordVocab(Vocab):
                 or a list of aforementioned vectors
             unk_init (callback): by default, initialize out-of-vocabulary word vectors
                 to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: torch.Tensor.zero_
+                returns a Tensor of the same size. Default: 'torch.zeros
         """
         try:
             import revtok
@@ -299,21 +301,22 @@ class Vectors(object):
     def __init__(self, name, cache=None,
                  url=None, unk_init=None, max_vectors=None):
         """
-        Arguments:
-           name: name of the file that contains the vectors
-           cache: directory for cached vectors
-           url: url for download if vectors not found in cache
-           unk_init (callback): by default, initialize out-of-vocabulary word vectors
-               to zero vectors; can be any function that takes in a Tensor and
-               returns a Tensor of the same size
-           max_vectors (int): this can be used to limit the number of
-               pre-trained vectors loaded.
-               Most pre-trained vector sets are sorted
-               in the descending order of word frequency.
-               Thus, in situations where the entire set doesn't fit in memory,
-               or is not needed for another reason, passing `max_vectors`
-               can limit the size of the loaded set.
+        Args:
+
+            name: name of the file that contains the vectors
+            cache: directory for cached vectors
+            url: url for download if vectors not found in cache
+            unk_init (callback): by default, initialize out-of-vocabulary word vectors
+                to zero vectors; can be any function that takes in a Tensor and returns a Tensor of the same size
+            max_vectors (int): this can be used to limit the number of
+                pre-trained vectors loaded.
+                Most pre-trained vector sets are sorted
+                in the descending order of word frequency.
+                Thus, in situations where the entire set doesn't fit in memory,
+                or is not needed for another reason, passing `max_vectors`
+                can limit the size of the loaded set.
         """
+
         cache = '.vector_cache' if cache is None else cache
         self.itos = None
         self.stoi = None
@@ -437,7 +440,7 @@ class Vectors(object):
     def get_vecs_by_tokens(self, tokens, lower_case_backup=False):
         """Look up embedding vectors of tokens.
 
-        Arguments:
+        Args:
             tokens: a token or a list of tokens. if `tokens` is a string,
                 returns a 1-D tensor of shape `self.dim`; if `tokens` is a
                 list of strings, returns a 2-D tensor of shape=(len(tokens),
@@ -546,7 +549,7 @@ def build_vocab_from_iterator(iterator, num_lines=None):
     """
     Build a Vocab from an iterator.
 
-    Arguments:
+    Args:
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         num_lines: The expected number of elements returned by the iterator.
             (Default: None)

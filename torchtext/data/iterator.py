@@ -45,7 +45,7 @@ class Iterator(object):
                  batch_size_fn=None, train=True,
                  repeat=False, shuffle=None, sort=None,
                  sort_within_batch=None):
-        warnings.warn('{} class will be retired in the 0.8.0 release and moved to torchtext.legacy. Please see 0.7.0 release notes for further information.'.format(self.__class__.__name__), UserWarning)
+        warnings.warn('{} class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.'.format(self.__class__.__name__), UserWarning)
         self.batch_size, self.train, self.dataset = batch_size, train, dataset
         self.batch_size_fn = batch_size_fn
         self.iterations = 0
@@ -85,7 +85,7 @@ class Iterator(object):
     def splits(cls, datasets, batch_sizes=None, **kwargs):
         """Create Iterator objects for multiple splits of a dataset.
 
-        Arguments:
+        Args:
             datasets: Tuple of Dataset objects corresponding to the splits. The
                 first such object should be the train set.
             batch_sizes: Tuple of batch sizes to use for the different splits,

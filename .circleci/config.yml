@@ -25,7 +25,7 @@ commands:
           command: |
             our_upload_channel=nightly
             # On tags upload to test instead
-            if [[ -n "${CIRCLE_TAG}" ]]; then
+            if [[ -n "${CIRCLE_TAG}" ]] || [[ ${CIRCLE_BRANCH} =~ release/* ]]; then
               our_upload_channel=test
             fi
             echo "export UPLOAD_CHANNEL=${our_upload_channel}" >> ${BASH_ENV}
@@ -75,6 +75,7 @@ jobs:
     resource_class: 2xlarge+
     steps:
       - checkout
+      - designate_upload_channel
       - run: packaging/build_wheel.sh
       - store_artifacts:
           path: dist
@@ -90,6 +91,7 @@ jobs:
     resource_class: 2xlarge+
     steps:
       - checkout
+      - designate_upload_channel
       - run: packaging/build_conda.sh
       - store_artifacts:
           path: /opt/conda/conda-bld/linux-64
@@ -104,6 +106,7 @@ jobs:
       name: windows-cpu
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           name: build
           command: |
@@ -123,6 +126,7 @@ jobs:
       name: windows-cpu
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           name: build
           command: |
@@ -144,6 +148,7 @@ jobs:
       xcode: "9.4.1"
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           # Installing cmake with `brew install cmake` takes 30 mins, so we use binary distribution.
           command: |
@@ -169,6 +174,7 @@ jobs:
       xcode: "9.4.1"
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           command: |
             curl -o conda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
@@ -196,7 +202,7 @@ jobs:
             # Prevent credential from leaking
             conda install -yq anaconda-client
             set -x
-            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u pytorch-nightly --label main --no-progress --force
+            anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u "pytorch-${UPLOAD_CHANNEL}" --label main --no-progress --force
 
   # Requires org-member context
   binary_wheel_upload:
@@ -217,7 +223,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY="${PYTORCH_BINARY_AWS_SECRET_ACCESS_KEY}"
             set -x
             for pkg in ~/workspace/*.whl; do
-              aws s3 cp "$pkg" "s3://pytorch/whl/nightly/" --acl public-read
+              aws s3 cp "$pkg" "s3://pytorch/whl/${UPLOAD_CHANNEL}/" --acl public-read
             done
 
   smoke_test_linux_conda:
@@ -231,7 +237,7 @@ jobs:
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-${UPLOAD_CHANNEL} pytorch
+            conda install -v -y -c pytorch-${UPLOAD_CHANNEL} pytorch cpuonly
             conda install -v -y -c file://$HOME/workspace/conda-bld torchtext
       - run:
           name: smoke test
@@ -244,12 +250,13 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workspace
+      - designate_upload_channel
       - run:
           name: install binaries
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: smoke test
           command: |
@@ -283,6 +290,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workspace
+      - designate_upload_channel
       - run:
           name: install binaries
           command: |
@@ -291,7 +299,7 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-nightly pytorch
+            conda install -v -y -c pytorch-"${UPLOAD_CHANNEL}" pytorch cpuonly
             conda install -v -y -c ~/workspace/conda-bld torchtext
       - run:
           name: smoke test
@@ -307,6 +315,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workspace
+      - designate_upload_channel
       - run:
           name: install binaries
           command: |
@@ -315,7 +324,7 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            pip install $(ls ~/workspace/torchtext*.whl) --pre -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: smoke test
           command: |
@@ -330,6 +339,7 @@ jobs:
     resource_class: 2xlarge+
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
@@ -381,6 +391,7 @@ jobs:
       name: windows-cpu
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
@@ -433,6 +444,7 @@ jobs:
     resource_class: medium
     steps:
       - checkout
+      - designate_upload_channel
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
@@ -455,6 +467,63 @@ jobs:
       - run:
           name: Run style check
           command: .circleci/unittest/linux/scripts/run_style_checks.sh
+  build_docs:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - designate_upload_channel
+      - checkout
+      - run:
+          name: install binaries
+          command: |
+            set -x
+            conda install make
+            pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
+      - run:
+          name: Build docs
+          command: |
+            set -x
+            pushd docs
+            pip install -r requirements.txt
+            make html
+            popd
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - "*"
+
+  upload_docs:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Generate netrc
+          command: |
+            # set credentials for https pushing
+            # requires the org-member context
+            cat > ~/.netrc \<<DONE
+              machine github.com
+              login pytorchbot
+              password ${GITHUB_PYTORCHBOT_TOKEN}
+            DONE
+      - run:
+          name: Upload docs
+          command: |
+            # Don't use "checkout" step since it uses ssh, which cannot git push
+            # https://circleci.com/docs/2.0/configuration-reference/#checkout
+            set -ex
+            tag=${CIRCLE_TAG:1:5}
+            target=${tag:-master}
+            ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
+
 
 workflows:
   build:
@@ -514,6 +583,22 @@ workflows:
       - binary_windows_conda:
           name: binary_windows_conda_py3.8
           python_version: '3.8'
+      - build_docs:
+          name: build_docs
+          python_version: '3.8'
+          requires:
+          - binary_linux_wheel_py3.8
+      - upload_docs:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: upload_docs
+          python_version: '3.8'
+          requires:
+          - build_docs
   unittest:
     jobs:
       - unittest_linux:

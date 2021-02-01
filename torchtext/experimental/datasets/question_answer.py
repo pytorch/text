@@ -1,30 +1,35 @@
 import torch
+import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import question_answer as raw
+from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.functional import (
     totensor,
     vocab_func,
     sequential_transforms,
 )
 
+logger_ = logging.getLogger(__name__)
+
 
 class QuestionAnswerDataset(torch.utils.data.Dataset):
     """Defines an abstract question answer datasets.
-       Currently, we only support the following datasets:
-             - SQuAD1
-             - SQuAD2
+    Currently, we only support the following datasets:
+
+        - SQuAD1
+        - SQuAD2
     """
 
     def __init__(self, data, vocab, transforms):
         """Initiate question answer dataset.
 
-        Arguments:
+        Args:
             data: a tuple of (context, question, answers, ans_pos).
             vocab: Vocabulary object used for dataset.
             transforms: a dictionary of transforms.
-                For example {'context': context_transform, 'answers': answers_transform,
-                             'question': question_transform, 'ans_pos': ans_pos_transform}
+            For example {'context': context_transform, 'answers': answers_transform,
+                'question': question_transform, 'ans_pos': ans_pos_transform}
         """
 
         super(QuestionAnswerDataset, self).__init__()
@@ -56,22 +61,14 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name,
-                    root='.data',
-                    vocab=None,
-                    tokenizer=None,
-                    data_select=('train', 'dev')):
+def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
-    if isinstance(data_select, str):
-        data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'dev'))):
-        raise TypeError('Given data selection {} is not supported!'.format(data_select))
-    train, dev = raw.DATASETS[dataset_name](root=root)
-    raw_data = {'train': [item for item in train],
-                'dev': [item for item in dev]}
+    data_select = check_default_set(data_select, ('train', 'dev'))
+    raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
     if vocab is None:
         if 'train' not in data_select:
             raise TypeError("Must pass a vocab if train is not selected.")
@@ -82,21 +79,24 @@ def _setup_datasets(dataset_name,
                 for item in _answers:
                     tok_ans += text_transform(item)
                 yield text_transform(_context) + text_transform(_question) + tok_ans
+        logger_.info('Building Vocab based on train data')
         vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), len(raw_data['train']))
+    logger_.info('Vocab has %d entries', len(vocab))
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
+    logger_.info('Building datasets for {}'.format(data_select))
     return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
 
 
-def SQuAD1(*args, **kwargs):
+def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
     """ Defines SQuAD1 datasets.
 
     Create question answer dataset: SQuAD1
 
     Separately returns the train and dev dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
@@ -120,17 +120,17 @@ def SQuAD1(*args, **kwargs):
         >>> train, dev = SQuAD1(tokenizer=tokenizer)
     """
 
-    return _setup_datasets(*(('SQuAD1',) + args), **kwargs)
+    return _setup_datasets('SQuAD1', root, vocab, tokenizer, data_select)
 
 
-def SQuAD2(*args, **kwargs):
+def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
     """ Defines SQuAD2 datasets.
 
     Create question answer dataset: SQuAD2
 
     Separately returns the train and dev dataset
 
-    Arguments:
+    Args:
         root: Directory where the datasets are saved. Default: ".data"
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
@@ -153,7 +153,8 @@ def SQuAD2(*args, **kwargs):
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
-    return _setup_datasets(*(('SQuAD2',) + args), **kwargs)
+
+    return _setup_datasets('SQuAD2', root, vocab, tokenizer, data_select)
 
 
 DATASETS = {

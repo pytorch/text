@@ -5,7 +5,6 @@ import tempfile
 import uuid
 import unittest
 
-import sentencepiece as spm
 import torch
 import torchtext.data as data
 from torchtext.data.functional import (
@@ -46,11 +45,8 @@ class TestFunctional(TorchtextTestCase):
             model_prefix = os.path.join(dir_name, f'spm_user_{uuid.uuid4()}')
             model_file = f'{model_prefix}.model'
             generate_sp_model(data_path, vocab_size=23456, model_prefix=model_prefix)
-
-            sp_user = spm.SentencePieceProcessor()
-            sp_user.Load(model_file)
-
-            self.assertEqual(len(sp_user), 23456)
+            sp_model = load_sp_model(model_file)
+            self.assertEqual(sp_model.GetPieceSize(), 23456)
 
     def test_sentencepiece_numericalizer(self):
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
@@ -111,13 +107,24 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(experimental_eager_tokens, ref_results)
 
-        # test load and save
-        save_path = os.path.join(self.test_dir, 'basic_english_normalize.pt')
-        torch.save(basic_eng_norm.to_ivalue(), save_path)
-        loaded_basic_eng_norm = torch.load(save_path)
+    def test_basicEnglishNormalize_load_and_save(self):
+        test_sample = '\'".<br />,()!?;:   Basic English Normalization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'basic', 'english', 'normalization',
+                       'for', 'a', 'line', 'of', 'text', "'", '.', ',', '(', ')', '!', '?']
 
-        loaded_eager_tokens = loaded_basic_eng_norm(test_sample)
-        self.assertEqual(loaded_eager_tokens, ref_results)
+        with self.subTest('pybind'):
+            save_path = os.path.join(self.test_dir, 'ben_pybind.pt')
+            ben = basic_english_normalize()
+            torch.save(ben, save_path)
+            loaded_ben = torch.load(save_path)
+            self.assertEqual(loaded_ben(test_sample), ref_results)
+
+        with self.subTest('torchscript'):
+            save_path = os.path.join(self.test_dir, 'ben_torchscrip.pt')
+            ben = basic_english_normalize().to_ivalue()
+            torch.save(ben, save_path)
+            loaded_ben = torch.load(save_path)
+            self.assertEqual(loaded_ben(test_sample), ref_results)
 
     # TODO(Nayef211): remove decorator once	https://github.com/pytorch/pytorch/issues/38207 is closed
     @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
@@ -151,13 +158,39 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(jit_tokens, ref_results)
 
-        # test load and save
-        save_path = os.path.join(self.test_dir, 'regex.pt')
-        torch.save(r_tokenizer.to_ivalue(), save_path)
-        loaded_r_tokenizer = torch.load(save_path)
+    def test_load_and_save(self):
+        test_sample = '\'".<br />,()!?;:   Basic Regex Tokenization for a Line of Text   \'".<br />,()!?;:'
+        ref_results = ["'", '.', ',', '(', ')', '!', '?', 'Basic', 'Regex', 'Tokenization',
+                       'for', 'a', 'Line', 'of', 'Text', "'", '.', ',', '(', ')', '!', '?']
+        patterns_list = [
+            (r'\'', ' \'  '),
+            (r'\"', ''),
+            (r'\.', ' . '),
+            (r'<br \/>', ' '),
+            (r',', ' , '),
+            (r'\(', ' ( '),
+            (r'\)', ' ) '),
+            (r'\!', ' ! '),
+            (r'\?', ' ? '),
+            (r'\;', ' '),
+            (r'\:', ' '),
+            (r'\s+', ' ')]
 
-        loaded_eager_tokens = loaded_r_tokenizer(test_sample)
-        self.assertEqual(loaded_eager_tokens, ref_results)
+        with self.subTest('pybind'):
+            save_path = os.path.join(self.test_dir, 'regex_pybind.pt')
+            tokenizer = regex_tokenizer(patterns_list)
+            torch.save(tokenizer, save_path)
+            loaded_tokenizer = torch.load(save_path)
+            results = loaded_tokenizer(test_sample)
+            self.assertEqual(results, ref_results)
+
+        with self.subTest('torchscript'):
+            save_path = os.path.join(self.test_dir, 'regex_torchscript.pt')
+            tokenizer = regex_tokenizer(patterns_list).to_ivalue()
+            torch.save(tokenizer, save_path)
+            loaded_tokenizer = torch.load(save_path)
+            results = loaded_tokenizer(test_sample)
+            self.assertEqual(results, ref_results)
 
     def test_custom_replace(self):
         custom_replace_transform = custom_replace([(r'S', 's'), (r'\s+', ' ')])

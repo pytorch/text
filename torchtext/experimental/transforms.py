@@ -31,6 +31,7 @@ def basic_english_normalize():
     Normalization includes
         - lowercasing
         - complete some basic text normalization for English words as follows:
+
             - add spaces before and after '\''
             - remove '\"',
             - add spaces before and after '.'
@@ -52,6 +53,7 @@ def basic_english_normalize():
         >>> jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())
         >>> tokens = jit_basic_eng_norm(test_sample)
     """
+
     patterns_list = [
         (r'\'', ' \'  '),
         (r'\"', ''),
@@ -89,18 +91,20 @@ def regex_tokenizer(patterns_list):
         >>> jit_reg_tokenizer = torch.jit.script(reg_tokenizer)
         >>> tokens = jit_reg_tokenizer(test_sample)
     """
+
     patterns = [pair[0] for pair in patterns_list]
     replacements = [pair[1] for pair in patterns_list]
     return RegexTokenizer(RegexTokenizerPybind(patterns, replacements, False))
 
 
 class BasicEnglishNormalize(nn.Module):
-    __ignored_properties__ = ["is_jitable"]
+    __jit_unused_properties__ = ["is_jitable"]
     r"""Basic normalization for a string sentence.
 
     Args:
         regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
+
     def __init__(self, regex_tokenizer):
         super(BasicEnglishNormalize, self).__init__()
         self.regex_tokenizer = regex_tokenizer
@@ -117,22 +121,25 @@ class BasicEnglishNormalize(nn.Module):
         Returns:
             List[str]: a token list after normalizing and splitting on whitespace.
         """
+
         return self.regex_tokenizer.forward(line)
 
     def to_ivalue(self):
         r"""Return a JITable BasicEnglishNormalize.
         """
+
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
         return BasicEnglishNormalize(regex_tokenizer)
 
 
 class RegexTokenizer(nn.Module):
-    __ignored_properties__ = ["is_jitable"]
+    __jit_unused_properties__ = ["is_jitable"]
     r"""Regex tokenizer for a string sentence that applies all regex replacements defined in patterns_list.
 
     Args:
         regex_tokenizer (torch.classes.torchtext.RegexTokenizer or torchtext._torchtext.RegexTokenizer): a cpp regex tokenizer object.
     """
+
     def __init__(self, regex_tokenzier):
         super(RegexTokenizer, self).__init__()
         self.regex_tokenizer = regex_tokenzier
@@ -149,17 +156,20 @@ class RegexTokenizer(nn.Module):
         Returns:
             List[str]: a token list after regex.
         """
+
         return self.regex_tokenizer.forward(line)
 
     def to_ivalue(self):
         r"""Return a JITable RegexTokenizer.
         """
+
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
         return RegexTokenizer(regex_tokenizer)
 
 
 class TextSequentialTransforms(nn.Sequential):
     r"""A container to host a sequential text transforms.
+
         Example:
             >>> import torch
             >>> from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms
@@ -169,6 +179,7 @@ class TextSequentialTransforms(nn.Sequential):
                 ['here', 'is', 'an', 'example']
             >>> jit_txt_pipeline = torch.jit.script(txt_pipeline.to_ivalue())
     """
+
     def forward(self, input: str):
         for module in self:
             input = module(input)
@@ -177,6 +188,7 @@ class TextSequentialTransforms(nn.Sequential):
     def to_ivalue(self):
         r"""Return a JITable TextSequentialTransforms.
         """
+
         module_list = []
         for _idx, _module in enumerate(self):
             if hasattr(_module, 'to_ivalue'):
@@ -197,7 +209,7 @@ PRETRAINED_SP_MODEL = {
 def load_sp_model(sp_model):
     r"""Load a  sentencepiece model for file.
 
-    Arguments:
+    Args:
         sp_model: the file path or a file object saving the sentencepiece model.
 
     Outputs:
@@ -213,6 +225,7 @@ def load_sp_model(sp_model):
         details please refer to SentencePiece GitHub https://github.com/google/sentencepiece). We also provide the pretrained model
         with a different size of the vocabulary (i.e. 15000, 25000, 50000).
         The following pretrained sentencepiece models are provided:
+
             - text_unigram_15000
             - text_unigram_25000
             - text_unigram_50000
@@ -225,6 +238,7 @@ def load_sp_model(sp_model):
         >>> sp_model_path = torchtext.utils.download_from_url(PRETRAINED_SP_MODEL['text_unigram_25000'])
         >>> sp_model = load_sp_model(sp_model_path)
     """
+
     if isinstance(sp_model, str):
         with open(sp_model, 'rb') as f:
             return SentencePiecePybind(f.read())
@@ -251,6 +265,7 @@ def sentencepiece_tokenizer(sp_model):
         >>> spm_tokenizer = sentencepiece_tokenizer('m_user.model')
         >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
     """
+
     spm = load_sp_model(sp_model)
     return SentencePieceTokenizer(spm)
 
@@ -277,6 +292,7 @@ class SentencePieceTokenizer(nn.Module):
 
         Note: SentencePiece treats the input text just as a sequence of Unicode characters. Whitespace is also handled as a normal symbol. To handle the whitespace as a basic token explicitly, SentencePiece first escapes the whitespace with a meta symbol "▁" (U+2581) as follows.
         """
+
         return self.sp_model.EncodeAsPieces(line)
 
     @torch.jit.export
@@ -289,6 +305,7 @@ class SentencePieceTokenizer(nn.Module):
             >>> spm_transform.decoder(['▁the', '▁pre', 'trained', '▁sp', '▁model', '▁names'])
             >>> 'the pretrained sp model names'
         """
+
         return self.sp_model.DecodePieces(tokens)
 
     def to_ivalue(self):
@@ -308,6 +325,7 @@ def sentencepiece_processor(sp_model):
         >>> spm_processor = sentencepiece_processor('m_user.model')
         >>> jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())
     """
+
     spm = load_sp_model(sp_model)
     return SentencePieceProcessor(spm)
 
@@ -332,6 +350,7 @@ class SentencePieceProcessor(nn.Module):
             >>> spm_processor('the pretrained sp model names')
             >>> [9, 1546, 18811, 2849, 2759, 2202]
         """
+
         return self.sp_model.EncodeAsIds(line)
 
     @torch.jit.export
@@ -344,6 +363,7 @@ class SentencePieceProcessor(nn.Module):
             >>> spm_processor.decoder([9, 1546, 18811, 2849, 2759, 2202])
             >>> 'the pretrained sp model names'
         """
+
         return self.sp_model.DecodeIds(ids)
 
     def to_ivalue(self):
@@ -379,6 +399,7 @@ class VocabTransform(nn.Module):
             >>> vocab_transform(['here', 'is', 'an', 'example'])
 
         """
+
         return self.vocab.lookup_indices(tokens)
 
     def to_ivalue(self):
@@ -415,6 +436,7 @@ class VectorTransform(nn.Module):
             >>> vector_transform(['here', 'is', 'an', 'example'])
 
         """
+
         return self.vector.lookup_vectors(tokens)
 
     def to_ivalue(self):

@@ -3,10 +3,9 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-
-from torchtext.utils import (download_from_url, extract_archive,
-                             unicode_csv_reader)
+from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+from torchtext.experimental.datasets.raw.common import check_default_set
 
 URLS = {
     'Multi30k': [
@@ -63,15 +62,14 @@ URLS = {
     'WMT14':
     'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8',
     'IWSLT':
-    'https://wit3.fbk.eu/archive/2016-01//texts/{}/{}/{}.tgz'
+    'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
 }
 
 
 def _read_text_iterator(path):
     with io.open(path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            yield " ".join(row)
+        for row in f:
+            yield row
 
 
 def _clean_xml_file(f_xml):
@@ -117,26 +115,36 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 
 def _setup_datasets(dataset_name,
-                    train_filenames,
-                    valid_filenames,
-                    test_filenames,
-                    root='.data'):
+                    train_filenames, valid_filenames, test_filenames,
+                    data_select, root):
+    data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
-
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    extracted_files = []
+    extracted_files = []  # list of paths to the extracted files
     if isinstance(URLS[dataset_name], list):
-        for f in URLS[dataset_name]:
-            dataset_tar = download_from_url(f, root=root)
+        for idx, f in enumerate(URLS[dataset_name]):
+            dataset_tar = download_from_url(
+                f, root=root, hash_value=MD5[dataset_name][idx], hash_type='md5')
             extracted_files.extend(extract_archive(dataset_tar))
     elif isinstance(URLS[dataset_name], str):
-        dataset_tar = download_from_url(URLS[dataset_name], root=root)
-        extracted_files.extend(extract_archive(dataset_tar))
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], hash_type='md5')
+        extracted_dataset_tar = extract_archive(dataset_tar)
+        if dataset_name == 'IWSLT':
+            # IWSLT dataset's url downloads a multilingual tgz.
+            # We need to take an extra step to pick out the specific language pair from it.
+            src_language = train_filenames[0].split(".")[-1]
+            tgt_language = train_filenames[1].split(".")[-1]
+            languages = "-".join([src_language, tgt_language])
+            iwslt_tar = '.data/2016-01/texts/{}/{}/{}.tgz'
+            iwslt_tar = iwslt_tar.format(
+                src_language, tgt_language, languages)
+            extracted_dataset_tar = extract_archive(iwslt_tar)
+        extracted_files.extend(extracted_dataset_tar)
     else:
         raise ValueError(
             "URLS for {} has to be in a form or list or string".format(
@@ -167,8 +175,7 @@ def _setup_datasets(dataset_name,
                 "Files are not found for data type {}".format(key))
 
     datasets = []
-    for key in data_filenames.keys():
-
+    for key in data_select:
         def fn(data_filename):
             def _iter():
                 src_data_iter = _read_text_iterator(data_filename[0])
@@ -178,7 +185,7 @@ def _setup_datasets(dataset_name,
             return _iter
 
         datasets.append(
-            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name], fn(data_filenames[key]), lazy=True))
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], fn(data_filenames[key]), lazy=True))
 
     return tuple(datasets)
 
@@ -186,7 +193,7 @@ def _setup_datasets(dataset_name,
 def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             root='.data'):
+             data_select=('train', 'valid', 'test'), root='.data'):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
         The available dataset include:
@@ -240,24 +247,25 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             val.5.de
             val.5.en
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.de', 'train.en')
         valid_filenames: the source and target filenames for valid.
             Default: ('val.de', 'val.en')
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
+        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets import Multi30k
+        >>> from torchtext.experimental.datasets.raw import Multi30k
         >>> train_dataset, valid_dataset, test_dataset = Multi30k()
     """
-    return _setup_datasets("Multi30k",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           root=root)
+    return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -265,7 +273,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
-          root='.data'):
+          data_select=('train', 'valid', 'test'), root='.data'):
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -405,31 +413,25 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             train.tags.fr-en.en
             train.tags.fr-en.fr
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.de-en.de', 'train.de-en.en')
         valid_filenames: the source and target filenames for valid.
             Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets.raw import IWSLT
+        >>> from torchtext.experimental.datasets.raw import IWSLT
         >>> train_dataset, valid_dataset, test_dataset = IWSLT()
     """
-    src_language = train_filenames[0].split(".")[-1]
-    tgt_language = train_filenames[1].split(".")[-1]
-    languages = "-".join([src_language, tgt_language])
-    URLS["IWSLT"] = URLS["IWSLT"].format(src_language, tgt_language, languages)
-
-    return _setup_datasets(
-        "IWSLT",
-        train_filenames=train_filenames,
-        valid_filenames=valid_filenames,
-        test_filenames=test_filenames,
-        root=root,
-    )
+    return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -438,7 +440,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
-          root='.data'):
+          data_select=('train', 'valid', 'test'), root='.data'):
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -493,25 +495,25 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             newstest2015.tok.bpe.32000.de
             train.tok.clean.bpe.32000.de
 
-    Arguments:
+    Args:
         train_filenames: the source and target filenames for training.
             Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
         valid_filenames: the source and target filenames for valid.
             Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
 
     Examples:
-        >>> from torchtext.datasets import WMT14
+        >>> from torchtext.experimental.datasets.raw import WMT14
         >>> train_dataset, valid_dataset, test_dataset = WMT14()
     """
-
-    return _setup_datasets("WMT14",
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames,
-                           root=root)
+    return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames, data_select, root)
 
 
 DATASETS = {
@@ -520,7 +522,60 @@ DATASETS = {
     'WMT14': WMT14
 }
 NUM_LINES = {
-    'Multi30k': 29000,
-    'IWSLT': 173939,
-    'WMT14': 4500966,
+    'Multi30k': {'train': 29000, 'valid': 1014, 'test': 1000},
+    'IWSLT': {'train': 196884, 'valid': 993, 'test': 1305},
+    'WMT14': {'train': 4500966, 'valid': 3000, 'test': 3003}
+}
+MD5 = {
+    'Multi30k': ['3104872229daa1bef3b401d44dd2220b',
+                 'efd67d314d98489b716b145475101932',
+                 'ff2c0fcb4893a13bd73414306bc250ae',
+                 '08dc7cd4a662f31718412de95ca9bfe3',
+                 '6a8d5c87f6ae19e3d35681aa6fd16571',
+                 '005396bac545d880abe6f00bbb7dbbb4',
+                 'cb09af7d2b501f9112f2d6a59fa1360d',
+                 'e8cd6ec2bc8a11fc846fa48a46e3d0bb',
+                 'a7b684e0edbef1d4a23660c8e8e743fd',
+                 '4995d10954a804d3cdfd907b9fd093e8',
+                 'a152878809942757a55ce087073486b8',
+                 'd9a5fc268917725a2b0efce3a0cc8607',
+                 '81ff90b99829c0cd4b1b587d394afd39',
+                 '0065d13af80720a55ca8153d126e6627',
+                 '6cb767741dcad3931f966fefbc05203f',
+                 '83cdc082f646b769095615384cf5c0ca',
+                 '6e0e229eb049e3fc99a1ef02fb2d5f91',
+                 '2b69aa9253948ac9f67e94917272dd40',
+                 '93fc564584b7e5ba410c761ea5a1c682',
+                 'ac0c72653c140dd96707212a1baa4278',
+                 'eec05227daba4bb8f3f8f25b1cb335f4',
+                 '6dfb42cae4e4fd9a3c40e62ff5398a55',
+                 '9318fa08c0c0b96114eadb10eb2fc633',
+                 'ece8cec6b87bf00dd12607f3062dae4c',
+                 '088ec0765fa213a0eb937a62adfd4996',
+                 '9a7e7b2dcc33135a32cd621c3b37d2d8',
+                 '5f7c8d0be0ac739856b47d32a9434998',
+                 '7d5ef0f069ee2d74dc2fdc6b46cd47fa',
+                 '713ed720636622a54546d5f14f88b00f',
+                 '62f36422bfab90fb42a560546b704009',
+                 'cbf5bfc2147706f228d288e1b18bf4af',
+                 '540da4566bb6dd35fdbc720218b742b7',
+                 'bdfe4222f4692ccaa1e3389460f0890e',
+                 '613eb4a3f0c2b13f0871ced946851b0e',
+                 '0e1ee2b4145795bd180b193424db204b',
+                 'd848fe0ae8b9447209fb49c5c31cb3d2',
+                 '1cff688d1aadef7fdb22e9ad27d6fd2c',
+                 'abc13b4042f4fef1cdff6de3b6c53b71',
+                 '3e10289959d0059952511c31df3c7550',
+                 'b26486ede1d4436d5acf6e38c65bb44d',
+                 'df57faf5f00d434d2559c021ef55f1aa',
+                 '16165248083beacebfe18866d5f4f0ae',
+                 '9077a5127480cc799116384de501bd70',
+                 '7180780822d4b600eb81c1ccf171c230',
+                 'c1f697c3b6dfb7305349db34e26b45fc',
+                 '8edb43c90cae66ec762748a968089b99',
+                 'acb5ea26a577ceccfae6337181c31716',
+                 '873a377a348713d3ab84db1fb57cdede',
+                 '680816e0938fea5cf5331444bc09a4cf'],
+    'IWSLT': 'c393ed3fc2a1b0f004b3331043f615ae',
+    'WMT14': '874ab6bbfe9c21ec987ed1b9347f95ec'
 }

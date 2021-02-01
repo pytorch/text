@@ -1,25 +1,25 @@
 import logging
 from typing import Dict, List
 import warnings
-
+from collections import Counter, OrderedDict
 import torch
 import torch.nn as nn
 from torchtext._torchtext import (
     Vocab as VocabPybind,
     _load_vocab_from_file,
-    _load_vocab_from_raw_text_file
+    _build_vocab_from_text_file
 )
 
 __all__ = [
-    'vocab_from_raw_text_file',
-    'vocab_from_file',
+    'build_vocab_from_text_file',
+    'load_vocab_from_file',
     'vocab',
     'Vocab',
 ]
 logger = logging.getLogger(__name__)
 
 
-def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -38,27 +38,29 @@ def vocab_from_raw_text_file(file_object, jited_tokenizer, min_freq=1, unk_token
         Vocab: a `Vocab` object.
 
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_raw_text_file
+        >>> from torchtext.experimental.vocab import build_vocab_from_text_file
         >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> f = open('vocab.txt', 'r')
         >>>     tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
-        >>> v = vocab_from_raw_text_file(f, jit_tokenizer)
+        >>> v = build_vocab_from_text_file(f, jit_tokenizer)
     """
-    vocab_obj = _load_vocab_from_raw_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
+def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
     The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
     Format for txt file:
+
         token1
         token2
         ...
         token_n
+
     Args:
         file_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
@@ -68,13 +70,35 @@ def vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
 
     Returns:
         Vocab: a `Vocab` object.
+
     Examples:
-        >>> from torchtext.experimental.vocab import vocab_from_file
+        >>> from torchtext.experimental.vocab import load_vocab_from_file
         >>> f = open('vocab.txt', 'r')
-        >>> v = vocab_from_file(f)
+        >>> v = load_vocab_from_file(f)
     """
+
     vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
+
+
+def build_vocab_from_iterator(iterator, min_freq=1, unk_token='<unk>'):
+    """
+    Build a Vocab from an iterator.
+
+    Args:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+            Values less than 1 will be set to 1. Default: 1.
+        unk_token: The default unknown token to use. Default: '<unk>'.
+    """
+
+    counter = Counter()
+    for tokens in iterator:
+        counter.update(tokens)
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+    ordered_dict = OrderedDict(sorted_by_freq_tuples)
+    word_vocab = vocab(ordered_dict, min_freq=min_freq, unk_token=unk_token)
+    return word_vocab
 
 
 def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
@@ -84,7 +108,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
     Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
     Additionally, the if the `unk_token` isn't found inside of the `ordered_dict`, it will be added to the end of the vocab.
 
-    Arguments:
+    Args:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
@@ -103,6 +127,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         >>> tokens = ['e', 'd', 'c', 'b', 'a']
         >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
     """
+
     if not unk_token:
         raise ValueError("A default unk token wasn't provided.")
 
@@ -119,10 +144,10 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
 
 
 class Vocab(nn.Module):
-    __ignored_properties__ = ["is_jitable"]
+    __jit_unused_properties__ = ["is_jitable"]
     r"""Creates a vocab object which maps tokens to indices.
 
-    Arguments:
+    Args:
         vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.
     """
 
