@@ -149,4 +149,8 @@ This example also shows a cross-lingual MLM task with XLM-R. The workflow requir
 
 To run the workflow with 3000 lines from each of the 100 languages (CC-100 dataset)
 
-    python cross_lingual_mlm_task.py --num_lines 3000 
+    python cross_lingual_mlm_task.py --num_lines 3000
+
+To Run the reference XLM-R model from fairseq, download and unzip the pretrained model from [link](https://dl.fbaipublicfiles.com/fairseq/models/xlmr.large.tar.gz).
+
+    python cross_lingual_mlm_task.py --eval_ref ./xlmr.large 
