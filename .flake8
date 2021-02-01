@@ -1,5 +1,5 @@
 [flake8]
 # E501 is not flexible enough, we're using B950 instead. Consistent with pytorch
-ignore = E402,E722,W503,W504,F821,E501
+ignore = E402,E722,W503,W504,F401,F821,E501
 max-line-length = 120
 exclude = docs/source,third_party

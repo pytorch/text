@@ -1,5 +1,4 @@
 import os
-import torch
 import torch.nn as nn
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from torchtext.experimental.vocab import load_vocab_from_file

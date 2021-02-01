@@ -1,5 +1,4 @@
 import os
-from typing import List
 import torch
 import torch.nn as nn
 from torchtext.experimental.modules import TransformerEncoder
@@ -55,7 +54,7 @@ def xlmr_base_model(directory='./', checkpoint_file='model.pt', args_file='args.
         >>> from torchtext.experimental.models import xlmr_base_model
         >>> xlmr_base_model = xlmr_base_model()
         >>> xlmr_base_model.encode('this is an example')
-        >>> tensor([  903,    83,   142, 27781]) 
+        >>> tensor([  903,    83,   142, 27781])
     '''
     if not files_exist([checkpoint_file, args_file, tokenizer_file, vocab_file], root=directory):
         tar_file = download_from_url(PRETRAINED['xlmr.base'], root=directory,
