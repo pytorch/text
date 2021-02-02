@@ -5,11 +5,11 @@ from torchtext.experimental.vocab import load_vocab_from_file
 from typing import List
 
 
-class RobertaTransform(nn.Module):
-    """Roberta encode transform."""
+class XLMRTransform(nn.Module):
+    """XLM-R encode transform."""
 
     def __init__(self, tokenizer, vocab):
-        super(RobertaTransform, self).__init__()
+        super(XLMRTransform, self).__init__()
         self.tokenizer = tokenizer
         self.vocab = vocab
 

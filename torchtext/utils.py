@@ -295,18 +295,17 @@ def files_exist(filenames: List[str], root: str = '.data'):
     return True
 
 
-def load_args_from_json(filename: str, root: str = '.data'):
+def load_args_from_json(filepath: str):
     """Load arguments from a json file
 
     Args:
-        filename: the name of the file
-        root: download folder used to store the file in (Default: .data)
+        filepath: the path to the file
 
     Examples:
-        >>> args = torchtext.utils.load_args_from_json('args.json')
+        >>> args = torchtext.utils.load_args_from_json('./args.json')
     """
 
-    with open(os.path.join(root, filename), 'rt') as f:
+    with open(filepath, 'rt') as f:
         t_args = argparse.Namespace()
         t_args.__dict__.update(json.load(f))
         parser = argparse.ArgumentParser()
