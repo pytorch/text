@@ -492,7 +492,7 @@ class NestedField(Field):
 
     def __init__(self, nesting_field, use_vocab=True, init_token=None, eos_token=None,
                  fix_length=None, dtype=torch.long, preprocessing=None,
-                 postprocessing=None, tokenize=None, tokenizer_language='en',
+                 postprocessing=None, tokenize=None, tokenizer_language='en_core_web_sm',
                  include_lengths=False, pad_token='<pad>',
                  pad_first=False, truncate_first=False):
         warnings.warn('{} class will be retired soon and moved to torchtext.legacy. Please see the most recent release notes for further information.'.format(self.__class__.__name__), UserWarning)
