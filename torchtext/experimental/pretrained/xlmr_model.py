@@ -12,7 +12,7 @@ from torchtext.experimental.vocab import load_vocab_from_file
 def xlmr_base(root='./.model'):
     '''
     Examples:
-        >>> from torchtext.experimental.models import xlmr_base
+        >>> from torchtext.experimental.pretrained import xlmr_base
         >>> xlmr_base_model, xlmr_base_transform = xlmr_base()
         >>> xlmr_base_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
@@ -26,7 +26,7 @@ def xlmr_base(root='./.model'):
 def xlmr_regular(root='./.model'):
     '''
     Examples:
-        >>> from torchtext.experimental.models import xlmr_regular
+        >>> from torchtext.experimental.pretrained import xlmr_regular
         >>> xlmr_regular_model, xlmr_regular_transform = xlmr_regular()
         >>> xlmr_regular_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
