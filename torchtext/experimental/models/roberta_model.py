@@ -36,9 +36,10 @@ class RobertaModel(nn.Module):
         return cls(args, encoder)
 
     def forward(self, src):
-        src = self.bert_embed(src)
-        output = self.transformer_encoder(src)
-        return output
+        # src = self.bert_embed(src)
+        # output = self.transformer_encoder(src)
+        # return output
+        raise NotImplementedError("forward func has not been implemented yet.")
 
     def encode(self, input_src: str) -> torch.Tensor:
         return torch.tensor(self.transform(input_src), dtype=torch.long)
