@@ -200,14 +200,21 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets import Multi30k
         # smoke test to ensure multi30k works properly
         train_dataset, valid_dataset, test_dataset = Multi30k()
+
+        # This change is due to the BC breaking in spacy 3.0
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
-                               ([4, 444, 2531, 47, 17480, 7423, 8, 158, 10, 12, 5849, 3, 2],
+                               # ([4, 444, 2531, 47, 17480, 7423, 8, 158, 10, 12, 5849, 3, 2],
+                               ([4, 444, 2529, 47, 17490, 7422, 8, 158, 10, 12, 5846, 3, 2],
                                 [5, 61, 530, 137, 1494, 10, 9, 280, 6, 2, 3749, 4, 3]))
+
         self._helper_test_func(len(valid_dataset), 1014, valid_dataset[30],
                                ([4, 179, 26, 85, 1005, 57, 19, 154, 3, 2],
                                 [5, 24, 32, 81, 47, 1348, 6, 2, 119, 4, 3]))
+
+        # This change is due to the BC breaking in spacy 3.0
         self._helper_test_func(len(test_dataset), 1000, test_dataset[40],
-                               ([4, 26, 6, 12, 3915, 1538, 21, 64, 3, 2],
+                               # ([4, 26, 6, 12, 3915, 1538, 21, 64, 3, 2],
+                               ([4, 26, 6, 12, 3913, 1537, 21, 64, 3, 2],
                                 [5, 32, 20, 2, 747, 345, 1915, 6, 46, 4, 3]))
 
         de_vocab, en_vocab = train_dataset.get_vocab()
@@ -234,8 +241,11 @@ class TestDataset(TorchtextTestCase):
                                          'A group of men are loading cotton onto a truck\n']))
         del train_iter, valid_iter
         train_dataset, = Multi30k(data_select=('train'))
+
+        # This change is due to the BC breaking in spacy 3.0
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
-                               ([4, 444, 2531, 47, 17480, 7423, 8, 158, 10, 12, 5849, 3, 2],
+                               # ([4, 444, 2531, 47, 17480, 7423, 8, 158, 10, 12, 5849, 3, 2],
+                               ([4, 444, 2529, 47, 17490, 7422, 8, 158, 10, 12, 5846, 3, 2],
                                 [5, 61, 530, 137, 1494, 10, 9, 280, 6, 2, 3749, 4, 3]))
 
         datafile = os.path.join(self.project_root, ".data", "train*")
