@@ -222,7 +222,9 @@ class TestDataset(TorchtextTestCase):
             de_vocab[token] for token in
             'Zwei Männer verpacken Donuts in Kunststofffolie'.split()
         ]
-        self.assertEqual(de_tokens_ids, [20, 30, 18705, 4448, 6, 6241])
+        # This change is due to the BC breaking in spacy 3.0
+        # self.assertEqual(de_tokens_ids, [20, 30, 18705, 4448, 6, 6241])
+        self.assertEqual(de_tokens_ids, [20, 30, 18714, 4447, 6, 6239])
 
         en_tokens_ids = [
             en_vocab[token] for token in
