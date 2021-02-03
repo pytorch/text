@@ -72,7 +72,7 @@ def _basic_english_normalize(line):
     return line.split()
 
 
-def get_tokenizer(tokenizer, language='en_core_web_sm'):
+def get_tokenizer(tokenizer, language='en'):
     r"""
     Generate tokenizer function for a string sentence.
 
@@ -101,6 +101,8 @@ def get_tokenizer(tokenizer, language='en_core_web_sm'):
         return _split_tokenizer
 
     if tokenizer == "basic_english":
+        if language != 'en':
+            raise ValueError("Basic normalization is only available for Enlish(en)")
         return _basic_english_normalize
 
     # simply return if a function is passed
@@ -108,6 +110,8 @@ def get_tokenizer(tokenizer, language='en_core_web_sm'):
         return tokenizer
 
     if tokenizer == "spacy":
+        if language == 'en':
+            raise RuntimeError("The en package has been deprecated in Spacy 3.0 release. Please switch to en_core_web_sm.")
         try:
             import spacy
             spacy = spacy.load(language)
