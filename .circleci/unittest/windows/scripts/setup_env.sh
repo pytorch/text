@@ -39,6 +39,6 @@ conda env update --file "${this_dir}/environment.yml" --prune
 
 # 4. Download
 printf "* Downloading SpaCy English models\n"
-python -m spacy download en_core_web_md 
+python -m spacy download en_core_web_sd 
 printf "* Downloading SpaCy German models\n"
-python -m spacy download de_core_news_md 
+python -m spacy download de_core_news_sd 
