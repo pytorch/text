@@ -118,7 +118,17 @@ def get_tokenizer(tokenizer, language='en'):
             language = 'de_core_news_sm'
         try:
             import spacy
-            spacy = spacy.load(language)
+            try:
+                spacy = spacy.load(language)
+            except IOError:
+                # Model shortcuts no longer work in spaCy 3.0+, try using fullnames
+                # List is from https://github.com/explosion/spaCy/blob/b903de3fcb56df2f7247e5b6cfa6b66f4ff02b62/spacy/errors.py#L789
+                OLD_MODEL_SHORTCUTS = spacy.errors.OLD_MODEL_SHORTCUTS if hasattr(spacy.errors, 'OLD_MODEL_SHORTCUTS') else {}
+                if language not in OLD_MODEL_SHORTCUTS:
+                    raise
+                import warnings
+                warnings.warn(f'Spacy model "{language}" could not be loaded, trying "{OLD_MODEL_SHORTCUTS[language]}" instead')
+                spacy = spacy.load(OLD_MODEL_SHORTCUTS[language])
             return partial(_spacy_tokenize, spacy=spacy)
         except ImportError:
             print("Please install SpaCy. "
