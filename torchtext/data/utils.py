@@ -132,6 +132,8 @@ def get_tokenizer(tokenizer, language='en'):
                 }
                 if language not in OLD_MODEL_SHORTCUTS:
                     raise
+                import warnings
+                warnings.warn(f'Spacy model "{language}" could not be loaded, trying "{OLD_MODEL_SHORTCUTS[language]}" instead')
                 spacy = spacy.load(OLD_MODEL_SHORTCUTS[language])
             return partial(_spacy_tokenize, spacy=spacy)
         except ImportError:
