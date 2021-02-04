@@ -2,7 +2,7 @@ import random
 from contextlib import contextmanager
 from copy import deepcopy
 import re
-
+import warnings
 from functools import partial
 
 
@@ -111,7 +111,11 @@ def get_tokenizer(tokenizer, language='en'):
 
     if tokenizer == "spacy":
         if language == 'en':
-            raise RuntimeError("The en package has been deprecated in Spacy 3.0 release. Please switch to en_core_web_sm.")
+            warnings.warn("The en package has been deprecated in Spacy 3.0 release. Please switch the language argument in get_tokenizer to en_core_web_sm.", UserWarning)
+            language = 'en_core_web_sm'
+        elif language == 'de':
+            warnings.warn("The de package has been deprecated in Spacy 3.0 release. Please switch the language argument in get_tokenizer to de_core_news_sm.", UserWarning)
+            language = 'de_core_news_sm'
         try:
             import spacy
             spacy = spacy.load(language)
