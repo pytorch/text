@@ -62,10 +62,10 @@ class TestWithAsset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 320, 437, 687])
 
         # Add test for the subset of the standard datasets
-        train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText103(data_select=('train', 'test'))
+        train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText103(split=('train', 'test'))
         self._helper_test_func(len(train_dataset), 1801350, next(iter(train_dataset)), ' \n')
         self._helper_test_func(len(test_dataset), 4358, next(iter(test_dataset)), ' \n')
-        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, data_select=('train', 'test'))
+        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, split=('train', 'test'))
         self._helper_test_func(len(train_dataset), 1801350, train_dataset[10][:5],
                                [2, 69, 12, 14, 265])
         self._helper_test_func(len(test_dataset), 4358, test_dataset[28][:5],

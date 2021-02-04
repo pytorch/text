@@ -39,8 +39,8 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root, data_select):
-    data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
+def _setup_datasets(dataset_name, separator, root, split):
+    split = check_default_set(split, target_select=('train', 'valid', 'test'))
     extracted_files = []
     if isinstance(URLS[dataset_name], dict):
         for name, item in URLS[dataset_name].items():
@@ -61,17 +61,17 @@ def _setup_datasets(dataset_name, separator, root, data_select):
     }
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
                  _create_data_from_iob(data_filenames[item], separator))
-                 if data_filenames[item] is not None else None for item in data_select)
+                 if data_filenames[item] is not None else None for item in split)
 
 
-def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
+def UDPOS(root=".data", split=('train', 'valid', 'test')):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training and test dataset
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+        split: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
             By default, all the datasets (train, valid, test) are generated.
             Users could also choose any one or two of them,
             for example ('train', 'valid', 'test') or just a string 'train'.
@@ -80,17 +80,17 @@ def UDPOS(root=".data", data_select=('train', 'valid', 'test')):
         >>> from torchtext.experimental.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets("UDPOS", "\t", root, data_select)
+    return _setup_datasets("UDPOS", "\t", root, split)
 
 
-def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
+def CoNLL2000Chunking(root=".data", split=('train', 'test')):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets (Default: ('train', 'test'))
+        split: a string or tuple for the returned datasets (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
 
@@ -98,7 +98,7 @@ def CoNLL2000Chunking(root=".data", data_select=('train', 'test')):
         >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets("CoNLL2000Chunking", " ", root, data_select)
+    return _setup_datasets("CoNLL2000Chunking", " ", root, split)
 
 
 DATASETS = {
