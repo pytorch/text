@@ -144,6 +144,15 @@ class TestDataset(TorchtextTestCase):
         _data = [item for item in train_iter]
         self.assertEqual(len(_data), 100)
 
+    def test_next_method_dataset(self):
+        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
+        dataset_len = len(train_iter)
+        container = []
+        for line in train_iter:
+            container.append(line)
+            container.append(next(train_iter))
+        self.assertEqual(len(container), dataset_len)
+
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab
