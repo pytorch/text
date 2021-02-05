@@ -138,6 +138,12 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
         del train_iter, test_iter
 
+    def test_num_lines_of_setup_iter_dataset(self):
+        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
+        train_iter.setup_iter(start=10, num_lines=100)
+        _data = [item for item in train_iter]
+        self.assertEqual(len(_data), 100)
+
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab
