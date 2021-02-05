@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.utils &mdash; torchtext 0.9.0.dev20210204 documentation</title>
+  <title>torchtext.data.utils &mdash; torchtext 0.9.0.dev20210205 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210204
+                  0.9.0.dev20210205
                 </div>
               
             
@@ -421,7 +421,17 @@
     <span class="k">if</span> <span class="n">tokenizer</span> <span class="o">==</span> <span class="s2">&quot;spacy&quot;</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">spacy</span>
-            <span class="n">spacy</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">spacy</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">language</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+                <span class="c1"># Model shortcuts no longer work in spaCy 3.0+, try using fullnames</span>
+                <span class="c1"># List is from https://github.com/explosion/spaCy/blob/b903de3fcb56df2f7247e5b6cfa6b66f4ff02b62/spacy/errors.py#L789</span>
+                <span class="n">OLD_MODEL_SHORTCUTS</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">OLD_MODEL_SHORTCUTS</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spacy</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="s1">&#39;OLD_MODEL_SHORTCUTS&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">language</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">OLD_MODEL_SHORTCUTS</span><span class="p">:</span>
+                    <span class="k">raise</span>
+                <span class="kn">import</span> <span class="nn">warnings</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spacy model &quot;</span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s1">&quot; could not be loaded, trying &quot;</span><span class="si">{</span><span class="n">OLD_MODEL_SHORTCUTS</span><span class="p">[</span><span class="n">language</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; instead&#39;</span><span class="p">)</span>
+                <span class="n">spacy</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">OLD_MODEL_SHORTCUTS</span><span class="p">[</span><span class="n">language</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">_spacy_tokenize</span><span class="p">,</span> <span class="n">spacy</span><span class="o">=</span><span class="n">spacy</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please install SpaCy. &quot;</span>
