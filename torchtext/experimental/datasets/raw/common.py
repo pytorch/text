@@ -24,7 +24,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         self.has_setup = False
         self.start = offset
         self.num_lines = None
-        self.setup_iter(offset)
+        self.setup_iter(start=offset, num_lines=full_num_lines - offset)
         self.stride = stride
 
     def setup_iter(self, start=0, num_lines=None):
