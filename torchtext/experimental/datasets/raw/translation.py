@@ -184,7 +184,7 @@ def _setup_datasets(dataset_name,
                 yield item
 
         datasets.append(
-            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset, stride))
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset=offset, stride=stride))
 
     return tuple(datasets)
 

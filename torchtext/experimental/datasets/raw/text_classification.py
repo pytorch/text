@@ -51,7 +51,7 @@ def _setup_datasets(dataset_name, root, data_select, offset, stride):
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                        _create_data_from_csv(cvs_path[item]), offset, stride) for item in data_select)
+                                        _create_data_from_csv(cvs_path[item]), offset=offset, stride=stride) for item in data_select)
 
 
 def AG_NEWS(root='.data', data_select=('train', 'test'), offset=0, stride=1):
@@ -264,7 +264,7 @@ def IMDB(root='.data', data_select=('train', 'test'), offset=0, stride=1):
     extracted_files = extract_archive(dataset_tar)
     return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
                                         generate_imdb_data(item,
-                                                           extracted_files), offset, stride) for item in data_select)
+                                                           extracted_files), offset=offset, stride=stride) for item in data_select)
 
 
 DATASETS = {
