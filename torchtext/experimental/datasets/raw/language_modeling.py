@@ -17,7 +17,7 @@ URLS = {
 }
 
 
-def _setup_datasets(dataset_name, root, data_select, year, language):
+def _setup_datasets(dataset_name, root, data_select, year, language, offset):
     data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -55,10 +55,10 @@ def _setup_datasets(dataset_name, root, data_select, year, language):
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
     return tuple(RawTextIterableDataset(dataset_name,
-                                        NUM_LINES[dataset_name][item], data[item]) for item in data_select)
+                                        NUM_LINES[dataset_name][item], data[item], offset=offset) for item in data_select)
 
 
-def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
+def WikiText2(root='.data', data_select=('train', 'valid', 'test'), offset=0):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -72,6 +72,7 @@ def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+        offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.raw.datasets import WikiText2
@@ -80,10 +81,10 @@ def WikiText2(root='.data', data_select=('train', 'valid', 'test')):
 
     """
 
-    return _setup_datasets("WikiText2", root, data_select, None, None)
+    return _setup_datasets("WikiText2", root, data_select, None, None, offset)
 
 
-def WikiText103(root='.data', data_select=('train', 'valid', 'test')):
+def WikiText103(root='.data', data_select=('train', 'valid', 'test'), offset=0):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -96,6 +97,7 @@ def WikiText103(root='.data', data_select=('train', 'valid', 'test')):
             could also choose any one or two of them, for example ('train', 'test').
             If 'train' is not in the tuple, an vocab object should be provided which will
             be used to process valid and/or test data.
+        offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WikiText103
@@ -103,10 +105,10 @@ def WikiText103(root='.data', data_select=('train', 'valid', 'test')):
         >>> valid_dataset, = WikiText103(data_select='valid')
     """
 
-    return _setup_datasets("WikiText103", root, data_select, None, None)
+    return _setup_datasets("WikiText103", root, data_select, None, None, offset)
 
 
-def PennTreebank(root='.data', data_select=('train', 'valid', 'test')):
+def PennTreebank(root='.data', data_select=('train', 'valid', 'test'), offset=0):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -121,6 +123,7 @@ def PennTreebank(root='.data', data_select=('train', 'valid', 'test')):
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
             object should be provided which will be used to process valid and/or test
             data.
+        offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import PennTreebank
@@ -129,10 +132,10 @@ def PennTreebank(root='.data', data_select=('train', 'valid', 'test')):
 
     """
 
-    return _setup_datasets("PennTreebank", root, data_select, None, None)
+    return _setup_datasets("PennTreebank", root, data_select, None, None, offset)
 
 
-def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
+def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en', offset=0):
     """ Defines WMT News Crawl.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -143,11 +146,12 @@ def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en'):
             (Default: 'train')
         year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
+        offset: the number of the starting line. Default: 0
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
 
-    return _setup_datasets("WMTNewsCrawl", root, data_select, year, language)
+    return _setup_datasets("WMTNewsCrawl", root, data_select, year, language, offset)
 
 
 DATASETS = {

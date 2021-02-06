@@ -14,7 +14,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
 
-    def __init__(self, name, full_num_lines, iterator):
+    def __init__(self, name, full_num_lines, iterator, offset=0, stride=1):
         """Initiate text-classification dataset.
         """
         super(RawTextIterableDataset, self).__init__()
@@ -22,8 +22,10 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         self.full_num_lines = full_num_lines
         self._iterator = iterator
         self.has_setup = False
-        self.start = 0
+        self.start = offset
         self.num_lines = None
+        self.setup_iter(offset)
+        self.stride = stride
 
     def setup_iter(self, start=0, num_lines=None):
         self.start = start
@@ -39,6 +41,8 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 
         for i, item in enumerate(self._iterator):
             if i < self.start:
+                continue
+            if (i - self.start) % self.stride != 0:
                 continue
             if self.num_lines and i >= (self.start + self.num_lines):
                 break
