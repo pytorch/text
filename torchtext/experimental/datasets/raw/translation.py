@@ -116,7 +116,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 def _setup_datasets(dataset_name,
                     train_filenames, valid_filenames, test_filenames,
-                    data_select, root, offset):
+                    data_select, root, offset, stride):
     data_select = check_default_set(data_select, ('train', 'valid', 'test'))
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
@@ -184,7 +184,7 @@ def _setup_datasets(dataset_name,
                 yield item
 
         datasets.append(
-            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset))
+            RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset, stride))
 
     return tuple(datasets)
 
@@ -192,7 +192,7 @@ def _setup_datasets(dataset_name,
 def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             data_select=('train', 'valid', 'test'), root='.data', offset=0):
+             data_select=('train', 'valid', 'test'), root='.data', offset=0, stride=1):
     """ Define translation datasets: Multi30k
         Separately returns train/valid/test datasets as a tuple
         The available dataset include:
@@ -260,12 +260,13 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import Multi30k
         >>> train_dataset, valid_dataset, test_dataset = Multi30k()
     """
-    return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, data_select, root, offset)
+    return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, data_select, root, offset, stride)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -273,7 +274,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
-          data_select=('train', 'valid', 'test'), root='.data', offset=0):
+          data_select=('train', 'valid', 'test'), root='.data', offset=0, stride=1):
     """ Define translation datasets: IWSLT
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -427,12 +428,13 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import IWSLT
         >>> train_dataset, valid_dataset, test_dataset = IWSLT()
     """
-    return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, data_select, root, offset)
+    return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, data_select, root, offset, stride)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -441,7 +443,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
-          data_select=('train', 'valid', 'test'), root='.data', offset=0):
+          data_select=('train', 'valid', 'test'), root='.data', offset=0, stride=1):
     """ Define translation datasets: WMT14
         Separately returns train/valid/test datasets
         The available datasets include:
@@ -510,12 +512,13 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             object should be provided which will be used to process valid and/or test data.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WMT14
         >>> train_dataset, valid_dataset, test_dataset = WMT14()
     """
-    return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames, data_select, root, offset)
+    return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames, data_select, root, offset, stride)
 
 
 DATASETS = {

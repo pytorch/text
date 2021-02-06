@@ -29,15 +29,15 @@ def _create_data_from_json(data_path):
                     yield (_context, _question, _answers, _answer_start)
 
 
-def _setup_datasets(dataset_name, root, data_select, offset):
+def _setup_datasets(dataset_name, root, data_select, offset, stride):
     data_select = check_default_set(data_select, ('train', 'dev'))
     extracted_files = {key: download_from_url(URLS[dataset_name][key], root=root,
                                               hash_value=MD5[dataset_name][key], hash_type='md5') for key in data_select}
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                 _create_data_from_json(extracted_files[item]), offset=offset) for item in data_select)
+                 _create_data_from_json(extracted_files[item]), offset=offset, stride=stride) for item in data_select)
 
 
-def SQuAD1(root='.data', data_select=('train', 'dev'), offset=0):
+def SQuAD1(root='.data', data_select=('train', 'dev'), offset=0, stride=1):
     """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD1.0.
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
@@ -52,6 +52,7 @@ def SQuAD1(root='.data', data_select=('train', 'dev'), offset=0):
             By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
             for example ('train', 'dev') or just a string 'train'.
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD1()
@@ -59,10 +60,10 @@ def SQuAD1(root='.data', data_select=('train', 'dev'), offset=0):
         >>>     print(idx, (context, question, answer, ans_pos))
     """
 
-    return _setup_datasets("SQuAD1", root, data_select, offset)
+    return _setup_datasets("SQuAD1", root, data_select, offset, stride)
 
 
-def SQuAD2(root='.data', data_select=('train', 'dev'), offset=0):
+def SQuAD2(root='.data', data_select=('train', 'dev'), offset=0, stride=1):
     """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD2.0.
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
@@ -77,6 +78,7 @@ def SQuAD2(root='.data', data_select=('train', 'dev'), offset=0):
             By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
             for example ('train', 'dev') or just a string 'train'.
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD2()
@@ -84,7 +86,7 @@ def SQuAD2(root='.data', data_select=('train', 'dev'), offset=0):
         >>>     print(idx, (context, question, answer, ans_pos))
     """
 
-    return _setup_datasets("SQuAD2", root, data_select, offset)
+    return _setup_datasets("SQuAD2", root, data_select, offset, stride)
 
 
 DATASETS = {

@@ -17,7 +17,7 @@ URLS = {
 }
 
 
-def _setup_datasets(dataset_name, root, data_select, year, language, offset):
+def _setup_datasets(dataset_name, root, data_select, year, language, offset, stride):
     data_select = check_default_set(data_select, ('train', 'test', 'valid'))
     if isinstance(data_select, str):
         data_select = [data_select]
@@ -55,10 +55,10 @@ def _setup_datasets(dataset_name, root, data_select, year, language, offset):
         data[item] = iter(io.open(_path[item], encoding="utf8"))
 
     return tuple(RawTextIterableDataset(dataset_name,
-                                        NUM_LINES[dataset_name][item], data[item], offset=offset) for item in data_select)
+                                        NUM_LINES[dataset_name][item], data[item], offset=offset, stride=stride) for item in data_select)
 
 
-def WikiText2(root='.data', data_select=('train', 'valid', 'test'), offset=0):
+def WikiText2(root='.data', data_select=('train', 'valid', 'test'), offset=0, stride=1):
     """ Defines WikiText2 datasets.
 
     Create language modeling dataset: WikiText2
@@ -73,6 +73,7 @@ def WikiText2(root='.data', data_select=('train', 'valid', 'test'), offset=0):
             object should be provided which will be used to process valid and/or test
             data.
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.raw.datasets import WikiText2
@@ -81,10 +82,10 @@ def WikiText2(root='.data', data_select=('train', 'valid', 'test'), offset=0):
 
     """
 
-    return _setup_datasets("WikiText2", root, data_select, None, None, offset)
+    return _setup_datasets("WikiText2", root, data_select, None, None, offset, stride)
 
 
-def WikiText103(root='.data', data_select=('train', 'valid', 'test'), offset=0):
+def WikiText103(root='.data', data_select=('train', 'valid', 'test'), offset=0, stride=1):
     """ Defines WikiText103 datasets.
 
     Create language modeling dataset: WikiText103
@@ -98,6 +99,7 @@ def WikiText103(root='.data', data_select=('train', 'valid', 'test'), offset=0):
             If 'train' is not in the tuple, an vocab object should be provided which will
             be used to process valid and/or test data.
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WikiText103
@@ -105,10 +107,10 @@ def WikiText103(root='.data', data_select=('train', 'valid', 'test'), offset=0):
         >>> valid_dataset, = WikiText103(data_select='valid')
     """
 
-    return _setup_datasets("WikiText103", root, data_select, None, None, offset)
+    return _setup_datasets("WikiText103", root, data_select, None, None, offset, stride)
 
 
-def PennTreebank(root='.data', data_select=('train', 'valid', 'test'), offset=0):
+def PennTreebank(root='.data', data_select=('train', 'valid', 'test'), offset=0, stride=1):
     """ Defines PennTreebank datasets.
 
     Create language modeling dataset: PennTreebank
@@ -124,6 +126,7 @@ def PennTreebank(root='.data', data_select=('train', 'valid', 'test'), offset=0)
             object should be provided which will be used to process valid and/or test
             data.
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import PennTreebank
@@ -132,10 +135,10 @@ def PennTreebank(root='.data', data_select=('train', 'valid', 'test'), offset=0)
 
     """
 
-    return _setup_datasets("PennTreebank", root, data_select, None, None, offset)
+    return _setup_datasets("PennTreebank", root, data_select, None, None, offset, stride)
 
 
-def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en', offset=0):
+def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en', offset=0, stride=1):
     """ Defines WMT News Crawl.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -147,11 +150,12 @@ def WMTNewsCrawl(root='.data', data_select=('train'), year=2010, language='en', 
         year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
         offset: the number of the starting line. Default: 0
+        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
 
-    return _setup_datasets("WMTNewsCrawl", root, data_select, year, language, offset)
+    return _setup_datasets("WMTNewsCrawl", root, data_select, year, language, offset, stride)
 
 
 DATASETS = {
