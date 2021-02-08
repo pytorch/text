@@ -144,20 +144,13 @@ class TestDataset(TorchtextTestCase):
         _data = [item for item in train_iter]
         self.assertEqual(len(_data), 100)
 
-    def test_offset_stride_dataset(self):
+    def test_offset_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(data_select=('train', 'test'),
-                                                                            offset=10, stride=1)
+                                                                            offset=10)
         container = [text[:20] for idx, (label, text) in enumerate(train_iter) if idx < 5]
         self.assertEqual(container, ['Oil and Economy Clou', 'No Need for OPEC to ',
                                      'Non-OPEC Nations Sho', 'Google IPO Auction O',
                                      'Dollar Falls Broadly'])
-
-        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(data_select=('train', 'test'),
-                                                                            offset=100, stride=5)
-        container = [text[:20] for idx, (label, text) in enumerate(test_iter) if idx < 5]
-        self.assertEqual(container, ['Olympic history for ', 'Edwards Banned from ',
-                                     'Yahoo! Ups Ante for ', 'Buckeyes have lots t',
-                                     'Oil prices bubble to'])
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
