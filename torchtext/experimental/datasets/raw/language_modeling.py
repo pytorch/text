@@ -66,7 +66,7 @@ def WikiText2(root='.data', split=('train', 'valid', 'test')):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tupel for the returned datasets. Default: ('train', 'valid, 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'valid, 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
