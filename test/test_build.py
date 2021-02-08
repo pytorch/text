@@ -107,7 +107,7 @@ class TestDataUtils(TorchtextTestCase):
 
     def test_get_tokenizer_spacy(self):
         # Test SpaCy option, and verify it properly handles punctuation.
-        assert torchtext.data.get_tokenizer("spacy")(str(self.TEST_STR)) == [
+        assert torchtext.data.get_tokenizer("spacy", language='en_core_web_sm')(str(self.TEST_STR)) == [
             "A", "string", ",", "particularly", "one", "with", "slightly",
             "complex", "punctuation", "."]
 
