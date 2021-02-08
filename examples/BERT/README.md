@@ -151,6 +151,10 @@ To run the workflow with 3000 lines from each of the 100 languages (CC-100 datas
 
     python cross_lingual_mlm_task.py --num_lines 3000
 
+To run the distributed training use '--dist' flag, to specify world size use '--world_size=N', the default world size is 3 for one master and 2 worker nodes.
+
+    python cross_lingual_mlm_task.py --num_lines 3000 --dist
+
 To Run the reference XLM-R model from fairseq, download and unzip the pretrained model from [link](https://dl.fbaipublicfiles.com/fairseq/models/xlmr.large.tar.gz).
 
     python cross_lingual_mlm_task.py --eval_ref ./xlmr.large 
