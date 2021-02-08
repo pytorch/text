@@ -89,9 +89,9 @@ def _load_sentence_classifier(checkpoint_file='model.pt', args_file='args.json')
     return classifier
 
 
-class TransformerEncoderSentenceClassificationTask(nn.Module):
+class TransformerEncoderSentenceClassification(nn.Module):
     def __init__(self, transformer_encoder, classifier_head):
-        super(TransformerEncoderSentenceClassificationTask, self).__init__()
+        super(TransformerEncoderSentenceClassification, self).__init__()
         self.transformer_encoder = transformer_encoder
         self.classifier_head = classifier_head
 
@@ -119,7 +119,7 @@ def xlmr_base_sentence_classifier(root='./.model'):
                                  hash_value=TASK_MD5['xlmr.base.sentence.classifier'], hash_type='md5')
     checkpoint_file, args_file = extract_archive(tar_file, overwrite=True)
     sentence_classifier = _load_sentence_classifier(checkpoint_file=checkpoint_file, args_file=args_file)
-    return TransformerEncoderSentenceClassificationTask(xlmr_model, sentence_classifier), xlmr_transform
+    return TransformerEncoderSentenceClassification(xlmr_model, sentence_classifier), xlmr_transform
 
 
 TASK_PRETRAINED = {'xlmr.base.sentence.classifier': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr.base.sentence.classifier.tar.gz'}
