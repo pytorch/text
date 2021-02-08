@@ -1,15 +1,24 @@
 import argparse
-import time
 import math
+import os
+import time
+from typing import List
+
 import torch
+import torch.distributed.autograd as dist_autograd
+import torch.distributed.rpc as rpc
+import torch.multiprocessing as mp
 import torch.nn as nn
-from data import CC100
-from model import CrossLingualMLMTask
+import torch.optim as optim
+from torch.distributed.optim import DistributedOptimizer
+from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
+
+from data import CC100
+from dist_model import DistCrossLingualMLMTask
+from model import CrossLingualMLMTask
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from transforms import PretrainedSPVocab
-from torch.nn.utils.rnn import pad_sequence
-from typing import List
 
 
 def collate_batch(batch_data, args, mask_id, pad_id, text_transform):
@@ -47,8 +56,28 @@ def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, devi
     return total_loss / (len(data_source) - 1)  # Set batch # to 1 for inference
 
 
+def step(model, data, targets, criterion, optimizer, ntokens):
+    optimizer.zero_grad()
+    output = model(data)
+    loss = criterion(output.view(-1, ntokens), targets.view(-1))
+    loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
+    optimizer.step()
+    return loss
+
+
+def dist_step(model, data, targets, criterion, optimizer, ntokens):
+    with dist_autograd.context() as context_id:
+        output = model(data)
+        loss = criterion(output.view(-1, ntokens), targets.view(-1))
+        dist_autograd.backward(context_id, [loss])
+        # torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
+        optimizer.step(context_id)
+        return loss
+
+
 def train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
-          optimizer, criterion, ntokens, epoch, scheduler, args, device, rank=None):
+          optimizer, criterion, ntokens, epoch, last_lr, args, device, step_impl):
     model.train()
     total_loss = 0.
     start_time = time.time()
@@ -57,33 +86,25 @@ def train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
                             shuffle=False, collate_fn=lambda b: collate_batch(b, args, mask_id, pad_id, text_transform))
 
     for batch, (data, targets) in enumerate(dataloader):
-        optimizer.zero_grad()
-        data = data.to(device)
-        targets = targets.to(device)
-        output = model(data)
-        loss = criterion(output.view(-1, ntokens), targets.view(-1))
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
-        optimizer.step()
+        loss = step_impl(model, data.to(device), targets.to(device), criterion, optimizer, ntokens)
+
         total_loss += loss.item()
         if batch % args.log_interval == 0 and batch > 0:
             cur_loss = total_loss / args.log_interval
             elapsed = time.time() - start_time
-            if (rank is None) or rank == 0:
-                train_loss_log[-1] = cur_loss
-                print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:05.5f} | ms/batch {:5.2f} | '
-                      'loss {:5.2f} | ppl {:8.2f}'.format(epoch, batch,
-                                                          len(train_data) // args.batch_size,
-                                                          scheduler.get_last_lr()[0],
-                                                          elapsed * 1000 / args.log_interval,
-                                                          cur_loss, math.exp(cur_loss)))
+            train_loss_log[-1] = cur_loss
+            print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:05.5f} | ms/batch {:5.2f} | '
+                    'loss {:5.2f} | ppl {:8.2f}'.format(epoch, batch,
+                                                        len(train_data) // args.batch_size,
+                                                        last_lr,
+                                                        elapsed * 1000 / args.log_interval,
+                                                        cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
 
 
-def run_main(args, rank=None):
+def run_main(args):
     torch.manual_seed(args.seed)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Set up tokenizer and vocab
     tokenizer = sentencepiece_tokenizer(args.spm_path)
@@ -95,11 +116,23 @@ def run_main(args, rank=None):
     pad_id = vocab(['pad'])[0]
     ntokens = len(vocab)
 
-    model = CrossLingualMLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
-    model = model.to(device)
+    if not args.dist:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = CrossLingualMLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+        model = model.to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
+    else:
+        device = "cpu"
+        model = DistCrossLingualMLMTask(args.split_size, ["worker1", "worker2"], ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+        optimizer = DistributedOptimizer(
+            optim.Adam,
+            model.parameter_rrefs(),
+            lr=args.lr,
+        )
+        scheduler = None
+
     criterion = nn.CrossEntropyLoss(ignore_index=pad_id)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
     best_val_loss = None
     train_loss_log, val_loss_log = [], []
 
@@ -110,8 +143,9 @@ def run_main(args, rank=None):
         val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
 
         epoch_start_time = time.time()
+        last_lr = scheduler.get_last_lr()[0] if scheduler is not None else args.lr
         train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
-              optimizer, criterion, ntokens, epoch, scheduler, args, device, rank)
+              optimizer, criterion, ntokens, epoch, last_lr, args, device, step if not args.dist else dist_step)
 
         # Turn on evaluation mode which disables dropout.
         model.eval()
@@ -122,12 +156,13 @@ def run_main(args, rank=None):
               'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
                                          val_loss, math.exp(val_loss)))
         print('-' * 89)
-        if not best_val_loss or val_loss < best_val_loss:
+        if not args.dist and not best_val_loss or val_loss < best_val_loss:
             with open(args.save, 'wb') as f:
                 torch.save(model, f)
             best_val_loss = val_loss
         else:
-            scheduler.step()
+            if scheduler is not None:
+                scheduler.step()
 
     # Run reference XLM-R model from fairseq
     if args.eval_ref != 'None':
@@ -157,6 +192,32 @@ def run_main(args, rank=None):
         print('| reference model | valid loss {:5.2f} | '
               'valid ppl {:8.2f}'.format(val_loss, math.exp(val_loss)))
         print('-' * 89)
+
+
+def run_worker(rank, args):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '29500'
+    options = rpc.TensorPipeRpcBackendOptions(num_worker_threads=256)
+
+    if rank == 0:
+        rpc.init_rpc(
+            "master",
+            rank=rank,
+            world_size=args.world_size,
+            rpc_backend_options=options
+        )
+        run_main(args)
+    else:
+        rpc.init_rpc(
+            f"worker{rank}",
+            rank=rank,
+            world_size=args.world_size,
+            rpc_backend_options=options
+        )
+        pass
+
+    # block until all rpcs finish
+    rpc.shutdown()
 
 
 if __name__ == "__main__":
@@ -197,6 +258,15 @@ if __name__ == "__main__":
                         help='path to load the reference model for evaluation')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')
+    parser.add_argument('--dist', action='store_true',
+                        help='run distributed version')
+    parser.add_argument('--world_size', type=int, default=3,
+                        help='world_size')
+    parser.add_argument('--split_size', type=int, default=8,
+                        help='split the input batch into micro-batches')
     args = parser.parse_args()
 
-    run_main(args)
+    if args.dist:
+        mp.spawn(run_worker, args=(args,), nprocs=args.world_size, join=True)
+    else:
+        run_main(args)
