@@ -33,8 +33,8 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-def _setup_datasets(dataset_name, root, data_select, offset, stride):
-    data_select = check_default_set(data_select, target_select=('train', 'test'))
+def _setup_datasets(dataset_name, root, split, offset):
+    split = check_default_set(split, target_select=('train', 'test'))
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
                                              hash_value=MD5['AG_NEWS'][item],
@@ -51,10 +51,10 @@ def _setup_datasets(dataset_name, root, data_select, offset, stride):
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                        _create_data_from_csv(cvs_path[item]), offset=offset, stride=stride) for item in data_select)
+                                        _create_data_from_csv(cvs_path[item]), offset=offset) for item in split)
 
 
-def AG_NEWS(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     """ Defines AG_NEWS datasets.
 
     Create supervised learning dataset: AG_NEWS
@@ -63,20 +63,19 @@ def AG_NEWS(root='.data', data_select=('train', 'test'), offset=0, stride=1):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
 
-    return _setup_datasets("AG_NEWS", root, data_select, offset, stride)
+    return _setup_datasets("AG_NEWS", root, split, offset)
 
 
-def SogouNews(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def SogouNews(root='.data', split=('train', 'test'), offset=0):
     """ Defines SogouNews datasets.
 
     Create supervised learning dataset: SogouNews
@@ -85,20 +84,19 @@ def SogouNews(root='.data', data_select=('train', 'test'), offset=0, stride=1):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
 
-    return _setup_datasets("SogouNews", root, data_select, offset, stride)
+    return _setup_datasets("SogouNews", root, split, offset)
 
 
-def DBpedia(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def DBpedia(root='.data', split=('train', 'test'), offset=0):
     """ Defines DBpedia datasets.
 
     Create supervised learning dataset: DBpedia
@@ -107,20 +105,19 @@ def DBpedia(root='.data', data_select=('train', 'test'), offset=0, stride=1):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
 
-    return _setup_datasets("DBpedia", root, data_select, offset, stride)
+    return _setup_datasets("DBpedia", root, split, offset)
 
 
-def YelpReviewPolarity(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """ Defines YelpReviewPolarity datasets.
 
     Create supervised learning dataset: YelpReviewPolarity
@@ -129,20 +126,19 @@ def YelpReviewPolarity(root='.data', data_select=('train', 'test'), offset=0, st
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
 
-    return _setup_datasets("YelpReviewPolarity", root, data_select, offset, stride)
+    return _setup_datasets("YelpReviewPolarity", root, split, offset)
 
 
-def YelpReviewFull(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     """ Defines YelpReviewFull datasets.
 
     Create supervised learning dataset: YelpReviewFull
@@ -151,20 +147,19 @@ def YelpReviewFull(root='.data', data_select=('train', 'test'), offset=0, stride
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
 
-    return _setup_datasets("YelpReviewFull", root, data_select, offset, stride)
+    return _setup_datasets("YelpReviewFull", root, split, offset)
 
 
-def YahooAnswers(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     """ Defines YahooAnswers datasets.
 
     Create supervised learning dataset: YahooAnswers
@@ -173,20 +168,19 @@ def YahooAnswers(root='.data', data_select=('train', 'test'), offset=0, stride=1
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
 
-    return _setup_datasets("YahooAnswers", root, data_select, offset, stride)
+    return _setup_datasets("YahooAnswers", root, split, offset)
 
 
-def AmazonReviewPolarity(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """ Defines AmazonReviewPolarity datasets.
 
     Create supervised learning dataset: AmazonReviewPolarity
@@ -195,20 +189,19 @@ def AmazonReviewPolarity(root='.data', data_select=('train', 'test'), offset=0, 
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
 
-    return _setup_datasets("AmazonReviewPolarity", root, data_select, offset, stride)
+    return _setup_datasets("AmazonReviewPolarity", root, split, offset)
 
 
-def AmazonReviewFull(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     """ Defines AmazonReviewFull datasets.
 
     Create supervised learning dataset: AmazonReviewFull
@@ -217,17 +210,16 @@ def AmazonReviewFull(root='.data', data_select=('train', 'test'), offset=0, stri
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
 
-    return _setup_datasets("AmazonReviewFull", root, data_select, offset, stride)
+    return _setup_datasets("AmazonReviewFull", root, split, offset)
 
 
 def generate_imdb_data(key, extracted_files):
@@ -240,7 +232,7 @@ def generate_imdb_data(key, extracted_files):
                 yield label, f.read()
 
 
-def IMDB(root='.data', data_select=('train', 'test'), offset=0, stride=1):
+def IMDB(root='.data', split=('train', 'test'), offset=0):
     """ Defines raw IMDB datasets.
 
     Create supervised learning dataset: IMDB
@@ -249,22 +241,21 @@ def IMDB(root='.data', data_select=('train', 'test'), offset=0, stride=1):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets. Default: ('train', 'test')
+        split: a string or tuple for the returned datasets. Default: ('train', 'test')
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-    data_select = check_default_set(data_select, target_select=('train', 'test'))
+    split = check_default_set(split, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root,
                                     hash_value=MD5['IMDB'], hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
                                         generate_imdb_data(item,
-                                                           extracted_files), offset=offset, stride=stride) for item in data_select)
+                                                           extracted_files), offset=offset) for item in split)
 
 
 DATASETS = {

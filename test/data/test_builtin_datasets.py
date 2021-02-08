@@ -57,12 +57,12 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 286, 503, 700])
 
         # Add test for the subset of the standard datasets
-        train_iter, valid_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(data_select=('train', 'valid', 'test'))
+        train_iter, valid_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(split=('train', 'valid', 'test'))
         self._helper_test_func(len(train_iter), 36718, next(iter(train_iter)), ' \n')
         self._helper_test_func(len(valid_iter), 3760, next(iter(valid_iter)), ' \n')
         self._helper_test_func(len(test_iter), 4358, next(iter(test_iter)), ' \n')
         del train_iter, valid_iter, test_iter
-        train_dataset, test_dataset = WikiText2(data_select=('train', 'test'))
+        train_dataset, test_dataset = WikiText2(split=('train', 'test'))
         train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
         test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
         self._helper_test_func(len(train_data), 2049990, train_data[20:25],
@@ -105,14 +105,14 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 2550, 3344, 1125])
 
         # Add test for the subset of the standard datasets
-        train_dataset, test_dataset = PennTreebank(data_select=('train', 'test'))
+        train_dataset, test_dataset = PennTreebank(split=('train', 'test'))
         train_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
         test_data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
         self._helper_test_func(len(train_data), 924412, train_data[20:25],
                                [9919, 9920, 9921, 9922, 9188])
         self._helper_test_func(len(test_data), 82114, test_data[30:35],
                                [397, 93, 4, 16, 7])
-        train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(data_select=('train', 'test'))
+        train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(split=('train', 'test'))
         self._helper_test_func(len(train_iter), 42068, next(iter(train_iter))[:15], ' aer banknote b')
         self._helper_test_func(len(test_iter), 3761, next(iter(test_iter))[:25], " no it was n't black mond")
         del train_iter, test_iter
@@ -130,7 +130,7 @@ class TestDataset(TorchtextTestCase):
                                [2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786])
 
         # Add test for the subset of the standard datasets
-        train_dataset, = AG_NEWS(data_select=('train'))
+        train_dataset, = AG_NEWS(split=('train'))
         self._helper_test_func(len(train_dataset), 120000, train_dataset[-1][1][:10],
                                [2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405])
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
@@ -175,7 +175,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
 
         # Add test for the subset of the standard datasets
-        train_dataset, = IMDB(data_select=('train'))
+        train_dataset, = IMDB(split=('train'))
         self._helper_test_func(len(train_dataset), 25000, train_dataset[0][1][:10],
                                [13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92])
         train_iter, test_iter = torchtext.experimental.datasets.raw.IMDB()
@@ -255,7 +255,7 @@ class TestDataset(TorchtextTestCase):
                          [18, 24, 1168, 807, 16, 56, 83, 335, 1338])
 
         # Add test for the subset of the standard datasets
-        train_iter, valid_iter = torchtext.experimental.datasets.raw.Multi30k(data_select=('train', 'valid'))
+        train_iter, valid_iter = torchtext.experimental.datasets.raw.Multi30k(split=('train', 'valid'))
         self._helper_test_func(len(train_iter), 29000, ' '.join(next(iter(train_iter))),
                                ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.\n',
                                          'Two young, White males are outside near many bushes.\n']))
@@ -263,7 +263,7 @@ class TestDataset(TorchtextTestCase):
                                ' '.join(['Eine Gruppe von Männern lädt Baumwolle auf einen Lastwagen\n',
                                          'A group of men are loading cotton onto a truck\n']))
         del train_iter, valid_iter
-        train_dataset, = Multi30k(data_select=('train'))
+        train_dataset, = Multi30k(split=('train'))
 
         # This change is due to the BC breaking in spacy 3.0
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
@@ -326,11 +326,11 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [1206, 8, 69, 60, 157, 452])
 
         # Add test for the subset of the standard datasets
-        train_dataset, = UDPOS(data_select=('train'))
+        train_dataset, = UDPOS(split=('train'))
         self._helper_test_func(len(train_dataset), 12543, (train_dataset[0][0][:10], train_dataset[-1][2][:10]),
                                ([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585],
                                 [6, 20, 8, 10, 8, 8, 24, 13, 8, 15]))
-        train_iter, valid_iter = torchtext.experimental.datasets.raw.UDPOS(data_select=('train', 'valid'))
+        train_iter, valid_iter = torchtext.experimental.datasets.raw.UDPOS(split=('train', 'valid'))
         self._helper_test_func(len(train_iter), 12543, ' '.join(next(iter(train_iter))[0][:5]),
                                ' '.join(['Al', '-', 'Zaman', ':', 'American']))
         self._helper_test_func(len(valid_iter), 2002, ' '.join(next(iter(valid_iter))[0][:5]),
@@ -373,7 +373,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [970, 5, 135, 43, 214, 690])
 
         # Add test for the subset of the standard datasets
-        train_dataset, = CoNLL2000Chunking(data_select=('train'))
+        train_dataset, = CoNLL2000Chunking(split=('train'))
         self._helper_test_func(len(train_dataset), 8936, (train_dataset[0][0][:10], train_dataset[0][1][:10],
                                                           train_dataset[0][2][:10], train_dataset[-1][0][:10],
                                                           train_dataset[-1][1][:10], train_dataset[-1][2][:10]),
@@ -408,7 +408,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = SQuAD1(vocab=new_vocab)
 
         # Add test for the subset of the standard datasets
-        train_dataset, = SQuAD1(data_select=('train'))
+        train_dataset, = SQuAD1(split=('train'))
         context, question, answers, ans_pos = train_dataset[100]
         self._helper_test_func(len(train_dataset), 87599, (question[:5], ans_pos[0]),
                                ([7, 24, 86, 52, 2], [72, 72]))
@@ -437,7 +437,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = SQuAD2(vocab=new_vocab)
 
         # Add test for the subset of the standard datasets
-        train_dataset, = SQuAD2(data_select=('train'))
+        train_dataset, = SQuAD2(split=('train'))
         context, question, answers, ans_pos = train_dataset[200]
         self._helper_test_func(len(train_dataset), 130319, (question[:5], ans_pos[0]),
                                ([84, 50, 1421, 12, 5439], [9, 9]))

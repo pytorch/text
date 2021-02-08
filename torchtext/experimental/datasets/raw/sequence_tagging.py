@@ -39,8 +39,8 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root, data_select, offset, stride):
-    data_select = check_default_set(data_select, target_select=('train', 'valid', 'test'))
+def _setup_datasets(dataset_name, separator, root, split, offset):
+    split = check_default_set(split, target_select=('train', 'valid', 'test'))
     extracted_files = []
     if isinstance(URLS[dataset_name], dict):
         for name, item in URLS[dataset_name].items():
@@ -60,49 +60,47 @@ def _setup_datasets(dataset_name, separator, root, data_select, offset, stride):
         "test": _construct_filepath(extracted_files, "test.txt")
     }
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                 _create_data_from_iob(data_filenames[item], separator), offset=offset, stride=stride)
-                 if data_filenames[item] is not None else None for item in data_select)
+                 _create_data_from_iob(data_filenames[item], separator), offset=offset)
+                 if data_filenames[item] is not None else None for item in split)
 
 
-def UDPOS(root=".data", data_select=('train', 'valid', 'test'), offset=0, stride=1):
+def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training and test dataset
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+        split: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
             By default, all the datasets (train, valid, test) are generated.
             Users could also choose any one or two of them,
             for example ('train', 'valid', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import UDPOS
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
-    return _setup_datasets("UDPOS", "\t", root, data_select, offset, stride)
+    return _setup_datasets("UDPOS", "\t", root, split, offset)
 
 
-def CoNLL2000Chunking(root=".data", data_select=('train', 'test'), offset=0, stride=1):
+def CoNLL2000Chunking(root=".data", split=('train', 'test'), offset=0):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        data_select: a string or tuple for the returned datasets (Default: ('train', 'test'))
+        split: a string or tuple for the returned datasets (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
             for example ('train', 'test') or just a string 'train'.
         offset: the number of the starting line. Default: 0
-        stride: stride - 1 is the number of the lines to skip. Default: 1
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import CoNLL2000Chunking
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
-    return _setup_datasets("CoNLL2000Chunking", " ", root, data_select, offset, stride)
+    return _setup_datasets("CoNLL2000Chunking", " ", root, split, offset)
 
 
 DATASETS = {
