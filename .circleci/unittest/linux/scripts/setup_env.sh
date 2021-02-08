@@ -45,4 +45,6 @@ fi
 
 # 4. Download
 printf "* Downloading SpaCy English models\n"
-python -m spacy download en
+python -m spacy download en_core_web_sm
+printf "* Downloading SpaCy German models\n"
+python -m spacy download de_core_news_sm 
