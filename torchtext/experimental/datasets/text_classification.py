@@ -69,18 +69,18 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
+def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, split):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
     text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
-    data_select = check_default_set(data_select, ('train', 'test'))
-    raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+    split = check_default_set(split, ('train', 'test'))
+    raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     # Materialize raw text iterable dataset
-    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
 
     if vocab is None:
-        if "train" not in data_select:
+        if "train" not in split:
             raise TypeError("Must pass a vocab if train is not selected.")
         logger_.info('Building Vocab based on train data')
         vocab = build_vocab(raw_data["train"], text_transform)
@@ -92,16 +92,16 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, data_select):
         label_transform = sequential_transforms(lambda x: 1 if x == 'pos' else 0, totensor(dtype=torch.long))
     else:
         label_transform = sequential_transforms(totensor(dtype=torch.long))
-    logger_.info('Building datasets for {}'.format(data_select))
+    logger_.info('Building datasets for {}'.format(split))
     return tuple(
         TextClassificationDataset(
             raw_data[item], vocab, (label_transform, text_transform)
         )
-        for item in data_select
+        for item in split
     )
 
 
-def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines AG_NEWS datasets.
         The labels includes:
             - 1 : World
@@ -123,7 +123,7 @@ def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -137,14 +137,14 @@ def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
         >>> train, test = AG_NEWS(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AG_NEWS(tokenizer=tokenizer)
-        >>> train, = AG_NEWS(tokenizer=tokenizer, data_select='train')
+        >>> train, = AG_NEWS(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("AG_NEWS", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("AG_NEWS", root, ngrams, vocab, tokenizer, split)
 
 
-def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines SogouNews datasets.
         The labels includes:
             - 1 : Sports
@@ -167,7 +167,7 @@ def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -181,14 +181,14 @@ def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('
         >>> train, test = SogouNews(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = SogouNews(tokenizer=tokenizer)
-        >>> train, = SogouNews(tokenizer=tokenizer, data_select='train')
+        >>> train, = SogouNews(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("SogouNews", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("SogouNews", root, ngrams, vocab, tokenizer, split)
 
 
-def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines DBpedia datasets.
         The labels includes:
             - 1 : Company
@@ -220,7 +220,7 @@ def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -234,14 +234,14 @@ def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('tr
         >>> train, test = DBpedia(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = DBpedia(tokenizer=tokenizer)
-        >>> train, = DBpedia(tokenizer=tokenizer, data_select='train')
+        >>> train, = DBpedia(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("DBpedia", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("DBpedia", root, ngrams, vocab, tokenizer, split)
 
 
-def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines YelpReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity.
@@ -261,7 +261,7 @@ def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -275,14 +275,14 @@ def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_
         >>> train, test = YelpReviewPolarity(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YelpReviewPolarity(tokenizer=tokenizer)
-        >>> train, = YelpReviewPolarity(tokenizer=tokenizer, data_select='train')
+        >>> train, = YelpReviewPolarity(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("YelpReviewPolarity", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("YelpReviewPolarity", root, ngrams, vocab, tokenizer, split)
 
 
-def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines YelpReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended).
@@ -301,7 +301,7 @@ def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_sele
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -315,14 +315,14 @@ def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_sele
         >>> train, test = YelpReviewFull(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YelpReviewFull(tokenizer=tokenizer)
-        >>> train, = YelpReviewFull(tokenizer=tokenizer, data_select='train')
+        >>> train, = YelpReviewFull(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("YelpReviewFull", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("YelpReviewFull", root, ngrams, vocab, tokenizer, split)
 
 
-def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines YahooAnswers datasets.
         The labels includes:
             - 1 : Society & Culture
@@ -350,7 +350,7 @@ def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -364,14 +364,14 @@ def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select
         >>> train, test = YahooAnswers(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YahooAnswers(tokenizer=tokenizer)
-        >>> train, = YahooAnswers(tokenizer=tokenizer, data_select='train')
+        >>> train, = YahooAnswers(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("YahooAnswers", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("YahooAnswers", root, ngrams, vocab, tokenizer, split)
 
 
-def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines AmazonReviewPolarity datasets.
         The labels includes:
             - 1 : Negative polarity
@@ -391,7 +391,7 @@ def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, dat
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -405,14 +405,14 @@ def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, dat
         >>> train, test = AmazonReviewPolarity(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AmazonReviewPolarity(tokenizer=tokenizer)
-        >>> train, = AmazonReviewPolarity(tokenizer=tokenizer, data_select='train')
+        >>> train, = AmazonReviewPolarity(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("AmazonReviewPolarity", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("AmazonReviewPolarity", root, ngrams, vocab, tokenizer, split)
 
 
-def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines AmazonReviewFull datasets.
         The labels includes:
             1 - 5 : rating classes (5 is highly recommended)
@@ -431,7 +431,7 @@ def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_se
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -445,14 +445,14 @@ def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, data_se
         >>> train, test = AmazonReviewFull(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AmazonReviewFull(tokenizer=tokenizer)
-        >>> train, = AmazonReviewFull(tokenizer=tokenizer, data_select='train')
+        >>> train, = AmazonReviewFull(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("AmazonReviewFull", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("AmazonReviewFull", root, ngrams, vocab, tokenizer, split)
 
 
-def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train', 'test')):
+def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
     """ Defines IMDB datasets.
         The labels includes:
             - 0 : Negative
@@ -473,7 +473,7 @@ def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -487,11 +487,11 @@ def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, data_select=('train
         >>> train, test = IMDB(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = IMDB(tokenizer=tokenizer)
-        >>> train, = IMDB(tokenizer=tokenizer, data_select='train')
+        >>> train, = IMDB(tokenizer=tokenizer, split='train')
 
     """
 
-    return _setup_datasets("IMDB", root, ngrams, vocab, tokenizer, data_select)
+    return _setup_datasets("IMDB", root, ngrams, vocab, tokenizer, split)
 
 
 DATASETS = {

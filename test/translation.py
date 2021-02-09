@@ -4,8 +4,8 @@ from torchtext import datasets
 import re
 import spacy
 
-spacy_de = spacy.load('de')
-spacy_en = spacy.load('en')
+spacy_de = spacy.load('de_core_news_sm')
+spacy_en = spacy.load('en_core_web_sm')
 
 url = re.compile('(<url>.*</url>)')
 

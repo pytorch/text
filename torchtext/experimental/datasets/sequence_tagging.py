@@ -26,15 +26,15 @@ def build_vocab(data):
     return vocabs
 
 
-def _setup_datasets(dataset_name, root, vocabs, data_select):
-    data_select = check_default_set(data_select, ('train', 'valid', 'test'))
-    raw_iter_tuple = raw.DATASETS[dataset_name](root=root, data_select=data_select)
+def _setup_datasets(dataset_name, root, vocabs, split):
+    split = check_default_set(split, ('train', 'valid', 'test'))
+    raw_iter_tuple = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {}
-    for name, raw_iter in zip(data_select, raw_iter_tuple):
+    for name, raw_iter in zip(split, raw_iter_tuple):
         raw_data[name] = list(raw_iter)
 
     if vocabs is None:
-        if "train" not in data_select:
+        if "train" not in split:
             raise TypeError("Must pass a vocab if train is not selected.")
         logger_.info('Building Vocab based on train data')
         vocabs = build_vocab(raw_data["train"])
@@ -58,8 +58,8 @@ def _setup_datasets(dataset_name, root, vocabs, data_select):
                               totensor(dtype=torch.long))
         for idx in range(len(vocabs))
     ]
-    logger_.info('Building datasets for {}'.format(data_select))
-    return tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in data_select)
+    logger_.info('Building datasets for {}'.format(split))
+    return tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in split)
 
 
 class SequenceTaggingDataset(torch.utils.data.Dataset):
@@ -108,7 +108,7 @@ class SequenceTaggingDataset(torch.utils.data.Dataset):
         return self.vocabs
 
 
-def UDPOS(root=".data", vocabs=None, data_select=("train", "valid", "test")):
+def UDPOS(root=".data", vocabs=None, split=("train", "valid", "test")):
     """ Universal Dependencies English Web Treebank
 
     Separately returns the training, validation, and test dataset
@@ -118,7 +118,7 @@ def UDPOS(root=".data", vocabs=None, data_select=("train", "valid", "test")):
         vocabs: A list of voabularies for each columns in the dataset. Must be in an
             instance of List
             Default: None
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'valid', 'test'))
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -131,10 +131,10 @@ def UDPOS(root=".data", vocabs=None, data_select=("train", "valid", "test")):
         >>> train_dataset, valid_dataset, test_dataset = UDPOS()
     """
 
-    return _setup_datasets("UDPOS", root, vocabs, data_select)
+    return _setup_datasets("UDPOS", root, vocabs, split)
 
 
-def CoNLL2000Chunking(root=".data", vocabs=None, data_select=("train", "test")):
+def CoNLL2000Chunking(root=".data", vocabs=None, split=("train", "test")):
     """ CoNLL 2000 Chunking Dataset
 
     Separately returns the training and test dataset
@@ -144,7 +144,7 @@ def CoNLL2000Chunking(root=".data", vocabs=None, data_select=("train", "test")):
         vocabs: A list of voabularies for each columns in the dataset. Must be in an
             instance of List
             Default: None
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'test'))
             By default, both datasets (train, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -157,7 +157,7 @@ def CoNLL2000Chunking(root=".data", vocabs=None, data_select=("train", "test")):
         >>> train_dataset, test_dataset = CoNLL2000Chunking()
     """
 
-    return _setup_datasets("CoNLL2000Chunking", root, vocabs, data_select)
+    return _setup_datasets("CoNLL2000Chunking", root, vocabs, split)
 
 
 DATASETS = {"UDPOS": UDPOS, "CoNLL2000Chunking": CoNLL2000Chunking}

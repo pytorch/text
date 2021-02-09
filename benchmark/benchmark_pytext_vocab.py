@@ -150,7 +150,7 @@ def benchmark_experimental_vocab():
     t0 = time.monotonic()
     experimental_script_vocab = ExperimentalScriptVocabulary(ordered_dict, unk_token="<unk>")
     print("Construction time:", time.monotonic() - t0)
-    jit_experimental_script_vocab = torch.jit.script(experimental_script_vocab.to_ivalue())
+    jit_experimental_script_vocab = torch.jit.script(experimental_script_vocab)
 
     # pytext Vocab eager lookup
     print("Pytext Vocabulary - Eager Mode")
