@@ -116,7 +116,7 @@ def run_main(args):
     pad_id = vocab(['pad'])[0]
     ntokens = len(vocab)
 
-    if not args.dist:
+    if args.shards == 1:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = CrossLingualMLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
         model = model.to(device)
@@ -124,7 +124,7 @@ def run_main(args):
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
     else:
         device = "cpu"
-        model = DistCrossLingualMLMTask(args.split_size, ["worker1", "worker2"], ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+        model = DistCrossLingualMLMTask(args.shards, args.split_size, ["worker" + str(i + 1) for i in range(args.world_size - 1)], ntokens, args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
         optimizer = DistributedOptimizer(
             optim.Adam,
             model.parameter_rrefs(),
@@ -137,7 +137,7 @@ def run_main(args):
     train_loss_log, val_loss_log = [], []
 
     for epoch in range(1, args.epochs + 1):
-        train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=args.start_line, num_lines=args.num_lines)
+        train_data = CC100(args.cc100_path, {'*.txt'}, start_line=args.start_line, num_lines=args.num_lines)
         from torchtext.experimental.datasets.raw import WikiText2
         val_data, = WikiText2(data_select='valid')
         val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
@@ -145,7 +145,7 @@ def run_main(args):
         epoch_start_time = time.time()
         last_lr = scheduler.get_last_lr()[0] if scheduler is not None else args.lr
         train(model, mask_id, pad_id, train_loss_log, train_data, text_transform,
-              optimizer, criterion, ntokens, epoch, last_lr, args, device, step if not args.dist else dist_step)
+              optimizer, criterion, ntokens, epoch, last_lr, args, device, step if args.shards == 1 else dist_step)
 
         # Turn on evaluation mode which disables dropout.
         model.eval()
@@ -156,7 +156,7 @@ def run_main(args):
               'valid ppl {:8.2f}'.format(epoch, (time.time() - epoch_start_time),
                                          val_loss, math.exp(val_loss)))
         print('-' * 89)
-        if not args.dist and not best_val_loss or val_loss < best_val_loss:
+        if args.shards == 1 and not best_val_loss or val_loss < best_val_loss:
             with open(args.save, 'wb') as f:
                 torch.save(model, f)
             best_val_loss = val_loss
@@ -258,15 +258,17 @@ if __name__ == "__main__":
                         help='path to load the reference model for evaluation')
     parser.add_argument('--mask_frac', type=float, default=0.15,
                         help='the fraction of masked tokens')
-    parser.add_argument('--dist', action='store_true',
-                        help='run distributed version')
+    parser.add_argument('--cc100_path', type=str, default='/datasets01/cc100/031720/',
+                        help='path to cc100')
+    parser.add_argument('--shards', type=int, default=1,
+                        help='number of shards')
     parser.add_argument('--world_size', type=int, default=3,
                         help='world_size')
     parser.add_argument('--split_size', type=int, default=8,
                         help='split the input batch into micro-batches')
     args = parser.parse_args()
 
-    if args.dist:
-        mp.spawn(run_worker, args=(args,), nprocs=args.world_size, join=True)
-    else:
+    if args.shards == 1:
         run_main(args)
+    else:
+        mp.spawn(run_worker, args=(args,), nprocs=args.world_size, join=True)
