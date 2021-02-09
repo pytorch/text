@@ -126,8 +126,6 @@ class BasicEnglishNormalize(nn.Module):
     def __prepare_scriptable__(self):
         r"""Return a JITable BasicEnglishNormalize.
         """
-        if self.is_jitable:
-            return BasicEnglishNormalize(self.regex_tokenizer)
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
         return BasicEnglishNormalize(regex_tokenizer)
 
@@ -162,9 +160,6 @@ class RegexTokenizer(nn.Module):
     def __prepare_scriptable__(self):
         r"""Return a JITable RegexTokenizer.
         """
-        if self.is_jitable:
-            return RegexTokenizer(self.regex_tokenizer)
-
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
         return RegexTokenizer(regex_tokenizer)
 
