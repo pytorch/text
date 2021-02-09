@@ -32,6 +32,10 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
                 break
             yield item
 
+    def __next__(self):
+        item = next(self._iterator)
+        return item
+
     def __len__(self):
         return self.num_lines
 
