@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.question_answer &mdash; torchtext 0.9.0.dev20210208 documentation</title>
+  <title>torchtext.experimental.datasets.question_answer &mdash; torchtext 0.9.0.dev20210209 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210208
+                  0.9.0.dev20210209
                 </div>
               
             
@@ -370,16 +370,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span></div>
 
 
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
     <span class="n">text_transform</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">tokenizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s1">&#39;basic_english&#39;</span><span class="p">)</span>
     <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
-    <span class="n">data_select</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">data_select</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">))</span>
-    <span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="n">data_select</span><span class="p">)</span>
-    <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">raw_dataset</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_select</span><span class="p">,</span> <span class="n">raw_datasets</span><span class="p">)}</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">))</span>
+    <span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">)</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">raw_dataset</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">raw_datasets</span><span class="p">)}</span>
     <span class="k">if</span> <span class="n">vocab</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;train&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;train&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Must pass a vocab if train is not selected.&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -394,11 +394,11 @@
     <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">text_transform</span><span class="p">,</span> <span class="n">vocab_func</span><span class="p">(</span><span class="n">vocab</span><span class="p">),</span> <span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">))</span>
     <span class="n">transforms</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;context&#39;</span><span class="p">:</span> <span class="n">text_transform</span><span class="p">,</span> <span class="s1">&#39;question&#39;</span><span class="p">:</span> <span class="n">text_transform</span><span class="p">,</span>
                   <span class="s1">&#39;answers&#39;</span><span class="p">:</span> <span class="n">text_transform</span><span class="p">,</span> <span class="s1">&#39;ans_pos&#39;</span><span class="p">:</span> <span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)}</span>
-    <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building datasets for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_select</span><span class="p">))</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">QuestionAnswerDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">transforms</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">)</span>
+    <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building datasets for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">QuestionAnswerDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">transforms</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SQuAD1"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SQuAD1">[docs]</a><span class="k">def</span> <span class="nf">SQuAD1</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">)):</span>
+<div class="viewcode-block" id="SQuAD1"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SQuAD1">[docs]</a><span class="k">def</span> <span class="nf">SQuAD1</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot; Defines SQuAD1 datasets.</span>
 
 <span class="sd">    Create question answer dataset: SQuAD1</span>
@@ -413,7 +413,7 @@
 <span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
 <span class="sd">            is supported as well. A custom tokenizer is callable</span>
 <span class="sd">            function with input of a string and output of a token list.</span>
-<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">        split: a string or tuple for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;dev&#39;))</span>
 <span class="sd">            By default, all the two datasets (train, dev) are generated. Users</span>
 <span class="sd">            could also choose any one of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
@@ -429,10 +429,10 @@
 <span class="sd">        &gt;&gt;&gt; train, dev = SQuAD1(tokenizer=tokenizer)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s1">&#39;SQuAD1&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s1">&#39;SQuAD1&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SQuAD2"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SQuAD2">[docs]</a><span class="k">def</span> <span class="nf">SQuAD2</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">)):</span>
+<div class="viewcode-block" id="SQuAD2"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SQuAD2">[docs]</a><span class="k">def</span> <span class="nf">SQuAD2</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot; Defines SQuAD2 datasets.</span>
 
 <span class="sd">    Create question answer dataset: SQuAD2</span>
@@ -447,7 +447,7 @@
 <span class="sd">            The default one is basic_english tokenizer in fastText. spacy tokenizer</span>
 <span class="sd">            is supported as well. A custom tokenizer is callable</span>
 <span class="sd">            function with input of a string and output of a token list.</span>
-<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">        split: a string or tuple for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;dev&#39;))</span>
 <span class="sd">            By default, all the two datasets (train, dev) are generated. Users</span>
 <span class="sd">            could also choose any one of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
@@ -463,7 +463,7 @@
 <span class="sd">        &gt;&gt;&gt; train, dev = SQuAD2(tokenizer=tokenizer)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s1">&#39;SQuAD2&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">data_select</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s1">&#39;SQuAD2&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span></div>
 
 
 <span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.sequence_tagging &mdash; torchtext 0.9.0.dev20210208 documentation</title>
+  <title>torchtext.experimental.datasets.sequence_tagging &mdash; torchtext 0.9.0.dev20210209 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210208
+                  0.9.0.dev20210209
                 </div>
               
             
@@ -335,15 +335,15 @@
     <span class="k">return</span> <span class="n">vocabs</span>
 
 
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">data_select</span><span class="p">):</span>
-    <span class="n">data_select</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">data_select</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
-    <span class="n">raw_iter_tuple</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="n">data_select</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+    <span class="n">raw_iter_tuple</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">)</span>
     <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">raw_iter</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_select</span><span class="p">,</span> <span class="n">raw_iter_tuple</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">raw_iter</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">raw_iter_tuple</span><span class="p">):</span>
         <span class="n">raw_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_iter</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">vocabs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;train&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;train&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Must pass a vocab if train is not selected.&quot;</span><span class="p">)</span>
         <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building Vocab based on train data&#39;</span><span class="p">)</span>
         <span class="n">vocabs</span> <span class="o">=</span> <span class="n">build_vocab</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">])</span>
@@ -367,8 +367,8 @@
                               <span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vocabs</span><span class="p">))</span>
     <span class="p">]</span>
-    <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building datasets for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_select</span><span class="p">))</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">transformers</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data_select</span><span class="p">)</span>
+    <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building datasets for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">transformers</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SequenceTaggingDataset"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SequenceTaggingDataset">[docs]</a><span class="k">class</span> <span class="nc">SequenceTaggingDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
@@ -417,7 +417,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocabs</span></div>
 
 
-<div class="viewcode-block" id="UDPOS"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.UDPOS">[docs]</a><span class="k">def</span> <span class="nf">UDPOS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">vocabs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)):</span>
+<div class="viewcode-block" id="UDPOS"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.UDPOS">[docs]</a><span class="k">def</span> <span class="nf">UDPOS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">vocabs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot; Universal Dependencies English Web Treebank</span>
 
 <span class="sd">    Separately returns the training, validation, and test dataset</span>
@@ -427,7 +427,7 @@
 <span class="sd">        vocabs: A list of voabularies for each columns in the dataset. Must be in an</span>
 <span class="sd">            instance of List</span>
 <span class="sd">            Default: None</span>
-<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">        split: a string or tuple for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;valid&#39;, &#39;test&#39;))</span>
 <span class="sd">            By default, all the three datasets (train, test, valid) are generated. Users</span>
 <span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
@@ -440,10 +440,10 @@
 <span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = UDPOS()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;UDPOS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">data_select</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;UDPOS&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.CoNLL2000Chunking">[docs]</a><span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">vocabs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_select</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)):</span>
+<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.CoNLL2000Chunking">[docs]</a><span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">vocabs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot; CoNLL 2000 Chunking Dataset</span>
 
 <span class="sd">    Separately returns the training and test dataset</span>
@@ -453,7 +453,7 @@
 <span class="sd">        vocabs: A list of voabularies for each columns in the dataset. Must be in an</span>
 <span class="sd">            instance of List</span>
 <span class="sd">            Default: None</span>
-<span class="sd">        data_select: a string or tuple for the returned datasets</span>
+<span class="sd">        split: a string or tuple for the returned datasets</span>
 <span class="sd">            (Default: (&#39;train&#39;, &#39;test&#39;))</span>
 <span class="sd">            By default, both datasets (train, test) are generated. Users</span>
 <span class="sd">            could also choose any one or two of them, for example (&#39;train&#39;, &#39;test&#39;) or</span>
@@ -466,7 +466,7 @@
 <span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = CoNLL2000Chunking()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">data_select</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">split</span><span class="p">)</span></div>
 
 
 <span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;UDPOS&quot;</span><span class="p">:</span> <span class="n">UDPOS</span><span class="p">,</span> <span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">:</span> <span class="n">CoNLL2000Chunking</span><span class="p">}</span>
