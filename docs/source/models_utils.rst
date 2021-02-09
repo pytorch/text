@@ -1,11 +1,11 @@
 .. role:: hidden
     :class: hidden-section
 
-torchtext.models.utils
-======================
+torchtext.experimental.models.utils
+===================================
 
-.. automodule:: torchtext.models.utils
-.. currentmodule:: torchtext.models.utils
+.. automodule:: torchtext.experimental.models.utils
+.. currentmodule:: torchtext.experimental.models.utils
 
 :hidden:`count_model_param`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

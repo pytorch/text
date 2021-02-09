@@ -1,5 +1,5 @@
 import torch
-from torchtext.models.utils import count_model_param
+from torchtext.experimental.models.utils import count_model_param
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
