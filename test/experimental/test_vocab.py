@@ -104,13 +104,15 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
-        jit_v = torch.jit.script(v.to_ivalue())
+        jit_v = torch.jit.script(v)
 
         expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         assert not v.is_jitable
-        assert v.to_ivalue().is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        assert v.__prepare_scriptable__().is_jitable
 
         self.assertEqual(jit_v.get_itos(), expected_itos)
         self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)
@@ -121,7 +123,7 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c)
-        jit_v = torch.jit.script(v.to_ivalue())
+        jit_v = torch.jit.script(v)
 
         tokens = ['b', 'a', 'c']
         expected_indices = [2, 1, 3]
@@ -208,7 +210,9 @@ class TestVocab(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
-            torch.save(v.to_ivalue(), vocab_path)
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            torch.save(v.__prepare_scriptable__(), vocab_path)
             loaded_v = torch.load(vocab_path)
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
