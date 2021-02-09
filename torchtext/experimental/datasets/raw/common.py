@@ -33,7 +33,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
             yield item
 
     def __next__(self):
-        item = self._iterator.__next__()
+        item = next(self._iterator)
         return item
 
     def __len__(self):
