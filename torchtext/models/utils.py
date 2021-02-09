@@ -3,10 +3,10 @@ import torch
 
 def count_model_param(nn_model, unit=10**6):
     r"""
-    Count the parameters in model
+    Count the parameters in a model
 
     Args:
-        model: a model (torch.nn.Module)
+        model: the model (torch.nn.Module)
         unit: the unit of the returned value. Default: 10**6 or M.
 
     Examples:
