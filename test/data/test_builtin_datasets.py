@@ -154,7 +154,7 @@ class TestDataset(TorchtextTestCase):
                 next(train_iter)
                 next_count += 1
             except:
-                print(for_count, next_count)
+                break
         self.assertEqual((for_count, next_count), (60000, 60000))
 
     def test_imdb(self):
