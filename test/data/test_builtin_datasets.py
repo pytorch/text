@@ -146,12 +146,16 @@ class TestDataset(TorchtextTestCase):
 
     def test_next_method_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
-        dataset_len = len(train_iter)
-        container = []
+        for_count = 0
+        next_count = 0
         for line in train_iter:
-            container.append(line)
-            container.append(next(train_iter))
-        self.assertEqual(len(container), dataset_len)
+            for_count += 1
+            try:
+                next(train_iter)
+                next_count += 1
+            except:
+                print(for_count, next_count)
+        self.assertEqual((for_count, next_count), (60000, 60000))
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
