@@ -94,14 +94,16 @@ class TestFunctional(TorchtextTestCase):
         basic_eng_norm = basic_english_normalize()
         experimental_eager_tokens = basic_eng_norm(test_sample)
 
-        jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())
+        jit_basic_eng_norm = torch.jit.script(basic_eng_norm)
         experimental_jit_tokens = jit_basic_eng_norm(test_sample)
 
         basic_english_tokenizer = data.get_tokenizer("basic_english")
         eager_tokens = basic_english_tokenizer(test_sample)
 
         assert not basic_eng_norm.is_jitable
-        assert basic_eng_norm.to_ivalue().is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        assert basic_eng_norm.__prepare_scriptable__().is_jitable
 
         self.assertEqual(experimental_jit_tokens, ref_results)
         self.assertEqual(eager_tokens, ref_results)
@@ -121,7 +123,9 @@ class TestFunctional(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'ben_torchscrip.pt')
-            ben = basic_english_normalize().to_ivalue()
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            ben = basic_english_normalize().__prepare_scriptable__()
             torch.save(ben, save_path)
             loaded_ben = torch.load(save_path)
             self.assertEqual(loaded_ben(test_sample), ref_results)
@@ -149,11 +153,13 @@ class TestFunctional(TorchtextTestCase):
         r_tokenizer = regex_tokenizer(patterns_list)
         eager_tokens = r_tokenizer(test_sample)
 
-        jit_r_tokenizer = torch.jit.script(r_tokenizer.to_ivalue())
+        jit_r_tokenizer = torch.jit.script(r_tokenizer)
         jit_tokens = jit_r_tokenizer(test_sample)
 
         assert not r_tokenizer.is_jitable
-        assert r_tokenizer.to_ivalue().is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        assert r_tokenizer.__prepare_scriptable__().is_jitable
 
         self.assertEqual(eager_tokens, ref_results)
         self.assertEqual(jit_tokens, ref_results)
@@ -186,7 +192,9 @@ class TestFunctional(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'regex_torchscript.pt')
-            tokenizer = regex_tokenizer(patterns_list).to_ivalue()
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            tokenizer = regex_tokenizer(patterns_list).__prepare_scriptable__()
             torch.save(tokenizer, save_path)
             loaded_tokenizer = torch.load(save_path)
             results = loaded_tokenizer(test_sample)
