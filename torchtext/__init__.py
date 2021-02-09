@@ -4,7 +4,6 @@ from . import datasets
 from . import utils
 from . import vocab
 from . import experimental
-from . import models
 
 
 try:
@@ -17,8 +16,7 @@ __all__ = ['data',
            'datasets',
            'utils',
            'vocab',
-           'experimental',
-           'models']
+           'experimental']
 
 
 def _init_extension():
