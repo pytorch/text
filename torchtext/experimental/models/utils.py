@@ -12,7 +12,7 @@ def count_model_param(nn_model, unit=10**6):
     Examples:
         >>> import torch
         >>> import torchtext
-        >>> from torchtext.models.utils import count_model_param
+        >>> from torchtext.experimental.models.utils import count_model_param
         >>> model = torch.nn.Embedding(100, 200)
         >>> count_model_param(model, unit=10**3)
         >>> 20.
