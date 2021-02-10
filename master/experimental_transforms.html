@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.transforms &mdash; torchtext 0.9.0.dev20210209 documentation</title>
+  <title>torchtext.experimental.transforms &mdash; torchtext 0.9.0.dev20210210 documentation</title>
   
 
   
@@ -184,7 +184,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210209
+                  0.9.0.dev20210210
                 </div>
               
             
@@ -227,6 +227,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
@@ -339,12 +340,6 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="torchtext.experimental.transforms.BasicEnglishNormalize.to_ivalue">
-<code class="sig-name descname">to_ivalue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize.to_ivalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize.to_ivalue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a JITable BasicEnglishNormalize.</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -375,12 +370,6 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="torchtext.experimental.transforms.RegexTokenizer.to_ivalue">
-<code class="sig-name descname">to_ivalue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer.to_ivalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer.to_ivalue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a JITable RegexTokenizer.</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -397,7 +386,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">txt_pipeline</span> <span class="o">=</span> <span class="n">TextSequentialTransforms</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">txt_pipeline</span><span class="p">(</span><span class="s1">&#39;here is an example&#39;</span><span class="p">)</span>
 <span class="go">    [&#39;here&#39;, &#39;is&#39;, &#39;an&#39;, &#39;example&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_txt_pipeline</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">txt_pipeline</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_txt_pipeline</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">txt_pipeline</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
@@ -412,12 +401,6 @@ this function, one should call the <code class="xref py py-class docutils litera
 instead of this since the former takes care of running the
 registered hooks while the latter silently ignores them.</p>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.transforms.TextSequentialTransforms.to_ivalue">
-<code class="sig-name descname">to_ivalue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#TextSequentialTransforms.to_ivalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.TextSequentialTransforms.to_ivalue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a JITable TextSequentialTransforms.</p>
 </dd></dl>
 
 </dd></dl>
@@ -485,7 +468,7 @@ The following pretrained sentencepiece models are provided:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.transforms</span> <span class="kn">import</span> <span class="n">sentencepiece_tokenizer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">spm_tokenizer</span> <span class="o">=</span> <span class="n">sentencepiece_tokenizer</span><span class="p">(</span><span class="s1">&#39;m_user.model&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_spm_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">spm_tokenizer</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_spm_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">spm_tokenizer</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -557,7 +540,7 @@ The following pretrained sentencepiece models are provided:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.transforms</span> <span class="kn">import</span> <span class="n">sentencepiece_processor</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">spm_processor</span> <span class="o">=</span> <span class="n">sentencepiece_processor</span><span class="p">(</span><span class="s1">&#39;m_user.model&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_spm_processor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">spm_processor</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_spm_processor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">spm_processor</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -629,7 +612,7 @@ The following pretrained sentencepiece models are provided:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.vocab</span> <span class="kn">import</span> <span class="n">vocab_from_file_object</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;vocab.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vocab_transform</span> <span class="o">=</span> <span class="n">VocabTransform</span><span class="p">(</span><span class="n">vocab_from_file_object</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vocab_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vocab_transform</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vocab_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vocab_transform</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
@@ -670,7 +653,7 @@ The following pretrained sentencepiece models are provided:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.vectors</span> <span class="kn">import</span> <span class="n">FastText</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vector_transform</span> <span class="o">=</span> <span class="n">VectorTransform</span><span class="p">(</span><span class="n">FastText</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vector_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vector_transform</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vector_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vector_transform</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">

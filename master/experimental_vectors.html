@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vectors &mdash; torchtext 0.9.0.dev20210209 documentation</title>
+  <title>torchtext.experimental.vectors &mdash; torchtext 0.9.0.dev20210210 documentation</title>
   
 
   
@@ -184,7 +184,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210209
+                  0.9.0.dev20210210
                 </div>
               
             
@@ -227,6 +227,7 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
@@ -354,6 +355,12 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="torchtext.experimental.vectors.Vectors.__prepare_scriptable__">
+<code class="sig-name descname">__prepare_scriptable__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__prepare_scriptable__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a JITable Vectors.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="torchtext.experimental.vectors.Vectors.__setitem__">
 <code class="sig-name descname">__setitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">vector: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__setitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -409,12 +416,6 @@ empty tensor if <cite>tokens</cite> is empty</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ret</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">get_vectors_by_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vectors.Vectors.to_ivalue">
-<code class="sig-name descname">to_ivalue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.to_ivalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.to_ivalue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a JITable Vectors.</p>
 </dd></dl>
 
 </dd></dl>

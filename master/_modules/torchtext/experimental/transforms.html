@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.transforms &mdash; torchtext 0.9.0.dev20210209 documentation</title>
+  <title>torchtext.experimental.transforms &mdash; torchtext 0.9.0.dev20210210 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210209
+                  0.9.0.dev20210210
                 </div>
               
             
@@ -225,6 +225,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
@@ -311,7 +312,6 @@
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">RegexTokenizer</span> <span class="k">as</span> <span class="n">RegexTokenizerPybind</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 <span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">SentencePiece</span> <span class="k">as</span> <span class="n">SentencePiecePybind</span>
 <span class="kn">import</span> <span class="nn">io</span>
@@ -359,7 +359,7 @@
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import basic_english_normalize</span>
 <span class="sd">        &gt;&gt;&gt; test_sample = &#39;Basic English Normalization for a Line of Text&#39;</span>
 <span class="sd">        &gt;&gt;&gt; basic_eng_norm = basic_english_normalize()</span>
-<span class="sd">        &gt;&gt;&gt; jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; jit_basic_eng_norm = torch.jit.script(basic_eng_norm)</span>
 <span class="sd">        &gt;&gt;&gt; tokens = jit_basic_eng_norm(test_sample)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -433,12 +433,11 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasicEnglishNormalize.to_ivalue"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.BasicEnglishNormalize.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable BasicEnglishNormalize.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">patterns_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">replacements_</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">BasicEnglishNormalize</span><span class="p">(</span><span class="n">regex_tokenizer</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">BasicEnglishNormalize</span><span class="p">(</span><span class="n">regex_tokenizer</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RegexTokenizer"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.RegexTokenizer">[docs]</a><span class="k">class</span> <span class="nc">RegexTokenizer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -468,12 +467,11 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RegexTokenizer.to_ivalue"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.RegexTokenizer.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable RegexTokenizer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">regex_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">patterns_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">regex_tokenizer</span><span class="o">.</span><span class="n">replacements_</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">RegexTokenizer</span><span class="p">(</span><span class="n">regex_tokenizer</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">RegexTokenizer</span><span class="p">(</span><span class="n">regex_tokenizer</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TextSequentialTransforms"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.TextSequentialTransforms">[docs]</a><span class="k">class</span> <span class="nc">TextSequentialTransforms</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
@@ -486,24 +484,13 @@
 <span class="sd">            &gt;&gt;&gt; txt_pipeline = TextSequentialTransforms(tokenizer)</span>
 <span class="sd">            &gt;&gt;&gt; txt_pipeline(&#39;here is an example&#39;)</span>
 <span class="sd">                [&#39;here&#39;, &#39;is&#39;, &#39;an&#39;, &#39;example&#39;]</span>
-<span class="sd">            &gt;&gt;&gt; jit_txt_pipeline = torch.jit.script(txt_pipeline.to_ivalue())</span>
+<span class="sd">            &gt;&gt;&gt; jit_txt_pipeline = torch.jit.script(txt_pipeline)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TextSequentialTransforms.forward"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.TextSequentialTransforms.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="nb">input</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">input</span></div>
-
-<div class="viewcode-block" id="TextSequentialTransforms.to_ivalue"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.TextSequentialTransforms.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable TextSequentialTransforms.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">module_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_module</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_module</span><span class="p">,</span> <span class="s1">&#39;to_ivalue&#39;</span><span class="p">):</span>
-                <span class="n">_module</span> <span class="o">=</span> <span class="n">_module</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">()</span>
-            <span class="n">module_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">_idx</span><span class="p">),</span> <span class="n">_module</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">TextSequentialTransforms</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">(</span><span class="n">module_list</span><span class="p">))</span></div></div>
+        <span class="k">return</span> <span class="nb">input</span></div></div>
 
 
 <span class="n">PRETRAINED_SP_MODEL</span> <span class="o">=</span> <span class="p">{</span>
@@ -572,7 +559,7 @@
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import sentencepiece_tokenizer</span>
 <span class="sd">        &gt;&gt;&gt; spm_tokenizer = sentencepiece_tokenizer(&#39;m_user.model&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; jit_spm_tokenizer = torch.jit.script(spm_tokenizer)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">spm</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span>
@@ -617,7 +604,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">DecodePieces</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">torchbind_spm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">SentencePiece</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">_return_content</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">SentencePieceTokenizer</span><span class="p">(</span><span class="n">torchbind_spm</span><span class="p">)</span></div>
 
@@ -632,7 +619,7 @@
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import sentencepiece_processor</span>
 <span class="sd">        &gt;&gt;&gt; spm_processor = sentencepiece_processor(&#39;m_user.model&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; jit_spm_processor = torch.jit.script(spm_processor)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">spm</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="n">sp_model</span><span class="p">)</span>
@@ -675,7 +662,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">DecodeIds</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">torchbind_spm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">SentencePiece</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">_return_content</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">SentencePieceProcessor</span><span class="p">(</span><span class="n">torchbind_spm</span><span class="p">)</span></div>
 
@@ -691,7 +678,7 @@
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vocab import vocab_from_file_object</span>
 <span class="sd">        &gt;&gt;&gt; f = open(&#39;vocab.txt&#39;, &#39;r&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; vocab_transform = VocabTransform(vocab_from_file_object(f))</span>
-<span class="sd">        &gt;&gt;&gt; jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; jit_vocab_transform = torch.jit.script(vocab_transform)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="VocabTransform.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VocabTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">):</span>
@@ -709,13 +696,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">,</span> <span class="s1">&#39;to_ivalue&#39;</span><span class="p">):</span>
-            <span class="n">vocab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">VocabTransform</span><span class="p">(</span><span class="n">vocab</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="VectorTransform"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VectorTransform">[docs]</a><span class="k">class</span> <span class="nc">VectorTransform</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -728,7 +709,7 @@
 <span class="sd">        &gt;&gt;&gt; import torch</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vectors import FastText</span>
 <span class="sd">        &gt;&gt;&gt; vector_transform = VectorTransform(FastText())</span>
-<span class="sd">        &gt;&gt;&gt; jit_vector_transform = torch.jit.script(vector_transform.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; jit_vector_transform = torch.jit.script(vector_transform)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="VectorTransform.__init__"><a class="viewcode-back" href="../../../experimental_transforms.html#torchtext.experimental.transforms.VectorTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
@@ -746,13 +727,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">lookup_vectors</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">,</span> <span class="s1">&#39;to_ivalue&#39;</span><span class="p">):</span>
-            <span class="n">vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">VectorTransform</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">lookup_vectors</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div></div>
 </pre></div>
 
              </article>

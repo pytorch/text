@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vectors &mdash; torchtext 0.9.0.dev20210209 documentation</title>
+  <title>torchtext.experimental.vectors &mdash; torchtext 0.9.0.dev20210210 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210209
+                  0.9.0.dev20210210
                 </div>
               
             
@@ -225,6 +225,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
@@ -594,7 +595,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">lookup_vectors</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Vectors.to_ivalue"><a class="viewcode-back" href="../../../experimental_vectors.html#torchtext.experimental.vectors.Vectors.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Vectors.__prepare_scriptable__"><a class="viewcode-back" href="../../../experimental_vectors.html#torchtext.experimental.vectors.Vectors.__prepare_scriptable__">[docs]</a>    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable Vectors.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">stoi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">get_stoi</span><span class="p">()</span>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20210209 documentation</title>
+  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20210210 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="next" title="torchtext.experimental.models.utils" href="models_utils.html" />
     <link rel="prev" title="torchtext.experimental.vectors" href="experimental_vectors.html" /> 
 
   
@@ -184,7 +184,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210209
+                  0.9.0.dev20210210
                 </div>
               
             
@@ -227,6 +227,7 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
@@ -353,6 +354,12 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="torchtext.experimental.vocab.Vocab.__prepare_scriptable__">
+<code class="sig-name descname">__prepare_scriptable__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.__prepare_scriptable__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a JITable Vocab.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="torchtext.experimental.vocab.Vocab.append_token">
 <code class="sig-name descname">append_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.append_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.append_token" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -474,12 +481,6 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.to_ivalue">
-<code class="sig-name descname">to_ivalue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.to_ivalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.to_ivalue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a JITable Vocab.</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -593,7 +594,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;vocab.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">basic_english_normalize</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">basic_english_normalize</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">to_ivalue</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_tokenizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">build_vocab_from_text_file</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">jit_tokenizer</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -629,7 +630,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="models_utils.html" class="btn btn-neutral float-right" title="torchtext.experimental.models.utils" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="experimental_vectors.html" class="btn btn-neutral" title="torchtext.experimental.vectors" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20210209 documentation</title>
+  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20210210 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210209
+                  0.9.0.dev20210210
                 </div>
               
             
@@ -225,6 +225,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
@@ -352,7 +353,7 @@
 <span class="sd">        &gt;&gt;&gt; f = open(&#39;vocab.txt&#39;, &#39;r&#39;)</span>
 <span class="sd">        &gt;&gt;&gt;     tokenizer = basic_english_normalize()</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = basic_english_normalize()</span>
-<span class="sd">        &gt;&gt;&gt; jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())</span>
+<span class="sd">        &gt;&gt;&gt; jit_tokenizer = torch.jit.script(tokenizer)</span>
 <span class="sd">        &gt;&gt;&gt; v = build_vocab_from_text_file(f, jit_tokenizer)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">vocab_obj</span> <span class="o">=</span> <span class="n">_build_vocab_from_text_file</span><span class="p">(</span><span class="n">file_object</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">unk_token</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">,</span> <span class="n">num_cpus</span><span class="p">,</span> <span class="n">jited_tokenizer</span><span class="p">)</span>
@@ -573,7 +574,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">get_itos</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Vocab.to_ivalue"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab.Vocab.to_ivalue">[docs]</a>    <span class="k">def</span> <span class="nf">to_ivalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Vocab.__prepare_scriptable__"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab.Vocab.__prepare_scriptable__">[docs]</a>    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable Vocab.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cpp_vocab</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">Vocab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">itos_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">unk_token_</span><span class="p">)</span>
