@@ -1,8 +1,7 @@
-import torch
 import torch.nn as nn
 from torchtext.experimental.modules import TransformerEncoder
 from .xlmr_transform import load_xlmr_transform
-from torchtext.utils import download_from_url, extract_archive, load_args_from_json
+from .utils import load_state_dict_from_url
 
 
 # [TODO] Add torch.hub support
@@ -16,10 +15,9 @@ def xlmr_base():
         >>> xlmr_base_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
-    tar_file = download_from_url(PRETRAINED['xlmr.base'],
-                                 hash_value=MD5['xlmr.base'], hash_type='md5')
-    checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
-    return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
+    encoder = TransformerEncoder(250002, embed_dim=768, nhead=12, feedforward_dim=3072, nlayers=12, dropout=0.2)
+    encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.base']))
+    return encoder, load_xlmr_transform()
 
 
 def xlmr_regular():
@@ -30,18 +28,9 @@ def xlmr_regular():
         >>> xlmr_regular_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
-    tar_file = download_from_url(PRETRAINED['xlmr.regular'],
-                                 hash_value=MD5['xlmr.regular'], hash_type='md5')
-    checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
-    return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
-
-
-def _load_xlmr_model(checkpoint_file='model.pt', args_file='args.json'):
-    args = load_args_from_json(args_file)
-    encoder = TransformerEncoder(args.ntoken, args.embed_dim, args.nhead,
-                                 args.feedforward_dim, args.nlayers, args.dropout)
-    encoder.load_state_dict(torch.load(checkpoint_file))
-    return encoder
+    encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.regular']))
+    encoder = TransformerEncoder(250002, embed_dim=1024, nhead=16, feedforward_dim=4096, nlayers=24, dropout=0.2)
+    return encoder, load_xlmr_transform()
 
 
 PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_regular-257d1221.pt',
@@ -72,10 +61,9 @@ class SentenceClassificationHead(nn.Module):
         return x
 
 
-def _load_sentence_classifier(checkpoint_file='model.pt', args_file='args.json'):
-    args = load_args_from_json(args_file)
-    classifier = SentenceClassificationHead(args.num_labels, args.embed_dim, args.dropout)
-    classifier.load_state_dict(torch.load(checkpoint_file))
+def _load_sentence_classifier():
+    classifier = SentenceClassificationHead(10, embed_dim=768, dropout=0.2)
+    classifier.load_state_dict(load_state_dict_from_url(TASK_PRETRAINED['xlmr_base_sentence_classifier']))
     return classifier
 
 
@@ -98,17 +86,11 @@ def xlmr_base_sentence_classifier():
         >>> tensor([  903,    83,   142, 27781])
     '''
     # Load pretrained XLM-R
-    tar_file = download_from_url(PRETRAINED['xlmr.base'],
-                                 hash_value=MD5['xlmr.base'], hash_type='md5')
-    checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
-    xlmr_model = _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file)
-    xlmr_transform = load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
+    xlmr_model, xlmr_transform = xlmr_base()
+    xlmr_transform = load_xlmr_transform()
 
     # Load classifier head
-    tar_file = download_from_url(TASK_PRETRAINED['xlmr.base.sentence.classifier'],
-                                 hash_value=TASK_MD5['xlmr.base.sentence.classifier'], hash_type='md5')
-    checkpoint_file, args_file = extract_archive(tar_file, overwrite=True)
-    sentence_classifier = _load_sentence_classifier(checkpoint_file=checkpoint_file, args_file=args_file)
+    sentence_classifier = _load_sentence_classifier()
     return TransformerEncoderSentenceClassification(xlmr_model, sentence_classifier), xlmr_transform
 
 

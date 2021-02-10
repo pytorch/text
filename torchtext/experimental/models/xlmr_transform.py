@@ -1,7 +1,6 @@
 import torch.nn as nn
 from typing import List
-from torchtext.experimental.transforms import sentencepiece_tokenizer
-from torchtext.experimental.vocab import load_vocab_from_file
+from .utils import load_model_from_url
 
 
 class XLMRTransform(nn.Module):
@@ -16,11 +15,9 @@ class XLMRTransform(nn.Module):
         return self.vocab(self.tokenizer(input_src))
 
 
-def load_xlmr_transform(tokenizer_file='sentencepiece.bpe.model', vocab_file='vocab.txt'):
-
-    tokenizer = sentencepiece_tokenizer(tokenizer_file)
-    with open(vocab_file, 'r') as f:
-        vocab = load_vocab_from_file(f)
+def load_xlmr_transform():
+    tokenizer = load_model_from_url(TRANSFORM_PRETRAINED['xlmr_sentencepiece'])
+    vocab = load_model_from_url(TRANSFORM_PRETRAINED['xlmr_vocab'])
     return XLMRTransform(tokenizer, vocab)
 
 
