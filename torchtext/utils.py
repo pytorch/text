@@ -132,8 +132,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
                     url
                 ))
         else:
-            raise RuntimeError("Internal error: confirm_token was not found in Google drive link with response content {}.".format(
-                response.content))
+            raise RuntimeError("Internal error: confirm_token was not found in Google drive link.")
 
     if confirm_token:
         url = url + "&confirm=" + confirm_token
