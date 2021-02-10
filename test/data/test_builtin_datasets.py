@@ -157,7 +157,7 @@ class TestDataset(TorchtextTestCase):
                 # the first line as a litmus test for correctness.
                 break
             # Exercise default constructor
-            all_datasets = dataset(root=cachedir)
+            _ = dataset(root=cachedir)
             conditional_remove(cachedir)
 
     def test_offset_dataset(self):
