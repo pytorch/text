@@ -66,7 +66,7 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, split):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
-    split = check_default_set(split, ('train', 'dev'))
+    split = check_default_set(split, ('train', 'dev'), dataset_name)
     raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     if vocab is None:

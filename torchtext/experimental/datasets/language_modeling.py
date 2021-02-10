@@ -62,7 +62,7 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, split, year, language)
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
-    split = check_default_set(split, ('train', 'test', 'valid'))
+    split = check_default_set(split, ('train', 'test', 'valid'), dataset_name)
 
     if vocab is None:
         if 'train' not in split:

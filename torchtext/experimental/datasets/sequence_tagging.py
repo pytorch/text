@@ -27,7 +27,7 @@ def build_vocab(data):
 
 
 def _setup_datasets(dataset_name, root, vocabs, split):
-    split = check_default_set(split, ('train', 'valid', 'test'))
+    split = check_default_set(split, ('train', 'valid', 'test'), dataset_name)
     raw_iter_tuple = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {}
     for name, raw_iter in zip(split, raw_iter_tuple):

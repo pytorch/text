@@ -74,7 +74,7 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, split):
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
     text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
-    split = check_default_set(split, ('train', 'test'))
+    split = check_default_set(split, ('train', 'test'), dataset_name)
     raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     # Materialize raw text iterable dataset
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
