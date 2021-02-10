@@ -117,8 +117,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 def _setup_datasets(dataset_name,
                     train_filenames, valid_filenames, test_filenames,
-                    split, root, offset):
-    split = check_default_set(split, ('train', 'valid', 'test'), dataset_name)
+                    split_, root, offset):
+    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
@@ -187,7 +187,7 @@ def _setup_datasets(dataset_name,
         datasets.append(
             RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset=offset))
 
-    return wrap_datasets(tuple(datasets), split)
+    return wrap_datasets(tuple(datasets), split_)
 
 
 def Multi30k(train_filenames=("train.de", "train.en"),

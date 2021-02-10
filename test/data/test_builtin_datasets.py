@@ -143,6 +143,33 @@ class TestDataset(TorchtextTestCase):
         _data = [item for item in train_iter]
         self.assertEqual(len(_data), 119990)
 
+    def test_raw_datasets_split_argument(self):
+        from torchtext.experimental.datasets.raw import DATASETS
+        for dataset_name in sorted(DATASETS.keys()):
+            print("dataset_name: ", dataset_name)
+            dataset = DATASETS[dataset_name]
+            if dataset_name in ["PennTreebank", "AmazonReviewFull", "AmazonReviewPolarity"]: # Download is waaaay too slow for this dataset
+                continue
+            cachedir = os.path.join(self.project_root, ".data", dataset_name)
+            conditional_remove(cachedir)
+            cachedir=".data"
+            os.makedirs(cachedir, exist_ok=True)
+            train1 = dataset(split='train', root=cachedir)
+            print("type(train1): ", type(train1))
+            train2, = dataset(split=('train',), root=cachedir)
+            print("type(train2): ", type(train2))
+            for d1, d2 in zip(train1, train2):
+                print(dataset)
+                print(d1)
+                print(d2)
+                self.assertEqual(d1, d2)
+                # This test only aims to exercise the argument parsing and uses
+                # the first line as a litmus test for correctness.
+                break
+            # Exercise default constructor
+            all_datasets = dataset(root=cachedir)
+            conditional_remove(cachedir)
+
     def test_offset_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(split=('train', 'test'),
                                                                             offset=10)

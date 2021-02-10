@@ -19,11 +19,11 @@ URLS = {
 }
 
 
-def _setup_datasets(dataset_name, root, split, year, language, offset):
+def _setup_datasets(dataset_name, root, split_, year, language, offset):
     if dataset_name == 'WMTNewsCrawl':
-        split = check_default_set(split, ('train'), dataset_name)
+        split = check_default_set(split_, ('train',), dataset_name)
     else:
-        split = check_default_set(split, ('train', 'test', 'valid'), dataset_name)
+        split = check_default_set(split_, ('train', 'test', 'valid'), dataset_name)
 
     if dataset_name == 'PennTreebank':
         extracted_files = [download_from_url(URLS['PennTreebank'][key],
@@ -49,7 +49,7 @@ def _setup_datasets(dataset_name, root, split, year, language, offset):
         datasets.append(RawTextIterableDataset(dataset_name,
                                                NUM_LINES[dataset_name][item], iter(io.open(path[item], encoding="utf8")), offset=offset))
 
-    return wrap_datasets(tuple(datasets), split)
+    return wrap_datasets(tuple(datasets), split_)
 
 
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):

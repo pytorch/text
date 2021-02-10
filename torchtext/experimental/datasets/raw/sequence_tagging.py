@@ -40,8 +40,8 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root, split, offset):
-    split = check_default_set(split, ('train', 'valid', 'test'), dataset_name)
+def _setup_datasets(dataset_name, separator, root, split_, offset):
+    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     extracted_files = []
     if isinstance(URLS[dataset_name], dict):
         for name, item in URLS[dataset_name].items():
@@ -62,7 +62,7 @@ def _setup_datasets(dataset_name, separator, root, split, offset):
     }
     return wrap_datasets(tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
                  _create_data_from_iob(data_filenames[item], separator), offset=offset)
-                 if data_filenames[item] is not None else None for item in split), split)
+                 if data_filenames[item] is not None else None for item in split), split_)
 
 
 def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):

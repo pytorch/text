@@ -34,8 +34,8 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-def _setup_datasets(dataset_name, root, split, offset):
-    split = check_default_set(split, ('train', 'test'), dataset_name)
+def _setup_datasets(dataset_name, root, split_, offset):
+    split = check_default_set(split_, ('train', 'test'), dataset_name)
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
                                              hash_value=MD5['AG_NEWS'][item],
@@ -52,7 +52,7 @@ def _setup_datasets(dataset_name, root, split, offset):
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
     return wrap_datasets(tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                        _create_data_from_csv(cvs_path[item]), offset=offset) for item in split), split)
+                                                      _create_data_from_csv(cvs_path[item]), offset=offset) for item in split), split_)
 
 
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
@@ -250,13 +250,13 @@ def IMDB(root='.data', split=('train', 'test'), offset=0):
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-    split = check_default_set(split, target_select=('train', 'test'))
+    split_ = check_default_set(split, ('train', 'test'), 'IMDB')
     dataset_tar = download_from_url(URLS['IMDB'], root=root,
                                     hash_value=MD5['IMDB'], hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
-                                        generate_imdb_data(item,
-                                                           extracted_files), offset=offset) for item in split)
+    return wrap_datasets(tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
+                                                      generate_imdb_data(item,
+                                                                         extracted_files), offset=offset) for item in split_), split)
 
 
 DATASETS = {
