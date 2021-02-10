@@ -16,8 +16,10 @@ class XLMRTransform(nn.Module):
 
 
 def load_xlmr_transform():
-    tokenizer = load_model_from_url(TRANSFORM_PRETRAINED['xlmr_sentencepiece'])
-    vocab = load_model_from_url(TRANSFORM_PRETRAINED['xlmr_vocab'])
+    tokenizer = load_model_from_url(TRANSFORM_PRETRAINED['xlmr_sentencepiece'],
+                                    hash_value=TRANSFORM_SHA256['xlmr_sentencepiece'])
+    vocab = load_model_from_url(TRANSFORM_PRETRAINED['xlmr_vocab'],
+                                hash_value=TRANSFORM_SHA256['xlmr_vocab'])
     return XLMRTransform(tokenizer, vocab)
 
 

@@ -23,14 +23,17 @@ def count_model_param(nn_model, unit=10**6):
     return params.item() / unit
 
 
-def load_state_dict_from_url(url):
+def load_state_dict_from_url(url, overwrite=False, hash_value=None, hash_type="sha256"):
     try:
-        return torch.hub.load_state_dict_from_url(url)
+        if hash_value:
+            return torch.hub.load_state_dict_from_url(url, check_hash=True)
+        else:
+            return torch.hub.load_state_dict_from_url(url, check_hash=False)
     except ImportError:
-        file_path = download_from_url(url)
+        file_path = download_from_url(url, hash_value=hash_value, hash_type=hash_type)
         return torch.load(file_path)
 
 
-def load_model_from_url(url):
-    file_path = download_from_url(url)
+def load_model_from_url(url, overwrite=False, hash_value=None, hash_type="sha256"):
+    file_path = download_from_url(url, overwrite=overwrite, hash_value=hash_value, hash_type=hash_type)
     return torch.load(file_path)

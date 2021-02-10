@@ -16,7 +16,7 @@ def xlmr_base():
         >>> tensor([  903,    83,   142, 27781])
     '''
     encoder = TransformerEncoder(250002, embed_dim=768, nhead=12, feedforward_dim=3072, nlayers=12, dropout=0.2)
-    encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.base']))
+    encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.base'], hash_value=SHA256['xlmr.base']))
     return encoder, load_xlmr_transform()
 
 
@@ -28,7 +28,7 @@ def xlmr_regular():
         >>> xlmr_regular_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
-    encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.regular']))
+    encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.regular'], hash_value=SHA256['xlmr.regular']))
     encoder = TransformerEncoder(250002, embed_dim=1024, nhead=16, feedforward_dim=4096, nlayers=24, dropout=0.2)
     return encoder, load_xlmr_transform()
 
@@ -63,7 +63,8 @@ class SentenceClassificationHead(nn.Module):
 
 def _load_sentence_classifier():
     classifier = SentenceClassificationHead(10, embed_dim=768, dropout=0.2)
-    classifier.load_state_dict(load_state_dict_from_url(TASK_PRETRAINED['xlmr_base_sentence_classifier']))
+    classifier.load_state_dict(load_state_dict_from_url(TASK_PRETRAINED['xlmr_base_sentence_classifier'],
+                               hash_value=TASK_SHA256['xlmr_base_sentence_classifier']))
     return classifier
 
 
