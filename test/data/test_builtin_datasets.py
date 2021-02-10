@@ -147,35 +147,29 @@ class TestDataset(TorchtextTestCase):
         from torchtext.experimental.datasets.raw import DATASETS
         for dataset_name in sorted(DATASETS.keys()):
             dataset = DATASETS[dataset_name]
-            cachedir = os.path.join(self.project_root, ".data", dataset_name)
-            conditional_remove(cachedir)
-            train1 = dataset(split='train', root=cachedir)
-            train2, = dataset(split=('train',), root=cachedir)
+            train1 = dataset(split='train')
+            train2, = dataset(split=('train',))
             for d1, d2 in zip(train1, train2):
                 self.assertEqual(d1, d2)
                 # This test only aims to exercise the argument parsing and uses
                 # the first line as a litmus test for correctness.
                 break
             # Exercise default constructor
-            _ = dataset(root=cachedir)
-            conditional_remove(cachedir)
+            _ = dataset()
 
     def test_datasets_split_argument(self):
         from torchtext.experimental.datasets import DATASETS
         for dataset_name in ["AG_NEWS", "WikiText2", "IMDB"]:
             dataset = DATASETS[dataset_name]
-            cachedir = os.path.join(self.project_root, ".data", dataset_name)
-            conditional_remove(cachedir)
-            train1 = dataset(split='train', root=cachedir)
-            train2, = dataset(split=('train',), root=cachedir)
+            train1 = dataset(split='train')
+            train2, = dataset(split=('train',))
             for d1, d2 in zip(train1, train2):
                 self.assertEqual(d1, d2)
                 # This test only aims to exercise the argument parsing and uses
                 # the first line as a litmus test for correctness.
                 break
             # Exercise default constructor
-            _ = dataset(root=cachedir)
-            conditional_remove(cachedir)
+            _ = dataset()
 
     def test_offset_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(split=('train', 'test'),
