@@ -59,11 +59,11 @@ class LanguageModelingDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, tokenizer, root, vocab, split, year, language):
+def _setup_datasets(dataset_name, tokenizer, root, vocab, split_, year, language):
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
 
-    split = check_default_set(split, ('train', 'test', 'valid'), dataset_name)
+    split = check_default_set(split_, ('train', 'test', 'valid'), dataset_name)
 
     if vocab is None:
         if 'train' not in split:
@@ -86,7 +86,7 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, split, year, language)
     raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(split, raw_datasets)}
     logger_.info('Building datasets for {}'.format(split))
     return wrap_datasets(tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform)
-                               for item in split), split)
+                               for item in split), split_)
 
 
 def WikiText2(tokenizer=None, root='.data', vocab=None, split=('train', 'valid', 'test')):

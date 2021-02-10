@@ -19,8 +19,8 @@ def build_vocab(data, transforms, index):
 
 def _setup_datasets(dataset_name,
                     train_filenames, valid_filenames, test_filenames,
-                    split, root, vocab, tokenizer):
-    split = check_default_set(split, ('train', 'valid', 'test'), dataset_name)
+                    split_, root, vocab, tokenizer):
+    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
@@ -80,7 +80,7 @@ def _setup_datasets(dataset_name,
             TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
                                (src_text_transform, tgt_text_transform)))
 
-    return wrap_datasets(tuple(datasets), split)
+    return wrap_datasets(tuple(datasets), split_)
 
 
 class TranslationDataset(torch.utils.data.Dataset):
