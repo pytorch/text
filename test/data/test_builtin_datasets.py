@@ -162,19 +162,18 @@ class TestDataset(TorchtextTestCase):
         # Exercise default constructor
         _ = dataset()
 
-    def test_datasets_split_argument(self):
-        from torchtext.experimental.datasets import DATASETS
-        for dataset_name in ["AG_NEWS", "WikiText2", "IMDB"]:
-            dataset = DATASETS[dataset_name]
-            train1 = dataset(split='train')
-            train2, = dataset(split=('train',))
-            for d1, d2 in zip(train1, train2):
-                self.assertEqual(d1, d2)
-                # This test only aims to exercise the argument parsing and uses
-                # the first line as a litmus test for correctness.
-                break
-            # Exercise default constructor
-            _ = dataset()
+    @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
+    def test_datasets_split_argument(self, dataset_name):
+        dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
+        train1 = dataset(split='train')
+        train2, = dataset(split=('train',))
+        for d1, d2 in zip(train1, train2):
+            self.assertEqual(d1, d2)
+            # This test only aims to exercise the argument parsing and uses
+            # the first line as a litmus test for correctness.
+            break
+        # Exercise default constructor
+        _ = dataset()
 
     def test_offset_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(split=('train', 'test'),

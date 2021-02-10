@@ -18,4 +18,4 @@ git submodule update --init --recursive
 python setup.py develop
 
 printf "* Installing parameterized\n"
-conda install -y parameterized
+pip install parameterized
