@@ -13,16 +13,15 @@ class XLMRTransform(nn.Module):
         self.tokenizer = tokenizer
         self.vocab = vocab
 
-    @classmethod
-    def from_pretrained(cls, directory='./',
-                        tokenizer_file="sentencepiece.bpe.model",
-                        vocab_file='vocab.txt'):
-        filepath = os.path.join(directory, tokenizer_file)
-        tokenizer = sentencepiece_tokenizer(filepath)
-        filepath = os.path.join(directory, vocab_file)
-        with open(filepath, 'r') as f:
-            vocab = load_vocab_from_file(f)
-        return cls(tokenizer, vocab)
-
     def forward(self, input_src: str) -> List[int]:
         return self.vocab(self.tokenizer(input_src))
+
+
+def xlmr_transform(root='./', tokenizer_file="sentencepiece.bpe.model",
+                   vocab_file='vocab.txt'):
+    filepath = os.path.join(directory, tokenizer_file)
+    tokenizer = sentencepiece_tokenizer(filepath)
+    filepath = os.path.join(directory, vocab_file)
+    with open(filepath, 'r') as f:
+        vocab = load_vocab_from_file(f)
+    return XLMRTransform(tokenizer, vocab)
