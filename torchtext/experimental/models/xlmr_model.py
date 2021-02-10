@@ -1,10 +1,8 @@
 import torch
 import torch.nn as nn
 from torchtext.experimental.modules import TransformerEncoder
-from .xlmr_transform import XLMRTransform
+from .xlmr_transform import load_xlmr_transform
 from torchtext.utils import download_from_url, extract_archive, load_args_from_json
-from torchtext.experimental.transforms import sentencepiece_tokenizer
-from torchtext.experimental.vocab import load_vocab_from_file
 
 
 # [TODO] Add torch.hub support
@@ -21,7 +19,7 @@ def xlmr_base():
     tar_file = download_from_url(PRETRAINED['xlmr.base'],
                                  hash_value=MD5['xlmr.base'], hash_type='md5')
     checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
-    return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), _load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
+    return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
 
 
 def xlmr_regular():
@@ -35,7 +33,7 @@ def xlmr_regular():
     tar_file = download_from_url(PRETRAINED['xlmr.regular'],
                                  hash_value=MD5['xlmr.regular'], hash_type='md5')
     checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
-    return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), _load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
+    return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
 
 
 def _load_xlmr_model(checkpoint_file='model.pt', args_file='args.json'):
@@ -46,18 +44,10 @@ def _load_xlmr_model(checkpoint_file='model.pt', args_file='args.json'):
     return encoder
 
 
-def _load_xlmr_transform(tokenizer_file='sentencepiece.bpe.model', vocab_file='vocab.txt'):
-
-    tokenizer = sentencepiece_tokenizer(tokenizer_file)
-    with open(vocab_file, 'r') as f:
-        vocab = load_vocab_from_file(f)
-    return XLMRTransform(tokenizer, vocab)
-
-
-PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr.regular.tar.gz',
-              'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr.base.tar.gz'}
-MD5 = {'xlmr.regular': 'adf75f3d20c8a876533b206ccb3a7cb6',
-       'xlmr.base': 'abc0a28171f883c6e1b2e8cf184c1ce8'}
+PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_regular-257d1221.pt',
+              'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base-1c6e095d.pt'}
+SHA256 = {'xlmr.regular': '257d1221b310dbc30e58ecdbf39a4126e78ff894befb180bc7658954b4b55dc3',
+          'xlmr.base': '1c6e095df239687682107c44cbb3f35e6329a5609a9fc8be9464eb6ad3919fcd'}
 
 ##################################################################################
 # This part will be moved to stl-text/models folder
@@ -112,7 +102,7 @@ def xlmr_base_sentence_classifier():
                                  hash_value=MD5['xlmr.base'], hash_type='md5')
     checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
     xlmr_model = _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file)
-    xlmr_transform = _load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
+    xlmr_transform = load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
 
     # Load classifier head
     tar_file = download_from_url(TASK_PRETRAINED['xlmr.base.sentence.classifier'],
@@ -122,5 +112,5 @@ def xlmr_base_sentence_classifier():
     return TransformerEncoderSentenceClassification(xlmr_model, sentence_classifier), xlmr_transform
 
 
-TASK_PRETRAINED = {'xlmr.base.sentence.classifier': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr.base.sentence.classifier.tar.gz'}
-TASK_MD5 = {'xlmr.base.sentence.classifier': '2c762f4ed8458bc56ee71a29f8d9e878'}
+TASK_PRETRAINED = {'xlmr_base_sentence_classifier': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base_sentence_classifier-7e3fbb3f.pt'}
+TASK_SHA256 = {'xlmr_base_sentence_classifier': '7e3fbb3fac705df2be377d9e1cc198ce3a578172a17b1943e94fa2efe592f278'}
