@@ -27,4 +27,16 @@ DATASETS = {'IMDB': IMDB,
             'SQuAD1': SQuAD1,
             'SQuAD2': SQuAD2}
 
+from .text_classification import URLS as text_classification_URLS
+from .sequence_tagging import URLS as sequence_tagging_URLS
+from .translation import URLS as translation_URLS
+from .language_modeling import URLS as language_modeling_URLS
+from .question_answer import URLS as question_answer_URLS
+
+URLS = text_classification_URLS
+URLS.update(sequence_tagging_URLS)
+URLS.update(translation_URLS)
+URLS.update(language_modeling_URLS)
+URLS.update(question_answer_URLS)
+
 __all__ = sorted(list(map(str, DATASETS.keys())))
