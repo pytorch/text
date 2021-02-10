@@ -57,7 +57,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         if hash_value:
             with open(path, "rb") as file_obj:
                 if not validate_file(file_obj, hash_value, hash_type):
-                    raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(path))
+                    raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
 
     def _process_response(r, root, filename):
         chunk_size = 16 * 1024

@@ -130,7 +130,7 @@ class TestDataset(TorchtextTestCase):
                                [2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786])
 
         # Add test for the subset of the standard datasets
-        train_dataset, = AG_NEWS(split=('train'))
+        train_dataset = AG_NEWS(split='train')
         self._helper_test_func(len(train_dataset), 120000, train_dataset[-1][1][:10],
                                [2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405])
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
@@ -142,6 +142,38 @@ class TestDataset(TorchtextTestCase):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(offset=10)
         _data = [item for item in train_iter]
         self.assertEqual(len(_data), 119990)
+
+    def test_raw_datasets_split_argument(self):
+        from torchtext.experimental.datasets.raw import DATASETS
+        for dataset_name in sorted(DATASETS.keys()):
+            if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+                continue
+            if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+                continue
+            dataset = DATASETS[dataset_name]
+            train1 = dataset(split='train')
+            train2, = dataset(split=('train',))
+            for d1, d2 in zip(train1, train2):
+                self.assertEqual(d1, d2)
+                # This test only aims to exercise the argument parsing and uses
+                # the first line as a litmus test for correctness.
+                break
+            # Exercise default constructor
+            _ = dataset()
+
+    def test_datasets_split_argument(self):
+        from torchtext.experimental.datasets import DATASETS
+        for dataset_name in ["AG_NEWS", "WikiText2", "IMDB"]:
+            dataset = DATASETS[dataset_name]
+            train1 = dataset(split='train')
+            train2, = dataset(split=('train',))
+            for d1, d2 in zip(train1, train2):
+                self.assertEqual(d1, d2)
+                # This test only aims to exercise the argument parsing and uses
+                # the first line as a litmus test for correctness.
+                break
+            # Exercise default constructor
+            _ = dataset()
 
     def test_offset_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(split=('train', 'test'),
@@ -180,7 +212,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = IMDB(vocab=new_vocab)
 
         # Add test for the subset of the standard datasets
-        train_dataset, = IMDB(split=('train'))
+        train_dataset = IMDB(split='train')
         self._helper_test_func(len(train_dataset), 25000, train_dataset[0][1][:10],
                                [13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92])
         train_iter, test_iter = torchtext.experimental.datasets.raw.IMDB()
@@ -268,7 +300,7 @@ class TestDataset(TorchtextTestCase):
                                ' '.join(['Eine Gruppe von Männern lädt Baumwolle auf einen Lastwagen\n',
                                          'A group of men are loading cotton onto a truck\n']))
         del train_iter, valid_iter
-        train_dataset, = Multi30k(split=('train'))
+        train_dataset = Multi30k(split='train')
 
         # This change is due to the BC breaking in spacy 3.0
         self._helper_test_func(len(train_dataset), 29000, train_dataset[20],
@@ -331,7 +363,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [1206, 8, 69, 60, 157, 452])
 
         # Add test for the subset of the standard datasets
-        train_dataset, = UDPOS(split=('train'))
+        train_dataset = UDPOS(split='train')
         self._helper_test_func(len(train_dataset), 12543, (train_dataset[0][0][:10], train_dataset[-1][2][:10]),
                                ([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585],
                                 [6, 20, 8, 10, 8, 8, 24, 13, 8, 15]))
@@ -378,7 +410,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [970, 5, 135, 43, 214, 690])
 
         # Add test for the subset of the standard datasets
-        train_dataset, = CoNLL2000Chunking(split=('train'))
+        train_dataset = CoNLL2000Chunking(split='train')
         self._helper_test_func(len(train_dataset), 8936, (train_dataset[0][0][:10], train_dataset[0][1][:10],
                                                           train_dataset[0][2][:10], train_dataset[-1][0][:10],
                                                           train_dataset[-1][1][:10], train_dataset[-1][2][:10]),
@@ -413,7 +445,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = SQuAD1(vocab=new_vocab)
 
         # Add test for the subset of the standard datasets
-        train_dataset, = SQuAD1(split=('train'))
+        train_dataset = SQuAD1(split='train')
         context, question, answers, ans_pos = train_dataset[100]
         self._helper_test_func(len(train_dataset), 87599, (question[:5], ans_pos[0]),
                                ([7, 24, 86, 52, 2], [72, 72]))
@@ -442,7 +474,7 @@ class TestDataset(TorchtextTestCase):
         new_train_data, new_test_data = SQuAD2(vocab=new_vocab)
 
         # Add test for the subset of the standard datasets
-        train_dataset, = SQuAD2(split=('train'))
+        train_dataset = SQuAD2(split='train')
         context, question, answers, ans_pos = train_dataset[200]
         self._helper_test_func(len(train_dataset), 130319, (question[:5], ans_pos[0]),
                                ([84, 50, 1421, 12, 5439], [9, 9]))

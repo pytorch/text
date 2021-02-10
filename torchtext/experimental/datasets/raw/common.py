@@ -1,13 +1,28 @@
 import torch
 
 
-def check_default_set(data_select, target_select):
-    if isinstance(data_select, str):
-        data_select = (data_select,)
-    if not set(data_select).issubset(set(target_select)):
-        raise TypeError('A subset of data selection {} is supported but {} is passed in'.format(target_select,
-                                                                                                data_select))
-    return data_select
+def check_default_set(split, target_select, dataset_name):
+    # Check whether given object split is either a tuple of strings or string
+    # and represents a valid selection of options given by the tuple of strings
+    # target_select.
+    if isinstance(split, str):
+        split = (split,)
+    if not isinstance(split, tuple):
+        raise ValueError("Internal error: Expected split to be of type tuple.")
+    if not set(split).issubset(set(target_select)):
+        raise TypeError('Given selection {} of splits is not supported for dataset {}. Please choose from {}.'.format(
+            split, dataset_name, target_select))
+    return split
+
+
+def wrap_datasets(datasets, split):
+    # Wrap return value for _setup_datasets functions to support singular values instead
+    # of tuples when split is a string.
+    if isinstance(split, str):
+        if len(datasets) != 1:
+            raise ValueError("Internal error: Expected number of datasets is not 1.")
+        return datasets[0]
+    return datasets
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
@@ -22,6 +37,8 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         self.full_num_lines = full_num_lines
         self._iterator = iterator
         self.start = offset
+        if offset < 0:
+            raise ValueError("Given offset must be non-negative, got {} instead.".format(offset))
         self.num_lines = full_num_lines - offset
 
     def __iter__(self):
