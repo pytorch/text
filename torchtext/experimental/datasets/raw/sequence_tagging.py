@@ -1,6 +1,7 @@
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 
 URLS = {
     "UDPOS":
@@ -39,8 +40,8 @@ def _construct_filepath(paths, file_suffix):
     return None
 
 
-def _setup_datasets(dataset_name, separator, root, split, offset):
-    split = check_default_set(split, target_select=('train', 'valid', 'test'))
+def _setup_datasets(dataset_name, separator, root, split_, offset):
+    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     extracted_files = []
     if isinstance(URLS[dataset_name], dict):
         for name, item in URLS[dataset_name].items():
@@ -59,9 +60,9 @@ def _setup_datasets(dataset_name, separator, root, split, offset):
         "valid": _construct_filepath(extracted_files, "dev.txt"),
         "test": _construct_filepath(extracted_files, "test.txt")
     }
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                 _create_data_from_iob(data_filenames[item], separator), offset=offset)
-                 if data_filenames[item] is not None else None for item in split)
+    return wrap_datasets(tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                                                      _create_data_from_iob(data_filenames[item], separator), offset=offset)
+                               if data_filenames[item] is not None else None for item in split), split_)
 
 
 def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
