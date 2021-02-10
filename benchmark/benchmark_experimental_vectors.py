@@ -42,7 +42,7 @@ def benchmark_experimental_vectors():
 
     # experimental FastText jit lookup
     print("FastText Experimental - Jit Mode")
-    jit_fast_text_experimental = torch.jit.script(fast_text_experimental.to_ivalue())
+    jit_fast_text_experimental = torch.jit.script(fast_text_experimental)
     _run_benchmark_lookup(tokens, jit_fast_text_experimental)
 
 
