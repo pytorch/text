@@ -4,6 +4,8 @@ import os
 import torchtext.data as data
 import torch
 import torchtext
+import unittest
+from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import conditional_remove
 
@@ -143,23 +145,22 @@ class TestDataset(TorchtextTestCase):
         _data = [item for item in train_iter]
         self.assertEqual(len(_data), 119990)
 
-    def test_raw_datasets_split_argument(self):
-        from torchtext.experimental.datasets.raw import DATASETS
-        for dataset_name in sorted(DATASETS.keys()):
-            if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
-                continue
-            if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
-                continue
-            dataset = DATASETS[dataset_name]
-            train1 = dataset(split='train')
-            train2, = dataset(split=('train',))
-            for d1, d2 in zip(train1, train2):
-                self.assertEqual(d1, d2)
-                # This test only aims to exercise the argument parsing and uses
-                # the first line as a litmus test for correctness.
-                break
-            # Exercise default constructor
-            _ = dataset()
+    @parameterized.expand(list(sorted(torchtext.experimental.datasets.raw.DATASETS.keys())))
+    def test_raw_datasets_split_argument(self, dataset_name):
+        if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+            return
+        if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+            return
+        dataset = torchtext.experimental.datasets.raw.DATASETS[dataset_name]
+        train1 = dataset(split='train')
+        train2, = dataset(split=('train',))
+        for d1, d2 in zip(train1, train2):
+            self.assertEqual(d1, d2)
+            # This test only aims to exercise the argument parsing and uses
+            # the first line as a litmus test for correctness.
+            break
+        # Exercise default constructor
+        _ = dataset()
 
     def test_datasets_split_argument(self):
         from torchtext.experimental.datasets import DATASETS
