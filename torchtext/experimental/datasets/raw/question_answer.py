@@ -30,7 +30,7 @@ def _create_data_from_json(data_path):
 
 
 def _setup_datasets(dataset_name, root, split, offset):
-    split = check_default_set(split, ('train', 'dev'))
+    split = check_default_set(split, ('train', 'dev'), dataset_name)
     extracted_files = {key: download_from_url(URLS[dataset_name][key], root=root,
                                               hash_value=MD5[dataset_name][key], hash_type='md5') for key in split}
     return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],

@@ -34,7 +34,7 @@ def _create_data_from_csv(data_path):
 
 
 def _setup_datasets(dataset_name, root, split, offset):
-    split = check_default_set(split, target_select=('train', 'test'))
+    split = check_default_set(split, ('train', 'test'), dataset_name)
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
                                              hash_value=MD5['AG_NEWS'][item],

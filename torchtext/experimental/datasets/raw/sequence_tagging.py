@@ -40,7 +40,7 @@ def _construct_filepath(paths, file_suffix):
 
 
 def _setup_datasets(dataset_name, separator, root, split, offset):
-    split = check_default_set(split, target_select=('train', 'valid', 'test'))
+    split = check_default_set(split, ('train', 'valid', 'test'), dataset_name)
     extracted_files = []
     if isinstance(URLS[dataset_name], dict):
         for name, item in URLS[dataset_name].items():

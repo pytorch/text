@@ -3,59 +3,53 @@ import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 
 URLS = {
     'WikiText2':
         'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip',
     'WikiText103':
         'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip',
-    'PennTreebank':
-        ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
-         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
+    'PennTreebank': {
+        'train': 'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
+        'test': 'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
+        'valid': 'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'
+    },
     'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
 }
 
 
 def _setup_datasets(dataset_name, root, split, year, language, offset):
-    split = check_default_set(split, ('train', 'test', 'valid'))
-    if isinstance(split, str):
-        split = [split]
-    if not set(split).issubset(set(('train', 'test', 'valid'))):
-        raise TypeError('split is not supported!')
+    if dataset_name == 'WMTNewsCrawl':
+        split = check_default_set(split, ('train'), dataset_name)
+    else:
+        split = check_default_set(split, ('train', 'test', 'valid'), dataset_name)
 
     if dataset_name == 'PennTreebank':
-        extracted_files = []
-        select_to_index = {'train': 0, 'test': 1, 'valid': 2}
-        extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
+        extracted_files = [download_from_url(URLS['PennTreebank'][key],
                                              root=root, hash_value=MD5['PennTreebank'][key],
                                              hash_type='md5') for key in split]
-    elif dataset_name == 'WMTNewsCrawl':
-        if not (split == ['train'] or set(split).issubset(set(('train',)))):
-            raise ValueError("WMTNewsCrawl only creates a training dataset. "
-                             "split should be 'train' "
-                             "or ('train',), got {}.".format(split))
-        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5['WMTNewsCrawl'], hash_type='md5')
-        extracted_files = extract_archive(dataset_tar)
-        file_name = 'news.{}.{}.shuffled'.format(year, language)
-        extracted_files = [f for f in extracted_files if file_name in f]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
 
-    _path = {}
+    if dataset_name == 'WMTNewsCrawl':
+        file_name = 'news.{}.{}.shuffled'.format(year, language)
+        extracted_files = [f for f in extracted_files if file_name in f]
+
+    path = {}
     for item in split:
         for fname in extracted_files:
             if item in fname:
-                _path[item] = fname
+                path[item] = fname
 
-    data = {}
-    for item in _path.keys():
+    datasets = []
+    for item in split:
         logging.info('Creating {} data'.format(item))
-        data[item] = iter(io.open(_path[item], encoding="utf8"))
+        datasets.append(RawTextIterableDataset(dataset_name,
+                                               NUM_LINES[dataset_name][item], iter(io.open(path[item], encoding="utf8")), offset=offset))
 
-    return tuple(RawTextIterableDataset(dataset_name,
-                                        NUM_LINES[dataset_name][item], data[item], offset=offset) for item in split)
+    return wrap_datasets(tuple(datasets), split)
 
 
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
