@@ -146,8 +146,6 @@ class TestDataset(TorchtextTestCase):
     def test_raw_datasets_split_argument(self):
         from torchtext.experimental.datasets.raw import DATASETS
         for dataset_name in sorted(DATASETS.keys()):
-            if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
-                continue
             if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
                 continue
             dataset = DATASETS[dataset_name]
