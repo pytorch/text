@@ -257,8 +257,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test data.
+            just a string 'train'.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
 
@@ -424,8 +423,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test data.
+            just a string 'train'.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
 
@@ -507,8 +505,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test data.
+            just a string 'train'.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
 

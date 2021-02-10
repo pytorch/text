@@ -63,15 +63,13 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
         split: a string or tuple for the returned datasets. Default: ('train', 'valid, 'test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+            just a string 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.raw.datasets import WikiText2
         >>> train_dataset, valid_dataset, test_dataset = WikiText2()
-        >>> valid_dataset, = WikiText2(split='valid')
+        >>> valid_dataset = WikiText2(split='valid')
 
     """
 
@@ -89,14 +87,12 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
         split: the returned datasets. Default: ('train', 'valid','test')
             By default, all the three datasets (train, test, valid) are generated. Users
             could also choose any one or two of them, for example ('train', 'test').
-            If 'train' is not in the tuple, an vocab object should be provided which will
-            be used to process valid and/or test data.
         offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WikiText103
         >>> train_dataset, valid_dataset, test_dataset = WikiText103()
-        >>> valid_dataset, = WikiText103(split='valid')
+        >>> valid_dataset = WikiText103(split='valid')
     """
 
     return _setup_datasets("WikiText103", root, split, None, None, offset)
@@ -114,15 +110,13 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
             (Default: ('train', 'test','valid'))
             By default, all the three datasets ('train', 'valid', 'test') are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'. If 'train' is not in the tuple or string, a vocab
-            object should be provided which will be used to process valid and/or test
-            data.
+            just a string 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import PennTreebank
         >>> train_dataset, valid_dataset, test_dataset = PennTreebank()
-        >>> valid_dataset, = PennTreebank(split='valid')
+        >>> valid_dataset = PennTreebank(split='valid')
 
     """
 
