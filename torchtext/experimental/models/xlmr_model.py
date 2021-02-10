@@ -10,7 +10,7 @@ from torchtext.experimental.vocab import load_vocab_from_file
 # [TODO] Add torch.hub support
 # [TODO] Download file from manifold
 # [TODO] check base model config
-def xlmr_base(root='./.model'):
+def xlmr_base():
     '''
     Examples:
         >>> from torchtext.experimental.models import xlmr_base
@@ -18,13 +18,13 @@ def xlmr_base(root='./.model'):
         >>> xlmr_base_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
-    tar_file = download_from_url(PRETRAINED['xlmr.base'], root=root,
+    tar_file = download_from_url(PRETRAINED['xlmr.base'],
                                  hash_value=MD5['xlmr.base'], hash_type='md5')
     checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
     return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), _load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
 
 
-def xlmr_regular(root='./.model'):
+def xlmr_regular():
     '''
     Examples:
         >>> from torchtext.experimental.models import xlmr_regular
@@ -32,7 +32,7 @@ def xlmr_regular(root='./.model'):
         >>> xlmr_regular_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
-    tar_file = download_from_url(PRETRAINED['xlmr.regular'], root=root,
+    tar_file = download_from_url(PRETRAINED['xlmr.regular'],
                                  hash_value=MD5['xlmr.regular'], hash_type='md5')
     checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
     return _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file), _load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
@@ -99,7 +99,7 @@ class TransformerEncoderSentenceClassification(nn.Module):
         raise NotImplementedError("forward func has not been implemented yet.")
 
 
-def xlmr_base_sentence_classifier(root='./.model'):
+def xlmr_base_sentence_classifier():
     '''
     Examples:
         >>> from torchtext.experimental.models import xlmr_base_sentence_classifier
@@ -108,14 +108,14 @@ def xlmr_base_sentence_classifier(root='./.model'):
         >>> tensor([  903,    83,   142, 27781])
     '''
     # Load pretrained XLM-R
-    tar_file = download_from_url(PRETRAINED['xlmr.base'], root=root,
+    tar_file = download_from_url(PRETRAINED['xlmr.base'],
                                  hash_value=MD5['xlmr.base'], hash_type='md5')
     checkpoint_file, tokenizer_file, vocab_file, args_file = extract_archive(tar_file, overwrite=True)
     xlmr_model = _load_xlmr_model(checkpoint_file=checkpoint_file, args_file=args_file)
     xlmr_transform = _load_xlmr_transform(tokenizer_file=tokenizer_file, vocab_file=vocab_file)
 
     # Load classifier head
-    tar_file = download_from_url(TASK_PRETRAINED['xlmr.base.sentence.classifier'], root=root,
+    tar_file = download_from_url(TASK_PRETRAINED['xlmr.base.sentence.classifier'],
                                  hash_value=TASK_MD5['xlmr.base.sentence.classifier'], hash_type='md5')
     checkpoint_file, args_file = extract_archive(tar_file, overwrite=True)
     sentence_classifier = _load_sentence_classifier(checkpoint_file=checkpoint_file, args_file=args_file)
