@@ -1,6 +1,7 @@
 import torch
 import logging
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
@@ -79,7 +80,7 @@ def _setup_datasets(dataset_name,
             TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
                                (src_text_transform, tgt_text_transform)))
 
-    return tuple(datasets)
+    return wrap_datasets(tuple(datasets), split)
 
 
 class TranslationDataset(torch.utils.data.Dataset):
@@ -139,7 +140,6 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              root='.data',
              vocab=(None, None),
              tokenizer=None):
-
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
@@ -240,7 +240,6 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           root='.data',
           vocab=(None, None),
           tokenizer=None):
-
     """ Define translation datasets: IWSLT
     Separately returns train/valid/test datasets
     The available datasets include:
@@ -430,7 +429,6 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           root='.data',
           vocab=(None, None),
           tokenizer=None):
-
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
     The available datasets include:

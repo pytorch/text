@@ -4,6 +4,7 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import language_modeling as raw
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 
 logger_ = logging.getLogger(__name__)
 
@@ -84,8 +85,8 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, split, year, language)
         raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(split, raw_datasets)}
     logger_.info('Building datasets for {}'.format(split))
-    return tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform)
-                 for item in split)
+    return wrap_datasets(tuple(LanguageModelingDataset(raw_data[item], vocab, text_transform)
+                               for item in split), split)
 
 
 def WikiText2(tokenizer=None, root='.data', vocab=None, split=('train', 'valid', 'test')):

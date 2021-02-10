@@ -4,6 +4,7 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
@@ -93,12 +94,12 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, split):
     else:
         label_transform = sequential_transforms(totensor(dtype=torch.long))
     logger_.info('Building datasets for {}'.format(split))
-    return tuple(
+    return wrap_datasets(tuple(
         TextClassificationDataset(
             raw_data[item], vocab, (label_transform, text_transform)
         )
         for item in split
-    )
+    ), split)
 
 
 def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):

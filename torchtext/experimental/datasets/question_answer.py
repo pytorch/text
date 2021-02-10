@@ -4,6 +4,7 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import question_answer as raw
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 from torchtext.experimental.functional import (
     totensor,
     vocab_func,
@@ -86,7 +87,7 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, split):
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
     logger_.info('Building datasets for {}'.format(split))
-    return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in split)
+    return wrap_datasets(tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in split), split)
 
 
 def SQuAD1(root='.data', vocab=None, tokenizer=None, split=('train', 'dev')):
