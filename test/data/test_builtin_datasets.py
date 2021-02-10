@@ -4,7 +4,6 @@ import os
 import torchtext.data as data
 import torch
 import torchtext
-import unittest
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import conditional_remove
