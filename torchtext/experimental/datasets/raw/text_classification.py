@@ -2,6 +2,7 @@ import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 
 URLS = {
     'AG_NEWS':
@@ -50,8 +51,8 @@ def _setup_datasets(dataset_name, root, split, offset):
             cvs_path['train'] = fname
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                        _create_data_from_csv(cvs_path[item]), offset=offset) for item in split)
+    return wrap_datasets(tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                                        _create_data_from_csv(cvs_path[item]), offset=offset) for item in split), split)
 
 
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):

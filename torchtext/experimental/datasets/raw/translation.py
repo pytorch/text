@@ -6,6 +6,7 @@ from collections import defaultdict
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 
 URLS = {
     'Multi30k': [
@@ -186,7 +187,7 @@ def _setup_datasets(dataset_name,
         datasets.append(
             RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset=offset))
 
-    return tuple(datasets)
+    return wrap_datasets(tuple(datasets), split)
 
 
 def Multi30k(train_filenames=("train.de", "train.en"),

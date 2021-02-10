@@ -2,6 +2,7 @@ from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 
 URLS = {
     'SQuAD1':
@@ -33,8 +34,8 @@ def _setup_datasets(dataset_name, root, split, offset):
     split = check_default_set(split, ('train', 'dev'), dataset_name)
     extracted_files = {key: download_from_url(URLS[dataset_name][key], root=root,
                                               hash_value=MD5[dataset_name][key], hash_type='md5') for key in split}
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                 _create_data_from_json(extracted_files[item]), offset=offset) for item in split)
+    return wrap_datasets(tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                                                      _create_data_from_json(extracted_files[item]), offset=offset) for item in split), split)
 
 
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
