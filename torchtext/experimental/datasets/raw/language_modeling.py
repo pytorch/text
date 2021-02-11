@@ -53,7 +53,7 @@ def _setup_datasets(dataset_name, root, split_, year, language, offset):
 
 
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """WikiText2 Dataset
+    """WikiText2 dataset
 
     Separately returns the train/valid/test split
 
@@ -75,7 +75,7 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """WikiText103 Dataset
+    """WikiText103 dataset
 
     Separately returns the train/valid/test split
 
@@ -96,7 +96,7 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """PennTreebank Dataset
+    """PennTreebank dataset
 
     Separately returns the train/valid/test split
 

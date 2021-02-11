@@ -66,7 +66,7 @@ def _setup_datasets(dataset_name, separator, root, split_, offset):
 
 
 def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
-    """Universal Dependencies English Web Treebank
+    """Universal Dependencies English Web Treebank dataset
 
     Separately returns the train/valid/test split
 
@@ -85,7 +85,7 @@ def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
 
 
 def CoNLL2000Chunking(root=".data", split=('train', 'test'), offset=0):
-    """CoNLL 2000 Chunking Dataset
+    """CoNLL 2000 Chunking dataset
 
     Separately returns the train/test split
 
