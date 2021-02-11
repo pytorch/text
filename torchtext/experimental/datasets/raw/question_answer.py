@@ -2,6 +2,7 @@ from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
+from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
 
 URLS = {
     'SQuAD1':
@@ -37,6 +38,7 @@ def _setup_datasets(dataset_name, root, split, offset):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     """
     Examples:
@@ -56,6 +58,7 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     """
     Examples:

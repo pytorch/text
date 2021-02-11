@@ -67,6 +67,11 @@ def dataset_docstring_header(fn):
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
 
+def dataset_docstring_header_decorator(fn):
+    fn.__doc__ = dataset_docstring_header(fn)
+    return fn
+
+
 def input_sanitization_decorator(fn):
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
@@ -76,14 +81,12 @@ def input_sanitization_decorator(fn):
             argspec.defaults[2] == 0):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
     default_split = argspec.defaults[1]
-    new_doc = dataset_docstring_header(fn)
 
-    @functools.wraps(fn, assigned=tuple(set(functools.WRAPPER_ASSIGNMENTS) - set(["__doc__"])))
+    @functools.wraps(fn)
     def new_fn(root='.data', split=argspec.defaults[1], offset=0, **kwargs):
         split_ = check_default_set(split, argspec.defaults[1], fn.__name__)
         result = fn(root, split_, offset, **kwargs)
         return wrap_datasets(tuple(result), split)
-    new_fn.__doc__ = new_doc
     return new_fn
 
 

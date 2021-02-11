@@ -2,6 +2,7 @@ import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
+from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
 
 URLS = {
     'AG_NEWS':
@@ -54,6 +55,7 @@ def _setup_datasets(dataset_name, root, split, offset):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -64,6 +66,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -74,6 +77,7 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -84,6 +88,7 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -94,6 +99,7 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -104,6 +110,7 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -114,6 +121,7 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -124,6 +132,7 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -144,6 +153,7 @@ def generate_imdb_data(key, extracted_files):
 
 
 @input_sanitization_decorator
+@dataset_docstring_header_decorator
 def IMDB(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
