@@ -274,21 +274,3 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
             break
         hash_func.update(chunk)
     return hash_func.hexdigest() == hash_value
-
-
-def load_args_from_json(filepath: str):
-    """Load arguments from a json file
-
-    Args:
-        filepath: the path to the file
-
-    Examples:
-        >>> args = torchtext.utils.load_args_from_json('./args.json')
-    """
-
-    with open(filepath, 'rt') as f:
-        t_args = argparse.Namespace()
-        t_args.__dict__.update(json.load(f))
-        parser = argparse.ArgumentParser()
-        args = parser.parse_args(namespace=t_args)
-    return args
