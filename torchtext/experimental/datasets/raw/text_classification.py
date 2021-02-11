@@ -58,7 +58,7 @@ def _setup_datasets(dataset_name, root, split_, offset):
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     """AG_NEWS dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -77,7 +77,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
     """SogouNews dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -96,7 +96,7 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
     """DBpedia dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -115,7 +115,7 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """YelpReviewPolarity dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -134,7 +134,7 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     """YelpReviewFull dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -153,7 +153,7 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     """YahooAnswers dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -172,7 +172,7 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """AmazonReviewPolarity dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -191,7 +191,7 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     """AmazonReviewFull dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
