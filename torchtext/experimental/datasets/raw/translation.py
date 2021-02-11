@@ -7,7 +7,7 @@ from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
-from torchtext.experimental.datasets.raw.common import prepend_dataset_docstring_header
+from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
 
 URLS = {
     'Multi30k': [
@@ -118,8 +118,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 def _setup_datasets(dataset_name,
                     train_filenames, valid_filenames, test_filenames,
-                    split_, root, offset):
-    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
+                    split, root, offset):
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
@@ -188,9 +187,10 @@ def _setup_datasets(dataset_name,
         datasets.append(
             RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][key], _iter(src_data_iter, tgt_data_iter), offset=offset))
 
-    return wrap_datasets(tuple(datasets), split_)
+    return datasets
 
 
+@input_sanitization_decorator
 def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
@@ -260,6 +260,7 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
 
+@input_sanitization_decorator
 def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
@@ -417,6 +418,7 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
 
+@input_sanitization_decorator
 def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.tok.clean.bpe.32000.de',
                            'train.tok.clean.bpe.32000.en'),
@@ -495,9 +497,6 @@ DATASETS = {
     'IWSLT': IWSLT,
     'WMT14': WMT14
 }
-
-for dataset in DATASETS.values():
-    prepend_dataset_docstring_header(dataset)
 
 NUM_LINES = {
     'Multi30k': {'train': 29000, 'valid': 1014, 'test': 1000},

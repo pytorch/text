@@ -4,7 +4,7 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
-from torchtext.experimental.datasets.raw.common import prepend_dataset_docstring_header
+from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
 
 URLS = {
     'WikiText2':
@@ -20,12 +20,7 @@ URLS = {
 }
 
 
-def _setup_datasets(dataset_name, root, split_, year, language, offset):
-    if dataset_name == 'WMTNewsCrawl':
-        split = check_default_set(split_, ('train',), dataset_name)
-    else:
-        split = check_default_set(split_, ('train', 'test', 'valid'), dataset_name)
-
+def _setup_datasets(dataset_name, root, split, year, language, offset):
     if dataset_name == 'PennTreebank':
         extracted_files = [download_from_url(URLS['PennTreebank'][key],
                                              root=root, hash_value=MD5['PennTreebank'][key],
@@ -50,9 +45,10 @@ def _setup_datasets(dataset_name, root, split_, year, language, offset):
         datasets.append(RawTextIterableDataset(dataset_name,
                                                NUM_LINES[dataset_name][item], iter(io.open(path[item], encoding="utf8")), offset=offset))
 
-    return wrap_datasets(tuple(datasets), split_)
+    return datasets
 
 
+@input_sanitization_decorator
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -65,6 +61,7 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("WikiText2", root, split, None, None, offset)
 
 
+@input_sanitization_decorator
 def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -76,6 +73,7 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("WikiText103", root, split, None, None, offset)
 
 
+@input_sanitization_decorator
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -88,6 +86,7 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("PennTreebank", root, split, None, None, offset)
 
 
+@input_sanitization_decorator
 def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
     """    year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
@@ -104,9 +103,6 @@ DATASETS = {
     'PennTreebank': PennTreebank,
     'WMTNewsCrawl': WMTNewsCrawl
 }
-
-for dataset in DATASETS.values():
-    prepend_dataset_docstring_header(dataset)
 
 NUM_LINES = {
     'WikiText2': {'train': 36718, 'valid': 3760, 'test': 4358},

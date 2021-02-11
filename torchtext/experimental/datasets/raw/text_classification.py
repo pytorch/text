@@ -3,7 +3,7 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
-from torchtext.experimental.datasets.raw.common import prepend_dataset_docstring_header
+from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
 
 URLS = {
     'AG_NEWS':
@@ -35,8 +35,7 @@ def _create_data_from_csv(data_path):
             yield int(row[0]), ' '.join(row[1:])
 
 
-def _setup_datasets(dataset_name, root, split_, offset):
-    split = check_default_set(split_, ('train', 'test'), dataset_name)
+def _setup_datasets(dataset_name, root, split, offset):
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
                                              hash_value=MD5['AG_NEWS'][item],
@@ -52,10 +51,11 @@ def _setup_datasets(dataset_name, root, split_, offset):
             cvs_path['train'] = fname
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
-    return wrap_datasets(tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                                      _create_data_from_csv(cvs_path[item]), offset=offset) for item in split), split_)
+    return [RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                                   _create_data_from_csv(cvs_path[item]), offset=offset) for item in split]
 
 
+@input_sanitization_decorator
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -65,6 +65,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("AG_NEWS", root, split, offset)
 
 
+@input_sanitization_decorator
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -74,6 +75,7 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("SogouNews", root, split, offset)
 
 
+@input_sanitization_decorator
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -83,6 +85,7 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("DBpedia", root, split, offset)
 
 
+@input_sanitization_decorator
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -92,6 +95,7 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YelpReviewPolarity", root, split, offset)
 
 
+@input_sanitization_decorator
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -101,6 +105,7 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YelpReviewFull", root, split, offset)
 
 
+@input_sanitization_decorator
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -110,6 +115,7 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YahooAnswers", root, split, offset)
 
 
+@input_sanitization_decorator
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -119,6 +125,7 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("AmazonReviewPolarity", root, split, offset)
 
 
+@input_sanitization_decorator
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -138,6 +145,7 @@ def generate_imdb_data(key, extracted_files):
                 yield label, f.read()
 
 
+@input_sanitization_decorator
 def IMDB(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -163,9 +171,6 @@ DATASETS = {
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
 }
-
-for dataset in DATASETS.values():
-    prepend_dataset_docstring_header(dataset)
 
 NUM_LINES = {
     'AG_NEWS': {'train': 120000, 'test': 7600},

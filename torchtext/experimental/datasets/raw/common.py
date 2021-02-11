@@ -1,5 +1,6 @@
 import torch
 import inspect
+import functools
 
 
 def check_default_set(split, target_select, dataset_name):
@@ -26,7 +27,7 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
-def prepend_dataset_docstring_header(fn):
+def dataset_docstring_header(fn):
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
@@ -38,7 +39,7 @@ def prepend_dataset_docstring_header(fn):
         example_subset = default_split[:2]
         if len(default_split) < 3:
             example_subset = (default_split[1],)
-        fn.__doc__ = """{} dataset
+        return """{} dataset
 
         Separately returns the {} split
 
@@ -50,10 +51,9 @@ def prepend_dataset_docstring_header(fn):
                 could also choose any subset of them, for example {} or just 'train'.
             offset: the number of the starting line. Default: 0
         """.format(fn.__name__, "/".join(default_split), str(default_split), str(example_subset)) + fn.__doc__
-        return
 
     if isinstance(default_split, str):
-        fn.__doc__ = """{} dataset
+        return """{} dataset
 
         Only returns the {} split
 
@@ -63,9 +63,28 @@ def prepend_dataset_docstring_header(fn):
                 (Default: {})
             offset: the number of the starting line. Default: 0
         """.format(fn.__name__, default_split, default_split, default_split) + fn.__doc__
-        return
 
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
+
+
+def input_sanitization_decorator(fn):
+    argspec = inspect.getfullargspec(fn)
+    if not (argspec.args[0] == "root" and
+            argspec.args[1] == "split" and
+            argspec.args[2] == "offset" and
+            argspec.defaults[0] == ".data" and
+            argspec.defaults[2] == 0):
+        raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
+    default_split = argspec.defaults[1]
+    new_doc = dataset_docstring_header(fn)
+
+    @functools.wraps(fn, assigned=tuple(set(functools.WRAPPER_ASSIGNMENTS) - set(["__doc__"])))
+    def new_fn(root='.data', split=argspec.defaults[1], offset=0, **kwargs):
+        split_ = check_default_set(split, argspec.defaults[1], fn.__name__)
+        result = fn(root, split_, offset, **kwargs)
+        return wrap_datasets(tuple(result), split)
+    new_fn.__doc__ = new_doc
+    return new_fn
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
