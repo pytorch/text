@@ -159,13 +159,12 @@ def IMDB(root='.data', split=('train', 'test'), offset=0):
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-    split_ = check_default_set(split, ('train', 'test'), 'IMDB')
     dataset_tar = download_from_url(URLS['IMDB'], root=root,
                                     hash_value=MD5['IMDB'], hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-    return wrap_datasets(tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
-                                                      generate_imdb_data(item,
-                                                                         extracted_files), offset=offset) for item in split_), split)
+    return [RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
+                                   generate_imdb_data(item,
+                                                      extracted_files), offset=offset) for item in split]
 
 
 DATASETS = {

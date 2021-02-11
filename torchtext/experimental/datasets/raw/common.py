@@ -44,13 +44,15 @@ def dataset_docstring_header(fn):
         Separately returns the {} split
 
         Args:
-            root: Directory where the datasets are saved. Default: ".data"
-            split: a string or tuple for the returned datasets
-                (Default: {})
+            root: Directory where the datasets are saved.
+                Default: ".data"
+            split: split or splits to be returned. Can be a string or tuple of strings.
                 By default, all three datasets are generated. Users
                 could also choose any subset of them, for example {} or just 'train'.
-            offset: the number of the starting line. Default: 0
-        """.format(fn.__name__, "/".join(default_split), str(default_split), str(example_subset)) + fn.__doc__
+                Default: {}
+            offset: the number of the starting line.
+                Default: 0
+        """.format(fn.__name__, "/".join(default_split), str(example_subset), str(default_split)) + fn.__doc__
 
     if isinstance(default_split, str):
         return """{} dataset
@@ -58,10 +60,12 @@ def dataset_docstring_header(fn):
         Only returns the {default_split} split
 
         Args:
-            root: Directory where the datasets are saved. Default: ".data"
-            split: a string or tuple for the returned datasets. Only {default_split} is available.
-                (Default: {default_split})
-            offset: the number of the starting line. Default: 0
+            root: Directory where the datasets are saved.
+                Default: ".data"
+            split: Only {default_split} is available.
+                Default: {default_split}
+            offset: the number of the starting line.
+                Default: 0
         """.format(fn.__name__, default_split=default_split) + fn.__doc__
 
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))

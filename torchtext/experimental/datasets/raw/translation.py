@@ -196,11 +196,11 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en")):
     """    train_filenames: the source and target filenames for training.
-            Default: ('train.de', 'train.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('val.de', 'val.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('test2016.de', 'test2016.en')
+                Default: ('train.de', 'train.en')
+            valid_filenames: the source and target filenames for valid.
+                Default: ('val.de', 'val.en')
+            test_filenames: the source and target filenames for test.
+                Default: ('test2016.de', 'test2016.en')
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import Multi30k
@@ -269,11 +269,11 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en')):
     """    train_filenames: the source and target filenames for training.
-            Default: ('train.de-en.de', 'train.de-en.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+                Default: ('train.de-en.de', 'train.de-en.en')
+            valid_filenames: the source and target filenames for valid.
+                Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
+            test_filenames: the source and target filenames for test.
+                Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import IWSLT
@@ -429,11 +429,11 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en')):
     """    train_filenames: the source and target filenames for training.
-            Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+                Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
+            valid_filenames: the source and target filenames for valid.
+                Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
+            test_filenames: the source and target filenames for test.
+                Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WMT14
