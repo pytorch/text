@@ -1,7 +1,5 @@
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import check_default_set
-from torchtext.experimental.datasets.raw.common import wrap_datasets
 from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
 
 URLS = {
