@@ -55,14 +55,14 @@ def dataset_docstring_header(fn):
     if isinstance(default_split, str):
         return """{} dataset
 
-        Only returns the {} split
+        Only returns the {default_split} split
 
         Args:
             root: Directory where the datasets are saved. Default: ".data"
-            split: a string or tuple for the returned datasets. Only {} is available.
-                (Default: {})
+            split: a string or tuple for the returned datasets. Only {default_split} is available.
+                (Default: {default_split})
             offset: the number of the starting line. Default: 0
-        """.format(fn.__name__, default_split, default_split, default_split) + fn.__doc__
+        """.format(fn.__name__, default_split=default_split) + fn.__doc__
 
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
