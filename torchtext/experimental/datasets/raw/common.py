@@ -82,14 +82,29 @@ def input_sanitization_decorator(fn):
             argspec.args[1] == "split" and
             argspec.args[2] == "offset" and
             argspec.defaults[0] == ".data" and
-            argspec.defaults[2] == 0):
+            argspec.defaults[2] == 0 and
+            argspec.varargs is None and
+            argspec.varkw is None and
+            len(argspec.kwonlyargs) == 0 and
+            argspec.kwonlydefaults is None and
+            len(argspec.annotations) == 0
+            ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
+    fn_kwargs_dict = {}
+    for arg, default in zip(argspec.args, argspec.defaults):
+        fn_kwargs_dict[arg] = default
+
     @functools.wraps(fn)
-    def new_fn(root='.data', split=argspec.defaults[1], offset=0, **kwargs):
-        split_ = check_default_set(split, argspec.defaults[1], fn.__name__)
-        result = fn(root, split_, offset, **kwargs)
-        return wrap_datasets(tuple(result), split)
+    def new_fn(**kwargs):
+        for arg in fn_kwargs_dict:
+            if arg not in kwargs:
+                kwargs[arg] = fn_kwargs_dict[arg]
+        orig_split = kwargs["split"]
+        kwargs["split"] = check_default_set(orig_split, argspec.defaults[1], fn.__name__)
+        result = fn(**kwargs)
+        return wrap_datasets(tuple(result), orig_split)
+
     return new_fn
 
 
