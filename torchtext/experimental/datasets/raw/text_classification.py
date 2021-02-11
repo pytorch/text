@@ -220,7 +220,7 @@ def generate_imdb_data(key, extracted_files):
 def IMDB(root='.data', split=('train', 'test'), offset=0):
     """IMDB dataset
 
-    Separately returns the raw training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"

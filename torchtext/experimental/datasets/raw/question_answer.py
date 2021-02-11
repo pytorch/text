@@ -41,6 +41,8 @@ def _setup_datasets(dataset_name, root, split_, offset):
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     """Stanford Question Answering SQuAD1.0. dataset
 
+    Separately returns the train/dev split
+
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
     For example, ('Architecturally, the school has a Catholic character. Atop the ...',
@@ -66,6 +68,8 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
 
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     """Stanford Question Answering SQuAD2.0. dataset
+
+    Separately returns the train/dev split
 
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
