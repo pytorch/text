@@ -3,6 +3,7 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
+from torchtext.experimental.datasets.raw.common import prepend_dataset_docstring_header
 
 URLS = {
     'AG_NEWS':
@@ -56,17 +57,7 @@ def _setup_datasets(dataset_name, root, split_, offset):
 
 
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
-    """AG_NEWS dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
@@ -75,17 +66,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
 
 
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
-    """SogouNews dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
@@ -94,17 +75,7 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
 
 
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
-    """DBpedia dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
@@ -113,17 +84,7 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
 
 
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
-    """YelpReviewPolarity dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
@@ -132,17 +93,7 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
-    """YelpReviewFull dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
@@ -151,17 +102,7 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
 
 
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
-    """YahooAnswers dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
@@ -170,17 +111,7 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
 
 
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
-    """AmazonReviewPolarity dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
@@ -189,17 +120,7 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
-    """AmazonReviewFull dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
@@ -218,17 +139,7 @@ def generate_imdb_data(key, extracted_files):
 
 
 def IMDB(root='.data', split=('train', 'test'), offset=0):
-    """IMDB dataset
-
-    Separately returns the train/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
@@ -252,6 +163,10 @@ DATASETS = {
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
 }
+
+for dataset in DATASETS.values():
+    prepend_dataset_docstring_header(dataset)
+
 NUM_LINES = {
     'AG_NEWS': {'train': 120000, 'test': 7600},
     'SogouNews': {'train': 450000, 'test': 60000},
@@ -263,6 +178,7 @@ NUM_LINES = {
     'AmazonReviewFull': {'train': 3000000, 'test': 650000},
     'IMDB': {'train': 25000, 'test': 25000}
 }
+
 MD5 = {
     'AG_NEWS': {'train': 'b1a00f826fdfbd249f79597b59e1dc12', 'test': 'd52ea96a97a2d943681189a97654912d'},
     'SogouNews': '0c1700ba70b73f964dd8de569d3fd03e',

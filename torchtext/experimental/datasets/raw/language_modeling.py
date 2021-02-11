@@ -4,6 +4,7 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
+from torchtext.experimental.datasets.raw.common import prepend_dataset_docstring_header
 
 URLS = {
     'WikiText2':
@@ -53,17 +54,7 @@ def _setup_datasets(dataset_name, root, split_, year, language, offset):
 
 
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """WikiText2 dataset
-
-    Separately returns the train/valid/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'valid, 'test')
-            By default, all three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> from torchtext.experimental.raw.datasets import WikiText2
         >>> train_dataset, valid_dataset, test_dataset = WikiText2()
@@ -75,17 +66,7 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """WikiText103 dataset
-
-    Separately returns the train/valid/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: the returned datasets. Default: ('train', 'valid','test')
-            By default, all three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> from torchtext.experimental.datasets.raw import WikiText103
         >>> train_dataset, valid_dataset, test_dataset = WikiText103()
@@ -96,18 +77,7 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """PennTreebank dataset
-
-    Separately returns the train/valid/test split
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
-            By default, all three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> from torchtext.experimental.datasets.raw import PennTreebank
         >>> train_dataset, valid_dataset, test_dataset = PennTreebank()
@@ -119,17 +89,8 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
-    """WMT News Crawl dataset
-
-    Returns the train split.
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Only 'train' is available.
-            (Default: 'train')
-        year: the year of the dataset (Default: 2010)
+    """    year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
-        offset: the number of the starting line. Default: 0
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
@@ -143,12 +104,17 @@ DATASETS = {
     'PennTreebank': PennTreebank,
     'WMTNewsCrawl': WMTNewsCrawl
 }
+
+for dataset in DATASETS.values():
+    prepend_dataset_docstring_header(dataset)
+
 NUM_LINES = {
     'WikiText2': {'train': 36718, 'valid': 3760, 'test': 4358},
     'WikiText103': {'train': 1801350, 'valid': 3760, 'test': 4358},
     'PennTreebank': {'train': 42068, 'valid': 3370, 'test': 3761},
     'WMTNewsCrawl': {'train': 17676013}
 }
+
 MD5 = {
     'WikiText2': '542ccefacc6c27f945fb54453812b3cd',
     'WikiText103': '9ddaacaf6af0710eda8c456decff7832',

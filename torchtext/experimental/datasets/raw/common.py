@@ -1,4 +1,5 @@
 import torch
+import inspect
 
 
 def check_default_set(split, target_select, dataset_name):
@@ -23,6 +24,48 @@ def wrap_datasets(datasets, split):
             raise ValueError("Internal error: Expected number of datasets is not 1.")
         return datasets[0]
     return datasets
+
+
+def prepend_dataset_docstring_header(fn):
+    argspec = inspect.getfullargspec(fn)
+    if not (argspec.args[0] == "root" and
+            argspec.args[1] == "split" and
+            argspec.args[2] == "offset"):
+        raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
+    default_split = argspec.defaults[1]
+
+    if isinstance(default_split, tuple):
+        example_subset = default_split[:2]
+        if len(default_split) < 3:
+            example_subset = (default_split[1],)
+        fn.__doc__ = """{} dataset
+
+        Separately returns the {} split
+
+        Args:
+            root: Directory where the datasets are saved. Default: ".data"
+            split: a string or tuple for the returned datasets
+                (Default: {})
+                By default, all three datasets are generated. Users
+                could also choose any subset of them, for example {} or just 'train'.
+            offset: the number of the starting line. Default: 0
+        """.format(fn.__name__, "/".join(default_split), str(default_split), str(example_subset)) + fn.__doc__
+        return
+
+    if isinstance(default_split, str):
+        fn.__doc__ = """{} dataset
+
+        Only returns the {} split
+
+        Args:
+            root: Directory where the datasets are saved. Default: ".data"
+            split: a string or tuple for the returned datasets. Only {} is available.
+                (Default: {})
+            offset: the number of the starting line. Default: 0
+        """.format(fn.__name__, default_split, default_split, default_split) + fn.__doc__
+        return
+
+    raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):

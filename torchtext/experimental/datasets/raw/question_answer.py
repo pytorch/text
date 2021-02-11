@@ -3,6 +3,7 @@ import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
+from torchtext.experimental.datasets.raw.common import prepend_dataset_docstring_header
 
 URLS = {
     'SQuAD1':
@@ -39,9 +40,11 @@ def _setup_datasets(dataset_name, root, split_, offset):
 
 
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
-    """Stanford Question Answering SQuAD1.0. dataset
-
-    Separately returns the train/dev split
+    """
+    Examples:
+        >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD1()
+        >>> for idx, (context, question, answer, ans_pos) in enumerate(train_dataset):
+        >>>     print(idx, (context, question, answer, ans_pos))
 
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
@@ -49,27 +52,17 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
                   'To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?',
                   ['Saint Bernadette Soubirous'],
                   [515])
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets (Default: ('train', 'dev'))
-            By default, both datasets (train, dev) are generated. Users
-            could also choose only one of them, for example 'train'.
-        offset: the number of the starting line. Default: 0
-
-    Examples:
-        >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD1()
-        >>> for idx, (context, question, answer, ans_pos) in enumerate(train_dataset):
-        >>>     print(idx, (context, question, answer, ans_pos))
     """
 
     return _setup_datasets("SQuAD1", root, split, offset)
 
 
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
-    """Stanford Question Answering SQuAD2.0. dataset
-
-    Separately returns the train/dev split
+    """
+    Examples:
+        >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD2()
+        >>> for idx, (context, question, answer, ans_pos) in enumerate(train_dataset):
+        >>>     print(idx, (context, question, answer, ans_pos))
 
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
@@ -77,18 +70,6 @@ def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
                   'When did Beyonce start becoming popular?',
                   ['in the late 1990s'],
                   [269])
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets (Default: ('train', 'dev'))
-            By default, both datasets (train, dev) are generated. Users
-            could also choose only one of them, for example 'train'.
-        offset: the number of the starting line. Default: 0
-
-    Examples:
-        >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD2()
-        >>> for idx, (context, question, answer, ans_pos) in enumerate(train_dataset):
-        >>>     print(idx, (context, question, answer, ans_pos))
     """
 
     return _setup_datasets("SQuAD2", root, split, offset)
@@ -98,10 +79,15 @@ DATASETS = {
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2
 }
+
+for dataset in DATASETS.values():
+    prepend_dataset_docstring_header(dataset)
+
 NUM_LINES = {
     'SQuAD1': {'train': 87599, 'dev': 10570},
     'SQuAD2': {'train': 130319, 'dev': 11873}
 }
+
 MD5 = {
     'SQuAD1': {'train': '981b29407e0affa3b1b156f72073b945', 'dev': '3e85deb501d4e538b6bc56f786231552'},
     'SQuAD2': {'train': '62108c273c268d70893182d5cf8df740', 'dev': '246adae8b7002f8679c027697b0b7cf8'}
