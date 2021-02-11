@@ -53,17 +53,15 @@ def _setup_datasets(dataset_name, root, split_, year, language, offset):
 
 
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """ Defines WikiText2 datasets.
+    """WikiText2 Dataset
 
-    Create language modeling dataset: WikiText2
-    Separately returns the train/test/valid set
+    Separately returns the train/valid/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets. Default: ('train', 'valid, 'test')
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
@@ -77,16 +75,15 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """ Defines WikiText103 datasets.
+    """WikiText103 Dataset
 
-    Create language modeling dataset: WikiText103
-    Separately returns the train/test/valid set
+    Separately returns the train/valid/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: the returned datasets. Default: ('train', 'valid','test')
-            By default, all the three datasets (train, test, valid) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test').
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
@@ -99,18 +96,16 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
 
 
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
-    """ Defines PennTreebank datasets.
+    """PennTreebank Dataset
 
-    Create language modeling dataset: PennTreebank
-    Separately returns the train/test/valid set
+    Separately returns the train/valid/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
-            By default, all the three datasets ('train', 'valid', 'test') are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
@@ -123,14 +118,14 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("PennTreebank", root, split, None, None, offset)
 
 
-def WMTNewsCrawl(root='.data', split=('train'), year=2010, language='en', offset=0):
-    """ Defines WMT News Crawl.
+def WMTNewsCrawl(root='.data', split='train', year=2010, language='en', offset=0):
+    """WMT News Crawl dataset
 
-    Create language modeling dataset: WMTNewsCrawl
+    Returns the train split.
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets.
+        split: a string or tuple for the returned datasets. Only 'train' is available.
             (Default: 'train')
         year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')

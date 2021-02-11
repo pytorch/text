@@ -68,14 +68,13 @@ def _setup_datasets(dataset_name, separator, root, split_, offset):
 def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
     """ Universal Dependencies English Web Treebank
 
-    Separately returns the training and test dataset
+    Separately returns the train/valid/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
-            By default, all the datasets (train, valid, test) are generated.
-            Users could also choose any one or two of them,
-            for example ('train', 'valid', 'test') or just a string 'train'.
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
@@ -88,13 +87,13 @@ def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
 def CoNLL2000Chunking(root=".data", split=('train', 'test'), offset=0):
     """ CoNLL 2000 Chunking Dataset
 
-    Separately returns the training and test dataset
+    Separately returns the train/test split
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets (Default: ('train', 'test'))
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
+            By default, all the both datasets (train, test) are generated. Users
+            could also choose only one of them, for example 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
