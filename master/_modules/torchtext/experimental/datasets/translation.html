@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.translation &mdash; torchtext 0.9.0.dev20210210 documentation</title>
+  <title>torchtext.experimental.datasets.translation &mdash; torchtext 0.9.0.dev20210211 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210210
+                  0.9.0.dev20210211
                 </div>
               
             
@@ -311,6 +311,7 @@
 <span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">check_default_set</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_datasets</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span><span class="p">,</span> <span class="n">build_vocab_from_iterator</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
@@ -328,8 +329,8 @@
 
 <span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span>
                     <span class="n">train_filenames</span><span class="p">,</span> <span class="n">valid_filenames</span><span class="p">,</span> <span class="n">test_filenames</span><span class="p">,</span>
-                    <span class="n">split</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">):</span>
-    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+                    <span class="n">split_</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">):</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split_</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">dataset_name</span><span class="p">)</span>
     <span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span> <span class="o">=</span> <span class="n">vocab</span>
     <span class="k">if</span> <span class="n">tokenizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">src_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;de_core_news_sm&#39;</span><span class="p">)</span>
@@ -389,7 +390,7 @@
             <span class="n">TranslationDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="p">(</span><span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span><span class="p">),</span>
                                <span class="p">(</span><span class="n">src_text_transform</span><span class="p">,</span> <span class="n">tgt_text_transform</span><span class="p">)))</span>
 
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrap_datasets</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span> <span class="n">split_</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TranslationDataset"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.TranslationDataset">[docs]</a><span class="k">class</span> <span class="nc">TranslationDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
@@ -449,7 +450,6 @@
              <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span>
              <span class="n">vocab</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
              <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot; Define translation datasets: Multi30k</span>
 <span class="sd">    Separately returns train/valid/test datasets as a tuple</span>
 
@@ -550,7 +550,6 @@
           <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span>
           <span class="n">vocab</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
           <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot; Define translation datasets: IWSLT</span>
 <span class="sd">    Separately returns train/valid/test datasets</span>
 <span class="sd">    The available datasets include:</span>
@@ -740,7 +739,6 @@
           <span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span>
           <span class="n">vocab</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
           <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot; Define translation datasets: WMT14</span>
 <span class="sd">    Separately returns train/valid/test datasets</span>
 <span class="sd">    The available datasets include:</span>

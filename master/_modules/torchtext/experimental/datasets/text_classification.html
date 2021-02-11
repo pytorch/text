@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.text_classification &mdash; torchtext 0.9.0.dev20210210 documentation</title>
+  <title>torchtext.experimental.datasets.text_classification &mdash; torchtext 0.9.0.dev20210211 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210210
+                  0.9.0.dev20210211
                 </div>
               
             
@@ -314,6 +314,7 @@
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">text_classification</span> <span class="k">as</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">check_default_set</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_datasets</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.functional</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">vocab_func</span><span class="p">,</span>
     <span class="n">totensor</span><span class="p">,</span>
@@ -379,12 +380,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span></div>
 
 
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">ngrams</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">split_</span><span class="p">):</span>
     <span class="n">text_transform</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">tokenizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
     <span class="n">text_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">ngrams_func</span><span class="p">(</span><span class="n">ngrams</span><span class="p">))</span>
-    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split_</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">dataset_name</span><span class="p">)</span>
     <span class="n">raw_datasets</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">)</span>
     <span class="c1"># Materialize raw text iterable dataset</span>
     <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw_dataset</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">raw_dataset</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">raw_datasets</span><span class="p">)}</span>
@@ -403,12 +404,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">label_transform</span> <span class="o">=</span> <span class="n">sequential_transforms</span><span class="p">(</span><span class="n">totensor</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">))</span>
     <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building datasets for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">wrap_datasets</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span>
         <span class="n">TextClassificationDataset</span><span class="p">(</span>
             <span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocab</span><span class="p">,</span> <span class="p">(</span><span class="n">label_transform</span><span class="p">,</span> <span class="n">text_transform</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span>
-    <span class="p">)</span>
+    <span class="p">),</span> <span class="n">split_</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="AG_NEWS"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.AG_NEWS">[docs]</a><span class="k">def</span> <span class="nf">AG_NEWS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">ngrams</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)):</span>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.utils &mdash; torchtext 0.9.0.dev20210210 documentation</title>
+  <title>torchtext.utils &mdash; torchtext 0.9.0.dev20210211 documentation</title>
   
 
   
@@ -182,7 +182,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210210
+                  0.9.0.dev20210211
                 </div>
               
             
@@ -367,12 +367,14 @@
         <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_file</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The hash of </span><span class="si">{}</span><span class="s2"> does not match. Delete the file manually and retry.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The hash of </span><span class="si">{}</span><span class="s2"> does not match. Delete the file manually and retry.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">_process_response</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">1024</span>
         <span class="n">total_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Content-length&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;content-disposition&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Internal error: headers don&#39;t contain content-disposition.&quot;</span><span class="p">)</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;content-disposition&#39;</span><span class="p">]</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;filename=</span><span class="se">\&quot;</span><span class="s2">(.+)</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -433,6 +435,14 @@
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">cookies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;download_warning&quot;</span><span class="p">):</span>
             <span class="n">confirm_token</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">confirm_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;Quota exceeded&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Google drive link </span><span class="si">{}</span><span class="s2"> is currently unavailable, because the quota was exceeded.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">url</span>
+                <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Internal error: confirm_token was not found in Google drive link.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">confirm_token</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;&amp;confirm=&quot;</span> <span class="o">+</span> <span class="n">confirm_token</span>
