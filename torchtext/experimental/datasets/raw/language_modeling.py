@@ -2,8 +2,8 @@ import logging
 import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
-from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
+from torchtext.experimental.datasets.raw.common import wrap_split_argument
+from torchtext.experimental.datasets.raw.common import add_docstring_header
 
 URLS = {
     'WikiText2':
@@ -47,8 +47,8 @@ def _setup_datasets(dataset_name, root, split, year, language, offset):
     return datasets
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -61,8 +61,8 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("WikiText2", root, split, None, None, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -74,8 +74,8 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("WikiText103", root, split, None, None, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -88,8 +88,8 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("PennTreebank", root, split, None, None, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
     """    year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')

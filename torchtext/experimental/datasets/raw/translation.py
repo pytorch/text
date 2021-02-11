@@ -5,8 +5,8 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
-from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
+from torchtext.experimental.datasets.raw.common import wrap_split_argument
+from torchtext.experimental.datasets.raw.common import add_docstring_header
 
 URLS = {
     'Multi30k': [
@@ -189,8 +189,8 @@ def _setup_datasets(dataset_name,
     return datasets
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
@@ -260,8 +260,8 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
@@ -419,8 +419,8 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.tok.clean.bpe.32000.de',
                            'train.tok.clean.bpe.32000.en'),

@@ -71,12 +71,12 @@ def dataset_docstring_header(fn):
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
 
-def dataset_docstring_header_decorator(fn):
+def add_docstring_header(fn):
     fn.__doc__ = dataset_docstring_header(fn)
     return fn
 
 
-def input_sanitization_decorator(fn):
+def wrap_split_argument(fn):
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and

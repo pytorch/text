@@ -1,7 +1,7 @@
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
-from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
+from torchtext.experimental.datasets.raw.common import wrap_split_argument
+from torchtext.experimental.datasets.raw.common import add_docstring_header
 
 URLS = {
     "UDPOS":
@@ -64,8 +64,8 @@ def _setup_datasets(dataset_name, separator, root, split, offset):
             if data_filenames[item] is not None else None for item in split]
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -75,8 +75,8 @@ def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("UDPOS", "\t", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def CoNLL2000Chunking(root=".data", split=('train', 'test'), offset=0):
     """
     Examples:

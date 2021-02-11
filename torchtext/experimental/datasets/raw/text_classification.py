@@ -1,8 +1,8 @@
 import io
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
-from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
+from torchtext.experimental.datasets.raw.common import wrap_split_argument
+from torchtext.experimental.datasets.raw.common import add_docstring_header
 
 URLS = {
     'AG_NEWS':
@@ -54,8 +54,8 @@ def _setup_datasets(dataset_name, root, split, offset):
                                    _create_data_from_csv(cvs_path[item]), offset=offset) for item in split]
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -65,8 +65,8 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("AG_NEWS", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -76,8 +76,8 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("SogouNews", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -87,8 +87,8 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("DBpedia", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -98,8 +98,8 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YelpReviewPolarity", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -109,8 +109,8 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YelpReviewFull", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -120,8 +120,8 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YahooAnswers", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -131,8 +131,8 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("AmazonReviewPolarity", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -152,8 +152,8 @@ def generate_imdb_data(key, extracted_files):
                 yield label, f.read()
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def IMDB(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:

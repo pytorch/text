@@ -1,8 +1,8 @@
 from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import input_sanitization_decorator
-from torchtext.experimental.datasets.raw.common import dataset_docstring_header_decorator
+from torchtext.experimental.datasets.raw.common import wrap_split_argument
+from torchtext.experimental.datasets.raw.common import add_docstring_header
 
 URLS = {
     'SQuAD1':
@@ -37,8 +37,8 @@ def _setup_datasets(dataset_name, root, split, offset):
                                    _create_data_from_json(extracted_files[item]), offset=offset) for item in split]
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     """
     Examples:
@@ -57,8 +57,8 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     return _setup_datasets("SQuAD1", root, split, offset)
 
 
-@input_sanitization_decorator
-@dataset_docstring_header_decorator
+@wrap_split_argument
+@add_docstring_header
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     """
     Examples:
