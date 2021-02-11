@@ -63,6 +63,8 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         chunk_size = 16 * 1024
         total_size = int(r.headers.get('Content-length', 0))
         if filename is None:
+            if 'content-disposition' not in r.headers:
+                raise RuntimeError("Internal error: headers don't contain content-disposition.")
             d = r.headers['content-disposition']
             filename = re.findall("filename=\"(.+)\"", d)
             if filename is None:
@@ -123,6 +125,14 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
     for k, v in response.cookies.items():
         if k.startswith("download_warning"):
             confirm_token = v
+    if confirm_token is None:
+        if "Quota exceeded" in str(response.content):
+            raise RuntimeError(
+                "Google drive link {} is currently unavailable, because the quota was exceeded.".format(
+                    url
+                ))
+        else:
+            raise RuntimeError("Internal error: confirm_token was not found in Google drive link.")
 
     if confirm_token:
         url = url + "&confirm=" + confirm_token
