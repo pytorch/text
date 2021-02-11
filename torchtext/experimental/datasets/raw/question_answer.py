@@ -39,7 +39,8 @@ def _setup_datasets(dataset_name, root, split_, offset):
 
 
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
-    """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD1.0.
+    """Stanford Question Answering SQuAD1.0. dataset
+
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
     For example, ('Architecturally, the school has a Catholic character. Atop the ...',
@@ -50,8 +51,8 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets (Default: ('train', 'dev'))
-            By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
-            for example ('train', 'dev') or just a string 'train'.
+            By default, both datasets (train, dev) are generated. Users
+            could also choose only one of them, for example 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:
@@ -64,7 +65,8 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
 
 
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
-    """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD2.0.
+    """Stanford Question Answering SQuAD2.0. dataset
+
     The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     a list of answer positions in the raw context).
     For example, ('Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an ...',
@@ -75,8 +77,8 @@ def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets (Default: ('train', 'dev'))
-            By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
-            for example ('train', 'dev') or just a string 'train'.
+            By default, both datasets (train, dev) are generated. Users
+            could also choose only one of them, for example 'train'.
         offset: the number of the starting line. Default: 0
 
     Examples:

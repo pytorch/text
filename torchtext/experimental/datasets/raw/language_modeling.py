@@ -60,7 +60,7 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets. Default: ('train', 'valid, 'test')
-            By default, all the three datasets (train, valid, test) are generated. Users
+            By default, all three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 
@@ -82,7 +82,7 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
     Args:
         root: Directory where the datasets are saved. Default: ".data"
         split: the returned datasets. Default: ('train', 'valid','test')
-            By default, all the three datasets (train, valid, test) are generated. Users
+            By default, all three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 
@@ -104,7 +104,7 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
         root: Directory where the datasets are saved. Default: ".data"
         split: a string or tuple for the returned datasets
             (Default: ('train', 'test','valid'))
-            By default, all the three datasets (train, valid, test) are generated. Users
+            By default, all three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         offset: the number of the starting line. Default: 0
 

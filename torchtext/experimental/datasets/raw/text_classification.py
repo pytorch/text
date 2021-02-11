@@ -56,9 +56,7 @@ def _setup_datasets(dataset_name, root, split_, offset):
 
 
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
-    """ Defines AG_NEWS datasets.
-
-    Create supervised learning dataset: AG_NEWS
+    """AG_NEWS dataset
 
     Separately returns the training and test dataset
 
@@ -77,9 +75,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
 
 
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
-    """ Defines SogouNews datasets.
-
-    Create supervised learning dataset: SogouNews
+    """SogouNews dataset
 
     Separately returns the training and test dataset
 
@@ -98,9 +94,7 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
 
 
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
-    """ Defines DBpedia datasets.
-
-    Create supervised learning dataset: DBpedia
+    """DBpedia dataset
 
     Separately returns the training and test dataset
 
@@ -119,9 +113,7 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
 
 
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
-    """ Defines YelpReviewPolarity datasets.
-
-    Create supervised learning dataset: YelpReviewPolarity
+    """YelpReviewPolarity dataset
 
     Separately returns the training and test dataset
 
@@ -140,9 +132,7 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
-    """ Defines YelpReviewFull datasets.
-
-    Create supervised learning dataset: YelpReviewFull
+    """YelpReviewFull dataset
 
     Separately returns the training and test dataset
 
@@ -161,9 +151,7 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
 
 
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
-    """ Defines YahooAnswers datasets.
-
-    Create supervised learning dataset: YahooAnswers
+    """YahooAnswers dataset
 
     Separately returns the training and test dataset
 
@@ -182,9 +170,7 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
 
 
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
-    """ Defines AmazonReviewPolarity datasets.
-
-    Create supervised learning dataset: AmazonReviewPolarity
+    """AmazonReviewPolarity dataset
 
     Separately returns the training and test dataset
 
@@ -203,9 +189,7 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
-    """ Defines AmazonReviewFull datasets.
-
-    Create supervised learning dataset: AmazonReviewFull
+    """AmazonReviewFull dataset
 
     Separately returns the training and test dataset
 
@@ -234,9 +218,7 @@ def generate_imdb_data(key, extracted_files):
 
 
 def IMDB(root='.data', split=('train', 'test'), offset=0):
-    """ Defines raw IMDB datasets.
-
-    Create supervised learning dataset: IMDB
+    """IMDB dataset
 
     Separately returns the raw training and test dataset
 

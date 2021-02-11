@@ -194,8 +194,10 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
              split=('train', 'valid', 'test'), root='.data', offset=0):
-    """ Define translation datasets: Multi30k
+    """Multi30k dataset
+
         Separately returns train/valid/test datasets as a tuple
+
         The available dataset include:
             test_2016_flickr.cs
             test_2016_flickr.de
@@ -255,7 +257,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all the three datasets (train, valid, test) are generated. Users
+            By default, all three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'.
         root: Directory where the datasets are saved. Default: ".data"
@@ -274,8 +276,10 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
           split=('train', 'valid', 'test'), root='.data', offset=0):
-    """ Define translation datasets: IWSLT
+    """IWSLT dataset
+
         Separately returns train/valid/test datasets
+
         The available datasets include:
             IWSLT16.TED.dev2010.ar-en.ar
             IWSLT16.TED.dev2010.ar-en.en
@@ -421,7 +425,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all the three datasets (train, valid, test) are generated. Users
+            By default, all three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'.
         root: Directory where the datasets are saved. Default: ".data"
@@ -441,8 +445,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
           split=('train', 'valid', 'test'), root='.data', offset=0):
-    """ Define translation datasets: WMT14
+    """WMT14 dataset
+
         Separately returns train/valid/test datasets
+
         The available datasets include:
             newstest2016.en
             newstest2016.de
@@ -502,10 +508,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
-        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all the three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
+        split: a string or tuple for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
         root: Directory where the datasets are saved. Default: ".data"
         offset: the number of the starting line. Default: 0
 
