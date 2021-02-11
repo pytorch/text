@@ -84,7 +84,6 @@ def input_sanitization_decorator(fn):
             argspec.defaults[0] == ".data" and
             argspec.defaults[2] == 0):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
-    default_split = argspec.defaults[1]
 
     @functools.wraps(fn)
     def new_fn(root='.data', split=argspec.defaults[1], offset=0, **kwargs):
