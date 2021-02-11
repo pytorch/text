@@ -190,10 +190,10 @@ def _setup_datasets(dataset_name,
     return wrap_datasets(tuple(datasets), split_)
 
 
-def Multi30k(train_filenames=("train.de", "train.en"),
+def Multi30k(split=('train', 'valid', 'test'), root='.data', offset=0,
+             train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
-             test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             split=('train', 'valid', 'test'), root='.data', offset=0):
+             test_filenames=("test_2016_flickr.de", "test_2016_flickr.en")):
     """Multi30k dataset
 
     Separately returns the train/valid/test split
@@ -250,18 +250,17 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         val.5.en
 
     Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+            By default, all three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
+        offset: the number of the starting line. Default: 0
         train_filenames: the source and target filenames for training.
             Default: ('train.de', 'train.en')
         valid_filenames: the source and target filenames for valid.
             Default: ('val.de', 'val.en')
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
-        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
-        root: Directory where the datasets are saved. Default: ".data"
-        offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import Multi30k
@@ -270,12 +269,12 @@ def Multi30k(train_filenames=("train.de", "train.en"),
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
 
-def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
+def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
+          train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
-                          'IWSLT16.TED.tst2014.de-en.en'),
-          split=('train', 'valid', 'test'), root='.data', offset=0):
+                          'IWSLT16.TED.tst2014.de-en.en')):
     """IWSLT dataset
 
     Separately returns train/valid/test split
@@ -418,18 +417,17 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         train.tags.fr-en.fr
 
     Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+            By default, all three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
+        offset: the number of the starting line. Default: 0
         train_filenames: the source and target filenames for training.
             Default: ('train.de-en.de', 'train.de-en.en')
         valid_filenames: the source and target filenames for valid.
             Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
-        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
-        root: Directory where the datasets are saved. Default: ".data"
-        offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import IWSLT
@@ -438,13 +436,13 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
 
-def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
+def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
+          train_filenames=('train.tok.clean.bpe.32000.de',
                            'train.tok.clean.bpe.32000.en'),
           valid_filenames=('newstest2013.tok.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
-                          'newstest2014.tok.bpe.32000.en'),
-          split=('train', 'valid', 'test'), root='.data', offset=0):
+                          'newstest2014.tok.bpe.32000.en')):
     """WMT14 dataset
 
     Separately returns train/valid/test split
@@ -502,18 +500,17 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         train.tok.clean.bpe.32000.de
 
     Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets (Default: ('train', 'valid', 'test'))
+            By default, all three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
+        offset: the number of the starting line. Default: 0
         train_filenames: the source and target filenames for training.
             Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
         valid_filenames: the source and target filenames for valid.
             Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
-        split: a string or tuple for the returned datasets
-            (Default: ('train', 'test','valid'))
-            By default, all three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or just 'train'.
-        root: Directory where the datasets are saved. Default: ".data"
-        offset: the number of the starting line. Default: 0
 
     Examples:
         >>> from torchtext.experimental.datasets.raw import WMT14

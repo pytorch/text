@@ -118,7 +118,7 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
     return _setup_datasets("PennTreebank", root, split, None, None, offset)
 
 
-def WMTNewsCrawl(root='.data', split='train', year=2010, language='en', offset=0):
+def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
     """WMT News Crawl dataset
 
     Returns the train split.
