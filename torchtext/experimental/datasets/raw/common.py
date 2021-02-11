@@ -28,6 +28,11 @@ def wrap_datasets(datasets, split):
 
 
 def dataset_docstring_header(fn):
+    """
+    Returns docstring for a dataset based on function arguments.
+
+    Assumes function signature of form (root='.data', split=<some tuple of strings>, offset=0, **kwargs)
+    """
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
@@ -77,6 +82,18 @@ def add_docstring_header(fn):
 
 
 def wrap_split_argument(fn):
+    """
+    Wraps given function of specific signature to extend behavior of split
+    to support individual strings. The given function is expected to have a split
+    kwarg that accepts tuples of strings, e.g. ('train', 'valid') and the returned
+    function will have a split argument that also accepts strings, e.g. 'train', which
+    are then turned single entry tuples. Furthermore, the return value of the wrapped
+    function is unpacked if split is only a single string to enable behavior such as
+
+    train = AG_NEWS(split='train')
+    train, valid = AG_NEWS(split=('train', 'valid'))
+    """
+
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
@@ -91,6 +108,11 @@ def wrap_split_argument(fn):
             ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
+    # functools.wraps only forwards __module__, __name__, etc
+    # (see https://docs.python.org/3/library/functools.html#functools.update_wrapper)
+    # but not default values of arguments. The wrapped function fn is assumed to have
+    # keyword arguments with default values only, so only  a dictionary of default
+    # values is needed to support that behavior for new_fn as well.
     fn_kwargs_dict = {}
     for arg, default in zip(argspec.args, argspec.defaults):
         fn_kwargs_dict[arg] = default
