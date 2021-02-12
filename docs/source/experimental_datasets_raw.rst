@@ -1,25 +1,22 @@
-torchtext.experimental.datasets
+torchtext.experimental.datasets.raw
 ===============================
 
-.. currentmodule:: torchtext.experimental.datasets
+.. currentmodule:: torchtext.experimental.datasets.raw
 
-The following datasets have been rewritten and more compatible with ``torch.utils.data``. General use cases are as follows: ::
+General use cases are as follows: ::
 
 
     # import datasets
-    from torchtext.experimental.datasets import IMDB
+    from torchtext.experimental.datasets.raw import IMDB
 
-    # set up tokenizer (the default on is basic_english tokenizer)
-    from torchtext.data.utils import get_tokenizer
-    tokenizer = get_tokenizer("spacy")
+    train_iter = IMDB(split='train')
 
-    # obtain data and vocab with a custom tokenizer
-    train_dataset, test_dataset = IMDB(tokenizer=tokenizer)
-    vocab = train_dataset.get_vocab()
-
-    # use the default tokenizer
-    train_dataset, test_dataset = IMDB()
-    vocab = train_dataset.get_vocab()
+    def tokenize(label, line):
+        return line.split()
+     
+    tokens = []
+    for line in train_iter:
+        tokens += tokenize(line)
 
 The following datasets are available:
 
@@ -32,11 +29,6 @@ Text Classification
 
 TextClassificationDataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Text classification datasets are subclasses of ``TextClassificationDataset`` class.
-
-.. autoclass:: TextClassificationDataset
-  :members: __init__
 
 AG_NEWS
 ~~~~~~~
@@ -88,12 +80,6 @@ IMDb
 Language Modeling
 ^^^^^^^^^^^^^^^^^
 
-Language modeling datasets are subclasses of ``LanguageModelingDataset`` class.
-
-.. autoclass:: LanguageModelingDataset
-  :members: __init__
-
-
 WikiText-2
 ~~~~~~~~~~
 
@@ -121,12 +107,6 @@ WMTNewsCrawl
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Translation datasets are subclasses of ``TranslationDataset`` class.
-
-.. autoclass:: TranslationDataset
-  :members: __init__
-
-
 Multi30k
 ~~~~~~~~
 
@@ -148,11 +128,6 @@ WMT14
 Sequence Tagging
 ^^^^^^^^^^^^^^^^
 
-Sequence Tagging datasets are subclasses of ``SequenceTaggingDataset`` class.
-
-.. autoclass:: SequenceTaggingDataset
-  :members: __init__
-
 UDPOS
 ~~~~~
 
@@ -165,12 +140,6 @@ CoNLL2000Chunking
 
 Question Answer
 ^^^^^^^^^^^^^^^
-
-Question answer datasets are subclasses of ``QuestionAnswerDataset`` class.
-
-.. autoclass:: QuestionAnswerDataset
-  :members: __init__
-
 
 SQuAD 1.0
 ~~~~~~~~~
