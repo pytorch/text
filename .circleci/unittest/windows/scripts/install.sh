@@ -21,3 +21,6 @@ conda install -y -c "pytorch-${UPLOAD_CHANNEL}" pytorch cpuonly
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
 "$root_dir/packaging/vc_env_helper.bat" python setup.py develop
+
+printf "* Installing parameterized\n"
+pip install parameterized

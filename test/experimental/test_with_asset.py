@@ -62,10 +62,10 @@ class TestWithAsset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 320, 437, 687])
 
         # Add test for the subset of the standard datasets
-        train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText103(data_select=('train', 'test'))
+        train_dataset, test_dataset = torchtext.experimental.datasets.raw.WikiText103(split=('train', 'test'))
         self._helper_test_func(len(train_dataset), 1801350, next(iter(train_dataset)), ' \n')
         self._helper_test_func(len(test_dataset), 4358, next(iter(test_dataset)), ' \n')
-        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, data_select=('train', 'test'))
+        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, split=('train', 'test'))
         self._helper_test_func(len(train_dataset), 1801350, train_dataset[10][:5],
                                [2, 69, 12, 14, 265])
         self._helper_test_func(len(test_dataset), 4358, test_dataset[28][:5],
@@ -85,7 +85,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
             vocab_transform = VocabTransform(load_vocab_from_file(f))
             self.assertEqual(vocab_transform(['of', 'that', 'new']),
                              [7, 18, 24])
-            jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
+            jit_vocab_transform = torch.jit.script(vocab_transform)
             self.assertEqual(jit_vocab_transform(['of', 'that', 'new', 'that']),
                              [7, 18, 24, 18])
 
@@ -131,7 +131,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = GloVe(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+            jit_vectors_obj = torch.jit.script(vectors_obj)
 
             # The first 3 entries in each vector.
             expected_glove = {
@@ -195,7 +195,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
             tokenizer = basic_english_normalize()
-            jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+            jit_tokenizer = torch.jit.script(tokenizer)
             v = build_vocab_from_text_file(f, jit_tokenizer)
             expected_itos = ["'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                              'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
@@ -247,7 +247,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
         with open(asset_path, 'r') as f:
             pipeline = TextSequentialTransforms(basic_english_normalize(), load_vocab_from_file(f))
-            jit_pipeline = torch.jit.script(pipeline.to_ivalue())
+            jit_pipeline = torch.jit.script(pipeline)
             self.assertEqual(pipeline('of that new'), [7, 18, 24])
             self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
 
@@ -274,7 +274,7 @@ class TestTransformsWithAsset(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vectors_obj = FastText(root=dir_name, validate_file=False)
-            jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+            jit_vectors_obj = torch.jit.script(vectors_obj)
 
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = {
