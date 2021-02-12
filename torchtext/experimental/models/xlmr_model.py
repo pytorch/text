@@ -61,7 +61,7 @@ class SentenceClassificationHead(nn.Module):
         return x
 
 
-def _load_sentence_classifier():
+def sentence_classifier_head():
     classifier = SentenceClassificationHead(10, embed_dim=768, dropout=0.2)
     classifier.load_state_dict(load_state_dict_from_url(TASK_PRETRAINED['xlmr_base_sentence_classifier'],
                                hash_value=TASK_SHA256['xlmr_base_sentence_classifier']))
@@ -91,7 +91,7 @@ def xlmr_base_sentence_classifier():
     xlmr_transform = load_xlmr_transform()
 
     # Load classifier head
-    sentence_classifier = _load_sentence_classifier()
+    sentence_classifier = sentence_classifier_head()
     return TransformerEncoderSentenceClassification(xlmr_model, sentence_classifier), xlmr_transform
 
 
