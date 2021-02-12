@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from typing import List
 from torchtext._torchtext import RegexTokenizer as RegexTokenizerPybind
-from collections import OrderedDict
 from torch import Tensor
 from torchtext._torchtext import SentencePiece as SentencePiecePybind
 import io
@@ -50,7 +49,7 @@ def basic_english_normalize():
         >>> from torchtext.experimental.transforms import basic_english_normalize
         >>> test_sample = 'Basic English Normalization for a Line of Text'
         >>> basic_eng_norm = basic_english_normalize()
-        >>> jit_basic_eng_norm = torch.jit.script(basic_eng_norm.to_ivalue())
+        >>> jit_basic_eng_norm = torch.jit.script(basic_eng_norm)
         >>> tokens = jit_basic_eng_norm(test_sample)
     """
 
@@ -124,10 +123,9 @@ class BasicEnglishNormalize(nn.Module):
 
         return self.regex_tokenizer.forward(line)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         r"""Return a JITable BasicEnglishNormalize.
         """
-
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, True)
         return BasicEnglishNormalize(regex_tokenizer)
 
@@ -159,10 +157,9 @@ class RegexTokenizer(nn.Module):
 
         return self.regex_tokenizer.forward(line)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         r"""Return a JITable RegexTokenizer.
         """
-
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
         return RegexTokenizer(regex_tokenizer)
 
@@ -177,24 +174,13 @@ class TextSequentialTransforms(nn.Sequential):
             >>> txt_pipeline = TextSequentialTransforms(tokenizer)
             >>> txt_pipeline('here is an example')
                 ['here', 'is', 'an', 'example']
-            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline.to_ivalue())
+            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
     """
 
     def forward(self, input: str):
         for module in self:
             input = module(input)
         return input
-
-    def to_ivalue(self):
-        r"""Return a JITable TextSequentialTransforms.
-        """
-
-        module_list = []
-        for _idx, _module in enumerate(self):
-            if hasattr(_module, 'to_ivalue'):
-                _module = _module.to_ivalue()
-            module_list.append((str(_idx), _module))
-        return TextSequentialTransforms(OrderedDict(module_list))
 
 
 PRETRAINED_SP_MODEL = {
@@ -263,7 +249,7 @@ def sentencepiece_tokenizer(sp_model):
         >>> import torch
         >>> from torchtext.experimental.transforms import sentencepiece_tokenizer
         >>> spm_tokenizer = sentencepiece_tokenizer('m_user.model')
-        >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
+        >>> jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
     """
 
     spm = load_sp_model(sp_model)
@@ -308,7 +294,7 @@ class SentencePieceTokenizer(nn.Module):
 
         return self.sp_model.DecodePieces(tokens)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model._return_content())
         return SentencePieceTokenizer(torchbind_spm)
 
@@ -323,7 +309,7 @@ def sentencepiece_processor(sp_model):
         >>> import torch
         >>> from torchtext.experimental.transforms import sentencepiece_processor
         >>> spm_processor = sentencepiece_processor('m_user.model')
-        >>> jit_spm_processor = torch.jit.script(spm_processor.to_ivalue())
+        >>> jit_spm_processor = torch.jit.script(spm_processor)
     """
 
     spm = load_sp_model(sp_model)
@@ -366,7 +352,7 @@ class SentencePieceProcessor(nn.Module):
 
         return self.sp_model.DecodeIds(ids)
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         torchbind_spm = torch.classes.torchtext.SentencePiece(self.sp_model._return_content())
         return SentencePieceProcessor(torchbind_spm)
 
@@ -382,7 +368,7 @@ class VocabTransform(nn.Module):
         >>> from torchtext.experimental.vocab import vocab_from_file_object
         >>> f = open('vocab.txt', 'r')
         >>> vocab_transform = VocabTransform(vocab_from_file_object(f))
-        >>> jit_vocab_transform = torch.jit.script(vocab_transform.to_ivalue())
+        >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
     def __init__(self, vocab):
@@ -402,12 +388,6 @@ class VocabTransform(nn.Module):
 
         return self.vocab.lookup_indices(tokens)
 
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            vocab = self.vocab.to_ivalue()
-            return VocabTransform(vocab)
-        return self
-
 
 class VectorTransform(nn.Module):
     r"""Vector transform
@@ -419,7 +399,7 @@ class VectorTransform(nn.Module):
         >>> import torch
         >>> from torchtext.experimental.vectors import FastText
         >>> vector_transform = VectorTransform(FastText())
-        >>> jit_vector_transform = torch.jit.script(vector_transform.to_ivalue())
+        >>> jit_vector_transform = torch.jit.script(vector_transform)
     """
 
     def __init__(self, vector):
@@ -438,9 +418,3 @@ class VectorTransform(nn.Module):
         """
 
         return self.vector.lookup_vectors(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vector, 'to_ivalue'):
-            vector = self.vector.to_ivalue()
-            return VectorTransform(vector)
-        return self

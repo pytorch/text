@@ -41,7 +41,7 @@ def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, num_cpu
         >>> f = open('vocab.txt', 'r')
         >>>     tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
-        >>> jit_tokenizer = torch.jit.script(tokenizer.to_ivalue())
+        >>> jit_tokenizer = torch.jit.script(tokenizer)
         >>> v = build_vocab_from_text_file(f, jit_tokenizer)
         >>> v.insert_token('<unk>', 0)
         >>> v.set_default_index(0)
@@ -308,7 +308,7 @@ class Vocab(nn.Module):
         """
         return self.vocab.get_itos()
 
-    def to_ivalue(self):
+    def __prepare_scriptable__(self):
         r"""Return a JITable Vocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_)

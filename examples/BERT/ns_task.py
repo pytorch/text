@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
-from model import NextSentenceTask, BertModel
+from model import NextSentenceTask, BertModel, BertEmbedding
 from utils import run_demo, run_ddp, wrap_up
 
 
@@ -149,7 +149,8 @@ def run_main(args, rank=None):
     if args.checkpoint != 'None':
         model = torch.load(args.checkpoint)
     else:
-        pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+        embed_layer = BertEmbedding(len(vocab), args.emsize)
+        pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, embed_layer, args.dropout)
         pretrained_bert.load_state_dict(torch.load(args.bert_model))
         model = NextSentenceTask(pretrained_bert)
 
