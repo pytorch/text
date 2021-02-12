@@ -1,13 +1,14 @@
 #!/usr/bin/env python
+from build_tools import setup_helpers
+import distutils.command.clean
 import io
 import os
+from pathlib import Path
+from setuptools import setup, find_packages
 import shutil
 import subprocess
-from pathlib import Path
-import distutils.command.clean
-from setuptools import setup, find_packages
-
-from build_tools import setup_helpers
+import sys
+import time
 
 ROOT_DIR = Path(__file__).parent.resolve()
 
@@ -42,6 +43,22 @@ def _export_version(version, sha):
     with open(version_path, 'w') as fileobj:
         fileobj.write("__version__ = '{}'\n".format(version))
         fileobj.write("git_version = {}\n".format(repr(sha)))
+
+
+def check_submodules():
+    third_party_dir = ROOT_DIR / 'third_party'
+    if not (third_party_dir / 're2' / 'CMakeFiles.txt').exists():
+        print(' --- third_party/re2/CMakeFiles.txt do not exist, trying to init submodules')
+        try:
+            start = time.time()
+            subprocess.check_call(['git', 'submodule', 'init'])
+            subprocess.check_call(['git', 'submodule', 'update'])
+            end = time.time()
+            print(f' --- Submodule initialization took {end-start:.2f} sec')
+        except Exception:
+            print(' --- Submodule initalization failed')
+            print('Please run:\n\tgit submodule update --init --recursive')
+            sys.exit(1)
 
 
 VERSION, SHA = _get_version()
@@ -112,4 +129,5 @@ setup_info = dict(
     },
 )
 
+check_submodules()
 setup(**setup_info)
