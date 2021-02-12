@@ -55,10 +55,12 @@ class TestVectors(TorchtextTestCase):
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
         vectors_obj.set_default_tensor(unk_tensor)
-        jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+        jit_vectors_obj = torch.jit.script(vectors_obj)
 
         assert not vectors_obj.is_jitable
-        assert vectors_obj.to_ivalue().is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        assert vectors_obj.__prepare_scriptable__().is_jitable
 
         self.assertEqual(vectors_obj['a'], jit_vectors_obj['a'])
         self.assertEqual(vectors_obj['b'], jit_vectors_obj['b'])
@@ -73,7 +75,7 @@ class TestVectors(TorchtextTestCase):
         vecs = torch.stack((tensorA, tensorB), 0)
         vectors_obj = build_vectors(tokens, vecs)
         vectors_obj.set_default_tensor(unk_tensor)
-        jit_vectors_obj = torch.jit.script(vectors_obj.to_ivalue())
+        jit_vectors_obj = torch.jit.script(vectors_obj)
 
         tokens_to_lookup = ['a', 'b', 'c']
         expected_vectors = torch.stack((tensorA, tensorB, unk_tensor), 0)
@@ -154,7 +156,9 @@ class TestVectors(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             vector_path = os.path.join(self.test_dir, 'vectors_torchscript.pt')
-            torch.save(vectors_obj.to_ivalue(), vector_path)
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            torch.save(vectors_obj.__prepare_scriptable__(), vector_path)
             loaded_vectors_obj = torch.load(vector_path)
 
             self.assertEqual(loaded_vectors_obj['a'], tensorA)

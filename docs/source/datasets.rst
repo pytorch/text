@@ -74,13 +74,13 @@ SST
 ~~~
 
 .. autoclass:: SST
-  :members: splits, iters
+  :members: __init__, splits, iters
 
 IMDb
 ~~~~
 
 .. autoclass:: IMDB
-  :members: splits, iters
+  :members: __init__, splits, iters
 
 
 Text Classification

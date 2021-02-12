@@ -18,7 +18,7 @@ class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_processor(self):
         model_path = get_asset_path('spm_example.model')
         spm_transform = sentencepiece_processor(model_path)
-        jit_spm_transform = torch.jit.script(spm_transform.to_ivalue())
+        jit_spm_transform = torch.jit.script(spm_transform)
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = [15340, 4286, 981, 1207, 1681, 17, 84, 684, 8896, 5366,
                        144, 3689, 9, 5602, 12114, 6, 560, 649, 5602, 12114]
@@ -30,7 +30,7 @@ class TestTransforms(TorchtextTestCase):
     def test_sentencepiece_tokenizer(self):
         model_path = get_asset_path('spm_example.model')
         spm_tokenizer = sentencepiece_tokenizer(model_path)
-        jit_spm_tokenizer = torch.jit.script(spm_tokenizer.to_ivalue())
+        jit_spm_tokenizer = torch.jit.script(spm_tokenizer)
         test_sample = 'SentencePiece is an unsupervised text tokenizer and detokenizer'
         ref_results = ['\u2581Sent', 'ence', 'P', 'ie', 'ce', '\u2581is',
                        '\u2581an', '\u2581un', 'super', 'vis', 'ed', '\u2581text',
@@ -53,7 +53,7 @@ class TestTransforms(TorchtextTestCase):
             data_path = os.path.join(dir_name, asset_name)
             shutil.copy(asset_path, data_path)
             vector_transform = VectorTransform(FastText(root=dir_name, validate_file=False))
-            jit_vector_transform = torch.jit.script(vector_transform.to_ivalue())
+            jit_vector_transform = torch.jit.script(vector_transform)
             # The first 3 entries in each vector.
             expected_fasttext_simple_en = torch.tensor([[-0.065334, -0.093031, -0.017571],
                                                         [-0.32423, -0.098845, -0.0073467]])
@@ -79,7 +79,9 @@ class TestTransforms(TorchtextTestCase):
 
         with self.subTest('torchscript'):
             save_path = os.path.join(self.test_dir, 'spm_torchscript.pt')
-            spm = sentencepiece_tokenizer((model_path)).to_ivalue()
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            spm = sentencepiece_tokenizer((model_path)).__prepare_scriptable__()
             torch.save(spm, save_path)
             loaded_spm = torch.load(save_path)
             self.assertEqual(expected, loaded_spm(input))
