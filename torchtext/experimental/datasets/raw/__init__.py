@@ -39,4 +39,28 @@ URLS.update(translation_URLS)
 URLS.update(language_modeling_URLS)
 URLS.update(question_answer_URLS)
 
+from .text_classification import NUM_LINES as text_classification_NUM_LINES
+from .sequence_tagging import NUM_LINES as sequence_tagging_NUM_LINES
+from .translation import NUM_LINES as translation_NUM_LINES
+from .language_modeling import NUM_LINES as language_modeling_NUM_LINES
+from .question_answer import NUM_LINES as question_answer_NUM_LINES
+
+NUM_LINES = text_classification_NUM_LINES
+NUM_LINES.update(sequence_tagging_NUM_LINES)
+NUM_LINES.update(translation_NUM_LINES)
+NUM_LINES.update(language_modeling_NUM_LINES)
+NUM_LINES.update(question_answer_NUM_LINES)
+
+from .text_classification import MD5 as text_classification_MD5
+from .sequence_tagging import MD5 as sequence_tagging_MD5
+from .translation import MD5 as translation_MD5
+from .language_modeling import MD5 as language_modeling_MD5
+from .question_answer import MD5 as question_answer_MD5
+
+MD5 = text_classification_MD5
+MD5.update(sequence_tagging_MD5)
+MD5.update(translation_MD5)
+MD5.update(language_modeling_MD5)
+MD5.update(question_answer_MD5)
+
 __all__ = sorted(list(map(str, DATASETS.keys())))
