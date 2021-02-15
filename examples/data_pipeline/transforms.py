@@ -24,14 +24,6 @@ class PretrainedSPVocab(nn.Module):
     def insert_token(self, token: str, index: int) -> None:
         self.vocab.insert_token(token, index)
 
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            sp_model = self.sp_model
-            new_module = PretrainedSPVocab(sp_model)
-            new_module.vocab = self.vocab.to_ivalue()
-            return new_module
-        return self
-
 
 class PyTextVocabTransform(nn.Module):
     r"""PyTextVocabTransform transform
@@ -56,12 +48,6 @@ class PyTextScriptVocabTransform(nn.Module):
 
     def forward(self, tokens: List[str]) -> List[int]:
         return self.vocab.lookup_indices_1d(tokens)
-
-    def to_ivalue(self):
-        if hasattr(self.vocab, 'to_ivalue'):
-            vocab = self.vocab.to_ivalue()
-            return PyTextScriptVocabTransform(vocab)
-        return self
 
 
 class ToLongTensor(nn.Module):
