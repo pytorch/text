@@ -61,16 +61,16 @@ class QuestionAnswerDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
+def _setup_datasets(dataset_name, root, vocab, tokenizer, split):
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer('basic_english')
     text_transform = sequential_transforms(tokenizer)
-    data_select = check_default_set(data_select, ('train', 'dev'))
-    raw_datasets = raw.DATASETS[dataset_name](root=root, data_select=data_select)
-    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
+    split = check_default_set(split, ('train', 'dev'))
+    raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     if vocab is None:
-        if 'train' not in data_select:
+        if 'train' not in split:
             raise TypeError("Must pass a vocab if train is not selected.")
 
         def apply_transform(data):
@@ -85,11 +85,11 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, data_select):
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
                   'answers': text_transform, 'ans_pos': totensor(dtype=torch.long)}
-    logger_.info('Building datasets for {}'.format(data_select))
-    return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in data_select)
+    logger_.info('Building datasets for {}'.format(split))
+    return tuple(QuestionAnswerDataset(raw_data[item], vocab, transforms) for item in split)
 
 
-def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
+def SQuAD1(root='.data', vocab=None, tokenizer=None, split=('train', 'dev')):
     """ Defines SQuAD1 datasets.
 
     Create question answer dataset: SQuAD1
@@ -104,7 +104,7 @@ def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'dev'))
             By default, all the two datasets (train, dev) are generated. Users
             could also choose any one of them, for example ('train', 'test') or
@@ -120,10 +120,10 @@ def SQuAD1(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
         >>> train, dev = SQuAD1(tokenizer=tokenizer)
     """
 
-    return _setup_datasets('SQuAD1', root, vocab, tokenizer, data_select)
+    return _setup_datasets('SQuAD1', root, vocab, tokenizer, split)
 
 
-def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev')):
+def SQuAD2(root='.data', vocab=None, tokenizer=None, split=('train', 'dev')):
     """ Defines SQuAD2 datasets.
 
     Create question answer dataset: SQuAD2
@@ -138,7 +138,7 @@ def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
             The default one is basic_english tokenizer in fastText. spacy tokenizer
             is supported as well. A custom tokenizer is callable
             function with input of a string and output of a token list.
-        data_select: a string or tuple for the returned datasets
+        split: a string or tuple for the returned datasets
             (Default: ('train', 'dev'))
             By default, all the two datasets (train, dev) are generated. Users
             could also choose any one of them, for example ('train', 'test') or
@@ -154,7 +154,7 @@ def SQuAD2(root='.data', vocab=None, tokenizer=None, data_select=('train', 'dev'
         >>> train, dev = SQuAD2(tokenizer=tokenizer)
     """
 
-    return _setup_datasets('SQuAD2', root, vocab, tokenizer, data_select)
+    return _setup_datasets('SQuAD2', root, vocab, tokenizer, split)
 
 
 DATASETS = {
