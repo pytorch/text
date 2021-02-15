@@ -40,7 +40,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         for i, item in enumerate(self._iterator):
             if i < self.start:
                 continue
-            if self.num_lines and i > (self.start + self.num_lines):
+            if self.num_lines and i >= (self.start + self.num_lines):
                 break
             yield item
 
