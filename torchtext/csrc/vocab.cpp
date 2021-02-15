@@ -101,6 +101,10 @@ void Vocab::set_default_index(const int64_t index) {
   default_index_ = index;
 }
 
+bool Vocab::have_default_index() {
+    return default_index_.has_value();
+}
+
 int64_t Vocab::get_default_index() const { return default_index_.value(); }
 
 std::string Vocab::lookup_token(const int64_t &index) {

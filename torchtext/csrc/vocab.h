@@ -25,6 +25,7 @@ public:
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
   void set_default_index(const int64_t index);
+  bool have_default_index();
   int64_t get_default_index() const;
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);

@@ -211,6 +211,13 @@ class Vocab(nn.Module):
         self.vocab.set_default_index(index)
 
     @torch.jit.export
+    def have_default_index(self) -> bool:
+        r"""
+        Check if the vocab has the default index
+        """
+        return self.vocab.have_default_index()
+
+    @torch.jit.export
     def get_default_index(self) -> int:
         r"""
         return:
@@ -286,8 +293,6 @@ class Vocab(nn.Module):
         r"""Return a JITable Vocab.
         """
         cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_)
-        try:
+        if self.vocab.have_default_index():
             cpp_vocab.set_default_index(self.vocab.get_default_index())
-            return Vocab(cpp_vocab)
-        except RuntimeError:
-            return Vocab(cpp_vocab)
+        return Vocab(cpp_vocab)
