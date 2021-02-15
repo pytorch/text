@@ -1,4 +1,5 @@
 import io
+import os
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
@@ -26,6 +27,20 @@ URLS = {
         'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 }
 
+_PATHS = {
+    'AG_NEWS':
+        {'train': 'train.csv',
+         'test': 'test.csv'},
+    'SogouNews': 'sogou_news_csv.tar.gz',
+    'DBpedia': 'dbpedia_csv.tar.gz',
+    'YelpReviewPolarity': 'yelp_review_polarity_csv.tar.gz',
+    'YelpReviewFull': 'yelp_review_full_csv.tar.gz',
+    'YahooAnswers': 'yahoo_answers_csv.tar.gz',
+    'AmazonReviewPolarity': 'amazon_review_polarity_csv.tar.gz',
+    'AmazonReviewFull': 'amazon_review_full_csv.tar.gz',
+    'IMDB': 'aclImdb_v1.tar.gz'
+}
+
 
 def _create_data_from_csv(data_path):
     with io.open(data_path, encoding="utf8") as f:
@@ -37,10 +52,12 @@ def _create_data_from_csv(data_path):
 def _setup_datasets(dataset_name, root, split, offset):
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
+                                             path=os.path.join(root, _PATHS[dataset_name][item]),
                                              hash_value=MD5['AG_NEWS'][item],
                                              hash_type='md5') for item in ('train', 'test')]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root,
+                                        path=os.path.join(root, _PATHS[dataset_name]),
                                         hash_value=MD5[dataset_name], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
 
