@@ -6,6 +6,7 @@ import torch
 import torchtext
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
+from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
 
 
@@ -129,15 +130,31 @@ class TestDataset(TorchtextTestCase):
                                [3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053])
         self._helper_test_func(len(test_dataset), 7600, test_dataset[-1][1][:10],
                                [2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786])
-
         # Add test for the subset of the standard datasets
         train_dataset = AG_NEWS(split='train')
         self._helper_test_func(len(train_dataset), 120000, train_dataset[-1][1][:10],
                                [2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405])
+
+    def test_raw_ag_news(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
         self._helper_test_func(len(train_iter), 120000, next(train_iter)[1][:25], 'Wall St. Bears Claw Back ')
         self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
         del train_iter, test_iter
+
+    @parameterized.expand(load_params('raw_datasets.json'))
+    def test_raw_text_classification(self, info):
+        dataset_name = info['dataset_name']
+        split = info['split']
+        data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+        self.assertEqual(len(data_iter), info['NUM_LINES'])
+        self.assertEqual(next(data_iter), info['first_line'])
+        if dataset_name == "AG_NEWS":
+            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name][split], info['URL'])
+            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name][split], info['MD5'])
+        else:
+            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name], info['URL'])
+            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name], info['MD5'])
+        del data_iter
 
     def test_num_lines_of_dataset(self):
         train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(offset=10)
