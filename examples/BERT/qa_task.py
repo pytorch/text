@@ -9,7 +9,7 @@ from torchtext.experimental.datasets import SQuAD1
 from model import QuestionAnswerTask
 from metrics import compute_qa_exact, compute_qa_f1
 from utils import print_loss_log
-from model import BertModel
+from model import BertModel, BertEmbedding
 from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from transforms import PretrainedSPVocab
@@ -185,7 +185,8 @@ if __name__ == "__main__":
     train_dataset = process_raw_data(train_dataset)
     dev_dataset = process_raw_data(dev_dataset)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, args.dropout)
+    embed_layer = BertEmbedding(len(vocab), args.emsize)
+    pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, embed_layer, args.dropout)
     pretrained_bert.load_state_dict(torch.load(args.bert_model))
     model = QuestionAnswerTask(pretrained_bert).to(device)
     criterion = nn.CrossEntropyLoss()

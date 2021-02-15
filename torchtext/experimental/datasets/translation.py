@@ -1,6 +1,7 @@
 import torch
 import logging
 from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_datasets
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
@@ -18,8 +19,8 @@ def build_vocab(data, transforms, index):
 
 def _setup_datasets(dataset_name,
                     train_filenames, valid_filenames, test_filenames,
-                    data_select, root, vocab, tokenizer):
-    data_select = check_default_set(data_select, ('train', 'valid', 'test'))
+                    split_, root, vocab, tokenizer):
+    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
@@ -37,13 +38,13 @@ def _setup_datasets(dataset_name,
     raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
                                               valid_filenames=valid_filenames,
                                               test_filenames=test_filenames,
-                                              data_select=data_select, root=root)
-    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(data_select, raw_datasets)}
+                                              split=split, root=root)
+    raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
 
     if src_vocab is None:
-        if 'train' not in data_select:
+        if 'train' not in split:
             raise TypeError("Must pass a vocab if train is not selected.")
         logger_.info('Building src Vocab based on train data')
         src_vocab = build_vocab(raw_data["train"],
@@ -55,7 +56,7 @@ def _setup_datasets(dataset_name,
     logger_.info('src Vocab has %d entries', len(src_vocab))
 
     if tgt_vocab is None:
-        if 'train' not in data_select:
+        if 'train' not in split:
             raise TypeError("Must pass a vocab if train is not selected.")
         logger_.info('Building tgt Vocab based on train data')
         tgt_vocab = build_vocab(raw_data["train"],
@@ -66,9 +67,9 @@ def _setup_datasets(dataset_name,
             raise TypeError("Passed tgt vocabulary is not of type Vocab")
     logger_.info('tgt Vocab has %d entries', len(tgt_vocab))
 
-    logger_.info('Building datasets for {}'.format(data_select))
+    logger_.info('Building datasets for {}'.format(split))
     datasets = []
-    for key in data_select:
+    for key in split:
         src_text_transform = sequential_transforms(src_text_vocab_transform,
                                                    vocab_func(src_vocab),
                                                    totensor(dtype=torch.long))
@@ -79,7 +80,7 @@ def _setup_datasets(dataset_name,
             TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
                                (src_text_transform, tgt_text_transform)))
 
-    return tuple(datasets)
+    return wrap_datasets(tuple(datasets), split_)
 
 
 class TranslationDataset(torch.utils.data.Dataset):
@@ -135,11 +136,10 @@ class TranslationDataset(torch.utils.data.Dataset):
 def Multi30k(train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
-             data_select=('train', 'valid', 'test'),
+             split=('train', 'valid', 'test'),
              root='.data',
              vocab=(None, None),
              tokenizer=None):
-
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
@@ -150,7 +150,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             Default: ('val.de', 'val.en')
         test_filenames: the source and target filenames for test.
             Default: ('test2016.de', 'test2016.en')
-        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -228,7 +228,7 @@ def Multi30k(train_filenames=("train.de", "train.en"),
     """
 
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames,
-                           data_select, root, vocab, tokenizer)
+                           split, root, vocab, tokenizer)
 
 
 def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -236,11 +236,10 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en'),
-          data_select=('train', 'valid', 'test'),
+          split=('train', 'valid', 'test'),
           root='.data',
           vocab=(None, None),
           tokenizer=None):
-
     """ Define translation datasets: IWSLT
     Separately returns train/valid/test datasets
     The available datasets include:
@@ -252,7 +251,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
         test_filenames: the source and target filenames for test.
             Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
-        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -417,7 +416,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
     """
 
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames,
-                           data_select, root, vocab, tokenizer)
+                           split, root, vocab, tokenizer)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -426,11 +425,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            'newstest2013.tok.bpe.32000.en'),
           test_filenames=('newstest2014.tok.bpe.32000.de',
                           'newstest2014.tok.bpe.32000.en'),
-          data_select=('train', 'valid', 'test'),
+          split=('train', 'valid', 'test'),
           root='.data',
           vocab=(None, None),
           tokenizer=None):
-
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
     The available datasets include:
@@ -493,7 +491,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
             Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
         test_filenames: the source and target filenames for test.
             Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
-        data_select: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'. If 'train' is not in the tuple or string, a vocab
@@ -520,7 +518,7 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
     """
 
     return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames,
-                           data_select, root, vocab, tokenizer)
+                           split, root, vocab, tokenizer)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}
