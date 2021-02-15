@@ -114,18 +114,19 @@ def wrap_split_argument(fn):
     # keyword arguments with default values only, so only  a dictionary of default
     # values is needed to support that behavior for new_fn as well.
     fn_kwargs_dict = {}
-    for arg, default in zip(argspec.args, argspec.defaults):
+    for arg, default in zip(argspec.args[3:], argspec.defaults[3:]):
         fn_kwargs_dict[arg] = default
 
     @functools.wraps(fn)
-    def new_fn(**kwargs):
+    def new_fn(root='.data', split=argspec.defaults[1], offset=0, **kwargs):
         for arg in fn_kwargs_dict:
             if arg not in kwargs:
                 kwargs[arg] = fn_kwargs_dict[arg]
-        orig_split = kwargs["split"]
-        kwargs["split"] = check_default_set(orig_split, argspec.defaults[1], fn.__name__)
+        kwargs["root"] = root
+        kwargs["offset"] = offset
+        kwargs["split"] = check_default_set(split, argspec.defaults[1], fn.__name__)
         result = fn(**kwargs)
-        return wrap_datasets(tuple(result), orig_split)
+        return wrap_datasets(tuple(result), split)
 
     return new_fn
 
