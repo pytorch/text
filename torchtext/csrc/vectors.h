@@ -26,6 +26,7 @@ public:
                    const torch::Tensor &vectors);
   std::unordered_map<std::string, int64_t> get_stoi();
   void set_default_tensor(const torch::Tensor default_tensor);
+  bool have_default_tensor() const;
   torch::Tensor get_default_tensor() const;
   torch::Tensor __getitem__(const std::string &token);
   torch::Tensor lookup_vectors(const std::vector<std::string> &tokens);

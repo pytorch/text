@@ -107,6 +107,8 @@ void Vectors::set_default_tensor(const torch::Tensor default_tensor) {
   default_tensor_ = default_tensor;
 }
 
+bool Vectors::have_default_tensor() const { return default_tensor_.has_value(); }
+
 torch::Tensor Vectors::get_default_tensor() const { return default_tensor_.value(); }
 
 int64_t Vectors::__len__() { return stovec_.size(); }

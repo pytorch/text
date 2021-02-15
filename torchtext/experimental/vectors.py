@@ -305,6 +305,12 @@ class Vectors(nn.Module):
         self.vectors.set_default_tensor(default_tensor)
 
     @torch.jit.export
+    def have_default_tensor(self) -> bool:
+        r"""Check if the vector has the default tensor
+        """
+        return self.vectors.have_default_tensor()
+
+    @torch.jit.export
     def get_default_tensor(self) -> Tensor:
         r"""
         return:
@@ -317,11 +323,9 @@ class Vectors(nn.Module):
         """
         stoi = self.vectors.get_stoi()
         cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_)
-        try:
+        if self.have_default_tensor():
             cpp_vectors.set_default_tensor(self.vectors.get_default_tensor())
-            return(Vectors(cpp_vectors))
-        except RuntimeError:
-            return(Vectors(cpp_vectors))
+        return(Vectors(cpp_vectors))
 
 
 CHECKSUMS_GLOVE = {

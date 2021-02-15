@@ -88,6 +88,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def("lookup_vectors", &Vectors::lookup_vectors)
       .def("__setitem__", &Vectors::__setitem__)
       .def("set_default_tensor", &Vectors::set_default_tensor)
+      .def("have_default_tensor", &Vectors::have_default_tensor)
       .def("get_default_tensor", &Vectors::get_default_tensor)
       .def("__len__", &Vectors::__len__)
       .def(py::pickle(
@@ -193,6 +194,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def("__setitem__", &Vectors::__setitem__)
     .def("__len__", &Vectors::__len__)
     .def("set_default_tensor", &Vectors::set_default_tensor)
+    .def("have_default_tensor", &Vectors::have_default_tensor)
     .def("get_default_tensor", &Vectors::get_default_tensor)
     .def_pickle(
         // __getstate__
