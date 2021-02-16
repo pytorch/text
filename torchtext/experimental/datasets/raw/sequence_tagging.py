@@ -65,7 +65,7 @@ def _setup_datasets(dataset_name, separator, root, split, offset):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
     """
     Examples:
@@ -76,7 +76,7 @@ def UDPOS(root=".data", split=('train', 'valid', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def CoNLL2000Chunking(root=".data", split=('train', 'test'), offset=0):
     """
     Examples:
