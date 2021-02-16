@@ -195,7 +195,7 @@ def _setup_datasets(dataset_name,
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
@@ -266,7 +266,7 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
@@ -425,7 +425,7 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.tok.clean.bpe.32000.de',
                            'train.tok.clean.bpe.32000.en'),

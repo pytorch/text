@@ -72,15 +72,16 @@ def dataset_docstring_header(fn):
             split: Only {default_split} is available.
                 Default: {default_split}
             offset: the number of the starting line.
-                Default: 0
-        """.format(fn.__name__, default_split=default_split) + fn.__doc__
+                Default: 0""".format(fn.__name__, default_split=default_split) + fn.__doc__
 
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
 
-def add_docstring_header(fn):
-    fn.__doc__ = dataset_docstring_header(fn)
-    return fn
+def add_docstring_header():
+    def docstring_decorator(fn):
+        fn.__doc__ = dataset_docstring_header(fn)
+        return fn
+    return docstring_decorator
 
 
 def wrap_split_argument(fn):
