@@ -72,7 +72,7 @@ def _setup_datasets(dataset_name, root, split, offset):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -83,7 +83,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -94,7 +94,7 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -105,7 +105,7 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -116,7 +116,7 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -127,7 +127,7 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -138,7 +138,7 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -149,7 +149,7 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:
@@ -170,7 +170,7 @@ def generate_imdb_data(key, extracted_files):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def IMDB(root='.data', split=('train', 'test'), offset=0):
     """
     Examples:

@@ -66,6 +66,11 @@ URLS = {
     'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
 }
 
+_PATHS = {
+    'WMT14': 'wmt16_en_de.tar.gz',
+    'IWSLT': '2016-01.tgz'
+}
+
 
 def _read_text_iterator(path):
     with io.open(path, encoding="utf8") as f:
@@ -132,7 +137,7 @@ def _setup_datasets(dataset_name,
                 f, root=root, hash_value=MD5[dataset_name][idx], hash_type='md5')
             extracted_files.extend(extract_archive(dataset_tar))
     elif isinstance(URLS[dataset_name], str):
-        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], hash_type='md5')
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], path=_PATHS[dataset_name], hash_type='md5')
         extracted_dataset_tar = extract_archive(dataset_tar)
         if dataset_name == 'IWSLT':
             # IWSLT dataset's url downloads a multilingual tgz.
@@ -190,7 +195,7 @@ def _setup_datasets(dataset_name,
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
@@ -261,7 +266,7 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
@@ -420,7 +425,7 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
           train_filenames=('train.tok.clean.bpe.32000.de',
                            'train.tok.clean.bpe.32000.en'),
