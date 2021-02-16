@@ -177,7 +177,8 @@ def IMDB(root='.data', split=('train', 'test'), offset=0):
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
     dataset_tar = download_from_url(URLS['IMDB'], root=root,
-                                    hash_value=MD5['IMDB'], hash_type='md5')
+                                    hash_value=MD5['IMDB'], hash_type='md5',
+                                    path=os.path.join(root, _PATHS["IMDB"]))
     extracted_files = extract_archive(dataset_tar)
     return [RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
                                    generate_imdb_data(item,
