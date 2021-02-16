@@ -155,6 +155,10 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
+
+        # Currently disabled due to incredibly slow download and possibly wrong reference hash
+        if dataset_name == "WMTNewsCrawl":
+            return
         split = info['split']
         data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
