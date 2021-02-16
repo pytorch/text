@@ -10,6 +10,15 @@ from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
 
 
+def _raw_text_custom_name_func(testcase_func, param_num, param):
+    info = param.args[0]
+    name_info = [info['dataset_name'], info['split']]
+    return "%s_%s" % (
+        testcase_func.__name__,
+        parameterized.to_safe_name("_".join(name_info))
+    )
+
+
 class TestDataset(TorchtextTestCase):
     def _helper_test_func(self, length, target_length, results, target_results):
         self.assertEqual(length, target_length)
@@ -141,7 +150,9 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
         del train_iter, test_iter
 
-    @parameterized.expand(load_params('raw_datasets.json'))
+    @parameterized.expand(
+            load_params('raw_datasets.json'),
+            name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
