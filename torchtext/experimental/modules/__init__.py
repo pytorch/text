@@ -1,5 +1,5 @@
-from .transformer import TransformerEncoder, TransformerEncoderLayer
-from .embedding import PositionalEmbedding
+from .transformer import TransformerEncoderLayer
+from .embedding import PositionalEmbedding, BertEmbedding
 
-__all__ = ['TransformerEncoder', 'TransformerEncoderLayer',
-           'PositionalEmbedding']
+__all__ = ['TransformerEncoderLayer',
+           'PositionalEmbedding', 'BertEmbedding']

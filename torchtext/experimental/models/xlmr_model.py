@@ -1,7 +1,25 @@
 import torch.nn as nn
-from torchtext.experimental.modules import TransformerEncoder
 from .xlmr_transform import load_xlmr_transform
 from .utils import load_state_dict_from_url
+from torch.nn import Linear, LayerNorm, TransformerEncoder
+import torch.nn.functional as F
+from torchtext.experimental.modules import BertEmbedding, TransformerEncoderLayer
+
+
+class XLMRModel(nn.Module):
+    """XLM-R model: a transformer encoder + embedding layer."""
+
+    def __init__(self, ntoken, embed_dim, nhead, feedforward_dim, nlayers, dropout=0.5):
+        super(XLMRModel, self).__init__()
+        self.xlmr_embed = BertEmbedding(ntoken, embed_dim, dropout)
+        encoder_layers = TransformerEncoderLayer(embed_dim, nhead, feedforward_dim, dropout)
+        self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
+        self.embed_dim = embed_dim
+
+    def forward(self, src):
+        src = self.xlmr_embed(src)
+        output = self.transformer_encoder(src)
+        return output
 
 
 # [TODO] Add torch.hub support
@@ -15,7 +33,7 @@ def xlmr_base():
         >>> xlmr_base_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
-    encoder = TransformerEncoder(250002, embed_dim=768, nhead=12, feedforward_dim=3072, nlayers=12, dropout=0.2)
+    encoder = XLMRModel(250002, embed_dim=768, nhead=12, feedforward_dim=3072, nlayers=12, dropout=0.2)
     encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.base'], hash_value=SHA256['xlmr.base']))
     return encoder, load_xlmr_transform()
 
@@ -28,20 +46,23 @@ def xlmr_regular():
         >>> xlmr_regular_transform('this is an example')
         >>> tensor([  903,    83,   142, 27781])
     '''
+    encoder = XLMRModel(250002, embed_dim=1024, nhead=16, feedforward_dim=4096, nlayers=24, dropout=0.2)
     encoder.load_state_dict(load_state_dict_from_url(PRETRAINED['xlmr.regular'], hash_value=SHA256['xlmr.regular']))
-    encoder = TransformerEncoder(250002, embed_dim=1024, nhead=16, feedforward_dim=4096, nlayers=24, dropout=0.2)
     return encoder, load_xlmr_transform()
 
 
-PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_regular-257d1221.pt',
-              'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base-1c6e095d.pt'}
-SHA256 = {'xlmr.regular': '257d1221b310dbc30e58ecdbf39a4126e78ff894befb180bc7658954b4b55dc3',
-          'xlmr.base': '1c6e095df239687682107c44cbb3f35e6329a5609a9fc8be9464eb6ad3919fcd'}
+PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_regular-b39c547d.pt',
+              'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base-dcbe409a.pt'}
+SHA256 = {'xlmr.regular': 'b39c547d43acab913ddc5d902996b65ceeaf13e8068a1d766aa4ac3a2104d6c9',
+          'xlmr.base': 'dcbe409aff2609843b6c6e37e3e16bbf068ed8d4995c28dd1cbe24ba3b4534e9'}
 
 ##################################################################################
 # This part will be moved to stl-text/models folder
 
 
+###########################
+# Sentence Classification
+###########################
 class SentenceClassificationHead(nn.Module):
     """Head for sentence-level classification."""
 
@@ -74,7 +95,7 @@ class TransformerEncoderSentenceClassification(nn.Module):
         self.transformer_encoder = transformer_encoder
         self.classifier_head = classifier_head
 
-    def forward(src):
+    def forward(self, src):
         raise NotImplementedError("forward func has not been implemented yet.")
 
 
@@ -88,11 +109,65 @@ def xlmr_base_sentence_classifier():
     '''
     # Load pretrained XLM-R
     xlmr_model, xlmr_transform = xlmr_base()
-    xlmr_transform = load_xlmr_transform()
 
     # Load classifier head
     sentence_classifier = sentence_classifier_head()
     return TransformerEncoderSentenceClassification(xlmr_model, sentence_classifier), xlmr_transform
+
+
+###########################
+# Language Modeling
+###########################
+class CrossLingualMLMHead(nn.Module):
+    """Contain a cross-lingual MLM head."""
+
+    def __init__(self, ntoken, embed_dim):
+        super(CrossLingualMLMHead, self).__init__()
+        self.mlm_span = Linear(embed_dim, embed_dim)
+        self.activation = F.gelu
+        self.norm_layer = LayerNorm(embed_dim, eps=1e-12)
+        self.mlm_head = Linear(embed_dim, ntoken)
+
+    def forward(self, src):
+        output = self.mlm_span(src)
+        output = self.activation(output)
+        output = self.norm_layer(output)
+        output = self.mlm_head(output)
+        return output
+
+
+def cross_lingual_mlm_head():
+    classifier = CrossLingualMLMHead(250002, 768)
+    # [TODO] Load the weight of LM head
+    return classifier
+
+
+class TransformerEncoderLanguageModeling(nn.Module):
+    """Contain a transformer encoder plus LM head."""
+
+    def __init__(self, transformer_encoder, lm_head):
+        super(TransformerEncoderLanguageModeling, self).__init__()
+        self.transformer_encoder = transformer_encoder
+        self.lm_head = lm_head
+
+    def forward(self, src):
+        output = self.transformer_encoder(src)
+        output = self.lm_head(output)
+        return output
+
+
+def xlmr_base_cross_lingual_mlm():
+    '''
+    Examples:
+        >>> from torchtext.experimental.models import xlmr_base_cross_lingual_mlm
+        >>> xlmr_lm_model, xlmr_base_transform = xlmr_base_cross_lingual_mlm()
+        >>> xlmr_base_transform('this is an example')
+        >>> tensor([  903,    83,   142, 27781])
+    '''
+    xlmr_model, xlmr_transform = xlmr_base()
+
+    lm_head = cross_lingual_mlm_head()
+    return TransformerEncoderLanguageModeling(xlmr_model, lm_head), xlmr_transform
 
 
 TASK_PRETRAINED = {'xlmr_base_sentence_classifier': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base_sentence_classifier-7e3fbb3f.pt'}

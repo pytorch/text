@@ -9,8 +9,6 @@ import re
 import sys
 import zipfile
 import gzip
-import argparse
-import json
 
 
 def reporthook(t):
