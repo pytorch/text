@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210215 documentation</title>
+  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210216 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.experimental.transforms" href="experimental_transforms.html" />
+    <link rel="next" title="torchtext.experimental.datasets.raw" href="experimental_datasets_raw.html" />
     <link rel="prev" title="torchtext.utils" href="utils.html" /> 
 
   
@@ -184,7 +184,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210215
+                  0.9.0.dev20210216
                 </div>
               
             
@@ -224,6 +224,7 @@
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
@@ -1092,7 +1093,7 @@ vocabulary based on the train data set.</p></li>
 </div>
 <div class="section" id="machine-translation">
 <h2><a class="toc-backref" href="#id17">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
-<p>Language modeling datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">TranslationDataset</span></code> class.</p>
+<p>Translation datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">TranslationDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.TranslationDataset">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">TranslationDataset</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocab</em>, <em class="sig-param">transforms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#TranslationDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.TranslationDataset" title="Permalink to this definition">¶</a></dt>
@@ -1518,7 +1519,7 @@ get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
 </div>
 <div class="section" id="sequence-tagging">
 <h2><a class="toc-backref" href="#id21">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
-<p>Language modeling datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">SequenceTaggingDataset</span></code> class.</p>
+<p>Sequence Tagging datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">SequenceTaggingDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.SequenceTaggingDataset">
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">SequenceTaggingDataset</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocabs</em>, <em class="sig-param">transforms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/sequence_tagging.html#SequenceTaggingDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.SequenceTaggingDataset" title="Permalink to this definition">¶</a></dt>
@@ -1739,7 +1740,7 @@ data.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="experimental_transforms.html" class="btn btn-neutral float-right" title="torchtext.experimental.transforms" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="experimental_datasets_raw.html" class="btn btn-neutral float-right" title="torchtext.experimental.datasets.raw" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="utils.html" class="btn btn-neutral" title="torchtext.utils" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
