@@ -156,8 +156,7 @@ class PennTreebank(LanguageModelingDataset):
     """The Penn Treebank dataset.
     A relatively small dataset originally created for POS tagging.
 
-    References
-    ----------
+    References:
     Marcus, Mitchell P., Marcinkiewicz, Mary Ann & Santorini, Beatrice (1993).
     Building a Large Annotated Corpus of English: The Penn Treebank
     """
