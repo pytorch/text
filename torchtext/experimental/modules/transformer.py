@@ -6,7 +6,7 @@ from torchtext.nn import MultiheadAttentionContainer, InProjContainer, ScaledDot
 
 class TransformerEncoderLayer(nn.Module):
     def __init__(self, embed_dim=768, nhead=12, feedforward_dim=3072,
-                 dropout=0.2, activation="gelu"):
+                 dropout=0.2, activation=F.gelu):
         super(TransformerEncoderLayer, self).__init__()
         in_proj_container = InProjContainer(Linear(embed_dim, embed_dim),
                                             Linear(embed_dim, embed_dim),
@@ -21,25 +21,8 @@ class TransformerEncoderLayer(nn.Module):
         self.norm2 = LayerNorm(embed_dim)
         self.dropout1 = Dropout(dropout)
         self.dropout2 = Dropout(dropout)
-
-        if activation == "relu":
-            self.activation = F.relu
-        elif activation == "gelu":
-            self.activation = F.gelu
-        else:
-            raise RuntimeError("only relu/gelu are supported, not {}".format(activation))
-
-    def init_weights(self):
-        self.mha.in_proj_container.query_proj.init_weights()
-        self.mha.in_proj_container.key_proj.init_weights()
-        self.mha.in_proj_container.value_proj.init_weights()
-        self.mha.out_proj.init_weights()
-        self.linear1.weight.data.normal_(mean=0.0, std=0.02)
-        self.linear2.weight.data.normal_(mean=0.0, std=0.02)
-        self.norm1.bias.data.zero_()
-        self.norm1.weight.data.fill_(1.0)
-        self.norm2.bias.data.zero_()
-        self.norm2.weight.data.fill_(1.0)
+        self.activation = activation
+        # [TODO] Add init_weights()
 
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
         attn_output, attn_output_weights = self.mha(src, src, src, attn_mask=src_mask)
