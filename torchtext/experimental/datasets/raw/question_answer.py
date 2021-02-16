@@ -38,7 +38,7 @@ def _setup_datasets(dataset_name, root, split, offset):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     """
     Examples:
@@ -58,7 +58,7 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
 
 
 @wrap_split_argument
-@add_docstring_header
+@add_docstring_header()
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     """
     Examples:
