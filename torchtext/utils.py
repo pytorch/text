@@ -93,7 +93,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
     if path is None:
         _, filename = os.path.split(url)
     else:
-        root, filename = os.path.split(path)
+        root, filename = os.path.split(os.path.abspath(path))
 
     if not os.path.exists(root):
         try:
