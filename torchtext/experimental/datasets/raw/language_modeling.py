@@ -91,8 +91,11 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
 @wrap_split_argument
 @add_docstring_header()
 def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
-    """    year: the year of the dataset (Default: 2010)
-        language: the language of the dataset (Default: 'en')
+    # """   year: the year of the dataset
+    #          (Default: 2010)
+    #       language: the language of the dataset
+    #          (Default: 'en')
+    """
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
