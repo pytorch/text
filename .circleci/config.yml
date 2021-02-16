@@ -489,7 +489,7 @@ jobs:
             set -x
             pushd docs
             pip install -r requirements.txt
-            make html
+            make html SPHINXOPTS="-W -j 4"
             popd
       - persist_to_workspace:
           root: ./
