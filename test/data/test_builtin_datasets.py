@@ -151,8 +151,8 @@ class TestDataset(TorchtextTestCase):
         del train_iter, test_iter
 
     @parameterized.expand(
-            load_params('raw_datasets.json'),
-            name_func=_raw_text_custom_name_func)
+        load_params('raw_datasets.json'),
+        name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
