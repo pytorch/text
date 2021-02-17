@@ -225,8 +225,8 @@ class TabularDataset(Dataset):
             path (str): Path to the data file.
             format (str): The format of the data file. One of "CSV", "TSV", or
                 "JSON" (case-insensitive).
-            fields (list(tuple(str, Field)) or dict[str: tuple(str, Field)]:
-                If using a list, the format must be CSV or TSV, and the values of the list
+            fields (list(tuple(str, Field)) or dict[str: tuple(str, Field)]): If using a list,
+                the format must be CSV or TSV, and the values of the list
                 should be tuples of (name, field).
                 The fields should be in the same order as the columns in the CSV or TSV
                 file, while tuples of (name, None) represent columns that will be ignored.
@@ -242,6 +242,7 @@ class TabularDataset(Dataset):
                 See
                 https://docs.python.org/3/library/csv.html#csv.reader
                 for more details.
+            kwargs (dict): Passed to the ``Dataset`` parent class.
         """
         format = format.lower()
         make_example = {

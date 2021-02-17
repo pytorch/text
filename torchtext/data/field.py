@@ -312,8 +312,8 @@ class Field(RawField):
         included in the return value.
 
         Args:
-            arr (List[List[str]], or tuple of (List[List[str]], List[int])):
-                List of tokenized and padded examples, or tuple of List of
+            arr (List[List[str]], or tuple of (List[List[str]], List[int])): List of tokenized
+                and padded examples, or tuple of List of
                 tokenized and padded examples and List of lengths of each
                 example if self.include_lengths is True.
             device (str or torch.device): A string or instance of `torch.device`
@@ -698,7 +698,7 @@ class NestedField(Field):
         tensors will be stacked at the first dimension.
 
         Args:
-            arr (List[List[str]]): List of tokenized and padded examples.
+            arrs (List[List[str]]): List of tokenized and padded examples.
             device (str or torch.device): A string or instance of `torch.device`
                 specifying which device the Variables are going to be created on.
                 If left as default, the tensors will be created on cpu. Default: None.
