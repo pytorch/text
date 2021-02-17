@@ -28,3 +28,4 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset('WikiText2',
                                                NUM_LINES[item], iter(io.open(path, encoding="utf8")), offset=offset))
+    return datasets

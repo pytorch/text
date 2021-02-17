@@ -29,3 +29,4 @@ def WMTNewsCrawl(root='.data', split=train, offset=0):
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset('WMTNewsCrawl',
                                                NUM_LINES[item], iter(io.open(path, encoding="utf8")), offset=offset))
+    return datasets
