@@ -9,6 +9,8 @@ def check_default_set(split, target_select, dataset_name):
     # target_select.
     if isinstance(split, str):
         split = (split,)
+    if isinstance(target_select, str):
+        target_select = (target_select,)
     if not isinstance(split, tuple):
         raise ValueError("Internal error: Expected split to be of type tuple.")
     if not set(split).issubset(set(target_select)):
