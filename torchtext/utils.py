@@ -55,6 +55,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
     """
     def _check_hash(path):
         if hash_value:
+            logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))
             with open(path, "rb") as file_obj:
                 if not validate_file(file_obj, hash_value, hash_type):
                     raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
