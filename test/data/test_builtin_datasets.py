@@ -156,7 +156,7 @@ class TestDataset(TorchtextTestCase):
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
 
-        # Currently disabled due to incredibly slow download and possibly wrong reference hash
+        # Currently disabled due to incredibly slow download.
         if dataset_name == "WMTNewsCrawl":
             return
         split = info['split']

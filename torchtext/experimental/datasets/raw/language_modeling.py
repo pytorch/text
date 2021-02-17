@@ -123,5 +123,5 @@ MD5 = {
     'PennTreebank': {'train': 'f26c4b92c5fdc7b3f8c7cdcb991d8420',
                      'valid': 'aa0affc06ff7c36e977d7cd49e3839bf',
                      'test': '8b80168b89c18661a38ef683c0dc3721'},
-    'WMTNewsCrawl': '64150a352f3abe890a87f6c6838524a6'
+    'WMTNewsCrawl': 'c70da2ba79db33fb0fc9119cbad16260'
 }
