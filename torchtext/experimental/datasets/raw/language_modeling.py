@@ -109,12 +109,14 @@ DATASETS = {
     'PennTreebank': PennTreebank,
     'WMTNewsCrawl': WMTNewsCrawl
 }
+
 NUM_LINES = {
     'WikiText2': {'train': 36718, 'valid': 3760, 'test': 4358},
     'WikiText103': {'train': 1801350, 'valid': 3760, 'test': 4358},
     'PennTreebank': {'train': 42068, 'valid': 3370, 'test': 3761},
     'WMTNewsCrawl': {'train': 17676013}
 }
+
 MD5 = {
     'WikiText2': '542ccefacc6c27f945fb54453812b3cd',
     'WikiText103': '9ddaacaf6af0710eda8c456decff7832',

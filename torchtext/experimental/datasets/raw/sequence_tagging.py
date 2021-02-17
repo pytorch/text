@@ -90,10 +90,12 @@ DATASETS = {
     "UDPOS": UDPOS,
     "CoNLL2000Chunking": CoNLL2000Chunking
 }
+
 NUM_LINES = {
     "UDPOS": {'train': 12543, 'valid': 2002, 'test': 2077},
     "CoNLL2000Chunking": {'train': 8936, 'test': 2012}
 }
+
 MD5 = {
     "UDPOS": 'bdcac7c52d934656bae1699541424545',
     "CoNLL2000Chunking": {'train': '6969c2903a1f19a83569db643e43dcc8', 'test': 'a916e1c2d83eb3004b38fc6fcd628939'}

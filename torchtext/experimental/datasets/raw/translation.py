@@ -210,6 +210,57 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
     Examples:
         >>> from torchtext.experimental.datasets.raw import Multi30k
         >>> train_dataset, valid_dataset, test_dataset = Multi30k()
+
+    The available dataset include:
+        test_2016_flickr.cs
+        test_2016_flickr.de
+        test_2016_flickr.en
+        test_2016_flickr.fr
+        test_2017_flickr.de
+        test_2017_flickr.en
+        test_2017_flickr.fr
+        test_2017_mscoco.de
+        test_2017_mscoco.en
+        test_2017_mscoco.fr
+        test_2018_flickr.en
+        train.cs
+        train.de
+        train.en
+        train.fr
+        val.cs
+        val.de
+        val.en
+        val.fr
+        test_2016.1.de
+        test_2016.1.en
+        test_2016.2.de
+        test_2016.2.en
+        test_2016.3.de
+        test_2016.3.en
+        test_2016.4.de
+        test_2016.4.en
+        test_2016.5.de
+        test_2016.5.en
+        train.1.de
+        train.1.en
+        train.2.de
+        train.2.en
+        train.3.de
+        train.3.en
+        train.4.de
+        train.4.en
+        train.5.de
+        train.5.en
+        val.1.de
+        val.1.en
+        val.2.de
+        val.2.en
+        val.3.de
+        val.3.en
+        val.4.de
+        val.4.en
+        val.5.de
+        val.5.en
     """
     return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
@@ -232,6 +283,143 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
     Examples:
         >>> from torchtext.experimental.datasets.raw import IWSLT
         >>> train_dataset, valid_dataset, test_dataset = IWSLT()
+
+    The available datasets include:
+        IWSLT16.TED.dev2010.ar-en.ar
+        IWSLT16.TED.dev2010.ar-en.en
+        IWSLT16.TED.dev2010.cs-en.cs
+        IWSLT16.TED.dev2010.cs-en.en
+        IWSLT16.TED.dev2010.de-en.de
+        IWSLT16.TED.dev2010.de-en.en
+        IWSLT16.TED.dev2010.en-ar.ar
+        IWSLT16.TED.dev2010.en-ar.en
+        IWSLT16.TED.dev2010.en-cs.cs
+        IWSLT16.TED.dev2010.en-cs.en
+        IWSLT16.TED.dev2010.en-de.de
+        IWSLT16.TED.dev2010.en-de.en
+        IWSLT16.TED.dev2010.en-fr.en
+        IWSLT16.TED.dev2010.en-fr.fr
+        IWSLT16.TED.dev2010.fr-en.en
+        IWSLT16.TED.dev2010.fr-en.fr
+        IWSLT16.TED.tst2010.ar-en.ar
+        IWSLT16.TED.tst2010.ar-en.en
+        IWSLT16.TED.tst2010.cs-en.cs
+        IWSLT16.TED.tst2010.cs-en.en
+        IWSLT16.TED.tst2010.de-en.de
+        IWSLT16.TED.tst2010.de-en.en
+        IWSLT16.TED.tst2010.en-ar.ar
+        IWSLT16.TED.tst2010.en-ar.en
+        IWSLT16.TED.tst2010.en-cs.cs
+        IWSLT16.TED.tst2010.en-cs.en
+        IWSLT16.TED.tst2010.en-de.de
+        IWSLT16.TED.tst2010.en-de.en
+        IWSLT16.TED.tst2010.en-fr.en
+        IWSLT16.TED.tst2010.en-fr.fr
+        IWSLT16.TED.tst2010.fr-en.en
+        IWSLT16.TED.tst2010.fr-en.fr
+        IWSLT16.TED.tst2011.ar-en.ar
+        IWSLT16.TED.tst2011.ar-en.en
+        IWSLT16.TED.tst2011.cs-en.cs
+        IWSLT16.TED.tst2011.cs-en.en
+        IWSLT16.TED.tst2011.de-en.de
+        IWSLT16.TED.tst2011.de-en.en
+        IWSLT16.TED.tst2011.en-ar.ar
+        IWSLT16.TED.tst2011.en-ar.en
+        IWSLT16.TED.tst2011.en-cs.cs
+        IWSLT16.TED.tst2011.en-cs.en
+        IWSLT16.TED.tst2011.en-de.de
+        IWSLT16.TED.tst2011.en-de.en
+        IWSLT16.TED.tst2011.en-fr.en
+        IWSLT16.TED.tst2011.en-fr.fr
+        IWSLT16.TED.tst2011.fr-en.en
+        IWSLT16.TED.tst2011.fr-en.fr
+        IWSLT16.TED.tst2012.ar-en.ar
+        IWSLT16.TED.tst2012.ar-en.en
+        IWSLT16.TED.tst2012.cs-en.cs
+        IWSLT16.TED.tst2012.cs-en.en
+        IWSLT16.TED.tst2012.de-en.de
+        IWSLT16.TED.tst2012.de-en.en
+        IWSLT16.TED.tst2012.en-ar.ar
+        IWSLT16.TED.tst2012.en-ar.en
+        IWSLT16.TED.tst2012.en-cs.cs
+        IWSLT16.TED.tst2012.en-cs.en
+        IWSLT16.TED.tst2012.en-de.de
+        IWSLT16.TED.tst2012.en-de.en
+        IWSLT16.TED.tst2012.en-fr.en
+        IWSLT16.TED.tst2012.en-fr.fr
+        IWSLT16.TED.tst2012.fr-en.en
+        IWSLT16.TED.tst2012.fr-en.fr
+        IWSLT16.TED.tst2013.ar-en.ar
+        IWSLT16.TED.tst2013.ar-en.en
+        IWSLT16.TED.tst2013.cs-en.cs
+        IWSLT16.TED.tst2013.cs-en.en
+        IWSLT16.TED.tst2013.de-en.de
+        IWSLT16.TED.tst2013.de-en.en
+        IWSLT16.TED.tst2013.en-ar.ar
+        IWSLT16.TED.tst2013.en-ar.en
+        IWSLT16.TED.tst2013.en-cs.cs
+        IWSLT16.TED.tst2013.en-cs.en
+        IWSLT16.TED.tst2013.en-de.de
+        IWSLT16.TED.tst2013.en-de.en
+        IWSLT16.TED.tst2013.en-fr.en
+        IWSLT16.TED.tst2013.en-fr.fr
+        IWSLT16.TED.tst2013.fr-en.en
+        IWSLT16.TED.tst2013.fr-en.fr
+        IWSLT16.TED.tst2014.ar-en.ar
+        IWSLT16.TED.tst2014.ar-en.en
+        IWSLT16.TED.tst2014.de-en.de
+        IWSLT16.TED.tst2014.de-en.en
+        IWSLT16.TED.tst2014.en-ar.ar
+        IWSLT16.TED.tst2014.en-ar.en
+        IWSLT16.TED.tst2014.en-de.de
+        IWSLT16.TED.tst2014.en-de.en
+        IWSLT16.TED.tst2014.en-fr.en
+        IWSLT16.TED.tst2014.en-fr.fr
+        IWSLT16.TED.tst2014.fr-en.en
+        IWSLT16.TED.tst2014.fr-en.fr
+        IWSLT16.TEDX.dev2012.de-en.de
+        IWSLT16.TEDX.dev2012.de-en.en
+        IWSLT16.TEDX.tst2013.de-en.de
+        IWSLT16.TEDX.tst2013.de-en.en
+        IWSLT16.TEDX.tst2014.de-en.de
+        IWSLT16.TEDX.tst2014.de-en.en
+        train.ar
+        train.ar-en.ar
+        train.ar-en.en
+        train.cs
+        train.cs-en.cs
+        train.cs-en.en
+        train.de
+        train.de-en.de
+        train.de-en.en
+        train.en
+        train.en-ar.ar
+        train.en-ar.en
+        train.en-cs.cs
+        train.en-cs.en
+        train.en-de.de
+        train.en-de.en
+        train.en-fr.en
+        train.en-fr.fr
+        train.fr
+        train.fr-en.en
+        train.fr-en.fr
+        train.tags.ar-en.ar
+        train.tags.ar-en.en
+        train.tags.cs-en.cs
+        train.tags.cs-en.en
+        train.tags.de-en.de
+        train.tags.de-en.en
+        train.tags.en-ar.ar
+        train.tags.en-ar.en
+        train.tags.en-cs.cs
+        train.tags.en-cs.en
+        train.tags.en-de.de
+        train.tags.en-de.en
+        train.tags.en-fr.en
+        train.tags.en-fr.fr
+        train.tags.fr-en.en
+        train.tags.fr-en.fr
     """
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
@@ -255,6 +443,58 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
     Examples:
         >>> from torchtext.experimental.datasets.raw import WMT14
         >>> train_dataset, valid_dataset, test_dataset = WMT14()
+
+    The available datasets include:
+        newstest2016.en
+        newstest2016.de
+        newstest2015.en
+        newstest2015.de
+        newstest2014.en
+        newstest2014.de
+        newstest2013.en
+        newstest2013.de
+        newstest2012.en
+        newstest2012.de
+        newstest2011.tok.de
+        newstest2011.en
+        newstest2011.de
+        newstest2010.tok.de
+        newstest2010.en
+        newstest2010.de
+        newstest2009.tok.de
+        newstest2009.en
+        newstest2009.de
+        newstest2016.tok.de
+        newstest2015.tok.de
+        newstest2014.tok.de
+        newstest2013.tok.de
+        newstest2012.tok.de
+        newstest2010.tok.en
+        newstest2009.tok.en
+        newstest2015.tok.en
+        newstest2014.tok.en
+        newstest2013.tok.en
+        newstest2012.tok.en
+        newstest2011.tok.en
+        newstest2016.tok.en
+        newstest2009.tok.bpe.32000.en
+        newstest2011.tok.bpe.32000.en
+        newstest2010.tok.bpe.32000.en
+        newstest2013.tok.bpe.32000.en
+        newstest2012.tok.bpe.32000.en
+        newstest2015.tok.bpe.32000.en
+        newstest2014.tok.bpe.32000.en
+        newstest2016.tok.bpe.32000.en
+        train.tok.clean.bpe.32000.en
+        newstest2009.tok.bpe.32000.de
+        newstest2010.tok.bpe.32000.de
+        newstest2011.tok.bpe.32000.de
+        newstest2013.tok.bpe.32000.de
+        newstest2012.tok.bpe.32000.de
+        newstest2014.tok.bpe.32000.de
+        newstest2016.tok.bpe.32000.de
+        newstest2015.tok.bpe.32000.de
+        train.tok.clean.bpe.32000.de
     """
     return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames, split, root, offset)
 
@@ -264,11 +504,13 @@ DATASETS = {
     'IWSLT': IWSLT,
     'WMT14': WMT14
 }
+
 NUM_LINES = {
     'Multi30k': {'train': 29000, 'valid': 1014, 'test': 1000},
     'IWSLT': {'train': 196884, 'valid': 993, 'test': 1305},
     'WMT14': {'train': 4500966, 'valid': 3000, 'test': 3003}
 }
+
 MD5 = {
     'Multi30k': ['3104872229daa1bef3b401d44dd2220b',
                  'efd67d314d98489b716b145475101932',

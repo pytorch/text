@@ -85,10 +85,12 @@ DATASETS = {
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2
 }
+
 NUM_LINES = {
     'SQuAD1': {'train': 87599, 'dev': 10570},
     'SQuAD2': {'train': 130319, 'dev': 11873}
 }
+
 MD5 = {
     'SQuAD1': {'train': '981b29407e0affa3b1b156f72073b945', 'dev': '3e85deb501d4e538b6bc56f786231552'},
     'SQuAD2': {'train': '62108c273c268d70893182d5cf8df740', 'dev': '246adae8b7002f8679c027697b0b7cf8'}

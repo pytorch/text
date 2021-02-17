@@ -195,6 +195,7 @@ DATASETS = {
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
 }
+
 NUM_LINES = {
     'AG_NEWS': {'train': 120000, 'test': 7600},
     'SogouNews': {'train': 450000, 'test': 60000},
@@ -206,6 +207,7 @@ NUM_LINES = {
     'AmazonReviewFull': {'train': 3000000, 'test': 650000},
     'IMDB': {'train': 25000, 'test': 25000}
 }
+
 MD5 = {
     'AG_NEWS': {'train': 'b1a00f826fdfbd249f79597b59e1dc12', 'test': 'd52ea96a97a2d943681189a97654912d'},
     'SogouNews': '0c1700ba70b73f964dd8de569d3fd03e',
