@@ -27,7 +27,6 @@ DATASETS = {'IMDB': IMDB,
             'SQuAD1': SQuAD1,
             'SQuAD2': SQuAD2}
 
-<<<<<<< HEAD
 from .text_classification import URLS as text_classification_URLS
 from .sequence_tagging import URLS as sequence_tagging_URLS
 from .translation import URLS as translation_URLS
@@ -64,6 +63,4 @@ MD5.update(translation_MD5)
 MD5.update(language_modeling_MD5)
 MD5.update(question_answer_MD5)
 
-=======
->>>>>>> upstream/fbsync
 __all__ = sorted(list(map(str, DATASETS.keys())))

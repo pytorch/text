@@ -1,10 +1,7 @@
 import torch
 import logging
 from torchtext.experimental.datasets.raw.common import check_default_set
-<<<<<<< HEAD
 from torchtext.experimental.datasets.raw.common import wrap_datasets
-=======
->>>>>>> upstream/fbsync
 from torchtext.experimental.datasets import raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
@@ -22,13 +19,8 @@ def build_vocab(data, transforms, index):
 
 def _setup_datasets(dataset_name,
                     train_filenames, valid_filenames, test_filenames,
-<<<<<<< HEAD
                     split_, root, vocab, tokenizer):
     split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
-=======
-                    split, root, vocab, tokenizer):
-    split = check_default_set(split, ('train', 'valid', 'test'))
->>>>>>> upstream/fbsync
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
@@ -88,11 +80,7 @@ def _setup_datasets(dataset_name,
             TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
                                (src_text_transform, tgt_text_transform)))
 
-<<<<<<< HEAD
     return wrap_datasets(tuple(datasets), split_)
-=======
-    return tuple(datasets)
->>>>>>> upstream/fbsync
 
 
 class TranslationDataset(torch.utils.data.Dataset):
@@ -152,10 +140,6 @@ def Multi30k(train_filenames=("train.de", "train.en"),
              root='.data',
              vocab=(None, None),
              tokenizer=None):
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/fbsync
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
@@ -256,10 +240,6 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
           root='.data',
           vocab=(None, None),
           tokenizer=None):
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/fbsync
     """ Define translation datasets: IWSLT
     Separately returns train/valid/test datasets
     The available datasets include:
@@ -449,10 +429,6 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
           root='.data',
           vocab=(None, None),
           tokenizer=None):
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/fbsync
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
     The available datasets include:

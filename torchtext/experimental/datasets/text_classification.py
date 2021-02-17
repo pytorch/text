@@ -4,10 +4,7 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.datasets.raw import text_classification as raw
 from torchtext.experimental.datasets.raw.common import check_default_set
-<<<<<<< HEAD
 from torchtext.experimental.datasets.raw.common import wrap_datasets
-=======
->>>>>>> upstream/fbsync
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
@@ -73,20 +70,12 @@ class TextClassificationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-<<<<<<< HEAD
 def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, split_):
-=======
-def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, split):
->>>>>>> upstream/fbsync
     text_transform = []
     if tokenizer is None:
         tokenizer = get_tokenizer("basic_english")
     text_transform = sequential_transforms(tokenizer, ngrams_func(ngrams))
-<<<<<<< HEAD
     split = check_default_set(split_, ('train', 'test'), dataset_name)
-=======
-    split = check_default_set(split, ('train', 'test'))
->>>>>>> upstream/fbsync
     raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     # Materialize raw text iterable dataset
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
@@ -105,20 +94,12 @@ def _setup_datasets(dataset_name, root, ngrams, vocab, tokenizer, split):
     else:
         label_transform = sequential_transforms(totensor(dtype=torch.long))
     logger_.info('Building datasets for {}'.format(split))
-<<<<<<< HEAD
     return wrap_datasets(tuple(
-=======
-    return tuple(
->>>>>>> upstream/fbsync
         TextClassificationDataset(
             raw_data[item], vocab, (label_transform, text_transform)
         )
         for item in split
-<<<<<<< HEAD
     ), split_)
-=======
-    )
->>>>>>> upstream/fbsync
 
 
 def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'test')):
@@ -157,11 +138,7 @@ def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 
         >>> train, test = AG_NEWS(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AG_NEWS(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = AG_NEWS(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = AG_NEWS(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -205,11 +182,7 @@ def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train'
         >>> train, test = SogouNews(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = SogouNews(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = SogouNews(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = SogouNews(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -262,11 +235,7 @@ def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 
         >>> train, test = DBpedia(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = DBpedia(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = DBpedia(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = DBpedia(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -307,11 +276,7 @@ def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, split
         >>> train, test = YelpReviewPolarity(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YelpReviewPolarity(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = YelpReviewPolarity(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = YelpReviewPolarity(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -351,11 +316,7 @@ def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('t
         >>> train, test = YelpReviewFull(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YelpReviewFull(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = YelpReviewFull(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = YelpReviewFull(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -404,11 +365,7 @@ def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('tra
         >>> train, test = YahooAnswers(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YahooAnswers(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = YahooAnswers(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = YahooAnswers(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -449,11 +406,7 @@ def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, spl
         >>> train, test = AmazonReviewPolarity(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AmazonReviewPolarity(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = AmazonReviewPolarity(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = AmazonReviewPolarity(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -493,11 +446,7 @@ def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, split=(
         >>> train, test = AmazonReviewFull(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AmazonReviewFull(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = AmazonReviewFull(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = AmazonReviewFull(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
@@ -539,11 +488,7 @@ def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'te
         >>> train, test = IMDB(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = IMDB(tokenizer=tokenizer)
-<<<<<<< HEAD
         >>> train = IMDB(tokenizer=tokenizer, split='train')
-=======
-        >>> train, = IMDB(tokenizer=tokenizer, split='train')
->>>>>>> upstream/fbsync
 
     """
 
