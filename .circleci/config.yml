@@ -524,6 +524,22 @@ jobs:
             target=${tag:-master}
             ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
 
+  docstring_parameters_sync:
+    <<: *binary_common
+    docker:
+      - image: continuumio/miniconda3
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/workspace
+      - designate_upload_channel
+      - checkout
+      - run:
+          name: Check parameters docstring sync
+          command: |
+            pip install --user pydocstyle
+            pydocstyle torchtext
+
 
 workflows:
   build:
@@ -599,6 +615,11 @@ workflows:
           python_version: '3.8'
           requires:
           - build_docs
+      - docstring_parameters_sync:
+          name: docstring_parameters_sync
+          python_version: '3.8'
+          requires:
+          - binary_linux_wheel_py3.8
   unittest:
     jobs:
       - unittest_linux:
