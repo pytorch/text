@@ -8,6 +8,19 @@ from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import conditional_remove
 
+GOOGLE_DRIVE_BASED_DATASETS = [
+    'AmazonReviewFull',
+    'AmazonReviewPolarity',
+    'DBpedia',
+    'IMDB',
+    'IWSLT',
+    'SogouNews',
+    'WMT14',
+    'YahooAnswers',
+    'YelpReviewFull',
+    'YelpReviewPolarity'
+]
+
 
 class TestDataset(TorchtextTestCase):
     def _helper_test_func(self, length, target_length, results, target_results):
@@ -146,7 +159,7 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(list(sorted(torchtext.experimental.datasets.raw.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
-        if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
         if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
             return
@@ -163,6 +176,8 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
     def test_datasets_split_argument(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
