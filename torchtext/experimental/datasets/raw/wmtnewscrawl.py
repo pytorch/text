@@ -8,7 +8,7 @@ import io
 
 URL = 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
 
-MD5 = '64150a352f3abe890a87f6c6838524a6'
+MD5 = 'c70da2ba79db33fb0fc9119cbad16260'
 
 NUM_LINES = {
     'train': 17676013,
@@ -17,7 +17,7 @@ NUM_LINES = {
 
 @wrap_split_argument
 @add_docstring_header()
-def WMTNewsCrawl(root='.data', split=train, offset=0):
+def WMTNewsCrawl(root='.data', split='train', offset=0):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     file_name = 'news.{}.{}.shuffled'.format(year, language)
