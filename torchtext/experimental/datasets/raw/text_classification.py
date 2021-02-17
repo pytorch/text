@@ -1,7 +1,9 @@
 import io
+import os
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import check_default_set
+from torchtext.experimental.datasets.raw.common import wrap_split_argument
+from torchtext.experimental.datasets.raw.common import add_docstring_header
 
 URLS = {
     'AG_NEWS':
@@ -25,6 +27,20 @@ URLS = {
         'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 }
 
+_PATHS = {
+    'AG_NEWS':
+        {'train': 'train.csv',
+         'test': 'test.csv'},
+    'SogouNews': 'sogou_news_csv.tar.gz',
+    'DBpedia': 'dbpedia_csv.tar.gz',
+    'YelpReviewPolarity': 'yelp_review_polarity_csv.tar.gz',
+    'YelpReviewFull': 'yelp_review_full_csv.tar.gz',
+    'YahooAnswers': 'yahoo_answers_csv.tar.gz',
+    'AmazonReviewPolarity': 'amazon_review_polarity_csv.tar.gz',
+    'AmazonReviewFull': 'amazon_review_full_csv.tar.gz',
+    'IMDB': 'aclImdb_v1.tar.gz'
+}
+
 
 def _create_data_from_csv(data_path):
     with io.open(data_path, encoding="utf8") as f:
@@ -34,13 +50,14 @@ def _create_data_from_csv(data_path):
 
 
 def _setup_datasets(dataset_name, root, split, offset):
-    split = check_default_set(split, target_select=('train', 'test'))
     if dataset_name == 'AG_NEWS':
         extracted_files = [download_from_url(URLS[dataset_name][item], root=root,
+                                             path=os.path.join(root, _PATHS[dataset_name][item]),
                                              hash_value=MD5['AG_NEWS'][item],
                                              hash_type='md5') for item in ('train', 'test')]
     else:
         dataset_tar = download_from_url(URLS[dataset_name], root=root,
+                                        path=os.path.join(root, _PATHS[dataset_name]),
                                         hash_value=MD5[dataset_name], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
 
@@ -50,24 +67,14 @@ def _setup_datasets(dataset_name, root, split, offset):
             cvs_path['train'] = fname
         if fname.endswith('test.csv'):
             cvs_path['test'] = fname
-    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                        _create_data_from_csv(cvs_path[item]), offset=offset) for item in split)
+    return [RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                                   _create_data_from_csv(cvs_path[item]), offset=offset) for item in split]
 
 
+@wrap_split_argument
+@add_docstring_header()
 def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
-    """ Defines AG_NEWS datasets.
-
-    Create supervised learning dataset: AG_NEWS
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AG_NEWS()
     """
@@ -75,20 +82,10 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("AG_NEWS", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def SogouNews(root='.data', split=('train', 'test'), offset=0):
-    """ Defines SogouNews datasets.
-
-    Create supervised learning dataset: SogouNews
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.SogouNews()
     """
@@ -96,20 +93,10 @@ def SogouNews(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("SogouNews", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def DBpedia(root='.data', split=('train', 'test'), offset=0):
-    """ Defines DBpedia datasets.
-
-    Create supervised learning dataset: DBpedia
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.DBpedia()
     """
@@ -117,20 +104,10 @@ def DBpedia(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("DBpedia", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
-    """ Defines YelpReviewPolarity datasets.
-
-    Create supervised learning dataset: YelpReviewPolarity
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewPolarity()
     """
@@ -138,20 +115,10 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YelpReviewPolarity", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
-    """ Defines YelpReviewFull datasets.
-
-    Create supervised learning dataset: YelpReviewFull
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YelpReviewFull()
     """
@@ -159,20 +126,10 @@ def YelpReviewFull(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YelpReviewFull", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
-    """ Defines YahooAnswers datasets.
-
-    Create supervised learning dataset: YahooAnswers
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.YahooAnswers()
     """
@@ -180,20 +137,10 @@ def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("YahooAnswers", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
-    """ Defines AmazonReviewPolarity datasets.
-
-    Create supervised learning dataset: AmazonReviewPolarity
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewPolarity()
     """
@@ -201,20 +148,10 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     return _setup_datasets("AmazonReviewPolarity", root, split, offset)
 
 
+@wrap_split_argument
+@add_docstring_header()
 def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
-    """ Defines AmazonReviewFull datasets.
-
-    Create supervised learning dataset: AmazonReviewFull
-
-    Separately returns the training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.AmazonReviewFull()
     """
@@ -232,30 +169,19 @@ def generate_imdb_data(key, extracted_files):
                 yield label, f.read()
 
 
+@wrap_split_argument
+@add_docstring_header()
 def IMDB(root='.data', split=('train', 'test'), offset=0):
-    """ Defines raw IMDB datasets.
-
-    Create supervised learning dataset: IMDB
-
-    Separately returns the raw training and test dataset
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets. Default: ('train', 'test')
-            By default, both datasets (train, test) are generated. Users could also choose any one or two of them,
-            for example ('train', 'test') or just a string 'train'.
-        offset: the number of the starting line. Default: 0
-
+    """
     Examples:
         >>> train, test = torchtext.experimental.datasets.raw.IMDB()
     """
-    split = check_default_set(split, target_select=('train', 'test'))
     dataset_tar = download_from_url(URLS['IMDB'], root=root,
                                     hash_value=MD5['IMDB'], hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-    return tuple(RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
-                                        generate_imdb_data(item,
-                                                           extracted_files), offset=offset) for item in split)
+    return [RawTextIterableDataset("IMDB", NUM_LINES["IMDB"][item],
+                                   generate_imdb_data(item,
+                                                      extracted_files), offset=offset) for item in split]
 
 
 DATASETS = {
@@ -269,6 +195,7 @@ DATASETS = {
     'AmazonReviewFull': AmazonReviewFull,
     'IMDB': IMDB
 }
+
 NUM_LINES = {
     'AG_NEWS': {'train': 120000, 'test': 7600},
     'SogouNews': {'train': 450000, 'test': 60000},
@@ -280,6 +207,7 @@ NUM_LINES = {
     'AmazonReviewFull': {'train': 3000000, 'test': 650000},
     'IMDB': {'train': 25000, 'test': 25000}
 }
+
 MD5 = {
     'AG_NEWS': {'train': 'b1a00f826fdfbd249f79597b59e1dc12', 'test': 'd52ea96a97a2d943681189a97654912d'},
     'SogouNews': '0c1700ba70b73f964dd8de569d3fd03e',
