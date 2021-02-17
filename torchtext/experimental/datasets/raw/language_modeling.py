@@ -4,6 +4,7 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
 from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.experimental.datasets.raw.common import find_match
 
 URLS = {
     'WikiText2':
@@ -32,17 +33,12 @@ def _setup_datasets(dataset_name, root, split, year, language, offset):
         file_name = 'news.{}.{}.shuffled'.format(year, language)
         extracted_files = [f for f in extracted_files if file_name in f]
 
-    path = {}
-    for item in split:
-        for fname in extracted_files:
-            if item in fname:
-                path[item] = fname
-
     datasets = []
     for item in split:
+        path = find_match(item, extracted_files)
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset(dataset_name,
-                                               NUM_LINES[dataset_name][item], iter(io.open(path[item], encoding="utf8")), offset=offset))
+                                               NUM_LINES[dataset_name][item], iter(io.open(path, encoding="utf8")), offset=offset))
 
     return datasets
 

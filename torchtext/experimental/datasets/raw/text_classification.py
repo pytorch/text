@@ -4,6 +4,7 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
 from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.experimental.datasets.raw.common import find_match
 
 URLS = {
     'AG_NEWS':
@@ -61,14 +62,12 @@ def _setup_datasets(dataset_name, root, split, offset):
                                         hash_value=MD5[dataset_name], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
 
-    cvs_path = {}
-    for fname in extracted_files:
-        if fname.endswith('train.csv'):
-            cvs_path['train'] = fname
-        if fname.endswith('test.csv'):
-            cvs_path['test'] = fname
-    return [RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
-                                   _create_data_from_csv(cvs_path[item]), offset=offset) for item in split]
+    datasets = []
+    for item in split:
+        path = find_match(item + '.csv', extracted_files)
+        datasets.append(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                                               _create_data_from_csv(path), offset=offset))
+    return datasets
 
 
 @wrap_split_argument
