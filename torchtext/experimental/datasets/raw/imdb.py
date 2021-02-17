@@ -1,4 +1,4 @@
-from torchtext.utils import download_from_url
+from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
 from torchtext.experimental.datasets.raw.common import add_docstring_header
