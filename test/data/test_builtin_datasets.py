@@ -21,7 +21,6 @@ GOOGLE_DRIVE_BASED_DATASETS = [
     'YelpReviewFull',
     'YelpReviewPolarity'
 ]
-GOOGLE_DRIVE_BASED_DATASETS = []
 
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
