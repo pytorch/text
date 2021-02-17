@@ -12,7 +12,7 @@ class TransformerEncoderLayer(nn.Module):
                                             Linear(embed_dim, embed_dim),
                                             Linear(embed_dim, embed_dim))
         self.mha = MultiheadAttentionContainer(nhead, in_proj_container,
-                                               ScaledDotProduct(), Linear(embed_dim, embed_dim))
+                                               ScaledDotProduct(), Linear(embed_dim, embed_dim), batch_first=True)
         self.linear1 = Linear(embed_dim, feedforward_dim)
         self.dropout = Dropout(dropout)
         self.linear2 = Linear(feedforward_dim, embed_dim)
