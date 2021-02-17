@@ -168,6 +168,8 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
 
         # Currently disabled due to incredibly slow download and possibly wrong reference hash
         if dataset_name == "WMTNewsCrawl":
