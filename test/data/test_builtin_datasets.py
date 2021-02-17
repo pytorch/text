@@ -1,9 +1,9 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
-import torchtext.data as data
 import torch
 import torchtext
+from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
@@ -42,7 +42,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(results, target_results)
 
     def test_wikitext2_legacy(self):
-        from torchtext.datasets import WikiText2
+        from torchtext.legacy.datasets import WikiText2
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
         conditional_remove(cachedir)
 
@@ -98,7 +98,7 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
     def test_penntreebank_legacy(self):
-        from torchtext.datasets import PennTreebank
+        from torchtext.legacy.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         TEXT = data.Field(lower=True, batch_first=True)
         ds = PennTreebank

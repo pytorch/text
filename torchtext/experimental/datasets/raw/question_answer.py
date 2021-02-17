@@ -1,8 +1,12 @@
 from torchtext.utils import download_from_url
 import json
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+<<<<<<< HEAD
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
 from torchtext.experimental.datasets.raw.common import add_docstring_header
+=======
+from torchtext.experimental.datasets.raw.common import check_default_set
+>>>>>>> upstream/fbsync
 
 URLS = {
     'SQuAD1':
@@ -31,6 +35,7 @@ def _create_data_from_json(data_path):
 
 
 def _setup_datasets(dataset_name, root, split, offset):
+<<<<<<< HEAD
     extracted_files = {key: download_from_url(URLS[dataset_name][key], root=root,
                                               hash_value=MD5[dataset_name][key], hash_type='md5') for key in split}
     return [RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
@@ -41,6 +46,30 @@ def _setup_datasets(dataset_name, root, split, offset):
 @add_docstring_header()
 def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
     """
+=======
+    split = check_default_set(split, ('train', 'dev'))
+    extracted_files = {key: download_from_url(URLS[dataset_name][key], root=root,
+                                              hash_value=MD5[dataset_name][key], hash_type='md5') for key in split}
+    return tuple(RawTextIterableDataset(dataset_name, NUM_LINES[dataset_name][item],
+                 _create_data_from_json(extracted_files[item]), offset=offset) for item in split)
+
+
+def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
+    """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD1.0.
+    The iterator yields a tuple of (raw context, raw question, a list of raw answer,
+    a list of answer positions in the raw context).
+    For example, ('Architecturally, the school has a Catholic character. Atop the ...',
+                  'To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?',
+                  ['Saint Bernadette Soubirous'],
+                  [515])
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets (Default: ('train', 'dev'))
+            By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
+            for example ('train', 'dev') or just a string 'train'.
+        offset: the number of the starting line. Default: 0
+>>>>>>> upstream/fbsync
 
     Examples:
         >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD1()
@@ -48,6 +77,7 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
         >>>     print(idx, (context, question, answer, ans_pos))
     """
 
+<<<<<<< HEAD
     # The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     # a list of answer positions in the raw context).
     # For example, ('Architecturally, the school has a Catholic character. Atop the ...',
@@ -63,6 +93,26 @@ def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
 @add_docstring_header()
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     """
+=======
+    return _setup_datasets("SQuAD1", root, split, offset)
+
+
+def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
+    """ A dataset iterator yields the data of Stanford Question Answering dataset - SQuAD2.0.
+    The iterator yields a tuple of (raw context, raw question, a list of raw answer,
+    a list of answer positions in the raw context).
+    For example, ('Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an ...',
+                  'When did Beyonce start becoming popular?',
+                  ['in the late 1990s'],
+                  [269])
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets (Default: ('train', 'dev'))
+            By default, both datasets (train, dev) are generated. Users could also choose any one or two of them,
+            for example ('train', 'dev') or just a string 'train'.
+        offset: the number of the starting line. Default: 0
+>>>>>>> upstream/fbsync
 
     Examples:
         >>> train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD2()
@@ -70,6 +120,7 @@ def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
         >>>     print(idx, (context, question, answer, ans_pos))
     """
 
+<<<<<<< HEAD
     # The iterator yields a tuple of (raw context, raw question, a list of raw answer,
     # a list of answer positions in the raw context).
     # For example, ('Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an ...',
@@ -78,6 +129,8 @@ def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     #               [269])
     # """
 
+=======
+>>>>>>> upstream/fbsync
     return _setup_datasets("SQuAD2", root, split, offset)
 
 
@@ -85,12 +138,18 @@ DATASETS = {
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/fbsync
 NUM_LINES = {
     'SQuAD1': {'train': 87599, 'dev': 10570},
     'SQuAD2': {'train': 130319, 'dev': 11873}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/fbsync
 MD5 = {
     'SQuAD1': {'train': '981b29407e0affa3b1b156f72073b945', 'dev': '3e85deb501d4e538b6bc56f786231552'},
     'SQuAD2': {'train': '62108c273c268d70893182d5cf8df740', 'dev': '246adae8b7002f8679c027697b0b7cf8'}

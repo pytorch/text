@@ -1,5 +1,5 @@
-from torchtext import data
-from torchtext import datasets
+from torchtext.legacy import data
+from torchtext.legacy import datasets
 from torchtext.vocab import GloVe
 
 # Define the fields associated with the sequences.

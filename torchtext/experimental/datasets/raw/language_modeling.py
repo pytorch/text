@@ -2,24 +2,36 @@ import logging
 import io
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
+<<<<<<< HEAD
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
 from torchtext.experimental.datasets.raw.common import add_docstring_header
+=======
+from torchtext.experimental.datasets.raw.common import check_default_set
+>>>>>>> upstream/fbsync
 
 URLS = {
     'WikiText2':
         'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip',
     'WikiText103':
         'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip',
+<<<<<<< HEAD
     'PennTreebank': {
         'train': 'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
         'test': 'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
         'valid': 'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'
     },
+=======
+    'PennTreebank':
+        ['https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt',
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt',
+         'https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt'],
+>>>>>>> upstream/fbsync
     'WMTNewsCrawl': 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
 }
 
 
 def _setup_datasets(dataset_name, root, split, year, language, offset):
+<<<<<<< HEAD
     if dataset_name == 'PennTreebank':
         extracted_files = [download_from_url(URLS['PennTreebank'][key],
                                              root=root, hash_value=MD5['PennTreebank'][key],
@@ -55,12 +67,75 @@ def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
         >>> from torchtext.experimental.raw.datasets import WikiText2
         >>> train_dataset, valid_dataset, test_dataset = WikiText2()
         >>> valid_dataset = WikiText2(split='valid')
+=======
+    split = check_default_set(split, ('train', 'test', 'valid'))
+    if isinstance(split, str):
+        split = [split]
+    if not set(split).issubset(set(('train', 'test', 'valid'))):
+        raise TypeError('split is not supported!')
+
+    if dataset_name == 'PennTreebank':
+        extracted_files = []
+        select_to_index = {'train': 0, 'test': 1, 'valid': 2}
+        extracted_files = [download_from_url(URLS['PennTreebank'][select_to_index[key]],
+                                             root=root, hash_value=MD5['PennTreebank'][key],
+                                             hash_type='md5') for key in split]
+    elif dataset_name == 'WMTNewsCrawl':
+        if not (split == ['train'] or set(split).issubset(set(('train',)))):
+            raise ValueError("WMTNewsCrawl only creates a training dataset. "
+                             "split should be 'train' "
+                             "or ('train',), got {}.".format(split))
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5['WMTNewsCrawl'], hash_type='md5')
+        extracted_files = extract_archive(dataset_tar)
+        file_name = 'news.{}.{}.shuffled'.format(year, language)
+        extracted_files = [f for f in extracted_files if file_name in f]
+    else:
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], hash_type='md5')
+        extracted_files = extract_archive(dataset_tar)
+
+    _path = {}
+    for item in split:
+        for fname in extracted_files:
+            if item in fname:
+                _path[item] = fname
+
+    data = {}
+    for item in _path.keys():
+        logging.info('Creating {} data'.format(item))
+        data[item] = iter(io.open(_path[item], encoding="utf8"))
+
+    return tuple(RawTextIterableDataset(dataset_name,
+                                        NUM_LINES[dataset_name][item], data[item], offset=offset) for item in split)
+
+
+def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
+    """ Defines WikiText2 datasets.
+
+    Create language modeling dataset: WikiText2
+    Separately returns the train/test/valid set
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets. Default: ('train', 'valid, 'test')
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+        offset: the number of the starting line. Default: 0
+
+    Examples:
+        >>> from torchtext.experimental.raw.datasets import WikiText2
+        >>> train_dataset, valid_dataset, test_dataset = WikiText2()
+        >>> valid_dataset, = WikiText2(split='valid')
+>>>>>>> upstream/fbsync
 
     """
 
     return _setup_datasets("WikiText2", root, split, None, None, offset)
 
 
+<<<<<<< HEAD
 @wrap_split_argument
 @add_docstring_header()
 def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
@@ -69,11 +144,33 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
         >>> from torchtext.experimental.datasets.raw import WikiText103
         >>> train_dataset, valid_dataset, test_dataset = WikiText103()
         >>> valid_dataset = WikiText103(split='valid')
+=======
+def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
+    """ Defines WikiText103 datasets.
+
+    Create language modeling dataset: WikiText103
+    Separately returns the train/test/valid set
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: the returned datasets. Default: ('train', 'valid','test')
+            By default, all the three datasets (train, test, valid) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test').
+            If 'train' is not in the tuple, an vocab object should be provided which will
+            be used to process valid and/or test data.
+        offset: the number of the starting line. Default: 0
+
+    Examples:
+        >>> from torchtext.experimental.datasets.raw import WikiText103
+        >>> train_dataset, valid_dataset, test_dataset = WikiText103()
+        >>> valid_dataset, = WikiText103(split='valid')
+>>>>>>> upstream/fbsync
     """
 
     return _setup_datasets("WikiText103", root, split, None, None, offset)
 
 
+<<<<<<< HEAD
 @wrap_split_argument
 @add_docstring_header()
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
@@ -82,12 +179,36 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
         >>> from torchtext.experimental.datasets.raw import PennTreebank
         >>> train_dataset, valid_dataset, test_dataset = PennTreebank()
         >>> valid_dataset = PennTreebank(split='valid')
+=======
+def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
+    """ Defines PennTreebank datasets.
+
+    Create language modeling dataset: PennTreebank
+    Separately returns the train/test/valid set
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets
+            (Default: ('train', 'test','valid'))
+            By default, all the three datasets ('train', 'valid', 'test') are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test
+            data.
+        offset: the number of the starting line. Default: 0
+
+    Examples:
+        >>> from torchtext.experimental.datasets.raw import PennTreebank
+        >>> train_dataset, valid_dataset, test_dataset = PennTreebank()
+        >>> valid_dataset, = PennTreebank(split='valid')
+>>>>>>> upstream/fbsync
 
     """
 
     return _setup_datasets("PennTreebank", root, split, None, None, offset)
 
 
+<<<<<<< HEAD
 @wrap_split_argument
 @add_docstring_header()
 def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
@@ -96,6 +217,20 @@ def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'
     #       language: the language of the dataset
     #          (Default: 'en')
     """
+=======
+def WMTNewsCrawl(root='.data', split=('train'), year=2010, language='en', offset=0):
+    """ Defines WMT News Crawl.
+
+    Create language modeling dataset: WMTNewsCrawl
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: a string or tuple for the returned datasets.
+            (Default: 'train')
+        year: the year of the dataset (Default: 2010)
+        language: the language of the dataset (Default: 'en')
+        offset: the number of the starting line. Default: 0
+>>>>>>> upstream/fbsync
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
@@ -109,14 +244,20 @@ DATASETS = {
     'PennTreebank': PennTreebank,
     'WMTNewsCrawl': WMTNewsCrawl
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/fbsync
 NUM_LINES = {
     'WikiText2': {'train': 36718, 'valid': 3760, 'test': 4358},
     'WikiText103': {'train': 1801350, 'valid': 3760, 'test': 4358},
     'PennTreebank': {'train': 42068, 'valid': 3370, 'test': 3761},
     'WMTNewsCrawl': {'train': 17676013}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/fbsync
 MD5 = {
     'WikiText2': '542ccefacc6c27f945fb54453812b3cd',
     'WikiText103': '9ddaacaf6af0710eda8c456decff7832',

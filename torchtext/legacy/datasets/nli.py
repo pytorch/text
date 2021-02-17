@@ -45,7 +45,7 @@ class NLIDataset(data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, parse_field=None,
-               extra_fields={}, root='.data', train='train.jsonl',
+               extra_fields=None, root='.data', train='train.jsonl',
                validation='val.jsonl', test='test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
@@ -66,6 +66,8 @@ class NLIDataset(data.TabularDataset):
             test: The filename of the test data, or None to not load the test
                 set. Default: 'test.jsonl'.
         """
+        if extra_fields is None:
+            extra_fields = {}
         path = cls.download(root)
 
         if parse_field is None:
