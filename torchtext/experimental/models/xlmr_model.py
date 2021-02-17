@@ -51,10 +51,10 @@ def xlmr_regular():
     return encoder, load_xlmr_transform()
 
 
-PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_regular-b39c547d.pt',
-              'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base-dcbe409a.pt'}
-SHA256 = {'xlmr.regular': 'b39c547d43acab913ddc5d902996b65ceeaf13e8068a1d766aa4ac3a2104d6c9',
-          'xlmr.base': 'dcbe409aff2609843b6c6e37e3e16bbf068ed8d4995c28dd1cbe24ba3b4534e9'}
+PRETRAINED = {'xlmr.regular': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_regular-5626411f.pt',
+              'xlmr.base': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_models/xlmr_base-4e52e3b8.pt'}
+SHA256 = {'xlmr.regular': '5626411f5062c17b392725fcccd2fbc7f6df4b7d802279e4b65985bb01ed4480',
+          'xlmr.base': '4e52e3b861231d9cd3cb974ed5166294cd93e966169007662fcee68135dc0602'}
 
 ##################################################################################
 # This part will be moved to stl-text/models folder
