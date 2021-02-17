@@ -27,13 +27,13 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
-def find_match(name, lst):
+def find_match(match, lst):
     """
-    Searches list of strings and returns first entry that contains
-    given string name. Akin to the unix tool find.
+    Searches list of strings and returns first entry that partially or fully
+    contains the given string match.
     """
     for element in lst:
-        if name in element:
+        if match in element:
             return element
     return None
 
