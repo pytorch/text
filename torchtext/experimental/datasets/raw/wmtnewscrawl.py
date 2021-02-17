@@ -23,7 +23,6 @@ def WMTNewsCrawl(root='.data', split=train, offset=0):
     file_name = 'news.{}.{}.shuffled'.format(year, language)
     extracted_files = [f for f in extracted_files if file_name in f]
 
-
     datasets = []
     for item in split:
         path = find_match(item, extracted_files)
