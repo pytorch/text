@@ -9,6 +9,19 @@ from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
 
+GOOGLE_DRIVE_BASED_DATASETS = [
+    'AmazonReviewFull',
+    'AmazonReviewPolarity',
+    'DBpedia',
+    'IMDB',
+    'IWSLT',
+    'SogouNews',
+    'WMT14',
+    'YahooAnswers',
+    'YelpReviewFull',
+    'YelpReviewPolarity'
+]
+
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
     info = param.args[0]
@@ -155,6 +168,8 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
 
         # Currently disabled due to incredibly slow download and possibly wrong reference hash
         if dataset_name == "WMTNewsCrawl":
@@ -178,7 +193,7 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(list(sorted(torchtext.experimental.datasets.raw.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
-        if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
         if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
             return
@@ -195,6 +210,8 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
     def test_datasets_split_argument(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
