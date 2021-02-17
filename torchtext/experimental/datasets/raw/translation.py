@@ -137,7 +137,7 @@ def _setup_datasets(dataset_name,
                 f, root=root, hash_value=MD5[dataset_name][idx], hash_type='md5')
             extracted_files.extend(extract_archive(dataset_tar))
     elif isinstance(URLS[dataset_name], str):
-        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], path=_PATHS[dataset_name], hash_type='md5')
+        dataset_tar = download_from_url(URLS[dataset_name], root=root, hash_value=MD5[dataset_name], path=os.path.join(root, _PATHS[dataset_name]), hash_type='md5')
         extracted_dataset_tar = extract_archive(dataset_tar)
         if dataset_name == 'IWSLT':
             # IWSLT dataset's url downloads a multilingual tgz.
