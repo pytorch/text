@@ -1,6 +1,7 @@
 import torch.utils.data
 import warnings
 
+
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, examples, fields, filter_pred=None):
         warnings.warn('{} class has '.format(self.__class__.__name__) +
