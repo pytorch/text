@@ -171,7 +171,7 @@ class TestDataset(TorchtextTestCase):
         if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
 
-        # Currently disabled due to incredibly slow download and possibly wrong reference hash
+        # Currently disabled due to incredibly slow download
         if dataset_name == "WMTNewsCrawl":
             return
         split = info['split']
