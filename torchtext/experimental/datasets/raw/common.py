@@ -29,6 +29,17 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
+def find_match(match, lst):
+    """
+    Searches list of strings and returns first entry that partially or fully
+    contains the given string match.
+    """
+    for element in lst:
+        if match in element:
+            return element
+    return None
+
+
 def dataset_docstring_header(fn):
     """
     Returns docstring for a dataset based on function arguments.
@@ -59,7 +70,7 @@ def dataset_docstring_header(fn):
                 Default: {}
             offset: the number of the starting line.
                 Default: 0
-        """.format(fn.__name__, "/".join(default_split), str(example_subset), str(default_split)) + fn.__doc__
+        """.format(fn.__name__, "/".join(default_split), str(example_subset), str(default_split))
 
     if isinstance(default_split, str):
         return """{} dataset
@@ -72,14 +83,14 @@ def dataset_docstring_header(fn):
             split: Only {default_split} is available.
                 Default: {default_split}
             offset: the number of the starting line.
-                Default: 0""".format(fn.__name__, default_split=default_split) + fn.__doc__
+                Default: 0""".format(fn.__name__, default_split=default_split)
 
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
 
 def add_docstring_header():
     def docstring_decorator(fn):
-        fn.__doc__ = dataset_docstring_header(fn)
+        fn.__doc__ = dataset_docstring_header(fn) + fn.__doc__ if fn.__doc__ else ""
         return fn
     return docstring_decorator
 
