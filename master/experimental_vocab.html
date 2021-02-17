@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20210216 documentation</title>
+  <title>torchtext.experimental.vocab &mdash; torchtext 0.9.0.dev20210217 documentation</title>
   
 
   
@@ -56,6 +56,7 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -184,7 +185,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210216
+                  0.9.0.dev20210217
                 </div>
               
             
@@ -373,15 +374,16 @@
 <dl class="method">
 <dt id="torchtext.experimental.vocab.Vocab.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls the <cite>lookup_indices</cite> method
-:param tokens: a list of tokens used to lookup their corresponding <cite>indices</cite>.
-:type tokens: List[str]</p>
+<dd><p>Calls the <cite>lookup_indices</cite> method</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the ‘indices` associated with a list of tokens`.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – a list of tokens used to lookup their corresponding <cite>indices</cite>.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>indices (List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the ‘indices` associated with a list of tokens`.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>indices (List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
 </dd>
 </dl>
 </dd></dl>
@@ -550,7 +552,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
 <dd class="field-even"><p>a <cite>Vocab</cite> object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vocab.Vocab" title="torchtext.experimental.vocab.Vocab">Vocab</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vocab.Vocab" title="torchtext.experimental.vocab.Vocab">torchtext.experimental.vocab.Vocab</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -586,7 +588,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
 <dd class="field-even"><p>a <cite>Vocab</cite> object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vocab.Vocab" title="torchtext.experimental.vocab.Vocab">Vocab</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vocab.Vocab" title="torchtext.experimental.vocab.Vocab">torchtext.experimental.vocab.Vocab</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

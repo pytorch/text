@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.utils &mdash; torchtext 0.9.0.dev20210216 documentation</title>
+  <title>torchtext.utils &mdash; torchtext 0.9.0.dev20210217 documentation</title>
   
 
   
@@ -54,6 +54,7 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -182,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210216
+                  0.9.0.dev20210217
                 </div>
               
             
@@ -366,6 +367,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_check_hash</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">hash_value</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Validating hash </span><span class="si">{}</span><span class="s1"> matches hash of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hash_value</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_file</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">hash_value</span><span class="p">,</span> <span class="n">hash_type</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The hash of </span><span class="si">{}</span><span class="s2"> does not match. Delete the file manually and retry.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>

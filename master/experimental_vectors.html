@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vectors &mdash; torchtext 0.9.0.dev20210216 documentation</title>
+  <title>torchtext.experimental.vectors &mdash; torchtext 0.9.0.dev20210217 documentation</title>
   
 
   
@@ -56,6 +56,7 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -184,7 +185,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210216
+                  0.9.0.dev20210217
                 </div>
               
             
@@ -380,13 +381,13 @@
 <dl class="method">
 <dt id="torchtext.experimental.vectors.Vectors.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.forward" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Calls the <cite>lookup_vectors</cite> method</dt><dd><dl class="simple">
+<dd><p>Calls the <cite>lookup_vectors</cite> method</p>
+<blockquote>
+<div><dl class="simple">
 <dt>Args:</dt><dd><p>tokens: a list of string tokens</p>
 </dd>
 </dl>
-</dd>
-</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>returns a 2-D tensor of shape=(len(tokens), vector_dim) or an
@@ -401,14 +402,16 @@ empty tensor if <cite>tokens</cite> is empty</p>
 <dl class="method">
 <dt id="torchtext.experimental.vectors.Vectors.lookup_vectors">
 <code class="sig-name descname">lookup_vectors</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.lookup_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.lookup_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Look up embedding vectors for a list of tokens.
-:param tokens: a list of tokens</p>
+<dd><p>Look up embedding vectors for a list of tokens.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if <cite>tokens</cite> is empty</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tokens</strong> – a list of tokens</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>vectors (Tensor)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns a 2-D tensor of shape=(len(tokens), vector_dim) or an empty tensor if <cite>tokens</cite> is empty</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>vectors (Tensor)</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -427,16 +430,17 @@ empty tensor if <cite>tokens</cite> is empty</p>
 <dl class="function">
 <dt id="torchtext.experimental.vectors.build_vectors">
 <code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">build_vectors</code><span class="sig-paren">(</span><em class="sig-param">tokens</em>, <em class="sig-param">vectors</em>, <em class="sig-param">unk_tensor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#build_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.build_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Factory method for creating a vectors object which maps tokens to vectors.
-:param tokens: a list of tokens.
-:type tokens: List[str]
-:param vectors: a 2d tensor representing the vector associated with each token.
-:type vectors: torch.Tensor
-:param unk_tensor: a 1d tensors representing the vector associated with an unknown token.
-:type unk_tensor: torch.Tensor</p>
+<dd><p>Factory method for creating a vectors object which maps tokens to vectors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – a list of tokens.</p></li>
+<li><p><strong>vectors</strong> (<a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><em>torch.Tensor</em></a>) – a 2d tensor representing the vector associated with each token.</p></li>
+<li><p><strong>unk_tensor</strong> (<a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><em>torch.Tensor</em></a>) – a 1d tensors representing the vector associated with an unknown token.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if <cite>vectors</cite> is empty and a default <cite>unk_tensor</cite> isn’t provided.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if <cite>tokens</cite> and <cite>vectors</cite> have different sizes or <cite>tokens</cite> has duplicates.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if all tensors within`vectors` are not of data type <cite>torch.float</cite>.</p></li>
@@ -506,7 +510,7 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 <dd class="field-even"><p>a Vectors object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vectors.Vectors" title="torchtext.experimental.vectors.Vectors">Vectors</a></p>
+<dd class="field-odd"><p>torchtext.experimental.vectors.Vector</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if duplicate tokens are found in FastText file.</p>
@@ -575,7 +579,7 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 <dd class="field-even"><p>a Vectors object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vectors.Vectors" title="torchtext.experimental.vectors.Vectors">Vectors</a></p>
+<dd class="field-odd"><p>torchtext.experimental.vectors.Vector</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if unexpected duplicate tokens are found in GloVe file.</p>

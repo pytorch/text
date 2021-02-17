@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets &mdash; torchtext 0.9.0.dev20210216 documentation</title>
+  <title>torchtext.datasets &mdash; torchtext 0.9.0.dev20210217 documentation</title>
   
 
   
@@ -56,6 +56,7 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -184,7 +185,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210216
+                  0.9.0.dev20210217
                 </div>
               
             
@@ -550,8 +551,8 @@ set. Default: ‘wiki.test.tokens’.</p></li>
 <em class="property">class </em><code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">PennTreebank</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">text_field</em>, <em class="sig-param">newline_eos=True</em>, <em class="sig-param">encoding='utf-8'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/language_modeling.html#PennTreebank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Penn Treebank dataset.
 A relatively small dataset originally created for POS tagging.</p>
-<p class="rubric">References</p>
-<p>Marcus, Mitchell P., Marcinkiewicz, Mary Ann &amp; Santorini, Beatrice (1993).
+<p>References:
+Marcus, Mitchell P., Marcinkiewicz, Mary Ann &amp; Santorini, Beatrice (1993).
 Building a Large Annotated Corpus of English: The Penn Treebank</p>
 <dl class="method">
 <dt id="torchtext.datasets.PennTreebank.iters">
@@ -790,18 +791,16 @@ numericalizing the string tokens. label is an integer.
 <dl class="function">
 <dt id="torchtext.datasets.AG_NEWS">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AG_NEWS</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines AG_NEWS datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><ul class="simple">
+<dd><p>Defines AG_NEWS datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>0 : World</p></li>
 <li><p>1 : Sports</p></li>
 <li><p>2 : Business</p></li>
 <li><p>3 : Sci/Tech</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>Create supervised learning dataset: AG_NEWS</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -828,19 +827,17 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.SogouNews">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SogouNews</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines SogouNews datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><ul class="simple">
+<dd><p>Defines SogouNews datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>0 : Sports</p></li>
 <li><p>1 : Finance</p></li>
 <li><p>2 : Entertainment</p></li>
 <li><p>3 : Automobile</p></li>
 <li><p>4 : Technology</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>Create supervised learning dataset: SogouNews</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -867,9 +864,10 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.DBpedia">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">DBpedia</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines DBpedia datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><ul class="simple">
+<dd><p>Defines DBpedia datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>0 : Company</p></li>
 <li><p>1 : EducationalInstitution</p></li>
 <li><p>2 : Artist</p></li>
@@ -885,10 +883,7 @@ vocabulary based on the train data set.</p></li>
 <li><p>12 : Film</p></li>
 <li><p>13 : WrittenWork</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>Create supervised learning dataset: DBpedia</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -915,16 +910,14 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.YelpReviewPolarity">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines YelpReviewPolarity datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><ul class="simple">
+<dd><p>Defines YelpReviewPolarity datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>0 : Negative polarity.</p></li>
 <li><p>1 : Positive polarity.</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>Create supervised learning dataset: YelpReviewPolarity</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -951,13 +944,11 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.YelpReviewFull">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewFull</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines YelpReviewFull datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><p>0 - 4 : rating classes (4 is highly recommended).</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dd><p>Defines YelpReviewFull datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><p>0 - 4 : rating classes (4 is highly recommended).</p>
+</div></blockquote>
 <p>Create supervised learning dataset: YelpReviewFull</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -984,9 +975,10 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.YahooAnswers">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YahooAnswers</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines YahooAnswers datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><ul class="simple">
+<dd><p>Defines YahooAnswers datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>0 : Society &amp; Culture</p></li>
 <li><p>1 : Science &amp; Mathematics</p></li>
 <li><p>2 : Health</p></li>
@@ -998,10 +990,7 @@ vocabulary based on the train data set.</p></li>
 <li><p>8 : Family &amp; Relationships</p></li>
 <li><p>9 : Politics &amp; Government</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>Create supervised learning dataset: YahooAnswers</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -1028,16 +1017,14 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.AmazonReviewPolarity">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines AmazonReviewPolarity datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><ul class="simple">
+<dd><p>Defines AmazonReviewPolarity datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>0 : Negative polarity</p></li>
 <li><p>1 : Positive polarity</p></li>
 </ul>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>Create supervised learning dataset: AmazonReviewPolarity</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">
@@ -1064,13 +1051,11 @@ vocabulary based on the train data set.</p></li>
 <dl class="function">
 <dt id="torchtext.datasets.AmazonReviewFull">
 <code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewFull</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/text_classification.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Defines AmazonReviewFull datasets.</dt><dd><dl class="simple">
-<dt>The labels includes:</dt><dd><p>0 - 4 : rating classes (4 is highly recommended)</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dd><p>Defines AmazonReviewFull datasets.</p>
+<p>The labels include:</p>
+<blockquote>
+<div><p>0 - 4 : rating classes (4 is highly recommended)</p>
+</div></blockquote>
 <p>Create supervised learning dataset: AmazonReviewFull</p>
 <p>Separately returns the training and test dataset</p>
 <dl class="field-list simple">

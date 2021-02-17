@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.text_classification &mdash; torchtext 0.9.0.dev20210216 documentation</title>
+  <title>torchtext.datasets.text_classification &mdash; torchtext 0.9.0.dev20210217 documentation</title>
   
 
   
@@ -54,6 +54,7 @@
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size2-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Size3-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
 </head>
 
 <div class="container-fluid header-holder tutorials-header" id="header-holder">
@@ -182,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210216
+                  0.9.0.dev20210217
                 </div>
               
             
@@ -455,11 +456,13 @@
 
 <div class="viewcode-block" id="AG_NEWS"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AG_NEWS">[docs]</a><span class="k">def</span> <span class="nf">AG_NEWS</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines AG_NEWS datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            - 0 : World</span>
-<span class="sd">            - 1 : Sports</span>
-<span class="sd">            - 2 : Business</span>
-<span class="sd">            - 3 : Sci/Tech</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        - 0 : World</span>
+<span class="sd">        - 1 : Sports</span>
+<span class="sd">        - 2 : Business</span>
+<span class="sd">        - 3 : Sci/Tech</span>
 
 <span class="sd">    Create supervised learning dataset: AG_NEWS</span>
 
@@ -483,12 +486,14 @@
 
 <div class="viewcode-block" id="SogouNews"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SogouNews">[docs]</a><span class="k">def</span> <span class="nf">SogouNews</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines SogouNews datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            - 0 : Sports</span>
-<span class="sd">            - 1 : Finance</span>
-<span class="sd">            - 2 : Entertainment</span>
-<span class="sd">            - 3 : Automobile</span>
-<span class="sd">            - 4 : Technology</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        - 0 : Sports</span>
+<span class="sd">        - 1 : Finance</span>
+<span class="sd">        - 2 : Entertainment</span>
+<span class="sd">        - 3 : Automobile</span>
+<span class="sd">        - 4 : Technology</span>
 
 <span class="sd">    Create supervised learning dataset: SogouNews</span>
 
@@ -512,21 +517,23 @@
 
 <div class="viewcode-block" id="DBpedia"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.DBpedia">[docs]</a><span class="k">def</span> <span class="nf">DBpedia</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines DBpedia datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            - 0 : Company</span>
-<span class="sd">            - 1 : EducationalInstitution</span>
-<span class="sd">            - 2 : Artist</span>
-<span class="sd">            - 3 : Athlete</span>
-<span class="sd">            - 4 : OfficeHolder</span>
-<span class="sd">            - 5 : MeanOfTransportation</span>
-<span class="sd">            - 6 : Building</span>
-<span class="sd">            - 7 : NaturalPlace</span>
-<span class="sd">            - 8 : Village</span>
-<span class="sd">            - 9 : Animal</span>
-<span class="sd">            - 10 : Plant</span>
-<span class="sd">            - 11 : Album</span>
-<span class="sd">            - 12 : Film</span>
-<span class="sd">            - 13 : WrittenWork</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        - 0 : Company</span>
+<span class="sd">        - 1 : EducationalInstitution</span>
+<span class="sd">        - 2 : Artist</span>
+<span class="sd">        - 3 : Athlete</span>
+<span class="sd">        - 4 : OfficeHolder</span>
+<span class="sd">        - 5 : MeanOfTransportation</span>
+<span class="sd">        - 6 : Building</span>
+<span class="sd">        - 7 : NaturalPlace</span>
+<span class="sd">        - 8 : Village</span>
+<span class="sd">        - 9 : Animal</span>
+<span class="sd">        - 10 : Plant</span>
+<span class="sd">        - 11 : Album</span>
+<span class="sd">        - 12 : Film</span>
+<span class="sd">        - 13 : WrittenWork</span>
 
 <span class="sd">    Create supervised learning dataset: DBpedia</span>
 
@@ -550,9 +557,11 @@
 
 <div class="viewcode-block" id="YelpReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewPolarity">[docs]</a><span class="k">def</span> <span class="nf">YelpReviewPolarity</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines YelpReviewPolarity datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            - 0 : Negative polarity.</span>
-<span class="sd">            - 1 : Positive polarity.</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        - 0 : Negative polarity.</span>
+<span class="sd">        - 1 : Positive polarity.</span>
 
 <span class="sd">    Create supervised learning dataset: YelpReviewPolarity</span>
 
@@ -576,8 +585,10 @@
 
 <div class="viewcode-block" id="YelpReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewFull">[docs]</a><span class="k">def</span> <span class="nf">YelpReviewFull</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines YelpReviewFull datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            0 - 4 : rating classes (4 is highly recommended).</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        0 - 4 : rating classes (4 is highly recommended).</span>
 
 <span class="sd">    Create supervised learning dataset: YelpReviewFull</span>
 
@@ -601,17 +612,19 @@
 
 <div class="viewcode-block" id="YahooAnswers"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YahooAnswers">[docs]</a><span class="k">def</span> <span class="nf">YahooAnswers</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines YahooAnswers datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            - 0 : Society &amp; Culture</span>
-<span class="sd">            - 1 : Science &amp; Mathematics</span>
-<span class="sd">            - 2 : Health</span>
-<span class="sd">            - 3 : Education &amp; Reference</span>
-<span class="sd">            - 4 : Computers &amp; Internet</span>
-<span class="sd">            - 5 : Sports</span>
-<span class="sd">            - 6 : Business &amp; Finance</span>
-<span class="sd">            - 7 : Entertainment &amp; Music</span>
-<span class="sd">            - 8 : Family &amp; Relationships</span>
-<span class="sd">            - 9 : Politics &amp; Government</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        - 0 : Society &amp; Culture</span>
+<span class="sd">        - 1 : Science &amp; Mathematics</span>
+<span class="sd">        - 2 : Health</span>
+<span class="sd">        - 3 : Education &amp; Reference</span>
+<span class="sd">        - 4 : Computers &amp; Internet</span>
+<span class="sd">        - 5 : Sports</span>
+<span class="sd">        - 6 : Business &amp; Finance</span>
+<span class="sd">        - 7 : Entertainment &amp; Music</span>
+<span class="sd">        - 8 : Family &amp; Relationships</span>
+<span class="sd">        - 9 : Politics &amp; Government</span>
 
 <span class="sd">    Create supervised learning dataset: YahooAnswers</span>
 
@@ -635,9 +648,11 @@
 
 <div class="viewcode-block" id="AmazonReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewPolarity">[docs]</a><span class="k">def</span> <span class="nf">AmazonReviewPolarity</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines AmazonReviewPolarity datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            - 0 : Negative polarity</span>
-<span class="sd">            - 1 : Positive polarity</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        - 0 : Negative polarity</span>
+<span class="sd">        - 1 : Positive polarity</span>
 
 <span class="sd">    Create supervised learning dataset: AmazonReviewPolarity</span>
 
@@ -661,8 +676,10 @@
 
 <div class="viewcode-block" id="AmazonReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewFull">[docs]</a><span class="k">def</span> <span class="nf">AmazonReviewFull</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Defines AmazonReviewFull datasets.</span>
-<span class="sd">        The labels includes:</span>
-<span class="sd">            0 - 4 : rating classes (4 is highly recommended)</span>
+
+<span class="sd">    The labels include:</span>
+
+<span class="sd">        0 - 4 : rating classes (4 is highly recommended)</span>
 
 <span class="sd">    Create supervised learning dataset: AmazonReviewFull</span>
 
