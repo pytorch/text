@@ -159,6 +159,10 @@ class TestDataset(TorchtextTestCase):
         # Currently disabled due to incredibly slow download and possibly wrong reference hash
         if dataset_name == "WMTNewsCrawl":
             return
+        # [TODO] Tests fail randomly due to exceed the quota of the Google drive URLs")
+        if dataset_name in ['SogouNews', 'DBpedia', 'YelpReviewPolarity', 'YelpReviewFull'
+                            'YahooAnswers', 'AmazonReviewPolarity', 'AmazonReviewFull']:
+            return
         split = info['split']
         data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
