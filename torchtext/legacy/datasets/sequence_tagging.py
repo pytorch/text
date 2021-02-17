@@ -78,7 +78,8 @@ class CoNLL2000Chunking(SequenceTaggingDataset):
     def splits(cls, fields, root=".data", train="train.txt",
                test="test.txt", validation_frac=0.1, **kwargs):
         """Downloads and loads the CoNLL 2000 Chunking dataset.
-        NOTE: There is only a train and test dataset so we use 10% of the train set as validation
+        NOTE: There is only a train and test dataset so we use
+              10% of the train set as validation
         """
 
         train, test = super(CoNLL2000Chunking, cls).splits(

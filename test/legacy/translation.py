@@ -1,11 +1,11 @@
-from torchtext import data
-from torchtext import datasets
+from torchtext.legacy import data
+from torchtext.legacy import datasets
 
 import re
 import spacy
 
-spacy_de = spacy.load('de_core_news_sm')
-spacy_en = spacy.load('en_core_web_sm')
+spacy_de = spacy.load('de')
+spacy_en = spacy.load('en')
 
 url = re.compile('(<url>.*</url>)')
 

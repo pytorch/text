@@ -1,76 +1,71 @@
 import os
+import glob
+import io
 
 from .. import data
 
 
-class TREC(data.Dataset):
+class IMDB(data.Dataset):
 
-    urls = ['http://cogcomp.org/Data/QA/QC/train_5500.label',
-            'http://cogcomp.org/Data/QA/QC/TREC_10.label']
-    name = 'trec'
-    dirname = ''
+    urls = ['http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz']
+    name = 'imdb'
+    dirname = 'aclImdb'
 
     @staticmethod
     def sort_key(ex):
         return len(ex.text)
 
-    def __init__(self, path, text_field, label_field,
-                 fine_grained=False, **kwargs):
-        """Create an TREC dataset instance given a path and fields.
+    def __init__(self, path, text_field, label_field, **kwargs):
+        """Create an IMDB dataset instance given a path and fields.
 
-        Args:
-            path: Path to the data file.
+        Arguments:
+            path: Path to the dataset's highest level directory
             text_field: The field that will be used for text data.
             label_field: The field that will be used for label data.
-            fine_grained: Whether to use the fine-grained (50-class) version of TREC
-                or the coarse grained (6-class) version.
             Remaining keyword arguments: Passed to the constructor of
                 data.Dataset.
         """
         fields = [('text', text_field), ('label', label_field)]
         examples = []
 
-        def get_label_str(label):
-            return label.split(':')[0] if not fine_grained else label
-        label_field.preprocessing = data.Pipeline(get_label_str)
+        for label in ['pos', 'neg']:
+            for fname in glob.iglob(os.path.join(path, label, '*.txt')):
+                with io.open(fname, 'r', encoding="utf-8") as f:
+                    text = f.readline()
+                examples.append(data.Example.fromlist([text, label], fields))
 
-        for line in open(os.path.expanduser(path), 'rb'):
-            # there is one non-ASCII byte: sisterBADBYTEcity; replaced with space
-            label, _, text = line.replace(b'\xf0', b' ').decode().partition(' ')
-            examples.append(data.Example.fromlist([text, label], fields))
-
-        super(TREC, self).__init__(examples, fields, **kwargs)
+        super(IMDB, self).__init__(examples, fields, **kwargs)
 
     @classmethod
     def splits(cls, text_field, label_field, root='.data',
-               train='train_5500.label', test='TREC_10.label', **kwargs):
-        """Create dataset objects for splits of the TREC dataset.
+               train='train', test='test', **kwargs):
+        """Create dataset objects for splits of the IMDB dataset.
 
-        Args:
+        Arguments:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
             root: Root dataset storage directory. Default is '.data'.
-            train: The filename of the train data. Default: 'train_5500.label'.
-            test: The filename of the test data, or None to not load the test
-                set. Default: 'TREC_10.label'.
+            train: The directory that contains the training examples
+            test: The directory that contains the test examples
             Remaining keyword arguments: Passed to the splits method of
                 Dataset.
         """
-        return super(TREC, cls).splits(
+        return super(IMDB, cls).splits(
             root=root, text_field=text_field, label_field=label_field,
             train=train, validation=None, test=test, **kwargs)
 
     @classmethod
     def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
-        """Create iterator objects for splits of the TREC dataset.
+        """Create iterator objects for splits of the IMDB dataset.
 
-        Args:
+        Arguments:
             batch_size: Batch_size
             device: Device to create batches on. Use - 1 for CPU and None for
                 the currently active GPU device.
-            root: The root directory that contains the trec dataset subdirectory
+            root: The root directory that contains the imdb dataset subdirectory
             vectors: one of the available pretrained vectors or a list with each
                 element one of the available pretrained vectors (see Vocab.load_vectors)
+
             Remaining keyword arguments: Passed to the splits method.
         """
         TEXT = data.Field()

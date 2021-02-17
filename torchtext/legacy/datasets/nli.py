@@ -45,13 +45,13 @@ class NLIDataset(data.TabularDataset):
 
     @classmethod
     def splits(cls, text_field, label_field, parse_field=None,
-               extra_fields={}, root='.data', train='train.jsonl',
+               extra_fields=None, root='.data', train='train.jsonl',
                validation='val.jsonl', test='test.jsonl'):
         """Create dataset objects for splits of the SNLI dataset.
 
         This is the most flexible way to use the dataset.
 
-        Args:
+        Arguments:
             text_field: The field that will be used for premise and hypothesis
                 data.
             label_field: The field that will be used for label data.
@@ -66,6 +66,8 @@ class NLIDataset(data.TabularDataset):
             test: The filename of the test data, or None to not load the test
                 set. Default: 'test.jsonl'.
         """
+        if extra_fields is None:
+            extra_fields = {}
         path = cls.download(root)
 
         if parse_field is None:
@@ -96,7 +98,7 @@ class NLIDataset(data.TabularDataset):
         This is the simplest way to use the dataset, and assumes common
         defaults for field, vocabulary, and iterator parameters.
 
-        Args:
+        Arguments:
             batch_size: Batch size.
             device: Device to create batches on. Use -1 for CPU and None for
                 the currently active GPU device.

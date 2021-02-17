@@ -17,7 +17,7 @@ class TranslationDataset(data.Dataset):
     def __init__(self, path, exts, fields, **kwargs):
         """Create a TranslationDataset given paths and fields.
 
-        Args:
+        Arguments:
             path: Common prefix of paths to the data files for both languages.
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
@@ -46,7 +46,7 @@ class TranslationDataset(data.Dataset):
                train='train', validation='val', test='test', **kwargs):
         """Create dataset objects for splits of a TranslationDataset.
 
-        Args:
+        Arguments:
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -87,7 +87,7 @@ class Multi30k(TranslationDataset):
                train='train', validation='val', test='test2016', **kwargs):
         """Create dataset objects for splits of the Multi30k dataset.
 
-        Args:
+        Arguments:
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -127,7 +127,7 @@ class IWSLT(TranslationDataset):
                test='IWSLT16.TED.tst2014', **kwargs):
         """Create dataset objects for splits of the IWSLT dataset.
 
-        Args:
+        Arguments:
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
@@ -178,9 +178,9 @@ class IWSLT(TranslationDataset):
             f_txt = f_orig.replace('.tags', '')
             with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
                     io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-                for l in fd_orig:
-                    if not any(tag in l for tag in xml_tags):
-                        fd_txt.write(l.strip() + '\n')
+                for line in fd_orig:
+                    if not any(tag in line for tag in xml_tags):
+                        fd_txt.write(line.strip() + '\n')
 
 
 class WMT14(TranslationDataset):
@@ -201,7 +201,7 @@ class WMT14(TranslationDataset):
                test='newstest2014.tok.bpe.32000', **kwargs):
         """Create dataset objects for splits of the WMT 2014 dataset.
 
-        Args:
+        Arguments:
             exts: A tuple containing the extensions for each language. Must be
                 either ('.en', '.de') or the reverse.
             fields: A tuple containing the fields that will be used for data

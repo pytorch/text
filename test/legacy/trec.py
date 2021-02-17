@@ -1,6 +1,6 @@
-from torchtext import data
-from torchtext import datasets
-from torchtext.vocab import GloVe
+from torchtext.legacy import data
+from torchtext.legacy import datasets
+from torchtext.vocab import GloVe, CharNGram
 
 
 # Approach 1:
@@ -10,7 +10,7 @@ LABEL = data.Field(sequential=False)
 
 
 # make splits for data
-train, test = datasets.IMDB.splits(TEXT, LABEL)
+train, test = datasets.TREC.splits(TEXT, LABEL, fine_grained=True)
 
 # print information about the data
 print('train.fields', train.fields)
@@ -27,7 +27,7 @@ print('TEXT.vocab.vectors.size()', TEXT.vocab.vectors.size())
 
 # make iterator for splits
 train_iter, test_iter = data.BucketIterator.splits(
-    (train, test), batch_size=3, device="cuda:0")
+    (train, test), batch_size=3)
 
 # print batch information
 batch = next(iter(train_iter))
@@ -35,7 +35,10 @@ print(batch.text)
 print(batch.label)
 
 # Approach 2:
-train_iter, test_iter = datasets.IMDB.iters(batch_size=4)
+TEXT.build_vocab(train, vectors=[GloVe(name='840B', dim='300'), CharNGram()])
+LABEL.build_vocab(train)
+
+train_iter, test_iter = datasets.TREC.iters(batch_size=4)
 
 # print batch information
 batch = next(iter(train_iter))
