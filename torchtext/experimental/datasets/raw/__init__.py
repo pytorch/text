@@ -1,6 +1,14 @@
-from .text_classification import AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, \
-    YelpReviewFull, YahooAnswers, \
-    AmazonReviewPolarity, AmazonReviewFull, IMDB
+import importlib
+from .ag_news import AG_NEWS
+from .sogounews import SogouNews
+from .dbpedia import DBpedia
+from .yelpreviewpolarity import YelpReviewPolarity
+from .yelpreviewfull import YelpReviewFull
+from .yahooanswers import YahooAnswers
+from .amazonreviewpolarity import AmazonReviewPolarity
+from .amazonreviewfull import AmazonReviewFull
+from .imdb import IMDB
+
 from .sequence_tagging import UDPOS, CoNLL2000Chunking
 from .translation import Multi30k, IWSLT, WMT14
 from .language_modeling import WikiText2, WikiText103, PennTreebank, WMTNewsCrawl

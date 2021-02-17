@@ -21,19 +21,19 @@ _PATH = 'aclImdb_v1.tar.gz'
 @wrap_split_argument
 @add_docstring_header()
 def IMDB(root='.data', split=('train', 'test'), offset=0):
-    def _create_data_from_csv(data_path):
-        with io.open(data_path, encoding="utf8") as f:
-            reader = unicode_csv_reader(f)
-            for row in reader:
-                yield int(row[0]), ' '.join(row[1:])
+    def generate_imdb_data(key, extracted_files):
+        for fname in extracted_files:
+            if 'urls' in fname:
+                continue
+            elif key in fname and ('pos' in fname or 'neg' in fname):
+                with io.open(fname, encoding="utf8") as f:
+                    label = 'pos' if 'pos' in fname else 'neg'
+                    yield label, f.read()
     dataset_tar = download_from_url(URL, root=root,
-                                    path=os.path.join(root, _PATH),
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-
     datasets = []
     for item in split:
-        path = find_match(item + '.csv', extracted_files)
-        datasets.append(RawTextIterableDataset("IMDB", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
+        iterator = generate_imdb_data(item, extracted_files)
+        datasets.append(RawTextIterableDataset("IMDB", NUM_LINES[item], iterator, offset=offset))
     return datasets

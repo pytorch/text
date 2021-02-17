@@ -34,7 +34,7 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
 
     extracted_files = [download_from_url(URL[item], root=root,
                                          path=os.path.join(root, item + ".csv"),
-                                         hash_value=MD5['AG_NEWS'][item],
+                                         hash_value=MD5[item],
                                          hash_type='md5') for item in ('train', 'test')]
     datasets = []
     for item in split:
