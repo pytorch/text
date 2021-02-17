@@ -29,6 +29,17 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
+def find_match(match, lst):
+    """
+    Searches list of strings and returns first entry that partially or fully
+    contains the given string match.
+    """
+    for element in lst:
+        if match in element:
+            return element
+    return None
+
+
 def dataset_docstring_header(fn):
     """
     Returns docstring for a dataset based on function arguments.
