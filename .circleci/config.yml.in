@@ -538,6 +538,7 @@ jobs:
           name: Check parameters docstring sync
           command: |
             pip install --user pydocstyle
+            export PATH="$HOME/.local/bin:$PATH"
             pydocstyle torchtext
 
 
