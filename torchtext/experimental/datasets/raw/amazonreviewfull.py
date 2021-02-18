@@ -5,6 +5,7 @@ from torchtext.experimental.datasets.raw.common import add_docstring_header
 from torchtext.experimental.datasets.raw.common import find_match
 import os
 import io
+import logging
 
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
 
@@ -34,6 +35,7 @@ def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
     datasets = []
     for item in split:
         path = find_match(item + '.csv', extracted_files)
+        logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset("AmazonReviewFull", NUM_LINES[item],
                                                _create_data_from_csv(path), offset=offset))
     return datasets

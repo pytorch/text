@@ -3,7 +3,6 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
 from torchtext.experimental.datasets.raw.common import wrap_split_argument
 from torchtext.experimental.datasets.raw.common import add_docstring_header
-from torchtext.experimental.datasets.raw.common import find_match
 import io
 
 URL = 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
@@ -14,19 +13,28 @@ NUM_LINES = {
     'train': 17676013,
 }
 
+_AVAILABLE_YEARS = [2010]
+_AVAILABLE_LANGUAGES = [
+    "cs",
+    "en",
+    "fr",
+    "es",
+    "de"
+]
+
 
 @wrap_split_argument
 @add_docstring_header()
-def WMTNewsCrawl(root='.data', split='train', offset=0):
+def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
+    if year not in _AVAILABLE_YEARS:
+        raise ValueError("{} not available. Please choose from years {}".format(year, _AVAILABLE_YEARS))
+    if language not in _AVAILABLE_LANGUAGES:
+        raise ValueError("{} not available. Please choose from languages {}".format(language, _AVAILABLE_LANGUAGES))
     file_name = 'news.{}.{}.shuffled'.format(year, language)
     extracted_files = [f for f in extracted_files if file_name in f]
-
-    datasets = []
-    for item in split:
-        path = find_match(item, extracted_files)
-        logging.info('Creating {} data'.format(item))
-        datasets.append(RawTextIterableDataset('WMTNewsCrawl',
-                                               NUM_LINES[item], iter(io.open(path, encoding="utf8")), offset=offset))
-    return datasets
+    path = extracted_files[0]
+    logging.info('Creating {} data'.format(split[0]))
+    return [RawTextIterableDataset('WMTNewsCrawl',
+                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")), offset=offset)]
