@@ -61,10 +61,14 @@ for dataset in ["AG_NEWS",
                 "PennTreebank",
                 "WMTNewsCrawl",
                 "SQuAD1",
+<<<<<<< HEAD
                 "SQuAD2",
                 "Multi30k",
                 "IWSLT",
                 "WMT14"]:
+=======
+                "SQuAD2"]:
+>>>>>>> 71065192f529a886b27704ef5e7a3d2c700cba7b
     dataset_module_path = "torchtext.experimental.datasets.raw." + dataset.lower()
     dataset_module = importlib.import_module(dataset_module_path)
     URLS[dataset] = dataset_module.URL
