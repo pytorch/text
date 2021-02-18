@@ -88,9 +88,14 @@ def dataset_docstring_header(fn):
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
 
-def add_docstring_header():
+def add_docstring_header(docstring=None):
     def docstring_decorator(fn):
-        fn.__doc__ = dataset_docstring_header(fn) + fn.__doc__ if fn.__doc__ else ""
+        old_doc = fn.__doc__
+        fn.__doc__ = dataset_docstring_header(fn)
+        if docstring is not None:
+            fn.__doc__ += docstring
+        if old_doc is not None:
+            fn.__doc__ += old_doc
         return fn
     return docstring_decorator
 
