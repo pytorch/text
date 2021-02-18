@@ -7,6 +7,7 @@ from .dbpedia import DBpedia
 from .enwik9 import EnWik9
 from .imdb import IMDB
 from .iwslt import IWSLT
+from .matchedmultinli import MatchedMultiNLI
 from .multi30k import Multi30k
 from .penntreebank import PennTreebank
 from .snli import SNLI
@@ -31,6 +32,7 @@ DATASETS = {
     'EnWik9': EnWik9,
     'IMDB': IMDB,
     'IWSLT': IWSLT,
+    'MatchedMultiNLI': MatchedMultiNLI,
     'Multi30k': Multi30k,
     'PennTreebank': PennTreebank,
     'SNLI': SNLI,
