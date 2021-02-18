@@ -2,8 +2,8 @@
 # Note that all the tests in this module require dataset (either network access or cached)
 import unittest
 
-from torchtext import data
-from torchtext.datasets import TREC
+from torchtext.legacy import data
+from torchtext.legacy.datasets import TREC
 
 
 class TestSubword(unittest.TestCase):
