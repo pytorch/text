@@ -234,6 +234,21 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
+    extracted_files = []  # list of paths to the extracted files
+    dataset_tar = download_from_url(URL, root=root, hash_value=MD5,
+                                    path=os.path.join(root, _PATH), hash_type='md5')
+    extracted_dataset_tar = extract_archive(dataset_tar)
+    # IWSLT dataset's url downloads a multilingual tgz.
+    # We need to take an extra step to pick out the specific language pair from it.
+    src_language = train_filenames[0].split(".")[-1]
+    tgt_language = train_filenames[1].split(".")[-1]
+    languages = "-".join([src_language, tgt_language])
+    iwslt_tar = '.data/2016-01/texts/{}/{}/{}.tgz'
+    iwslt_tar = iwslt_tar.format(
+        src_language, tgt_language, languages)
+    extracted_dataset_tar = extract_archive(iwslt_tar)
+    extracted_files.extend(extracted_dataset_tar)
+
     # Clean the xml and tag file in the archives
     file_archives = []
     for fname in extracted_files:
