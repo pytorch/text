@@ -3,10 +3,10 @@ from collections import Counter
 import os
 
 import torch
-import torchtext.data as data
+import torchtext.legacy.data as data
 import pytest
 
-from ..common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
+from ...common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
 
 
 class TestField(TorchtextTestCase):

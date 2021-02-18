@@ -1,4 +1,4 @@
-from torchtext import data
+from .. import data
 import io
 
 
