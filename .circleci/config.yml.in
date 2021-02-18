@@ -343,18 +343,18 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
           {% raw %}
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
       - run:
           name: Setup
           command: .circleci/unittest/linux/scripts/setup_env.sh
       - save_cache:
           {% raw %}
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
           paths:
             - conda
@@ -365,7 +365,7 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - data-linux-v1-{{ checksum ".circleci-weekly" }}
+            - data-linux-v1-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
       - run:
           name: Run tests
@@ -374,7 +374,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
           {% raw %}
-          key: data-linux-v1-{{ checksum ".circleci-weekly" }}
+          key: data-linux-v1-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
           paths:
             - .vector_cache
@@ -395,18 +395,18 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
           {% raw %}
           keys:
-            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
       - run:
           name: Setup
           command: .circleci/unittest/windows/scripts/setup_env.sh
       - save_cache:
           {% raw %}
-          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
           paths:
             - conda
@@ -417,7 +417,7 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - data-windows-v1-{{ checksum ".circleci-weekly" }}
+            - data-windows-v1-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
       - run:
           name: Run tests
@@ -426,7 +426,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
           {% raw %}
-          key: data-windows-v1-{{ checksum ".circleci-weekly" }}
+          key: data-windows-v1-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
           paths:
             - .vector_cache
@@ -448,18 +448,18 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
           {% raw %}
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
       - run:
           name: Setup
           command: .circleci/unittest/linux/scripts/setup_env.sh
       - save_cache:
           {% raw %}
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
           {% endraw %}
           paths:
             - conda
