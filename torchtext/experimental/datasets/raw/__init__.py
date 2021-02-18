@@ -18,7 +18,10 @@ from .squad1 import SQuAD1
 from .squad2 import SQuAD2
 
 from .sequence_tagging import UDPOS, CoNLL2000Chunking
-from .translation import Multi30k, IWSLT, WMT14
+
+from .multi30k import Multi30k
+from .iwslt import IWSLT
+from .wmt14 import WMT14
 
 DATASETS = {'IMDB': IMDB,
             'AG_NEWS': AG_NEWS,
@@ -58,7 +61,10 @@ for dataset in ["AG_NEWS",
                 "PennTreebank",
                 "WMTNewsCrawl",
                 "SQuAD1",
-                "SQuAD2"]:
+                "SQuAD2",
+                "Multi30k",
+                "IWSLT",
+                "WMT14"]:
     dataset_module_path = "torchtext.experimental.datasets.raw." + dataset.lower()
     dataset_module = importlib.import_module(dataset_module_path)
     URLS[dataset] = dataset_module.URL
