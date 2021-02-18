@@ -2,7 +2,7 @@ import torch
 import logging
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
-from torchtext.experimental.datasets import raw
+from torchtext import datasets as raw
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
     vocab_func,
