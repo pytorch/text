@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.raw.question_answer &mdash; torchtext 0.9.0.dev20210217 documentation</title>
+  <title>torchtext.experimental.datasets.raw.udpos &mdash; torchtext 0.9.0.dev20210218 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210217
+                  0.9.0.dev20210218
                 </div>
               
             
@@ -214,12 +214,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data.html">torchtext.data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -281,7 +279,7 @@
         
           <li><a href="../../../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.experimental.datasets.raw.question_answer</li>
+      <li>torchtext.experimental.datasets.raw.udpos</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -309,104 +307,64 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.experimental.datasets.raw.question_answer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span>
-<span class="kn">import</span> <span class="nn">json</span>
+  <h1>Source code for torchtext.experimental.datasets.raw.udpos</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
 
-<span class="n">URLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;SQuAD1&#39;</span><span class="p">:</span>
-        <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="s1">&#39;https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;SQuAD2&#39;</span><span class="p">:</span>
-        <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="s1">&#39;https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json&#39;</span><span class="p">}</span>
-<span class="p">}</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip&#39;</span>
 
-
-<span class="k">def</span> <span class="nf">_create_data_from_json</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
-        <span class="n">raw_json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">layer1</span> <span class="ow">in</span> <span class="n">raw_json_data</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">layer2</span> <span class="ow">in</span> <span class="n">layer1</span><span class="p">[</span><span class="s1">&#39;paragraphs&#39;</span><span class="p">]:</span>
-                <span class="k">for</span> <span class="n">layer3</span> <span class="ow">in</span> <span class="n">layer2</span><span class="p">[</span><span class="s1">&#39;qas&#39;</span><span class="p">]:</span>
-                    <span class="n">_context</span><span class="p">,</span> <span class="n">_question</span> <span class="o">=</span> <span class="n">layer2</span><span class="p">[</span><span class="s1">&#39;context&#39;</span><span class="p">],</span> <span class="n">layer3</span><span class="p">[</span><span class="s1">&#39;question&#39;</span><span class="p">]</span>
-                    <span class="n">_answers</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">layer3</span><span class="p">[</span><span class="s1">&#39;answers&#39;</span><span class="p">]]</span>
-                    <span class="n">_answer_start</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;answer_start&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">layer3</span><span class="p">[</span><span class="s1">&#39;answers&#39;</span><span class="p">]]</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_answers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">_answers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
-                        <span class="n">_answer_start</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="c1"># yield the raw data in the order of context, question, answers, answer_start</span>
-                    <span class="k">yield</span> <span class="p">(</span><span class="n">_context</span><span class="p">,</span> <span class="n">_question</span><span class="p">,</span> <span class="n">_answers</span><span class="p">,</span> <span class="n">_answer_start</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
-    <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
-                                              <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">split</span><span class="p">}</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">][</span><span class="n">item</span><span class="p">],</span>
-                                   <span class="n">_create_data_from_json</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">[</span><span class="n">item</span><span class="p">]),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">]</span>
-
-
-<div class="viewcode-block" id="SQuAD1"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.SQuAD1">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">SQuAD1</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD1()</span>
-<span class="sd">        &gt;&gt;&gt; for idx, (context, question, answer, ans_pos) in enumerate(train_dataset):</span>
-<span class="sd">        &gt;&gt;&gt;     print(idx, (context, question, answer, ans_pos))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># The iterator yields a tuple of (raw context, raw question, a list of raw answer,</span>
-    <span class="c1"># a list of answer positions in the raw context).</span>
-    <span class="c1"># For example, (&#39;Architecturally, the school has a Catholic character. Atop the ...&#39;,</span>
-    <span class="c1">#               &#39;To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?&#39;,</span>
-    <span class="c1">#               [&#39;Saint Bernadette Soubirous&#39;],</span>
-    <span class="c1">#               [515])</span>
-    <span class="c1"># &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;SQuAD1&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SQuAD2"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.SQuAD2">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">SQuAD2</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, dev_dataset = torchtext.experimental.datasets.raw.SQuAD2()</span>
-<span class="sd">        &gt;&gt;&gt; for idx, (context, question, answer, ans_pos) in enumerate(train_dataset):</span>
-<span class="sd">        &gt;&gt;&gt;     print(idx, (context, question, answer, ans_pos))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># The iterator yields a tuple of (raw context, raw question, a list of raw answer,</span>
-    <span class="c1"># a list of answer positions in the raw context).</span>
-    <span class="c1"># For example, (&#39;Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an ...&#39;,</span>
-    <span class="c1">#               &#39;When did Beyonce start becoming popular?&#39;,</span>
-    <span class="c1">#               [&#39;in the late 1990s&#39;],</span>
-    <span class="c1">#               [269])</span>
-    <span class="c1"># &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;SQuAD2&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;SQuAD1&#39;</span><span class="p">:</span> <span class="n">SQuAD1</span><span class="p">,</span>
-    <span class="s1">&#39;SQuAD2&#39;</span><span class="p">:</span> <span class="n">SQuAD2</span>
-<span class="p">}</span>
+<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;bdcac7c52d934656bae1699541424545&#39;</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;SQuAD1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">87599</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="mi">10570</span><span class="p">},</span>
-    <span class="s1">&#39;SQuAD2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">130319</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="mi">11873</span><span class="p">}</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">12543</span><span class="p">,</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">2002</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">2077</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">MD5</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;SQuAD1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;981b29407e0affa3b1b156f72073b945&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="s1">&#39;3e85deb501d4e538b6bc56f786231552&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;SQuAD2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;62108c273c268d70893182d5cf8df740&#39;</span><span class="p">,</span> <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="s1">&#39;246adae8b7002f8679c027697b0b7cf8&#39;</span><span class="p">}</span>
-<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">_create_data_from_iob</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">input_file</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">columns</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                    <span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">columns</span>
+
+
+<span class="k">def</span> <span class="nf">_construct_filepath</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">file_suffix</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file_suffix</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="UDPOS"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.UDPOS">[docs]</a><span class="nd">@wrap_split_argument</span>
+<span class="nd">@add_docstring_header</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">UDPOS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">,</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
+    <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
+
+    <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;train.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;dev.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;UDPOS&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
+                                   <span class="n">_create_data_from_iob</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">item</span><span class="p">]),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data_filenames</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">]</span></div>
 </pre></div>
 
              </article>

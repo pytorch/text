@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.sequence_tagging &mdash; torchtext 0.9.0.dev20210217 documentation</title>
+  <title>torchtext.experimental.datasets.raw.conll2000chunking &mdash; torchtext 0.9.0.dev20210218 documentation</title>
   
 
   
@@ -25,24 +25,24 @@
 
   
 
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <!-- <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" /> -->
-  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../../../../../_static/css/pytorch_theme.css" type="text/css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
 
   
-  <script src="../../../_static/js/modernizr.min.js"></script>
+  <script src="../../../../../_static/js/modernizr.min.js"></script>
 
   <!-- Preload the theme fonts -->
 
-<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="../../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="../../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
 <!-- Preload the katex fonts -->
 
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210217
+                  0.9.0.dev20210218
                 </div>
               
             
@@ -195,7 +195,7 @@
 
 
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search Docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -213,22 +213,20 @@
             
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data.html">torchtext.data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../models_utils.html">torchtext.experimental.models.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -271,7 +269,7 @@
   <ul class="pytorch-breadcrumbs">
     
       <li>
-        <a href="../../../index.html">
+        <a href="../../../../../index.html">
           
             Docs
           
@@ -279,9 +277,9 @@
       </li>
 
         
-          <li><a href="../../index.html">Module code</a> &gt;</li>
+          <li><a href="../../../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.sequence_tagging</li>
+      <li>torchtext.experimental.datasets.raw.conll2000chunking</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -309,109 +307,71 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.sequence_tagging</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">data</span>
-<span class="kn">import</span> <span class="nn">random</span>
+  <h1>Source code for torchtext.experimental.datasets.raw.conll2000chunking</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
+
+<span class="n">URL</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s2">&quot;https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">MD5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;6969c2903a1f19a83569db643e43dcc8&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s2">&quot;a916e1c2d83eb3004b38fc6fcd628939&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">8936</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">2012</span><span class="p">,</span>
+<span class="p">}</span>
 
 
-<div class="viewcode-block" id="SequenceTaggingDataset"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SequenceTaggingDataset">[docs]</a><span class="k">class</span> <span class="nc">SequenceTaggingDataset</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Defines a dataset for sequence tagging. Examples in this dataset</span>
-<span class="sd">    contain paired lists -- paired list of words and tags.</span>
-
-<span class="sd">    For example, in the case of part-of-speech tagging, an example is of the</span>
-<span class="sd">    form</span>
-<span class="sd">    [I, love, PyTorch, .] paired with [PRON, VERB, PROPN, PUNCT]</span>
-
-<span class="sd">    See torchtext/test/sequence_tagging.py on how to use this class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">example</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span> <span class="ow">and</span> \
-                    <span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
-
-<div class="viewcode-block" id="SequenceTaggingDataset.__init__"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.SequenceTaggingDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">examples</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span> <span class="nf">_create_data_from_iob</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">input_file</span><span class="p">:</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
-                        <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Example</span><span class="o">.</span><span class="n">fromlist</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">fields</span><span class="p">))</span>
-                    <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)):</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
-                        <span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
-                <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Example</span><span class="o">.</span><span class="n">fromlist</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">fields</span><span class="p">))</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span>
-                                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">input_file</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">columns</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                    <span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">columns</span>
 
 
-<div class="viewcode-block" id="UDPOS"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.UDPOS">[docs]</a><span class="k">class</span> <span class="nc">UDPOS</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">):</span>
-
-    <span class="c1"># Universal Dependencies English Web Treebank.</span>
-    <span class="c1"># Download original at http://universaldependencies.org/</span>
-    <span class="c1"># License: http://creativecommons.org/licenses/by-sa/4.0/</span>
-    <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip&#39;</span><span class="p">]</span>
-    <span class="n">dirname</span> <span class="o">=</span> <span class="s1">&#39;en-ud-v2&#39;</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;udpos&#39;</span>
-
-<div class="viewcode-block" id="UDPOS.splits"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.UDPOS.splits">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="s2">&quot;en-ud-tag.v2.train.txt&quot;</span><span class="p">,</span>
-               <span class="n">validation</span><span class="o">=</span><span class="s2">&quot;en-ud-tag.v2.dev.txt&quot;</span><span class="p">,</span>
-               <span class="n">test</span><span class="o">=</span><span class="s2">&quot;en-ud-tag.v2.test.txt&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Downloads and loads the Universal Dependencies Version 2 POS Tagged</span>
-<span class="sd">        data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">UDPOS</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-            <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="n">train</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="n">validation</span><span class="p">,</span>
-            <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+<span class="k">def</span> <span class="nf">_construct_filepath</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">file_suffix</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file_suffix</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CoNLL2000Chunking">[docs]</a><span class="k">class</span> <span class="nc">CoNLL2000Chunking</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">):</span>
-    <span class="c1"># CoNLL 2000 Chunking Dataset</span>
-    <span class="c1"># https://www.clips.uantwerpen.be/conll2000/chunking/</span>
-    <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz&#39;</span><span class="p">]</span>
-    <span class="n">dirname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;conll2000&#39;</span>
+<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.CoNLL2000Chunking">[docs]</a><span class="nd">@wrap_split_argument</span>
+<span class="nd">@add_docstring_header</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">URL</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
+        <span class="n">extracted_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">))</span>
 
-<div class="viewcode-block" id="CoNLL2000Chunking.splits"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CoNLL2000Chunking.splits">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="s2">&quot;train.txt&quot;</span><span class="p">,</span>
-               <span class="n">test</span><span class="o">=</span><span class="s2">&quot;test.txt&quot;</span><span class="p">,</span> <span class="n">validation_frac</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Downloads and loads the CoNLL 2000 Chunking dataset.</span>
-<span class="sd">        NOTE: There is only a train and test dataset so we use 10% of the train set as validation</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">CoNLL2000Chunking</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-            <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="n">train</span><span class="p">,</span>
-            <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="c1"># HACK: Saving the sort key function as the split() call removes it</span>
-        <span class="n">sort_key</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">sort_key</span>
-
-        <span class="c1"># Now split the train set</span>
-        <span class="c1"># Force a random seed to make the split deterministic</span>
-        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">train</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">validation_frac</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">())</span>
-        <span class="c1"># Reset the seed</span>
-        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
-
-        <span class="c1"># HACK: Set the sort key</span>
-        <span class="n">train</span><span class="o">.</span><span class="n">sort_key</span> <span class="o">=</span> <span class="n">sort_key</span>
-        <span class="n">val</span><span class="o">.</span><span class="n">sort_key</span> <span class="o">=</span> <span class="n">sort_key</span>
-
-        <span class="k">return</span> <span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span></div></div>
+    <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;train.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;dev.txt&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
+                                   <span class="n">_create_data_from_iob</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data_filenames</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">]</span></div>
 </pre></div>
 
              </article>
@@ -459,20 +419,20 @@
   
 
      
-       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-         <script src="../../../_static/jquery.js"></script>
-         <script src="../../../_static/underscore.js"></script>
-         <script src="../../../_static/doctools.js"></script>
-         <script src="../../../_static/language_data.js"></script>
+       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+         <script src="../../../../../_static/jquery.js"></script>
+         <script src="../../../../../_static/underscore.js"></script>
+         <script src="../../../../../_static/doctools.js"></script>
+         <script src="../../../../../_static/language_data.js"></script>
          <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   
 
-  <script type="text/javascript" src="../../../_static/js/vendor/popper.min.js"></script>
-  <script type="text/javascript" src="../../../_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/vendor/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
@@ -584,7 +544,7 @@
   <div class="cookie-banner-wrapper">
   <div class="container">
     <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
-    <img class="close-button" src="../../../_static/images/pytorch-x.svg">
+    <img class="close-button" src="../../../../../_static/images/pytorch-x.svg">
   </div>
 </div>
 
@@ -699,7 +659,7 @@
 
   <!-- End Mobile Menu -->
 
-  <script type="text/javascript" src="../../../_static/js/vendor/anchor.min.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/vendor/anchor.min.js"></script>
 
   <script type="text/javascript">
     $(document).ready(function() {

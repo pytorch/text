@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.raw.language_modeling &mdash; torchtext 0.9.0.dev20210217 documentation</title>
+  <title>torchtext.experimental.datasets.raw.wmt14 &mdash; torchtext 0.9.0.dev20210218 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210217
+                  0.9.0.dev20210218
                 </div>
               
             
@@ -214,12 +214,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data.html">torchtext.data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -281,7 +279,7 @@
         
           <li><a href="../../../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.experimental.datasets.raw.language_modeling</li>
+      <li>torchtext.experimental.datasets.raw.wmt14</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -309,134 +307,195 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.experimental.datasets.raw.language_modeling</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+  <h1>Source code for torchtext.experimental.datasets.raw.wmt14</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
 
-<span class="n">URLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;WikiText2&#39;</span><span class="p">:</span>
-        <span class="s1">&#39;https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span>
-        <span class="s1">&#39;https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.test.txt&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="s1">&#39;https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.valid.txt&#39;</span>
-    <span class="p">},</span>
-    <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span> <span class="s1">&#39;http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz&#39;</span>
-<span class="p">}</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0B_bZck-ksdkpM25jRUN2X2UxMm8&#39;</span>
 
+<span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;wmt16_en_de.tar.gz&#39;</span>
 
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="s1">&#39;PennTreebank&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">],</span>
-                                             <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="s1">&#39;PennTreebank&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">],</span>
-                                             <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">split</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span>
-        <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;news.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.shuffled&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">extracted_files</span> <span class="k">if</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
-
-    <span class="n">path</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">extracted_files</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-                <span class="n">path</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">fname</span>
-
-    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
-        <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span>
-                                               <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">][</span><span class="n">item</span><span class="p">],</span> <span class="nb">iter</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">datasets</span>
-
-
-<div class="viewcode-block" id="WikiText2"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WikiText2">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">WikiText2</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.raw.datasets import WikiText2</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = WikiText2()</span>
-<span class="sd">        &gt;&gt;&gt; valid_dataset = WikiText2(split=&#39;valid&#39;)</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;WikiText2&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="WikiText103"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WikiText103">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">WikiText103</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets.raw import WikiText103</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = WikiText103()</span>
-<span class="sd">        &gt;&gt;&gt; valid_dataset = WikiText103(split=&#39;valid&#39;)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;WikiText103&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="PennTreebank"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.PennTreebank">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">PennTreebank</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets.raw import PennTreebank</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = PennTreebank()</span>
-<span class="sd">        &gt;&gt;&gt; valid_dataset = PennTreebank(split=&#39;valid&#39;)</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;PennTreebank&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="WMTNewsCrawl"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMTNewsCrawl">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">WMTNewsCrawl</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">2010</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
-    <span class="c1"># &quot;&quot;&quot;   year: the year of the dataset</span>
-    <span class="c1">#          (Default: 2010)</span>
-    <span class="c1">#       language: the language of the dataset</span>
-    <span class="c1">#          (Default: &#39;en&#39;)</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;WMTNewsCrawl&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;WikiText2&#39;</span><span class="p">:</span> <span class="n">WikiText2</span><span class="p">,</span>
-    <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span> <span class="n">WikiText103</span><span class="p">,</span>
-    <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span> <span class="n">PennTreebank</span><span class="p">,</span>
-    <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span> <span class="n">WMTNewsCrawl</span>
-<span class="p">}</span>
+<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;874ab6bbfe9c21ec987ed1b9347f95ec&#39;</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;WikiText2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">36718</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">3760</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">4358</span><span class="p">},</span>
-    <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">1801350</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">3760</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">4358</span><span class="p">},</span>
-    <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">42068</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">3370</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">3761</span><span class="p">},</span>
-    <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">17676013</span><span class="p">}</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">4500966</span><span class="p">,</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">3003</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">MD5</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;WikiText2&#39;</span><span class="p">:</span> <span class="s1">&#39;542ccefacc6c27f945fb54453812b3cd&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;WikiText103&#39;</span><span class="p">:</span> <span class="s1">&#39;9ddaacaf6af0710eda8c456decff7832&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;PennTreebank&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;f26c4b92c5fdc7b3f8c7cdcb991d8420&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="s1">&#39;aa0affc06ff7c36e977d7cd49e3839bf&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;8b80168b89c18661a38ef683c0dc3721&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;WMTNewsCrawl&#39;</span><span class="p">:</span> <span class="s1">&#39;64150a352f3abe890a87f6c6838524a6&#39;</span>
-<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">_read_text_iterator</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">row</span>
+
+
+<span class="k">def</span> <span class="nf">_clean_xml_file</span><span class="p">(</span><span class="n">f_xml</span><span class="p">):</span>
+    <span class="n">f_txt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f_xml</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">f_txt</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd_txt</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f_xml</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;doc&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;seg&#39;</span><span class="p">):</span>
+                <span class="n">fd_txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_clean_tags_file</span><span class="p">(</span><span class="n">f_orig</span><span class="p">):</span>
+    <span class="n">xml_tags</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;&lt;url&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;keywords&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;talkid&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;reviewer&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&lt;translator&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;title&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;speaker&#39;</span>
+    <span class="p">]</span>
+    <span class="n">f_txt</span> <span class="o">=</span> <span class="n">f_orig</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.tags&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">f_txt</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd_txt</span><span class="p">,</span> \
+            <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">f_orig</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd_orig</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">fd_orig</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">l</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">xml_tags</span><span class="p">):</span>
+                <span class="c1"># TODO: Fix utf-8 next line mark</span>
+                <span class="c1">#                fd_txt.write(l.strip() + &#39;\n&#39;)</span>
+                <span class="c1">#                fd_txt.write(l.strip() + u&quot;\u0085&quot;)</span>
+                <span class="c1">#                fd_txt.write(l.lstrip())</span>
+                <span class="n">fd_txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_construct_filenames</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
+    <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
+        <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">lang</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filenames</span>
+
+
+<span class="k">def</span> <span class="nf">_construct_filepaths</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">src_filename</span><span class="p">,</span> <span class="n">tgt_filename</span><span class="p">):</span>
+    <span class="n">src_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tgt_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="n">src_path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">src_filename</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="n">src_path</span>
+        <span class="n">tgt_path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">tgt_filename</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="n">tgt_path</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WMT14"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMT14">[docs]</a><span class="nd">@wrap_split_argument</span>
+<span class="nd">@add_docstring_header</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">WMT14</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+          <span class="n">train_filenames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train.tok.clean.bpe.32000.de&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;train.tok.clean.bpe.32000.en&#39;</span><span class="p">),</span>
+          <span class="n">valid_filenames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;newstest2013.tok.bpe.32000.de&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;newstest2013.tok.bpe.32000.en&#39;</span><span class="p">),</span>
+          <span class="n">test_filenames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;newstest2014.tok.bpe.32000.de&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;newstest2014.tok.bpe.32000.en&#39;</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;    train_filenames: the source and target filenames for training.</span>
+<span class="sd">                Default: (&#39;train.tok.clean.bpe.32000.de&#39;, &#39;train.tok.clean.bpe.32000.en&#39;)</span>
+<span class="sd">            valid_filenames: the source and target filenames for valid.</span>
+<span class="sd">                Default: (&#39;newstest2013.tok.bpe.32000.de&#39;, &#39;newstest2013.tok.bpe.32000.en&#39;)</span>
+<span class="sd">            test_filenames: the source and target filenames for test.</span>
+<span class="sd">                Default: (&#39;newstest2014.tok.bpe.32000.de&#39;, &#39;newstest2014.tok.bpe.32000.en&#39;)</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets.raw import WMT14</span>
+<span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = WMT14()</span>
+
+<span class="sd">    The available datasets include:</span>
+<span class="sd">        newstest2016.en</span>
+<span class="sd">        newstest2016.de</span>
+<span class="sd">        newstest2015.en</span>
+<span class="sd">        newstest2015.de</span>
+<span class="sd">        newstest2014.en</span>
+<span class="sd">        newstest2014.de</span>
+<span class="sd">        newstest2013.en</span>
+<span class="sd">        newstest2013.de</span>
+<span class="sd">        newstest2012.en</span>
+<span class="sd">        newstest2012.de</span>
+<span class="sd">        newstest2011.tok.de</span>
+<span class="sd">        newstest2011.en</span>
+<span class="sd">        newstest2011.de</span>
+<span class="sd">        newstest2010.tok.de</span>
+<span class="sd">        newstest2010.en</span>
+<span class="sd">        newstest2010.de</span>
+<span class="sd">        newstest2009.tok.de</span>
+<span class="sd">        newstest2009.en</span>
+<span class="sd">        newstest2009.de</span>
+<span class="sd">        newstest2016.tok.de</span>
+<span class="sd">        newstest2015.tok.de</span>
+<span class="sd">        newstest2014.tok.de</span>
+<span class="sd">        newstest2013.tok.de</span>
+<span class="sd">        newstest2012.tok.de</span>
+<span class="sd">        newstest2010.tok.en</span>
+<span class="sd">        newstest2009.tok.en</span>
+<span class="sd">        newstest2015.tok.en</span>
+<span class="sd">        newstest2014.tok.en</span>
+<span class="sd">        newstest2013.tok.en</span>
+<span class="sd">        newstest2012.tok.en</span>
+<span class="sd">        newstest2011.tok.en</span>
+<span class="sd">        newstest2016.tok.en</span>
+<span class="sd">        newstest2009.tok.bpe.32000.en</span>
+<span class="sd">        newstest2011.tok.bpe.32000.en</span>
+<span class="sd">        newstest2010.tok.bpe.32000.en</span>
+<span class="sd">        newstest2013.tok.bpe.32000.en</span>
+<span class="sd">        newstest2012.tok.bpe.32000.en</span>
+<span class="sd">        newstest2015.tok.bpe.32000.en</span>
+<span class="sd">        newstest2014.tok.bpe.32000.en</span>
+<span class="sd">        newstest2016.tok.bpe.32000.en</span>
+<span class="sd">        train.tok.clean.bpe.32000.en</span>
+<span class="sd">        newstest2009.tok.bpe.32000.de</span>
+<span class="sd">        newstest2010.tok.bpe.32000.de</span>
+<span class="sd">        newstest2011.tok.bpe.32000.de</span>
+<span class="sd">        newstest2013.tok.bpe.32000.de</span>
+<span class="sd">        newstest2012.tok.bpe.32000.de</span>
+<span class="sd">        newstest2014.tok.bpe.32000.de</span>
+<span class="sd">        newstest2016.tok.bpe.32000.de</span>
+<span class="sd">        newstest2015.tok.bpe.32000.de</span>
+<span class="sd">        train.tok.clean.bpe.32000.de</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_filenames</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valid_filenames</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_filenames</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All filenames must be tuples&quot;</span><span class="p">)</span>
+    <span class="n">src_train</span><span class="p">,</span> <span class="n">tgt_train</span> <span class="o">=</span> <span class="n">train_filenames</span>
+    <span class="n">src_eval</span><span class="p">,</span> <span class="n">tgt_eval</span> <span class="o">=</span> <span class="n">valid_filenames</span>
+    <span class="n">src_test</span><span class="p">,</span> <span class="n">tgt_test</span> <span class="o">=</span> <span class="n">test_filenames</span>
+
+    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
+    <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
+
+    <span class="c1"># Clean the xml and tag file in the archives</span>
+    <span class="n">file_archives</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">extracted_files</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;xml&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="n">_clean_xml_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="s2">&quot;tags&quot;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="n">_clean_tags_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.tags&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_train</span><span class="p">,</span> <span class="n">tgt_train</span><span class="p">),</span>
+        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_eval</span><span class="p">,</span> <span class="n">tgt_eval</span><span class="p">),</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_test</span><span class="p">,</span> <span class="n">tgt_test</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_filenames</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;Files are not found for data type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
+        <span class="n">src_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">tgt_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">item</span>
+
+        <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;WMT14&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">datasets</span></div>
 </pre></div>
 
              </article>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.text_classification &mdash; torchtext 0.9.0.dev20210217 documentation</title>
+  <title>torchtext.experimental.datasets.text_classification &mdash; torchtext 0.9.0.dev20210218 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210217
+                  0.9.0.dev20210218
                 </div>
               
             
@@ -214,12 +214,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data.html">torchtext.data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -314,7 +312,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
-<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">text_classification</span> <span class="k">as</span> <span class="n">raw</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">check_default_set</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_datasets</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.functional</span> <span class="kn">import</span> <span class="p">(</span>
@@ -450,7 +448,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = AG_NEWS(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = AG_NEWS(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = AG_NEWS(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = AG_NEWS(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -494,7 +492,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = SogouNews(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = SogouNews(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = SogouNews(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = SogouNews(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -547,7 +545,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = DBpedia(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = DBpedia(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = DBpedia(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = DBpedia(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -588,7 +586,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = YelpReviewPolarity(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = YelpReviewPolarity(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = YelpReviewPolarity(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = YelpReviewPolarity(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -628,7 +626,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = YelpReviewFull(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = YelpReviewFull(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = YelpReviewFull(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = YelpReviewFull(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -677,7 +675,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = YahooAnswers(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = YahooAnswers(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = YahooAnswers(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = YahooAnswers(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -718,7 +716,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewPolarity(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewPolarity(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = AmazonReviewPolarity(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = AmazonReviewPolarity(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -758,7 +756,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewFull(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = AmazonReviewFull(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = AmazonReviewFull(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = AmazonReviewFull(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -800,7 +798,7 @@
 <span class="sd">        &gt;&gt;&gt; train, test = IMDB(ngrams=3)</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = get_tokenizer(&quot;spacy&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; train, test = IMDB(tokenizer=tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; train, = IMDB(tokenizer=tokenizer, split=&#39;train&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; train = IMDB(tokenizer=tokenizer, split=&#39;train&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

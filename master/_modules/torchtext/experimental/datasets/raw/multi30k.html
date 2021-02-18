@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.raw.sequence_tagging &mdash; torchtext 0.9.0.dev20210217 documentation</title>
+  <title>torchtext.experimental.datasets.raw.multi30k &mdash; torchtext 0.9.0.dev20210218 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210217
+                  0.9.0.dev20210218
                 </div>
               
             
@@ -214,12 +214,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data.html">torchtext.data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -281,7 +279,7 @@
         
           <li><a href="../../../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.experimental.datasets.raw.sequence_tagging</li>
+      <li>torchtext.experimental.datasets.raw.multi30k</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -309,109 +307,250 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.experimental.datasets.raw.sequence_tagging</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
+  <h1>Source code for torchtext.experimental.datasets.raw.multi30k</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw.common</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
 
-<span class="n">URLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;UDPOS&quot;</span><span class="p">:</span>
-    <span class="s1">&#39;https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.clips.uantwerpen.be/conll2000/chunking/test.txt.gz&#39;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="n">_URL_BASE_</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/multi30k/dataset/master/data/task&#39;</span>
 
+<span class="n">URL</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;1/raw/test_2016_flickr.cs.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2016_flickr.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2016_flickr.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2016_flickr.fr.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2017_flickr.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2017_flickr.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2017_flickr.fr.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2017_mscoco.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2017_mscoco.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2017_mscoco.fr.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/test_2018_flickr.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/train.cs.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/train.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/train.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/train.fr.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/val.cs.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/val.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/val.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1/raw/val.fr.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.1.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.1.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.2.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.2.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.3.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.3.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.4.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.4.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.5.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/test_2016.5.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.1.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.1.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.2.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.2.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.3.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.3.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.4.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.4.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.5.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/train.5.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.1.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.1.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.2.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.2.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.3.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.3.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.4.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.4.en.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.5.de.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2/raw/val.5.en.gz&#39;</span>
+<span class="p">]</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="p">[</span><span class="n">_URL_BASE_</span> <span class="o">+</span> <span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">URL</span><span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">_create_data_from_iob</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">input_file</span><span class="p">:</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">columns</span>
-                <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)):</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
-                    <span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">columns</span>
-
-
-<span class="k">def</span> <span class="nf">_construct_filepath</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">file_suffix</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file_suffix</span><span class="p">)</span> <span class="k">else</span> <span class="n">path</span>
-        <span class="k">return</span> <span class="n">path</span>
-    <span class="k">return</span> <span class="kc">None</span>
-
-
-<span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
-    <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">][</span><span class="n">name</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-            <span class="n">extracted_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URLS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-        <span class="n">extracted_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;URLS for </span><span class="si">{}</span><span class="s2"> has to be in a form of dictionary or string&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">dataset_name</span><span class="p">))</span>
-
-    <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;train.txt&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;dev.txt&quot;</span><span class="p">),</span>
-        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">_construct_filepath</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">][</span><span class="n">item</span><span class="p">],</span>
-                                   <span class="n">_create_data_from_iob</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">separator</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">data_filenames</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">]</span>
-
-
-<div class="viewcode-block" id="UDPOS"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.UDPOS">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">UDPOS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets.raw import UDPOS</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = UDPOS()</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;UDPOS&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.CoNLL2000Chunking">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;.data&quot;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets.raw import CoNLL2000Chunking</span>
-<span class="sd">        &gt;&gt;&gt; train_dataset, test_dataset = CoNLL2000Chunking()</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_setup_datasets</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
-
-
-<span class="n">DATASETS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;UDPOS&quot;</span><span class="p">:</span> <span class="n">UDPOS</span><span class="p">,</span>
-    <span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">:</span> <span class="n">CoNLL2000Chunking</span>
-<span class="p">}</span>
+<span class="n">MD5</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;3104872229daa1bef3b401d44dd2220b&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;efd67d314d98489b716b145475101932&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ff2c0fcb4893a13bd73414306bc250ae&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;08dc7cd4a662f31718412de95ca9bfe3&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6a8d5c87f6ae19e3d35681aa6fd16571&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;005396bac545d880abe6f00bbb7dbbb4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;cb09af7d2b501f9112f2d6a59fa1360d&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;e8cd6ec2bc8a11fc846fa48a46e3d0bb&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;a7b684e0edbef1d4a23660c8e8e743fd&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;4995d10954a804d3cdfd907b9fd093e8&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;a152878809942757a55ce087073486b8&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;d9a5fc268917725a2b0efce3a0cc8607&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;81ff90b99829c0cd4b1b587d394afd39&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;0065d13af80720a55ca8153d126e6627&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6cb767741dcad3931f966fefbc05203f&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;83cdc082f646b769095615384cf5c0ca&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6e0e229eb049e3fc99a1ef02fb2d5f91&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2b69aa9253948ac9f67e94917272dd40&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;93fc564584b7e5ba410c761ea5a1c682&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ac0c72653c140dd96707212a1baa4278&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;eec05227daba4bb8f3f8f25b1cb335f4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6dfb42cae4e4fd9a3c40e62ff5398a55&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9318fa08c0c0b96114eadb10eb2fc633&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ece8cec6b87bf00dd12607f3062dae4c&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;088ec0765fa213a0eb937a62adfd4996&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9a7e7b2dcc33135a32cd621c3b37d2d8&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;5f7c8d0be0ac739856b47d32a9434998&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7d5ef0f069ee2d74dc2fdc6b46cd47fa&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;713ed720636622a54546d5f14f88b00f&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;62f36422bfab90fb42a560546b704009&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;cbf5bfc2147706f228d288e1b18bf4af&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;540da4566bb6dd35fdbc720218b742b7&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;bdfe4222f4692ccaa1e3389460f0890e&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;613eb4a3f0c2b13f0871ced946851b0e&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;0e1ee2b4145795bd180b193424db204b&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;d848fe0ae8b9447209fb49c5c31cb3d2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1cff688d1aadef7fdb22e9ad27d6fd2c&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;abc13b4042f4fef1cdff6de3b6c53b71&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3e10289959d0059952511c31df3c7550&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;b26486ede1d4436d5acf6e38c65bb44d&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;df57faf5f00d434d2559c021ef55f1aa&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;16165248083beacebfe18866d5f4f0ae&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9077a5127480cc799116384de501bd70&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7180780822d4b600eb81c1ccf171c230&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;c1f697c3b6dfb7305349db34e26b45fc&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8edb43c90cae66ec762748a968089b99&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;acb5ea26a577ceccfae6337181c31716&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;873a377a348713d3ab84db1fb57cdede&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;680816e0938fea5cf5331444bc09a4cf&#39;</span>
+<span class="p">]</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;UDPOS&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">12543</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">2002</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">2077</span><span class="p">},</span>
-    <span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">8936</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">2012</span><span class="p">}</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">29000</span><span class="p">,</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">1014</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">MD5</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;UDPOS&quot;</span><span class="p">:</span> <span class="s1">&#39;bdcac7c52d934656bae1699541424545&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;6969c2903a1f19a83569db643e43dcc8&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;a916e1c2d83eb3004b38fc6fcd628939&#39;</span><span class="p">}</span>
-<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">_read_text_iterator</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">row</span>
+
+
+<span class="k">def</span> <span class="nf">_construct_filepaths</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">src_filename</span><span class="p">,</span> <span class="n">tgt_filename</span><span class="p">):</span>
+    <span class="n">src_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tgt_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="n">src_path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">src_filename</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="n">src_path</span>
+        <span class="n">tgt_path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">tgt_filename</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="n">tgt_path</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Multi30k"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.Multi30k">[docs]</a><span class="nd">@wrap_split_argument</span>
+<span class="nd">@add_docstring_header</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">Multi30k</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+             <span class="n">train_filenames</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;train.de&quot;</span><span class="p">,</span> <span class="s2">&quot;train.en&quot;</span><span class="p">),</span>
+             <span class="n">valid_filenames</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;val.de&quot;</span><span class="p">,</span> <span class="s2">&quot;val.en&quot;</span><span class="p">),</span>
+             <span class="n">test_filenames</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;test_2016_flickr.de&quot;</span><span class="p">,</span> <span class="s2">&quot;test_2016_flickr.en&quot;</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;    train_filenames: the source and target filenames for training.</span>
+<span class="sd">                Default: (&#39;train.de&#39;, &#39;train.en&#39;)</span>
+<span class="sd">            valid_filenames: the source and target filenames for valid.</span>
+<span class="sd">                Default: (&#39;val.de&#39;, &#39;val.en&#39;)</span>
+<span class="sd">            test_filenames: the source and target filenames for test.</span>
+<span class="sd">                Default: (&#39;test2016.de&#39;, &#39;test2016.en&#39;)</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.datasets.raw import Multi30k</span>
+<span class="sd">        &gt;&gt;&gt; train_dataset, valid_dataset, test_dataset = Multi30k()</span>
+
+<span class="sd">    The available dataset include:</span>
+<span class="sd">        test_2016_flickr.cs</span>
+<span class="sd">        test_2016_flickr.de</span>
+<span class="sd">        test_2016_flickr.en</span>
+<span class="sd">        test_2016_flickr.fr</span>
+<span class="sd">        test_2017_flickr.de</span>
+<span class="sd">        test_2017_flickr.en</span>
+<span class="sd">        test_2017_flickr.fr</span>
+<span class="sd">        test_2017_mscoco.de</span>
+<span class="sd">        test_2017_mscoco.en</span>
+<span class="sd">        test_2017_mscoco.fr</span>
+<span class="sd">        test_2018_flickr.en</span>
+<span class="sd">        train.cs</span>
+<span class="sd">        train.de</span>
+<span class="sd">        train.en</span>
+<span class="sd">        train.fr</span>
+<span class="sd">        val.cs</span>
+<span class="sd">        val.de</span>
+<span class="sd">        val.en</span>
+<span class="sd">        val.fr</span>
+<span class="sd">        test_2016.1.de</span>
+<span class="sd">        test_2016.1.en</span>
+<span class="sd">        test_2016.2.de</span>
+<span class="sd">        test_2016.2.en</span>
+<span class="sd">        test_2016.3.de</span>
+<span class="sd">        test_2016.3.en</span>
+<span class="sd">        test_2016.4.de</span>
+<span class="sd">        test_2016.4.en</span>
+<span class="sd">        test_2016.5.de</span>
+<span class="sd">        test_2016.5.en</span>
+<span class="sd">        train.1.de</span>
+<span class="sd">        train.1.en</span>
+<span class="sd">        train.2.de</span>
+<span class="sd">        train.2.en</span>
+<span class="sd">        train.3.de</span>
+<span class="sd">        train.3.en</span>
+<span class="sd">        train.4.de</span>
+<span class="sd">        train.4.en</span>
+<span class="sd">        train.5.de</span>
+<span class="sd">        train.5.en</span>
+<span class="sd">        val.1.de</span>
+<span class="sd">        val.1.en</span>
+<span class="sd">        val.2.de</span>
+<span class="sd">        val.2.en</span>
+<span class="sd">        val.3.de</span>
+<span class="sd">        val.3.en</span>
+<span class="sd">        val.4.de</span>
+<span class="sd">        val.4.en</span>
+<span class="sd">        val.5.de</span>
+<span class="sd">        val.5.en</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">train_filenames</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valid_filenames</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> \
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_filenames</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All filenames must be tuples&quot;</span><span class="p">)</span>
+    <span class="n">src_train</span><span class="p">,</span> <span class="n">tgt_train</span> <span class="o">=</span> <span class="n">train_filenames</span>
+    <span class="n">src_eval</span><span class="p">,</span> <span class="n">tgt_eval</span> <span class="o">=</span> <span class="n">valid_filenames</span>
+    <span class="n">src_test</span><span class="p">,</span> <span class="n">tgt_test</span> <span class="o">=</span> <span class="n">test_filenames</span>
+
+    <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of paths to the extracted files</span>
+
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">URL</span><span class="p">):</span>
+        <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
+        <span class="n">extracted_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">))</span>
+
+    <span class="n">file_archives</span> <span class="o">=</span> <span class="n">extracted_files</span>
+
+    <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_train</span><span class="p">,</span> <span class="n">tgt_train</span><span class="p">),</span>
+        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_eval</span><span class="p">,</span> <span class="n">tgt_eval</span><span class="p">),</span>
+        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_test</span><span class="p">,</span> <span class="n">tgt_test</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_filenames</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;Files are not found for data type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
+        <span class="n">src_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">tgt_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">item</span>
+
+        <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;Multi30k&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">datasets</span></div>
 </pre></div>
 
              </article>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210217 documentation</title>
+  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210218 documentation</title>
   
 
   
@@ -185,7 +185,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210217
+                  0.9.0.dev20210218
                 </div>
               
             
@@ -216,12 +216,10 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data.html">torchtext.data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets</a></li>
@@ -467,7 +465,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">AG_NEWS</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -521,7 +519,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">SogouNews</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -584,7 +582,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">DBpedia</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -635,7 +633,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">YelpReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -683,7 +681,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">YelpReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -742,7 +740,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">YahooAnswers</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -793,7 +791,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">AmazonReviewPolarity</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -841,7 +839,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">AmazonReviewFull</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -893,7 +891,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">IMDB</span><span class="p">(</span><span class="n">ngrams</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">IMDB</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span><span class="p">,</span> <span class="o">=</span> <span class="n">IMDB</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">IMDB</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -968,7 +966,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">WikiText2</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_dataset</span><span class="p">,</span> <span class="o">=</span> <span class="n">WikiText2</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">WikiText2</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">,</span>
 <span class="go">                               split=&#39;valid&#39;)</span>
 </pre></div>
 </div>
@@ -1008,7 +1006,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">WikiText103</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_dataset</span><span class="p">,</span> <span class="o">=</span> <span class="n">WikiText103</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">WikiText103</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">,</span>
 <span class="go">                                 split=&#39;valid&#39;)</span>
 </pre></div>
 </div>
@@ -1048,7 +1046,7 @@ data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">PennTreebank</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_dataset</span><span class="p">,</span> <span class="o">=</span> <span class="n">PennTreebank</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">PennTreebank</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">vocab</span><span class="o">=</span><span class="n">vocab</span><span class="p">,</span>
 <span class="go">                                  split=&#39;valid&#39;)</span>
 </pre></div>
 </div>
@@ -1084,7 +1082,7 @@ vocabulary based on the train data set.</p></li>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">WMTNewsCrawl</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="o">=</span> <span class="n">WMTNewsCrawl</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">WMTNewsCrawl</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.</p>
