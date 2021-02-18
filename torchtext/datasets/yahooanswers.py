@@ -1,26 +1,26 @@
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
-from torchtext.experimental.datasets.raw.common import find_match
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
+from torchtext.datasets.common import find_match
 import os
 import io
 
-URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM'
+URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU'
 
-MD5 = 'fe39f8b653cada45afd5792e0f0e8f9b'
+MD5 = 'f3f9899b997a42beb24157e62e3eea8d'
 
 NUM_LINES = {
-    'train': 3600000,
-    'test': 400000,
+    'train': 1400000,
+    'test': 60000,
 }
 
-_PATH = 'amazon_review_polarity_csv.tar.gz'
+_PATH = 'yahoo_answers_csv.tar.gz'
 
 
 @wrap_split_argument
 @add_docstring_header()
-def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
+def YahooAnswers(root='.data', split=('train', 'test'), offset=0):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
@@ -34,6 +34,6 @@ def AmazonReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     datasets = []
     for item in split:
         path = find_match(item + '.csv', extracted_files)
-        datasets.append(RawTextIterableDataset("AmazonReviewPolarity", NUM_LINES[item],
+        datasets.append(RawTextIterableDataset("YahooAnswers", NUM_LINES[item],
                                                _create_data_from_csv(path), offset=offset))
     return datasets
