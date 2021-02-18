@@ -343,7 +343,7 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "YEAR-WEEK $(date +"%Y-%U")" > .circleci-weekly-refresh
+          command: echo "YYYY-WW $(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
           {% raw %}
           keys:
@@ -395,7 +395,7 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "YEAR-WEEK $(date +"%Y-%U")" > .circleci-weekly-refresh
+          command: echo "YYYY-WW $(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
           {% raw %}
           keys:
@@ -448,7 +448,7 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "YEAR-WEEK $(date +"%Y-%U")" > .circleci-weekly-refresh
+          command: echo "YYYY-WW $(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
           {% raw %}
           keys:
