@@ -44,14 +44,14 @@ def _construct_filepath(paths, file_suffix):
 @wrap_split_argument
 @add_docstring_header()
 def UDPOS(root='.data', split=('train', 'valid', 'test'), offset=0):
-    dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
-
-    data_filenames = {
-        "train": _construct_filepath(extracted_files, "train.txt"),
-        "valid": _construct_filepath(extracted_files, "dev.txt"),
-        "test": _construct_filepath(extracted_files, "test.txt")
-    }
-    return [RawTextIterableDataset("UDPOS", NUM_LINES[item],
-                                   _create_data_from_iob(data_filenames[item]), offset=offset)
-            if data_filenames[item] is not None else None for item in split]
+    datasets = []
+    for item in split:
+        dataset_tar = download_from_url(item, root=root, hash_value=MD5[item], hash_type='md5')
+        extracted_files = extract_archive(dataset_tar)
+        if split == "valid":
+            data_filenames = _construct_filepath(extracted_files, "dev.txt")
+        else:
+            data_filenames = _construct_filepath(extracted_files, split + ".txt")
+        datasets.append(RawTextIterableDataset("UDPOS", NUM_LINES[item],
+                                               _create_data_from_iob(data_filenames[item], " "), offset=offset))
+    return datasets

@@ -28,16 +28,14 @@ NUM_LINES = {
 @wrap_split_argument
 @add_docstring_header()
 def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
-    extracted_files = [download_from_url(URL[key],
-                                         root=root, hash_value=MD5[key],
-                                         hash_type='md5') for key in split]
     datasets = []
     for item in split:
-        path = find_match(item, extracted_files)
+        path = download_from_url(URL[item],
+                                 root=root, hash_value=MD5[item],
+                                 hash_type='md5')
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset('PennTreebank',
                                                NUM_LINES[item],
                                                iter(io.open(path, encoding="utf8")),
                                                offset=offset))
-
     return datasets

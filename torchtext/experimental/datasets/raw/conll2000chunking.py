@@ -19,7 +19,7 @@ NUM_LINES = {
 }
 
 
-def _create_data_from_iob(data_path, separator="\t"):
+def _create_data_from_iob(data_path, separator):
     with open(data_path, encoding="utf-8") as input_file:
         columns = []
         for line in input_file:
@@ -49,16 +49,11 @@ def _construct_filepath(paths, file_suffix):
 @wrap_split_argument
 @add_docstring_header()
 def CoNLL2000Chunking(root='.data', split=('train', 'test'), offset=0):
-    extracted_files = []
-    for name, item in URL.items():
-        dataset_tar = download_from_url(item, root=root, hash_value=MD5[name], hash_type='md5')
-        extracted_files.extend(extract_archive(dataset_tar))
-
-    data_filenames = {
-        "train": _construct_filepath(extracted_files, "train.txt"),
-        "valid": _construct_filepath(extracted_files, "dev.txt"),
-        "test": _construct_filepath(extracted_files, "test.txt")
-    }
-    return [RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[item],
-                                   _create_data_from_iob(data_filenames[item], " "), offset=offset)
-            if data_filenames[item] is not None else None for item in split]
+    datasets = []
+    for item in split:
+        dataset_tar = download_from_url(item, root=root, hash_value=MD5[item], hash_type='md5')
+        extracted_files = extract_archive(dataset_tar)
+        data_filenames = _construct_filepath(extracted_files, split + ".txt")
+        datasets.append(RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[item],
+                                               _create_data_from_iob(data_filenames[item], " "), offset=offset))
+    return datasets
