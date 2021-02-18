@@ -442,7 +442,7 @@ jobs:
     docker:
       - image: "pytorch/manylinux-cuda100"
     resource_class: medium
-    step:
+    steps:
       - checkout
       - designate_upload_channel
       - run:
