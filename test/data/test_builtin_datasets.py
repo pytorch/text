@@ -13,7 +13,6 @@ GOOGLE_DRIVE_BASED_DATASETS = [
     'AmazonReviewFull',
     'AmazonReviewPolarity',
     'DBpedia',
-    'EnWik9'
     'IMDB',
     'IWSLT',
     'SogouNews',
