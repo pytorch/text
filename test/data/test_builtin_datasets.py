@@ -1,13 +1,26 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
-import torchtext.data as data
 import torch
 import torchtext
+from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
+
+GOOGLE_DRIVE_BASED_DATASETS = [
+    'AmazonReviewFull',
+    'AmazonReviewPolarity',
+    'DBpedia',
+    'IMDB',
+    'IWSLT',
+    'SogouNews',
+    'WMT14',
+    'YahooAnswers',
+    'YelpReviewFull',
+    'YelpReviewPolarity'
+]
 
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
@@ -29,7 +42,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(results, target_results)
 
     def test_wikitext2_legacy(self):
-        from torchtext.datasets import WikiText2
+        from torchtext.legacy.datasets import WikiText2
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
         conditional_remove(cachedir)
 
@@ -85,7 +98,7 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
     def test_penntreebank_legacy(self):
-        from torchtext.datasets import PennTreebank
+        from torchtext.legacy.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         TEXT = data.Field(lower=True, batch_first=True)
         ds = PennTreebank
@@ -155,8 +168,10 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
 
-        # Currently disabled due to incredibly slow download and possibly wrong reference hash
+        # Currently disabled due to incredibly slow download
         if dataset_name == "WMTNewsCrawl":
             return
         split = info['split']
@@ -178,7 +193,7 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(list(sorted(torchtext.experimental.datasets.raw.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
-        if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
         if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
             return
@@ -195,6 +210,8 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
     def test_datasets_split_argument(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
