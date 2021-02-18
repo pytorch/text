@@ -39,7 +39,9 @@ def _create_data_from_json(data_path):
 @wrap_split_argument
 @add_docstring_header()
 def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
-    extracted_files = {key: download_from_url(URL[key], root=root,
-                                              hash_value=MD5[key], hash_type='md5') for key in split}
-    return [RawTextIterableDataset('SQuAD2', NUM_LINES[item],
-                                   _create_data_from_json(extracted_files[item]), offset=offset) for item in split]
+    datasets = []
+    for item in split:
+        extracted_files = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')
+        datasets.append(RawTextIterableDataset('SQuAD2', NUM_LINES[item],
+                                               _create_data_from_json(extracted_files), offset=offset))
+    return datasets
