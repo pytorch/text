@@ -1,8 +1,8 @@
 import io
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 
 _URL_BASE_ = 'https://raw.githubusercontent.com/multi30k/dataset/master/data/task'
 
@@ -145,10 +145,6 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
                 Default: ('val.de', 'val.en')
             test_filenames: the source and target filenames for test.
                 Default: ('test2016.de', 'test2016.en')
-
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import Multi30k
-        >>> train_dataset, valid_dataset, test_dataset = Multi30k()
 
     The available dataset include:
         test_2016_flickr.cs

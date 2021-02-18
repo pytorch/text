@@ -1,22 +1,22 @@
 from torchtext.utils import download_from_url
 import json
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 
 URL = {
-    'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json",
-    'dev': "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json",
+    'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
+    'dev': "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
 }
 
 MD5 = {
-    'train': "981b29407e0affa3b1b156f72073b945",
-    'dev': "3e85deb501d4e538b6bc56f786231552",
+    'train': "62108c273c268d70893182d5cf8df740",
+    'dev': "246adae8b7002f8679c027697b0b7cf8",
 }
 
 NUM_LINES = {
-    'train': 87599,
-    'dev': 10570,
+    'train': 130319,
+    'dev': 11873,
 }
 
 
@@ -38,10 +38,10 @@ def _create_data_from_json(data_path):
 
 @wrap_split_argument
 @add_docstring_header()
-def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
+def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     datasets = []
     for item in split:
         extracted_files = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')
-        datasets.append(RawTextIterableDataset('SQuAD1', NUM_LINES[item],
+        datasets.append(RawTextIterableDataset('SQuAD2', NUM_LINES[item],
                                                _create_data_from_json(extracted_files), offset=offset))
     return datasets

@@ -3,9 +3,9 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 
@@ -83,10 +83,6 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
                 Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
             test_filenames: the source and target filenames for test.
                 Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
-
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import WMT14
-        >>> train_dataset, valid_dataset, test_dataset = WMT14()
 
     The available datasets include:
         newstest2016.en
