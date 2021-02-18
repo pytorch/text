@@ -22,7 +22,7 @@ from torchtext.experimental.vocab import load_vocab_from_file
 from torchtext.vocab import FastText
 
 import argparse
-from torchtext.experimental.datasets.raw import text_classification as raw
+from torchtext.datasets import text_classification as raw
 import time
 from torch.utils.data import DataLoader
 
