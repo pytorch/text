@@ -35,9 +35,10 @@ _URL2 = [
     '2/raw/train',
     '2/raw/val',
 ]
-for i in range(1, 6):
-    for lang in ['de', 'en']:
-        URL += [_URL_BASE_ + u + "." + str(i) + "." + lang + '.gz' for u in _URL2]
+for u in _URL2:
+    for i in range(1, 6):
+        for lang in ['de', 'en']:
+            URL.append(_URL_BASE_ + u + "." + str(i) + "." + lang + '.gz')
 
 MD5 = [
     '3104872229daa1bef3b401d44dd2220b',
@@ -123,7 +124,7 @@ _DOCSTRING = \
 
         The available dataset include:"""
 
-for u in sorted(URL):
+for u in URL:
     _DOCSTRING += ("\n            " + os.path.basename(u)[:-3])
 
 
