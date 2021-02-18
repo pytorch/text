@@ -343,18 +343,18 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
 
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
 
       - run:
           name: Setup
           command: .circleci/unittest/linux/scripts/setup_env.sh
       - save_cache:
 
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
 
           paths:
             - conda
@@ -365,7 +365,7 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v1-{{ checksum ".circleci-weekly" }}
+            - data-linux-v1-{{ checksum ".circleci-weekly-refresh" }}
 
       - run:
           name: Run tests
@@ -374,7 +374,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
 
-          key: data-linux-v1-{{ checksum ".circleci-weekly" }}
+          key: data-linux-v1-{{ checksum ".circleci-weekly-refresh" }}
 
           paths:
             - .vector_cache
@@ -395,18 +395,18 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
 
           keys:
-            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
 
       - run:
           name: Setup
           command: .circleci/unittest/windows/scripts/setup_env.sh
       - save_cache:
 
-          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
 
           paths:
             - conda
@@ -417,7 +417,7 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v1-{{ checksum ".circleci-weekly" }}
+            - data-windows-v1-{{ checksum ".circleci-weekly-refresh" }}
 
       - run:
           name: Run tests
@@ -426,7 +426,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
 
-          key: data-windows-v1-{{ checksum ".circleci-weekly" }}
+          key: data-windows-v1-{{ checksum ".circleci-weekly-refresh" }}
 
           paths:
             - .vector_cache
@@ -442,24 +442,24 @@ jobs:
     docker:
       - image: "pytorch/manylinux-cuda100"
     resource_class: medium
-    steps:
+    step:
       - checkout
       - designate_upload_channel
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%U")" > .circleci-weekly-refresh
       - restore_cache:
 
           keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
 
       - run:
           name: Setup
           command: .circleci/unittest/linux/scripts/setup_env.sh
       - save_cache:
 
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly-refresh" }}
 
           paths:
             - conda
