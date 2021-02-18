@@ -63,7 +63,7 @@ for dataset in ["AG_NEWS",
                 "SQuAD1",
                 "Multi30k",
                 "IWSLT",
-                "WMT14"]:
+                "WMT14",
                 "SQuAD2"]:
     dataset_module_path = "torchtext.experimental.datasets.raw." + dataset.lower()
     dataset_module = importlib.import_module(dataset_module_path)
@@ -72,21 +72,15 @@ for dataset in ["AG_NEWS",
     MD5[dataset] = dataset_module.MD5
 
 from .sequence_tagging import URLS as sequence_tagging_URLS
-from .translation import URLS as translation_URLS
 
 URLS.update(sequence_tagging_URLS)
-URLS.update(translation_URLS)
 
 from .sequence_tagging import NUM_LINES as sequence_tagging_NUM_LINES
-from .translation import NUM_LINES as translation_NUM_LINES
 
 NUM_LINES.update(sequence_tagging_NUM_LINES)
-NUM_LINES.update(translation_NUM_LINES)
 
 from .sequence_tagging import MD5 as sequence_tagging_MD5
-from .translation import MD5 as translation_MD5
 
 MD5.update(sequence_tagging_MD5)
-MD5.update(translation_MD5)
 
 __all__ = sorted(list(map(str, DATASETS.keys())))
