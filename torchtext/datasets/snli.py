@@ -1,8 +1,9 @@
-from torchtext.utils import download_from_url
 import json
+from torchtext.utils import download_from_url, extract_archive
 from torchtext.datasets.common import RawTextIterableDataset
 from torchtext.datasets.common import wrap_split_argument
 from torchtext.datasets.common import add_docstring_header
+from torchtext.datasets.common import find_match
 
 URL = 'http://nlp.stanford.edu/projects/snli/snli_1.0.zip'
 
