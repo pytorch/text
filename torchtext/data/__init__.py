@@ -2,8 +2,7 @@ from .batch import Batch
 from .dataset import Dataset, TabularDataset
 from .example import Example
 from .field import RawField, Field, ReversibleField, SubwordField, NestedField, LabelField
-from .iterator import (batch, BucketIterator, Iterator, BPTTIterator,
-                       pool)
+from .iterator import BucketIterator, Iterator, BPTTIterator
 from .metrics import bleu_score
 from .pipeline import Pipeline
 from .utils import get_tokenizer, interleave_keys
@@ -18,8 +17,7 @@ __all__ = ["Batch",
            "Example",
            "RawField", "Field", "ReversibleField", "SubwordField", "NestedField",
            "LabelField",
-           "batch", "BucketIterator", "Iterator", "BPTTIterator",
-           "pool",
+           "BucketIterator", "Iterator", "BPTTIterator",
            "bleu_score",
            "Pipeline",
            "get_tokenizer", "interleave_keys",

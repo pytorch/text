@@ -1,9 +1,9 @@
 import torch
-from .common.torchtext_test_case import TorchtextTestCase
+from ..common.torchtext_test_case import TorchtextTestCase
 
-from torchtext.datasets import SNLI, MultiNLI, XNLI
-from torchtext.datasets.nli import ParsedTextField, ShiftReduceField
-from torchtext.data import Field, LabelField, Iterator
+from torchtext.legacy.datasets import SNLI, MultiNLI, XNLI
+from torchtext.legacy.datasets.nli import ParsedTextField, ShiftReduceField
+from torchtext.legacy.data import Field, LabelField, Iterator
 
 import shutil
 
