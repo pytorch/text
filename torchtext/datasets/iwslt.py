@@ -83,10 +83,6 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
             test_filenames: the source and target filenames for test.
                 Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
 
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import IWSLT
-        >>> train_dataset, valid_dataset, test_dataset = IWSLT()
-
     The available datasets include:
         IWSLT16.TED.dev2010.ar-en.ar
         IWSLT16.TED.dev2010.ar-en.en

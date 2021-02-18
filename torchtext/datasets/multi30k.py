@@ -146,10 +146,6 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
             test_filenames: the source and target filenames for test.
                 Default: ('test2016.de', 'test2016.en')
 
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import Multi30k
-        >>> train_dataset, valid_dataset, test_dataset = Multi30k()
-
     The available dataset include:
         test_2016_flickr.cs
         test_2016_flickr.de

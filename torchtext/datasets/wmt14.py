@@ -84,10 +84,6 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
             test_filenames: the source and target filenames for test.
                 Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
 
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import WMT14
-        >>> train_dataset, valid_dataset, test_dataset = WMT14()
-
     The available datasets include:
         newstest2016.en
         newstest2016.de
