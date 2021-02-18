@@ -91,11 +91,11 @@ def dataset_docstring_header(fn):
 def add_docstring_header(docstring=None):
     def docstring_decorator(fn):
         old_doc = fn.__doc__
-        if docstring is None:
-            fn.__doc__ = dataset_docstring_header(fn)
-        else:
-            fn.__doc__ = dataset_docstring_header(fn) + docstring
-        fn.__doc__ += "" if old_doc is None else old_doc
+        fn.__doc__ = dataset_docstring_header(fn)
+        if docstring is not None:
+            fn.__doc__ += docstring
+        if old_doc is not None:
+            fn.__doc__ += old_doc
         return fn
     return docstring_decorator
 
