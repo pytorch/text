@@ -2,7 +2,7 @@ import torch
 import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.datasets.raw import language_modeling as raw
+from torchtext.experimental.datasets import raw
 from torchtext.experimental.datasets.raw.common import check_default_set
 from torchtext.experimental.datasets.raw.common import wrap_datasets
 
@@ -116,7 +116,7 @@ def WikiText2(tokenizer=None, root='.data', vocab=None, split=('train', 'valid',
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, valid_dataset, test_dataset = WikiText2(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
-        >>> valid_dataset, = WikiText2(tokenizer=tokenizer, vocab=vocab,
+        >>> valid_dataset = WikiText2(tokenizer=tokenizer, vocab=vocab,
                                        split='valid')
 
     """
@@ -150,7 +150,7 @@ def WikiText103(tokenizer=None, root='.data', vocab=None, split=('train', 'valid
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, valid_dataset, test_dataset = WikiText103(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
-        >>> valid_dataset, = WikiText103(tokenizer=tokenizer, vocab=vocab,
+        >>> valid_dataset = WikiText103(tokenizer=tokenizer, vocab=vocab,
                                          split='valid')
 
     """
@@ -185,7 +185,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, split=('train', 'vali
         >>> tokenizer = get_tokenizer("spacy")
         >>> train_dataset, valid_dataset, test_dataset = PennTreebank(tokenizer=tokenizer)
         >>> vocab = train_dataset.get_vocab()
-        >>> valid_dataset, = PennTreebank(tokenizer=tokenizer, vocab=vocab,
+        >>> valid_dataset = PennTreebank(tokenizer=tokenizer, vocab=vocab,
                                           split='valid')
 
     """
@@ -216,7 +216,7 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, split=('train'), year
         >>> from torchtext.experimental.datasets import WMTNewsCrawl
         >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("spacy")
-        >>> train_dataset, = WMTNewsCrawl(tokenizer=tokenizer, split='train')
+        >>> train_dataset = WMTNewsCrawl(tokenizer=tokenizer, split='train')
 
     Note: WMTNewsCrawl provides datasets based on the year and language instead of train/valid/test.
     """
