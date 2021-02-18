@@ -35,6 +35,5 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset('PennTreebank',
                                                NUM_LINES[item],
-                                               iter(io.open(path, encoding="utf8")),
-                                               offset=offset))
+                                               iter(io.open(path, encoding="utf8"))))
     return datasets

@@ -179,6 +179,6 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
                 yield item
 
         datasets.append(
-            RawTextIterableDataset("WMT14", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter), offset=offset))
+            RawTextIterableDataset("WMT14", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter)))
 
     return datasets

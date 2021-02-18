@@ -27,5 +27,5 @@ def WikiText103(root='.data', split=('train', 'valid', 'test'), offset=0):
         path = find_match(item, extracted_files)
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset('WikiText103',
-                                               NUM_LINES[item], iter(io.open(path, encoding="utf8")), offset=offset))
+                                               NUM_LINES[item], iter(io.open(path, encoding="utf8"))))
     return datasets

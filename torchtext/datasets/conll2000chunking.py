@@ -47,5 +47,5 @@ def CoNLL2000Chunking(root='.data', split=('train', 'test'), offset=0):
         extracted_files = extract_archive(dataset_tar)
         data_filename = find_match(item + ".txt", extracted_files)
         datasets.append(RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[item],
-                                               _create_data_from_iob(data_filename, " "), offset=offset))
+                                               _create_data_from_iob(data_filename, " ")))
     return datasets

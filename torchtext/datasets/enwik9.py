@@ -22,4 +22,4 @@ def EnWik9(root='.data', split='train', offset=0):
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split[0]))
     return [RawTextIterableDataset('EnWik9',
-                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")), offset=offset)]
+                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")))]

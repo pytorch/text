@@ -37,5 +37,5 @@ def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
         path = find_match(item + '.csv', extracted_files)
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset("AmazonReviewFull", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
+                                               _create_data_from_csv(path)))
     return datasets

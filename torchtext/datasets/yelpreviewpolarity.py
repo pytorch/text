@@ -35,5 +35,5 @@ def YelpReviewPolarity(root='.data', split=('train', 'test'), offset=0):
     for item in split:
         path = find_match(item + '.csv', extracted_files)
         datasets.append(RawTextIterableDataset("YelpReviewPolarity", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
+                                               _create_data_from_csv(path)))
     return datasets

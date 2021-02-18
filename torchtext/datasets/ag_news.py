@@ -37,5 +37,5 @@ def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
                                  hash_value=MD5[item],
                                  hash_type='md5')
         datasets.append(RawTextIterableDataset("AG_NEWS", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
+                                               _create_data_from_csv(path)))
     return datasets

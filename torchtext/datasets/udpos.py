@@ -45,5 +45,5 @@ def UDPOS(root='.data', split=('train', 'valid', 'test'), offset=0):
         else:
             path = find_match(item + ".txt", extracted_files)
         datasets.append(RawTextIterableDataset("UDPOS", NUM_LINES[item],
-                                               _create_data_from_iob(path), offset=offset))
+                                               _create_data_from_iob(path)))
     return datasets

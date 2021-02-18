@@ -37,4 +37,4 @@ def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split[0]))
     return [RawTextIterableDataset('WMTNewsCrawl',
-                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")), offset=offset)]
+                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")))]

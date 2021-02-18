@@ -33,5 +33,5 @@ def IMDB(root='.data', split=('train', 'test'), offset=0):
     datasets = []
     for item in split:
         iterator = generate_imdb_data(item, extracted_files)
-        datasets.append(RawTextIterableDataset("IMDB", NUM_LINES[item], iterator, offset=offset))
+        datasets.append(RawTextIterableDataset("IMDB", NUM_LINES[item], iterator))
     return datasets
