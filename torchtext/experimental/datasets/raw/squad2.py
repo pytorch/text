@@ -42,4 +42,4 @@ def SQuAD2(root='.data', split=('train', 'dev'), offset=0):
     extracted_files = {key: download_from_url(URL[key], root=root,
                                               hash_value=MD5[key], hash_type='md5') for key in split}
     return [RawTextIterableDataset('SQuAD2', NUM_LINES[item],
-                                   _create_data_from_json(extracted_files), offset=offset) for item in split]
+                                   _create_data_from_json(extracted_files[item]), offset=offset) for item in split]
