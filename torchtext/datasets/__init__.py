@@ -9,6 +9,7 @@ from .imdb import IMDB
 from .iwslt import IWSLT
 from .multi30k import Multi30k
 from .penntreebank import PennTreebank
+from .snli import SNLI
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
 from .squad2 import SQuAD2
@@ -32,6 +33,7 @@ DATASETS = {
     'IWSLT': IWSLT,
     'Multi30k': Multi30k,
     'PennTreebank': PennTreebank,
+    'SNLI': SNLI,
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2,
     'SogouNews': SogouNews,
