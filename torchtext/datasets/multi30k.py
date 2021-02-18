@@ -1,9 +1,9 @@
 import io
 import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 
 _URL_BASE_ = 'https://raw.githubusercontent.com/multi30k/dataset/master/data/task'
 

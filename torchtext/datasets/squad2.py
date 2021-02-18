@@ -1,8 +1,8 @@
 from torchtext.utils import download_from_url
 import json
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 
 URL = {
     'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
