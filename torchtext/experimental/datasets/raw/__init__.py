@@ -4,6 +4,7 @@ from .amazonreviewfull import AmazonReviewFull
 from .amazonreviewpolarity import AmazonReviewPolarity
 from .conll2000chunking import CoNLL2000Chunking
 from .dbpedia import DBpedia
+from .enwik9 import EnWik9
 from .imdb import IMDB
 from .iwslt import IWSLT
 from .multi30k import Multi30k
@@ -26,6 +27,7 @@ DATASETS = {
     'AmazonReviewPolarity': AmazonReviewPolarity,
     'CoNLL2000Chunking': CoNLL2000Chunking,
     'DBpedia': DBpedia,
+    'EnWik9': EnWik9,
     'IMDB': IMDB,
     'IWSLT': IWSLT,
     'Multi30k': Multi30k,
