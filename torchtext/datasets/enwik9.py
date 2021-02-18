@@ -1,8 +1,8 @@
 import logging
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 import io
 
 URL = 'http://mattmahoney.net/dc/enwik9.zip'
