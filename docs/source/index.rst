@@ -32,12 +32,11 @@ popular datasets for natural language.
    :caption:  Package Reference
 
    self
-   torchtext.data <data>
    nn_modules
-   data_utils
    data_functional
    data_metrics
-   torchtext.datasets <datasets>
+   data_utils
+   datasets
    torchtext.vocab <vocab>
    torchtext.utils <utils>
    experimental_datasets

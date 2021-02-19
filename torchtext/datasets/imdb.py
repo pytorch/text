@@ -1,80 +1,37 @@
-import os
-import glob
+from torchtext.utils import download_from_url, extract_archive
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 import io
 
-from .. import data
+URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
+
+MD5 = '7c2ac02c03563afcf9b574c7e56c153a'
+
+NUM_LINES = {
+    'train': 25000,
+    'test': 25000,
+}
+
+_PATH = 'aclImdb_v1.tar.gz'
 
 
-class IMDB(data.Dataset):
-
-    urls = ['http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz']
-    name = 'imdb'
-    dirname = 'aclImdb'
-
-    @staticmethod
-    def sort_key(ex):
-        return len(ex.text)
-
-    def __init__(self, path, text_field, label_field, **kwargs):
-        """Create an IMDB dataset instance given a path and fields.
-
-        Args:
-            path: Path to the dataset's highest level directory
-            text_field: The field that will be used for text data.
-            label_field: The field that will be used for label data.
-            Remaining keyword arguments: Passed to the constructor of
-                data.Dataset.
-        """
-        fields = [('text', text_field), ('label', label_field)]
-        examples = []
-
-        for label in ['pos', 'neg']:
-            for fname in glob.iglob(os.path.join(path, label, '*.txt')):
-                with io.open(fname, 'r', encoding="utf-8") as f:
-                    text = f.readline()
-                examples.append(data.Example.fromlist([text, label], fields))
-
-        super(IMDB, self).__init__(examples, fields, **kwargs)
-
-    @classmethod
-    def splits(cls, text_field, label_field, root='.data',
-               train='train', test='test', **kwargs):
-        """Create dataset objects for splits of the IMDB dataset.
-
-        Args:
-            text_field: The field that will be used for the sentence.
-            label_field: The field that will be used for label data.
-            root: Root dataset storage directory. Default is '.data'.
-            train: The directory that contains the training examples
-            test: The directory that contains the test examples
-            Remaining keyword arguments: Passed to the splits method of
-                Dataset.
-        """
-        return super(IMDB, cls).splits(
-            root=root, text_field=text_field, label_field=label_field,
-            train=train, validation=None, test=test, **kwargs)
-
-    @classmethod
-    def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
-        """Create iterator objects for splits of the IMDB dataset.
-
-        Args:
-            batch_size: Batch_size
-            device: Device to create batches on. Use - 1 for CPU and None for
-                the currently active GPU device.
-            root: The root directory that contains the imdb dataset subdirectory
-            vectors: one of the available pretrained vectors or a list with each
-                element one of the available pretrained vectors (see Vocab.load_vectors)
-
-            Remaining keyword arguments: Passed to the splits method.
-        """
-        TEXT = data.Field()
-        LABEL = data.Field(sequential=False)
-
-        train, test = cls.splits(TEXT, LABEL, root=root, **kwargs)
-
-        TEXT.build_vocab(train, vectors=vectors)
-        LABEL.build_vocab(train)
-
-        return data.BucketIterator.splits(
-            (train, test), batch_size=batch_size, device=device)
+@wrap_split_argument
+@add_docstring_header()
+def IMDB(root='.data', split=('train', 'test')):
+    def generate_imdb_data(key, extracted_files):
+        for fname in extracted_files:
+            if 'urls' in fname:
+                continue
+            elif key in fname and ('pos' in fname or 'neg' in fname):
+                with io.open(fname, encoding="utf8") as f:
+                    label = 'pos' if 'pos' in fname else 'neg'
+                    yield label, f.read()
+    dataset_tar = download_from_url(URL, root=root,
+                                    hash_value=MD5, hash_type='md5')
+    extracted_files = extract_archive(dataset_tar)
+    datasets = []
+    for item in split:
+        iterator = generate_imdb_data(item, extracted_files)
+        datasets.append(RawTextIterableDataset("IMDB", NUM_LINES[item], iterator))
+    return datasets

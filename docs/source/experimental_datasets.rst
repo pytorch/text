@@ -121,7 +121,7 @@ WMTNewsCrawl
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Language modeling datasets are subclasses of ``TranslationDataset`` class.
+Translation datasets are subclasses of ``TranslationDataset`` class.
 
 .. autoclass:: TranslationDataset
   :members: __init__
@@ -148,7 +148,7 @@ WMT14
 Sequence Tagging
 ^^^^^^^^^^^^^^^^
 
-Language modeling datasets are subclasses of ``SequenceTaggingDataset`` class.
+Sequence Tagging datasets are subclasses of ``SequenceTaggingDataset`` class.
 
 .. autoclass:: SequenceTaggingDataset
   :members: __init__

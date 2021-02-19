@@ -1,86 +1,27 @@
-torchtext.datasets
-==================
+torchtext.experimental.datasets.raw
+===================================
 
 .. currentmodule:: torchtext.datasets
 
-All datasets are subclasses of :class:`torchtext.data.Dataset`, which
-inherits from :class:`torch.utils.data.Dataset` i.e, they have ``split`` and
-``iters`` methods implemented.
+General use cases are as follows: ::
 
-General use cases are as follows:
 
-Approach 1, ``splits``: ::
+    # import datasets
+    from torchtext.experimental.datasets.raw import IMDB
 
-    # set up fields
-    TEXT = data.Field(lower=True, include_lengths=True, batch_first=True)
-    LABEL = data.Field(sequential=False)
+    train_iter = IMDB(split='train')
 
-    # make splits for data
-    train, test = datasets.IMDB.splits(TEXT, LABEL)
-
-    # build the vocabulary
-    TEXT.build_vocab(train, vectors=GloVe(name='6B', dim=300))
-    LABEL.build_vocab(train)
-
-    # make iterator for splits
-    train_iter, test_iter = data.BucketIterator.splits(
-        (train, test), batch_size=3, device=0)
-
-Approach 2, ``iters``: ::
-
-    # use default configurations
-    train_iter, test_iter = datasets.IMDB.iters(batch_size=4)
+    def tokenize(label, line):
+        return line.split()
+     
+    tokens = []
+    for line in train_iter:
+        tokens += tokenize(line)
 
 The following datasets are available:
 
 .. contents:: Datasets
     :local:
-
-
-Language Modeling
-^^^^^^^^^^^^^^^^^
-
-Language modeling datasets are subclasses of ``LanguageModelingDataset`` class.
-
-.. autoclass:: LanguageModelingDataset
-  :members: __init__
-
-
-WikiText-2
-~~~~~~~~~~
-
-.. autoclass:: WikiText2
-  :members: splits, iters
-
-
-WikiText103
-~~~~~~~~~~~
-
-.. autoclass:: WikiText103
-  :members: splits, iters
-
-
-PennTreebank
-~~~~~~~~~~~~
-
-.. autoclass:: PennTreebank
-  :members: splits, iters
-
-
-Sentiment Analysis
-^^^^^^^^^^^^^^^^^^
-
-SST
-~~~
-
-.. autoclass:: SST
-  :members: __init__, splits, iters
-
-IMDb
-~~~~
-
-.. autoclass:: IMDB
-  :members: __init__, splits, iters
 
 
 Text Classification
@@ -89,13 +30,11 @@ Text Classification
 TextClassificationDataset
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: TextClassificationDataset
-  :members: __init__
-
 AG_NEWS
 ~~~~~~~
 
 .. autofunction:: AG_NEWS
+
 
 SogouNews
 ~~~~~~~~~
@@ -105,7 +44,7 @@ SogouNews
 DBpedia
 ~~~~~~~
 
-.. autofunction::  DBpedia
+.. autofunction:: DBpedia
 
 YelpReviewPolarity
 ~~~~~~~~~~~~~~~~~~
@@ -132,96 +71,83 @@ AmazonReviewFull
 
 .. autofunction:: AmazonReviewFull
 
-
-Question Classification
-^^^^^^^^^^^^^^^^^^^^^^^
-
-TREC
+IMDb
 ~~~~
 
-.. autoclass:: TREC
-  :members: splits, iters
-
-Entailment
-^^^^^^^^^^
-
-SNLI
-~~~~
-
-.. autoclass:: SNLI
-  :members: splits, iters
+.. autofunction:: IMDB
 
 
-MultiNLI
-~~~~~~~~
+Language Modeling
+^^^^^^^^^^^^^^^^^
 
-.. autoclass:: MultiNLI
-  :members: splits, iters
+WikiText-2
+~~~~~~~~~~
+
+.. autofunction:: WikiText2
+
+
+WikiText103
+~~~~~~~~~~~
+
+.. autofunction:: WikiText103
+
+
+PennTreebank
+~~~~~~~~~~~~
+
+.. autofunction:: PennTreebank
+
+
+WMTNewsCrawl
+~~~~~~~~~~~~
+
+.. autofunction:: WMTNewsCrawl
 
 
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Machine translation datasets are subclasses of ``TranslationDataset`` class.
-
-.. autoclass:: TranslationDataset
-  :members: __init__
-
-
 Multi30k
 ~~~~~~~~
 
-.. autoclass:: Multi30k
-  :members: splits
+.. autofunction:: Multi30k
+
 
 IWSLT
 ~~~~~
 
-.. autoclass:: IWSLT
-  :members: splits
+.. autofunction:: IWSLT
+
 
 WMT14
 ~~~~~
 
-.. autoclass:: WMT14
-  :members: splits
+.. autofunction:: WMT14
 
 
 Sequence Tagging
 ^^^^^^^^^^^^^^^^
 
-Sequence tagging datasets are subclasses of ``SequenceTaggingDataset`` class.
-
-.. autoclass:: SequenceTaggingDataset
-  :members: __init__
-
-
 UDPOS
 ~~~~~
 
-.. autoclass:: UDPOS
-  :members: splits
+.. autofunction:: UDPOS
 
 CoNLL2000Chunking
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: CoNLL2000Chunking
-  :members: splits
+.. autofunction:: CoNLL2000Chunking
 
-Question Answering
-^^^^^^^^^^^^^^^^^^
+Question Answer
+^^^^^^^^^^^^^^^
 
-BABI20
-~~~~~~
+SQuAD 1.0
+~~~~~~~~~
 
-.. autoclass:: BABI20
-  :members: __init__, splits, iters
+.. autofunction:: SQuAD1
 
-Unsupervised Learning
-^^^^^^^^^^^^^^^^^^^^^
 
-EnWik9
-~~~~~~
+SQuAD 2.0
+~~~~~~~~~
 
-.. autoclass:: EnWik9
-  :members: __init__, __getitem__, __len__, __iter__, get_vocab
+.. autofunction:: SQuAD2

@@ -1,12 +1,35 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
-import torchtext.data as data
 import torch
 import torchtext
+from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
+from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
+
+GOOGLE_DRIVE_BASED_DATASETS = [
+    'AmazonReviewFull',
+    'AmazonReviewPolarity',
+    'DBpedia',
+    'IMDB',
+    'IWSLT',
+    'SogouNews',
+    'WMT14',
+    'YahooAnswers',
+    'YelpReviewFull',
+    'YelpReviewPolarity'
+]
+
+
+def _raw_text_custom_name_func(testcase_func, param_num, param):
+    info = param.args[0]
+    name_info = [info['dataset_name'], info['split']]
+    return "%s_%s" % (
+        testcase_func.__name__,
+        parameterized.to_safe_name("_".join(name_info))
+    )
 
 
 class TestDataset(TorchtextTestCase):
@@ -19,7 +42,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(results, target_results)
 
     def test_wikitext2_legacy(self):
-        from torchtext.datasets import WikiText2
+        from torchtext.legacy.datasets import WikiText2
         cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
         conditional_remove(cachedir)
 
@@ -58,7 +81,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(tokens_ids, [2, 286, 503, 700])
 
         # Add test for the subset of the standard datasets
-        train_iter, valid_iter, test_iter = torchtext.experimental.datasets.raw.WikiText2(split=('train', 'valid', 'test'))
+        train_iter, valid_iter, test_iter = torchtext.datasets.WikiText2(split=('train', 'valid', 'test'))
         self._helper_test_func(len(train_iter), 36718, next(train_iter), ' \n')
         self._helper_test_func(len(valid_iter), 3760, next(valid_iter), ' \n')
         self._helper_test_func(len(test_iter), 4358, next(test_iter), ' \n')
@@ -75,7 +98,7 @@ class TestDataset(TorchtextTestCase):
         conditional_remove(cachefile)
 
     def test_penntreebank_legacy(self):
-        from torchtext.datasets import PennTreebank
+        from torchtext.legacy.datasets import PennTreebank
         # smoke test to ensure penn treebank works properly
         TEXT = data.Field(lower=True, batch_first=True)
         ds = PennTreebank
@@ -113,7 +136,7 @@ class TestDataset(TorchtextTestCase):
                                [9919, 9920, 9921, 9922, 9188])
         self._helper_test_func(len(test_data), 82114, test_data[30:35],
                                [397, 93, 4, 16, 7])
-        train_iter, test_iter = torchtext.experimental.datasets.raw.PennTreebank(split=('train', 'test'))
+        train_iter, test_iter = torchtext.datasets.PennTreebank(split=('train', 'test'))
         self._helper_test_func(len(train_iter), 42068, next(train_iter)[:15], ' aer banknote b')
         self._helper_test_func(len(test_iter), 3761, next(test_iter)[:25], " no it was n't black mond")
         del train_iter, test_iter
@@ -129,28 +152,47 @@ class TestDataset(TorchtextTestCase):
                                [3525, 319, 4053, 34, 5407, 3607, 70, 6798, 10599, 4053])
         self._helper_test_func(len(test_dataset), 7600, test_dataset[-1][1][:10],
                                [2351, 758, 96, 38581, 2351, 220, 5, 396, 3, 14786])
-
         # Add test for the subset of the standard datasets
         train_dataset = AG_NEWS(split='train')
         self._helper_test_func(len(train_dataset), 120000, train_dataset[-1][1][:10],
                                [2155, 223, 2405, 30, 3010, 2204, 54, 3603, 4930, 2405])
-        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
+
+    def test_raw_ag_news(self):
+        train_iter, test_iter = torchtext.datasets.AG_NEWS()
         self._helper_test_func(len(train_iter), 120000, next(train_iter)[1][:25], 'Wall St. Bears Claw Back ')
         self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
         del train_iter, test_iter
 
-    def test_num_lines_of_dataset(self):
-        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(offset=10)
-        _data = [item for item in train_iter]
-        self.assertEqual(len(_data), 119990)
+    @parameterized.expand(
+        load_params('raw_datasets.json'),
+        name_func=_raw_text_custom_name_func)
+    def test_raw_text_classification(self, info):
+        dataset_name = info['dataset_name']
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
 
-    @parameterized.expand(list(sorted(torchtext.experimental.datasets.raw.DATASETS.keys())))
+        # Currently disabled due to incredibly slow download
+        if dataset_name == "WMTNewsCrawl":
+            return
+        split = info['split']
+        data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
+        self.assertEqual(len(data_iter), info['NUM_LINES'])
+        self.assertEqual(next(data_iter), info['first_line'])
+        if dataset_name == "AG_NEWS":
+            self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
+            self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
+        else:
+            self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
+            self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
+        del data_iter
+
+    @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
-        if 'drive.google' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
-        if 'statmt' in torchtext.experimental.datasets.raw.URLS[dataset_name]:
+        if 'statmt' in torchtext.datasets.URLS[dataset_name]:
             return
-        dataset = torchtext.experimental.datasets.raw.DATASETS[dataset_name]
+        dataset = torchtext.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
         for d1, d2 in zip(train1, train2):
@@ -163,6 +205,8 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
     def test_datasets_split_argument(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
@@ -174,16 +218,8 @@ class TestDataset(TorchtextTestCase):
         # Exercise default constructor
         _ = dataset()
 
-    def test_offset_dataset(self):
-        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS(split=('train', 'test'),
-                                                                            offset=10)
-        container = [text[:20] for idx, (label, text) in enumerate(train_iter) if idx < 5]
-        self.assertEqual(container, ['Oil and Economy Clou', 'No Need for OPEC to ',
-                                     'Non-OPEC Nations Sho', 'Google IPO Auction O',
-                                     'Dollar Falls Broadly'])
-
     def test_next_method_dataset(self):
-        train_iter, test_iter = torchtext.experimental.datasets.raw.AG_NEWS()
+        train_iter, test_iter = torchtext.datasets.AG_NEWS()
         for_count = 0
         next_count = 0
         for line in train_iter:
@@ -214,7 +250,7 @@ class TestDataset(TorchtextTestCase):
         train_dataset = IMDB(split='train')
         self._helper_test_func(len(train_dataset), 25000, train_dataset[0][1][:10],
                                [13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92])
-        train_iter, test_iter = torchtext.experimental.datasets.raw.IMDB()
+        train_iter, test_iter = torchtext.datasets.IMDB()
         self._helper_test_func(len(train_iter), 25000, next(train_iter)[1][:25], 'I rented I AM CURIOUS-YEL')
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
@@ -250,8 +286,6 @@ class TestDataset(TorchtextTestCase):
                                        'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
                                       ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s",
                                        'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
-        datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
-        conditional_remove(datafile)
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
@@ -291,7 +325,7 @@ class TestDataset(TorchtextTestCase):
                          [18, 24, 1168, 807, 16, 56, 83, 335, 1338])
 
         # Add test for the subset of the standard datasets
-        train_iter, valid_iter = torchtext.experimental.datasets.raw.Multi30k(split=('train', 'valid'))
+        train_iter, valid_iter = torchtext.datasets.Multi30k(split=('train', 'valid'))
         self._helper_test_func(len(train_iter), 29000, ' '.join(next(train_iter)),
                                ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.\n',
                                          'Two young, White males are outside near many bushes.\n']))
@@ -366,7 +400,7 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(train_dataset), 12543, (train_dataset[0][0][:10], train_dataset[-1][2][:10]),
                                ([262, 16, 5728, 45, 289, 701, 1160, 4436, 10660, 585],
                                 [6, 20, 8, 10, 8, 8, 24, 13, 8, 15]))
-        train_iter, valid_iter = torchtext.experimental.datasets.raw.UDPOS(split=('train', 'valid'))
+        train_iter, valid_iter = torchtext.datasets.UDPOS(split=('train', 'valid'))
         self._helper_test_func(len(train_iter), 12543, ' '.join(next(train_iter)[0][:5]),
                                ' '.join(['Al', '-', 'Zaman', ':', 'American']))
         self._helper_test_func(len(valid_iter), 2002, ' '.join(next(valid_iter)[0][:5]),
@@ -419,7 +453,7 @@ class TestDataset(TorchtextTestCase):
                                 [85, 17, 59, 6473, 288, 115, 72, 5, 2294, 2502],
                                 [18, 17, 12, 19, 10, 6, 3, 3, 4, 4],
                                 [3, 5, 7, 7, 3, 2, 6, 6, 3, 2]))
-        train_iter, test_iter = torchtext.experimental.datasets.raw.CoNLL2000Chunking()
+        train_iter, test_iter = torchtext.datasets.CoNLL2000Chunking()
         self._helper_test_func(len(train_iter), 8936, ' '.join(next(train_iter)[0][:5]),
                                ' '.join(['Confidence', 'in', 'the', 'pound', 'is']))
         self._helper_test_func(len(test_iter), 2012, ' '.join(next(test_iter)[0][:5]),
@@ -448,7 +482,7 @@ class TestDataset(TorchtextTestCase):
         context, question, answers, ans_pos = train_dataset[100]
         self._helper_test_func(len(train_dataset), 87599, (question[:5], ans_pos[0]),
                                ([7, 24, 86, 52, 2], [72, 72]))
-        train_iter, dev_iter = torchtext.experimental.datasets.raw.SQuAD1()
+        train_iter, dev_iter = torchtext.datasets.SQuAD1()
         self._helper_test_func(len(train_iter), 87599, next(train_iter)[0][:50],
                                'Architecturally, the school has a Catholic charact')
         self._helper_test_func(len(dev_iter), 10570, next(dev_iter)[0][:50],
@@ -477,7 +511,7 @@ class TestDataset(TorchtextTestCase):
         context, question, answers, ans_pos = train_dataset[200]
         self._helper_test_func(len(train_dataset), 130319, (question[:5], ans_pos[0]),
                                ([84, 50, 1421, 12, 5439], [9, 9]))
-        train_iter, dev_iter = torchtext.experimental.datasets.raw.SQuAD2()
+        train_iter, dev_iter = torchtext.datasets.SQuAD2()
         self._helper_test_func(len(train_iter), 130319, next(train_iter)[0][:50],
                                'Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-Y')
         self._helper_test_func(len(dev_iter), 11873, next(dev_iter)[0][:50],

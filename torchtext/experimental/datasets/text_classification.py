@@ -2,9 +2,9 @@ import torch
 import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.datasets.raw import text_classification as raw
-from torchtext.experimental.datasets.raw.common import check_default_set
-from torchtext.experimental.datasets.raw.common import wrap_datasets
+from torchtext import datasets as raw
+from torchtext.data.datasets_utils import check_default_set
+from torchtext.data.datasets_utils import wrap_datasets
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
@@ -138,7 +138,7 @@ def AG_NEWS(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 
         >>> train, test = AG_NEWS(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AG_NEWS(tokenizer=tokenizer)
-        >>> train, = AG_NEWS(tokenizer=tokenizer, split='train')
+        >>> train = AG_NEWS(tokenizer=tokenizer, split='train')
 
     """
 
@@ -182,7 +182,7 @@ def SogouNews(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train'
         >>> train, test = SogouNews(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = SogouNews(tokenizer=tokenizer)
-        >>> train, = SogouNews(tokenizer=tokenizer, split='train')
+        >>> train = SogouNews(tokenizer=tokenizer, split='train')
 
     """
 
@@ -235,7 +235,7 @@ def DBpedia(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 
         >>> train, test = DBpedia(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = DBpedia(tokenizer=tokenizer)
-        >>> train, = DBpedia(tokenizer=tokenizer, split='train')
+        >>> train = DBpedia(tokenizer=tokenizer, split='train')
 
     """
 
@@ -276,7 +276,7 @@ def YelpReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, split
         >>> train, test = YelpReviewPolarity(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YelpReviewPolarity(tokenizer=tokenizer)
-        >>> train, = YelpReviewPolarity(tokenizer=tokenizer, split='train')
+        >>> train = YelpReviewPolarity(tokenizer=tokenizer, split='train')
 
     """
 
@@ -316,7 +316,7 @@ def YelpReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('t
         >>> train, test = YelpReviewFull(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YelpReviewFull(tokenizer=tokenizer)
-        >>> train, = YelpReviewFull(tokenizer=tokenizer, split='train')
+        >>> train = YelpReviewFull(tokenizer=tokenizer, split='train')
 
     """
 
@@ -365,7 +365,7 @@ def YahooAnswers(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('tra
         >>> train, test = YahooAnswers(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = YahooAnswers(tokenizer=tokenizer)
-        >>> train, = YahooAnswers(tokenizer=tokenizer, split='train')
+        >>> train = YahooAnswers(tokenizer=tokenizer, split='train')
 
     """
 
@@ -406,7 +406,7 @@ def AmazonReviewPolarity(root='.data', ngrams=1, vocab=None, tokenizer=None, spl
         >>> train, test = AmazonReviewPolarity(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AmazonReviewPolarity(tokenizer=tokenizer)
-        >>> train, = AmazonReviewPolarity(tokenizer=tokenizer, split='train')
+        >>> train = AmazonReviewPolarity(tokenizer=tokenizer, split='train')
 
     """
 
@@ -446,7 +446,7 @@ def AmazonReviewFull(root='.data', ngrams=1, vocab=None, tokenizer=None, split=(
         >>> train, test = AmazonReviewFull(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = AmazonReviewFull(tokenizer=tokenizer)
-        >>> train, = AmazonReviewFull(tokenizer=tokenizer, split='train')
+        >>> train = AmazonReviewFull(tokenizer=tokenizer, split='train')
 
     """
 
@@ -488,7 +488,7 @@ def IMDB(root='.data', ngrams=1, vocab=None, tokenizer=None, split=('train', 'te
         >>> train, test = IMDB(ngrams=3)
         >>> tokenizer = get_tokenizer("spacy")
         >>> train, test = IMDB(tokenizer=tokenizer)
-        >>> train, = IMDB(tokenizer=tokenizer, split='train')
+        >>> train = IMDB(tokenizer=tokenizer, split='train')
 
     """
 
