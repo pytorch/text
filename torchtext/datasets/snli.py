@@ -33,6 +33,8 @@ def SNLI(root='.data', split=('train', 'dev', 'test'), offset=0):
     datasets = []
     for item in split:
         path = find_match(item + '.jsonl', extracted_files)
+        print("Looking for file that match: ", item + '.jsonl')
+        print("find_match returns:", path)
         datasets.append(RawTextIterableDataset("SNLI", NUM_LINES[item],
                                                _create_data_from_jsonlines(path), offset=offset))
     return datasets
