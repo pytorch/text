@@ -35,10 +35,30 @@ def _setup_datasets(dataset_name,
         raise ValueError(
             "tokenizer must be an instance of tuple with length two"
             "or None")
-    raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                              valid_filenames=valid_filenames,
-                                              test_filenames=test_filenames,
-                                              split=split, root=root)
+
+    if dataset_name == 'IWSLT':
+
+        src_language = train_filenames[0].split(".")[-1]
+        tgt_language = train_filenames[1].split(".")[-1]
+        valid_set = valid_filenames[0].split(".")[2]
+        test_set = test_filenames[0].split(".")[2]
+        if '16' in valid_filenames[0].split(".")[0]:
+            IWSLT_year = 2016
+        else:
+            IWSLT_year = 2017
+
+        raw_datasets = raw.DATASETS[dataset_name](root=root,
+                                                  split=split,
+                                                  IWSLT_year=IWSLT_year,
+                                                  src_language=src_language,
+                                                  tgt_language=tgt_language,
+                                                  valid_set=valid_set,
+                                                  test_set=test_set)
+    else:
+        raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
+                                                  valid_filenames=valid_filenames,
+                                                  test_filenames=test_filenames,
+                                                  split=split, root=root)
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
@@ -231,11 +251,11 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            split, root, vocab, tokenizer)
 
 
-def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
-          valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
-                           'IWSLT16.TED.tst2013.de-en.en'),
-          test_filenames=('IWSLT16.TED.tst2014.de-en.de',
-                          'IWSLT16.TED.tst2014.de-en.en'),
+def IWSLT(src_language='de',
+          tgt_language='en',
+          IWSLT_year=2016,
+          valid_set='tst2013',
+          test_set='tst2014',
           split=('train', 'valid', 'test'),
           root='.data',
           vocab=(None, None),
@@ -245,12 +265,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
     The available datasets include:
 
     Args:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.de-en.de', 'train.de-en.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+        TODO
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -267,142 +282,7 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
             get_tokenizer("spacy", language='en_core_web_sm'))
 
         The available datasets include:
-
-            IWSLT16.TED.dev2010.ar-en.ar
-            IWSLT16.TED.dev2010.ar-en.en
-            IWSLT16.TED.dev2010.cs-en.cs
-            IWSLT16.TED.dev2010.cs-en.en
-            IWSLT16.TED.dev2010.de-en.de
-            IWSLT16.TED.dev2010.de-en.en
-            IWSLT16.TED.dev2010.en-ar.ar
-            IWSLT16.TED.dev2010.en-ar.en
-            IWSLT16.TED.dev2010.en-cs.cs
-            IWSLT16.TED.dev2010.en-cs.en
-            IWSLT16.TED.dev2010.en-de.de
-            IWSLT16.TED.dev2010.en-de.en
-            IWSLT16.TED.dev2010.en-fr.en
-            IWSLT16.TED.dev2010.en-fr.fr
-            IWSLT16.TED.dev2010.fr-en.en
-            IWSLT16.TED.dev2010.fr-en.fr
-            IWSLT16.TED.tst2010.ar-en.ar
-            IWSLT16.TED.tst2010.ar-en.en
-            IWSLT16.TED.tst2010.cs-en.cs
-            IWSLT16.TED.tst2010.cs-en.en
-            IWSLT16.TED.tst2010.de-en.de
-            IWSLT16.TED.tst2010.de-en.en
-            IWSLT16.TED.tst2010.en-ar.ar
-            IWSLT16.TED.tst2010.en-ar.en
-            IWSLT16.TED.tst2010.en-cs.cs
-            IWSLT16.TED.tst2010.en-cs.en
-            IWSLT16.TED.tst2010.en-de.de
-            IWSLT16.TED.tst2010.en-de.en
-            IWSLT16.TED.tst2010.en-fr.en
-            IWSLT16.TED.tst2010.en-fr.fr
-            IWSLT16.TED.tst2010.fr-en.en
-            IWSLT16.TED.tst2010.fr-en.fr
-            IWSLT16.TED.tst2011.ar-en.ar
-            IWSLT16.TED.tst2011.ar-en.en
-            IWSLT16.TED.tst2011.cs-en.cs
-            IWSLT16.TED.tst2011.cs-en.en
-            IWSLT16.TED.tst2011.de-en.de
-            IWSLT16.TED.tst2011.de-en.en
-            IWSLT16.TED.tst2011.en-ar.ar
-            IWSLT16.TED.tst2011.en-ar.en
-            IWSLT16.TED.tst2011.en-cs.cs
-            IWSLT16.TED.tst2011.en-cs.en
-            IWSLT16.TED.tst2011.en-de.de
-            IWSLT16.TED.tst2011.en-de.en
-            IWSLT16.TED.tst2011.en-fr.en
-            IWSLT16.TED.tst2011.en-fr.fr
-            IWSLT16.TED.tst2011.fr-en.en
-            IWSLT16.TED.tst2011.fr-en.fr
-            IWSLT16.TED.tst2012.ar-en.ar
-            IWSLT16.TED.tst2012.ar-en.en
-            IWSLT16.TED.tst2012.cs-en.cs
-            IWSLT16.TED.tst2012.cs-en.en
-            IWSLT16.TED.tst2012.de-en.de
-            IWSLT16.TED.tst2012.de-en.en
-            IWSLT16.TED.tst2012.en-ar.ar
-            IWSLT16.TED.tst2012.en-ar.en
-            IWSLT16.TED.tst2012.en-cs.cs
-            IWSLT16.TED.tst2012.en-cs.en
-            IWSLT16.TED.tst2012.en-de.de
-            IWSLT16.TED.tst2012.en-de.en
-            IWSLT16.TED.tst2012.en-fr.en
-            IWSLT16.TED.tst2012.en-fr.fr
-            IWSLT16.TED.tst2012.fr-en.en
-            IWSLT16.TED.tst2012.fr-en.fr
-            IWSLT16.TED.tst2013.ar-en.ar
-            IWSLT16.TED.tst2013.ar-en.en
-            IWSLT16.TED.tst2013.cs-en.cs
-            IWSLT16.TED.tst2013.cs-en.en
-            IWSLT16.TED.tst2013.de-en.de
-            IWSLT16.TED.tst2013.de-en.en
-            IWSLT16.TED.tst2013.en-ar.ar
-            IWSLT16.TED.tst2013.en-ar.en
-            IWSLT16.TED.tst2013.en-cs.cs
-            IWSLT16.TED.tst2013.en-cs.en
-            IWSLT16.TED.tst2013.en-de.de
-            IWSLT16.TED.tst2013.en-de.en
-            IWSLT16.TED.tst2013.en-fr.en
-            IWSLT16.TED.tst2013.en-fr.fr
-            IWSLT16.TED.tst2013.fr-en.en
-            IWSLT16.TED.tst2013.fr-en.fr
-            IWSLT16.TED.tst2014.ar-en.ar
-            IWSLT16.TED.tst2014.ar-en.en
-            IWSLT16.TED.tst2014.de-en.de
-            IWSLT16.TED.tst2014.de-en.en
-            IWSLT16.TED.tst2014.en-ar.ar
-            IWSLT16.TED.tst2014.en-ar.en
-            IWSLT16.TED.tst2014.en-de.de
-            IWSLT16.TED.tst2014.en-de.en
-            IWSLT16.TED.tst2014.en-fr.en
-            IWSLT16.TED.tst2014.en-fr.fr
-            IWSLT16.TED.tst2014.fr-en.en
-            IWSLT16.TED.tst2014.fr-en.fr
-            IWSLT16.TEDX.dev2012.de-en.de
-            IWSLT16.TEDX.dev2012.de-en.en
-            IWSLT16.TEDX.tst2013.de-en.de
-            IWSLT16.TEDX.tst2013.de-en.en
-            IWSLT16.TEDX.tst2014.de-en.de
-            IWSLT16.TEDX.tst2014.de-en.en
-            train.ar
-            train.ar-en.ar
-            train.ar-en.en
-            train.cs
-            train.cs-en.cs
-            train.cs-en.en
-            train.de
-            train.de-en.de
-            train.de-en.en
-            train.en
-            train.en-ar.ar
-            train.en-ar.en
-            train.en-cs.cs
-            train.en-cs.en
-            train.en-de.de
-            train.en-de.en
-            train.en-fr.en
-            train.en-fr.fr
-            train.fr
-            train.fr-en.en
-            train.fr-en.fr
-            train.tags.ar-en.ar
-            train.tags.ar-en.en
-            train.tags.cs-en.cs
-            train.tags.cs-en.en
-            train.tags.de-en.de
-            train.tags.de-en.en
-            train.tags.en-ar.ar
-            train.tags.en-ar.en
-            train.tags.en-cs.cs
-            train.tags.en-cs.en
-            train.tags.en-de.de
-            train.tags.en-de.en
-            train.tags.en-fr.en
-            train.tags.en-fr.fr
-            train.tags.fr-en.en
-            train.tags.fr-en.fr
+        TODO
 
     Examples:
         >>> from torchtext.experimental.datasets import IWSLT
@@ -414,6 +294,10 @@ def IWSLT(train_filenames=('train.de-en.de', 'train.de-en.en'),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
+    year = {2016: 16, 2017: 17}
+    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], test_set, src_language, tgt_language, tgt_language)
 
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames,
                            split, root, vocab, tokenizer)

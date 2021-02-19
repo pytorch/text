@@ -7,11 +7,40 @@ from torchtext.datasets.common import RawTextIterableDataset
 from torchtext.datasets.common import wrap_split_argument
 from torchtext.datasets.common import add_docstring_header
 
-URL = 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
 
-_PATH = '2016-01.tgz'
+SUPPORTED_DATASETS = {
+    2016: {
+        'URL': 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8',
+        '_PATH': '2016-01.tgz',
+        'MD5': 'c393ed3fc2a1b0f004b3331043f615ae',
+        'valid_test': ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014'],
+        'language_pair': {
+            'en': ['ar', 'de', 'fr', 'cs'],
+            'ar': ['en'],
+            'fr': ['en'],
+            'de': ['en'],
+            'cs': ['en'],
+        },
+        'year': 16,
+    },
+    2017: {
+        'URL': 'https://drive.google.com/u/0/uc?id=12ycYSzLIG253AFN35Y6qoyf9wtkOjakp',
+        '_PATH': '2017-01-trnmted.tgz',
+        'MD5': 'aca701032b1c4411afc4d9fa367796ba',
+        'valid_test': ['dev2010', 'tst2010'],
+        'language_pair': {
+            'en': ['nl', 'de', 'it', 'ro'],
+            'ro': ['de', 'en', 'nl', 'it'],
+            'de': ['ro', 'en', 'nl', 'it'],
+            'it': ['en', 'nl', 'de', 'ro'],
+            'nl': ['de', 'en', 'it', 'ro'],
+        },
+        'year': 17,
+    }
+}
 
-MD5 = 'c393ed3fc2a1b0f004b3331043f615ae'
+URL = [v['URL'] for v in SUPPORTED_DATASETS.values()]
+MD5 = [v['MD5'] for v in SUPPORTED_DATASETS.values()]
 
 NUM_LINES = {
     'train': 196884,
@@ -70,178 +99,48 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 @wrap_split_argument
 @add_docstring_header()
-def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
-          train_filenames=('train.de-en.de', 'train.de-en.en'),
-          valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
-                           'IWSLT16.TED.tst2013.de-en.en'),
-          test_filenames=('IWSLT16.TED.tst2014.de-en.de',
-                          'IWSLT16.TED.tst2014.de-en.en')):
-    """    train_filenames: the source and target filenames for training.
-                Default: ('train.de-en.de', 'train.de-en.en')
-            valid_filenames: the source and target filenames for valid.
-                Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
-            test_filenames: the source and target filenames for test.
-                Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
-
-    The available datasets include:
-        IWSLT16.TED.dev2010.ar-en.ar
-        IWSLT16.TED.dev2010.ar-en.en
-        IWSLT16.TED.dev2010.cs-en.cs
-        IWSLT16.TED.dev2010.cs-en.en
-        IWSLT16.TED.dev2010.de-en.de
-        IWSLT16.TED.dev2010.de-en.en
-        IWSLT16.TED.dev2010.en-ar.ar
-        IWSLT16.TED.dev2010.en-ar.en
-        IWSLT16.TED.dev2010.en-cs.cs
-        IWSLT16.TED.dev2010.en-cs.en
-        IWSLT16.TED.dev2010.en-de.de
-        IWSLT16.TED.dev2010.en-de.en
-        IWSLT16.TED.dev2010.en-fr.en
-        IWSLT16.TED.dev2010.en-fr.fr
-        IWSLT16.TED.dev2010.fr-en.en
-        IWSLT16.TED.dev2010.fr-en.fr
-        IWSLT16.TED.tst2010.ar-en.ar
-        IWSLT16.TED.tst2010.ar-en.en
-        IWSLT16.TED.tst2010.cs-en.cs
-        IWSLT16.TED.tst2010.cs-en.en
-        IWSLT16.TED.tst2010.de-en.de
-        IWSLT16.TED.tst2010.de-en.en
-        IWSLT16.TED.tst2010.en-ar.ar
-        IWSLT16.TED.tst2010.en-ar.en
-        IWSLT16.TED.tst2010.en-cs.cs
-        IWSLT16.TED.tst2010.en-cs.en
-        IWSLT16.TED.tst2010.en-de.de
-        IWSLT16.TED.tst2010.en-de.en
-        IWSLT16.TED.tst2010.en-fr.en
-        IWSLT16.TED.tst2010.en-fr.fr
-        IWSLT16.TED.tst2010.fr-en.en
-        IWSLT16.TED.tst2010.fr-en.fr
-        IWSLT16.TED.tst2011.ar-en.ar
-        IWSLT16.TED.tst2011.ar-en.en
-        IWSLT16.TED.tst2011.cs-en.cs
-        IWSLT16.TED.tst2011.cs-en.en
-        IWSLT16.TED.tst2011.de-en.de
-        IWSLT16.TED.tst2011.de-en.en
-        IWSLT16.TED.tst2011.en-ar.ar
-        IWSLT16.TED.tst2011.en-ar.en
-        IWSLT16.TED.tst2011.en-cs.cs
-        IWSLT16.TED.tst2011.en-cs.en
-        IWSLT16.TED.tst2011.en-de.de
-        IWSLT16.TED.tst2011.en-de.en
-        IWSLT16.TED.tst2011.en-fr.en
-        IWSLT16.TED.tst2011.en-fr.fr
-        IWSLT16.TED.tst2011.fr-en.en
-        IWSLT16.TED.tst2011.fr-en.fr
-        IWSLT16.TED.tst2012.ar-en.ar
-        IWSLT16.TED.tst2012.ar-en.en
-        IWSLT16.TED.tst2012.cs-en.cs
-        IWSLT16.TED.tst2012.cs-en.en
-        IWSLT16.TED.tst2012.de-en.de
-        IWSLT16.TED.tst2012.de-en.en
-        IWSLT16.TED.tst2012.en-ar.ar
-        IWSLT16.TED.tst2012.en-ar.en
-        IWSLT16.TED.tst2012.en-cs.cs
-        IWSLT16.TED.tst2012.en-cs.en
-        IWSLT16.TED.tst2012.en-de.de
-        IWSLT16.TED.tst2012.en-de.en
-        IWSLT16.TED.tst2012.en-fr.en
-        IWSLT16.TED.tst2012.en-fr.fr
-        IWSLT16.TED.tst2012.fr-en.en
-        IWSLT16.TED.tst2012.fr-en.fr
-        IWSLT16.TED.tst2013.ar-en.ar
-        IWSLT16.TED.tst2013.ar-en.en
-        IWSLT16.TED.tst2013.cs-en.cs
-        IWSLT16.TED.tst2013.cs-en.en
-        IWSLT16.TED.tst2013.de-en.de
-        IWSLT16.TED.tst2013.de-en.en
-        IWSLT16.TED.tst2013.en-ar.ar
-        IWSLT16.TED.tst2013.en-ar.en
-        IWSLT16.TED.tst2013.en-cs.cs
-        IWSLT16.TED.tst2013.en-cs.en
-        IWSLT16.TED.tst2013.en-de.de
-        IWSLT16.TED.tst2013.en-de.en
-        IWSLT16.TED.tst2013.en-fr.en
-        IWSLT16.TED.tst2013.en-fr.fr
-        IWSLT16.TED.tst2013.fr-en.en
-        IWSLT16.TED.tst2013.fr-en.fr
-        IWSLT16.TED.tst2014.ar-en.ar
-        IWSLT16.TED.tst2014.ar-en.en
-        IWSLT16.TED.tst2014.de-en.de
-        IWSLT16.TED.tst2014.de-en.en
-        IWSLT16.TED.tst2014.en-ar.ar
-        IWSLT16.TED.tst2014.en-ar.en
-        IWSLT16.TED.tst2014.en-de.de
-        IWSLT16.TED.tst2014.en-de.en
-        IWSLT16.TED.tst2014.en-fr.en
-        IWSLT16.TED.tst2014.en-fr.fr
-        IWSLT16.TED.tst2014.fr-en.en
-        IWSLT16.TED.tst2014.fr-en.fr
-        IWSLT16.TEDX.dev2012.de-en.de
-        IWSLT16.TEDX.dev2012.de-en.en
-        IWSLT16.TEDX.tst2013.de-en.de
-        IWSLT16.TEDX.tst2013.de-en.en
-        IWSLT16.TEDX.tst2014.de-en.de
-        IWSLT16.TEDX.tst2014.de-en.en
-        train.ar
-        train.ar-en.ar
-        train.ar-en.en
-        train.cs
-        train.cs-en.cs
-        train.cs-en.en
-        train.de
-        train.de-en.de
-        train.de-en.en
-        train.en
-        train.en-ar.ar
-        train.en-ar.en
-        train.en-cs.cs
-        train.en-cs.en
-        train.en-de.de
-        train.en-de.en
-        train.en-fr.en
-        train.en-fr.fr
-        train.fr
-        train.fr-en.en
-        train.fr-en.fr
-        train.tags.ar-en.ar
-        train.tags.ar-en.en
-        train.tags.cs-en.cs
-        train.tags.cs-en.en
-        train.tags.de-en.de
-        train.tags.de-en.en
-        train.tags.en-ar.ar
-        train.tags.en-ar.en
-        train.tags.en-cs.cs
-        train.tags.en-cs.en
-        train.tags.en-de.de
-        train.tags.en-de.en
-        train.tags.en-fr.en
-        train.tags.en-fr.fr
-        train.tags.fr-en.en
-        train.tags.fr-en.fr
+def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0, src_language='de', tgt_language='en', IWSLT_year=2016, valid_set='dev2010', test_set='tst2010'):
+    """TODO
     """
-    if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
-            and not isinstance(test_filenames, tuple):
-        raise ValueError("All filenames must be tuples")
+
+    if IWSLT_year not in SUPPORTED_DATASETS.keys():
+        raise ValueError("IWSLT_year {} is not valid. Supported years are {}".format(IWSLT_year, list(SUPPORTED_DATASETS.keys())))
+
+    if src_language not in SUPPORTED_DATASETS[IWSLT_year]['language_pair'].keys():
+        raise ValueError("src_language '{}' is not valid for ISWLT_year {}. Supported source languages are {}".format(src_language, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['language_pair'].keys()))
+
+    if tgt_language not in SUPPORTED_DATASETS[IWSLT_year]['language_pair'][src_language]:
+        raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".format(tgt_language, src_language, SUPPORTED_DATASETS[IWSLT_year]['language_pair'][src_language]))
+
+    if valid_set not in SUPPORTED_DATASETS[IWSLT_year]['valid_test']:
+        raise ValueError("valid_set '{}' is not valid for give ISWLT_year {}. Supported validation sets are {}".format(valid_set, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['valid_test']))
+
+    if test_set not in SUPPORTED_DATASETS[IWSLT_year]['valid_test']:
+        raise ValueError("test_set '{}' is not valid for give ISWLT_year {}. Supported test sets are {}".format(valid_set, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['valid_test']))
+
+    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], test_set, src_language, tgt_language, tgt_language)
+
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
-
     extracted_files = []  # list of paths to the extracted files
-    dataset_tar = download_from_url(URL, root=root, hash_value=MD5,
-                                    path=os.path.join(root, _PATH), hash_type='md5')
+    dataset_tar = download_from_url(SUPPORTED_DATASETS[IWSLT_year]['URL'], root=root, hash_value=SUPPORTED_DATASETS[IWSLT_year]['MD5'], path=os.path.join(root, SUPPORTED_DATASETS[IWSLT_year]['_PATH']), hash_type='md5')
     extracted_dataset_tar = extract_archive(dataset_tar)
     # IWSLT dataset's url downloads a multilingual tgz.
     # We need to take an extra step to pick out the specific language pair from it.
     src_language = train_filenames[0].split(".")[-1]
     tgt_language = train_filenames[1].split(".")[-1]
     languages = "-".join([src_language, tgt_language])
-    iwslt_tar = '.data/2016-01/texts/{}/{}/{}.tgz'
-    iwslt_tar = iwslt_tar.format(
-        src_language, tgt_language, languages)
+    # For Year 2017 everything is put in the same folder
+    if IWSLT_year == 2017:
+        iwslt_tar = os.path.join(root, SUPPORTED_DATASETS[IWSLT_year]['_PATH'].split(".")[0], 'texts/DeEnItNlRo/DeEnItNlRo', 'DeEnItNlRo-DeEnItNlRo.tgz')
+    else:
+        iwslt_tar = '{}/{}/texts/{}/{}/{}.tgz'
+        iwslt_tar = iwslt_tar.format(
+            root, SUPPORTED_DATASETS[IWSLT_year]['_PATH'].split(".")[0], src_language, tgt_language, languages)
     extracted_dataset_tar = extract_archive(iwslt_tar)
     extracted_files.extend(extracted_dataset_tar)
 
