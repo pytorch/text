@@ -7,8 +7,11 @@ from .dbpedia import DBpedia
 from .enwik9 import EnWik9
 from .imdb import IMDB
 from .iwslt import IWSLT
+from .matchedmultinli import MatchedMultiNLI
+from .mismatchedmultinli import MismatchedMultiNLI
 from .multi30k import Multi30k
 from .penntreebank import PennTreebank
+from .snli import SNLI
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
 from .squad2 import SQuAD2
@@ -30,8 +33,11 @@ DATASETS = {
     'EnWik9': EnWik9,
     'IMDB': IMDB,
     'IWSLT': IWSLT,
+    'MatchedMultiNLI': MatchedMultiNLI,
+    'MismatchedMultiNLI': MismatchedMultiNLI,
     'Multi30k': Multi30k,
     'PennTreebank': PennTreebank,
+    'SNLI': SNLI,
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2,
     'SogouNews': SogouNews,
