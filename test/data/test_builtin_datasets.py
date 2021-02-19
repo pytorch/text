@@ -298,8 +298,6 @@ class TestDataset(TorchtextTestCase):
                                        'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
                                       ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s",
                                        'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
-        datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
-        conditional_remove(datafile)
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k
