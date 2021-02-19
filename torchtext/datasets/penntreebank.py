@@ -1,8 +1,8 @@
 import logging
 from torchtext.utils import download_from_url
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 import io
 
 URL = {
@@ -26,7 +26,7 @@ NUM_LINES = {
 
 @wrap_split_argument
 @add_docstring_header()
-def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
+def PennTreebank(root='.data', split=('train', 'valid', 'test')):
     datasets = []
     for item in split:
         path = download_from_url(URL[item],
@@ -35,6 +35,5 @@ def PennTreebank(root='.data', split=('train', 'valid', 'test'), offset=0):
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset('PennTreebank',
                                                NUM_LINES[item],
-                                               iter(io.open(path, encoding="utf8")),
-                                               offset=offset))
+                                               iter(io.open(path, encoding="utf8"))))
     return datasets

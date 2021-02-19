@@ -1,8 +1,8 @@
 import logging
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 import io
 
 URL = 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
@@ -37,4 +37,4 @@ def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split[0]))
     return [RawTextIterableDataset('WMTNewsCrawl',
-                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")), offset=offset)]
+                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")))]

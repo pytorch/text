@@ -1,8 +1,8 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
-from torchtext.datasets.common import find_match
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import find_match
 
 URL = {
     'train': "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
@@ -40,12 +40,12 @@ def _create_data_from_iob(data_path, separator):
 
 @wrap_split_argument
 @add_docstring_header()
-def CoNLL2000Chunking(root='.data', split=('train', 'test'), offset=0):
+def CoNLL2000Chunking(root='.data', split=('train', 'test')):
     datasets = []
     for item in split:
         dataset_tar = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')
         extracted_files = extract_archive(dataset_tar)
         data_filename = find_match(item + ".txt", extracted_files)
         datasets.append(RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[item],
-                                               _create_data_from_iob(data_filename, " "), offset=offset))
+                                               _create_data_from_iob(data_filename, " ")))
     return datasets

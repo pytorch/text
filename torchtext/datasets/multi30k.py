@@ -1,9 +1,9 @@
 import io
 import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 
 _URL_BASE_ = 'https://raw.githubusercontent.com/multi30k/dataset/master/data/task'
 
@@ -171,6 +171,6 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
                 yield item
 
         datasets.append(
-            RawTextIterableDataset("Multi30k", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter), offset=offset))
+            RawTextIterableDataset("Multi30k", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter)))
 
     return datasets

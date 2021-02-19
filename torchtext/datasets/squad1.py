@@ -1,8 +1,8 @@
 from torchtext.utils import download_from_url
 import json
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 
 URL = {
     'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json",
@@ -38,10 +38,10 @@ def _create_data_from_json(data_path):
 
 @wrap_split_argument
 @add_docstring_header()
-def SQuAD1(root='.data', split=('train', 'dev'), offset=0):
+def SQuAD1(root='.data', split=('train', 'dev')):
     datasets = []
     for item in split:
         extracted_files = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')
         datasets.append(RawTextIterableDataset('SQuAD1', NUM_LINES[item],
-                                               _create_data_from_json(extracted_files), offset=offset))
+                                               _create_data_from_json(extracted_files)))
     return datasets

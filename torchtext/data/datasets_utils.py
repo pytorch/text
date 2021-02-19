@@ -44,12 +44,11 @@ def dataset_docstring_header(fn):
     """
     Returns docstring for a dataset based on function arguments.
 
-    Assumes function signature of form (root='.data', split=<some tuple of strings>, offset=0, **kwargs)
+    Assumes function signature of form (root='.data', split=<some tuple of strings>, **kwargs)
     """
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
-            argspec.args[1] == "split" and
-            argspec.args[2] == "offset"):
+            argspec.args[1] == "split"):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
     default_split = argspec.defaults[1]
 
@@ -68,8 +67,6 @@ def dataset_docstring_header(fn):
                 By default, all three datasets are generated. Users
                 could also choose any subset of them, for example {} or just 'train'.
                 Default: {}
-            offset: the number of the starting line.
-                Default: 0
         """.format(fn.__name__, "/".join(default_split), str(example_subset), str(default_split))
 
     if isinstance(default_split, str):
@@ -81,9 +78,7 @@ def dataset_docstring_header(fn):
             root: Directory where the datasets are saved.
                 Default: ".data"
             split: Only {default_split} is available.
-                Default: {default_split}
-            offset: the number of the starting line.
-                Default: 0""".format(fn.__name__, default_split=default_split)
+                Default: {default_split}""".format(fn.__name__, default_split=default_split)
 
     raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
 
@@ -116,9 +111,7 @@ def wrap_split_argument(fn):
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
-            argspec.args[2] == "offset" and
             argspec.defaults[0] == ".data" and
-            argspec.defaults[2] == 0 and
             argspec.varargs is None and
             argspec.varkw is None and
             len(argspec.kwonlyargs) == 0 and
@@ -133,16 +126,15 @@ def wrap_split_argument(fn):
     # keyword arguments with default values only, so only  a dictionary of default
     # values is needed to support that behavior for new_fn as well.
     fn_kwargs_dict = {}
-    for arg, default in zip(argspec.args[3:], argspec.defaults[3:]):
+    for arg, default in zip(argspec.args[2:], argspec.defaults[2:]):
         fn_kwargs_dict[arg] = default
 
     @functools.wraps(fn)
-    def new_fn(root='.data', split=argspec.defaults[1], offset=0, **kwargs):
+    def new_fn(root='.data', split=argspec.defaults[1], **kwargs):
         for arg in fn_kwargs_dict:
             if arg not in kwargs:
                 kwargs[arg] = fn_kwargs_dict[arg]
         kwargs["root"] = root
-        kwargs["offset"] = offset
         kwargs["split"] = check_default_set(split, argspec.defaults[1], fn.__name__)
         result = fn(**kwargs)
         return wrap_datasets(tuple(result), split)
@@ -154,32 +146,28 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
 
-    def __init__(self, name, full_num_lines, iterator, offset=0):
+    def __init__(self, name, full_num_lines, iterator):
         """Initiate text-classification dataset.
         """
         super(RawTextIterableDataset, self).__init__()
         self.name = name
         self.full_num_lines = full_num_lines
         self._iterator = iterator
-        self.start = offset
-        if offset < 0:
-            raise ValueError("Given offset must be non-negative, got {} instead.".format(offset))
-        self.num_lines = full_num_lines - offset
+        self.num_lines = full_num_lines
+        self.current_pos = None
 
     def __iter__(self):
-        for i, item in enumerate(self._iterator):
-            if i < self.start:
-                continue
-            if self.num_lines and i >= (self.start + self.num_lines):
-                break
-            yield item
+        return self
 
     def __next__(self):
+        if self.current_pos == self.num_lines - 1:
+            raise StopIteration
         item = next(self._iterator)
+        if self.current_pos is None:
+            self.current_pos = 0
+        else:
+            self.current_pos += 1
         return item
 
     def __len__(self):
         return self.num_lines
-
-    def get_iterator(self):
-        return self._iterator

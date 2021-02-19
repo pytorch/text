@@ -1,8 +1,8 @@
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
-from torchtext.datasets.common import find_match
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import find_match
 import os
 import io
 import logging
@@ -21,7 +21,7 @@ _PATH = 'amazon_review_full_csv.tar.gz'
 
 @wrap_split_argument
 @add_docstring_header()
-def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
+def AmazonReviewFull(root='.data', split=('train', 'test')):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
@@ -37,5 +37,5 @@ def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
         path = find_match(item + '.csv', extracted_files)
         logging.info('Creating {} data'.format(item))
         datasets.append(RawTextIterableDataset("AmazonReviewFull", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
+                                               _create_data_from_csv(path)))
     return datasets
