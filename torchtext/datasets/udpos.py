@@ -35,7 +35,7 @@ def _create_data_from_iob(data_path, separator="\t"):
 
 @wrap_split_argument
 @add_docstring_header()
-def UDPOS(root='.data', split=('train', 'valid', 'test'), offset=0):
+def UDPOS(root='.data', split=('train', 'valid', 'test')):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     datasets = []

@@ -18,7 +18,7 @@ _PATH = 'aclImdb_v1.tar.gz'
 
 @wrap_split_argument
 @add_docstring_header()
-def IMDB(root='.data', split=('train', 'test'), offset=0):
+def IMDB(root='.data', split=('train', 'test')):
     def generate_imdb_data(key, extracted_files):
         for fname in extracted_files:
             if 'urls' in fname:

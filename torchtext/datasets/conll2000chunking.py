@@ -40,7 +40,7 @@ def _create_data_from_iob(data_path, separator):
 
 @wrap_split_argument
 @add_docstring_header()
-def CoNLL2000Chunking(root='.data', split=('train', 'test'), offset=0):
+def CoNLL2000Chunking(root='.data', split=('train', 'test')):
     datasets = []
     for item in split:
         dataset_tar = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')

@@ -19,7 +19,7 @@ NUM_LINES = {
 
 @wrap_split_argument
 @add_docstring_header()
-def WikiText2(root='.data', split=('train', 'valid', 'test'), offset=0):
+def WikiText2(root='.data', split=('train', 'valid', 'test')):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     datasets = []

@@ -21,7 +21,7 @@ _PATH = 'amazon_review_full_csv.tar.gz'
 
 @wrap_split_argument
 @add_docstring_header()
-def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
+def AmazonReviewFull(root='.data', split=('train', 'test')):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)

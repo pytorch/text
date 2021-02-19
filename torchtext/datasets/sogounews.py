@@ -20,7 +20,7 @@ _PATH = 'sogou_news_csv.tar.gz'
 
 @wrap_split_argument
 @add_docstring_header()
-def SogouNews(root='.data', split=('train', 'test'), offset=0):
+def SogouNews(root='.data', split=('train', 'test')):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
