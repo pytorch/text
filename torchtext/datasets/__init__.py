@@ -12,6 +12,7 @@ from .penntreebank import PennTreebank
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
 from .squad2 import SQuAD2
+from .trec import Trec
 from .udpos import UDPOS
 from .wikitext103 import WikiText103
 from .wikitext2 import WikiText2
@@ -35,6 +36,7 @@ DATASETS = {
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2,
     'SogouNews': SogouNews,
+    'Trec': Trec,
     'UDPOS': UDPOS,
     'WMT14': WMT14,
     'WMTNewsCrawl': WMTNewsCrawl,
