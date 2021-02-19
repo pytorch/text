@@ -7,11 +7,40 @@ from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 
-URL = 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
 
-_PATH = '2016-01.tgz'
+SUPPORTED_DATASETS = {
+    2016: {
+        'URL': 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8',
+        '_PATH': '2016-01.tgz',
+        'MD5': 'c393ed3fc2a1b0f004b3331043f615ae',
+        'valid_test': ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014'],
+        'language_pair': {
+            'en': ['ar', 'de', 'fr', 'cs'],
+            'ar': ['en'],
+            'fr': ['en'],
+            'de': ['en'],
+            'cs': ['en'],
+        },
+        'year': 16,
+    },
+    2017: {
+        'URL': 'https://drive.google.com/u/0/uc?id=12ycYSzLIG253AFN35Y6qoyf9wtkOjakp',
+        '_PATH': '2017-01-trnmted.tgz',
+        'MD5': 'aca701032b1c4411afc4d9fa367796ba',
+        'valid_test': ['dev2010', 'tst2010'],
+        'language_pair': {
+            'en': ['nl', 'de', 'it', 'ro'],
+            'ro': ['de', 'en', 'nl', 'it'],
+            'de': ['ro', 'en', 'nl', 'it'],
+            'it': ['en', 'nl', 'de', 'ro'],
+            'nl': ['de', 'en', 'it', 'ro'],
+        },
+        'year': 17,
+    }
+}
 
-MD5 = 'c393ed3fc2a1b0f004b3331043f615ae'
+URL = [v['URL'] for v in SUPPORTED_DATASETS.values()]
+MD5 = [v['MD5'] for v in SUPPORTED_DATASETS.values()]
 
 NUM_LINES = {
     'train': 196884,
@@ -220,19 +249,32 @@ def IWSLT(root, split,
         train.tags.fr-en.en
         train.tags.fr-en.fr
     """
-    if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
-            and not isinstance(test_filenames, tuple):
-        raise ValueError("All filenames must be tuples")
+
+    if IWSLT_year not in SUPPORTED_DATASETS.keys():
+        raise ValueError("IWSLT_year {} is not valid. Supported years are {}".format(IWSLT_year, list(SUPPORTED_DATASETS.keys())))
+
+    if src_language not in SUPPORTED_DATASETS[IWSLT_year]['language_pair'].keys():
+        raise ValueError("src_language '{}' is not valid for ISWLT_year {}. Supported source languages are {}".format(src_language, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['language_pair'].keys()))
+
+    if tgt_language not in SUPPORTED_DATASETS[IWSLT_year]['language_pair'][src_language]:
+        raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".format(tgt_language, src_language, SUPPORTED_DATASETS[IWSLT_year]['language_pair'][src_language]))
+
+    if valid_set not in SUPPORTED_DATASETS[IWSLT_year]['valid_test']:
+        raise ValueError("valid_set '{}' is not valid for give ISWLT_year {}. Supported validation sets are {}".format(valid_set, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['valid_test']))
+
+    if test_set not in SUPPORTED_DATASETS[IWSLT_year]['valid_test']:
+        raise ValueError("test_set '{}' is not valid for give ISWLT_year {}. Supported test sets are {}".format(valid_set, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['valid_test']))
+
+    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], test_set, src_language, tgt_language, tgt_language)
+
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
-
     extracted_files = []  # list of paths to the extracted files
-    dataset_tar = download_from_url(URL, root=root, hash_value=MD5,
-                                    path=os.path.join(root, _PATH), hash_type='md5')
+    dataset_tar = download_from_url(SUPPORTED_DATASETS[IWSLT_year]['URL'], root=root, hash_value=SUPPORTED_DATASETS[IWSLT_year]['MD5'], path=os.path.join(root, SUPPORTED_DATASETS[IWSLT_year]['_PATH']), hash_type='md5')
     extracted_dataset_tar = extract_archive(dataset_tar)
     # IWSLT dataset's url downloads a multilingual tgz.
     # We need to take an extra step to pick out the specific language pair from it.
