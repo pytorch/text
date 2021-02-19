@@ -35,7 +35,7 @@ def find_match(match, lst):
     contains the given string match.
     """
     for element in lst:
-        if match in element:
+        if element.find(match) != -1:
             return element
     return None
 
