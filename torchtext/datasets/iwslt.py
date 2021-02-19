@@ -99,35 +99,42 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 @wrap_split_argument
 @add_docstring_header()
-def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0, src_language='de', tgt_language='en', IWSLT_year=2016, valid_set='dev2010', test_set='tst2010'):
+def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en'), year=2016, valid_set='dev2010', test_set='tst2010'):
     """TODO
     """
 
-    if IWSLT_year not in SUPPORTED_DATASETS.keys():
-        raise ValueError("IWSLT_year {} is not valid. Supported years are {}".format(IWSLT_year, list(SUPPORTED_DATASETS.keys())))
+    if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
+        raise ValueError("language_pair must be list or tuple")
 
-    if src_language not in SUPPORTED_DATASETS[IWSLT_year]['language_pair'].keys():
-        raise ValueError("src_language '{}' is not valid for ISWLT_year {}. Supported source languages are {}".format(src_language, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['language_pair'].keys()))
+    assert (len(language_pair) == 2), 'language_pair must contain only 2 elements'
 
-    if tgt_language not in SUPPORTED_DATASETS[IWSLT_year]['language_pair'][src_language]:
-        raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".format(tgt_language, src_language, SUPPORTED_DATASETS[IWSLT_year]['language_pair'][src_language]))
+    src_language, tgt_language = language_pair[0], language_pair[1]
 
-    if valid_set not in SUPPORTED_DATASETS[IWSLT_year]['valid_test']:
-        raise ValueError("valid_set '{}' is not valid for give ISWLT_year {}. Supported validation sets are {}".format(valid_set, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['valid_test']))
+    if year not in SUPPORTED_DATASETS.keys():
+        raise ValueError("year {} is not valid. Supported years are {}".format(year, list(SUPPORTED_DATASETS.keys())))
 
-    if test_set not in SUPPORTED_DATASETS[IWSLT_year]['valid_test']:
-        raise ValueError("test_set '{}' is not valid for give ISWLT_year {}. Supported test sets are {}".format(valid_set, IWSLT_year, SUPPORTED_DATASETS[IWSLT_year]['valid_test']))
+    if src_language not in SUPPORTED_DATASETS[year]['language_pair'].keys():
+        raise ValueError("src_language '{}' is not valid for ISWLT_year {}. Supported source languages are {}".format(src_language, year, SUPPORTED_DATASETS[year]['language_pair'].keys()))
+
+    if tgt_language not in SUPPORTED_DATASETS[year]['language_pair'][src_language]:
+        raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".format(tgt_language, src_language, SUPPORTED_DATASETS[year]['language_pair'][src_language]))
+
+    if valid_set not in SUPPORTED_DATASETS[year]['valid_test']:
+        raise ValueError("valid_set '{}' is not valid for give ISWLT_year {}. Supported validation sets are {}".format(valid_set, year, SUPPORTED_DATASETS[year]['valid_test']))
+
+    if test_set not in SUPPORTED_DATASETS[year]['valid_test']:
+        raise ValueError("test_set '{}' is not valid for give ISWLT_year {}. Supported test sets are {}".format(valid_set, year, SUPPORTED_DATASETS[year]['valid_test']))
 
     train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], valid_set, src_language, tgt_language, tgt_language)
-    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[IWSLT_year]['year'], test_set, src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[year]['year'], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[year]['year'], valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[year]['year'], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS[year]['year'], test_set, src_language, tgt_language, tgt_language)
 
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
     extracted_files = []  # list of paths to the extracted files
-    dataset_tar = download_from_url(SUPPORTED_DATASETS[IWSLT_year]['URL'], root=root, hash_value=SUPPORTED_DATASETS[IWSLT_year]['MD5'], path=os.path.join(root, SUPPORTED_DATASETS[IWSLT_year]['_PATH']), hash_type='md5')
+    dataset_tar = download_from_url(SUPPORTED_DATASETS[year]['URL'], root=root, hash_value=SUPPORTED_DATASETS[year]['MD5'], path=os.path.join(root, SUPPORTED_DATASETS[year]['_PATH']), hash_type='md5')
     extracted_dataset_tar = extract_archive(dataset_tar)
     # IWSLT dataset's url downloads a multilingual tgz.
     # We need to take an extra step to pick out the specific language pair from it.
@@ -135,12 +142,12 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0, src_language
     tgt_language = train_filenames[1].split(".")[-1]
     languages = "-".join([src_language, tgt_language])
     # For Year 2017 everything is put in the same folder
-    if IWSLT_year == 2017:
-        iwslt_tar = os.path.join(root, SUPPORTED_DATASETS[IWSLT_year]['_PATH'].split(".")[0], 'texts/DeEnItNlRo/DeEnItNlRo', 'DeEnItNlRo-DeEnItNlRo.tgz')
+    if year == 2017:
+        iwslt_tar = os.path.join(root, SUPPORTED_DATASETS[year]['_PATH'].split(".")[0], 'texts/DeEnItNlRo/DeEnItNlRo', 'DeEnItNlRo-DeEnItNlRo.tgz')
     else:
         iwslt_tar = '{}/{}/texts/{}/{}/{}.tgz'
         iwslt_tar = iwslt_tar.format(
-            root, SUPPORTED_DATASETS[IWSLT_year]['_PATH'].split(".")[0], src_language, tgt_language, languages)
+            root, SUPPORTED_DATASETS[year]['_PATH'].split(".")[0], src_language, tgt_language, languages)
     extracted_dataset_tar = extract_archive(iwslt_tar)
     extracted_files.extend(extracted_dataset_tar)
 
@@ -169,6 +176,8 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0, src_language
 
     datasets = []
     for key in split:
+        assert (data_filenames[key][0] is not None), 'Internal Error: {} file not found'.format(key)
+        assert (data_filenames[key][1] is not None), 'Internal Error: {} file not found'.format(key)
         src_data_iter = _read_text_iterator(data_filenames[key][0])
         tgt_data_iter = _read_text_iterator(data_filenames[key][1])
 

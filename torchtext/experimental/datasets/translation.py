@@ -43,15 +43,14 @@ def _setup_datasets(dataset_name,
         valid_set = valid_filenames[0].split(".")[2]
         test_set = test_filenames[0].split(".")[2]
         if '16' in valid_filenames[0].split(".")[0]:
-            IWSLT_year = 2016
+            year = 2016
         else:
-            IWSLT_year = 2017
+            year = 2017
 
         raw_datasets = raw.DATASETS[dataset_name](root=root,
                                                   split=split,
-                                                  IWSLT_year=IWSLT_year,
-                                                  src_language=src_language,
-                                                  tgt_language=tgt_language,
+                                                  year=year,
+                                                  language_pair=(src_language, tgt_language),
                                                   valid_set=valid_set,
                                                   test_set=test_set)
     else:
@@ -251,9 +250,8 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            split, root, vocab, tokenizer)
 
 
-def IWSLT(src_language='de',
-          tgt_language='en',
-          IWSLT_year=2016,
+def IWSLT(language_pair=('de', 'en'),
+          year=2016,
           valid_set='tst2013',
           test_set='tst2014',
           split=('train', 'valid', 'test'),
@@ -294,10 +292,18 @@ def IWSLT(src_language='de',
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-    year = {2016: 16, 2017: 17}
+    year_mapping = {2016: 16, 2017: 17}
+
+    if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
+        raise ValueError("language_pair must be list or tuple")
+
+    assert (len(language_pair) == 2), 'language_pair must contain only 2 elements'
+
+    src_language, tgt_language = language_pair[0], language_pair[1]
+
     train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], valid_set, src_language, tgt_language, tgt_language)
-    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year[IWSLT_year], test_set, src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], test_set, src_language, tgt_language, tgt_language)
 
     return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames,
                            split, root, vocab, tokenizer)
