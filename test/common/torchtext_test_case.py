@@ -108,7 +108,7 @@ class TorchtextTestCase(TestCase):
 
         texts = [str(i) for i in range(num_examples)]
         labels = list(range(num_labels)) * num_repetitions
-        labels = [str(l) for l in labels[:num_examples]]
+        labels = [str(line) for line in labels[:num_examples]]
 
         dict_dataset = [
             {'text': t, 'label': l} for t, l in zip(texts, labels)
