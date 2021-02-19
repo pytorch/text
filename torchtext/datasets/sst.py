@@ -5,7 +5,12 @@ from torchtext.datasets.common import add_docstring_header
 from torchtext.datasets.common import find_match
 import os
 import io
-from nltk.tree import Tree
+try:
+    from nltk.tree import Tree
+except ImportError:
+    print("Please install NLTK. "
+          "See the docs at https://nltk.org  for more information.")
+
 
 URL = 'http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip'
 
