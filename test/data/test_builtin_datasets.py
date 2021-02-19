@@ -267,6 +267,8 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
+    # [TODO] Google drive link exceeds quota limit
+    @unittest.skip()
     def test_iwslt(self):
         from torchtext.experimental.datasets import IWSLT
 
