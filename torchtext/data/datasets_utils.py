@@ -154,7 +154,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         self.full_num_lines = full_num_lines
         self._iterator = iterator
         self.num_lines = full_num_lines
-        self.current_pos = 0
+        self.current_pos = None
 
     def __iter__(self):
         return self
@@ -163,7 +163,10 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
         if self.current_pos == self.num_lines - 1:
             raise StopIteration
         item = next(self._iterator)
-        self.current_pos += 1
+        if self.current_pos is None:
+            self.current_pos = 0
+        else:
+            self.current_pos += 1
         return item
 
     def __len__(self):
