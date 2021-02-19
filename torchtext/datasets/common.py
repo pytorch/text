@@ -1,6 +1,7 @@
 import torch
 import inspect
 import functools
+from re import search
 
 
 def check_default_set(split, target_select, dataset_name):
@@ -35,7 +36,7 @@ def find_match(match, lst):
     contains the given string match.
     """
     for element in lst:
-        if element.find(match) != -1:
+        if search(match, element):
             return element
     return None
 
