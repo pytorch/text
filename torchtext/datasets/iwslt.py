@@ -3,9 +3,9 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 
 URL = 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
 
@@ -43,13 +43,13 @@ def _clean_tags_file(f_orig):
     f_txt = f_orig.replace('.tags', '')
     with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
             io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for l in fd_orig:
-            if not any(tag in l for tag in xml_tags):
+        for line in fd_orig:
+            if not any(tag in line for tag in xml_tags):
                 # TODO: Fix utf-8 next line mark
                 #                fd_txt.write(l.strip() + '\n')
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
-                fd_txt.write(l.strip() + '\n')
+                fd_txt.write(line.strip() + '\n')
 
 
 def _construct_filenames(filename, languages):
@@ -82,10 +82,6 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
                 Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
             test_filenames: the source and target filenames for test.
                 Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
-
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import IWSLT
-        >>> train_dataset, valid_dataset, test_dataset = IWSLT()
 
     The available datasets include:
         IWSLT16.TED.dev2010.ar-en.ar

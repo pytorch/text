@@ -3,7 +3,7 @@ import argparse
 from torchtext.experimental.transforms import load_sp_model as load_pybind_sp_model
 from torchtext.data.functional import load_sp_model as load_torchbind_sp_model
 from torchtext.utils import download_from_url
-from torchtext.experimental.datasets.raw import text_classification as raw
+from torchtext.datasets import text_classification as raw
 
 
 def benchmark_sentencepiece(args):

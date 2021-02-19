@@ -1,8 +1,8 @@
 import torch
 import logging
-from torchtext.experimental.datasets.raw.common import check_default_set
-from torchtext.experimental.datasets.raw.common import wrap_datasets
-from torchtext.experimental.datasets import raw
+from torchtext.datasets.common import check_default_set
+from torchtext.datasets.common import wrap_datasets
+from torchtext import datasets as raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms

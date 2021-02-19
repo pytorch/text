@@ -1,7 +1,8 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
+from torchtext.datasets.common import find_match
 
 URL = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
 
@@ -32,26 +33,17 @@ def _create_data_from_iob(data_path, separator="\t"):
             yield columns
 
 
-def _construct_filepath(paths, file_suffix):
-    if file_suffix:
-        path = None
-        for p in paths:
-            path = p if p.endswith(file_suffix) else path
-        return path
-    return None
-
-
 @wrap_split_argument
 @add_docstring_header()
 def UDPOS(root='.data', split=('train', 'valid', 'test'), offset=0):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-
-    data_filenames = {
-        "train": _construct_filepath(extracted_files, "train.txt"),
-        "valid": _construct_filepath(extracted_files, "dev.txt"),
-        "test": _construct_filepath(extracted_files, "test.txt")
-    }
-    return [RawTextIterableDataset("UDPOS", NUM_LINES[item],
-                                   _create_data_from_iob(data_filenames[item]), offset=offset)
-            if data_filenames[item] is not None else None for item in split]
+    datasets = []
+    for item in split:
+        if item == 'valid':
+            path = find_match("dev.txt", extracted_files)
+        else:
+            path = find_match(item + ".txt", extracted_files)
+        datasets.append(RawTextIterableDataset("UDPOS", NUM_LINES[item],
+                                               _create_data_from_iob(path), offset=offset))
+    return datasets

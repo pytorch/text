@@ -3,9 +3,9 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.datasets.common import RawTextIterableDataset
+from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 
@@ -43,13 +43,13 @@ def _clean_tags_file(f_orig):
     f_txt = f_orig.replace('.tags', '')
     with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
             io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for l in fd_orig:
-            if not any(tag in l for tag in xml_tags):
+        for line in fd_orig:
+            if not any(tag in line for tag in xml_tags):
                 # TODO: Fix utf-8 next line mark
                 #                fd_txt.write(l.strip() + '\n')
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
-                fd_txt.write(l.strip() + '\n')
+                fd_txt.write(line.strip() + '\n')
 
 
 def _construct_filenames(filename, languages):
@@ -83,10 +83,6 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
                 Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
             test_filenames: the source and target filenames for test.
                 Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
-
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import WMT14
-        >>> train_dataset, valid_dataset, test_dataset = WMT14()
 
     The available datasets include:
         newstest2016.en
