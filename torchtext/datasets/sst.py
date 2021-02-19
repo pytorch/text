@@ -8,8 +8,7 @@ import io
 try:
     from nltk.tree import Tree
 except ImportError:
-    print("Please install NLTK. "
-          "See the docs at https://nltk.org  for more information.")
+    print("Please install NLTK. See the docs at https://nltk.org for more information.")
 
 
 URL = 'http://nlp.stanford.edu/sentiment/trainDevTestTrees_PTB.zip'
