@@ -1,6 +1,10 @@
-import torch
-import inspect
 import functools
+import inspect
+import os
+import torch
+from torchtext.utils import validate_file
+from torchtext.utils import download_from_url
+from torchtext.utils import extract_archive
 
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
@@ -146,6 +150,22 @@ def wrap_split_argument(splits):
     def new_fn(fn):
         return _wrap_split_argument(fn, splits)
     return new_fn
+
+
+def download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
+                              hash_type="sha256"):
+    path = os.path.join(root, extracted_file)
+    if os.path.exists(path):
+        with open(os.path.join(root, extracted_file), 'rb') as f:
+            if validate_file(f, extracted_file_md5, hash_type):
+                return path
+
+    dataset_tar = download_from_url(url, root=root,
+                                    path=os.path.join(root, downloaded_file),
+                                    hash_value=url_md5, hash_type=hash_type)
+    extracted_files = extract_archive(dataset_tar)
+    assert path == find_match(extracted_file, extracted_files)
+    return path
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
