@@ -18,7 +18,7 @@ NUM_LINES = {
 _PATH = 'sogou_news_csv.tar.gz'
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'test'))
 def SogouNews(root, split):
     def _create_data_from_csv(data_path):

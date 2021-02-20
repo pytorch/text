@@ -68,7 +68,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'valid', 'test'))
 def IWSLT(root, split,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
@@ -77,11 +77,11 @@ def IWSLT(root, split,
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en')):
     """    train_filenames: the source and target filenames for training.
-                Default: ('train.de-en.de', 'train.de-en.en')
-            valid_filenames: the source and target filenames for valid.
-                Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
-            test_filenames: the source and target filenames for test.
-                Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+        Default: ('train.de-en.de', 'train.de-en.en')
+    valid_filenames: the source and target filenames for valid.
+        Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
+    test_filenames: the source and target filenames for test.
+        Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
 
     The available datasets include:
         IWSLT16.TED.dev2010.ar-en.ar

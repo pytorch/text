@@ -18,7 +18,7 @@ NUM_LINES = {
 _PATH = 'amazon_review_polarity_csv.tar.gz'
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'test'))
 def AmazonReviewPolarity(root, split):
     def _create_data_from_csv(data_path):

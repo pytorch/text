@@ -23,7 +23,7 @@ _AVAILABLE_LANGUAGES = [
 ]
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train',))
 def WMTNewsCrawl(root, split, year=2010, language='en'):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')

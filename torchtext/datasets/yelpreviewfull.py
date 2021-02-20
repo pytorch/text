@@ -18,7 +18,7 @@ NUM_LINES = {
 _PATH = 'yelp_review_full_csv.tar.gz'
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'test'))
 def YelpReviewFull(root, split):
     def _create_data_from_csv(data_path):
