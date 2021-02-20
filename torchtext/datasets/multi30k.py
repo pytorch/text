@@ -116,19 +116,19 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 _DOCSTRING = \
     """    train_filenames: the source and target filenames for training.
-                Default: ('train.de', 'train.en')
-            valid_filenames: the source and target filenames for valid.
-                Default: ('val.de', 'val.en')
-            test_filenames: the source and target filenames for test.
-                Default: ('test2016.de', 'test2016.en')
+        Default: ('train.de', 'train.en')
+    valid_filenames: the source and target filenames for valid.
+        Default: ('val.de', 'val.en')
+    test_filenames: the source and target filenames for test.
+        Default: ('test2016.de', 'test2016.en')
 
-        The available dataset include:"""
+    The available dataset include:"""
 
 for u in URL:
-    _DOCSTRING += ("\n            " + os.path.basename(u)[:-3])
+    _DOCSTRING += ("\n        " + os.path.basename(u)[:-3])
 
 
-@add_docstring_header(_DOCSTRING)
+@add_docstring_header(_DOCSTRING, NUM_LINES)
 @wrap_split_argument(('train', 'valid', 'test'))
 def Multi30k(root, split,
              train_filenames=("train.de", "train.en"),

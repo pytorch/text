@@ -68,7 +68,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'valid', 'test'))
 def WMT14(root, split,
           train_filenames=('train.tok.clean.bpe.32000.de',

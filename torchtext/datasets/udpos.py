@@ -33,7 +33,7 @@ def _create_data_from_iob(data_path, separator="\t"):
             yield columns
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'valid', 'test'))
 def UDPOS(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
