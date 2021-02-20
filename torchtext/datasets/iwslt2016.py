@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.datasets.common import RawTextIterableDataset
 from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
 
 SUPPORTED_DATASETS = {
     'URL': 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8',
@@ -81,30 +82,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 
 @ wrap_split_argument
+@add_docstring_header()
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en'), valid_set='dev2010', test_set='tst2010'):
-    """Raw IWSLT2016 dataset
-    The available datasets include following:
-    - language pairs
-    [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
-    ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
-    - valid/test sets
-    ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
-    For additional details refer to source website below:
-    https://wit3.fbk.eu/2016-01
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all the three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
-        language_pair: tuple or list of two elements: src and tgt language
-        valid_set: a string to identify validation set. The actual filenames would be
-            'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[0])
-            and 'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[1])
-        test_set: a string to identify test set. The actual filenames would be as defined for valid_set
-
-    """
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple but got {} instead".format(type(language_pair)))
 
