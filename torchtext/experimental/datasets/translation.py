@@ -36,23 +36,24 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    if dataset_name == 'IWSLT':
-
+    if 'IWSLT' in dataset_name:
         src_language = train_filenames[0].split(".")[-1]
         tgt_language = train_filenames[1].split(".")[-1]
-        valid_set = valid_filenames[0].split(".")[2]
-        test_set = test_filenames[0].split(".")[2]
-        if '16' in valid_filenames[0].split(".")[0]:
-            year = 2016
+        if dataset_name == 'IWSLT2016':
+            valid_set = valid_filenames[0].split(".")[2]
+            test_set = test_filenames[0].split(".")[2]
+            raw_datasets = raw.DATASETS[dataset_name](root=root,
+                                                      split=split,
+                                                      language_pair=(src_language, tgt_language),
+                                                      valid_set=valid_set,
+                                                      test_set=test_set)
+        elif dataset_name == 'IWSLT2017':
+            raw_datasets = raw.DATASETS[dataset_name](root=root,
+                                                      split=split,
+                                                      language_pair=(src_language, tgt_language))
         else:
-            year = 2017
+            raise ValueError("{} is not supportd".format(dataset_name))
 
-        raw_datasets = raw.DATASETS[dataset_name](root=root,
-                                                  split=split,
-                                                  year=year,
-                                                  language_pair=(src_language, tgt_language),
-                                                  valid_set=valid_set,
-                                                  test_set=test_set)
     else:
         raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
                                                   valid_filenames=valid_filenames,
@@ -109,7 +110,8 @@ class TranslationDataset(torch.utils.data.Dataset):
 
         - Multi30k
         - WMT14
-        - IWSLT
+        - IWSLT2016
+        - IWSLT2017
     """
 
     def __init__(self, data, vocab, transforms):
@@ -250,20 +252,16 @@ def Multi30k(train_filenames=("train.de", "train.en"),
                            split, root, vocab, tokenizer)
 
 
-def IWSLT(language_pair=('de', 'en'),
-          year=2016,
-          valid_set='tst2013',
-          test_set='tst2014',
-          split=('train', 'valid', 'test'),
-          root='.data',
-          vocab=(None, None),
-          tokenizer=None):
+def IWSLT2017(language_pair=('de', 'en'),
+              split=('train', 'valid', 'test'),
+              root='.data',
+              vocab=(None, None),
+              tokenizer=None):
     """ Define translation datasets: IWSLT
     Separately returns train/valid/test datasets
-    The available datasets include:
 
     Args:
-        TODO
+        language_pair: tuple or list of two elements: src and tgt language
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -279,8 +277,15 @@ def IWSLT(language_pair=('de', 'en'),
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
             get_tokenizer("spacy", language='en_core_web_sm'))
 
-        The available datasets include:
-        TODO
+        The available datasets include following:
+        -language pairs:
+            [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
+            ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
+            ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
+            ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
+
+        For additional details refer to source website below:
+        https://wit3.fbk.eu/2017-01
 
     Examples:
         >>> from torchtext.experimental.datasets import IWSLT
@@ -292,7 +297,9 @@ def IWSLT(language_pair=('de', 'en'),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-    year_mapping = {2016: 16, 2017: 17}
+    year = 17
+    valid_set = 'dev2010'
+    test_set = 'tst2010'
 
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple")
@@ -302,10 +309,80 @@ def IWSLT(language_pair=('de', 'en'),
     src_language, tgt_language = language_pair[0], language_pair[1]
 
     train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], valid_set, src_language, tgt_language, tgt_language)
-    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year_mapping[year], test_set, src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, tgt_language)
 
-    return _setup_datasets("IWSLT", train_filenames, valid_filenames, test_filenames,
+    return _setup_datasets("IWSLT2017", train_filenames, valid_filenames, test_filenames,
+                           split, root, vocab, tokenizer)
+
+
+def IWSLT2016(language_pair=('de', 'en'),
+              valid_set='tst2013',
+              test_set='tst2014',
+              split=('train', 'valid', 'test'),
+              root='.data',
+              vocab=(None, None),
+              tokenizer=None):
+    """ Define translation datasets: IWSLT
+    Separately returns train/valid/test datasets
+
+    Args:
+        language_pair: tuple or list of two elements: src and tgt language
+        valid_set: a string to identify validation set. The actual filenames would be
+                'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[0])
+                and 'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[1])
+        test_set: a string to identify test set. The actual filenames would be as defined for valid_set
+        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
+            By default, all the three datasets (train, valid, test) are generated. Users
+            could also choose any one or two of them, for example ('train', 'test') or
+            just a string 'train'. If 'train' is not in the tuple or string, a vocab
+            object should be provided which will be used to process valid and/or test data.
+        root: Directory where the datasets are saved. Default: ".data"
+        vocab: Source and target Vocabulary objects used for dataset. If None, it
+            will generate a new vocabulary based on the train data set. It has to be
+            in a form of tuple.
+            Default: (None, None)
+        tokenizer: the tokenizer used to preprocess source and target raw text data.
+            It has to be in a form of tuple.
+            Default: (get_tokenizer("spacy", language='de_core_news_sm'),
+            get_tokenizer("spacy", language='en_core_web_sm'))
+
+        The available datasets include following:
+        - language pairs:
+            [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
+            ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
+        - valid/test sets:
+            ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
+
+        For additional details refer to source website below:
+        https://wit3.fbk.eu/2016-01
+
+
+
+    Examples:
+        >>> from torchtext.experimental.datasets import IWSLT
+        >>> from torchtext.data.utils import get_tokenizer
+        >>> src_tokenizer = get_tokenizer("spacy", language='de')
+        >>> tgt_tokenizer = get_tokenizer("basic_english")
+        >>> train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer,
+                                                                          tgt_tokenizer))
+        >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
+        >>> src_data, tgt_data = train_dataset[10]
+    """
+    year = 16
+
+    if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
+        raise ValueError("language_pair must be list or tuple")
+
+    assert (len(language_pair) == 2), 'language_pair must contain only 2 elements'
+
+    src_language, tgt_language = language_pair[0], language_pair[1]
+
+    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, tgt_language)
+    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, tgt_language)
+
+    return _setup_datasets("IWSLT2016", train_filenames, valid_filenames, test_filenames,
                            split, root, vocab, tokenizer)
 
 
@@ -411,4 +488,4 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
                            split, root, vocab, tokenizer)
 
 
-DATASETS = {'Multi30k': Multi30k, 'IWSLT': IWSLT, 'WMT14': WMT14}
+DATASETS = {'Multi30k': Multi30k, 'IWSLT2016': IWSLT2016, 'IWSLT2017': IWSLT2017, 'WMT14': WMT14}
