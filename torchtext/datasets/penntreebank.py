@@ -25,7 +25,7 @@ NUM_LINES = {
 
 
 @add_docstring_header()
-@wrap_split_argument(('train', 'test'))
+@wrap_split_argument(('train', 'valid', 'test'))
 def PennTreebank(root, split):
     path = download_from_url(URL[split],
                              root=root, hash_value=MD5[split],

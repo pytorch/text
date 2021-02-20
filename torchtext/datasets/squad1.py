@@ -37,7 +37,7 @@ def _create_data_from_json(data_path):
 
 
 @add_docstring_header()
-@wrap_split_argument(('train', 'test'))
+@wrap_split_argument(('train', 'dev'))
 def SQuAD1(root, split):
     extracted_files = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
     return RawTextIterableDataset('SQuAD1', NUM_LINES[split],

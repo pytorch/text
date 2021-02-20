@@ -60,7 +60,7 @@ def dataset_docstring_header(fn):
     if isinstance(default_split, tuple):
         example_subset = default_split[:2]
         if len(default_split) < 3:
-            example_subset = (default_split[1],)
+            example_subset = (default_split[0],)
         return """{} dataset
 
         Separately returns the {} split
@@ -119,28 +119,17 @@ def _wrap_split_argument(fn, splits):
             argspec.varargs is None and
             argspec.varkw is None and
             len(argspec.kwonlyargs) == 0 and
-            argspec.kwonlydefaults is None and
             len(argspec.annotations) == 0
             ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
-    # functools.wraps only forwards __module__, __name__, etc
-    # (see https://docs.python.org/3/library/functools.html#functools.update_wrapper)
-    # but not default values of arguments. The wrapped function fn is assumed to have
-    # keyword arguments with default values only, so only  a dictionary of default
-    # values is needed to support that behavior for new_fn as well.
-    fn_kwargs_dict = {}
-    for arg, default in zip(argspec.args[2:], argspec.defaults[2:]):
-        fn_kwargs_dict[arg] = default
-
     @functools.wraps(fn)
     def new_fn(root='.data', split=splits, **kwargs):
-        for arg in fn_kwargs_dict:
-            if arg not in kwargs:
-                kwargs[arg] = fn_kwargs_dict[arg]
-        kwargs["root"] = root
-        kwargs["split"] = check_default_set(split, splits, fn.__name__)
-        result = fn(**kwargs)
+        result = []
+        for item in check_default_set(split, splits, fn.__name__):
+            kwargs["root"] = root
+            kwargs["split"] = item
+            result.append(fn(**kwargs))
         return wrap_datasets(tuple(result), split)
 
     return new_fn

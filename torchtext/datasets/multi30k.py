@@ -129,7 +129,7 @@ for u in URL:
 
 
 @add_docstring_header(_DOCSTRING)
-@wrap_split_argument(('train', 'test'))
+@wrap_split_argument(('train', 'valid', 'test'))
 def Multi30k(root, split,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
