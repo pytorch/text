@@ -257,8 +257,17 @@ def IWSLT2017(language_pair=('de', 'en'),
               root='.data',
               vocab=(None, None),
               tokenizer=None):
-    """ Define translation datasets: IWSLT
+    """ Define translation datasets: IWSLT2017
     Separately returns train/valid/test datasets
+    The available datasets include following:
+        language pairs
+        [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
+        ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
+        ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
+        ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
+
+        For additional details refer to source website below:
+        https://wit3.fbk.eu/2017-01
 
     Args:
         language_pair: tuple or list of two elements: src and tgt language
@@ -276,16 +285,6 @@ def IWSLT2017(language_pair=('de', 'en'),
             It has to be in a form of tuple.
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
             get_tokenizer("spacy", language='en_core_web_sm'))
-
-        The available datasets include following:
-        -language pairs:
-            [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
-            ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
-            ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
-            ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
-
-        For additional details refer to source website below:
-        https://wit3.fbk.eu/2017-01
 
     Examples:
         >>> from torchtext.experimental.datasets import IWSLT
@@ -323,14 +322,23 @@ def IWSLT2016(language_pair=('de', 'en'),
               root='.data',
               vocab=(None, None),
               tokenizer=None):
-    """ Define translation datasets: IWSLT
+    """ Define translation datasets: IWSLT2016
     Separately returns train/valid/test datasets
+    The available datasets include following:
+        language pairs
+        [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
+        ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
+        valid/test sets
+        ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
+
+        For additional details refer to source website below:
+        https://wit3.fbk.eu/2016-01
 
     Args:
         language_pair: tuple or list of two elements: src and tgt language
         valid_set: a string to identify validation set. The actual filenames would be
-                'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[0])
-                and 'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[1])
+            'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[0])
+            and 'IWSLT16.TED.{}.{}-{}.{}'.format(valid_set,language_pair[0],language_pair[1],language_pair[1])
         test_set: a string to identify test set. The actual filenames would be as defined for valid_set
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
@@ -346,17 +354,6 @@ def IWSLT2016(language_pair=('de', 'en'),
             It has to be in a form of tuple.
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
             get_tokenizer("spacy", language='en_core_web_sm'))
-
-        The available datasets include following:
-        - language pairs:
-            [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
-            ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
-        - valid/test sets:
-            ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
-
-        For additional details refer to source website below:
-        https://wit3.fbk.eu/2016-01
-
 
 
     Examples:
