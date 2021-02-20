@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.datasets.common import RawTextIterableDataset
 from torchtext.datasets.common import wrap_split_argument
+from torchtext.datasets.common import add_docstring_header
+
 
 SUPPORTED_DATASETS = {
 
@@ -81,27 +83,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 
 @ wrap_split_argument
+@add_docstring_header()
 def IWSLT2017(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en')):
-    """Raw IWSLT2017 dataset
-    The available datasets include following:
-    - language pairs
-    [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
-    ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
-    ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
-    ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
-    For additional details refer to source website below:
-    https://wit3.fbk.eu/2017-01
-
-    Args:
-        root: Directory where the datasets are saved. Default: ".data"
-        split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
-            By default, all the three datasets (train, valid, test) are generated. Users
-            could also choose any one or two of them, for example ('train', 'test') or
-            just a string 'train'.
-        language_pair: tuple or list of two elements: src and tgt language
-
-    """
-
     valid_set = 'dev2010'
     test_set = 'tst2010'
 
