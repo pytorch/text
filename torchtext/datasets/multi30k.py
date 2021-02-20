@@ -128,9 +128,9 @@ for u in URL:
     _DOCSTRING += ("\n            " + os.path.basename(u)[:-3])
 
 
-@wrap_split_argument
 @add_docstring_header(_DOCSTRING)
-def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
+@wrap_split_argument(('train', 'valid', 'test'))
+def Multi30k(root, split,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en")):
@@ -161,16 +161,11 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
-    datasets = []
-    for key in split:
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
+    src_data_iter = _read_text_iterator(data_filenames[split][0])
+    tgt_data_iter = _read_text_iterator(data_filenames[split][1])
 
-        def _iter(src_data_iter, tgt_data_iter):
-            for item in zip(src_data_iter, tgt_data_iter):
-                yield item
+    def _iter(src_data_iter, tgt_data_iter):
+        for item in zip(src_data_iter, tgt_data_iter):
+            yield item
 
-        datasets.append(
-            RawTextIterableDataset("Multi30k", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter)))
-
-    return datasets
+    return RawTextIterableDataset("Multi30k", NUM_LINES[split], _iter(src_data_iter, tgt_data_iter))

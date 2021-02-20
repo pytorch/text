@@ -18,9 +18,9 @@ NUM_LINES = {
 _PATH = 'yelp_review_polarity_csv.tar.gz'
 
 
-@wrap_split_argument
 @add_docstring_header()
-def YelpReviewPolarity(root='.data', split=('train', 'test')):
+@wrap_split_argument(('train', 'test'))
+def YelpReviewPolarity(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
@@ -31,9 +31,6 @@ def YelpReviewPolarity(root='.data', split=('train', 'test')):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    datasets = []
-    for item in split:
-        path = find_match(item + '.csv', extracted_files)
-        datasets.append(RawTextIterableDataset("YelpReviewPolarity", NUM_LINES[item],
-                                               _create_data_from_csv(path)))
-    return datasets
+    path = find_match(split + '.csv', extracted_files)
+    return RawTextIterableDataset("YelpReviewPolarity", NUM_LINES[split],
+                                  _create_data_from_csv(path))

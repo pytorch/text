@@ -2,6 +2,11 @@ import torch
 import inspect
 import functools
 
+"""
+These functions and classes are meant solely for use in torchtext.datasets and not
+for public consumption yet.
+"""
+
 
 def check_default_set(split, target_select, dataset_name):
     # Check whether given object split is either a tuple of strings or string
@@ -55,7 +60,7 @@ def dataset_docstring_header(fn):
     if isinstance(default_split, tuple):
         example_subset = default_split[:2]
         if len(default_split) < 3:
-            example_subset = (default_split[1],)
+            example_subset = (default_split[0],)
         return """{} dataset
 
         Separately returns the {} split
@@ -95,7 +100,7 @@ def add_docstring_header(docstring=None):
     return docstring_decorator
 
 
-def wrap_split_argument(fn):
+def _wrap_split_argument(fn, splits):
     """
     Wraps given function of specific signature to extend behavior of split
     to support individual strings. The given function is expected to have a split
@@ -111,34 +116,35 @@ def wrap_split_argument(fn):
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
-            argspec.defaults[0] == ".data" and
             argspec.varargs is None and
             argspec.varkw is None and
             len(argspec.kwonlyargs) == 0 and
-            argspec.kwonlydefaults is None and
             len(argspec.annotations) == 0
             ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
-    # functools.wraps only forwards __module__, __name__, etc
-    # (see https://docs.python.org/3/library/functools.html#functools.update_wrapper)
-    # but not default values of arguments. The wrapped function fn is assumed to have
-    # keyword arguments with default values only, so only  a dictionary of default
-    # values is needed to support that behavior for new_fn as well.
-    fn_kwargs_dict = {}
-    for arg, default in zip(argspec.args[2:], argspec.defaults[2:]):
-        fn_kwargs_dict[arg] = default
-
     @functools.wraps(fn)
-    def new_fn(root='.data', split=argspec.defaults[1], **kwargs):
-        for arg in fn_kwargs_dict:
-            if arg not in kwargs:
-                kwargs[arg] = fn_kwargs_dict[arg]
-        kwargs["root"] = root
-        kwargs["split"] = check_default_set(split, argspec.defaults[1], fn.__name__)
-        result = fn(**kwargs)
+    def new_fn(root='.data', split=splits, **kwargs):
+        result = []
+        for item in check_default_set(split, splits, fn.__name__):
+            result.append(fn(root, item, **kwargs))
         return wrap_datasets(tuple(result), split)
 
+    new_sig = inspect.signature(new_fn)
+    new_sig_params = new_sig.parameters
+    new_params = []
+    new_params.append(new_sig_params['root'].replace(default='.data'))
+    new_params.append(new_sig_params['split'].replace(default=splits))
+    new_params += [entry[1] for entry in list(new_sig_params.items())[2:]]
+    new_sig = new_sig.replace(parameters=tuple(new_params))
+    new_fn.__signature__ = new_sig
+
+    return new_fn
+
+
+def wrap_split_argument(splits):
+    def new_fn(fn):
+        return _wrap_split_argument(fn, splits)
     return new_fn
 
 
@@ -146,11 +152,11 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
 
-    def __init__(self, name, full_num_lines, iterator):
+    def __init__(self, description, full_num_lines, iterator):
         """Initiate text-classification dataset.
         """
         super(RawTextIterableDataset, self).__init__()
-        self.name = name
+        self.description = description
         self.full_num_lines = full_num_lines
         self._iterator = iterator
         self.num_lines = full_num_lines
@@ -171,3 +177,13 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 
     def __len__(self):
         return self.num_lines
+
+    def pos(self):
+        """
+        Returns current position of the iterator. This returns None
+        if the iterator hasn't been used yet.
+        """
+        return self.current_pos
+
+    def __str__(self):
+        return self.description

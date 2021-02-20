@@ -19,9 +19,9 @@ NUM_LINES = {
 _PATH = 'amazon_review_full_csv.tar.gz'
 
 
-@wrap_split_argument
 @add_docstring_header()
-def AmazonReviewFull(root='.data', split=('train', 'test')):
+@wrap_split_argument(('train', 'test'))
+def AmazonReviewFull(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
@@ -32,10 +32,7 @@ def AmazonReviewFull(root='.data', split=('train', 'test')):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    datasets = []
-    for item in split:
-        path = find_match(item + '.csv', extracted_files)
-        logging.info('Creating {} data'.format(item))
-        datasets.append(RawTextIterableDataset("AmazonReviewFull", NUM_LINES[item],
-                                               _create_data_from_csv(path)))
-    return datasets
+    path = find_match(split + '.csv', extracted_files)
+    logging.info('Creating {} data'.format(split))
+    return RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
+                                  _create_data_from_csv(path))
