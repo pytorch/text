@@ -15,11 +15,11 @@ NUM_LINES = {
 
 
 @add_docstring_header()
-@wrap_split_argument(('train', 'test'))
+@wrap_split_argument(('train',))
 def EnWik9(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     path = extracted_files[0]
-    logging.info('Creating {} data'.format(split[0]))
-    return [RawTextIterableDataset('EnWik9',
-                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")))]
+    logging.info('Creating {} data'.format(split))
+    return RawTextIterableDataset('EnWik9',
+                                  NUM_LINES[split], iter(io.open(path, encoding="utf8")))

@@ -31,13 +31,10 @@ def AG_NEWS(root, split):
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
 
-    datasets = []
-    for item in split:
-        path = download_from_url(URL[item], root=root,
-                                 path=os.path.join(root, item + ".csv"),
-                                 hash_value=MD5[item],
-                                 hash_type='md5')
-        description = construct_dataset_description("AG_NEWS", root, item)
-        datasets.append(RawTextIterableDataset(description, NUM_LINES[item],
-                                               _create_data_from_csv(path)))
-    return datasets
+    path = download_from_url(URL[split], root=root,
+                             path=os.path.join(root, split + ".csv"),
+                             hash_value=MD5[split],
+                             hash_type='md5')
+    description = construct_dataset_description("AG_NEWS", root, split)
+    return RawTextIterableDataset(description, NUM_LINES[split],
+                                  _create_data_from_csv(path))

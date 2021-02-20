@@ -36,7 +36,7 @@ def WMTNewsCrawl(root, split, year=2010, language='en'):
     file_name = 'news.{}.{}.shuffled'.format(year, language)
     extracted_files = [f for f in extracted_files if file_name in f]
     path = extracted_files[0]
-    logging.info('Creating {} data'.format(split[0]))
-    description = construct_dataset_description("WMTNewsCrawl", root, split[0], year=year, language=language)
-    return [RawTextIterableDataset(description,
-                                   NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")))]
+    logging.info('Creating {} data'.format(split))
+    description = construct_dataset_description("WMTNewsCrawl", root, split, year=year, language=language)
+    return RawTextIterableDataset(description,
+                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))

@@ -32,10 +32,7 @@ def AmazonReviewFull(root, split):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    datasets = []
-    for item in split:
-        path = find_match(item + '.csv', extracted_files)
-        logging.info('Creating {} data'.format(item))
-        datasets.append(RawTextIterableDataset("AmazonReviewFull", NUM_LINES[item],
-                                               _create_data_from_csv(path)))
-    return datasets
+    path = find_match(split + '.csv', extracted_files)
+    logging.info('Creating {} data'.format(split))
+    return RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
+                                  _create_data_from_csv(path))

@@ -31,9 +31,6 @@ def YelpReviewPolarity(root, split):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    datasets = []
-    for item in split:
-        path = find_match(item + '.csv', extracted_files)
-        datasets.append(RawTextIterableDataset("YelpReviewPolarity", NUM_LINES[item],
-                                               _create_data_from_csv(path)))
-    return datasets
+    path = find_match(split + '.csv', extracted_files)
+    return RawTextIterableDataset("YelpReviewPolarity", NUM_LINES[split],
+                                  _create_data_from_csv(path))

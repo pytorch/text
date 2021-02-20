@@ -41,11 +41,8 @@ def _create_data_from_iob(data_path, separator):
 @add_docstring_header()
 @wrap_split_argument(('train', 'test'))
 def CoNLL2000Chunking(root, split):
-    datasets = []
-    for item in split:
-        dataset_tar = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')
-        extracted_files = extract_archive(dataset_tar)
-        data_filename = find_match(item + ".txt", extracted_files)
-        datasets.append(RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[item],
-                                               _create_data_from_iob(data_filename, " ")))
-    return datasets
+    dataset_tar = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
+    extracted_files = extract_archive(dataset_tar)
+    data_filename = find_match(split + ".txt", extracted_files)
+    return RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],
+                                  _create_data_from_iob(data_filename, " "))
