@@ -2,6 +2,11 @@ import torch
 import inspect
 import functools
 
+"""
+These functions and classes are meant solely for use in torchtext.datasets and not
+for public consumption yet.
+"""
+
 
 def check_default_set(split, target_select, dataset_name):
     # Check whether given object split is either a tuple of strings or string
@@ -95,7 +100,7 @@ def add_docstring_header(docstring=None):
     return docstring_decorator
 
 
-def wrap_split_argument(fn):
+def _wrap_split_argument(fn, splits):
     """
     Wraps given function of specific signature to extend behavior of split
     to support individual strings. The given function is expected to have a split
@@ -111,7 +116,6 @@ def wrap_split_argument(fn):
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
-            argspec.defaults[0] == ".data" and
             argspec.varargs is None and
             argspec.varkw is None and
             len(argspec.kwonlyargs) == 0 and
@@ -130,27 +134,40 @@ def wrap_split_argument(fn):
         fn_kwargs_dict[arg] = default
 
     @functools.wraps(fn)
-    def new_fn(root='.data', split=argspec.defaults[1], **kwargs):
+    def new_fn(root='.data', split=splits, **kwargs):
         for arg in fn_kwargs_dict:
             if arg not in kwargs:
                 kwargs[arg] = fn_kwargs_dict[arg]
         kwargs["root"] = root
-        kwargs["split"] = check_default_set(split, argspec.defaults[1], fn.__name__)
+        kwargs["split"] = check_default_set(split, splits, fn.__name__)
         result = fn(**kwargs)
         return wrap_datasets(tuple(result), split)
 
     return new_fn
 
 
+def wrap_split_argument(splits):
+    def new_fn(fn):
+        return _wrap_split_argument(fn, splits)
+    return new_fn
+
+
+def construct_dataset_description(dataset_name, root, split, **kwargs):
+    args_str = ["root=" + root, "split=" + str(split)]
+    for k, v in kwargs.items():
+        args_str.append(f"{k}={v}")
+    return dataset_name + "(" + ", ".join(args_str) + ")"
+
+
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
 
-    def __init__(self, name, full_num_lines, iterator):
+    def __init__(self, description, full_num_lines, iterator):
         """Initiate text-classification dataset.
         """
         super(RawTextIterableDataset, self).__init__()
-        self.name = name
+        self.description = description
         self.full_num_lines = full_num_lines
         self._iterator = iterator
         self.num_lines = full_num_lines
@@ -171,3 +188,13 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 
     def __len__(self):
         return self.num_lines
+
+    def pos(self):
+        """
+        Returns current position of the iterator. This is None
+        if the iterator hasn't been used yet.
+        """
+        return self.current_pos
+
+    def __str__(self):
+        return self.description

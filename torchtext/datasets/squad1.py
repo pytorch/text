@@ -36,9 +36,9 @@ def _create_data_from_json(data_path):
                     yield (_context, _question, _answers, _answer_start)
 
 
-@wrap_split_argument
 @add_docstring_header()
-def SQuAD1(root='.data', split=('train', 'dev')):
+@wrap_split_argument(('train', 'test'))
+def SQuAD1(root, split):
     datasets = []
     for item in split:
         extracted_files = download_from_url(URL[item], root=root, hash_value=MD5[item], hash_type='md5')

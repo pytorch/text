@@ -24,9 +24,9 @@ NUM_LINES = {
 }
 
 
-@wrap_split_argument
 @add_docstring_header()
-def PennTreebank(root='.data', split=('train', 'valid', 'test')):
+@wrap_split_argument(('train', 'test'))
+def PennTreebank(root, split):
     datasets = []
     for item in split:
         path = download_from_url(URL[item],

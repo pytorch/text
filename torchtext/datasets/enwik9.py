@@ -14,9 +14,9 @@ NUM_LINES = {
 }
 
 
-@wrap_split_argument
 @add_docstring_header()
-def EnWik9(root='.data', split='train'):
+@wrap_split_argument(('train', 'test'))
+def EnWik9(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     path = extracted_files[0]

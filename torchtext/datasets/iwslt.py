@@ -68,9 +68,9 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument
 @add_docstring_header()
-def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
+@wrap_split_argument(('train', 'valid', 'test'))
+def IWSLT(root, split,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
                            'IWSLT16.TED.tst2013.de-en.en'),
@@ -239,7 +239,7 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
     src_language = train_filenames[0].split(".")[-1]
     tgt_language = train_filenames[1].split(".")[-1]
     languages = "-".join([src_language, tgt_language])
-    iwslt_tar = '.data/2016-01/texts/{}/{}/{}.tgz'
+    iwslt_tar = os.path.join(root, '2016-01/texts/{}/{}/{}.tgz')
     iwslt_tar = iwslt_tar.format(
         src_language, tgt_language, languages)
     extracted_dataset_tar = extract_archive(iwslt_tar)

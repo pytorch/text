@@ -128,9 +128,9 @@ for u in URL:
     _DOCSTRING += ("\n            " + os.path.basename(u)[:-3])
 
 
-@wrap_split_argument
 @add_docstring_header(_DOCSTRING)
-def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
+@wrap_split_argument(('train', 'test'))
+def Multi30k(root, split,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en")):

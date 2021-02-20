@@ -3,6 +3,7 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import construct_dataset_description
 import io
 
 URL = 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
@@ -23,9 +24,9 @@ _AVAILABLE_LANGUAGES = [
 ]
 
 
-@wrap_split_argument
 @add_docstring_header()
-def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'):
+@wrap_split_argument(('train',))
+def WMTNewsCrawl(root, split, year=2010, language='en'):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     if year not in _AVAILABLE_YEARS:
@@ -36,5 +37,6 @@ def WMTNewsCrawl(root='.data', split='train', offset=0, year=2010, language='en'
     extracted_files = [f for f in extracted_files if file_name in f]
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split[0]))
-    return [RawTextIterableDataset('WMTNewsCrawl',
+    description = construct_dataset_description("WMTNewsCrawl", root, split[0], year=year, language=language)
+    return [RawTextIterableDataset(description,
                                    NUM_LINES[split[0]], iter(io.open(path, encoding="utf8")))]
