@@ -83,18 +83,16 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 
 @ wrap_split_argument
-@ add_docstring_header()
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en'), valid_set='dev2010', test_set='tst2010'):
     """Raw IWSLT2016 dataset
     The available datasets include following:
-        language pairs
-        [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
-        ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
-        valid/test sets
-        ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
-
-        For additional details refer to source website below:
-        https://wit3.fbk.eu/2016-01
+    - language pairs
+    [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
+    ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
+    - valid/test sets
+    ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
+    For additional details refer to source website below:
+    https://wit3.fbk.eu/2016-01
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
