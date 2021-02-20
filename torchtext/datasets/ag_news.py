@@ -1,7 +1,7 @@
 from torchtext.utils import download_from_url, unicode_csv_reader
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 import os
 import io
 
@@ -21,21 +21,18 @@ NUM_LINES = {
 }
 
 
-@wrap_split_argument
-@add_docstring_header()
-def AG_NEWS(root='.data', split=('train', 'test'), offset=0):
+@add_docstring_header(num_lines=NUM_LINES)
+@wrap_split_argument(('train', 'test'))
+def AG_NEWS(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
 
-    datasets = []
-    for item in split:
-        path = download_from_url(URL[item], root=root,
-                                 path=os.path.join(root, item + ".csv"),
-                                 hash_value=MD5[item],
-                                 hash_type='md5')
-        datasets.append(RawTextIterableDataset("AG_NEWS", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
-    return datasets
+    path = download_from_url(URL[split], root=root,
+                             path=os.path.join(root, split + ".csv"),
+                             hash_value=MD5[split],
+                             hash_type='md5')
+    return RawTextIterableDataset("AG_NEWS", NUM_LINES[split],
+                                  _create_data_from_csv(path))

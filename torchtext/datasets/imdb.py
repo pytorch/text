@@ -1,7 +1,7 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 import io
 
 URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
@@ -16,9 +16,9 @@ NUM_LINES = {
 _PATH = 'aclImdb_v1.tar.gz'
 
 
-@wrap_split_argument
-@add_docstring_header()
-def IMDB(root='.data', split=('train', 'test'), offset=0):
+@add_docstring_header(num_lines=NUM_LINES)
+@wrap_split_argument(('train', 'test'))
+def IMDB(root, split):
     def generate_imdb_data(key, extracted_files):
         for fname in extracted_files:
             if 'urls' in fname:
@@ -30,8 +30,5 @@ def IMDB(root='.data', split=('train', 'test'), offset=0):
     dataset_tar = download_from_url(URL, root=root,
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
-    datasets = []
-    for item in split:
-        iterator = generate_imdb_data(item, extracted_files)
-        datasets.append(RawTextIterableDataset("IMDB", NUM_LINES[item], iterator, offset=offset))
-    return datasets
+    iterator = generate_imdb_data(split, extracted_files)
+    return RawTextIterableDataset("IMDB", NUM_LINES[split], iterator)

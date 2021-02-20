@@ -3,6 +3,7 @@
 import os
 import torch
 import torchtext
+import unittest
 from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -186,11 +187,6 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
         del data_iter
 
-    def test_num_lines_of_dataset(self):
-        train_iter, test_iter = torchtext.datasets.AG_NEWS(offset=10)
-        _data = [item for item in train_iter]
-        self.assertEqual(len(_data), 119990)
-
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
         if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
@@ -222,13 +218,6 @@ class TestDataset(TorchtextTestCase):
             break
         # Exercise default constructor
         _ = dataset()
-
-    def test_offset_dataset(self):
-        train_iter, test_iter = torchtext.datasets.AG_NEWS(split=('train', 'test'), offset=10)
-        container = [text[:20] for idx, (label, text) in enumerate(train_iter) if idx < 5]
-        self.assertEqual(container, ['Oil and Economy Clou', 'No Need for OPEC to ',
-                                     'Non-OPEC Nations Sho', 'Google IPO Auction O',
-                                     'Dollar Falls Broadly'])
 
     def test_next_method_dataset(self):
         train_iter, test_iter = torchtext.datasets.AG_NEWS()
@@ -267,6 +256,7 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
+    @unittest.skip("Dataset depends on Google drive")
     def test_iwslt(self):
         from torchtext.experimental.datasets import IWSLT
 
@@ -298,8 +288,6 @@ class TestDataset(TorchtextTestCase):
                                        'alle', 'möglichen', 'Funktionsteile', 'hat', '.', '\n'],
                                       ['It', "'s", 'one', 'of', 'my', 'favorites', ',', 'because', 'it', "'s",
                                        'got', 'all', 'sorts', 'of', 'working', 'parts', '.', '\n']))
-        datafile = os.path.join(self.project_root, ".data", "2016-01.tgz")
-        conditional_remove(datafile)
 
     def test_multi30k(self):
         from torchtext.experimental.datasets import Multi30k

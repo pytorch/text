@@ -1,9 +1,8 @@
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
-from torchtext.datasets.common import find_match
-import os
+from torchtext.utils import unicode_csv_reader
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import download_extract_validate
 import io
 import logging
 
@@ -18,24 +17,28 @@ NUM_LINES = {
 
 _PATH = 'amazon_review_full_csv.tar.gz'
 
+_EXTRACTED_FILES = {
+    'train': 'amazon_review_full_csv/train.csv',
+    'test': 'amazon_review_full_csv/test.csv'
+}
 
-@wrap_split_argument
-@add_docstring_header()
-def AmazonReviewFull(root='.data', split=('train', 'test'), offset=0):
+_EXTRACTED_FILES_MD5 = {
+    'train': "31b268b09fd794e0ca5a1f59a0358677",
+    'test': "0f1e78ab60f625f2a30eab6810ef987c"
+}
+
+
+@add_docstring_header(num_lines=NUM_LINES)
+@wrap_split_argument(('train', 'test'))
+def AmazonReviewFull(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
-    dataset_tar = download_from_url(URL, root=root,
-                                    path=os.path.join(root, _PATH),
-                                    hash_value=MD5, hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
 
-    datasets = []
-    for item in split:
-        path = find_match(item + '.csv', extracted_files)
-        logging.info('Creating {} data'.format(item))
-        datasets.append(RawTextIterableDataset("AmazonReviewFull", NUM_LINES[item],
-                                               _create_data_from_csv(path), offset=offset))
-    return datasets
+    path = download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[split],
+                                     _EXTRACTED_FILES_MD5[split], hash_type="md5")
+    logging.info('Creating {} data'.format(split))
+    return RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
+                                  _create_data_from_csv(path))

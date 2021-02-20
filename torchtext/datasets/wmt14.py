@@ -3,9 +3,9 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 
@@ -68,9 +68,9 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument
-@add_docstring_header()
-def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
+@add_docstring_header(num_lines=NUM_LINES)
+@wrap_split_argument(('train', 'valid', 'test'))
+def WMT14(root, split,
           train_filenames=('train.tok.clean.bpe.32000.de',
                            'train.tok.clean.bpe.32000.en'),
           valid_filenames=('newstest2013.tok.bpe.32000.de',
@@ -169,16 +169,11 @@ def WMT14(root='.data', split=('train', 'valid', 'test'), offset=0,
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
-    datasets = []
-    for key in split:
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
+    src_data_iter = _read_text_iterator(data_filenames[split][0])
+    tgt_data_iter = _read_text_iterator(data_filenames[split][1])
 
-        def _iter(src_data_iter, tgt_data_iter):
-            for item in zip(src_data_iter, tgt_data_iter):
-                yield item
+    def _iter(src_data_iter, tgt_data_iter):
+        for item in zip(src_data_iter, tgt_data_iter):
+            yield item
 
-        datasets.append(
-            RawTextIterableDataset("WMT14", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter), offset=offset))
-
-    return datasets
+    return RawTextIterableDataset("WMT14", NUM_LINES[split], _iter(src_data_iter, tgt_data_iter))
