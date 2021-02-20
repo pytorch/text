@@ -127,9 +127,7 @@ def _wrap_split_argument(fn, splits):
     def new_fn(root='.data', split=splits, **kwargs):
         result = []
         for item in check_default_set(split, splits, fn.__name__):
-            kwargs["root"] = root
-            kwargs["split"] = item
-            result.append(fn(**kwargs))
+            result.append(fn(root, item, **kwargs))
         return wrap_datasets(tuple(result), split)
 
     new_sig = inspect.signature(new_fn)
@@ -148,13 +146,6 @@ def wrap_split_argument(splits):
     def new_fn(fn):
         return _wrap_split_argument(fn, splits)
     return new_fn
-
-
-def construct_dataset_description(dataset_name, root, split, **kwargs):
-    args_str = ["root=" + root, "split=" + str(split)]
-    for k, v in kwargs.items():
-        args_str.append(f"{k}={v}")
-    return dataset_name + "(" + ", ".join(args_str) + ")"
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
