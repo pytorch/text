@@ -138,7 +138,7 @@ def run_main(args):
 
     for epoch in range(1, args.epochs + 1):
         train_data = CC100('/datasets01/cc100/031720/', {'*.txt'}, start_line=args.start_line, num_lines=args.num_lines)
-        from torchtext.experimental.datasets.raw import WikiText2
+        from torchtext.datasets import WikiText2
         val_data, = WikiText2(data_select='valid')
         val_data = [(17, item) for item in val_data if item != ' \n']  # english language type is 17 in CC100 dataset
 
