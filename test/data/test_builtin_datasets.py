@@ -267,10 +267,51 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
-    def test_iwslt(self):
-        from torchtext.experimental.datasets import IWSLT
+    def test_iwslt2017(self):
+        from torchtext.experimental.datasets import IWSLT2017
 
-        train_dataset, valid_dataset, test_dataset = IWSLT()
+        train_dataset, valid_dataset, test_dataset = IWSLT2017()
+
+        self.assertEqual(len(train_dataset), 196884)
+        self.assertEqual(len(valid_dataset), 888)
+        self.assertEqual(len(test_dataset), 1305)
+
+        de_vocab, en_vocab = train_dataset.get_vocab()
+
+        def assert_nth_pair_is_equal(n, expected_sentence_pair):
+            de_sentence = [de_vocab.itos[index] for index in train_dataset[n][0]]
+            en_sentence = [en_vocab.itos[index] for index in train_dataset[n][1]]
+
+            expected_de_sentence, expected_en_sentence = expected_sentence_pair
+
+            self.assertEqual(de_sentence, expected_de_sentence)
+            self.assertEqual(en_sentence, expected_en_sentence)
+
+        assert_nth_pair_is_equal(0, (['<', 'doc', 'docid="1', '"', 'genre="lectures', '"', '>', '\n'],
+                                     ['<', 'doc', 'docid="1', '"', 'genre="lectures', '"', '>', '\n']))
+        assert_nth_pair_is_equal(10, (['Kurz', 'nachdem', 'Tipper', 'und', 'ich', 'aus', 'dem', ' ', 'Weißen', 'Haus',
+                                       'ausgezogen', 'waren', ',', 'fuhren', 'wir', 'von', 'unserem', 'Haus', 'in', 'Nashville',
+                                       'zu', 'unserer', 'kleinen', 'Farm', '50', 'Meilen', 'östlich', 'von', 'Nashville', '--', '\n'],
+                                      ['Soon', 'after', 'Tipper', 'and', 'I', 'left', 'the', '--', ' ', 'White', 'House', '--', ' ',
+                                       'we', 'were', 'driving', 'from', 'our', 'home', 'in', 'Nashville', 'to', 'a', 'little', 'farm',
+                                       'we', 'have', '50', 'miles', 'east', 'of', 'Nashville', '.', '\n']))
+        assert_nth_pair_is_equal(20, (['Wir', 'gingen', 'rein', 'und', 'setzten', 'uns', 'in', 'eine', 'Nische', '.', 'Die', 'Kellnerin',
+                                       'kam', 'zu', 'uns', 'und', 'machte', 'viel', 'Aufhebens', 'um', 'Tipper', '.', 'Sie', 'nahm', 'unsere',
+                                       'Bestellung', 'auf', ',', 'ging', 'dann', 'zum', 'Paar', 'in', 'der', 'Nische', 'neben', 'uns', 'und',
+                                       'senkte', 'ihre', 'Stimme', 'so', 'sehr', ',', 'dass', 'ich', 'mich', 'richtig', 'anstrengen', 'musste',
+                                       ',', 'um', 'sie', 'zu', 'verstehen', '.', '\n'],
+                                      ['We', 'went', 'in', 'and', 'sat', 'down', 'at', 'the', 'booth', ',', 'and', 'the', 'waitress', 'came',
+                                       'over', ',', 'made', 'a', 'big', 'commotion', 'over', 'Tipper', '.', ' ', 'She', 'took', 'our', 'order',
+                                       ',', 'and', 'then', 'went', 'to', 'the', 'couple', 'in', 'the', 'booth', 'next', 'to', 'us', ',', 'and',
+                                       'she', 'lowered', 'her', 'voice', 'so', 'much', ',', 'I', 'had', 'to', 'really', 'strain', 'to', 'hear',
+                                       'what', 'she', 'was', 'saying', '.', '\n']))
+        datafile = os.path.join(self.project_root, ".data", "2017-01-trnmted.tgz")
+        conditional_remove(datafile)
+
+    def test_iwslt2016(self):
+        from torchtext.experimental.datasets import IWSLT2016
+
+        train_dataset, valid_dataset, test_dataset = IWSLT2016()
 
         self.assertEqual(len(train_dataset), 196884)
         self.assertEqual(len(valid_dataset), 993)
