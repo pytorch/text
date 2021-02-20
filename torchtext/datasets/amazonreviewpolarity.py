@@ -1,10 +1,10 @@
-from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
+from torchtext.utils import unicode_csv_reader
 from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import find_match
-import os
+from torchtext.data.datasets_utils import download_extract_validate
 import io
+import logging
 
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM'
 
@@ -17,6 +17,16 @@ NUM_LINES = {
 
 _PATH = 'amazon_review_polarity_csv.tar.gz'
 
+_EXTRACTED_FILES = {
+    'train': 'amazon_review_polarity_csv/train.csv',
+    'test': 'amazon_review_polarity_csv/test.csv'
+}
+
+_EXTRACTED_FILES_MD5 = {
+    'train': "520937107c39a2d1d1f66cd410e9ed9e",
+    'test': "f4c8bded2ecbde5f996b675db6228f16"
+}
+
 
 @add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'test'))
@@ -26,11 +36,8 @@ def AmazonReviewPolarity(root, split):
             reader = unicode_csv_reader(f)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
-    dataset_tar = download_from_url(URL, root=root,
-                                    path=os.path.join(root, _PATH),
-                                    hash_value=MD5, hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
-
-    path = find_match(split + '.csv', extracted_files)
+    path = download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[split],
+                                     _EXTRACTED_FILES_MD5[split], hash_type="md5")
+    logging.info('Creating {} data'.format(split))
     return RawTextIterableDataset("AmazonReviewPolarity", NUM_LINES[split],
                                   _create_data_from_csv(path))
