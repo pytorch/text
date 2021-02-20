@@ -86,6 +86,15 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 @ add_docstring_header()
 def IWSLT2017(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en')):
     """Raw IWSLT2017 dataset
+    The available datasets include following:
+    language pairs
+    [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
+    ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
+    ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
+    ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
+
+    For additional details refer to source website below:
+    https://wit3.fbk.eu/2017-01
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
@@ -94,16 +103,6 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), offset=0, language
             could also choose any one or two of them, for example ('train', 'test') or
             just a string 'train'.
         language_pair: tuple or list of two elements: src and tgt language
-
-        The available datasets include following:
-        -language pairs:
-            [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
-            ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
-            ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
-            ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
-
-        For additional details refer to source website below:
-        https://wit3.fbk.eu/2017-01
 
     """
 
