@@ -287,3 +287,19 @@ def validate_file(file_obj, hash_value, hash_type="sha256"):
             break
         hash_func.update(chunk)
     return hash_func.hexdigest() == hash_value
+
+
+def validate_file_path(file_path, hash_value, hash_type="sha256"):
+    """Validate a file located at given file path
+
+    Args:
+        file_path: File path to open and validate
+        hash_value (str): Hash for url.
+        hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
+    Returns:
+        bool: return True if its a valid file, else False.
+
+    """
+
+    with open(file_path, 'rb') as f:
+        return validate_file(f, hash_value, hash_type)
