@@ -132,6 +132,15 @@ def _wrap_split_argument(fn, splits):
             result.append(fn(**kwargs))
         return wrap_datasets(tuple(result), split)
 
+    new_sig = inspect.signature(new_fn)
+    new_sig_params = new_sig.parameters
+    new_params = []
+    new_params.append(new_sig_params['root'].replace(default='.data'))
+    new_params.append(new_sig_params['split'].replace(default=splits))
+    new_params += [entry[1] for entry in list(new_sig_params.items())[2:]]
+    new_sig = new_sig.replace(parameters=tuple(new_params))
+    new_fn.__signature__ = new_sig
+
     return new_fn
 
 
