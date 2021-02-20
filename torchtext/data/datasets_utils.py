@@ -157,12 +157,14 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
     path = os.path.join(root, extracted_file)
     if os.path.exists(path):
         with open(os.path.join(root, extracted_file), 'rb') as f:
-            if not validate_file(f, extracted_file_md5, hash_type):
-                dataset_tar = download_from_url(url, root=root,
-                                                path=os.path.join(root, downloaded_file),
-                                                hash_value=url_md5, hash_type='md5')
-                extracted_files = extract_archive(dataset_tar)
-                assert path == find_match(extracted_file, extracted_files)
+            if validate_file(f, extracted_file_md5, hash_type):
+                return path
+
+    dataset_tar = download_from_url(url, root=root,
+                                    path=os.path.join(root, downloaded_file),
+                                    hash_value=url_md5, hash_type=hash_type)
+    extracted_files = extract_archive(dataset_tar)
+    assert path == find_match(extracted_file, extracted_files)
     return path
 
 
