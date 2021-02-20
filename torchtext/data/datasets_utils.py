@@ -180,7 +180,7 @@ class RawTextIterableDataset(torch.utils.data.IterableDataset):
 
     def pos(self):
         """
-        Returns current position of the iterator. This is None
+        Returns current position of the iterator. This returns None
         if the iterator hasn't been used yet.
         """
         return self.current_pos
