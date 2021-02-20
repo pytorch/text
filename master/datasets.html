@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.raw &mdash; torchtext 0.9.0.dev20210219 documentation</title>
+  <title>torchtext.datasets &mdash; torchtext 0.9.0.dev20210220 documentation</title>
   
 
   
@@ -185,7 +185,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210219
+                  0.9.0.dev20210220
                 </div>
               
             
@@ -220,7 +220,7 @@
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets.raw</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -279,7 +279,7 @@
       </li>
 
         
-      <li>torchtext.experimental.datasets.raw</li>
+      <li>torchtext.datasets</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -311,11 +311,11 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="torchtext-experimental-datasets-raw">
-<h1>torchtext.experimental.datasets.raw<a class="headerlink" href="#torchtext-experimental-datasets-raw" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="torchtext-datasets">
+<h1>torchtext.datasets<a class="headerlink" href="#torchtext-datasets" title="Permalink to this headline">¶</a></h1>
 <p>General use cases are as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import datasets</span>
-<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">IMDB</span>
+<span class="kn">from</span> <span class="nn">torchtext.datasets</span> <span class="kn">import</span> <span class="n">IMDB</span>
 
 <span class="n">train_iter</span> <span class="o">=</span> <span class="n">IMDB</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
 
@@ -383,20 +383,21 @@
 <h3><a class="toc-backref" href="#id3">AG_NEWS</a><a class="headerlink" href="#ag-news" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.AG_NEWS">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AG_NEWS</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/ag_news.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AG_NEWS</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/ag_news.html#AG_NEWS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AG_NEWS" title="Permalink to this definition">¶</a></dt>
 <dd><p>AG_NEWS dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 120000
+test: 7600</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -407,20 +408,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id4">SogouNews</a><a class="headerlink" href="#sogounews" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.SogouNews">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SogouNews</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sogounews.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SogouNews</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/sogounews.html#SogouNews"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SogouNews" title="Permalink to this definition">¶</a></dt>
 <dd><p>SogouNews dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 450000
+test: 60000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -431,20 +433,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id5">DBpedia</a><a class="headerlink" href="#dbpedia" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.DBpedia">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">DBpedia</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/dbpedia.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">DBpedia</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/dbpedia.html#DBpedia"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.DBpedia" title="Permalink to this definition">¶</a></dt>
 <dd><p>DBpedia dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 560000
+test: 70000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -455,20 +458,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id6">YelpReviewPolarity</a><a class="headerlink" href="#yelpreviewpolarity" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.YelpReviewPolarity">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewpolarity.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewpolarity.html#YelpReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewPolarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>YelpReviewPolarity dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 560000
+test: 38000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -479,20 +483,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id7">YelpReviewFull</a><a class="headerlink" href="#yelpreviewfull" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.YelpReviewFull">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewFull</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewfull.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YelpReviewFull</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yelpreviewfull.html#YelpReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YelpReviewFull" title="Permalink to this definition">¶</a></dt>
 <dd><p>YelpReviewFull dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 650000
+test: 50000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -503,20 +508,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id8">YahooAnswers</a><a class="headerlink" href="#yahooanswers" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.YahooAnswers">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YahooAnswers</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yahooanswers.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">YahooAnswers</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/yahooanswers.html#YahooAnswers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.YahooAnswers" title="Permalink to this definition">¶</a></dt>
 <dd><p>YahooAnswers dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 1400000
+test: 60000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -527,20 +533,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id9">AmazonReviewPolarity</a><a class="headerlink" href="#amazonreviewpolarity" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.AmazonReviewPolarity">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewpolarity.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewPolarity</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewpolarity.html#AmazonReviewPolarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewPolarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>AmazonReviewPolarity dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 3600000
+test: 400000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -551,20 +558,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id10">AmazonReviewFull</a><a class="headerlink" href="#amazonreviewfull" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.AmazonReviewFull">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewFull</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewfull.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">AmazonReviewFull</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/amazonreviewfull.html#AmazonReviewFull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.AmazonReviewFull" title="Permalink to this definition">¶</a></dt>
 <dd><p>AmazonReviewFull dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 3000000
+test: 650000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -575,20 +583,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id11">IMDb</a><a class="headerlink" href="#imdb" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.IMDB">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">IMDB</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IMDB" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">IMDB</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/imdb.html#IMDB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IMDB" title="Permalink to this definition">¶</a></dt>
 <dd><p>IMDB dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 25000
+test: 25000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -602,20 +611,22 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id13">WikiText-2</a><a class="headerlink" href="#wikitext-2" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.WikiText2">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WikiText2</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext2.html#WikiText2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WikiText2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WikiText2</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext2.html#WikiText2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WikiText2" title="Permalink to this definition">¶</a></dt>
 <dd><p>WikiText2 dataset</p>
 <p>Separately returns the train/valid/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 36718
+valid: 3760
+test: 4358</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
 Default: (‘train’, ‘valid’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -626,20 +637,22 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id14">WikiText103</a><a class="headerlink" href="#wikitext103" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.WikiText103">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WikiText103</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext103.html#WikiText103"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WikiText103" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WikiText103</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wikitext103.html#WikiText103"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WikiText103" title="Permalink to this definition">¶</a></dt>
 <dd><p>WikiText103 dataset</p>
 <p>Separately returns the train/valid/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 1801350
+valid: 3760
+test: 4358</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
 Default: (‘train’, ‘valid’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -650,20 +663,22 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id15">PennTreebank</a><a class="headerlink" href="#penntreebank" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.PennTreebank">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">PennTreebank</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/penntreebank.html#PennTreebank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">PennTreebank</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/penntreebank.html#PennTreebank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.PennTreebank" title="Permalink to this definition">¶</a></dt>
 <dd><p>PennTreebank dataset</p>
 <p>Separately returns the train/valid/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 42068
+valid: 3370
+test: 3761</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
 Default: (‘train’, ‘valid’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -674,18 +689,20 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id16">WMTNewsCrawl</a><a class="headerlink" href="#wmtnewscrawl" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.WMTNewsCrawl">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WMTNewsCrawl</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split='train'</em>, <em class="sig-param">offset=0</em>, <em class="sig-param">year=2010</em>, <em class="sig-param">language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wmtnewscrawl.html#WMTNewsCrawl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WMTNewsCrawl" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WMTNewsCrawl</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">)</em>, <em class="sig-param">year=2010</em>, <em class="sig-param">language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wmtnewscrawl.html#WMTNewsCrawl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WMTNewsCrawl" title="Permalink to this definition">¶</a></dt>
 <dd><p>WMTNewsCrawl dataset</p>
-<p>Only returns the train split</p>
+<p>Separately returns the train split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 17676013</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
-<li><p><strong>split</strong> – Only train is available.
-Default: train</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
+Default: .data</p></li>
+<li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
+Default: (‘train’,)</p></li>
 </ul>
 </dd>
 </dl>
@@ -699,31 +716,29 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id18">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.Multi30k">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">Multi30k</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em>, <em class="sig-param">train_filenames=('train.de'</em>, <em class="sig-param">'train.en')</em>, <em class="sig-param">valid_filenames=('val.de'</em>, <em class="sig-param">'val.en')</em>, <em class="sig-param">test_filenames=('test_2016_flickr.de'</em>, <em class="sig-param">'test_2016_flickr.en')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/multi30k.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">Multi30k</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">train_filenames=('train.de'</em>, <em class="sig-param">'train.en')</em>, <em class="sig-param">valid_filenames=('val.de'</em>, <em class="sig-param">'val.en')</em>, <em class="sig-param">test_filenames=('test_2016_flickr.de'</em>, <em class="sig-param">'test_2016_flickr.en')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/multi30k.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multi30k dataset</p>
 <p>Separately returns the train/valid/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 29000
+valid: 1014
+test: 1000</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
 Default: (‘train’, ‘valid’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 <li><p><strong>train_filenames</strong> – the source and target filenames for training.
 Default: (‘train.de’, ‘train.en’)</p></li>
 <li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
 Default: (‘val.de’, ‘val.en’)</p></li>
 <li><p><strong>test_filenames</strong> – the source and target filenames for test.
 Default: (‘test2016.de’, ‘test2016.en’)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>The available dataset include:</dt><dd><p>test_2016_flickr.cs
+<li><p><strong>available dataset include</strong> (<em>The</em>) – test_2016_flickr.cs
 test_2016_flickr.de
 test_2016_flickr.en
 test_2016_flickr.fr
@@ -771,7 +786,8 @@ val.3.en
 val.4.de
 val.4.en
 val.5.de
-val.5.en</p>
+val.5.en</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -781,32 +797,29 @@ val.5.en</p>
 <h3><a class="toc-backref" href="#id19">IWSLT</a><a class="headerlink" href="#iwslt" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.IWSLT">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">IWSLT</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em>, <em class="sig-param">train_filenames=('train.de-en.de'</em>, <em class="sig-param">'train.de-en.en')</em>, <em class="sig-param">valid_filenames=('IWSLT16.TED.tst2013.de-en.de'</em>, <em class="sig-param">'IWSLT16.TED.tst2013.de-en.en')</em>, <em class="sig-param">test_filenames=('IWSLT16.TED.tst2014.de-en.de'</em>, <em class="sig-param">'IWSLT16.TED.tst2014.de-en.en')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/iwslt.html#IWSLT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IWSLT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">IWSLT</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">train_filenames=('train.de-en.de'</em>, <em class="sig-param">'train.de-en.en')</em>, <em class="sig-param">valid_filenames=('IWSLT16.TED.tst2013.de-en.de'</em>, <em class="sig-param">'IWSLT16.TED.tst2013.de-en.en')</em>, <em class="sig-param">test_filenames=('IWSLT16.TED.tst2014.de-en.de'</em>, <em class="sig-param">'IWSLT16.TED.tst2014.de-en.en')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/iwslt.html#IWSLT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.IWSLT" title="Permalink to this definition">¶</a></dt>
 <dd><p>IWSLT dataset</p>
-<blockquote>
-<div><p>Separately returns the train/valid/test split</p>
+<p>Separately returns the train/valid/test split</p>
 <dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>root: Directory where the datasets are saved.</dt><dd><p>Default: “.data”</p>
-</dd>
-<dt>split: split or splits to be returned. Can be a string or tuple of strings.</dt><dd><p>By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
-Default: (‘train’, ‘valid’, ‘test’)</p>
-</dd>
-<dt>offset: the number of the starting line.</dt><dd><p>Default: 0</p>
-</dd>
-<dt>train_filenames: the source and target filenames for training.</dt><dd><p>Default: (‘train.de-en.de’, ‘train.de-en.en’)</p>
-</dd>
-<dt>valid_filenames: the source and target filenames for valid.</dt><dd><p>Default: (‘IWSLT16.TED.tst2013.de-en.de’, ‘IWSLT16.TED.tst2013.de-en.en’)</p>
-</dd>
-<dt>test_filenames: the source and target filenames for test.</dt><dd><p>Default: (‘IWSLT16.TED.tst2014.de-en.de’, ‘IWSLT16.TED.tst2014.de-en.en’)</p>
+<dt>Number of lines per split:</dt><dd><p>train: 196884
+valid: 993
+test: 1305</p>
 </dd>
 </dl>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="simple">
-<dt>The available datasets include:</dt><dd><p>IWSLT16.TED.dev2010.ar-en.ar
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved.
+Default: .data</p></li>
+<li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
+Default: (‘train’, ‘valid’, ‘test’)</p></li>
+<li><p><strong>train_filenames</strong> – the source and target filenames for training.
+Default: (‘train.de-en.de’, ‘train.de-en.en’)</p></li>
+<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
+Default: (‘IWSLT16.TED.tst2013.de-en.de’, ‘IWSLT16.TED.tst2013.de-en.en’)</p></li>
+<li><p><strong>test_filenames</strong> – the source and target filenames for test.
+Default: (‘IWSLT16.TED.tst2014.de-en.de’, ‘IWSLT16.TED.tst2014.de-en.en’)</p></li>
+<li><p><strong>available datasets include</strong> (<em>The</em>) – IWSLT16.TED.dev2010.ar-en.ar
 IWSLT16.TED.dev2010.ar-en.en
 IWSLT16.TED.dev2010.cs-en.cs
 IWSLT16.TED.dev2010.cs-en.en
@@ -940,7 +953,8 @@ train.tags.en-de.en
 train.tags.en-fr.en
 train.tags.en-fr.fr
 train.tags.fr-en.en
-train.tags.fr-en.fr</p>
+train.tags.fr-en.fr</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -950,32 +964,32 @@ train.tags.fr-en.fr</p>
 <h3><a class="toc-backref" href="#id20">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.WMT14">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em>, <em class="sig-param">train_filenames=('train.tok.clean.bpe.32000.de'</em>, <em class="sig-param">'train.tok.clean.bpe.32000.en')</em>, <em class="sig-param">valid_filenames=('newstest2013.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2013.tok.bpe.32000.en')</em>, <em class="sig-param">test_filenames=('newstest2014.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2014.tok.bpe.32000.en')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wmt14.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">train_filenames=('train.tok.clean.bpe.32000.de'</em>, <em class="sig-param">'train.tok.clean.bpe.32000.en')</em>, <em class="sig-param">valid_filenames=('newstest2013.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2013.tok.bpe.32000.en')</em>, <em class="sig-param">test_filenames=('newstest2014.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2014.tok.bpe.32000.en')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/wmt14.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
 <dd><p>WMT14 dataset</p>
-<blockquote>
-<div><p>Separately returns the train/valid/test split</p>
+<p>Separately returns the train/valid/test split</p>
 <dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>root: Directory where the datasets are saved.</dt><dd><p>Default: “.data”</p>
+<dt>Number of lines per split:</dt><dd><p>train: 4500966
+valid: 3000
+test: 3003</p>
 </dd>
-<dt>split: split or splits to be returned. Can be a string or tuple of strings.</dt><dd><p>By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
-Default: (‘train’, ‘valid’, ‘test’)</p>
-</dd>
-<dt>offset: the number of the starting line.</dt><dd><p>Default: 0</p>
-</dd>
-<dt>train_filenames: the source and target filenames for training.</dt><dd><p>Default: (‘train.tok.clean.bpe.32000.de’, ‘train.tok.clean.bpe.32000.en’)</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved.
+Default: .data</p></li>
+<li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
+Default: (‘train’, ‘valid’, ‘test’)</p></li>
+<li><p><strong>train_filenames</strong> – <dl class="simple">
+<dt>the source and target filenames for training.</dt><dd><p>Default: (‘train.tok.clean.bpe.32000.de’, ‘train.tok.clean.bpe.32000.en’)</p>
 </dd>
 <dt>valid_filenames: the source and target filenames for valid.</dt><dd><p>Default: (‘newstest2013.tok.bpe.32000.de’, ‘newstest2013.tok.bpe.32000.en’)</p>
 </dd>
 <dt>test_filenames: the source and target filenames for test.</dt><dd><p>Default: (‘newstest2014.tok.bpe.32000.de’, ‘newstest2014.tok.bpe.32000.en’)</p>
 </dd>
 </dl>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="simple">
-<dt>The available datasets include:</dt><dd><p>newstest2016.en
+</p></li>
+<li><p><strong>available datasets include</strong> (<em>The</em>) – newstest2016.en
 newstest2016.de
 newstest2015.en
 newstest2015.de
@@ -1024,7 +1038,8 @@ newstest2012.tok.bpe.32000.de
 newstest2014.tok.bpe.32000.de
 newstest2016.tok.bpe.32000.de
 newstest2015.tok.bpe.32000.de
-train.tok.clean.bpe.32000.de</p>
+train.tok.clean.bpe.32000.de</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1037,20 +1052,22 @@ train.tok.clean.bpe.32000.de</p>
 <h3><a class="toc-backref" href="#id22">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.UDPOS">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">UDPOS</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/udpos.html#UDPOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">UDPOS</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/udpos.html#UDPOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
 <dd><p>UDPOS dataset</p>
 <p>Separately returns the train/valid/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 12543
+valid: 2002
+test: 2077</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘train’, ‘valid’) or just ‘train’.
 Default: (‘train’, ‘valid’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -1061,20 +1078,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id23">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.CoNLL2000Chunking">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">CoNLL2000Chunking</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/conll2000chunking.html#CoNLL2000Chunking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">CoNLL2000Chunking</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/conll2000chunking.html#CoNLL2000Chunking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
 <dd><p>CoNLL2000Chunking dataset</p>
 <p>Separately returns the train/test split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 8936
+test: 2012</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘test’,) or just ‘train’.
 Default: (‘train’, ‘test’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -1088,20 +1106,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id25">SQuAD 1.0</a><a class="headerlink" href="#squad-1-0" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.SQuAD1">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SQuAD1</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'dev')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad1.html#SQuAD1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SQuAD1" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SQuAD1</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'dev')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad1.html#SQuAD1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SQuAD1" title="Permalink to this definition">¶</a></dt>
 <dd><p>SQuAD1 dataset</p>
 <p>Separately returns the train/dev split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 87599
+dev: 10570</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘dev’,) or just ‘train’.
 Default: (‘train’, ‘dev’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -1112,20 +1131,21 @@ Default: 0</p></li>
 <h3><a class="toc-backref" href="#id26">SQuAD 2.0</a><a class="headerlink" href="#squad-2-0" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.datasets.SQuAD2">
-<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SQuAD2</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'dev')</em>, <em class="sig-param">offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad2.html#SQuAD2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SQuAD2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.datasets.</code><code class="sig-name descname">SQuAD2</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'dev')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/datasets/squad2.html#SQuAD2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.datasets.SQuAD2" title="Permalink to this definition">¶</a></dt>
 <dd><p>SQuAD2 dataset</p>
 <p>Separately returns the train/dev split</p>
+<dl class="simple">
+<dt>Number of lines per split:</dt><dd><p>train: 130319
+dev: 11873</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> – Directory where the datasets are saved.
-Default: “.data”</p></li>
+Default: .data</p></li>
 <li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings.
-By default, all three datasets are generated. Users
-could also choose any subset of them, for example (‘dev’,) or just ‘train’.
 Default: (‘train’, ‘dev’)</p></li>
-<li><p><strong>offset</strong> – the number of the starting line.
-Default: 0</p></li>
 </ul>
 </dd>
 </dl>
@@ -1178,7 +1198,7 @@ Default: 0</p></li>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext.experimental.datasets.raw</a><ul>
+<li><a class="reference internal" href="#">torchtext.datasets</a><ul>
 <li><a class="reference internal" href="#text-classification">Text Classification</a><ul>
 <li><a class="reference internal" href="#textclassificationdataset">TextClassificationDataset</a></li>
 <li><a class="reference internal" href="#ag-news">AG_NEWS</a></li>

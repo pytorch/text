@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.conll2000chunking &mdash; torchtext 0.9.0.dev20210219 documentation</title>
+  <title>torchtext.datasets.conll2000chunking &mdash; torchtext 0.9.0.dev20210220 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210219
+                  0.9.0.dev20210220
                 </div>
               
             
@@ -218,7 +218,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.experimental.datasets.raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -309,10 +309,10 @@
               
   <h1>Source code for torchtext.datasets.conll2000chunking</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">find_match</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">find_match</span>
 
 <span class="n">URL</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz&quot;</span><span class="p">,</span>
@@ -348,17 +348,14 @@
             <span class="k">yield</span> <span class="n">columns</span>
 
 
-<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CoNLL2000Chunking">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
-        <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-        <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
-        <span class="n">data_filename</span> <span class="o">=</span> <span class="n">find_match</span><span class="p">(</span><span class="n">item</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
-        <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">item</span><span class="p">],</span>
-                                               <span class="n">_create_data_from_iob</span><span class="p">(</span><span class="n">data_filename</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">datasets</span></div>
+<div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CoNLL2000Chunking">[docs]</a><span class="nd">@add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">)</span>
+<span class="nd">@wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
+    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
+    <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
+    <span class="n">data_filename</span> <span class="o">=</span> <span class="n">find_match</span><span class="p">(</span><span class="n">split</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
+                                  <span class="n">_create_data_from_iob</span><span class="p">(</span><span class="n">data_filename</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span></div>
 </pre></div>
 
              </article>

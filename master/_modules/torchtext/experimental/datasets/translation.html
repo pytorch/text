@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.translation &mdash; torchtext 0.9.0.dev20210219 documentation</title>
+  <title>torchtext.experimental.datasets.translation &mdash; torchtext 0.9.0.dev20210220 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210219
+                  0.9.0.dev20210220
                 </div>
               
             
@@ -218,7 +218,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data_utils.html">torchtext.data.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">torchtext.experimental.datasets.raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -310,8 +310,8 @@
   <h1>Source code for torchtext.experimental.datasets.translation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">check_default_set</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">wrap_datasets</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">check_default_set</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_datasets</span>
 <span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">datasets</span> <span class="k">as</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span><span class="p">,</span> <span class="n">build_vocab_from_iterator</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>

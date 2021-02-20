@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.iwslt &mdash; torchtext 0.9.0.dev20210219 documentation</title>
+  <title>torchtext.datasets.iwslt &mdash; torchtext 0.9.0.dev20210220 documentation</title>
   
 
   
@@ -183,7 +183,7 @@
               
               
                 <div class="version">
-                  0.9.0.dev20210219
+                  0.9.0.dev20210220
                 </div>
               
             
@@ -218,7 +218,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_utils.html">torchtext.data.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.experimental.datasets.raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
@@ -313,9 +313,9 @@
 <span class="kn">import</span> <span class="nn">codecs</span>
 <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
-<span class="kn">from</span> <span class="nn">torchtext.datasets.common</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
 
 <span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8&#39;</span>
 
@@ -378,20 +378,20 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="IWSLT"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IWSLT">[docs]</a><span class="nd">@wrap_split_argument</span>
-<span class="nd">@add_docstring_header</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">IWSLT</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<div class="viewcode-block" id="IWSLT"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IWSLT">[docs]</a><span class="nd">@add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">)</span>
+<span class="nd">@wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">IWSLT</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span>
           <span class="n">train_filenames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train.de-en.de&#39;</span><span class="p">,</span> <span class="s1">&#39;train.de-en.en&#39;</span><span class="p">),</span>
           <span class="n">valid_filenames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;IWSLT16.TED.tst2013.de-en.de&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;IWSLT16.TED.tst2013.de-en.en&#39;</span><span class="p">),</span>
           <span class="n">test_filenames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;IWSLT16.TED.tst2014.de-en.de&#39;</span><span class="p">,</span>
                           <span class="s1">&#39;IWSLT16.TED.tst2014.de-en.en&#39;</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;    train_filenames: the source and target filenames for training.</span>
-<span class="sd">                Default: (&#39;train.de-en.de&#39;, &#39;train.de-en.en&#39;)</span>
-<span class="sd">            valid_filenames: the source and target filenames for valid.</span>
-<span class="sd">                Default: (&#39;IWSLT16.TED.tst2013.de-en.de&#39;, &#39;IWSLT16.TED.tst2013.de-en.en&#39;)</span>
-<span class="sd">            test_filenames: the source and target filenames for test.</span>
-<span class="sd">                Default: (&#39;IWSLT16.TED.tst2014.de-en.de&#39;, &#39;IWSLT16.TED.tst2014.de-en.en&#39;)</span>
+<span class="sd">        Default: (&#39;train.de-en.de&#39;, &#39;train.de-en.en&#39;)</span>
+<span class="sd">    valid_filenames: the source and target filenames for valid.</span>
+<span class="sd">        Default: (&#39;IWSLT16.TED.tst2013.de-en.de&#39;, &#39;IWSLT16.TED.tst2013.de-en.en&#39;)</span>
+<span class="sd">    test_filenames: the source and target filenames for test.</span>
+<span class="sd">        Default: (&#39;IWSLT16.TED.tst2014.de-en.de&#39;, &#39;IWSLT16.TED.tst2014.de-en.en&#39;)</span>
 
 <span class="sd">    The available datasets include:</span>
 <span class="sd">        IWSLT16.TED.dev2010.ar-en.ar</span>
@@ -549,7 +549,7 @@
     <span class="n">src_language</span> <span class="o">=</span> <span class="n">train_filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">tgt_language</span> <span class="o">=</span> <span class="n">train_filenames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">languages</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">])</span>
-    <span class="n">iwslt_tar</span> <span class="o">=</span> <span class="s1">&#39;.data/2016-01/texts/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.tgz&#39;</span>
+    <span class="n">iwslt_tar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;2016-01/texts/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.tgz&#39;</span><span class="p">)</span>
     <span class="n">iwslt_tar</span> <span class="o">=</span> <span class="n">iwslt_tar</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">languages</span><span class="p">)</span>
     <span class="n">extracted_dataset_tar</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">iwslt_tar</span><span class="p">)</span>
@@ -578,19 +578,14 @@
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
                 <span class="s2">&quot;Files are not found for data type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
 
-    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">split</span><span class="p">:</span>
-        <span class="n">src_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">tgt_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">src_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">tgt_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">def</span> <span class="nf">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
-                <span class="k">yield</span> <span class="n">item</span>
+    <span class="k">def</span> <span class="nf">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">item</span>
 
-        <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;IWSLT&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">datasets</span></div>
+    <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;IWSLT&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">))</span></div>
 </pre></div>
 
              </article>
