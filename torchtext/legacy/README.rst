@@ -51,5 +51,3 @@ With `torchtext v0.9.0`
       >>> train_iterator, test_iterator = torchtext.data.Iterator.splits(
                    (train_split, test_split), batch_size=8, device = device)
       >>> next(iter(train_iterator))
-
-However, if you still import ``torchtext`` (e.g. ``from torchtext import data``), it will refer to the torchtext package, not ``torchtext.legacy``.
