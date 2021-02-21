@@ -17,7 +17,7 @@ This repository consists of:
 * `torchtext.nn <#nn>`_: NLP related modules
 * `examples <https://github.com/pytorch/text/tree/master/examples>`_: Example NLP workflows with PyTorch and torchtext library.
 
-Note: the legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <#legacy>`_ folder. Those legacy code will not be maintained by the development team and we plan to fully remove then in the future release. See the Legacy session for more details.
+Note: the legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <#legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See the Legacy session for more details.
 
 Installation
 ============
@@ -113,7 +113,7 @@ For example, to access the raw text from the AG_NEWS dataset:
       >>> train_iter = AG_NEWS(split='train')
       >>> dataloader = DataLoader(train_iter, batch_size=8, shuffle=False)
 
-A tutorial for the end-to-end text classification workflow can be founc in `TEXT CLASSIFICATION WITH TORCHTEXT <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
+A tutorial for the end-to-end text classification workflow can be found in `TEXT CLASSIFICATION WITH TORCHTEXT <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
 
 [Prototype] Experimental Code
 =============================
@@ -133,14 +133,14 @@ For more detailed instructions, please refer to `Install PyTorch <https://pytorc
 [BC Breaking] Legacy
 ====================
 
-In v0.9.0 release, we move the following legacy code to `torchtext.legacy <#legacy>`_. This is part of the work to modernize the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
+In v0.9.0 release, we move the following legacy code to `torchtext.legacy <#legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
 
-* torchtext.legacy.data.field
-* torchtext.legacy.data.batch
-* torchtext.legacy.data.example
-* torchtext.legacy.data.iterator
-* torchtext.legacy.data.pipeline
-* torchtext.legacy.datasets
+* ``torchtext.legacy.data.field``
+* ``torchtext.legacy.data.batch``
+* ``torchtext.legacy.data.example``
+* ``torchtext.legacy.data.iterator``
+* ``torchtext.legacy.data.pipeline``
+* ``torchtext.legacy.datasets``
 
 We have a `migration tutorial <https://fburl.com/9hbq843y>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
 
