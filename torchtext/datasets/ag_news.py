@@ -21,21 +21,18 @@ NUM_LINES = {
 }
 
 
-@wrap_split_argument
-@add_docstring_header()
-def AG_NEWS(root='.data', split=('train', 'test')):
+@add_docstring_header(num_lines=NUM_LINES)
+@wrap_split_argument(('train', 'test'))
+def AG_NEWS(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
 
-    datasets = []
-    for item in split:
-        path = download_from_url(URL[item], root=root,
-                                 path=os.path.join(root, item + ".csv"),
-                                 hash_value=MD5[item],
-                                 hash_type='md5')
-        datasets.append(RawTextIterableDataset("AG_NEWS", NUM_LINES[item],
-                                               _create_data_from_csv(path)))
-    return datasets
+    path = download_from_url(URL[split], root=root,
+                             path=os.path.join(root, split + ".csv"),
+                             hash_value=MD5[split],
+                             hash_type='md5')
+    return RawTextIterableDataset("AG_NEWS", NUM_LINES[split],
+                                  _create_data_from_csv(path))

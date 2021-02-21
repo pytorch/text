@@ -68,20 +68,20 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument
-@add_docstring_header()
-def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
+@add_docstring_header(num_lines=NUM_LINES)
+@wrap_split_argument(('train', 'valid', 'test'))
+def IWSLT(root, split,
           train_filenames=('train.de-en.de', 'train.de-en.en'),
           valid_filenames=('IWSLT16.TED.tst2013.de-en.de',
                            'IWSLT16.TED.tst2013.de-en.en'),
           test_filenames=('IWSLT16.TED.tst2014.de-en.de',
                           'IWSLT16.TED.tst2014.de-en.en')):
     """    train_filenames: the source and target filenames for training.
-                Default: ('train.de-en.de', 'train.de-en.en')
-            valid_filenames: the source and target filenames for valid.
-                Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
-            test_filenames: the source and target filenames for test.
-                Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
+        Default: ('train.de-en.de', 'train.de-en.en')
+    valid_filenames: the source and target filenames for valid.
+        Default: ('IWSLT16.TED.tst2013.de-en.de', 'IWSLT16.TED.tst2013.de-en.en')
+    test_filenames: the source and target filenames for test.
+        Default: ('IWSLT16.TED.tst2014.de-en.de', 'IWSLT16.TED.tst2014.de-en.en')
 
     The available datasets include:
         IWSLT16.TED.dev2010.ar-en.ar
@@ -239,7 +239,7 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
     src_language = train_filenames[0].split(".")[-1]
     tgt_language = train_filenames[1].split(".")[-1]
     languages = "-".join([src_language, tgt_language])
-    iwslt_tar = '.data/2016-01/texts/{}/{}/{}.tgz'
+    iwslt_tar = os.path.join(root, '2016-01/texts/{}/{}/{}.tgz')
     iwslt_tar = iwslt_tar.format(
         src_language, tgt_language, languages)
     extracted_dataset_tar = extract_archive(iwslt_tar)
@@ -268,16 +268,11 @@ def IWSLT(root='.data', split=('train', 'valid', 'test'), offset=0,
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
-    datasets = []
-    for key in split:
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
+    src_data_iter = _read_text_iterator(data_filenames[split][0])
+    tgt_data_iter = _read_text_iterator(data_filenames[split][1])
 
-        def _iter(src_data_iter, tgt_data_iter):
-            for item in zip(src_data_iter, tgt_data_iter):
-                yield item
+    def _iter(src_data_iter, tgt_data_iter):
+        for item in zip(src_data_iter, tgt_data_iter):
+            yield item
 
-        datasets.append(
-            RawTextIterableDataset("IWSLT", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter)))
-
-    return datasets
+    return RawTextIterableDataset("IWSLT", NUM_LINES[split], _iter(src_data_iter, tgt_data_iter))
