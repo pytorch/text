@@ -221,7 +221,6 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-# @add_docstring_header()
 @wrap_split_argument(('train', 'valid', 'test'))
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en'), valid_set='dev2010', test_set='tst2010'):
     """IWSLT2016 dataset
