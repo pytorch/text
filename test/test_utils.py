@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
+import unittest
 from torchtext import utils
 from .common.torchtext_test_case import TorchtextTestCase
 from test.common.assets import get_asset_path
