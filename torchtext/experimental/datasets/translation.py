@@ -324,7 +324,7 @@ def IWSLT2016(language_pair=('de', 'en'),
               tokenizer=None):
     """ Define translation datasets: IWSLT2016
     Separately returns train/valid/test datasets
-    
+
     The available datasets include following:
 
     **Language pairs**: [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
