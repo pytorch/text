@@ -18,8 +18,7 @@ def build_vocab(data, transforms, index):
 
 
 def _setup_datasets(dataset_name,
-                    train_filenames, valid_filenames, test_filenames,
-                    split_, root, vocab, tokenizer):
+                    split_, root, vocab, tokenizer, **kwargs):
     split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
@@ -36,29 +35,7 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    if 'IWSLT' in dataset_name:
-        src_language = train_filenames[0].split(".")[-1]
-        tgt_language = train_filenames[1].split(".")[-1]
-        if dataset_name == 'IWSLT2016':
-            valid_set = valid_filenames[0].split(".")[2]
-            test_set = test_filenames[0].split(".")[2]
-            raw_datasets = raw.DATASETS[dataset_name](root=root,
-                                                      split=split,
-                                                      language_pair=(src_language, tgt_language),
-                                                      valid_set=valid_set,
-                                                      test_set=test_set)
-        elif dataset_name == 'IWSLT2017':
-            raw_datasets = raw.DATASETS[dataset_name](root=root,
-                                                      split=split,
-                                                      language_pair=(src_language, tgt_language))
-        else:
-            raise ValueError("{} is not supported".format(dataset_name))
-
-    else:
-        raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
-                                                  valid_filenames=valid_filenames,
-                                                  test_filenames=test_filenames,
-                                                  split=split, root=root)
+    raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
@@ -247,9 +224,10 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-
-    return _setup_datasets("Multi30k", train_filenames, valid_filenames, test_filenames,
-                           split, root, vocab, tokenizer)
+    return _setup_datasets("Multi30k", split, root, vocab, tokenizer,
+                           train_filenames=train_filenames,
+                           valid_filenames=valid_filenames,
+                           test_filenames=test_filenames)
 
 
 def IWSLT2017(language_pair=('de', 'en'),
@@ -296,23 +274,13 @@ def IWSLT2017(language_pair=('de', 'en'),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-    year = 17
-    valid_set = 'dev2010'
-    test_set = 'tst2010'
 
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple")
 
     assert (len(language_pair) == 2), 'language_pair must contain only 2 elements'
 
-    src_language, tgt_language = language_pair[0], language_pair[1]
-
-    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, tgt_language)
-    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, tgt_language)
-
-    return _setup_datasets("IWSLT2017", train_filenames, valid_filenames, test_filenames,
-                           split, root, vocab, tokenizer)
+    return _setup_datasets("IWSLT2017", split, root, vocab, tokenizer, language_pair=language_pair)
 
 
 def IWSLT2016(language_pair=('de', 'en'),
@@ -364,21 +332,13 @@ def IWSLT2016(language_pair=('de', 'en'),
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
     """
-    year = 16
 
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple")
 
     assert (len(language_pair) == 2), 'language_pair must contain only 2 elements'
 
-    src_language, tgt_language = language_pair[0], language_pair[1]
-
-    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, valid_set, src_language, tgt_language, tgt_language)
-    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(year, test_set, src_language, tgt_language, tgt_language)
-
-    return _setup_datasets("IWSLT2016", train_filenames, valid_filenames, test_filenames,
-                           split, root, vocab, tokenizer)
+    return _setup_datasets("IWSLT2016", split, root, vocab, tokenizer, language_pair=language_pair, valid_set=valid_set, test_set=test_set)
 
 
 def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
@@ -479,8 +439,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
         >>> src_data, tgt_data = train_dataset[10]
     """
 
-    return _setup_datasets("WMT14", train_filenames, valid_filenames, test_filenames,
-                           split, root, vocab, tokenizer)
+    return _setup_datasets("WMT14", split, root, vocab, tokenizer,
+                           train_filenames=train_filenames,
+                           valid_filenames=valid_filenames,
+                           test_filenames=test_filenames)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT2016': IWSLT2016, 'IWSLT2017': IWSLT2017, 'WMT14': WMT14}
