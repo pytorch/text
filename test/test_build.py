@@ -173,6 +173,7 @@ class TestVocab(TorchtextTestCase):
             self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(100))
             self.assertEqual(vectors[v.stoi['OOV token']], torch.zeros(100))
 
+    @unittest.skip("Download temp. slow.")
     def test_download_custom_vectors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
