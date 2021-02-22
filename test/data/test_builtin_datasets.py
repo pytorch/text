@@ -3,25 +3,11 @@
 import os
 import torch
 import torchtext
-import unittest
 from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
-
-GOOGLE_DRIVE_BASED_DATASETS = [
-    'AmazonReviewFull',
-    'AmazonReviewPolarity',
-    'DBpedia',
-    'IMDB',
-    'IWSLT',
-    'SogouNews',
-    'WMT14',
-    'YahooAnswers',
-    'YelpReviewFull',
-    'YelpReviewPolarity'
-]
 
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
@@ -169,8 +155,6 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
-        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
-            return
 
         # Currently disabled due to incredibly slow download
         if dataset_name == "WMTNewsCrawl":
@@ -189,8 +173,6 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
-        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
-            return
         if 'statmt' in torchtext.datasets.URLS[dataset_name]:
             return
         dataset = torchtext.datasets.DATASETS[dataset_name]
@@ -206,8 +188,6 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
     def test_datasets_split_argument(self, dataset_name):
-        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
-            return
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
@@ -256,7 +236,6 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
-    @unittest.skip("Dataset depends on Google drive")
     def test_iwslt(self):
         from torchtext.experimental.datasets import IWSLT
 

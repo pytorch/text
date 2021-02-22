@@ -164,7 +164,10 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
                                     path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
-    assert path == find_match(extracted_file, extracted_files)
+    extracted_files = [os.path.abspath(p) for p in extracted_files]
+    abs_path = os.path.abspath(path)
+    found_path = find_match(extracted_file, extracted_files)
+    assert found_path == abs_path
     return path
 
 
