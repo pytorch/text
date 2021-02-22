@@ -358,8 +358,7 @@ jobs:
       - load_conda_channel_flags
       - run:
           name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"%Y-%m-%d")" > .circleci-weekly
       - restore_cache:
 
           keys:
