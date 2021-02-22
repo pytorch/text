@@ -222,7 +222,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
 
 
 @wrap_split_argument(('train', 'valid', 'test'))
-def IWSLT2016(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en'), valid_set='dev2010', test_set='tst2010'):
+def IWSLT2016(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
     """IWSLT2016 dataset
 
     The available datasets include following:
