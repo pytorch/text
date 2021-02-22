@@ -3,6 +3,7 @@
 import os
 import torch
 import torchtext
+import unittest
 from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
