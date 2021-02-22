@@ -80,7 +80,8 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, split_, year, language
         return torch.tensor([vocab[token] for token in tokenizer(line)], dtype=torch.long)
 
     if dataset_name == 'WMTNewsCrawl':
-        raw_datasets = raw.DATASETS[dataset_name](root=root, split=split, year=year, language=language)
+        raw_datasets = torchtext.experimental.datasets.raw.DATASETS[dataset_name](root=root, split=split,
+                                                                                  year=year, language=language)
     else:
         raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(split, raw_datasets)}
