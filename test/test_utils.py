@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
 import os
-import unittest
 from torchtext import utils
 from .common.torchtext_test_case import TorchtextTestCase
 from test.common.assets import get_asset_path
@@ -154,7 +153,6 @@ class TestUtils(TorchtextTestCase):
             conditional_remove(f)
         conditional_remove(archive_path)
 
-    @unittest.skip("Download temp. slow.")
     def test_extract_non_tar_zip(self):
         # create root directory for downloading data
         root = '.data'

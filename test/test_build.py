@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Tests that requires external resources (Network access to fetch dataset)"""
 import os
-import unittest
 from collections import Counter
 
 import torch
@@ -295,7 +294,6 @@ class TestVocab(TorchtextTestCase):
 
             self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(300))
 
-    @unittest.skip("Download temp. slow.")
     def test_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')
