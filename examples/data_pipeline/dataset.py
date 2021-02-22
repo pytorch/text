@@ -1,5 +1,5 @@
 import torch
-from torchtext.experimental.datasets.raw import text_classification as raw
+from torchtext.datasets import text_classification as raw
 
 
 class BatchTextClassificationData(torch.utils.data.IterableDataset):

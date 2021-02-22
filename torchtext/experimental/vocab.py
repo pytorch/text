@@ -35,7 +35,7 @@ def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_tok
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
-        Vocab: a `Vocab` object.
+        torchtext.experimental.vocab.Vocab: a `Vocab` object.
 
     Examples:
         >>> from torchtext.experimental.vocab import build_vocab_from_text_file
@@ -69,7 +69,7 @@ def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4)
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
-        Vocab: a `Vocab` object.
+        torchtext.experimental.vocab.Vocab: a `Vocab` object.
 
     Examples:
         >>> from torchtext.experimental.vocab import load_vocab_from_file
@@ -162,6 +162,7 @@ class Vocab(nn.Module):
     @torch.jit.export
     def forward(self, tokens: List[str]) -> List[int]:
         r"""Calls the `lookup_indices` method
+
         Args:
             tokens (List[str]): a list of tokens used to lookup their corresponding `indices`.
 

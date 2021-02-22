@@ -29,6 +29,16 @@ commands:
               our_upload_channel=test
             fi
             echo "export UPLOAD_CHANNEL=${our_upload_channel}" >> ${BASH_ENV}
+  load_conda_channel_flags:
+    description: "Determines whether we need extra conda channels"
+    steps:
+      - run:
+          name: Adding CONDA_CHANNEL_FLAGS to BASH_ENV
+          command: |
+              CONDA_CHANNEL_FLAGS=""
+              if [[ "${PYTHON_VERSION}" = *3.9* ]]; then
+                echo "export CONDA_CHANNEL_FLAGS=-c=conda-forge" >> ${BASH_ENV}
+              fi
 
 binary_common: &binary_common
   parameters:
@@ -71,7 +81,7 @@ jobs:
   binary_linux_wheel:
     <<: *binary_common
     docker:
-      - image: "pytorch/manylinux-cuda100"
+      - image: "pytorch/manylinux-cuda102"
     resource_class: 2xlarge+
     steps:
       - checkout
@@ -92,6 +102,7 @@ jobs:
     steps:
       - checkout
       - designate_upload_channel
+      - load_conda_channel_flags
       - run: packaging/build_conda.sh
       - store_artifacts:
           path: /opt/conda/conda-bld/linux-64
@@ -127,12 +138,13 @@ jobs:
     steps:
       - checkout
       - designate_upload_channel
+      - load_conda_channel_flags
       - run:
           name: build
           command: |
             eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
             conda activate base
-            conda install -yq conda-build "conda-package-handling!=1.5.0"
+            conda install ${CONDA_CHANNEL_FLAGS} -yq conda-build "conda-package-handling!=1.5.0"
             bash packaging/build_conda.sh
             rm /C/tools/miniconda3/conda-bld/win-64/vs2019*.tar.bz2
       - store_artifacts:
@@ -175,6 +187,7 @@ jobs:
     steps:
       - checkout
       - designate_upload_channel
+      - load_conda_channel_flags
       - run:
           command: |
             curl -o conda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
@@ -232,13 +245,14 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - designate_upload_channel
+      - load_conda_channel_flags
       - run:
           name: install binaries
           command: |
             set -x
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-${UPLOAD_CHANNEL} pytorch cpuonly
-            conda install -v -y -c file://$HOME/workspace/conda-bld torchtext
+            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-${UPLOAD_CHANNEL} pytorch
+            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c file://$HOME/workspace/conda-bld torchtext
       - run:
           name: smoke test
           command: |
@@ -291,6 +305,7 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - designate_upload_channel
+      - load_conda_channel_flags
       - run:
           name: install binaries
           command: |
@@ -299,8 +314,8 @@ jobs:
             conda env remove -n python${PYTHON_VERSION} || true
             conda create -yn python${PYTHON_VERSION} python=${PYTHON_VERSION}
             conda activate python${PYTHON_VERSION}
-            conda install -v -y -c pytorch-"${UPLOAD_CHANNEL}" pytorch cpuonly
-            conda install -v -y -c ~/workspace/conda-bld torchtext
+            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c pytorch-"${UPLOAD_CHANNEL}" pytorch
+            conda install -v -y ${CONDA_CHANNEL_FLAGS} -c ~/workspace/conda-bld torchtext
       - run:
           name: smoke test
           command: |
@@ -335,11 +350,12 @@ jobs:
   unittest_linux:
     <<: *binary_common
     docker:
-      - image: "pytorch/manylinux-cuda100"
+      - image: "pytorch/manylinux-cuda102"
     resource_class: 2xlarge+
     steps:
       - checkout
       - designate_upload_channel
+      - load_conda_channel_flags
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
@@ -392,6 +408,7 @@ jobs:
     steps:
       - checkout
       - designate_upload_channel
+      - load_conda_channel_flags
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
@@ -440,7 +457,7 @@ jobs:
   stylecheck:
     <<: *binary_common
     docker:
-      - image: "pytorch/manylinux-cuda100"
+      - image: "pytorch/manylinux-cuda102"
     resource_class: medium
     steps:
       - checkout
@@ -538,6 +555,9 @@ workflows:
       - binary_linux_wheel:
           name: binary_linux_wheel_py3.8
           python_version: '3.8'
+      - binary_linux_wheel:
+          name: binary_linux_wheel_py3.9
+          python_version: '3.9'
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.6
           python_version: '3.6'
@@ -547,6 +567,9 @@ workflows:
       - binary_macos_wheel:
           name: binary_macos_wheel_py3.8
           python_version: '3.8'
+      - binary_macos_wheel:
+          name: binary_macos_wheel_py3.9
+          python_version: '3.9'
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.6
           python_version: '3.6'
@@ -556,6 +579,9 @@ workflows:
       - binary_windows_wheel:
           name: binary_windows_wheel_py3.8
           python_version: '3.8'
+      - binary_windows_wheel:
+          name: binary_windows_wheel_py3.9
+          python_version: '3.9'
       - binary_linux_conda:
           name: binary_linux_conda_py3.6
           python_version: '3.6'
@@ -565,6 +591,9 @@ workflows:
       - binary_linux_conda:
           name: binary_linux_conda_py3.8
           python_version: '3.8'
+      - binary_linux_conda:
+          name: binary_linux_conda_py3.9
+          python_version: '3.9'
       - binary_macos_conda:
           name: binary_macos_conda_py3.6
           python_version: '3.6'
@@ -574,6 +603,9 @@ workflows:
       - binary_macos_conda:
           name: binary_macos_conda_py3.8
           python_version: '3.8'
+      - binary_macos_conda:
+          name: binary_macos_conda_py3.9
+          python_version: '3.9'
       - binary_windows_conda:
           name: binary_windows_conda_py3.6
           python_version: '3.6'
@@ -583,6 +615,9 @@ workflows:
       - binary_windows_conda:
           name: binary_windows_conda_py3.8
           python_version: '3.8'
+      - binary_windows_conda:
+          name: binary_windows_conda_py3.9
+          python_version: '3.9'
       - build_docs:
           name: build_docs
           python_version: '3.8'
@@ -613,6 +648,9 @@ workflows:
       - unittest_linux:
           name: unittest_linux_py3.8
           python_version: '3.8'
+      - unittest_linux:
+          name: unittest_linux_py3.9
+          python_version: '3.9'
       - unittest_windows:
           name: unittest_windows_py3.6
           python_version: '3.6'
@@ -622,6 +660,9 @@ workflows:
       - unittest_windows:
           name: unittest_windows_py3.8
           python_version: '3.8'
+      - unittest_windows:
+          name: unittest_windows_py3.9
+          python_version: '3.9'
   nightly:
     jobs:
       - circleci_consistency:
@@ -712,6 +753,34 @@ workflows:
           python_version: '3.8'
           requires:
           - nightly_binary_linux_wheel_py3.8_upload
+      - binary_linux_wheel:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_wheel_py3.9
+          python_version: '3.9'
+      - binary_wheel_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_wheel_py3.9_upload
+          requires:
+          - nightly_binary_linux_wheel_py3.9
+      - smoke_test_linux_pip:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_wheel_py3.9_smoke_test_pip
+          python_version: '3.9'
+          requires:
+          - nightly_binary_linux_wheel_py3.9_upload
       - binary_macos_wheel:
           filters:
             branches:
@@ -766,6 +835,24 @@ workflows:
           name: nightly_binary_macos_wheel_py3.8_upload
           requires:
           - nightly_binary_macos_wheel_py3.8
+      - binary_macos_wheel:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_macos_wheel_py3.9
+          python_version: '3.9'
+      - binary_wheel_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_macos_wheel_py3.9_upload
+          requires:
+          - nightly_binary_macos_wheel_py3.9
       - binary_windows_wheel:
           filters:
             branches:
@@ -850,6 +937,34 @@ workflows:
           python_version: '3.8'
           requires:
           - nightly_binary_windows_wheel_py3.8_upload
+      - binary_windows_wheel:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_wheel_py3.9
+          python_version: '3.9'
+      - binary_wheel_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_wheel_py3.9_upload
+          requires:
+          - nightly_binary_windows_wheel_py3.9
+      - smoke_test_windows_pip:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_wheel_py3.9_smoke_test_pip
+          python_version: '3.9'
+          requires:
+          - nightly_binary_windows_wheel_py3.9_upload
       - binary_linux_conda:
           filters:
             branches:
@@ -934,6 +1049,34 @@ workflows:
           python_version: '3.8'
           requires:
           - nightly_binary_linux_conda_py3.8_upload
+      - binary_linux_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_conda_py3.9
+          python_version: '3.9'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_conda_py3.9_upload
+          requires:
+          - nightly_binary_linux_conda_py3.9
+      - smoke_test_linux_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_linux_conda_py3.9_smoke_test_conda
+          python_version: '3.9'
+          requires:
+          - nightly_binary_linux_conda_py3.9_upload
       - binary_macos_conda:
           filters:
             branches:
@@ -988,6 +1131,24 @@ workflows:
           name: nightly_binary_macos_conda_py3.8_upload
           requires:
           - nightly_binary_macos_conda_py3.8
+      - binary_macos_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_macos_conda_py3.9
+          python_version: '3.9'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_macos_conda_py3.9_upload
+          requires:
+          - nightly_binary_macos_conda_py3.9
       - binary_windows_conda:
           filters:
             branches:
@@ -1072,6 +1233,34 @@ workflows:
           python_version: '3.8'
           requires:
           - nightly_binary_windows_conda_py3.8_upload
+      - binary_windows_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.9
+          python_version: '3.9'
+      - binary_conda_upload:
+          context: org-member
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.9_upload
+          requires:
+          - nightly_binary_windows_conda_py3.9
+      - smoke_test_windows_conda:
+          filters:
+            branches:
+              only: nightly
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
+          name: nightly_binary_windows_conda_py3.9_smoke_test_conda
+          python_version: '3.9'
+          requires:
+          - nightly_binary_windows_conda_py3.9_upload
   docker_build:
     triggers:
       - schedule:

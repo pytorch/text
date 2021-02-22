@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests that requires external resources (Network access to fetch dataset)"""
 import os
+import unittest
 from collections import Counter
 
 import torch
@@ -11,9 +12,9 @@ from .common.torchtext_test_case import TorchtextTestCase
 
 class TestNestedField(TorchtextTestCase):
     def test_build_vocab(self):
-        nesting_field = torchtext.data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
+        nesting_field = torchtext.legacy.data.Field(tokenize=list, init_token="<w>", eos_token="</w>")
 
-        field = torchtext.data.NestedField(
+        field = torchtext.legacy.data.NestedField(
             nesting_field, init_token='<s>', eos_token='</s>',
             include_lengths=True,
             pad_first=True)
@@ -33,15 +34,15 @@ class TestDataset(TorchtextTestCase):
     def test_csv_file_no_header_one_col_multiple_fields(self):
         self.write_test_ppid_dataset(data_format="csv")
 
-        question_field = torchtext.data.Field(sequential=True)
-        spacy_tok_question_field = torchtext.data.Field(sequential=True, tokenize="spacy")
-        label_field = torchtext.data.Field(sequential=False)
+        question_field = torchtext.legacy.data.Field(sequential=True)
+        spacy_tok_question_field = torchtext.legacy.data.Field(sequential=True, tokenize="spacy")
+        label_field = torchtext.legacy.data.Field(sequential=False)
         # Field name/value as nested tuples
         fields = [("ids", None),
                   (("q1", "q1_spacy"), (question_field, spacy_tok_question_field)),
                   (("q2", "q2_spacy"), (question_field, spacy_tok_question_field)),
                   ("label", label_field)]
-        dataset = torchtext.data.TabularDataset(
+        dataset = torchtext.legacy.data.TabularDataset(
             path=self.test_ppid_dataset_path, format="csv", fields=fields)
         expected_examples = [
             (["When", "do", "you", "use", "シ", "instead", "of", "し?"],
@@ -70,15 +71,15 @@ class TestDataset(TorchtextTestCase):
     def test_json_dataset_one_key_multiple_fields(self):
         self.write_test_ppid_dataset(data_format="json")
 
-        question_field = torchtext.data.Field(sequential=True)
-        spacy_tok_question_field = torchtext.data.Field(sequential=True, tokenize="spacy")
-        label_field = torchtext.data.Field(sequential=False)
+        question_field = torchtext.legacy.data.Field(sequential=True)
+        spacy_tok_question_field = torchtext.legacy.data.Field(sequential=True, tokenize="spacy")
+        label_field = torchtext.legacy.data.Field(sequential=False)
         fields = {"question1": [("q1", question_field),
                                 ("q1_spacy", spacy_tok_question_field)],
                   "question2": [("q2", question_field),
                                 ("q2_spacy", spacy_tok_question_field)],
                   "label": ("label", label_field)}
-        dataset = torchtext.data.TabularDataset(
+        dataset = torchtext.legacy.data.TabularDataset(
             path=self.test_ppid_dataset_path, format="json", fields=fields)
         expected_examples = [
             (["When", "do", "you", "use", "シ", "instead", "of", "し?"],
@@ -294,6 +295,7 @@ class TestVocab(TorchtextTestCase):
 
             self.assertEqual(vectors[v.stoi['<unk>']], torch.zeros(300))
 
+    @unittest.skip("Download temp. slow.")
     def test_vectors_custom_cache(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         vector_cache = os.path.join('/tmp', 'vector_cache')

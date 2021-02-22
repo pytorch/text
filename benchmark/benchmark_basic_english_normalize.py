@@ -1,7 +1,7 @@
 import time
 
 import torch
-from torchtext.experimental.datasets.raw import AG_NEWS
+from torchtext.datasets import AG_NEWS
 from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.data.utils import get_tokenizer
 

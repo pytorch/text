@@ -38,7 +38,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 10.
 
     Returns:
-        Vectors: a Vectors object.
+        torchtext.experimental.vectors.Vector: a Vectors object.
 
     Raises:
         ValueError: if duplicate tokens are found in FastText file.
@@ -99,7 +99,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
                               Should be `False` when running tests with a local asset.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 10.
     Returns:
-        Vectors: a Vectors object.
+        torchtext.experimental.vectors.Vector: a Vectors object.
 
     Raises:
         ValueError: if unexpected duplicate tokens are found in GloVe file.
@@ -185,6 +185,7 @@ def load_vectors_from_file_path(filepath, delimiter=",", unk_tensor=None, num_cp
 
 def build_vectors(tokens, vectors, unk_tensor=None):
     r"""Factory method for creating a vectors object which maps tokens to vectors.
+
     Args:
         tokens (List[str]): a list of tokens.
         vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
@@ -208,6 +209,7 @@ def build_vectors(tokens, vectors, unk_tensor=None):
 class Vectors(nn.Module):
     __jit_unused_properties__ = ["is_jitable"]
     r"""Creates a vectors object which maps tokens to vectors.
+
     Args:
         vectors (torch.classes.torchtext.Vectors or torchtext._torchtext.Vectors): a cpp vectors object.
     """
@@ -223,6 +225,7 @@ class Vectors(nn.Module):
     @torch.jit.export
     def forward(self, tokens: List[str]) -> Tensor:
         r"""Calls the `lookup_vectors` method
+
          Args:
             tokens: a list of string tokens
 
@@ -269,6 +272,7 @@ class Vectors(nn.Module):
     @torch.jit.export
     def lookup_vectors(self, tokens: List[str]) -> Tensor:
         """Look up embedding vectors for a list of tokens.
+
         Args:
             tokens: a list of tokens
 
