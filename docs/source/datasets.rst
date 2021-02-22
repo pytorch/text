@@ -98,12 +98,6 @@ PennTreebank
 .. autofunction:: PennTreebank
 
 
-WMTNewsCrawl
-~~~~~~~~~~~~
-
-.. autofunction:: WMTNewsCrawl
-
-
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
