@@ -142,7 +142,7 @@ In v0.9.0 release, we move the following legacy code to `torchtext.legacy <#lega
 * ``torchtext.legacy.data.pipeline``
 * ``torchtext.legacy.datasets``
 
-We have a `migration tutorial <https://fburl.com/9hbq843y>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
+We have a `migration tutorial <https://colab.research.google.com/github/zhangguanheng66/text/blob/master/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
 
 Disclaimer on Datasets
 ======================
