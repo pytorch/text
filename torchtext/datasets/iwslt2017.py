@@ -3,10 +3,8 @@ import io
 import codecs
 import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.datasets.common import RawTextIterableDataset
-from torchtext.datasets.common import wrap_split_argument
-from torchtext.datasets.common import add_docstring_header
-
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
 
 SUPPORTED_DATASETS = {
 
@@ -28,9 +26,122 @@ URL = SUPPORTED_DATASETS['URL']
 MD5 = SUPPORTED_DATASETS['MD5']
 
 NUM_LINES = {
-    'train': 196884,
-    'valid': 888,
-    'test': 1305,
+    'train': {
+        'train': {
+            ('en', 'nl'): 237240,
+            ('en', 'de'): 206112,
+            ('en', 'it'): 231619,
+            ('en', 'ro'): 220538,
+            ('ro', 'de'): 201455,
+            ('ro', 'en'): 220538,
+            ('ro', 'nl'): 206920,
+            ('ro', 'it'): 217551,
+            ('de', 'ro'): 201455,
+            ('de', 'en'): 206112,
+            ('de', 'nl'): 213628,
+            ('de', 'it'): 205465,
+            ('it', 'en'): 231619,
+            ('it', 'nl'): 233415,
+            ('it', 'de'): 205465,
+            ('it', 'ro'): 217551,
+            ('nl', 'de'): 213628,
+            ('nl', 'en'): 237240,
+            ('nl', 'it'): 233415,
+            ('nl', 'ro'): 206920
+        }
+    },
+    'valid': {
+        'dev2010': {
+            ('en', 'nl'): 1003,
+            ('en', 'de'): 888,
+            ('en', 'it'): 929,
+            ('en', 'ro'): 914,
+            ('ro', 'de'): 912,
+            ('ro', 'en'): 914,
+            ('ro', 'nl'): 913,
+            ('ro', 'it'): 914,
+            ('de', 'ro'): 912,
+            ('de', 'en'): 888,
+            ('de', 'nl'): 1001,
+            ('de', 'it'): 923,
+            ('it', 'en'): 929,
+            ('it', 'nl'): 1001,
+            ('it', 'de'): 923,
+            ('it', 'ro'): 914,
+            ('nl', 'de'): 1001,
+            ('nl', 'en'): 1003,
+            ('nl', 'it'): 1001,
+            ('nl', 'ro'): 913
+        },
+        'tst2010': {
+            ('en', 'nl'): 1777,
+            ('en', 'de'): 1568,
+            ('en', 'it'): 1566,
+            ('en', 'ro'): 1678,
+            ('ro', 'de'): 1677,
+            ('ro', 'en'): 1678,
+            ('ro', 'nl'): 1680,
+            ('ro', 'it'): 1643,
+            ('de', 'ro'): 1677,
+            ('de', 'en'): 1568,
+            ('de', 'nl'): 1779,
+            ('de', 'it'): 1567,
+            ('it', 'en'): 1566,
+            ('it', 'nl'): 1669,
+            ('it', 'de'): 1567,
+            ('it', 'ro'): 1643,
+            ('nl', 'de'): 1779,
+            ('nl', 'en'): 1777,
+            ('nl', 'it'): 1669,
+            ('nl', 'ro'): 1680
+        }
+    },
+    'test': {
+        'dev2010': {
+            ('en', 'nl'): 1003,
+            ('en', 'de'): 888,
+            ('en', 'it'): 929,
+            ('en', 'ro'): 914,
+            ('ro', 'de'): 912,
+            ('ro', 'en'): 914,
+            ('ro', 'nl'): 913,
+            ('ro', 'it'): 914,
+            ('de', 'ro'): 912,
+            ('de', 'en'): 888,
+            ('de', 'nl'): 1001,
+            ('de', 'it'): 923,
+            ('it', 'en'): 929,
+            ('it', 'nl'): 1001,
+            ('it', 'de'): 923,
+            ('it', 'ro'): 914,
+            ('nl', 'de'): 1001,
+            ('nl', 'en'): 1003,
+            ('nl', 'it'): 1001,
+            ('nl', 'ro'): 913
+        },
+        'tst2010': {
+            ('en', 'nl'): 1777,
+            ('en', 'de'): 1568,
+            ('en', 'it'): 1566,
+            ('en', 'ro'): 1678,
+            ('ro', 'de'): 1677,
+            ('ro', 'en'): 1678,
+            ('ro', 'nl'): 1680,
+            ('ro', 'it'): 1643,
+            ('de', 'ro'): 1677,
+            ('de', 'en'): 1568,
+            ('de', 'nl'): 1779,
+            ('de', 'it'): 1567,
+            ('it', 'en'): 1566,
+            ('it', 'nl'): 1669,
+            ('it', 'de'): 1567,
+            ('it', 'ro'): 1643,
+            ('nl', 'de'): 1779,
+            ('nl', 'en'): 1777,
+            ('nl', 'it'): 1669,
+            ('nl', 'ro'): 1680
+        }
+    }
 }
 
 
@@ -52,7 +163,7 @@ def _clean_xml_file(f_xml):
 def _clean_tags_file(f_orig):
     xml_tags = [
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker'
+        '<translator', '<title', '<speaker', '<doc', '</doc'
     ]
     f_txt = f_orig.replace('.tags', '')
     with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt,\
@@ -82,11 +193,34 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@ wrap_split_argument
-@add_docstring_header()
-def IWSLT2017(root='.data', split=('train', 'valid', 'test'), offset=0, language_pair=('de', 'en')):
+@wrap_split_argument(('train', 'valid', 'test'))
+def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en')):
+    """IWSLT2017 dataset
+
+    The available datasets include following:
+
+    **Language pairs**: [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
+    ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
+    ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
+    ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
+
+    For additional details refer to source website: https://wit3.fbk.eu/2017-01
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
+        language_pair: tuple or list containing src and tgt language
+
+    """
+
     valid_set = 'dev2010'
     test_set = 'tst2010'
+
+    num_lines_set_identifier = {
+        'train': 'train',
+        'valid': valid_set,
+        'test': test_set
+    }
 
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple but got {} instead".format(type(language_pair)))
@@ -96,14 +230,19 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), offset=0, language
     src_language, tgt_language = language_pair[0], language_pair[1]
 
     if src_language not in SUPPORTED_DATASETS['language_pair'].keys():
-        raise ValueError("src_language '{}' is not valid for ISWLT_year {}. Supported source languages are {}".format(src_language, year, SUPPORTED_DATASETS['language_pair'].keys()))
+        raise ValueError("src_language '{}' is not valid for ISWLT_year {}. Supported source languages are {}".
+                         format(src_language, year, SUPPORTED_DATASETS['language_pair'].keys()))
 
     if tgt_language not in SUPPORTED_DATASETS['language_pair'][src_language]:
-        raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".format(tgt_language, src_language, SUPPORTED_DATASETS['language_pair'][src_language]))
+        raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".
+                         format(tgt_language, src_language, SUPPORTED_DATASETS['language_pair'][src_language]))
 
-    train_filenames = 'train.{}-{}.{}'.format(src_language, tgt_language, src_language), 'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
-    valid_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language)
-    test_filenames = 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language), 'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language)
+    train_filenames = ('train.{}-{}.{}'.format(src_language, tgt_language, src_language),
+                       'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language))
+    valid_filenames = ('IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
+                       'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language))
+    test_filenames = ('IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
+                      'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language))
 
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
@@ -138,24 +277,16 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), offset=0, language
         "valid": _construct_filepaths(file_archives, src_eval, tgt_eval),
         "test": _construct_filepaths(file_archives, src_test, tgt_test)
     }
-
     for key in data_filenames.keys():
         if len(data_filenames[key]) == 0 or data_filenames[key] is None:
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
-    datasets = []
-    for key in split:
-        assert (data_filenames[key][0] is not None), 'Internal Error: {} file not found'.format(key)
-        assert (data_filenames[key][1] is not None), 'Internal Error: {} file not found'.format(key)
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
+    src_data_iter = _read_text_iterator(data_filenames[split][0])
+    tgt_data_iter = _read_text_iterator(data_filenames[split][1])
 
-        def _iter(src_data_iter, tgt_data_iter):
-            for item in zip(src_data_iter, tgt_data_iter):
-                yield item
+    def _iter(src_data_iter, tgt_data_iter):
+        for item in zip(src_data_iter, tgt_data_iter):
+            yield item
 
-        datasets.append(
-            RawTextIterableDataset("IWSLT", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter), offset=offset))
-
-    return datasets
+    return RawTextIterableDataset("IWSLT2017", NUM_LINES[split][num_lines_set_identifier[split]][language_pair], _iter(src_data_iter, tgt_data_iter))

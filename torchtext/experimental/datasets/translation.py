@@ -52,7 +52,7 @@ def _setup_datasets(dataset_name,
                                                       split=split,
                                                       language_pair=(src_language, tgt_language))
         else:
-            raise ValueError("{} is not supportd".format(dataset_name))
+            raise ValueError("{} is not supported".format(dataset_name))
 
     else:
         raw_datasets = raw.DATASETS[dataset_name](train_filenames=train_filenames,
