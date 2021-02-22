@@ -1,13 +1,13 @@
-torchtext.experimental.datasets.raw
-===================================
+torchtext.datasets
+==================
 
-.. currentmodule:: torchtext.experimental.datasets.raw
+.. currentmodule:: torchtext.datasets
 
 General use cases are as follows: ::
 
 
     # import datasets
-    from torchtext.experimental.datasets.raw import IMDB
+    from torchtext.datasets import IMDB
 
     train_iter = IMDB(split='train')
 
