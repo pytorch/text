@@ -131,9 +131,11 @@ class TranslationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def Multi30k(train_filenames=("train.de", "train.en"),
-             valid_filenames=("val.de", "val.en"),
-             test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
+def Multi30k(task='task1',
+             language_pair=('de', 'en'),
+             train_set="train",
+             valid_set="val",
+             test_set="test_2016_flickr",
              split=('train', 'valid', 'test'),
              root='.data',
              vocab=(None, None),
@@ -225,9 +227,11 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         >>> src_data, tgt_data = train_dataset[10]
     """
     return _setup_datasets("Multi30k", split, root, vocab, tokenizer,
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames)
+                           task=task,
+                           language_pair=language_pair,
+                           train_set=train_set,
+                           valid_set=valid_set,
+                           test_set=test_set)
 
 
 def IWSLT2017(language_pair=('de', 'en'),
