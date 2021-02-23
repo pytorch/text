@@ -143,13 +143,9 @@ def Multi30k(task='task1',
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
+    TODO
     Args:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.de', 'train.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('val.de', 'val.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('test2016.de', 'test2016.en')
+        TODO: TODO
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -165,57 +161,6 @@ def Multi30k(task='task1',
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
             get_tokenizer("spacy", language='en_core_web_sm'))
 
-        The available dataset include:
-
-            test_2016_flickr.cs
-            test_2016_flickr.de
-            test_2016_flickr.en
-            test_2016_flickr.fr
-            test_2017_flickr.de
-            test_2017_flickr.en
-            test_2017_flickr.fr
-            test_2017_mscoco.de
-            test_2017_mscoco.en
-            test_2017_mscoco.fr
-            test_2018_flickr.en
-            train.cs
-            train.de
-            train.en
-            train.fr
-            val.cs
-            val.de
-            val.en
-            val.fr
-            test_2016.1.de
-            test_2016.1.en
-            test_2016.2.de
-            test_2016.2.en
-            test_2016.3.de
-            test_2016.3.en
-            test_2016.4.de
-            test_2016.4.en
-            test_2016.5.de
-            test_2016.5.en
-            train.1.de
-            train.1.en
-            train.2.de
-            train.2.en
-            train.3.de
-            train.3.en
-            train.4.de
-            train.4.en
-            train.5.de
-            train.5.en
-            val.1.de
-            val.1.en
-            val.2.de
-            val.2.en
-            val.3.de
-            val.3.en
-            val.4.de
-            val.4.en
-            val.5.de
-            val.5.en
 
     Examples:
         >>> from torchtext.experimental.datasets import Multi30k
