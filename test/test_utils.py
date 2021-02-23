@@ -62,11 +62,11 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
-        assert files == [os.path.abspath(os.path.join(root, 'val.5.en'))]
+        assert files == [os.path.join(root, 'val.5.en')]
 
         # extract files with overwrite option True
         files = utils.extract_archive(archive_path, overwrite=True)
-        assert files == [os.path.abspath(os.path.join(root, 'val.5.en'))]
+        assert files == [os.path.join(root, 'val.5.en')]
 
         # remove files and archive
         for f in files:
@@ -81,7 +81,7 @@ class TestUtils(TorchtextTestCase):
 
         # ensure archive is not already downloaded, if it is then delete
         url = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
-        target_archive_path = os.path.abspath(os.path.join(root, 'en-ud-v2.zip'))
+        target_archive_path = os.path.join(root, 'en-ud-v2.zip')
         conditional_remove(target_archive_path)
 
         # download archive and ensure is in correct location
