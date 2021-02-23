@@ -9,7 +9,6 @@ import re
 import sys
 import zipfile
 import gzip
-import os
 
 
 def reporthook(t):
@@ -55,7 +54,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
 
     """
     path = os.path.abspath(path)
-    root = os.root.absroot(root)
+    root = os.path.abspath(root)
 
     def _check_hash(path):
         if hash_value:
