@@ -48,27 +48,39 @@ class MultiheadAttentionContainer(torch.nn.Module):
         r"""
 
         Args:
-            query, key, value (Tensor): map a query and a set of key-value pairs to an output.
+            query (Tensor): The query of the attention function.
                 See "Attention Is All You Need" for more details.
-            attn_mask, bias_k and bias_v (Tensor, optional): keyword arguments passed to the attention layer.
-                See the definitions in the attention.
+            key (Tensor): The keys of the attention function.
+                See "Attention Is All You Need" for more details.
+            value (Tensor): The values of the attention function.
+                See "Attention Is All You Need" for more details.
+            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
+            bias_k (Tensor, optional): one more key and value sequence to be added to keys at
+                sequence dim (dim=-3). Those are used for incremental decoding. Users should provide
+                ``bias_v``.
+            bias_v (Tensor, optional): one more key and value sequence to be added to values at
+                sequence dim (dim=-3). Those are used for incremental decoding. Users should also provide
+                ``bias_k``.
 
         Shape:
+
             - Inputs:
-            - query: :math:`(..., L, N, E)`
-            - key: :math:`(..., S, N, E)`
-            - value: :math:`(..., S, N, E)`
-            - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.
+
+                - query: :math:`(..., L, N, E)`
+                - key: :math:`(..., S, N, E)`
+                - value: :math:`(..., S, N, E)`
+                - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.
 
             - Outputs:
-            - attn_output: :math:`(..., L, N, E)`
-            - attn_output_weights: :math:`(N * H, L, S)`
+
+                - attn_output: :math:`(..., L, N, E)`
+                - attn_output_weights: :math:`(N * H, L, S)`
 
             Note: It's optional to have the query/key/value inputs with more than three dimensions (for broadcast purpose).
-                The MultiheadAttentionContainer module will operate on the last three dimensions.
+            The MultiheadAttentionContainer module will operate on the last three dimensions.
 
             where where L is the target length, S is the sequence length, H is the number of attention heads,
-                N is the batch size, and E is the embedding dimension.
+            N is the batch size, and E is the embedding dimension.
         """
         if self.batch_first:
             query, key, value = query.transpose(-3, -2), key.transpose(-3, -2), value.transpose(-3, -2)
@@ -133,9 +145,13 @@ class ScaledDotProduct(torch.nn.Module):
             key (Tensor): Projected key
             value (Tensor): Projected value
             attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
-            bias_k and bias_v: (Tensor, optional): one more key and value sequence to be added at
+            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.
+            bias_k (Tensor, optional): one more key and value sequence to be added to keys at
                 sequence dim (dim=-3). Those are used for incremental decoding. Users should provide
-                non-None to both arguments in order to activate them.
+                ``bias_v``.
+            bias_v (Tensor, optional): one more key and value sequence to be added to values at
+                sequence dim (dim=-3). Those are used for incremental decoding. Users should also provide
+                ``bias_k``.
 
         Shape:
             - query: :math:`(..., L, N * H, E / H)`
@@ -224,7 +240,9 @@ class InProjContainer(torch.nn.Module):
         the forward func of query/key/value_proj, respectively.
 
         Args:
-            query, key, value (Tensors): sequence to be projected
+            query (Tensor): The query to be projected.
+            key (Tensor): The keys to be projected.
+            value (Tensor): The values to be projected.
 
         Examples::
             >>> from torchtext.nn import InProjContainer
