@@ -75,7 +75,7 @@ def dataset_docstring_header(fn, num_lines=None):
     if num_lines is not None:
         header_s += "\n\nNumber of lines per split:"
         for k, v in num_lines.items():
-            header_s += f"\n    {k}: {v}"
+            header_s += "\n    {}: {}\n".format(k, v)
 
     args_s = "\nArgs:"
     args_s += "\n    root: Directory where the datasets are saved."
