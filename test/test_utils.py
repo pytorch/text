@@ -17,7 +17,7 @@ class TestUtils(TorchtextTestCase):
 
     def test_download_extract_tar(self):
         # create root directory for downloading data
-        root = '.data'
+        root = os.path.abspath('.data')
         if not os.path.exists(root):
             os.makedirs(root)
 
@@ -47,7 +47,7 @@ class TestUtils(TorchtextTestCase):
 
     def test_download_extract_gz(self):
         # create root directory for downloading data
-        root = '.data'
+        root = os.path.abspath('.data')
         if not os.path.exists(root):
             os.makedirs(root)
 
@@ -62,11 +62,11 @@ class TestUtils(TorchtextTestCase):
 
         # extract files and ensure they are correct
         files = utils.extract_archive(archive_path)
-        assert files == [os.path.join(root, 'val.5.en')]
+        assert files == [os.path.abspath(os.path.join(root, 'val.5.en'))]
 
         # extract files with overwrite option True
         files = utils.extract_archive(archive_path, overwrite=True)
-        assert files == [os.path.join(root, 'val.5.en')]
+        assert files == [os.path.abspath(os.path.join(root, 'val.5.en'))]
 
         # remove files and archive
         for f in files:
@@ -75,13 +75,13 @@ class TestUtils(TorchtextTestCase):
 
     def test_download_extract_zip(self):
         # create root directory for downloading data
-        root = '.data'
+        root = os.path.abspath('.data')
         if not os.path.exists(root):
             os.makedirs(root)
 
         # ensure archive is not already downloaded, if it is then delete
         url = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
-        target_archive_path = os.path.join(root, 'en-ud-v2.zip')
+        target_archive_path = os.path.abspath(os.path.join(root, 'en-ud-v2.zip'))
         conditional_remove(target_archive_path)
 
         # download archive and ensure is in correct location
@@ -110,10 +110,10 @@ class TestUtils(TorchtextTestCase):
     def test_no_download(self):
         asset_name = 'glove.840B.300d.zip'
         asset_path = get_asset_path(asset_name)
-        root = '.data'
+        root = os.path.abspath('.data')
         if not os.path.exists(root):
             os.makedirs(root)
-        data_path = os.path.join('.data', asset_name)
+        data_path = os.path.abspath(os.path.join('.data', asset_name))
         shutil.copy(asset_path, data_path)
         file_path = utils.download_from_url('fakedownload/glove.840B.300d.zip')
         self.assertEqual(file_path, data_path)
@@ -121,7 +121,7 @@ class TestUtils(TorchtextTestCase):
 
     def test_download_extract_to_path(self):
         # create root directory for downloading data
-        root = '.data'
+        root = os.path.abspath('.data')
         if not os.path.exists(root):
             os.makedirs(root)
 
@@ -157,7 +157,7 @@ class TestUtils(TorchtextTestCase):
     @unittest.skip("Download temp. slow.")
     def test_extract_non_tar_zip(self):
         # create root directory for downloading data
-        root = '.data'
+        root = os.path.abspath('.data')
         if not os.path.exists(root):
             os.makedirs(root)
 
