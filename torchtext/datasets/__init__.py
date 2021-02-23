@@ -6,7 +6,8 @@ from .conll2000chunking import CoNLL2000Chunking
 from .dbpedia import DBpedia
 from .enwik9 import EnWik9
 from .imdb import IMDB
-from .iwslt import IWSLT
+from .iwslt2016 import IWSLT2016
+from .iwslt2017 import IWSLT2017
 from .multi30k import Multi30k
 from .penntreebank import PennTreebank
 from .sogounews import SogouNews
@@ -29,7 +30,8 @@ DATASETS = {
     'DBpedia': DBpedia,
     'EnWik9': EnWik9,
     'IMDB': IMDB,
-    'IWSLT': IWSLT,
+    'IWSLT2016': IWSLT2016,
+    'IWSLT2017': IWSLT2017,
     'Multi30k': Multi30k,
     'PennTreebank': PennTreebank,
     'SQuAD1': SQuAD1,
