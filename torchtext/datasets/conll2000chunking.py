@@ -56,8 +56,8 @@ def _create_data_from_iob(data_path, separator):
 def CoNLL2000Chunking(root, split):
     # Create a dataset specific subfolder to deal with generic download filenames
     root = os.path.join(root, 'conll2000chunking')
-    _PATH = os.path.join(root, split + ".txt.gz")
-    data_filename = download_extract_validate(root, URL[split], MD5[split], _PATH, os.path.join(root, _EXTRACTED_FILES[split]),
+    path = os.path.join(root, split + ".txt.gz")
+    data_filename = download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
                                               _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],

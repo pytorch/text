@@ -232,10 +232,6 @@ class TestDataset(TorchtextTestCase):
                 break
         self.assertEqual((for_count, next_count), (60000, 60000))
 
-    def test_download_extract_validate(self):
-        print("ASD")
-        pass
-
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
         from torchtext.vocab import Vocab
