@@ -1,4 +1,5 @@
 import io
+import os
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
@@ -11,21 +12,21 @@ SUPPORTED_DATASETS = {
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2016_flickr.cs.gz',
                 'MD5': '3104872229daa1bef3b401d44dd2220b',
-                '_PATH': 'test_2016_flickr.cs.gz'
+                'NUM_LINES': 1000
             },
             'train': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/train.cs.gz',
                 'MD5': 'd9a5fc268917725a2b0efce3a0cc8607',
-                '_PATH': 'train.cs.gz'
+                'NUM_LINES': 29000
             },
             'val': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/val.cs.gz',
                 'MD5': '83cdc082f646b769095615384cf5c0ca',
-                '_PATH': 'val.cs.gz'
+                'NUM_LINES': 1014
             }
         },
         'de': {
@@ -34,35 +35,35 @@ SUPPORTED_DATASETS = {
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2016_flickr.de.gz',
                 'MD5': 'efd67d314d98489b716b145475101932',
-                '_PATH': 'test_2016_flickr.de.gz'
+                'NUM_LINES': 1000
             },
             'test_2017_flickr': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2017_flickr.de.gz',
                 'MD5': '6a8d5c87f6ae19e3d35681aa6fd16571',
-                '_PATH': 'test_2017_flickr.de.gz'
+                'NUM_LINES': 1000
             },
             'test_2017_mscoco': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2017_mscoco.de.gz',
                 'MD5': 'e8cd6ec2bc8a11fc846fa48a46e3d0bb',
-                '_PATH': 'test_2017_mscoco.de.gz'
+                'NUM_LINES': 461
             },
             'train': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/train.de.gz',
                 'MD5': '81ff90b99829c0cd4b1b587d394afd39',
-                '_PATH': 'train.de.gz'
+                'NUM_LINES': 29000
             },
             'val': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/val.de.gz',
                 'MD5': '6e0e229eb049e3fc99a1ef02fb2d5f91',
-                '_PATH': 'val.de.gz'
+                'NUM_LINES': 1014
             }
         },
         'en': {
@@ -71,42 +72,42 @@ SUPPORTED_DATASETS = {
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2016_flickr.en.gz',
                 'MD5': 'ff2c0fcb4893a13bd73414306bc250ae',
-                '_PATH': 'test_2016_flickr.en.gz'
+                'NUM_LINES': 1000
             },
             'test_2017_flickr': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2017_flickr.en.gz',
                 'MD5': '005396bac545d880abe6f00bbb7dbbb4',
-                '_PATH': 'test_2017_flickr.en.gz'
+                'NUM_LINES': 1000
             },
             'test_2017_mscoco': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2017_mscoco.en.gz',
                 'MD5': 'a7b684e0edbef1d4a23660c8e8e743fd',
-                '_PATH': 'test_2017_mscoco.en.gz'
+                'NUM_LINES': 461
             },
             'test_2018_flickr': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2018_flickr.en.gz',
                 'MD5': 'a152878809942757a55ce087073486b8',
-                '_PATH': 'test_2018_flickr.en.gz'
+                'NUM_LINES': 1071
             },
             'train': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/train.en.gz',
                 'MD5': '0065d13af80720a55ca8153d126e6627',
-                '_PATH': 'train.en.gz'
+                'NUM_LINES': 29000
             },
             'val': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/val.en.gz',
                 'MD5': '2b69aa9253948ac9f67e94917272dd40',
-                '_PATH': 'val.en.gz'
+                'NUM_LINES': 1014
             }
         },
         'fr': {
@@ -115,35 +116,35 @@ SUPPORTED_DATASETS = {
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2016_flickr.fr.gz',
                 'MD5': '08dc7cd4a662f31718412de95ca9bfe3',
-                '_PATH': 'test_2016_flickr.fr.gz'
+                'NUM_LINES': 1000
             },
             'test_2017_flickr': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2017_flickr.fr.gz',
                 'MD5': 'cb09af7d2b501f9112f2d6a59fa1360d',
-                '_PATH': 'test_2017_flickr.fr.gz'
+                'NUM_LINES': 1000
             },
             'test_2017_mscoco': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/test_2017_mscoco.fr.gz',
                 'MD5': '4995d10954a804d3cdfd907b9fd093e8',
-                '_PATH': 'test_2017_mscoco.fr.gz'
+                'NUM_LINES': 461
             },
             'train': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/train.fr.gz',
                 'MD5': '6cb767741dcad3931f966fefbc05203f',
-                '_PATH': 'train.fr.gz'
+                'NUM_LINES': 29000
             },
             'val': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task1/raw/val.fr.gz',
                 'MD5': '93fc564584b7e5ba410c761ea5a1c682',
-                '_PATH': 'val.fr.gz'
+                'NUM_LINES': 1014
             }
         }
     },
@@ -154,105 +155,105 @@ SUPPORTED_DATASETS = {
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.1.de.gz',
                 'MD5': 'ac0c72653c140dd96707212a1baa4278',
-                '_PATH': 'test_2016.1.de.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.2': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.2.de.gz',
                 'MD5': '6dfb42cae4e4fd9a3c40e62ff5398a55',
-                '_PATH': 'test_2016.2.de.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.3': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.3.de.gz',
                 'MD5': 'ece8cec6b87bf00dd12607f3062dae4c',
-                '_PATH': 'test_2016.3.de.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.4': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.4.de.gz',
                 'MD5': '9a7e7b2dcc33135a32cd621c3b37d2d8',
-                '_PATH': 'test_2016.4.de.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.5': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.5.de.gz',
                 'MD5': '7d5ef0f069ee2d74dc2fdc6b46cd47fa',
-                '_PATH': 'test_2016.5.de.gz'
+                'NUM_LINES': 1000
             },
             'train.1': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.1.de.gz',
                 'MD5': '62f36422bfab90fb42a560546b704009',
-                '_PATH': 'train.1.de.gz'
+                'NUM_LINES': 29000
             },
             'train.2': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.2.de.gz',
                 'MD5': '540da4566bb6dd35fdbc720218b742b7',
-                '_PATH': 'train.2.de.gz'
+                'NUM_LINES': 29000
             },
             'train.3': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.3.de.gz',
                 'MD5': '613eb4a3f0c2b13f0871ced946851b0e',
-                '_PATH': 'train.3.de.gz'
+                'NUM_LINES': 29000
             },
             'train.4': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.4.de.gz',
                 'MD5': 'd848fe0ae8b9447209fb49c5c31cb3d2',
-                '_PATH': 'train.4.de.gz'
+                'NUM_LINES': 29000
             },
             'train.5': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.5.de.gz',
                 'MD5': 'abc13b4042f4fef1cdff6de3b6c53b71',
-                '_PATH': 'train.5.de.gz'
+                'NUM_LINES': 29000
             },
             'val.1': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.1.de.gz',
                 'MD5': 'b26486ede1d4436d5acf6e38c65bb44d',
-                '_PATH': 'val.1.de.gz'
+                'NUM_LINES': 1014
             },
             'val.2': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.2.de.gz',
                 'MD5': '16165248083beacebfe18866d5f4f0ae',
-                '_PATH': 'val.2.de.gz'
+                'NUM_LINES': 1014
             },
             'val.3': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.3.de.gz',
                 'MD5': '7180780822d4b600eb81c1ccf171c230',
-                '_PATH': 'val.3.de.gz'
+                'NUM_LINES': 1014
             },
             'val.4': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.4.de.gz',
                 'MD5': '8edb43c90cae66ec762748a968089b99',
-                '_PATH': 'val.4.de.gz'
+                'NUM_LINES': 1014
             },
             'val.5': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.5.de.gz',
                 'MD5': '873a377a348713d3ab84db1fb57cdede',
-                '_PATH': 'val.5.de.gz'
+                'NUM_LINES': 1014
             }
         },
         'en': {
@@ -261,105 +262,105 @@ SUPPORTED_DATASETS = {
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.1.en.gz',
                 'MD5': 'eec05227daba4bb8f3f8f25b1cb335f4',
-                '_PATH': 'test_2016.1.en.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.2': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.2.en.gz',
                 'MD5': '9318fa08c0c0b96114eadb10eb2fc633',
-                '_PATH': 'test_2016.2.en.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.3': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.3.en.gz',
                 'MD5': '088ec0765fa213a0eb937a62adfd4996',
-                '_PATH': 'test_2016.3.en.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.4': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.4.en.gz',
                 'MD5': '5f7c8d0be0ac739856b47d32a9434998',
-                '_PATH': 'test_2016.4.en.gz'
+                'NUM_LINES': 1000
             },
             'test_2016.5': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/test_2016.5.en.gz',
                 'MD5': '713ed720636622a54546d5f14f88b00f',
-                '_PATH': 'test_2016.5.en.gz'
+                'NUM_LINES': 1000
             },
             'train.1': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.1.en.gz',
                 'MD5': 'cbf5bfc2147706f228d288e1b18bf4af',
-                '_PATH': 'train.1.en.gz'
+                'NUM_LINES': 29000
             },
             'train.2': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.2.en.gz',
                 'MD5': 'bdfe4222f4692ccaa1e3389460f0890e',
-                '_PATH': 'train.2.en.gz'
+                'NUM_LINES': 29000
             },
             'train.3': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.3.en.gz',
                 'MD5': '0e1ee2b4145795bd180b193424db204b',
-                '_PATH': 'train.3.en.gz'
+                'NUM_LINES': 29000
             },
             'train.4': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.4.en.gz',
                 'MD5': '1cff688d1aadef7fdb22e9ad27d6fd2c',
-                '_PATH': 'train.4.en.gz'
+                'NUM_LINES': 29000
             },
             'train.5': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/train.5.en.gz',
                 'MD5': '3e10289959d0059952511c31df3c7550',
-                '_PATH': 'train.5.en.gz'
+                'NUM_LINES': 29000
             },
             'val.1': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.1.en.gz',
                 'MD5': 'df57faf5f00d434d2559c021ef55f1aa',
-                '_PATH': 'val.1.en.gz'
+                'NUM_LINES': 1014
             },
             'val.2': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.2.en.gz',
                 'MD5': '9077a5127480cc799116384de501bd70',
-                '_PATH': 'val.2.en.gz'
+                'NUM_LINES': 1014
             },
             'val.3': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.3.en.gz',
                 'MD5': 'c1f697c3b6dfb7305349db34e26b45fc',
-                '_PATH': 'val.3.en.gz'
+                'NUM_LINES': 1014
             },
             'val.4': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.4.en.gz',
                 'MD5': 'acb5ea26a577ceccfae6337181c31716',
-                '_PATH': 'val.4.en.gz'
+                'NUM_LINES': 1014
             },
             'val.5': {
                 'URL':
                     'https://raw.githubusercontent.com/multi30k/dataset/master/'
                     'data/task2/raw/val.5.en.gz',
                 'MD5': '680816e0938fea5cf5331444bc09a4cf',
-                '_PATH': 'val.5.en.gz'
+                'NUM_LINES': 1014
             }
         }
     }
@@ -368,18 +369,14 @@ SUPPORTED_DATASETS = {
 
 URL = []
 MD5 = []
+NUM_LINES = []
 
 for task in SUPPORTED_DATASETS.keys():
     for language in SUPPORTED_DATASETS[task].keys():
         for data in SUPPORTED_DATASETS[task][language].keys():
             URL.append(SUPPORTED_DATASETS[task][language][data]['URL'])
             MD5.append(SUPPORTED_DATASETS[task][language][data]['MD5'])
-
-NUM_LINES = {
-    'train': 29000,
-    'valid': 1014,
-    'test': 1000,
-}
+            NUM_LINES.append(SUPPORTED_DATASETS[task][language][data]['NUM_LINES'])
 
 
 def _read_text_iterator(path):
@@ -404,8 +401,29 @@ def Multi30k(root, split,
              train_set="train",
              valid_set="val",
              test_set="test_2016_flickr"):
+    """Multi30k Dataset
 
-    """TODO
+    The available datasets include following:
+
+    **task1**
+
+    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+
+    **task2**
+
+    **Languages**: 'de' | 'en'
+
+    For additional details refer to source: https://github.com/multi30k/dataset
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
+        task: Indicate the task
+        language_pair: tuple or list containing src and tgt language
+        train_set: A string to identify train set.
+        valid_set: A string to identify validation set.
+        test_set: A string to identify test set.
+
     """
 
     if task not in SUPPORTED_DATASETS.keys():
@@ -452,15 +470,16 @@ def Multi30k(root, split,
 
     current_url = []
     current_md5 = []
-    all_filenames = train_filenames + valid_filenames + test_filenames
+
+    current_filenames = train_filenames + valid_filenames + test_filenames
     for url, md5 in zip(URL, MD5):
-        if any(f in url for f in all_filenames):
+        if any(f in url for f in current_filenames):
             current_url.append(url)
             current_md5.append(md5)
 
     for url, md5 in zip(current_url, current_md5):
         dataset_tar = download_from_url(
-            url, root=root, hash_value=md5, hash_type='md5')
+            url, path=os.path.join(root,os.path.basename(url)), root=root, hash_value=md5, hash_type='md5')
         extracted_files.extend(extract_archive(dataset_tar))
 
     file_archives = extracted_files
@@ -485,4 +504,12 @@ def Multi30k(root, split,
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("Multi30k", NUM_LINES[split], _iter(src_data_iter, tgt_data_iter))
+    set_identifier = {
+        'train': train_set,
+        'valid': valid_set,
+        'test': test_set,
+    }
+
+    return RawTextIterableDataset("Multi30k",
+                                  SUPPORTED_DATASETS[task][language_pair[0]][set_identifier[split]]['NUM_LINES'],
+                                  _iter(src_data_iter, tgt_data_iter))

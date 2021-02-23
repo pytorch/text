@@ -143,9 +143,25 @@ def Multi30k(task='task1',
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
-    TODO
+    The available datasets include following:
+
+    **task1**
+
+    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+
+    **task2**
+
+    **Languages**: 'de' | 'en'
+
+    For additional details refer to source: https://github.com/multi30k/dataset
+
+
     Args:
-        TODO: TODO
+        task: Indicate the task
+        language_pair: tuple or list containing src and tgt language
+        train_set: A string to identify train set.
+        valid_set: A string to identify validation set.
+        test_set: A string to identify test set.
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
