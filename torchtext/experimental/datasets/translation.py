@@ -3,6 +3,7 @@ import logging
 from torchtext.data.datasets_utils import check_default_set
 from torchtext.data.datasets_utils import wrap_datasets
 from torchtext import datasets as raw
+from torchtext.experimental.datasets import raw as experimental_raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
@@ -35,7 +36,10 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
+    if dataset_name == 'Multi30k':
+        raw_datasets = experimental_raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
+    else:
+        raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)

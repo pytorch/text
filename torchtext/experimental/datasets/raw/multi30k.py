@@ -430,6 +430,10 @@ def Multi30k(root, split,
         valid_set: A string to identify validation set.
         test_set: A string to identify test set.
 
+    Examples:
+        >>> from torchtext.experimental.datasets.raw import Multi30k
+        >>> train_iter, valid_iter, test_iter = Multi30k()
+        >>> src_sentence, tgt_sentence = list(train_iter)[0]
     """
 
     if task not in SUPPORTED_DATASETS.keys():

@@ -8,7 +8,6 @@ from .enwik9 import EnWik9
 from .imdb import IMDB
 from .iwslt2016 import IWSLT2016
 from .iwslt2017 import IWSLT2017
-from .multi30k import Multi30k
 from .penntreebank import PennTreebank
 from .sogounews import SogouNews
 from .squad1 import SQuAD1
@@ -31,7 +30,6 @@ DATASETS = {
     'IMDB': IMDB,
     'IWSLT2016': IWSLT2016,
     'IWSLT2017': IWSLT2017,
-    'Multi30k': Multi30k,
     'PennTreebank': PennTreebank,
     'SQuAD1': SQuAD1,
     'SQuAD2': SQuAD2,
