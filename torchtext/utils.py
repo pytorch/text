@@ -91,10 +91,14 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         _check_hash(path)
         return path
 
+    print("root0: ", root)
     if path is None:
         _, filename = os.path.split(url)
     else:
         root, filename = os.path.split(os.path.abspath(path))
+    print("path0: ", path)
+    print("root1: ", root)
+    print("filename1: ", filename)
 
     if not os.path.exists(root):
         try:

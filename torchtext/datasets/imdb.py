@@ -30,5 +30,7 @@ def IMDB(root, split):
     dataset_tar = download_from_url(URL, root=root,
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
+    print('extracted_files')
+    print(extracted_files)
     iterator = generate_imdb_data(split, extracted_files)
     return RawTextIterableDataset("IMDB", NUM_LINES[split], iterator)

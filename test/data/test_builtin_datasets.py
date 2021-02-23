@@ -10,18 +10,18 @@ from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
 
-GOOGLE_DRIVE_BASED_DATASETS = [
-    'AmazonReviewFull',
-    'AmazonReviewPolarity',
-    'DBpedia',
-    'IMDB',
-    'IWSLT',
-    'SogouNews',
-    'WMT14',
-    'YahooAnswers',
-    'YelpReviewFull',
-    'YelpReviewPolarity'
-]
+GOOGLE_DRIVE_BASED_DATASETS = []
+#     'AmazonReviewFull',
+#     'AmazonReviewPolarity',
+#     'DBpedia',
+#     'IMDB',
+#     'IWSLT',
+#     'SogouNews',
+#     'WMT14',
+#     'YahooAnswers',
+#     'YelpReviewFull',
+#     'YelpReviewPolarity'
+# ]
 
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
@@ -231,6 +231,10 @@ class TestDataset(TorchtextTestCase):
             except:
                 break
         self.assertEqual((for_count, next_count), (60000, 60000))
+
+    def test_download_extract_validate(self):
+        print("ASD")
+        pass
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
