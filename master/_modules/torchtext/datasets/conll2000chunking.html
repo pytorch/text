@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.conll2000chunking &mdash; torchtext 0.9.0.dev20210222 documentation</title>
+  <title>torchtext.datasets.conll2000chunking &mdash; torchtext 0.9.0.dev20210223 documentation</title>
   
 
   
@@ -178,17 +178,10 @@
         <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           <div class="pytorch-left-menu-search">
             
-
-            
-              
-              
-                <div class="version">
-                  0.9.0.dev20210222
-                </div>
-              
-            
-
-            
+    <div class="version">
+      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210223 &#x25BC</a>
+    </div>
+    
 
 
   
@@ -202,7 +195,6 @@
   </form>
 </div>
 
-            
           </div>
 
           
@@ -308,11 +300,12 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.datasets.conll2000chunking</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
+<span></span><span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">find_match</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">download_extract_validate</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="n">URL</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz&quot;</span><span class="p">,</span>
@@ -327,6 +320,16 @@
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">8936</span><span class="p">,</span>
     <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">2012</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;train.txt&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;test.txt&#39;</span>
+<span class="p">}</span>
+
+<span class="n">_EXTRACTED_FILES_MD5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;2e2f24e90e20fcb910ab2251b5ed8cd0&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s2">&quot;56944df34be553b72a2a634e539a0951&quot;</span>
 <span class="p">}</span>
 
 
@@ -351,9 +354,12 @@
 <div class="viewcode-block" id="CoNLL2000Chunking"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.CoNLL2000Chunking">[docs]</a><span class="nd">@add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">)</span>
 <span class="nd">@wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">CoNLL2000Chunking</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
-    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-    <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
-    <span class="n">data_filename</span> <span class="o">=</span> <span class="n">find_match</span><span class="p">(</span><span class="n">split</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
+    <span class="c1"># Create a dataset specific subfolder to deal with generic download filenames</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;conll2000chunking&#39;</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span> <span class="o">+</span> <span class="s2">&quot;.txt.gz&quot;</span><span class="p">)</span>
+    <span class="n">data_filename</span> <span class="o">=</span> <span class="n">download_extract_validate</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">URL</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]),</span>
+                                              <span class="n">_EXTRACTED_FILES_MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;CoNLL2000Chunking&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
                                   <span class="n">_create_data_from_iob</span><span class="p">(</span><span class="n">data_filename</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span></div>
 </pre></div>

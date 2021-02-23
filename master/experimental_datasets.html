@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210222 documentation</title>
+  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210223 documentation</title>
   
 
   
@@ -180,17 +180,10 @@
         <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           <div class="pytorch-left-menu-search">
             
-
-            
-              
-              
-                <div class="version">
-                  0.9.0.dev20210222
-                </div>
-              
-            
-
-            
+    <div class="version">
+      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210223 &#x25BC</a>
+    </div>
+    
 
 
   
@@ -204,7 +197,6 @@
   </form>
 </div>
 
-            
           </div>
 
           
@@ -359,20 +351,21 @@
 <li><p><a class="reference internal" href="#machine-translation" id="id17">Machine Translation</a></p>
 <ul>
 <li><p><a class="reference internal" href="#multi30k" id="id18">Multi30k</a></p></li>
-<li><p><a class="reference internal" href="#iwslt" id="id19">IWSLT</a></p></li>
-<li><p><a class="reference internal" href="#wmt14" id="id20">WMT14</a></p></li>
+<li><p><a class="reference internal" href="#iwslt2016" id="id19">IWSLT2016</a></p></li>
+<li><p><a class="reference internal" href="#iwslt2017" id="id20">IWSLT2017</a></p></li>
+<li><p><a class="reference internal" href="#wmt14" id="id21">WMT14</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#sequence-tagging" id="id21">Sequence Tagging</a></p>
+<li><p><a class="reference internal" href="#sequence-tagging" id="id22">Sequence Tagging</a></p>
 <ul>
-<li><p><a class="reference internal" href="#udpos" id="id22">UDPOS</a></p></li>
-<li><p><a class="reference internal" href="#conll2000chunking" id="id23">CoNLL2000Chunking</a></p></li>
+<li><p><a class="reference internal" href="#udpos" id="id23">UDPOS</a></p></li>
+<li><p><a class="reference internal" href="#conll2000chunking" id="id24">CoNLL2000Chunking</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#question-answer" id="id24">Question Answer</a></p>
+<li><p><a class="reference internal" href="#question-answer" id="id25">Question Answer</a></p>
 <ul>
-<li><p><a class="reference internal" href="#squad-1-0" id="id25">SQuAD 1.0</a></p></li>
-<li><p><a class="reference internal" href="#squad-2-0" id="id26">SQuAD 2.0</a></p></li>
+<li><p><a class="reference internal" href="#squad-1-0" id="id26">SQuAD 1.0</a></p></li>
+<li><p><a class="reference internal" href="#squad-2-0" id="id27">SQuAD 2.0</a></p></li>
 </ul>
 </li>
 </ul>
@@ -1102,7 +1095,8 @@ vocabulary based on the train data set.</p></li>
 <div><ul class="simple">
 <li><p>Multi30k</p></li>
 <li><p>WMT14</p></li>
-<li><p>IWSLT</p></li>
+<li><p>IWSLT2016</p></li>
+<li><p>IWSLT2017</p></li>
 </ul>
 </div></blockquote>
 <dl class="method">
@@ -1232,23 +1226,24 @@ val.5.en</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="iwslt">
-<h3><a class="toc-backref" href="#id19">IWSLT</a><a class="headerlink" href="#iwslt" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="iwslt2016">
+<h3><a class="toc-backref" href="#id19">IWSLT2016</a><a class="headerlink" href="#iwslt2016" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="torchtext.experimental.datasets.IWSLT">
-<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">IWSLT</code><span class="sig-paren">(</span><em class="sig-param">train_filenames=('train.de-en.de'</em>, <em class="sig-param">'train.de-en.en')</em>, <em class="sig-param">valid_filenames=('IWSLT16.TED.tst2013.de-en.de'</em>, <em class="sig-param">'IWSLT16.TED.tst2013.de-en.en')</em>, <em class="sig-param">test_filenames=('IWSLT16.TED.tst2014.de-en.de'</em>, <em class="sig-param">'IWSLT16.TED.tst2014.de-en.en')</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#IWSLT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.IWSLT" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define translation datasets: IWSLT
-Separately returns train/valid/test datasets
-The available datasets include:</p>
+<dt id="torchtext.experimental.datasets.IWSLT2016">
+<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">IWSLT2016</code><span class="sig-paren">(</span><em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">valid_set='tst2013'</em>, <em class="sig-param">test_set='tst2014'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#IWSLT2016"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.IWSLT2016" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define translation datasets: IWSLT2016
+Separately returns train/valid/test datasets</p>
+<p>The available datasets include following:</p>
+<p><strong>Language pairs</strong>: [(‘en’, ‘ar’), (‘en’, ‘de’), (‘en’, ‘fr’), (‘en’, ‘cs’), (‘ar’, ‘en’),
+(‘fr’, ‘en’), (‘de’, ‘en’), (‘cs’, ‘en’)]</p>
+<p><strong>valid/test sets</strong>: [‘dev2010’, ‘tst2010’, ‘tst2011’, ‘tst2012’, ‘tst2013’, ‘tst2014’]</p>
+<p>For additional details refer to source website: <a class="reference external" href="https://wit3.fbk.eu/2016-01">https://wit3.fbk.eu/2016-01</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>train_filenames</strong> – the source and target filenames for training.
-Default: (‘train.de-en.de’, ‘train.de-en.en’)</p></li>
-<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
-Default: (‘IWSLT16.TED.tst2013.de-en.de’, ‘IWSLT16.TED.tst2013.de-en.en’)</p></li>
-<li><p><strong>test_filenames</strong> – the source and target filenames for test.
-Default: (‘IWSLT16.TED.tst2014.de-en.de’, ‘IWSLT16.TED.tst2014.de-en.en’)</p></li>
+<li><p><strong>language_pair</strong> – tuple or list of two elements: src and tgt language</p></li>
+<li><p><strong>valid_set</strong> – a string to identify validation set.</p></li>
+<li><p><strong>test_set</strong> – a string to identify test set.</p></li>
 <li><p><strong>split</strong> – a string or tuple for the returned datasets, Default: (‘train’, ‘valid’, ‘test’)
 By default, all the three datasets (train, valid, test) are generated. Users
 could also choose any one or two of them, for example (‘train’, ‘test’) or
@@ -1263,141 +1258,54 @@ Default: (None, None)</p></li>
 It has to be in a form of tuple.
 Default: (get_tokenizer(“spacy”, language=’de_core_news_sm’),
 get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
-<li><p><strong>available datasets include</strong> (<em>The</em>) – IWSLT16.TED.dev2010.ar-en.ar
-IWSLT16.TED.dev2010.ar-en.en
-IWSLT16.TED.dev2010.cs-en.cs
-IWSLT16.TED.dev2010.cs-en.en
-IWSLT16.TED.dev2010.de-en.de
-IWSLT16.TED.dev2010.de-en.en
-IWSLT16.TED.dev2010.en-ar.ar
-IWSLT16.TED.dev2010.en-ar.en
-IWSLT16.TED.dev2010.en-cs.cs
-IWSLT16.TED.dev2010.en-cs.en
-IWSLT16.TED.dev2010.en-de.de
-IWSLT16.TED.dev2010.en-de.en
-IWSLT16.TED.dev2010.en-fr.en
-IWSLT16.TED.dev2010.en-fr.fr
-IWSLT16.TED.dev2010.fr-en.en
-IWSLT16.TED.dev2010.fr-en.fr
-IWSLT16.TED.tst2010.ar-en.ar
-IWSLT16.TED.tst2010.ar-en.en
-IWSLT16.TED.tst2010.cs-en.cs
-IWSLT16.TED.tst2010.cs-en.en
-IWSLT16.TED.tst2010.de-en.de
-IWSLT16.TED.tst2010.de-en.en
-IWSLT16.TED.tst2010.en-ar.ar
-IWSLT16.TED.tst2010.en-ar.en
-IWSLT16.TED.tst2010.en-cs.cs
-IWSLT16.TED.tst2010.en-cs.en
-IWSLT16.TED.tst2010.en-de.de
-IWSLT16.TED.tst2010.en-de.en
-IWSLT16.TED.tst2010.en-fr.en
-IWSLT16.TED.tst2010.en-fr.fr
-IWSLT16.TED.tst2010.fr-en.en
-IWSLT16.TED.tst2010.fr-en.fr
-IWSLT16.TED.tst2011.ar-en.ar
-IWSLT16.TED.tst2011.ar-en.en
-IWSLT16.TED.tst2011.cs-en.cs
-IWSLT16.TED.tst2011.cs-en.en
-IWSLT16.TED.tst2011.de-en.de
-IWSLT16.TED.tst2011.de-en.en
-IWSLT16.TED.tst2011.en-ar.ar
-IWSLT16.TED.tst2011.en-ar.en
-IWSLT16.TED.tst2011.en-cs.cs
-IWSLT16.TED.tst2011.en-cs.en
-IWSLT16.TED.tst2011.en-de.de
-IWSLT16.TED.tst2011.en-de.en
-IWSLT16.TED.tst2011.en-fr.en
-IWSLT16.TED.tst2011.en-fr.fr
-IWSLT16.TED.tst2011.fr-en.en
-IWSLT16.TED.tst2011.fr-en.fr
-IWSLT16.TED.tst2012.ar-en.ar
-IWSLT16.TED.tst2012.ar-en.en
-IWSLT16.TED.tst2012.cs-en.cs
-IWSLT16.TED.tst2012.cs-en.en
-IWSLT16.TED.tst2012.de-en.de
-IWSLT16.TED.tst2012.de-en.en
-IWSLT16.TED.tst2012.en-ar.ar
-IWSLT16.TED.tst2012.en-ar.en
-IWSLT16.TED.tst2012.en-cs.cs
-IWSLT16.TED.tst2012.en-cs.en
-IWSLT16.TED.tst2012.en-de.de
-IWSLT16.TED.tst2012.en-de.en
-IWSLT16.TED.tst2012.en-fr.en
-IWSLT16.TED.tst2012.en-fr.fr
-IWSLT16.TED.tst2012.fr-en.en
-IWSLT16.TED.tst2012.fr-en.fr
-IWSLT16.TED.tst2013.ar-en.ar
-IWSLT16.TED.tst2013.ar-en.en
-IWSLT16.TED.tst2013.cs-en.cs
-IWSLT16.TED.tst2013.cs-en.en
-IWSLT16.TED.tst2013.de-en.de
-IWSLT16.TED.tst2013.de-en.en
-IWSLT16.TED.tst2013.en-ar.ar
-IWSLT16.TED.tst2013.en-ar.en
-IWSLT16.TED.tst2013.en-cs.cs
-IWSLT16.TED.tst2013.en-cs.en
-IWSLT16.TED.tst2013.en-de.de
-IWSLT16.TED.tst2013.en-de.en
-IWSLT16.TED.tst2013.en-fr.en
-IWSLT16.TED.tst2013.en-fr.fr
-IWSLT16.TED.tst2013.fr-en.en
-IWSLT16.TED.tst2013.fr-en.fr
-IWSLT16.TED.tst2014.ar-en.ar
-IWSLT16.TED.tst2014.ar-en.en
-IWSLT16.TED.tst2014.de-en.de
-IWSLT16.TED.tst2014.de-en.en
-IWSLT16.TED.tst2014.en-ar.ar
-IWSLT16.TED.tst2014.en-ar.en
-IWSLT16.TED.tst2014.en-de.de
-IWSLT16.TED.tst2014.en-de.en
-IWSLT16.TED.tst2014.en-fr.en
-IWSLT16.TED.tst2014.en-fr.fr
-IWSLT16.TED.tst2014.fr-en.en
-IWSLT16.TED.tst2014.fr-en.fr
-IWSLT16.TEDX.dev2012.de-en.de
-IWSLT16.TEDX.dev2012.de-en.en
-IWSLT16.TEDX.tst2013.de-en.de
-IWSLT16.TEDX.tst2013.de-en.en
-IWSLT16.TEDX.tst2014.de-en.de
-IWSLT16.TEDX.tst2014.de-en.en
-train.ar
-train.ar-en.ar
-train.ar-en.en
-train.cs
-train.cs-en.cs
-train.cs-en.en
-train.de
-train.de-en.de
-train.de-en.en
-train.en
-train.en-ar.ar
-train.en-ar.en
-train.en-cs.cs
-train.en-cs.en
-train.en-de.de
-train.en-de.en
-train.en-fr.en
-train.en-fr.fr
-train.fr
-train.fr-en.en
-train.fr-en.fr
-train.tags.ar-en.ar
-train.tags.ar-en.en
-train.tags.cs-en.cs
-train.tags.cs-en.en
-train.tags.de-en.de
-train.tags.de-en.en
-train.tags.en-ar.ar
-train.tags.en-ar.en
-train.tags.en-cs.cs
-train.tags.en-cs.en
-train.tags.en-de.de
-train.tags.en-de.en
-train.tags.en-fr.en
-train.tags.en-fr.fr
-train.tags.fr-en.en
-train.tags.fr-en.fr</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets</span> <span class="kn">import</span> <span class="n">IWSLT</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data.utils</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;spacy&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;de&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tgt_tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">valid_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">IWSLT</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">=</span><span class="p">(</span><span class="n">src_tokenizer</span><span class="p">,</span>
+<span class="go">                                                                  tgt_tokenizer))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_vocab</span><span class="p">,</span> <span class="n">tgt_vocab</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">get_vocab</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_data</span><span class="p">,</span> <span class="n">tgt_data</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="iwslt2017">
+<h3><a class="toc-backref" href="#id20">IWSLT2017</a><a class="headerlink" href="#iwslt2017" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="torchtext.experimental.datasets.IWSLT2017">
+<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">IWSLT2017</code><span class="sig-paren">(</span><em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#IWSLT2017"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.IWSLT2017" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define translation datasets: IWSLT2017
+Separately returns train/valid/test datasets</p>
+<p>The available datasets include following:</p>
+<p><strong>Language pairs</strong>: [(‘en’, ‘nl’), (‘en’, ‘de’), (‘en’, ‘it’), (‘en’, ‘ro’), (‘ro’, ‘de’),
+(‘ro’, ‘en’), (‘ro’, ‘nl’), (‘ro’, ‘it’), (‘de’, ‘ro’), (‘de’, ‘en’),
+(‘de’, ‘nl’), (‘de’, ‘it’), (‘it’, ‘en’), (‘it’, ‘nl’), (‘it’, ‘de’),
+(‘it’, ‘ro’), (‘nl’, ‘de’), (‘nl’, ‘en’), (‘nl’, ‘it’), (‘nl’, ‘ro’)]</p>
+<p>For additional details refer to source website: <a class="reference external" href="https://wit3.fbk.eu/2017-01">https://wit3.fbk.eu/2017-01</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>language_pair</strong> – tuple or list of two elements: src and tgt language</p></li>
+<li><p><strong>split</strong> – a string or tuple for the returned datasets, Default: (‘train’, ‘valid’, ‘test’)
+By default, all the three datasets (train, valid, test) are generated. Users
+could also choose any one or two of them, for example (‘train’, ‘test’) or
+just a string ‘train’. If ‘train’ is not in the tuple or string, a vocab
+object should be provided which will be used to process valid and/or test data.</p></li>
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>vocab</strong> – Source and target Vocabulary objects used for dataset. If None, it
+will generate a new vocabulary based on the train data set. It has to be
+in a form of tuple.
+Default: (None, None)</p></li>
+<li><p><strong>tokenizer</strong> – the tokenizer used to preprocess source and target raw text data.
+It has to be in a form of tuple.
+Default: (get_tokenizer(“spacy”, language=’de_core_news_sm’),
+get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
 </ul>
 </dd>
 </dl>
@@ -1416,7 +1324,7 @@ train.tags.fr-en.fr</p></li>
 
 </div>
 <div class="section" id="wmt14">
-<h3><a class="toc-backref" href="#id20">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.WMT14">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">train_filenames=('train.tok.clean.bpe.32000.de'</em>, <em class="sig-param">'train.tok.clean.bpe.32000.en')</em>, <em class="sig-param">valid_filenames=('newstest2013.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2013.tok.bpe.32000.en')</em>, <em class="sig-param">test_filenames=('newstest2014.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2014.tok.bpe.32000.en')</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
@@ -1517,7 +1425,7 @@ get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
 </div>
 </div>
 <div class="section" id="sequence-tagging">
-<h2><a class="toc-backref" href="#id21">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">Sequence Tagging</a><a class="headerlink" href="#sequence-tagging" title="Permalink to this headline">¶</a></h2>
 <p>Sequence Tagging datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">SequenceTaggingDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.SequenceTaggingDataset">
@@ -1553,7 +1461,7 @@ found in the data.</p></li>
 </dd></dl>
 
 <div class="section" id="udpos">
-<h3><a class="toc-backref" href="#id22">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">UDPOS</a><a class="headerlink" href="#udpos" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.UDPOS">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">UDPOS</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">vocabs=None</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/sequence_tagging.html#UDPOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.UDPOS" title="Permalink to this definition">¶</a></dt>
@@ -1585,7 +1493,7 @@ data.</p></li>
 
 </div>
 <div class="section" id="conll2000chunking">
-<h3><a class="toc-backref" href="#id23">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">CoNLL2000Chunking</a><a class="headerlink" href="#conll2000chunking" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.CoNLL2000Chunking">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">CoNLL2000Chunking</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">vocabs=None</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'test')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/sequence_tagging.html#CoNLL2000Chunking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.CoNLL2000Chunking" title="Permalink to this definition">¶</a></dt>
@@ -1618,7 +1526,7 @@ data.</p></li>
 </div>
 </div>
 <div class="section" id="question-answer">
-<h2><a class="toc-backref" href="#id24">Question Answer</a><a class="headerlink" href="#question-answer" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">Question Answer</a><a class="headerlink" href="#question-answer" title="Permalink to this headline">¶</a></h2>
 <p>Question answer datasets are subclasses of <code class="docutils literal notranslate"><span class="pre">QuestionAnswerDataset</span></code> class.</p>
 <dl class="class">
 <dt id="torchtext.experimental.datasets.QuestionAnswerDataset">
@@ -1651,7 +1559,7 @@ Currently, we only support the following datasets:</p>
 </dd></dl>
 
 <div class="section" id="squad-1-0">
-<h3><a class="toc-backref" href="#id25">SQuAD 1.0</a><a class="headerlink" href="#squad-1-0" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">SQuAD 1.0</a><a class="headerlink" href="#squad-1-0" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.SQuAD1">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">SQuAD1</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=None</em>, <em class="sig-param">tokenizer=None</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'dev')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/question_answer.html#SQuAD1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.SQuAD1" title="Permalink to this definition">¶</a></dt>
@@ -1690,7 +1598,7 @@ data.</p></li>
 
 </div>
 <div class="section" id="squad-2-0">
-<h3><a class="toc-backref" href="#id26">SQuAD 2.0</a><a class="headerlink" href="#squad-2-0" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">SQuAD 2.0</a><a class="headerlink" href="#squad-2-0" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.SQuAD2">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">SQuAD2</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=None</em>, <em class="sig-param">tokenizer=None</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'dev')</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/question_answer.html#SQuAD2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.SQuAD2" title="Permalink to this definition">¶</a></dt>
@@ -1797,7 +1705,8 @@ data.</p></li>
 </li>
 <li><a class="reference internal" href="#machine-translation">Machine Translation</a><ul>
 <li><a class="reference internal" href="#multi30k">Multi30k</a></li>
-<li><a class="reference internal" href="#iwslt">IWSLT</a></li>
+<li><a class="reference internal" href="#iwslt2016">IWSLT2016</a></li>
+<li><a class="reference internal" href="#iwslt2017">IWSLT2017</a></li>
 <li><a class="reference internal" href="#wmt14">WMT14</a></li>
 </ul>
 </li>
