@@ -17,7 +17,6 @@ from .udpos import UDPOS
 from .wikitext103 import WikiText103
 from .wikitext2 import WikiText2
 from .wmt14 import WMT14
-from .wmtnewscrawl import WMTNewsCrawl
 from .yahooanswers import YahooAnswers
 from .yelpreviewfull import YelpReviewFull
 from .yelpreviewpolarity import YelpReviewPolarity
@@ -39,7 +38,6 @@ DATASETS = {
     'SogouNews': SogouNews,
     'UDPOS': UDPOS,
     'WMT14': WMT14,
-    'WMTNewsCrawl': WMTNewsCrawl,
     'WikiText103': WikiText103,
     'WikiText2': WikiText2,
     'YahooAnswers': YahooAnswers,
