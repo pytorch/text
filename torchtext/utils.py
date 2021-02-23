@@ -9,6 +9,7 @@ import re
 import sys
 import zipfile
 import gzip
+import os
 
 
 def reporthook(t):
