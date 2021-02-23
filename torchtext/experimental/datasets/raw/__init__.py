@@ -1,3 +1,4 @@
+import importlib
 from .wmtnewscrawl import WMTNewsCrawl
 
 DATASETS = {
