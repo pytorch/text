@@ -3,6 +3,7 @@ import logging
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext import datasets as raw
+from torchtext.experimental.datasets import raw as experimental_raw
 from torchtext.data.datasets_utils import check_default_set
 from torchtext.data.datasets_utils import wrap_datasets
 
@@ -69,7 +70,8 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, split_, year, language
         if 'train' not in split:
             raise TypeError("Must pass a vocab if train is not selected.")
         if dataset_name == 'WMTNewsCrawl':
-            raw_train, = raw.DATASETS[dataset_name](root=root, split=('train',), year=year, language=language)
+            raw_train = experimental_raw.DATASETS[dataset_name](root=root, split='train',
+                                                                year=year, language=language)
         else:
             raw_train, = raw.DATASETS[dataset_name](root=root, split=('train',))
         logger_.info('Building Vocab based on train data')
@@ -80,8 +82,8 @@ def _setup_datasets(dataset_name, tokenizer, root, vocab, split_, year, language
         return torch.tensor([vocab[token] for token in tokenizer(line)], dtype=torch.long)
 
     if dataset_name == 'WMTNewsCrawl':
-        raw_datasets = torchtext.experimental.datasets.raw.DATASETS[dataset_name](root=root, split=split,
-                                                                                  year=year, language=language)
+        raw_datasets = experimental_raw.DATASETS[dataset_name](root=root, split=split,
+                                                               year=year, language=language)
     else:
         raw_datasets = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {name: list(map(text_transform, raw_dataset)) for name, raw_dataset in zip(split, raw_datasets)}
@@ -194,7 +196,7 @@ def PennTreebank(tokenizer=None, root='.data', vocab=None, split=('train', 'vali
     return _setup_datasets("PennTreebank", tokenizer, root, vocab, split, None, None)
 
 
-def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, split=('train'), year=2010, language='en'):
+def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, split='train', year=2010, language='en'):
     """ Defines WMTNewsCrawl datasets.
 
     Create language modeling dataset: WMTNewsCrawl
@@ -209,7 +211,7 @@ def WMTNewsCrawl(tokenizer=None, root='.data', vocab=None, split=('train'), year
         vocab: Vocabulary used for dataset. If None, it will generate a new
             vocabulary based on the train data set.
         split: a string or tuple for the returned datasets
-            (Default: ('train',))
+            (Default: 'train')
         year: the year of the dataset (Default: 2010)
         language: the language of the dataset (Default: 'en')
 
