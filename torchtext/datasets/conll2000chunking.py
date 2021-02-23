@@ -1,8 +1,6 @@
-from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import find_match
 from torchtext.data.datasets_utils import download_extract_validate
 import os
 import logging
