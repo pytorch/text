@@ -180,7 +180,7 @@ class TestDataset(TorchtextTestCase):
         data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
         self.assertEqual(next(data_iter), info['first_line'])
-        if dataset_name == "AG_NEWS":
+        if dataset_name == "AG_NEWS" or dataset_name == 'Multi30k':
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
         else:

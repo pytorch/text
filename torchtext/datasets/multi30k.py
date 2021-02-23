@@ -367,16 +367,22 @@ SUPPORTED_DATASETS = {
 }
 
 
-URL = []
-MD5 = []
-NUM_LINES = []
+URL = {'train': [], 'valid': [], 'test': []}
+MD5 = {'train': [], 'valid': [], 'test': []}
+NUM_LINES = {'train': [], 'valid': [], 'test': []}
 
 for task in SUPPORTED_DATASETS.keys():
     for language in SUPPORTED_DATASETS[task].keys():
         for data in SUPPORTED_DATASETS[task][language].keys():
-            URL.append(SUPPORTED_DATASETS[task][language][data]['URL'])
-            MD5.append(SUPPORTED_DATASETS[task][language][data]['MD5'])
-            NUM_LINES.append(SUPPORTED_DATASETS[task][language][data]['NUM_LINES'])
+            if 'train' in data:
+                k = 'train'
+            elif 'val' in data:
+                k = 'valid'
+            else:
+                k = 'test'
+            URL[k].append(SUPPORTED_DATASETS[task][language][data]['URL'])
+            MD5[k].append(SUPPORTED_DATASETS[task][language][data]['MD5'])
+            NUM_LINES[k].append(SUPPORTED_DATASETS[task][language][data]['NUM_LINES'])
 
 
 def _read_text_iterator(path):
@@ -462,17 +468,20 @@ def Multi30k(root, split,
         test_set, language_pair[0]), "{}.{}".format(test_set,
                                                     language_pair[1])]
 
-    src_train, tgt_train = train_filenames
-    src_eval, tgt_eval = valid_filenames
-    src_test, tgt_test = test_filenames
+    if split == 'train':
+        src_file, tgt_file = train_filenames
+    elif split == 'valid':
+        src_file, tgt_file = valid_filenames
+    else:
+        src_file, tgt_file = test_filenames
 
     extracted_files = []  # list of paths to the extracted files
 
     current_url = []
     current_md5 = []
 
-    current_filenames = train_filenames + valid_filenames + test_filenames
-    for url, md5 in zip(URL, MD5):
+    current_filenames = [src_file, tgt_file]
+    for url, md5 in zip(URL[split], MD5[split]):
         if any(f in url for f in current_filenames):
             current_url.append(url)
             current_md5.append(md5)
@@ -485,9 +494,7 @@ def Multi30k(root, split,
     file_archives = extracted_files
 
     data_filenames = {
-        "train": _construct_filepaths(file_archives, src_train, tgt_train),
-        "valid": _construct_filepaths(file_archives, src_eval, tgt_eval),
-        "test": _construct_filepaths(file_archives, src_test, tgt_test)
+        split: _construct_filepaths(file_archives, src_file, tgt_file),
     }
 
     for key in data_filenames.keys():
