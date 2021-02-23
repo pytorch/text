@@ -53,6 +53,10 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         >>> '.data/validation.tar.gz'
 
     """
+    if path is not None:
+        path = os.path.abspath(path)
+    root = os.path.abspath(root)
+
     def _check_hash(path):
         if hash_value:
             logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))

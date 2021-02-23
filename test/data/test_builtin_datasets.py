@@ -3,11 +3,26 @@
 import os
 import torch
 import torchtext
+import unittest
 from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
 from ..common.assets import conditional_remove
+
+GOOGLE_DRIVE_BASED_DATASETS = [
+    'AmazonReviewFull',
+    'AmazonReviewPolarity',
+    'DBpedia',
+    'IMDB',
+    'IWSLT2016',
+    'IWSLT2017',
+    'SogouNews',
+    'WMT14',
+    'YahooAnswers',
+    'YelpReviewFull',
+    'YelpReviewPolarity'
+]
 
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
@@ -155,6 +170,8 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
 
         # Currently disabled due to incredibly slow download
         if dataset_name == "WMTNewsCrawl":
@@ -173,6 +190,8 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
         if 'statmt' in torchtext.datasets.URLS[dataset_name]:
             return
         dataset = torchtext.datasets.DATASETS[dataset_name]
@@ -188,6 +207,8 @@ class TestDataset(TorchtextTestCase):
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
     def test_datasets_split_argument(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
         train2, = dataset(split=('train',))
@@ -236,10 +257,38 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
-    def test_iwslt(self):
-        from torchtext.experimental.datasets import IWSLT
+    @unittest.skip("Depend on Google drive download")
+    def test_iwslt2017(self):
+        from torchtext.experimental.datasets import IWSLT2017
 
-        train_dataset, valid_dataset, test_dataset = IWSLT()
+        train_dataset, valid_dataset, test_dataset = IWSLT2017()
+
+        self.assertEqual(len(train_dataset), 206112)
+        self.assertEqual(len(valid_dataset), 888)
+        self.assertEqual(len(test_dataset), 1568)
+
+        de_vocab, en_vocab = train_dataset.get_vocab()
+
+        def assert_nth_pair_is_equal(n, expected_sentence_pair):
+            de_sentence = [de_vocab.itos[index] for index in train_dataset[n][0]]
+            en_sentence = [en_vocab.itos[index] for index in train_dataset[n][1]]
+
+            expected_de_sentence, expected_en_sentence = expected_sentence_pair
+
+            self.assertEqual(de_sentence, expected_de_sentence)
+            self.assertEqual(en_sentence, expected_en_sentence)
+
+        assert_nth_pair_is_equal(0, (['Vielen', 'Dank', ',', 'Chris', '.', '\n'], ['Thank', 'you', 'so', 'much', ',', 'Chris', '.', '\n']))
+        assert_nth_pair_is_equal(10, (['und', 'wir', 'fuhren', 'selbst', '.', '\n'], ['Driving', 'ourselves', '.', '\n']))
+        assert_nth_pair_is_equal(20, (['Sie', 'sagte', ':', '"', 'Ja', ',', 'das', 'ist', 'Ex-Vizepräsident', 'Al', 'Gore', 'und', 'seine',
+                                       'Frau', 'Tipper', '.', '"', '\n'], ['And', 'she', 'said', '"', 'Yes', ',', 'that', "'s", 'former',
+                                                                           'Vice', 'President', 'Al', 'Gore', 'and', 'his', 'wife', ',', 'Tipper', '.', '"', '\n']))
+
+    @unittest.skip("Depend on Google drive download")
+    def test_iwslt2016(self):
+        from torchtext.experimental.datasets import IWSLT2016
+
+        train_dataset, valid_dataset, test_dataset = IWSLT2016()
 
         self.assertEqual(len(train_dataset), 196884)
         self.assertEqual(len(valid_dataset), 993)

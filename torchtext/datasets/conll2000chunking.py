@@ -1,8 +1,9 @@
-from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import find_match
+from torchtext.data.datasets_utils import download_extract_validate
+import os
+import logging
 
 URL = {
     'train': "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
@@ -17,6 +18,16 @@ MD5 = {
 NUM_LINES = {
     'train': 8936,
     'test': 2012,
+}
+
+_EXTRACTED_FILES = {
+    'train': 'train.txt',
+    'test': 'test.txt'
+}
+
+_EXTRACTED_FILES_MD5 = {
+    'train': "2e2f24e90e20fcb910ab2251b5ed8cd0",
+    'test': "56944df34be553b72a2a634e539a0951"
 }
 
 
@@ -41,8 +52,11 @@ def _create_data_from_iob(data_path, separator):
 @add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'test'))
 def CoNLL2000Chunking(root, split):
-    dataset_tar = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
-    data_filename = find_match(split + ".txt", extracted_files)
+    # Create a dataset specific subfolder to deal with generic download filenames
+    root = os.path.join(root, 'conll2000chunking')
+    path = os.path.join(root, split + ".txt.gz")
+    data_filename = download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
+                                              _EXTRACTED_FILES_MD5[split], hash_type="md5")
+    logging.info('Creating {} data'.format(split))
     return RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],
                                   _create_data_from_iob(data_filename, " "))
