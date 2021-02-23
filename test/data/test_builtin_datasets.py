@@ -173,9 +173,6 @@ class TestDataset(TorchtextTestCase):
         if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
 
-        # Currently disabled due to incredibly slow download
-        if dataset_name == "WMTNewsCrawl":
-            return
         split = info['split']
         data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
