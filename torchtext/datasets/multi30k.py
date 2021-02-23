@@ -479,7 +479,7 @@ def Multi30k(root, split,
 
     for url, md5 in zip(current_url, current_md5):
         dataset_tar = download_from_url(
-            url, path=os.path.join(root,os.path.basename(url)), root=root, hash_value=md5, hash_type='md5')
+            url, path=os.path.join(root, os.path.basename(url)), root=root, hash_value=md5, hash_type='md5')
         extracted_files.extend(extract_archive(dataset_tar))
 
     file_archives = extracted_files
