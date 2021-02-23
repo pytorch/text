@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 """Tests that requires external resources (Network access to fetch dataset)"""
-from collections import Counter
-
 import torch
 import torchtext.data
 
