@@ -9,6 +9,7 @@ import torchtext.data
 
 from .common.torchtext_test_case import TorchtextTestCase
 
+
 class TestDataUtils(TorchtextTestCase):
     TEST_STR = "A string, particularly one with slightly complex punctuation."
 
