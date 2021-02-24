@@ -42,3 +42,11 @@ WMT14
 
 .. autofunction:: WMT14
 
+    
+Language Modeling
+^^^^^^^^^^^^^^^^^
+
+WMTNewsCrawl
+~~~~~~~~~~~~    
+
+.. autofunction:: WMTNewsCrawl
