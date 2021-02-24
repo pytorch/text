@@ -154,18 +154,19 @@ def wrap_split_argument(splits):
 
 def download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
                               hash_type="sha256"):
-    path = os.path.join(root, extracted_file)
-    if os.path.exists(path):
+    root = os.path.abspath(root)
+    downloaded_file = os.path.abspath(downloaded_file)
+    extracted_file = os.path.abspath(extracted_file)
+    if os.path.exists(extracted_file):
         with open(os.path.join(root, extracted_file), 'rb') as f:
             if validate_file(f, extracted_file_md5, hash_type):
-                return path
+                return extracted_file
 
-    dataset_tar = download_from_url(url, root=root,
-                                    path=os.path.join(root, downloaded_file),
+    dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
-    assert path == find_match(extracted_file, extracted_files)
-    return path
+    assert extracted_file == find_match(extracted_file, extracted_files)
+    return extracted_file
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):
