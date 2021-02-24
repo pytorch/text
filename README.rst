@@ -50,7 +50,7 @@ Optional requirements
 If you want to use English tokenizer from `SpaCy <http://spacy.io/>`_, you need to install SpaCy and download its English model::
 
     pip install spacy
-    python -m spacy download en
+    python -m spacy download en_core_web_sm 
 
 Alternatively, you might want to use the `Moses <http://www.statmt.org/moses/>`_ tokenizer port in `SacreMoses <https://github.com/alvations/sacremoses>`_ (split from `NLTK <http://nltk.org/>`_). You have to install SacreMoses::
 
@@ -93,7 +93,7 @@ Datasets
 The datasets module currently contains:
 
 * Language modeling: WikiText2, WikiText103, PennTreebank, EnWik9
-* Machine translation: Multi30k, IWSLT, WMT14
+* Machine translation: IWSLT2016, IWSLT2017
 * Sequence tagging (e.g. POS/NER): UDPOS, CoNLL2000Chunking
 * Question answering: SQuAD1, SQuAD2 
 * Text classification: AG_NEWS, SogouNews, DBpedia, YelpReviewPolarity, YelpReviewFull, YahooAnswers, AmazonReviewPolarity, AmazonReviewFull, IMDB
@@ -113,7 +113,7 @@ For example, to access the raw text from the AG_NEWS dataset:
       >>> train_iter = AG_NEWS(split='train')
       >>> dataloader = DataLoader(train_iter, batch_size=8, shuffle=False)
 
-A tutorial for the end-to-end text classification workflow can be found in `TEXT CLASSIFICATION WITH TORCHTEXT <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
+A tutorial for the end-to-end text classification workflow can be found in `PyTorch tutorial <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
 
 [Prototype] Experimental Code
 =============================
