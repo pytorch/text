@@ -36,3 +36,11 @@ Multi30k
 
 .. autofunction:: Multi30k
 
+    
+Language Modeling
+^^^^^^^^^^^^^^^^^
+
+WMTNewsCrawl
+~~~~~~~~~~~~    
+
+.. autofunction:: WMTNewsCrawl
