@@ -1,6 +1,10 @@
-import torch
-import inspect
 import functools
+import inspect
+import os
+import torch
+from torchtext.utils import validate_file
+from torchtext.utils import download_from_url
+from torchtext.utils import extract_archive
 
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
@@ -45,7 +49,7 @@ def find_match(match, lst):
     return None
 
 
-def dataset_docstring_header(fn):
+def dataset_docstring_header(fn, num_lines=None):
     """
     Returns docstring for a dataset based on function arguments.
 
@@ -57,41 +61,41 @@ def dataset_docstring_header(fn):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
     default_split = argspec.defaults[1]
 
+    if not (isinstance(default_split, tuple) or isinstance(default_split, str)):
+        raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
+
+    header_s = fn.__name__ + " dataset\n"
+
     if isinstance(default_split, tuple):
-        example_subset = default_split[:2]
-        if len(default_split) < 3:
-            example_subset = (default_split[0],)
-        return """{} dataset
-
-        Separately returns the {} split
-
-        Args:
-            root: Directory where the datasets are saved.
-                Default: ".data"
-            split: split or splits to be returned. Can be a string or tuple of strings.
-                By default, all three datasets are generated. Users
-                could also choose any subset of them, for example {} or just 'train'.
-                Default: {}
-        """.format(fn.__name__, "/".join(default_split), str(example_subset), str(default_split))
+        header_s += "\nSeparately returns the {} split".format("/".join(default_split))
 
     if isinstance(default_split, str):
-        return """{} dataset
+        header_s += "\nOnly returns the {} split".format(default_split)
 
-        Only returns the {default_split} split
+    if num_lines is not None:
+        header_s += "\n\nNumber of lines per split:"
+        for k, v in num_lines.items():
+            header_s += "\n    {}: {}\n".format(k, v)
 
-        Args:
-            root: Directory where the datasets are saved.
-                Default: ".data"
-            split: Only {default_split} is available.
-                Default: {default_split}""".format(fn.__name__, default_split=default_split)
+    args_s = "\nArgs:"
+    args_s += "\n    root: Directory where the datasets are saved."
+    args_s += "\n        Default: .data"
 
-    raise ValueError("default_split type expected to be of string or tuple but got {}".format(type(default_split)))
+    if isinstance(default_split, tuple):
+        args_s += "\n    split: split or splits to be returned. Can be a string or tuple of strings."
+        args_s += "\n        Default: {}""".format(str(default_split))
+
+    if isinstance(default_split, str):
+        args_s += "\n     split: Only {default_split} is available."
+        args_s += "\n         Default: {default_split}.format(default_split=default_split)"
+
+    return "\n".join([header_s, args_s]) + "\n"
 
 
-def add_docstring_header(docstring=None):
+def add_docstring_header(docstring=None, num_lines=None):
     def docstring_decorator(fn):
         old_doc = fn.__doc__
-        fn.__doc__ = dataset_docstring_header(fn)
+        fn.__doc__ = dataset_docstring_header(fn, num_lines)
         if docstring is not None:
             fn.__doc__ += docstring
         if old_doc is not None:
@@ -146,6 +150,23 @@ def wrap_split_argument(splits):
     def new_fn(fn):
         return _wrap_split_argument(fn, splits)
     return new_fn
+
+
+def download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
+                              hash_type="sha256"):
+    root = os.path.abspath(root)
+    downloaded_file = os.path.abspath(downloaded_file)
+    extracted_file = os.path.abspath(extracted_file)
+    if os.path.exists(extracted_file):
+        with open(os.path.join(root, extracted_file), 'rb') as f:
+            if validate_file(f, extracted_file_md5, hash_type):
+                return extracted_file
+
+    dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
+                                    hash_value=url_md5, hash_type=hash_type)
+    extracted_files = extract_archive(dataset_tar)
+    assert extracted_file == find_match(extracted_file, extracted_files)
+    return extracted_file
 
 
 class RawTextIterableDataset(torch.utils.data.IterableDataset):

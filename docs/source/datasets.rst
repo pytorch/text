@@ -1,5 +1,5 @@
-torchtext.experimental.datasets.raw
-===================================
+torchtext.datasets
+==================
 
 .. currentmodule:: torchtext.datasets
 
@@ -7,7 +7,7 @@ General use cases are as follows: ::
 
 
     # import datasets
-    from torchtext.experimental.datasets.raw import IMDB
+    from torchtext.datasets import IMDB
 
     train_iter = IMDB(split='train')
 
@@ -98,25 +98,19 @@ PennTreebank
 .. autofunction:: PennTreebank
 
 
-WMTNewsCrawl
-~~~~~~~~~~~~
-
-.. autofunction:: WMTNewsCrawl
-
-
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Multi30k
-~~~~~~~~
 
-.. autofunction:: Multi30k
+IWSLT2016
+~~~~~~~~~
 
+.. autofunction:: IWSLT2016
 
-IWSLT
-~~~~~
+IWSLT2017
+~~~~~~~~~
 
-.. autofunction:: IWSLT
+.. autofunction:: IWSLT2017
 
 
 WMT14

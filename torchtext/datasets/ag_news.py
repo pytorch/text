@@ -21,7 +21,7 @@ NUM_LINES = {
 }
 
 
-@add_docstring_header()
+@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'test'))
 def AG_NEWS(root, split):
     def _create_data_from_csv(data_path):
