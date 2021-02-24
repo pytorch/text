@@ -97,7 +97,18 @@ def WMT14(root, split,
           test_set='newstest2014.tok.bpe.32000'):
     """WMT14 Dataset
 
-    The available datasets include ('de','en') language pair
+    The available datasets include following:
+
+    **Language pairs**:
+
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
+
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"

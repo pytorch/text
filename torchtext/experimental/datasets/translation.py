@@ -149,13 +149,29 @@ def Multi30k(task='task1',
 
     The available datasets include following:
 
-    **task1**
+    **Language pairs (task1)**:
 
-    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+    +-----+-----+-----+-----+-----+
+    |     |'en' |'cs' |'de' |'fr' |
+    +-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'cs' |  x  |     |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'de' |  x  |   x |     |  x  |
+    +-----+-----+-----+-----+-----+
+    |'fr' |  x  |   x |  x  |     |
+    +-----+-----+-----+-----+-----+
 
-    **task2**
+    **Language pairs (task2)**:
 
-    **Languages**: 'de' | 'en'
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
 
     For additional details refer to source: https://github.com/multi30k/dataset
 
@@ -345,7 +361,18 @@ def WMT14(language_pair=('de', 'en'),
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
 
-    The available datasets include (‘de’,’en’) language pair
+    The available datasets include following:
+
+    **Language pairs**:
+
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
+
 
     Args:
         language_pair: tuple or list containing src and tgt language

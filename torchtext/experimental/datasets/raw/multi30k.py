@@ -411,13 +411,29 @@ def Multi30k(root, split,
 
     The available datasets include following:
 
-    **task1**
+    **Language pairs (task1)**:
 
-    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+    +-----+-----+-----+-----+-----+
+    |     |'en' |'cs' |'de' |'fr' |
+    +-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'cs' |  x  |     |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'de' |  x  |   x |     |  x  |
+    +-----+-----+-----+-----+-----+
+    |'fr' |  x  |   x |  x  |     |
+    +-----+-----+-----+-----+-----+
 
-    **task2**
+    **Language pairs (task2)**:
 
-    **Languages**: 'de' | 'en'
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
 
     For additional details refer to source: https://github.com/multi30k/dataset
 
