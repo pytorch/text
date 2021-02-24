@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Examples &mdash; torchtext 0.9.0.dev20210223 documentation</title>
+  <title>torchtext.experimental.datasets.raw &mdash; torchtext 0.9.0.dev20210224 documentation</title>
   
 
   
@@ -31,7 +31,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="torchtext.experimental.models.utils" href="models_utils.html" /> 
+    <link rel="next" title="torchtext.experimental.transforms" href="experimental_transforms.html" />
+    <link rel="prev" title="torchtext.experimental.datasets" href="experimental_datasets.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -180,7 +181,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210223 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210224 &#x25BC</a>
     </div>
     
 
@@ -215,11 +216,11 @@
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets.raw</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -270,13 +271,13 @@
       </li>
 
         
-      <li>Examples</li>
+      <li>torchtext.experimental.datasets.raw</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/examples.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+            <a href="_sources/experimental_datasets_raw.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -302,89 +303,73 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>Note: We are working on new building blocks and datasets. Some of the components in the examples (e.g. Field) will eventually retire. See the release note 0.5.0 <a class="reference external" href="https://github.com/pytorch/text/releases">here</a>.</p>
-<ol class="arabic simple">
-<li><p>Ability to describe declaratively how to load a custom NLP dataset that’s in a “normal” format:</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pos</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="p">(</span>
-<span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/pos/pos_wsj_train.tsv&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
-<span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()),</span>
-        <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">())])</span>
+  <div class="section" id="torchtext-experimental-datasets-raw">
+<h1>torchtext.experimental.datasets.raw<a class="headerlink" href="#torchtext-experimental-datasets-raw" title="Permalink to this headline">¶</a></h1>
+<p>General use cases are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import datasets</span>
+<span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">Multi30k</span>
 
-<span class="n">sentiment</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/sentiment/train.json&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sentence_tokenized&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">sequential</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
-             <span class="s1">&#39;sentiment_gold&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">sequential</span><span class="o">=</span><span class="kc">False</span><span class="p">))})</span>
+<span class="n">train_iter</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+<span class="n">tokens_src</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">tokens_tgt</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">train_iter</span><span class="p">:</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">tgt</span> <span class="o">=</span> <span class="n">line</span>
+    <span class="n">tokens_src</span> <span class="o">+=</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">tokens_tgt</span> <span class="o">+=</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">tgt</span><span class="p">)</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li><p>Ability to parse nested keys for loading a JSON dataset</p></li>
-</ol>
-<p>2.1 sample.json</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;foods&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;fruits&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Apple&quot;</span><span class="p">,</span> <span class="s2">&quot;Banana&quot;</span><span class="p">],</span>
-    <span class="nt">&quot;vegetables&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lettuce&quot;</span><span class="p">},</span> <span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;marrow&quot;</span><span class="p">}]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<p>The following datasets are available:</p>
+<div class="contents local topic" id="datasets">
+<p class="topic-title">Datasets</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#machine-translation" id="id1">Machine Translation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#multi30k" id="id2">Multi30k</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="machine-translation">
+<h2><a class="toc-backref" href="#id1">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="multi30k">
+<h3><a class="toc-backref" href="#id2">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="torchtext.experimental.datasets.raw.Multi30k">
+<code class="sig-prename descclassname">torchtext.experimental.datasets.raw.</code><code class="sig-name descname">Multi30k</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">task='task1'</em>, <em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">train_set='train'</em>, <em class="sig-param">valid_set='val'</em>, <em class="sig-param">test_set='test_2016_flickr'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/multi30k.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.Multi30k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multi30k Dataset</p>
+<p>The available datasets include following:</p>
+<p><strong>task1</strong></p>
+<p><strong>Languages</strong>: ‘cs’ | ‘de’ | ‘en’ | ‘fr’</p>
+<p><strong>task2</strong></p>
+<p><strong>Languages</strong>: ‘de’ | ‘en’</p>
+<p>For additional details refer to source: <a class="reference external" href="https://github.com/multi30k/dataset">https://github.com/multi30k/dataset</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
+<li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)</p></li>
+<li><p><strong>task</strong> – Indicate the task</p></li>
+<li><p><strong>language_pair</strong> – tuple or list containing src and tgt language</p></li>
+<li><p><strong>train_set</strong> – A string to identify train set.</p></li>
+<li><p><strong>valid_set</strong> – A string to identify validation set.</p></li>
+<li><p><strong>test_set</strong> – A string to identify test set.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">Multi30k</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_iter</span><span class="p">,</span> <span class="n">valid_iter</span><span class="p">,</span> <span class="n">test_iter</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_sentence</span><span class="p">,</span> <span class="n">tgt_sentence</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">train_iter</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>2.2 pass in nested keys to parse nested data directly</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">data</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foods.vegetables.name&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;vegs&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">())}</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;sample.json&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span>
-<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">vegs</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="p">[</span><span class="s1">&#39;lettuce&#39;</span><span class="p">,</span> <span class="s1">&#39;marrow&#39;</span><span class="p">]</span>
-</pre></div>
+</dd></dl>
+
 </div>
-<ol class="arabic simple" start="3">
-<li><p>Ability to define a preprocessing pipeline:</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">my_custom_tokenizer</span><span class="p">)</span>
-<span class="n">trg</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span><span class="o">=</span><span class="n">my_custom_tokenizer</span><span class="p">)</span>
-<span class="n">mt_train</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">TranslationDataset</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/mt/wmt16-ende.train&#39;</span><span class="p">,</span> <span class="n">exts</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;.en&#39;</span><span class="p">,</span> <span class="s1">&#39;.de&#39;</span><span class="p">),</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="4">
-<li><p>Batching, padding, and numericalizing (including building vocabulary object):</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># continuing from above</span>
-<span class="n">mt_dev</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TranslationDataset</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;data/mt/newstest2014&#39;</span><span class="p">,</span> <span class="n">exts</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;.en&#39;</span><span class="p">,</span> <span class="s1">&#39;.de&#39;</span><span class="p">),</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">))</span>
-<span class="n">src</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">mt_train</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">80000</span><span class="p">)</span>
-<span class="n">trg</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">mt_train</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
-<span class="c1"># mt_dev shares the fields, so it shares their vocab objects</span>
-
-<span class="n">train_iter</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="p">(</span>
-    <span class="n">dataset</span><span class="o">=</span><span class="n">mt_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">interleave_keys</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">src</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">trg</span><span class="p">)))</span>
-<span class="c1"># usage</span>
-<span class="o">&gt;&gt;&gt;</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">train_iter</span><span class="p">))</span>
-<span class="o">&lt;</span><span class="n">data</span><span class="o">.</span><span class="n">Batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="p">[</span><span class="n">LongTensor</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">25</span><span class="p">)],</span> <span class="n">trg</span><span class="o">=</span><span class="p">[</span><span class="n">LongTensor</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">28</span><span class="p">)])</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="5">
-<li><p>Wrapper for dataset splits (train, validation, test):</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TEXT</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-<span class="n">LABELS</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">()</span>
-
-<span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TabularDataset</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-    <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/data/pos_wsj/pos_wsj&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="s1">&#39;_train.tsv&#39;</span><span class="p">,</span>
-    <span class="n">validation</span><span class="o">=</span><span class="s1">&#39;_dev.tsv&#39;</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">&#39;_test.tsv&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
-    <span class="n">fields</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">TEXT</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">LABELS</span><span class="p">)])</span>
-
-<span class="n">train_iter</span><span class="p">,</span> <span class="n">val_iter</span><span class="p">,</span> <span class="n">test_iter</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">test</span><span class="p">),</span> <span class="n">batch_sizes</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
-    <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="n">TEXT</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-<span class="n">LABELS</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-</pre></div>
 </div>
 </div>
 
@@ -396,8 +381,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="experimental_transforms.html" class="btn btn-neutral float-right" title="torchtext.experimental.transforms" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
-        <a href="models_utils.html" class="btn btn-neutral" title="torchtext.experimental.models.utils" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+      
+        <a href="experimental_datasets.html" class="btn btn-neutral" title="torchtext.experimental.datasets" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -429,7 +416,13 @@
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">Examples</a></li>
+<li><a class="reference internal" href="#">torchtext.experimental.datasets.raw</a><ul>
+<li><a class="reference internal" href="#machine-translation">Machine Translation</a><ul>
+<li><a class="reference internal" href="#multi30k">Multi30k</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             </div>

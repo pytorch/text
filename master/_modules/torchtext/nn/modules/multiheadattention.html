@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.nn.modules.multiheadattention &mdash; torchtext 0.9.0.dev20210223 documentation</title>
+  <title>torchtext.nn.modules.multiheadattention &mdash; torchtext 0.9.0.dev20210224 documentation</title>
   
 
   
@@ -179,7 +179,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210223 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210224 &#x25BC</a>
     </div>
     
 
@@ -214,11 +214,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../utils.html">torchtext.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../models_utils.html">torchtext.experimental.models.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -350,27 +350,39 @@
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query, key, value (Tensor): map a query and a set of key-value pairs to an output.</span>
+<span class="sd">            query (Tensor): The query of the attention function.</span>
 <span class="sd">                See &quot;Attention Is All You Need&quot; for more details.</span>
-<span class="sd">            attn_mask, bias_k and bias_v (Tensor, optional): keyword arguments passed to the attention layer.</span>
-<span class="sd">                See the definitions in the attention.</span>
+<span class="sd">            key (Tensor): The keys of the attention function.</span>
+<span class="sd">                See &quot;Attention Is All You Need&quot; for more details.</span>
+<span class="sd">            value (Tensor): The values of the attention function.</span>
+<span class="sd">                See &quot;Attention Is All You Need&quot; for more details.</span>
+<span class="sd">            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.</span>
+<span class="sd">            bias_k (Tensor, optional): one more key and value sequence to be added to keys at</span>
+<span class="sd">                sequence dim (dim=-3). Those are used for incremental decoding. Users should provide</span>
+<span class="sd">                ``bias_v``.</span>
+<span class="sd">            bias_v (Tensor, optional): one more key and value sequence to be added to values at</span>
+<span class="sd">                sequence dim (dim=-3). Those are used for incremental decoding. Users should also provide</span>
+<span class="sd">                ``bias_k``.</span>
 
 <span class="sd">        Shape:</span>
+
 <span class="sd">            - Inputs:</span>
-<span class="sd">            - query: :math:`(..., L, N, E)`</span>
-<span class="sd">            - key: :math:`(..., S, N, E)`</span>
-<span class="sd">            - value: :math:`(..., S, N, E)`</span>
-<span class="sd">            - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.</span>
+
+<span class="sd">                - query: :math:`(..., L, N, E)`</span>
+<span class="sd">                - key: :math:`(..., S, N, E)`</span>
+<span class="sd">                - value: :math:`(..., S, N, E)`</span>
+<span class="sd">                - attn_mask, bias_k and bias_v: same with the shape of the corresponding args in attention layer.</span>
 
 <span class="sd">            - Outputs:</span>
-<span class="sd">            - attn_output: :math:`(..., L, N, E)`</span>
-<span class="sd">            - attn_output_weights: :math:`(N * H, L, S)`</span>
+
+<span class="sd">                - attn_output: :math:`(..., L, N, E)`</span>
+<span class="sd">                - attn_output_weights: :math:`(N * H, L, S)`</span>
 
 <span class="sd">            Note: It&#39;s optional to have the query/key/value inputs with more than three dimensions (for broadcast purpose).</span>
-<span class="sd">                The MultiheadAttentionContainer module will operate on the last three dimensions.</span>
+<span class="sd">            The MultiheadAttentionContainer module will operate on the last three dimensions.</span>
 
 <span class="sd">            where where L is the target length, S is the sequence length, H is the number of attention heads,</span>
-<span class="sd">                N is the batch size, and E is the embedding dimension.</span>
+<span class="sd">            N is the batch size, and E is the embedding dimension.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_first</span><span class="p">:</span>
             <span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">key</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
@@ -435,9 +447,13 @@
 <span class="sd">            key (Tensor): Projected key</span>
 <span class="sd">            value (Tensor): Projected value</span>
 <span class="sd">            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.</span>
-<span class="sd">            bias_k and bias_v: (Tensor, optional): one more key and value sequence to be added at</span>
+<span class="sd">            attn_mask (BoolTensor, optional): 3D mask that prevents attention to certain positions.</span>
+<span class="sd">            bias_k (Tensor, optional): one more key and value sequence to be added to keys at</span>
 <span class="sd">                sequence dim (dim=-3). Those are used for incremental decoding. Users should provide</span>
-<span class="sd">                non-None to both arguments in order to activate them.</span>
+<span class="sd">                ``bias_v``.</span>
+<span class="sd">            bias_v (Tensor, optional): one more key and value sequence to be added to values at</span>
+<span class="sd">                sequence dim (dim=-3). Those are used for incremental decoding. Users should also provide</span>
+<span class="sd">                ``bias_k``.</span>
 
 <span class="sd">        Shape:</span>
 <span class="sd">            - query: :math:`(..., L, N * H, E / H)`</span>
@@ -526,7 +542,9 @@
 <span class="sd">        the forward func of query/key/value_proj, respectively.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query, key, value (Tensors): sequence to be projected</span>
+<span class="sd">            query (Tensor): The query to be projected.</span>
+<span class="sd">            key (Tensor): The keys to be projected.</span>
+<span class="sd">            value (Tensor): The values to be projected.</span>
 
 <span class="sd">        Examples::</span>
 <span class="sd">            &gt;&gt;&gt; from torchtext.nn import InProjContainer</span>

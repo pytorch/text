@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210223 documentation</title>
+  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210224 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.experimental.transforms" href="experimental_transforms.html" />
+    <link rel="next" title="torchtext.experimental.datasets.raw" href="experimental_datasets_raw.html" />
     <link rel="prev" title="torchtext.utils" href="utils.html" /> 
 
   
@@ -181,7 +181,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210223 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210224 &#x25BC</a>
     </div>
     
 
@@ -216,11 +216,11 @@
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -1065,7 +1065,7 @@ function with input of a string and output of a token list.</p></li>
 <li><p><strong>vocab</strong> – Vocabulary used for dataset. If None, it will generate a new
 vocabulary based on the train data set.</p></li>
 <li><p><strong>split</strong> – a string or tuple for the returned datasets
-(Default: (‘train’,))</p></li>
+(Default: ‘train’)</p></li>
 <li><p><strong>year</strong> – the year of the dataset (Default: 2010)</p></li>
 <li><p><strong>language</strong> – the language of the dataset (Default: ‘en’)</p></li>
 </ul>
@@ -1135,18 +1135,23 @@ numericalizing the string tokens.
 <h3><a class="toc-backref" href="#id18">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.Multi30k">
-<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">Multi30k</code><span class="sig-paren">(</span><em class="sig-param">train_filenames=('train.de'</em>, <em class="sig-param">'train.en')</em>, <em class="sig-param">valid_filenames=('val.de'</em>, <em class="sig-param">'val.en')</em>, <em class="sig-param">test_filenames=('test_2016_flickr.de'</em>, <em class="sig-param">'test_2016_flickr.en')</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">Multi30k</code><span class="sig-paren">(</span><em class="sig-param">task='task1'</em>, <em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">train_set='train'</em>, <em class="sig-param">valid_set='val'</em>, <em class="sig-param">test_set='test_2016_flickr'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.Multi30k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define translation datasets: Multi30k
 Separately returns train/valid/test datasets as a tuple</p>
+<p>The available datasets include following:</p>
+<p><strong>task1</strong></p>
+<p><strong>Languages</strong>: ‘cs’ | ‘de’ | ‘en’ | ‘fr’</p>
+<p><strong>task2</strong></p>
+<p><strong>Languages</strong>: ‘de’ | ‘en’</p>
+<p>For additional details refer to source: <a class="reference external" href="https://github.com/multi30k/dataset">https://github.com/multi30k/dataset</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>train_filenames</strong> – the source and target filenames for training.
-Default: (‘train.de’, ‘train.en’)</p></li>
-<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
-Default: (‘val.de’, ‘val.en’)</p></li>
-<li><p><strong>test_filenames</strong> – the source and target filenames for test.
-Default: (‘test2016.de’, ‘test2016.en’)</p></li>
+<li><p><strong>task</strong> – Indicate the task</p></li>
+<li><p><strong>language_pair</strong> – tuple or list containing src and tgt language</p></li>
+<li><p><strong>train_set</strong> – A string to identify train set.</p></li>
+<li><p><strong>valid_set</strong> – A string to identify validation set.</p></li>
+<li><p><strong>test_set</strong> – A string to identify test set.</p></li>
 <li><p><strong>split</strong> – a string or tuple for the returned datasets, Default: (‘train’, ‘valid’, ‘test’)
 By default, all the three datasets (train, valid, test) are generated. Users
 could also choose any one or two of them, for example (‘train’, ‘test’) or
@@ -1161,55 +1166,6 @@ Default: (None, None)</p></li>
 It has to be in a form of tuple.
 Default: (get_tokenizer(“spacy”, language=’de_core_news_sm’),
 get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
-<li><p><strong>available dataset include</strong> (<em>The</em>) – test_2016_flickr.cs
-test_2016_flickr.de
-test_2016_flickr.en
-test_2016_flickr.fr
-test_2017_flickr.de
-test_2017_flickr.en
-test_2017_flickr.fr
-test_2017_mscoco.de
-test_2017_mscoco.en
-test_2017_mscoco.fr
-test_2018_flickr.en
-train.cs
-train.de
-train.en
-train.fr
-val.cs
-val.de
-val.en
-val.fr
-test_2016.1.de
-test_2016.1.en
-test_2016.2.de
-test_2016.2.en
-test_2016.3.de
-test_2016.3.en
-test_2016.4.de
-test_2016.4.en
-test_2016.5.de
-test_2016.5.en
-train.1.de
-train.1.en
-train.2.de
-train.2.en
-train.3.de
-train.3.en
-train.4.de
-train.4.en
-train.5.de
-train.5.en
-val.1.de
-val.1.en
-val.2.de
-val.2.en
-val.3.de
-val.3.en
-val.4.de
-val.4.en
-val.5.de
-val.5.en</p></li>
 </ul>
 </dd>
 </dl>
@@ -1647,7 +1603,7 @@ data.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="experimental_transforms.html" class="btn btn-neutral float-right" title="torchtext.experimental.transforms" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="experimental_datasets_raw.html" class="btn btn-neutral float-right" title="torchtext.experimental.datasets.raw" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="utils.html" class="btn btn-neutral" title="torchtext.utils" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
