@@ -1,9 +1,11 @@
-import torch
-import torch.nn as nn
-import torch.distributed.rpc as rpc
-from torch.distributed.rpc import RRef
-import threading
 import concurrent.futures
+import threading
+
+import torch
+import torch.distributed.rpc as rpc
+import torch.nn as nn
+from torch.distributed.rpc import RRef
+
 
 class ToDevice(nn.Module):
     def __init__(self, device):
@@ -15,19 +17,18 @@ class ToDevice(nn.Module):
 
 
 class SingleProcessPipeline(nn.Sequential):
-    def __init__(self, shards, devices):
+    def __init__(self, shards, devices, to_device=True):
         super().__init__()
         assert len(shards) == len(devices)
         self.devices = devices
-        self.seq = nn.Sequential()
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            concurrent.futures.wait([executor.submit(lambda s, d: s.to(d), shards[i], devices[i]) for i in range(len(shards))])
+            concurrent.futures.wait(
+                [executor.submit(lambda s, d: s.to(d), shards[i], devices[i]) for i in range(len(shards))])
 
         for i, shard in enumerate(shards):
-            self.seq.add_module(f'Shard({devices[i]})', shard)
-            if i != len(shards)-1:
-                self.seq.add_module(f'ToDevice({devices[i+1]})', ToDevice(devices[i+1]))
+            self.add_module(f'Shard({devices[i]})', shard)
+            if to_device and i != len(shards) - 1:
+                self.add_module(f'ToDevice({devices[i + 1]})', ToDevice(devices[i + 1]))
 
 
 class RemoteBaseCPURPC(nn.Module):
@@ -66,7 +67,8 @@ class RPCPipeline(nn.Module):
     def __init__(self, shards, devices, workers, remote_base_class=RemoteBaseCPURPC, split_size=1):
         super().__init__()
         self.split_size = split_size
-        self.shards = [rpc.remote(worker, remote_base_class, args=(shard, device)) for worker, shard, device in zip(workers, shards, devices)]
+        self.shards = [rpc.remote(worker, remote_base_class, args=(shard, device)) for worker, shard, device in
+                       zip(workers, shards, devices)]
 
     def forward(self, xs):
         # Split the input batch xs into micro-batches, and collect async RPC
@@ -87,4 +89,3 @@ class RPCPipeline(nn.Module):
         for shard in self.shards:
             remote_params.extend(shard.remote().parameter_rrefs().to_here())
         return remote_params
-    

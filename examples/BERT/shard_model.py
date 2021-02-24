@@ -1,5 +1,7 @@
 import torch.nn as nn
+
 from model import TransformerEncoderLayer, XLMREmbedding
+
 
 class XLMRModelShards():
     def __init__(self, ntoken, ninp, nhead, nhid, dropout=0.5):
@@ -13,7 +15,6 @@ class XLMRModelShards():
 
     def encoder_layers(self, nlayers):
         return nn.TransformerEncoder(self.encoder_layer, nlayers)
-
 
 
 class MLMShards():
