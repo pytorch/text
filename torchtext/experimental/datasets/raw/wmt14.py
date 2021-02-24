@@ -110,7 +110,7 @@ def WMT14(root, split,
     Examples:
         >>> from torchtext.datasets import WMT14
         >>> train_iter, valid_iter, test_iter = WMT14()
-        >>> src_sentence, tgt_sentence = list(train_iter)[0]
+        >>> src_sentence, tgt_sentence = next(train_iter)
     """
 
     supported_language = ['en', 'de']

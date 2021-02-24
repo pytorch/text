@@ -36,7 +36,7 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    if dataset_name == 'Multi30k':
+    if dataset_name == 'Multi30k' or dataset_name == 'WMT14':
         raw_datasets = experimental_raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
     else:
         raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)

@@ -36,3 +36,9 @@ Multi30k
 
 .. autofunction:: Multi30k
 
+
+WMT14
+~~~~~
+
+.. autofunction:: WMT14
+
