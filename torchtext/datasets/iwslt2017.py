@@ -198,7 +198,7 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
 
     if src_language not in SUPPORTED_DATASETS['language_pair']:
         raise ValueError("src_language '{}' is not valid. Supported source languages are {}".
-                         format(src_language, list(SUPPORTED_DATASETS['language_pair'].keys())))
+                         format(src_language, list(SUPPORTED_DATASETS['language_pair'])))
 
     if tgt_language not in SUPPORTED_DATASETS['language_pair'][src_language]:
         raise ValueError("tgt_language '{}' is not valid for give src_language '{}'. Supported target language are {}".
