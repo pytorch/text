@@ -3,6 +3,7 @@ import logging
 from torchtext.data.datasets_utils import check_default_set
 from torchtext.data.datasets_utils import wrap_datasets
 from torchtext import datasets as raw
+from torchtext.experimental.datasets import raw as experimental_raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
@@ -35,7 +36,10 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
+    if dataset_name == 'Multi30k':
+        raw_datasets = experimental_raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
+    else:
+        raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
     raw_data = {name: list(raw_dataset) for name, raw_dataset in zip(split, raw_datasets)}
     src_text_vocab_transform = sequential_transforms(src_tokenizer)
     tgt_text_vocab_transform = sequential_transforms(tgt_tokenizer)
@@ -131,9 +135,11 @@ class TranslationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def Multi30k(train_filenames=("train.de", "train.en"),
-             valid_filenames=("val.de", "val.en"),
-             test_filenames=("test_2016_flickr.de", "test_2016_flickr.en"),
+def Multi30k(task='task1',
+             language_pair=('de', 'en'),
+             train_set="train",
+             valid_set="val",
+             test_set="test_2016_flickr",
              split=('train', 'valid', 'test'),
              root='.data',
              vocab=(None, None),
@@ -141,13 +147,25 @@ def Multi30k(train_filenames=("train.de", "train.en"),
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
+    The available datasets include following:
+
+    **task1**
+
+    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+
+    **task2**
+
+    **Languages**: 'de' | 'en'
+
+    For additional details refer to source: https://github.com/multi30k/dataset
+
+
     Args:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.de', 'train.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('val.de', 'val.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('test2016.de', 'test2016.en')
+        task: Indicate the task
+        language_pair: tuple or list containing src and tgt language
+        train_set: A string to identify train set.
+        valid_set: A string to identify validation set.
+        test_set: A string to identify test set.
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -163,57 +181,6 @@ def Multi30k(train_filenames=("train.de", "train.en"),
             Default: (get_tokenizer("spacy", language='de_core_news_sm'),
             get_tokenizer("spacy", language='en_core_web_sm'))
 
-        The available dataset include:
-
-            test_2016_flickr.cs
-            test_2016_flickr.de
-            test_2016_flickr.en
-            test_2016_flickr.fr
-            test_2017_flickr.de
-            test_2017_flickr.en
-            test_2017_flickr.fr
-            test_2017_mscoco.de
-            test_2017_mscoco.en
-            test_2017_mscoco.fr
-            test_2018_flickr.en
-            train.cs
-            train.de
-            train.en
-            train.fr
-            val.cs
-            val.de
-            val.en
-            val.fr
-            test_2016.1.de
-            test_2016.1.en
-            test_2016.2.de
-            test_2016.2.en
-            test_2016.3.de
-            test_2016.3.en
-            test_2016.4.de
-            test_2016.4.en
-            test_2016.5.de
-            test_2016.5.en
-            train.1.de
-            train.1.en
-            train.2.de
-            train.2.en
-            train.3.de
-            train.3.en
-            train.4.de
-            train.4.en
-            train.5.de
-            train.5.en
-            val.1.de
-            val.1.en
-            val.2.de
-            val.2.en
-            val.3.de
-            val.3.en
-            val.4.de
-            val.4.en
-            val.5.de
-            val.5.en
 
     Examples:
         >>> from torchtext.experimental.datasets import Multi30k
@@ -225,9 +192,11 @@ def Multi30k(train_filenames=("train.de", "train.en"),
         >>> src_data, tgt_data = train_dataset[10]
     """
     return _setup_datasets("Multi30k", split, root, vocab, tokenizer,
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames)
+                           task=task,
+                           language_pair=language_pair,
+                           train_set=train_set,
+                           valid_set=valid_set,
+                           test_set=test_set)
 
 
 def IWSLT2017(language_pair=('de', 'en'),
