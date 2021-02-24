@@ -5,7 +5,6 @@ import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 

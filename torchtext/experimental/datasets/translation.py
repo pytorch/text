@@ -321,6 +321,8 @@ def WMT14(language_pair=('de', 'en'),
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
 
+    The available datasets include (‘de’,’en’) language pair
+
     Args:
         language_pair: tuple or list containing src and tgt language
         train_set: A string to identify train set.
