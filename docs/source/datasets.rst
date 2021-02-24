@@ -98,25 +98,19 @@ PennTreebank
 .. autofunction:: PennTreebank
 
 
-WMTNewsCrawl
-~~~~~~~~~~~~
-
-.. autofunction:: WMTNewsCrawl
-
-
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Multi30k
-~~~~~~~~
 
-.. autofunction:: Multi30k
+IWSLT2016
+~~~~~~~~~
 
+.. autofunction:: IWSLT2016
 
-IWSLT
-~~~~~
+IWSLT2017
+~~~~~~~~~
 
-.. autofunction:: IWSLT
+.. autofunction:: IWSLT2017
 
 
 WMT14

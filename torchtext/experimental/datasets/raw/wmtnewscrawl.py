@@ -42,7 +42,7 @@ _EXTRACTED_FILES_MD5 = {
 
 
 @add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train',))
+@wrap_split_argument('train')
 def WMTNewsCrawl(root, split, year=2010, language='en'):
     if year not in _AVAILABLE_YEARS:
         raise ValueError("{} not available. Please choose from years {}".format(year, _AVAILABLE_YEARS))
