@@ -371,9 +371,9 @@ URL = {'train': [], 'valid': [], 'test': []}
 MD5 = {'train': [], 'valid': [], 'test': []}
 NUM_LINES = {'train': [], 'valid': [], 'test': []}
 
-for task in SUPPORTED_DATASETS.keys():
-    for language in SUPPORTED_DATASETS[task].keys():
-        for data in SUPPORTED_DATASETS[task][language].keys():
+for task in SUPPORTED_DATASETS:
+    for language in SUPPORTED_DATASETS[task]:
+        for data in SUPPORTED_DATASETS[task][language]:
             if 'train' in data:
                 k = 'train'
             elif 'val' in data:
@@ -501,7 +501,7 @@ def Multi30k(root, split,
         split: _construct_filepaths(file_archives, src_file, tgt_file),
     }
 
-    for key in data_filenames.keys():
+    for key in data_filenames:
         if len(data_filenames[key]) == 0 or data_filenames[key] is None:
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))

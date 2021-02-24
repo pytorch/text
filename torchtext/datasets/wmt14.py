@@ -14,9 +14,31 @@ _PATH = 'wmt16_en_de.tar.gz'
 MD5 = '874ab6bbfe9c21ec987ed1b9347f95ec'
 
 NUM_LINES = {
-    'train': 4500966,
-    'valid': 3000,
-    'test': 3003,
+    'newstest2010.tok.bpe.32000': 2489,
+    'newstest2012': 3003,
+    'newstest2010.tok': 2489,
+    'newstest2016': 2999,
+    'newstest2014.tok': 3003,
+    'newstest2009': 2525,
+    'newstest2015.tok.bpe.32000': 2169,
+    'newstest2016.tok': 2999,
+    'newstest2011.tok.bpe.32000': 3003,
+    'newstest2012.tok': 3003,
+    'newstest2013': 3000,
+    'newstest2014.tok.bpe.32000': 3003,
+    'newstest2011.tok': 3003,
+    'newstest2011': 3003,
+    'newstest2015.tok': 2169,
+    'newstest2012.tok.bpe.32000': 3003,
+    'newstest2015': 2169,
+    'newstest2016.tok.bpe.32000': 2999,
+    'newstest2009.tok.bpe.32000': 2525,
+    'newstest2014': 3003,
+    'newstest2009.tok': 2525,
+    'newstest2013.tok.bpe.32000': 3000,
+    'newstest2013.tok': 3000,
+    'newstest2010': 2489,
+    'train.tok.clean.bpe.32000': 4500966
 }
 
 
@@ -38,7 +60,7 @@ def _clean_xml_file(f_xml):
 def _clean_tags_file(f_orig):
     xml_tags = [
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker'
+        '<translator', '<title', '<speaker', '<doc', '</doc'
     ]
     f_txt = f_orig.replace('.tags', '')
     with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
@@ -68,80 +90,67 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@add_docstring_header(num_lines=NUM_LINES)
 @wrap_split_argument(('train', 'valid', 'test'))
 def WMT14(root, split,
-          train_filenames=('train.tok.clean.bpe.32000.de',
-                           'train.tok.clean.bpe.32000.en'),
-          valid_filenames=('newstest2013.tok.bpe.32000.de',
-                           'newstest2013.tok.bpe.32000.en'),
-          test_filenames=('newstest2014.tok.bpe.32000.de',
-                          'newstest2014.tok.bpe.32000.en')):
-    """    train_filenames: the source and target filenames for training.
-                Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
-            valid_filenames: the source and target filenames for valid.
-                Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
-            test_filenames: the source and target filenames for test.
-                Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+          language_pair=('de', 'en'),
+          train_set='train.tok.clean.bpe.32000',
+          valid_set='newstest2013.tok.bpe.32000',
+          test_set='newstest2014.tok.bpe.32000'):
+    """WMT14 Dataset
 
-    The available datasets include:
-        newstest2016.en
-        newstest2016.de
-        newstest2015.en
-        newstest2015.de
-        newstest2014.en
-        newstest2014.de
-        newstest2013.en
-        newstest2013.de
-        newstest2012.en
-        newstest2012.de
-        newstest2011.tok.de
-        newstest2011.en
-        newstest2011.de
-        newstest2010.tok.de
-        newstest2010.en
-        newstest2010.de
-        newstest2009.tok.de
-        newstest2009.en
-        newstest2009.de
-        newstest2016.tok.de
-        newstest2015.tok.de
-        newstest2014.tok.de
-        newstest2013.tok.de
-        newstest2012.tok.de
-        newstest2010.tok.en
-        newstest2009.tok.en
-        newstest2015.tok.en
-        newstest2014.tok.en
-        newstest2013.tok.en
-        newstest2012.tok.en
-        newstest2011.tok.en
-        newstest2016.tok.en
-        newstest2009.tok.bpe.32000.en
-        newstest2011.tok.bpe.32000.en
-        newstest2010.tok.bpe.32000.en
-        newstest2013.tok.bpe.32000.en
-        newstest2012.tok.bpe.32000.en
-        newstest2015.tok.bpe.32000.en
-        newstest2014.tok.bpe.32000.en
-        newstest2016.tok.bpe.32000.en
-        train.tok.clean.bpe.32000.en
-        newstest2009.tok.bpe.32000.de
-        newstest2010.tok.bpe.32000.de
-        newstest2011.tok.bpe.32000.de
-        newstest2013.tok.bpe.32000.de
-        newstest2012.tok.bpe.32000.de
-        newstest2014.tok.bpe.32000.de
-        newstest2016.tok.bpe.32000.de
-        newstest2015.tok.bpe.32000.de
-        train.tok.clean.bpe.32000.de
+    The available datasets include ('de','en') language pair
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
+        language_pair: tuple or list containing src and tgt language
+        train_set: A string to identify train set.
+        valid_set: A string to identify validation set.
+        test_set: A string to identify test set.
+
+    Examples:
+        >>> from torchtext.datasets import WMT14
+        >>> train_iter, valid_iter, test_iter = WMT14()
+        >>> src_sentence, tgt_sentence = list(train_iter)[0]
     """
-    if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
-            and not isinstance(test_filenames, tuple):
-        raise ValueError("All filenames must be tuples")
-    src_train, tgt_train = train_filenames
-    src_eval, tgt_eval = valid_filenames
-    src_test, tgt_test = test_filenames
+
+    supported_language = ['en', 'de']
+    supported_train_set = [s for s in NUM_LINES if 'train' in s]
+    supported_valid_set = [s for s in NUM_LINES if 'test' in s]
+    supported_test_set = [s for s in NUM_LINES if 'test' in s]
+
+    assert (len(language_pair) == 2), 'language_pair must contain only 2 elements: src and tgt language respectively'
+
+    if language_pair[0] not in supported_language:
+        raise ValueError("Source language '{}' is not supported. Valid options are {}".
+                         format(language_pair[0], supported_language))
+
+    if language_pair[1] not in supported_language:
+        raise ValueError("Source language '{}' is not supported. Valid options are {}".
+                         format(language_pair[1], supported_language))
+
+    if train_set not in supported_train_set:
+        raise ValueError("'{}' is not a valid train set identifier. valid options are {}".
+                         format(train_set, supported_test_set))
+
+    if valid_set not in supported_valid_set:
+        raise ValueError("'{}' is not a valid valid set identifier. valid options are {}".
+                         format(valid_set, supported_valid_set))
+
+    if test_set not in supported_test_set:
+        raise ValueError("'{}' is not a valid valid set identifier. valid options are {}".
+                         format(test_set, supported_test_set))
+
+    train_filenames = '{}.{}'.format(train_set, language_pair[0]), '{}.{}'.format(train_set, language_pair[1])
+    valid_filenames = '{}.{}'.format(valid_set, language_pair[0]), '{}.{}'.format(valid_set, language_pair[1])
+    test_filenames = '{}.{}'.format(test_set, language_pair[0]), '{}.{}'.format(test_set, language_pair[1])
+
+    if split == 'train':
+        src_file, tgt_file = train_filenames
+    elif split == 'valid':
+        src_file, tgt_file = valid_filenames
+    else:
+        src_file, tgt_file = test_filenames
 
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
@@ -159,16 +168,16 @@ def WMT14(root, split,
             file_archives.append(fname)
 
     data_filenames = {
-        "train": _construct_filepaths(file_archives, src_train, tgt_train),
-        "valid": _construct_filepaths(file_archives, src_eval, tgt_eval),
-        "test": _construct_filepaths(file_archives, src_test, tgt_test)
+        split: _construct_filepaths(file_archives, src_file, tgt_file),
     }
 
-    for key in data_filenames.keys():
+    for key in data_filenames:
         if len(data_filenames[key]) == 0 or data_filenames[key] is None:
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
+    assert data_filenames[split][0] is not None, "Internal Error: File not found for reading"
+    assert data_filenames[split][1] is not None, "Internal Error: File not found for reading"
     src_data_iter = _read_text_iterator(data_filenames[split][0])
     tgt_data_iter = _read_text_iterator(data_filenames[split][1])
 
@@ -176,4 +185,4 @@ def WMT14(root, split,
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("WMT14", NUM_LINES[split], _iter(src_data_iter, tgt_data_iter))
+    return RawTextIterableDataset("WMT14", NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))

@@ -310,78 +310,22 @@ def IWSLT2016(language_pair=('de', 'en'),
     return _setup_datasets("IWSLT2016", split, root, vocab, tokenizer, language_pair=language_pair, valid_set=valid_set, test_set=test_set)
 
 
-def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
-                           'train.tok.clean.bpe.32000.en'),
-          valid_filenames=('newstest2013.tok.bpe.32000.de',
-                           'newstest2013.tok.bpe.32000.en'),
-          test_filenames=('newstest2014.tok.bpe.32000.de',
-                          'newstest2014.tok.bpe.32000.en'),
+def WMT14(language_pair=('de', 'en'),
+          train_set='train.tok.clean.bpe.32000',
+          valid_set='newstest2013.tok.bpe.32000',
+          test_set='newstest2014.tok.bpe.32000',
           split=('train', 'valid', 'test'),
           root='.data',
           vocab=(None, None),
           tokenizer=None):
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
-    The available datasets include:
-
-            newstest2016.en
-            newstest2016.de
-            newstest2015.en
-            newstest2015.de
-            newstest2014.en
-            newstest2014.de
-            newstest2013.en
-            newstest2013.de
-            newstest2012.en
-            newstest2012.de
-            newstest2011.tok.de
-            newstest2011.en
-            newstest2011.de
-            newstest2010.tok.de
-            newstest2010.en
-            newstest2010.de
-            newstest2009.tok.de
-            newstest2009.en
-            newstest2009.de
-            newstest2016.tok.de
-            newstest2015.tok.de
-            newstest2014.tok.de
-            newstest2013.tok.de
-            newstest2012.tok.de
-            newstest2010.tok.en
-            newstest2009.tok.en
-            newstest2015.tok.en
-            newstest2014.tok.en
-            newstest2013.tok.en
-            newstest2012.tok.en
-            newstest2011.tok.en
-            newstest2016.tok.en
-            newstest2009.tok.bpe.32000.en
-            newstest2011.tok.bpe.32000.en
-            newstest2010.tok.bpe.32000.en
-            newstest2013.tok.bpe.32000.en
-            newstest2012.tok.bpe.32000.en
-            newstest2015.tok.bpe.32000.en
-            newstest2014.tok.bpe.32000.en
-            newstest2016.tok.bpe.32000.en
-            train.tok.clean.bpe.32000.en
-            newstest2009.tok.bpe.32000.de
-            newstest2010.tok.bpe.32000.de
-            newstest2011.tok.bpe.32000.de
-            newstest2013.tok.bpe.32000.de
-            newstest2012.tok.bpe.32000.de
-            newstest2014.tok.bpe.32000.de
-            newstest2016.tok.bpe.32000.de
-            newstest2015.tok.bpe.32000.de
-            train.tok.clean.bpe.32000.de
 
     Args:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+        language_pair: tuple or list containing src and tgt language
+        train_set: A string to identify train set.
+        valid_set: A string to identify validation set.
+        test_set: A string to identify test set.
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -409,9 +353,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
     """
 
     return _setup_datasets("WMT14", split, root, vocab, tokenizer,
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames)
+                           language_pair=language_pair,
+                           train_set=train_set,
+                           valid_set=valid_set,
+                           test_set=test_set)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT2016': IWSLT2016, 'IWSLT2017': IWSLT2017, 'WMT14': WMT14}
