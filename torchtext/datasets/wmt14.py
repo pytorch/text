@@ -125,12 +125,12 @@ def WMT14(root, split,
                          format(language_pair[0], supported_language))
 
     if language_pair[1] not in supported_language:
-        raise ValueError("Source language '{}' is not supported. Valid options are {}".
+        raise ValueError("Target language '{}' is not supported. Valid options are {}".
                          format(language_pair[1], supported_language))
 
     if train_set not in supported_train_set:
         raise ValueError("'{}' is not a valid train set identifier. valid options are {}".
-                         format(train_set, supported_test_set))
+                         format(train_set, supported_train_set))
 
     if valid_set not in supported_valid_set:
         raise ValueError("'{}' is not a valid valid set identifier. valid options are {}".
