@@ -132,11 +132,15 @@ Multi30k
 
 .. autofunction:: Multi30k
 
+IWSLT2016
+~~~~~~~~~
 
-IWSLT
-~~~~~
+.. autofunction:: IWSLT2016
 
-.. autofunction:: IWSLT
+IWSLT2017
+~~~~~~~~~
+
+.. autofunction:: IWSLT2017
 
 
 WMT14

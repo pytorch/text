@@ -15,7 +15,8 @@ GOOGLE_DRIVE_BASED_DATASETS = [
     'AmazonReviewPolarity',
     'DBpedia',
     'IMDB',
-    'IWSLT',
+    'IWSLT2016',
+    'IWSLT2017',
     'SogouNews',
     'WMT14',
     'YahooAnswers',
@@ -172,16 +173,20 @@ class TestDataset(TorchtextTestCase):
         if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
 
-        # Currently disabled due to incredibly slow download
-        if dataset_name == "WMTNewsCrawl":
-            return
         split = info['split']
-        data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
+        if dataset_name == "Multi30k":
+            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+        else:
+            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
         self.assertEqual(next(data_iter), info['first_line'])
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
+        elif dataset_name == "Multi30k":
+            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name][split], info['URL'])
+            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name][split], info['MD5'])
+
         else:
             self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
@@ -256,11 +261,38 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
-    @unittest.skip("Dataset depends on Google drive")
-    def test_iwslt(self):
-        from torchtext.experimental.datasets import IWSLT
+    @unittest.skip("Depend on Google drive download")
+    def test_iwslt2017(self):
+        from torchtext.experimental.datasets import IWSLT2017
 
-        train_dataset, valid_dataset, test_dataset = IWSLT()
+        train_dataset, valid_dataset, test_dataset = IWSLT2017()
+
+        self.assertEqual(len(train_dataset), 206112)
+        self.assertEqual(len(valid_dataset), 888)
+        self.assertEqual(len(test_dataset), 1568)
+
+        de_vocab, en_vocab = train_dataset.get_vocab()
+
+        def assert_nth_pair_is_equal(n, expected_sentence_pair):
+            de_sentence = [de_vocab.itos[index] for index in train_dataset[n][0]]
+            en_sentence = [en_vocab.itos[index] for index in train_dataset[n][1]]
+
+            expected_de_sentence, expected_en_sentence = expected_sentence_pair
+
+            self.assertEqual(de_sentence, expected_de_sentence)
+            self.assertEqual(en_sentence, expected_en_sentence)
+
+        assert_nth_pair_is_equal(0, (['Vielen', 'Dank', ',', 'Chris', '.', '\n'], ['Thank', 'you', 'so', 'much', ',', 'Chris', '.', '\n']))
+        assert_nth_pair_is_equal(10, (['und', 'wir', 'fuhren', 'selbst', '.', '\n'], ['Driving', 'ourselves', '.', '\n']))
+        assert_nth_pair_is_equal(20, (['Sie', 'sagte', ':', '"', 'Ja', ',', 'das', 'ist', 'Ex-Vizepräsident', 'Al', 'Gore', 'und', 'seine',
+                                       'Frau', 'Tipper', '.', '"', '\n'], ['And', 'she', 'said', '"', 'Yes', ',', 'that', "'s", 'former',
+                                                                           'Vice', 'President', 'Al', 'Gore', 'and', 'his', 'wife', ',', 'Tipper', '.', '"', '\n']))
+
+    @unittest.skip("Depend on Google drive download")
+    def test_iwslt2016(self):
+        from torchtext.experimental.datasets import IWSLT2016
+
+        train_dataset, valid_dataset, test_dataset = IWSLT2016()
 
         self.assertEqual(len(train_dataset), 196884)
         self.assertEqual(len(valid_dataset), 993)
@@ -327,7 +359,7 @@ class TestDataset(TorchtextTestCase):
                          [18, 24, 1168, 807, 16, 56, 83, 335, 1338])
 
         # Add test for the subset of the standard datasets
-        train_iter, valid_iter = torchtext.datasets.Multi30k(split=('train', 'valid'))
+        train_iter, valid_iter = torchtext.experimental.datasets.raw.Multi30k(split=('train', 'valid'))
         self._helper_test_func(len(train_iter), 29000, ' '.join(next(train_iter)),
                                ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.\n',
                                          'Two young, White males are outside near many bushes.\n']))
