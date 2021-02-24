@@ -29,134 +29,84 @@ MD5 = SUPPORTED_DATASETS['MD5']
 NUM_LINES = {
     'train': {
         'train': {
-            ('en', 'ar'): 224126,
-            ('en', 'de'): 196884,
-            ('en', 'fr'): 220400,
-            ('en', 'cs'): 114390,
-            ('ar', 'en'): 224126,
-            ('fr', 'en'): 220400,
-            ('de', 'en'): 196884,
-            ('cs', 'en'): 114390
+            frozenset(['ar', 'en']): 224126,
+            frozenset(['de', 'en']): 196884,
+            frozenset(['en', 'fr']): 220400,
+            frozenset(['en', 'cs']): 114390
         }
     },
     'valid': {
         'dev2010': {
-            ('en', 'ar'): 887,
-            ('en', 'de'): 887,
-            ('en', 'fr'): 887,
-            ('en', 'cs'): 480,
-            ('ar', 'en'): 887,
-            ('fr', 'en'): 887,
-            ('de', 'en'): 887,
-            ('cs', 'en'): 480
+            frozenset(['ar', 'en']): 887,
+            frozenset(['de', 'en']): 887,
+            frozenset(['en', 'fr']): 887,
+            frozenset(['en', 'cs']): 480
         },
         'tst2010': {
-            ('en', 'ar'): 1569,
-            ('en', 'de'): 1565,
-            ('en', 'fr'): 1664,
-            ('en', 'cs'): 1511,
-            ('ar', 'en'): 1569,
-            ('fr', 'en'): 1664,
-            ('de', 'en'): 1565,
-            ('cs', 'en'): 1511
+            frozenset(['ar', 'en']): 1569,
+            frozenset(['de', 'en']): 1565,
+            frozenset(['en', 'fr']): 1664,
+            frozenset(['en', 'cs']): 1511
         },
         'tst2011': {
-            ('en', 'ar'): 1199,
-            ('en', 'de'): 1433,
-            ('en', 'fr'): 818,
-            ('en', 'cs'): 1013,
-            ('ar', 'en'): 1199,
-            ('fr', 'en'): 818,
-            ('de', 'en'): 1433,
-            ('cs', 'en'): 1013
+            frozenset(['ar', 'en']): 1199,
+            frozenset(['de', 'en']): 1433,
+            frozenset(['en', 'fr']): 818,
+            frozenset(['en', 'cs']): 1013
         },
         'tst2012': {
-            ('en', 'ar'): 1702,
-            ('en', 'de'): 1700,
-            ('en', 'fr'): 1124,
-            ('en', 'cs'): 1385,
-            ('ar', 'en'): 1702,
-            ('fr', 'en'): 1124,
-            ('de', 'en'): 1700,
-            ('cs', 'en'): 1385
+            frozenset(['ar', 'en']): 1702,
+            frozenset(['de', 'en']): 1700,
+            frozenset(['en', 'fr']): 1124,
+            frozenset(['en', 'cs']): 1385
         },
         'tst2013': {
-            ('en', 'ar'): 1169,
-            ('en', 'de'): 993,
-            ('en', 'fr'): 1026,
-            ('en', 'cs'): 1327,
-            ('ar', 'en'): 1169,
-            ('fr', 'en'): 1026,
-            ('de', 'en'): 993,
-            ('cs', 'en'): 1327
+            frozenset(['ar', 'en']): 1169,
+            frozenset(['de', 'en']): 993,
+            frozenset(['en', 'fr']): 1026,
+            frozenset(['en', 'cs']): 1327
         },
         'tst2014': {
-            ('en', 'ar'): 1107,
-            ('en', 'de'): 1305,
-            ('en', 'fr'): 1305,
-            ('ar', 'en'): 1107,
-            ('fr', 'en'): 1305,
-            ('de', 'en'): 1305
+            frozenset(['ar', 'en']): 1107,
+            frozenset(['de', 'en']): 1305,
+            frozenset(['en', 'fr']): 1305
         }
     },
     'test': {
         'dev2010': {
-            ('en', 'ar'): 887,
-            ('en', 'de'): 887,
-            ('en', 'fr'): 887,
-            ('en', 'cs'): 480,
-            ('ar', 'en'): 887,
-            ('fr', 'en'): 887,
-            ('de', 'en'): 887,
-            ('cs', 'en'): 480
+            frozenset(['ar', 'en']): 887,
+            frozenset(['de', 'en']): 887,
+            frozenset(['en', 'fr']): 887,
+            frozenset(['en', 'cs']): 480
         },
         'tst2010': {
-            ('en', 'ar'): 1569,
-            ('en', 'de'): 1565,
-            ('en', 'fr'): 1664,
-            ('en', 'cs'): 1511,
-            ('ar', 'en'): 1569,
-            ('fr', 'en'): 1664,
-            ('de', 'en'): 1565,
-            ('cs', 'en'): 1511
+            frozenset(['ar', 'en']): 1569,
+            frozenset(['de', 'en']): 1565,
+            frozenset(['en', 'fr']): 1664,
+            frozenset(['en', 'cs']): 1511
         },
         'tst2011': {
-            ('en', 'ar'): 1199,
-            ('en', 'de'): 1433,
-            ('en', 'fr'): 818,
-            ('en', 'cs'): 1013,
-            ('ar', 'en'): 1199,
-            ('fr', 'en'): 818,
-            ('de', 'en'): 1433,
-            ('cs', 'en'): 1013
+            frozenset(['ar', 'en']): 1199,
+            frozenset(['de', 'en']): 1433,
+            frozenset(['en', 'fr']): 818,
+            frozenset(['en', 'cs']): 1013
         },
         'tst2012': {
-            ('en', 'ar'): 1702,
-            ('en', 'de'): 1700,
-            ('en', 'fr'): 1124,
-            ('en', 'cs'): 1385,
-            ('ar', 'en'): 1702,
-            ('fr', 'en'): 1124,
-            ('de', 'en'): 1700,
-            ('cs', 'en'): 1385
+            frozenset(['ar', 'en']): 1702,
+            frozenset(['de', 'en']): 1700,
+            frozenset(['en', 'fr']): 1124,
+            frozenset(['en', 'cs']): 1385
         },
         'tst2013': {
-            ('en', 'ar'): 1169,
-            ('en', 'de'): 993,
-            ('en', 'fr'): 1026,
-            ('en', 'cs'): 1327,
-            ('ar', 'en'): 1169,
-            ('fr', 'en'): 1026,
-            ('de', 'en'): 993,
-            ('cs', 'en'): 1327
+            frozenset(['ar', 'en']): 1169,
+            frozenset(['de', 'en']): 993,
+            frozenset(['en', 'fr']): 1026,
+            frozenset(['en', 'cs']): 1327
         },
         'tst2014': {
-            ('en', 'ar'): 1107,
-            ('en', 'de'): 1305,
-            ('en', 'fr'): 1305,
-            ('ar', 'en'): 1107,
-            ('fr', 'en'): 1305,
-            ('de', 'en'): 1305
+            frozenset(['ar', 'en']): 1107,
+            frozenset(['de', 'en']): 1305,
+            frozenset(['en', 'fr']): 1305
         }
     }
 }
@@ -227,8 +177,21 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
 
     The available datasets include following:
 
-    **Language pairs**: [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
-    ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
+    **Language pairs**:
+
+    +-----+-----+-----+-----+-----+-----+
+    |     |'en' |'fr' |'de' |'cs' |'ar' |
+    +-----+-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |  x  |
+    +-----+-----+-----+-----+-----+-----+
+    |'fr' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
+    |'de' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
+    |'cs' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
+    |'ar' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
 
     **valid/test sets**: ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
 
@@ -240,6 +203,11 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         language_pair: tuple or list containing src and tgt language
         valid_set: a string to identify validation set.
         test_set: a string to identify test set.
+
+    Examples:
+        >>> from torchtext.datasets import IWSLT2016
+        >>> train_iter, valid_iter, test_iter = IWSLT2016()
+        >>> src_sentence, tgt_sentence = list(train_iter)[0]
 
     """
     num_lines_set_identifier = {
@@ -328,4 +296,4 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("IWSLT2016", NUM_LINES[split][num_lines_set_identifier[split]][language_pair], _iter(src_data_iter, tgt_data_iter))
+    return RawTextIterableDataset("IWSLT2016", NUM_LINES[split][num_lines_set_identifier[split]][frozenset(language_pair)], _iter(src_data_iter, tgt_data_iter))
