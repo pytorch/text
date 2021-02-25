@@ -162,6 +162,7 @@ def WMT14(root, split,
     else:
         src_file, tgt_file = test_filenames
 
+    root = os.path.join(root, 'wmt14')
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
