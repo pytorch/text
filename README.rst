@@ -12,12 +12,12 @@ torchtext
 
 This repository consists of:
 
-* `torchtext.datasets <#datasets>`_: The raw text iterators for common NLP datasets
-* `torchtext.data <#data>`_: Some basic NLP building blocks (tokenizers, metrics, functionals etc.)
-* `torchtext.nn <#nn>`_: NLP related modules
+* `torchtext.datasets <https://github.com/pytorch/text/tree/master/torchtext/datasets>`_: The raw text iterators for common NLP datasets
+* `torchtext.data <https://github.com/pytorch/text/tree/master/torchtext/data>`_: Some basic NLP building blocks (tokenizers, metrics, functionals etc.)
+* `torchtext.nn <https://github.com/pytorch/text/tree/master/torchtext/nn>`_: NLP related modules
 * `examples <https://github.com/pytorch/text/tree/master/examples>`_: Example NLP workflows with PyTorch and torchtext library.
 
-Note: the legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <#legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See the Legacy session for more details.
+Note: the legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See the Legacy session for more details.
 
 Installation
 ============
@@ -133,7 +133,7 @@ For more detailed instructions, please refer to `Install PyTorch <https://pytorc
 [BC Breaking] Legacy
 ====================
 
-In v0.9.0 release, we move the following legacy code to `torchtext.legacy <#legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
+In v0.9.0 release, we move the following legacy code to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
 
 * ``torchtext.legacy.data.field``
 * ``torchtext.legacy.data.batch``
