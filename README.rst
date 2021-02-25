@@ -17,7 +17,7 @@ This repository consists of:
 * `torchtext.nn <https://github.com/pytorch/text/tree/master/torchtext/nn>`_: NLP related modules
 * `examples <https://github.com/pytorch/text/tree/master/examples>`_: Example NLP workflows with PyTorch and torchtext library.
 
-Note: the legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See the Legacy session for more details.
+Note: the legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder for more details.
 
 Installation
 ============
@@ -120,9 +120,9 @@ A tutorial for the end-to-end text classification workflow can be found in `PyTo
 
 We have re-written several building blocks under ``torchtext.experimental``:
 
-* Transforms
-* Vocabulary
-* Vectors
+* `Transforms <https://github.com/pytorch/text/blob/master/torchtext/experimental/transforms.py>`_: some basic data processing building blocks
+* `Vocabulary <https://github.com/pytorch/text/blob/master/torchtext/experimental/vocab.py>`_: a vocabulary to numericalize tokens
+* `Vectors <https://github.com/pytorch/text/blob/master/torchtext/experimental/vectors.py>`_: the vectors to convert tokens into tensors.
 
 These prototype building blocks in the experimental folder are available in the nightly release only. The nightly packages are accessible via Pip and Conda for Windows, Mac, and Linux. For example, Linux users can install the nightly wheels with the following command::
 
