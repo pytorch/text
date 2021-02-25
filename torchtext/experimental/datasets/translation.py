@@ -36,7 +36,7 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    if dataset_name == 'Multi30k':
+    if dataset_name == 'Multi30k' or dataset_name == 'WMT14':
         raw_datasets = experimental_raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
     else:
         raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
@@ -149,13 +149,29 @@ def Multi30k(task='task1',
 
     The available datasets include following:
 
-    **task1**
+    **Language pairs (task1)**:
 
-    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+    +-----+-----+-----+-----+-----+
+    |     |'en' |'cs' |'de' |'fr' |
+    +-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'cs' |  x  |     |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'de' |  x  |   x |     |  x  |
+    +-----+-----+-----+-----+-----+
+    |'fr' |  x  |   x |  x  |     |
+    +-----+-----+-----+-----+-----+
 
-    **task2**
+    **Language pairs (task2)**:
 
-    **Languages**: 'de' | 'en'
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
 
     For additional details refer to source: https://github.com/multi30k/dataset
 
@@ -209,10 +225,21 @@ def IWSLT2017(language_pair=('de', 'en'),
 
     The available datasets include following:
 
-    **Language pairs**: [('en', 'nl'), ('en', 'de'), ('en', 'it'), ('en', 'ro'), ('ro', 'de'),
-    ('ro', 'en'), ('ro', 'nl'), ('ro', 'it'), ('de', 'ro'), ('de', 'en'),
-    ('de', 'nl'), ('de', 'it'), ('it', 'en'), ('it', 'nl'), ('it', 'de'),
-    ('it', 'ro'), ('nl', 'de'), ('nl', 'en'), ('nl', 'it'), ('nl', 'ro')]
+    **Language pairs**:
+
+    +-----+-----+-----+-----+-----+-----+
+    |     |'en' |'nl' |'de' |'it' |'ro' |
+    +-----+-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |  x  |
+    +-----+-----+-----+-----+-----+-----+
+    |'nl' |  x  |     |  x  |  x  |  x  |
+    +-----+-----+-----+-----+-----+-----+
+    |'de' |  x  |   x |     |  x  |  x  |
+    +-----+-----+-----+-----+-----+-----+
+    |'it' |  x  |   x |  x  |     |  x  |
+    +-----+-----+-----+-----+-----+-----+
+    |'ro' |  x  |   x |  x  |  x  |     |
+    +-----+-----+-----+-----+-----+-----+
 
     For additional details refer to source website: https://wit3.fbk.eu/2017-01
 
@@ -264,8 +291,21 @@ def IWSLT2016(language_pair=('de', 'en'),
 
     The available datasets include following:
 
-    **Language pairs**: [('en', 'ar'), ('en', 'de'), ('en', 'fr'), ('en', 'cs'), ('ar', 'en'),
-    ('fr', 'en'), ('de', 'en'), ('cs', 'en')]
+    **Language pairs**:
+
+    +-----+-----+-----+-----+-----+-----+
+    |     |'en' |'fr' |'de' |'cs' |'ar' |
+    +-----+-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |  x  |
+    +-----+-----+-----+-----+-----+-----+
+    |'fr' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
+    |'de' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
+    |'cs' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
+    |'ar' |  x  |     |     |     |     |
+    +-----+-----+-----+-----+-----+-----+
 
     **valid/test sets**: ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014']
 
@@ -310,78 +350,35 @@ def IWSLT2016(language_pair=('de', 'en'),
     return _setup_datasets("IWSLT2016", split, root, vocab, tokenizer, language_pair=language_pair, valid_set=valid_set, test_set=test_set)
 
 
-def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
-                           'train.tok.clean.bpe.32000.en'),
-          valid_filenames=('newstest2013.tok.bpe.32000.de',
-                           'newstest2013.tok.bpe.32000.en'),
-          test_filenames=('newstest2014.tok.bpe.32000.de',
-                          'newstest2014.tok.bpe.32000.en'),
+def WMT14(language_pair=('de', 'en'),
+          train_set='train.tok.clean.bpe.32000',
+          valid_set='newstest2013.tok.bpe.32000',
+          test_set='newstest2014.tok.bpe.32000',
           split=('train', 'valid', 'test'),
           root='.data',
           vocab=(None, None),
           tokenizer=None):
     """ Define translation datasets: WMT14
     Separately returns train/valid/test datasets
-    The available datasets include:
 
-            newstest2016.en
-            newstest2016.de
-            newstest2015.en
-            newstest2015.de
-            newstest2014.en
-            newstest2014.de
-            newstest2013.en
-            newstest2013.de
-            newstest2012.en
-            newstest2012.de
-            newstest2011.tok.de
-            newstest2011.en
-            newstest2011.de
-            newstest2010.tok.de
-            newstest2010.en
-            newstest2010.de
-            newstest2009.tok.de
-            newstest2009.en
-            newstest2009.de
-            newstest2016.tok.de
-            newstest2015.tok.de
-            newstest2014.tok.de
-            newstest2013.tok.de
-            newstest2012.tok.de
-            newstest2010.tok.en
-            newstest2009.tok.en
-            newstest2015.tok.en
-            newstest2014.tok.en
-            newstest2013.tok.en
-            newstest2012.tok.en
-            newstest2011.tok.en
-            newstest2016.tok.en
-            newstest2009.tok.bpe.32000.en
-            newstest2011.tok.bpe.32000.en
-            newstest2010.tok.bpe.32000.en
-            newstest2013.tok.bpe.32000.en
-            newstest2012.tok.bpe.32000.en
-            newstest2015.tok.bpe.32000.en
-            newstest2014.tok.bpe.32000.en
-            newstest2016.tok.bpe.32000.en
-            train.tok.clean.bpe.32000.en
-            newstest2009.tok.bpe.32000.de
-            newstest2010.tok.bpe.32000.de
-            newstest2011.tok.bpe.32000.de
-            newstest2013.tok.bpe.32000.de
-            newstest2012.tok.bpe.32000.de
-            newstest2014.tok.bpe.32000.de
-            newstest2016.tok.bpe.32000.de
-            newstest2015.tok.bpe.32000.de
-            train.tok.clean.bpe.32000.de
+    The available datasets include following:
+
+    **Language pairs**:
+
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
+
 
     Args:
-        train_filenames: the source and target filenames for training.
-            Default: ('train.tok.clean.bpe.32000.de', 'train.tok.clean.bpe.32000.en')
-        valid_filenames: the source and target filenames for valid.
-            Default: ('newstest2013.tok.bpe.32000.de', 'newstest2013.tok.bpe.32000.en')
-        test_filenames: the source and target filenames for test.
-            Default: ('newstest2014.tok.bpe.32000.de', 'newstest2014.tok.bpe.32000.en')
+        language_pair: tuple or list containing src and tgt language
+        train_set: A string to identify train set.
+        valid_set: A string to identify validation set.
+        test_set: A string to identify test set.
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -409,9 +406,10 @@ def WMT14(train_filenames=('train.tok.clean.bpe.32000.de',
     """
 
     return _setup_datasets("WMT14", split, root, vocab, tokenizer,
-                           train_filenames=train_filenames,
-                           valid_filenames=valid_filenames,
-                           test_filenames=test_filenames)
+                           language_pair=language_pair,
+                           train_set=train_set,
+                           valid_set=valid_set,
+                           test_set=test_set)
 
 
 DATASETS = {'Multi30k': Multi30k, 'IWSLT2016': IWSLT2016, 'IWSLT2017': IWSLT2017, 'WMT14': WMT14}
