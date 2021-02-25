@@ -1,10 +1,12 @@
 import importlib
 from .wmtnewscrawl import WMTNewsCrawl
 from .multi30k import Multi30k
+from .wmt14 import WMT14
 
 DATASETS = {
     'WMTNewsCrawl': WMTNewsCrawl,
     'Multi30k': Multi30k,
+    'WMT14': WMT14,
 }
 
 URLS = {}
