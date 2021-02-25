@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.utils &mdash; torchtext 0.9.0.dev20210225 documentation</title>
+  <title>torchtext.experimental.datasets.raw.wmtnewscrawl &mdash; torchtext 0.9.0.dev20210225 documentation</title>
   
 
   
@@ -25,26 +25,24 @@
 
   
 
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
-  <link rel="stylesheet" href="_static/css/pytorch_theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!-- <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" /> -->
+  <link rel="stylesheet" href="../../../../../_static/css/pytorch_theme.css" type="text/css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.experimental.datasets" href="experimental_datasets.html" />
-    <link rel="prev" title="torchtext.vocab" href="vocab.html" /> 
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
 
   
-  <script src="_static/js/modernizr.min.js"></script>
+  <script src="../../../../../_static/js/modernizr.min.js"></script>
 
   <!-- Preload the theme fonts -->
 
-<link rel="preload" href="_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-book.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/IBMPlexMono/IBMPlexMono-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/FreightSans/freight-sans-medium-italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="../../../../../_static/fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
 <!-- Preload the katex fonts -->
 
@@ -190,7 +188,7 @@
 
 
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search Docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -206,21 +204,21 @@
             
             
               <p class="caption"><span class="caption-text">Package Reference</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
-<li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets.html">torchtext.experimental.datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">torchtext</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../nn_modules.html">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data_functional.html">torchtext.data.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data_metrics.html">torchtext.data.metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data_utils.html">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">torchtext.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../vocab.html">torchtext.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">torchtext.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets.html">torchtext.experimental.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../models_utils.html">torchtext.experimental.models.utils</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -263,7 +261,7 @@
   <ul class="pytorch-breadcrumbs">
     
       <li>
-        <a href="index.html">
+        <a href="../../../../../index.html">
           
             Docs
           
@@ -271,14 +269,12 @@
       </li>
 
         
-      <li>torchtext.utils</li>
+          <li><a href="../../../../index.html">Module code</a> &gt;</li>
+        
+      <li>torchtext.experimental.datasets.raw.wmtnewscrawl</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
-        
-            
-            <a href="_sources/utils.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
-          
         
       </li>
     
@@ -303,118 +299,68 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="module-torchtext.utils">
-<span id="torchtext-utils"></span><h1>torchtext.utils<a class="headerlink" href="#module-torchtext.utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="reporthook">
-<h2><span class="hidden-section">reporthook</span><a class="headerlink" href="#reporthook" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.reporthook">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">reporthook</code><span class="sig-paren">(</span><em class="sig-param">t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#reporthook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.reporthook" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://github.com/tqdm/tqdm">https://github.com/tqdm/tqdm</a>.</p>
-</dd></dl>
+  <h1>Source code for torchtext.experimental.datasets.raw.wmtnewscrawl</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">download_extract_validate</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
-</div>
-<div class="section" id="download-from-url">
-<h2><span class="hidden-section">download_from_url</span><a class="headerlink" href="#download-from-url" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.download_from_url">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">download_from_url</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">path=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">overwrite=False</em>, <em class="sig-param">hash_value=None</em>, <em class="sig-param">hash_type='sha256'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#download_from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.download_from_url" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download file, with logic (from tensor2tensor) for Google Drive. Returns
-the path to the downloaded file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> – the url of the file from URL header. (None)</p></li>
-<li><p><strong>root</strong> – download folder used to store the file in (.data)</p></li>
-<li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
-<li><p><strong>hash_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – hash for url (Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
-<li><p><strong>hash_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – hash type, among “sha256” and “md5” (Default: <code class="docutils literal notranslate"><span class="pre">&quot;sha256&quot;</span></code>).</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;.data/validation.tar.gz&#39;</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz&#39;</span>
+
+<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;c70da2ba79db33fb0fc9119cbad16260&#39;</span>
+
+<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">17676013</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_PATH</span> <span class="o">=</span> <span class="s2">&quot;training-monolingual-news-2010.tgz&quot;</span>
+
+<span class="n">_AVAILABLE_YEARS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2010</span><span class="p">]</span>
+<span class="n">_AVAILABLE_LANGUAGES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;cs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;es&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;de&quot;</span>
+<span class="p">]</span>
+
+<span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cs&quot;</span><span class="p">:</span> <span class="s2">&quot;training-monolingual/news.2010.cs.shuffled&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="s2">&quot;training-monolingual/news.2010.de.shuffled&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;en&quot;</span><span class="p">:</span> <span class="s2">&quot;training-monolingual/news.2010.en.shuffled&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="s2">&quot;training-monolingual/news.2010.es.shuffled&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="s2">&quot;training-monolingual/news.2010.fr.shuffled&quot;</span>
+<span class="p">}</span>
+
+<span class="n">_EXTRACTED_FILES_MD5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;cs&quot;</span><span class="p">:</span> <span class="s2">&quot;b60fdbf95a2e97bae3a7d04cc81df925&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="s2">&quot;e59a0f0c6eeeb2113c0da1873a2e1035&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;en&quot;</span><span class="p">:</span> <span class="s2">&quot;234a50914d87158754815a0bd86d7b9d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;es&quot;</span><span class="p">:</span> <span class="s2">&quot;aee3d773a0c054c5ac313a42d08b7020&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fr&quot;</span><span class="p">:</span> <span class="s2">&quot;066d671533f78bfe139cf7052574fd5a&quot;</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="WMTNewsCrawl"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMTNewsCrawl">[docs]</a><span class="nd">@add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">)</span>
+<span class="nd">@wrap_split_argument</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">WMTNewsCrawl</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">2010</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">year</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_YEARS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not available. Please choose from years </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">_AVAILABLE_YEARS</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_AVAILABLE_LANGUAGES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not available. Please choose from languages </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="n">_AVAILABLE_LANGUAGES</span><span class="p">))</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">download_extract_validate</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">URL</span><span class="p">,</span> <span class="n">MD5</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">language</span><span class="p">],</span>
+                                     <span class="n">_EXTRACTED_FILES_MD5</span><span class="p">[</span><span class="n">language</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;WMTNewsCrawl&quot;</span><span class="p">,</span>
+                                  <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="nb">iter</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)))</span></div>
 </pre></div>
-</div>
-</dd></dl>
-
-</div>
-<div class="section" id="unicode-csv-reader">
-<h2><span class="hidden-section">unicode_csv_reader</span><a class="headerlink" href="#unicode-csv-reader" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.unicode_csv_reader">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">unicode_csv_reader</code><span class="sig-paren">(</span><em class="sig-param">unicode_csv_data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#unicode_csv_reader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.unicode_csv_reader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
-Borrowed and slightly modified from the Python docs:
-<a class="reference external" href="https://docs.python.org/2/library/csv.html#csv-examples">https://docs.python.org/2/library/csv.html#csv-examples</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>unicode_csv_data</strong> – unicode csv data (see example below)</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">unicode_csv_reader</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">reader</span> <span class="o">=</span> <span class="n">unicode_csv_reader</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</div>
-<div class="section" id="extract-archive">
-<h2><span class="hidden-section">extract_archive</span><a class="headerlink" href="#extract-archive" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="torchtext.utils.extract_archive">
-<code class="sig-prename descclassname">torchtext.utils.</code><code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">from_path</em>, <em class="sig-param">to_path=None</em>, <em class="sig-param">overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/utils.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.utils.extract_archive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract archive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>from_path</strong> – the path of the archive.</p></li>
-<li><p><strong>to_path</strong> – the root path of the extracted files (directory of from_path)</p></li>
-<li><p><strong>overwrite</strong> – overwrite existing files (False)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of paths to extracted files even if not overwritten.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">from_path</span> <span class="o">=</span> <span class="s1">&#39;./validation.tar.gz&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">to_path</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">from_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;.data/val.de&#39;</span><span class="p">,</span> <span class="s1">&#39;.data/val.en&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">from_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">torchtext</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">extract_archive</span><span class="p">(</span><span class="n">from_path</span><span class="p">,</span> <span class="n">to_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;.data/val.de&#39;</span><span class="p">,</span> <span class="s1">&#39;.data/val.en&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</div>
-</div>
-
 
              </article>
              
             </div>
             <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="experimental_datasets.html" class="btn btn-neutral float-right" title="torchtext.experimental.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
-      
-      
-        <a href="vocab.html" class="btn btn-neutral" title="torchtext.vocab" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
-      
-    </div>
   
 
   
@@ -443,16 +389,7 @@ Borrowed and slightly modified from the Python docs:
         <div class="pytorch-content-right" id="pytorch-content-right">
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
-              <ul>
-<li><a class="reference internal" href="#">torchtext.utils</a><ul>
-<li><a class="reference internal" href="#reporthook"><span class="hidden-section">reporthook</span></a></li>
-<li><a class="reference internal" href="#download-from-url"><span class="hidden-section">download_from_url</span></a></li>
-<li><a class="reference internal" href="#unicode-csv-reader"><span class="hidden-section">unicode_csv_reader</span></a></li>
-<li><a class="reference internal" href="#extract-archive"><span class="hidden-section">extract_archive</span></a></li>
-</ul>
-</li>
-</ul>
-
+              
             </div>
           </div>
         </div>
@@ -465,20 +402,20 @@ Borrowed and slightly modified from the Python docs:
   
 
      
-       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-         <script src="_static/jquery.js"></script>
-         <script src="_static/underscore.js"></script>
-         <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
+       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+         <script src="../../../../../_static/jquery.js"></script>
+         <script src="../../../../../_static/underscore.js"></script>
+         <script src="../../../../../_static/doctools.js"></script>
+         <script src="../../../../../_static/language_data.js"></script>
          <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   
 
-  <script type="text/javascript" src="_static/js/vendor/popper.min.js"></script>
-  <script type="text/javascript" src="_static/js/vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/vendor/popper.min.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/vendor/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
-  <script type="text/javascript" src="_static/js/theme.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
@@ -590,7 +527,7 @@ Borrowed and slightly modified from the Python docs:
   <div class="cookie-banner-wrapper">
   <div class="container">
     <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
-    <img class="close-button" src="_static/images/pytorch-x.svg">
+    <img class="close-button" src="../../../../../_static/images/pytorch-x.svg">
   </div>
 </div>
 
@@ -705,7 +642,7 @@ Borrowed and slightly modified from the Python docs:
 
   <!-- End Mobile Menu -->
 
-  <script type="text/javascript" src="_static/js/vendor/anchor.min.js"></script>
+  <script type="text/javascript" src="../../../../../_static/js/vendor/anchor.min.js"></script>
 
   <script type="text/javascript">
     $(document).ready(function() {

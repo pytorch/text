@@ -113,12 +113,6 @@ IWSLT2017
 .. autofunction:: IWSLT2017
 
 
-WMT14
-~~~~~
-
-.. autofunction:: WMT14
-
-
 Sequence Tagging
 ^^^^^^^^^^^^^^^^
 

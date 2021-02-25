@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210224 documentation</title>
+  <title>torchtext.experimental.datasets &mdash; torchtext 0.9.0.dev20210225 documentation</title>
   
 
   
@@ -181,7 +181,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210224 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.9.0.dev20210225 &#x25BC</a>
     </div>
     
 
@@ -1139,10 +1139,70 @@ numericalizing the string tokens.
 <dd><p>Define translation datasets: Multi30k
 Separately returns train/valid/test datasets as a tuple</p>
 <p>The available datasets include following:</p>
-<p><strong>task1</strong></p>
-<p><strong>Languages</strong>: ‘cs’ | ‘de’ | ‘en’ | ‘fr’</p>
-<p><strong>task2</strong></p>
-<p><strong>Languages</strong>: ‘de’ | ‘en’</p>
+<p><strong>Language pairs (task1)</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>‘en’</p></td>
+<td><p>‘cs’</p></td>
+<td><p>‘de’</p></td>
+<td><p>‘fr’</p></td>
+</tr>
+<tr class="row-even"><td><p>‘en’</p></td>
+<td></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘cs’</p></td>
+<td><p>x</p></td>
+<td></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-even"><td><p>‘de’</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘fr’</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Language pairs (task2)</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>‘en’</p></td>
+<td><p>‘de’</p></td>
+</tr>
+<tr class="row-even"><td><p>‘en’</p></td>
+<td></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘de’</p></td>
+<td><p>x</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p>For additional details refer to source: <a class="reference external" href="https://github.com/multi30k/dataset">https://github.com/multi30k/dataset</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1190,8 +1250,61 @@ get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
 <dd><p>Define translation datasets: IWSLT2016
 Separately returns train/valid/test datasets</p>
 <p>The available datasets include following:</p>
-<p><strong>Language pairs</strong>: [(‘en’, ‘ar’), (‘en’, ‘de’), (‘en’, ‘fr’), (‘en’, ‘cs’), (‘ar’, ‘en’),
-(‘fr’, ‘en’), (‘de’, ‘en’), (‘cs’, ‘en’)]</p>
+<p><strong>Language pairs</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>‘en’</p></td>
+<td><p>‘fr’</p></td>
+<td><p>‘de’</p></td>
+<td><p>‘cs’</p></td>
+<td><p>‘ar’</p></td>
+</tr>
+<tr class="row-even"><td><p>‘en’</p></td>
+<td></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘fr’</p></td>
+<td><p>x</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>‘de’</p></td>
+<td><p>x</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>‘cs’</p></td>
+<td><p>x</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>‘ar’</p></td>
+<td><p>x</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p><strong>valid/test sets</strong>: [‘dev2010’, ‘tst2010’, ‘tst2011’, ‘tst2012’, ‘tst2013’, ‘tst2014’]</p>
 <p>For additional details refer to source website: <a class="reference external" href="https://wit3.fbk.eu/2016-01">https://wit3.fbk.eu/2016-01</a></p>
 <dl class="field-list simple">
@@ -1239,10 +1352,61 @@ get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
 <dd><p>Define translation datasets: IWSLT2017
 Separately returns train/valid/test datasets</p>
 <p>The available datasets include following:</p>
-<p><strong>Language pairs</strong>: [(‘en’, ‘nl’), (‘en’, ‘de’), (‘en’, ‘it’), (‘en’, ‘ro’), (‘ro’, ‘de’),
-(‘ro’, ‘en’), (‘ro’, ‘nl’), (‘ro’, ‘it’), (‘de’, ‘ro’), (‘de’, ‘en’),
-(‘de’, ‘nl’), (‘de’, ‘it’), (‘it’, ‘en’), (‘it’, ‘nl’), (‘it’, ‘de’),
-(‘it’, ‘ro’), (‘nl’, ‘de’), (‘nl’, ‘en’), (‘nl’, ‘it’), (‘nl’, ‘ro’)]</p>
+<p><strong>Language pairs</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>‘en’</p></td>
+<td><p>‘nl’</p></td>
+<td><p>‘de’</p></td>
+<td><p>‘it’</p></td>
+<td><p>‘ro’</p></td>
+</tr>
+<tr class="row-even"><td><p>‘en’</p></td>
+<td></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘nl’</p></td>
+<td><p>x</p></td>
+<td></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-even"><td><p>‘de’</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘it’</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-even"><td><p>‘ro’</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td><p>x</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p>For additional details refer to source website: <a class="reference external" href="https://wit3.fbk.eu/2017-01">https://wit3.fbk.eu/2017-01</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1283,71 +1447,39 @@ get_tokenizer(“spacy”, language=’en_core_web_sm’))</p></li>
 <h3><a class="toc-backref" href="#id21">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.WMT14">
-<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">train_filenames=('train.tok.clean.bpe.32000.de'</em>, <em class="sig-param">'train.tok.clean.bpe.32000.en')</em>, <em class="sig-param">valid_filenames=('newstest2013.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2013.tok.bpe.32000.en')</em>, <em class="sig-param">test_filenames=('newstest2014.tok.bpe.32000.de'</em>, <em class="sig-param">'newstest2014.tok.bpe.32000.en')</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">torchtext.experimental.datasets.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">train_set='train.tok.clean.bpe.32000'</em>, <em class="sig-param">valid_set='newstest2013.tok.bpe.32000'</em>, <em class="sig-param">test_set='newstest2014.tok.bpe.32000'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">vocab=(None</em>, <em class="sig-param">None)</em>, <em class="sig-param">tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/translation.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.WMT14" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define translation datasets: WMT14
-Separately returns train/valid/test datasets
-The available datasets include:</p>
-<blockquote>
-<div><p>newstest2016.en
-newstest2016.de
-newstest2015.en
-newstest2015.de
-newstest2014.en
-newstest2014.de
-newstest2013.en
-newstest2013.de
-newstest2012.en
-newstest2012.de
-newstest2011.tok.de
-newstest2011.en
-newstest2011.de
-newstest2010.tok.de
-newstest2010.en
-newstest2010.de
-newstest2009.tok.de
-newstest2009.en
-newstest2009.de
-newstest2016.tok.de
-newstest2015.tok.de
-newstest2014.tok.de
-newstest2013.tok.de
-newstest2012.tok.de
-newstest2010.tok.en
-newstest2009.tok.en
-newstest2015.tok.en
-newstest2014.tok.en
-newstest2013.tok.en
-newstest2012.tok.en
-newstest2011.tok.en
-newstest2016.tok.en
-newstest2009.tok.bpe.32000.en
-newstest2011.tok.bpe.32000.en
-newstest2010.tok.bpe.32000.en
-newstest2013.tok.bpe.32000.en
-newstest2012.tok.bpe.32000.en
-newstest2015.tok.bpe.32000.en
-newstest2014.tok.bpe.32000.en
-newstest2016.tok.bpe.32000.en
-train.tok.clean.bpe.32000.en
-newstest2009.tok.bpe.32000.de
-newstest2010.tok.bpe.32000.de
-newstest2011.tok.bpe.32000.de
-newstest2013.tok.bpe.32000.de
-newstest2012.tok.bpe.32000.de
-newstest2014.tok.bpe.32000.de
-newstest2016.tok.bpe.32000.de
-newstest2015.tok.bpe.32000.de
-train.tok.clean.bpe.32000.de</p>
-</div></blockquote>
+Separately returns train/valid/test datasets</p>
+<p>The available datasets include following:</p>
+<p><strong>Language pairs</strong>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>‘en’</p></td>
+<td><p>‘de’</p></td>
+</tr>
+<tr class="row-even"><td><p>‘en’</p></td>
+<td></td>
+<td><p>x</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘de’</p></td>
+<td><p>x</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>train_filenames</strong> – the source and target filenames for training.
-Default: (‘train.tok.clean.bpe.32000.de’, ‘train.tok.clean.bpe.32000.en’)</p></li>
-<li><p><strong>valid_filenames</strong> – the source and target filenames for valid.
-Default: (‘newstest2013.tok.bpe.32000.de’, ‘newstest2013.tok.bpe.32000.en’)</p></li>
-<li><p><strong>test_filenames</strong> – the source and target filenames for test.
-Default: (‘newstest2014.tok.bpe.32000.de’, ‘newstest2014.tok.bpe.32000.en’)</p></li>
+<li><p><strong>language_pair</strong> – tuple or list containing src and tgt language</p></li>
+<li><p><strong>train_set</strong> – A string to identify train set.</p></li>
+<li><p><strong>valid_set</strong> – A string to identify validation set.</p></li>
+<li><p><strong>test_set</strong> – A string to identify test set.</p></li>
 <li><p><strong>split</strong> – a string or tuple for the returned datasets, Default: (‘train’, ‘valid’, ‘test’)
 By default, all the three datasets (train, valid, test) are generated. Users
 could also choose any one or two of them, for example (‘train’, ‘test’) or
