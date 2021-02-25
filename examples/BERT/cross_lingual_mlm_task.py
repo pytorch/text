@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 
 from data import CC100
 from model import CrossLingualMLMTask
-from pipeline import SingleProcessPipeline, RPCPipeline, RemoteBaseCPURPC, RemoteBaseCUDARPC
+from pipeline import SingleProcessPipeline, RPCPipeline, RemoteBaseCPURPC, RemoteBaseCUDARPC, SingleProcessPipelineRPC
 from shard_model import XLMRModelShards, MLMShards
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from transforms import PretrainedSPVocab
@@ -125,14 +125,18 @@ def run_main(args):
     mlm = MLMShards(ntokens, args.emsize)
     devices = [f"cuda:{i}" for i in range(args.gpus)] if torch.cuda.is_available() else ["cpu"]
 
-    if len(devices) == 1:
+    ndevices = len(devices)
+    if args.world_size is not None and args.rank is not None:
+        ndevices = ndevices * (args.world_size - 1)
+
+    if ndevices == 1:
         # In case of one device combine all layers into a single nn.Sequential
         shards = [nn.Sequential(
             xlmr.xlmr_embed(),
             xlmr.encoder_layers(args.nlayers),
             mlm.mlm()
         )]
-    elif len(devices) == 2:
+    elif ndevices == 2:
         # In case of two devices split the model right in the middle and
         # put the embeddings and half of encoders to the first shard and
         # another half of encoders and mlm head to the second.
@@ -151,7 +155,7 @@ def run_main(args):
         # In case of more that 2 devices put the embeddings and mlm head
         # to the first and the last shard and split the encoders to equal
         # parts among the rest of the shards
-        encoder_gpus = (args.gpus - 2)
+        encoder_gpus = ndevices - 2
         assert args.nlayers % encoder_gpus == 0
         encoders_per_gpu = args.nlayers // encoder_gpus
         shards = [
@@ -171,12 +175,26 @@ def run_main(args):
     print("Allocating memory")
     if args.pipeline_mode == 'sp':
         model = SingleProcessPipeline(shards, devices)
-        
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
+    elif args.world_size is not None and args.rank is not None:
+        workers = [f"worker{i+1}" for i in range(args.world_size - 1)]
+        workers_to_shards = {worker: shards[i*len(devices):(i+1)*len(devices)] for i, worker in enumerate(workers)}
+        workers_to_devices = {worker: devices for worker in workers}
+        model = RPCPipeline(workers_to_shards, workers_to_devices, split_size=args.split_size,
+                            remote_base_class=SingleProcessPipelineRPC)
+        optimizer = DistributedOptimizer(
+            optim.Adam,
+            model.parameter_rrefs(),
+            lr=args.lr,
+        )
+        scheduler = None
     else:
         workers = [f"worker{i+1}" for i in range(len(devices))]
-        model = RPCPipeline(shards, devices, workers, split_size=args.split_size, remote_base_class=(RemoteBaseCUDARPC if args.pipeline_mode == 'cuda' else RemoteBaseCPURPC))
+        workers_to_shards = {worker: shard for worker, shard in zip(workers, shards)}
+        workers_to_devices = {worker: device for worker, device in zip(workers, devices)}
+        model = RPCPipeline(workers_to_shards, workers_to_devices, split_size=args.split_size,
+                            remote_base_class=(RemoteBaseCUDARPC if args.pipeline_mode == 'cuda' else RemoteBaseCPURPC))
         optimizer = DistributedOptimizer(
             optim.Adam,
             model.parameter_rrefs(),
@@ -253,9 +271,9 @@ def run_main(args):
         print('-' * 89)
 
 
-def run_worker(rank, args):
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '29500'
+def run_worker(rank, world_size, args):
+    os.environ['MASTER_ADDR'] = args.master_addr
+    os.environ['MASTER_PORT'] = args.master_port
     options = rpc.TensorPipeRpcBackendOptions(num_worker_threads=256)
 
     if rank == 0:
@@ -265,7 +283,7 @@ def run_worker(rank, args):
         rpc.init_rpc(
             "master",
             rank=rank,
-            world_size=args.gpus+1,
+            world_size=world_size,
             rpc_backend_options=options
         )
         run_main(args)
@@ -278,7 +296,7 @@ def run_worker(rank, args):
         rpc.init_rpc(
             f"worker{rank}",
             rank=rank,
-            world_size=args.gpus+1,
+            world_size=world_size,
             rpc_backend_options=options
         )
         pass
@@ -333,9 +351,19 @@ if __name__ == "__main__":
                         help='pipeline mode, `cpu` for CPU RPC, `cuda` for CUDA RPC, `sp` for single process pipeline')
     parser.add_argument('--split_size', type=int, default=8,
                         help='split the input batch into micro-batches')
+    parser.add_argument('--world_size', type=int, default=None,
+                        help="""Total number of participating processes. Should be the sum of master node and all training nodes.""")
+    parser.add_argument('--rank', type=int, default=None,
+                        help="Global rank of this process. Pass in 0 for master.")
+    parser.add_argument('--master_addr', type=str, default='localhost',
+                        help="""Address of master, will default to localhost if not provided. Master must be able to accept network traffic on the address + port.""")
+    parser.add_argument('--master_port', type=str, default='29500',
+                        help="""Port that master is listening on, will default to 29500 if not provided. Master must be able to accept network traffic on the host and port.""")
     args = parser.parse_args()
 
     if args.pipeline_mode == 'sp':
         run_main(args)
+    elif args.world_size is not None and args.rank is not None:
+        run_worker(args.rank, args.world_size, args)
     else:
-        mp.spawn(run_worker, args=(args,), nprocs=args.gpus+1, join=True)
+        mp.spawn(run_worker, args=(args.gpus+1, args,), nprocs=args.gpus+1, join=True)
