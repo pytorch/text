@@ -249,7 +249,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         filename = from_path[:-3]
         files = [filename]
         with gzip.open(from_path, 'rb') as gzfile, \
-                open(filename, 'wb') as d_file:
+                open(filename, 'wb', 0) as d_file:
             while True:
                 block = gzfile.read(default_block_size)
                 if not block:
