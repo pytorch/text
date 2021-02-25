@@ -449,7 +449,7 @@ def Multi30k(root, split,
     Examples:
         >>> from torchtext.experimental.datasets.raw import Multi30k
         >>> train_iter, valid_iter, test_iter = Multi30k()
-        >>> src_sentence, tgt_sentence = list(train_iter)[0]
+        >>> src_sentence, tgt_sentence = next(train_iter)
     """
 
     if task not in SUPPORTED_DATASETS.keys():
