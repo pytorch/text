@@ -371,9 +371,9 @@ URL = {'train': [], 'valid': [], 'test': []}
 MD5 = {'train': [], 'valid': [], 'test': []}
 NUM_LINES = {'train': [], 'valid': [], 'test': []}
 
-for task in SUPPORTED_DATASETS.keys():
-    for language in SUPPORTED_DATASETS[task].keys():
-        for data in SUPPORTED_DATASETS[task][language].keys():
+for task in SUPPORTED_DATASETS:
+    for language in SUPPORTED_DATASETS[task]:
+        for data in SUPPORTED_DATASETS[task][language]:
             if 'train' in data:
                 k = 'train'
             elif 'val' in data:
@@ -411,13 +411,29 @@ def Multi30k(root, split,
 
     The available datasets include following:
 
-    **task1**
+    **Language pairs (task1)**:
 
-    **Languages**: 'cs' | 'de' | 'en' | 'fr'
+    +-----+-----+-----+-----+-----+
+    |     |'en' |'cs' |'de' |'fr' |
+    +-----+-----+-----+-----+-----+
+    |'en' |     |   x |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'cs' |  x  |     |  x  |  x  |
+    +-----+-----+-----+-----+-----+
+    |'de' |  x  |   x |     |  x  |
+    +-----+-----+-----+-----+-----+
+    |'fr' |  x  |   x |  x  |     |
+    +-----+-----+-----+-----+-----+
 
-    **task2**
+    **Language pairs (task2)**:
 
-    **Languages**: 'de' | 'en'
+    +-----+-----+-----+
+    |     |'en' |'de' |
+    +-----+-----+-----+
+    |'en' |     |   x |
+    +-----+-----+-----+
+    |'de' |  x  |     |
+    +-----+-----+-----+
 
     For additional details refer to source: https://github.com/multi30k/dataset
 
@@ -433,7 +449,7 @@ def Multi30k(root, split,
     Examples:
         >>> from torchtext.experimental.datasets.raw import Multi30k
         >>> train_iter, valid_iter, test_iter = Multi30k()
-        >>> src_sentence, tgt_sentence = list(train_iter)[0]
+        >>> src_sentence, tgt_sentence = next(train_iter)
     """
 
     if task not in SUPPORTED_DATASETS.keys():
@@ -501,7 +517,7 @@ def Multi30k(root, split,
         split: _construct_filepaths(file_archives, src_file, tgt_file),
     }
 
-    for key in data_filenames.keys():
+    for key in data_filenames:
         if len(data_filenames[key]) == 0 or data_filenames[key] is None:
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))

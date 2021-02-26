@@ -174,7 +174,7 @@ class TestDataset(TorchtextTestCase):
             return
 
         split = info['split']
-        if dataset_name == "Multi30k":
+        if dataset_name == "Multi30k" or dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
@@ -186,7 +186,9 @@ class TestDataset(TorchtextTestCase):
         elif dataset_name == "Multi30k":
             self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name][split], info['MD5'])
-
+        elif dataset_name == "WMT14":
+            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name], info['URL'])
+            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name], info['MD5'])
         else:
             self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
