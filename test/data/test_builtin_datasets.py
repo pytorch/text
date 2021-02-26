@@ -24,6 +24,8 @@ GOOGLE_DRIVE_BASED_DATASETS = [
     'YelpReviewPolarity'
 ]
 
+CACHE_STATUS_FILE = '.data/cache_status_file.json'
+
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):
     info = param.args[0]
@@ -165,15 +167,51 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
         del train_iter, test_iter
 
+    def test_raw_data_cache(self):
+        # cache already created, nothing to do
+        if os.path.exists(CACHE_STATUS_FILE):
+            return
+
+        raw_data_info = load_params('raw_datasets.json')
+        cache_status = {}
+        for info in raw_data_info:
+            dataset_name = info['dataset_name']
+            split = info['split']
+            if dataset_name not in download_success:
+                download_success[dataset_name] = {}
+            try:
+                if dataset_name == "Multi30k" or dataset_name == 'WMT14':
+                    _ = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+                else:
+                    _ = torchtext.datasets.DATASETS[dataset_name](split=split)
+               cache_status[dataset_name][split] = {'status':'success','reason':'No exception thrown'}
+            except Exception as e:
+                cache_status[data][split] = {'status':'fail','reason': str(e)}
+
+        with open(CACHE_STATUS_FILE,'w') as f: json.dump(cache_status, f)
+
     @parameterized.expand(
         load_params('raw_datasets.json'),
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
+        self.assertTrue(os.path.exists(CACHE_STATUS_FILE))
         dataset_name = info['dataset_name']
-        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
-            return
-
         split = info['split']
+
+        # failure modes
+        with open(CACHE_STATUS_FILE,'r') as f:
+            cache_status = json.load(f)
+            if dataset_name not in cache_status:
+                raise KeyError('{} not found in cache status file.'.format(dataset_name))
+
+            if split not in cache_status[dataset_name]: 
+                raise KeyError('{} split not found in cache status file for {}'.format(split, dataset_name))
+
+            if cache_status[dataset_name][split]['status'] == 'fail':
+                raise FileNotFoundError('Data not cached due to {}'.format(cache_status[dataset_name][split]['reason']))
+
+        
+        # From here on Dataset should be in cache already
         if dataset_name == "Multi30k" or dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
         else:
