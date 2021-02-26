@@ -506,6 +506,7 @@ def Multi30k(root, split,
             current_url.append(url)
             current_md5.append(md5)
 
+    root = os.path.join(root, 'multi30k')
     for url, md5 in zip(current_url, current_md5):
         dataset_tar = download_from_url(
             url, path=os.path.join(root, os.path.basename(url)), root=root, hash_value=md5, hash_type='md5')

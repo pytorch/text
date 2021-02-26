@@ -4,6 +4,7 @@ import os
 import torch
 import torchtext
 import unittest
+import tempfile
 from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -193,6 +194,34 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
         del data_iter
+
+    @parameterized.expand(list(torchtext.datasets.DATASETS))
+    def test_raw_datasets_download(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            _ = torchtext.datasets.DATASETS[dataset_name](root=tmpdirname, split='train')
+            # This ensures that the data downloads in given root directory
+            self.assertIsNot(len(os.listdir(tmpdirname)), 0)
+            # This ensure that we do not pollute root diretory.
+            # Every dataset is expected to create a dedicated dir inside root dir
+            # if the number expected files are more than 1
+            self.assertLessEqual(len(os.listdir(tmpdirname)), 2)
+
+    @parameterized.expand(list(torchtext.experimental.datasets.raw.DATASETS))
+    def test_raw_experimental_datasets_download(self, dataset_name):
+        if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
+            return
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            _ = torchtext.experimental.datasets.raw.DATASETS[dataset_name](root=tmpdirname, split='train')
+            # This ensures that the data downloads in given root directory
+            self.assertIsNot(len(os.listdir(tmpdirname)), 0)
+            # This ensure that we do not pollute root diretory.
+            # Every dataset is expected to create a dedicated dir inside root dir
+            # if the number expected files are more than 1
+            self.assertLessEqual(len(os.listdir(tmpdirname)), 2)
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
