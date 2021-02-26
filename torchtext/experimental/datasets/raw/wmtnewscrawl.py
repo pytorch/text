@@ -3,6 +3,7 @@ from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import download_extract_validate
 import io
+import os
 import logging
 
 URL = 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'
@@ -48,7 +49,7 @@ def WMTNewsCrawl(root, split, year=2010, language='en'):
         raise ValueError("{} not available. Please choose from years {}".format(year, _AVAILABLE_YEARS))
     if language not in _AVAILABLE_LANGUAGES:
         raise ValueError("{} not available. Please choose from languages {}".format(language, _AVAILABLE_LANGUAGES))
-    path = download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[language],
+    path = download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), _EXTRACTED_FILES[language],
                                      _EXTRACTED_FILES_MD5[language], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return RawTextIterableDataset("WMTNewsCrawl",

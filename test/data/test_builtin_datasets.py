@@ -214,6 +214,9 @@ class TestDataset(TorchtextTestCase):
         if dataset_name in GOOGLE_DRIVE_BASED_DATASETS:
             return
 
+        if dataset_name == 'WMTNewsCrawl':
+            return
+
         with tempfile.TemporaryDirectory() as tmpdirname:
             _ = torchtext.experimental.datasets.raw.DATASETS[dataset_name](root=tmpdirname, split='train')
             # This ensures that the data downloads in given root directory
