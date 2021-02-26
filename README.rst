@@ -126,7 +126,7 @@ We have re-written several building blocks under ``torchtext.experimental``:
 
 These prototype building blocks in the experimental folder are available in the nightly release only. The nightly packages are accessible via Pip and Conda for Windows, Mac, and Linux. For example, Linux users can install the nightly wheels with the following command::
 
-    pip install --pre torch torchtext -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html  
+    pip install --pre --upgrade torch torchtext -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html  
 
 For more detailed instructions, please refer to `Install PyTorch <https://pytorch.org/get-started/locally/>`_. It should be noted that the new building blocks are still under development, and the APIs have not been solidified.
 
