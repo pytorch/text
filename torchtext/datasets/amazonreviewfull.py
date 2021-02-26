@@ -4,6 +4,7 @@ from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import download_extract_validate
 import io
+import os
 import logging
 
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
@@ -37,7 +38,7 @@ def AmazonReviewFull(root, split):
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
 
-    path = download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[split],
+    path = download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
