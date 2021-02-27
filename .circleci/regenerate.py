@@ -165,6 +165,7 @@ def unittest_workflows(indentation=6):
                 f"unittest_{os_type}": {
                     "name": f"unittest_{os_type}_py{python_version}",
                     "python_version": python_version,
+                    "requires": [f"cachesetup_{os_type}_py_any"],
                 }
             })
 
