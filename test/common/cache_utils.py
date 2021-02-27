@@ -73,7 +73,7 @@ def generate_data_cache():
                 _ = torchtext.datasets.DATASETS[dataset_name](split=split)
             cache_status[dataset_name][split] = {'status': 'success', 'reason': 'No exception thrown'}
         except Exception as e:
-            cache_status[data][split] = {'status': 'fail', 'reason': str(e)}
+            cache_status[dataset_name][split] = {'status': 'fail', 'reason': str(e)}
 
     with open(CACHE_STATUS_FILE, 'w') as f:
         json.dump(cache_status, f)
