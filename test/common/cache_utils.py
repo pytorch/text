@@ -13,20 +13,20 @@ def check_cache_status(_func=None, *, input_dataset_name=None, input_split=None)
         def wrapper(*args, **kwargs):
             assert os.path.exists(CACHE_STATUS_FILE), "Cache status file does not exists"
             if input_dataset_name is None:
-                if isinstance(args[0], str):
-                    dataset_name = args[0]
-                elif isinstance(args[0], dict):
-                    dataset_name = args[0]['dataset_name']
+                if isinstance(args[1], str):
+                    dataset_name = args[1]
+                elif isinstance(args[1], dict):
+                    dataset_name = args[1]['dataset_name']
                 else:
                     raise Exception('cannot find dataset_name in arguments')
             else:
                 dataset_name = input_dataset_name
 
             if input_split is None:
-                if len(args) > 1 and isinstance(args[1], str):
-                    split = args[1]
-                elif isinstance(args[0], dict):
-                    split = args[0]['split']
+                if isinstance(args[1], dict):
+                    split = args[1]['split']
+                elif len(args) > 2 and isinstance(args[2], str):
+                    split = args[2]
                 else:
                     raise Exception('cannot find split in arguments')
             else:

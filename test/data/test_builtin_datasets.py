@@ -151,10 +151,10 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
         del train_iter, test_iter
 
-    @check_cache_status
     @parameterized.expand(
         load_params('raw_datasets.json'),
         name_func=_raw_text_custom_name_func)
+    @check_cache_status
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
@@ -179,8 +179,8 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
         del data_iter
 
-    @check_cache_status(input_split='train')
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
+    @check_cache_status(input_split='train')
     def test_raw_datasets_split_argument(self, dataset_name):
         if 'statmt' in torchtext.datasets.URLS[dataset_name]:
             return
@@ -195,8 +195,8 @@ class TestDataset(TorchtextTestCase):
         # Exercise default constructor
         _ = dataset()
 
-    @check_cache_status(input_split='train')
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
+    @check_cache_status(input_split='train')
     def test_datasets_split_argument(self, dataset_name):
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
