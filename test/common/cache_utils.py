@@ -2,7 +2,7 @@ import os
 import json
 import torchtext
 import functools
-from .parameterized_utils import load_params
+from parameterized_utils import load_params
 
 CACHE_STATUS_FILE = '.data/cache_status_file.json'
 
