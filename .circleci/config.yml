@@ -363,6 +363,21 @@ jobs:
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
             echo "$(date +"%Y-%d")" > .circleci-daily
       - restore_cache:
+          keys:
+
+            - data-linux-v1-{{ checksum ".circleci-daily" }}
+
+      - run:
+          name: Exit if cache exists
+          command: |
+            FILE = .data/cache_status_file.json
+            if test -f "$FILE"; then
+              echo "$FILE exists"
+              circleci step halt
+            else
+              echo "$FILE does not exists"
+            fi
+      - restore_cache:
 
           keys:
             - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
@@ -380,11 +395,6 @@ jobs:
       - run:
           name: Install torchtext
           command: .circleci/unittest/linux/scripts/install.sh
-      - restore_cache:
-          keys:
-
-            - data-linux-v1-{{ checksum ".circleci-daily" }}
-
       - run:
           name: Generate daily data Cache
           no_output_timeout: 30m
@@ -471,6 +481,21 @@ jobs:
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
             echo "$(date +"%Y-%d")" > .circleci-daily
       - restore_cache:
+          keys:
+
+            - data-windows-v1-{{ checksum ".circleci-daily" }}
+
+      - run:
+          name: Exit if cache exists
+          command: |
+            FILE = .data/cache_status_file.json
+            if test -f "$FILE"; then
+              echo "$FILE exists"
+              circleci step halt
+            else
+              echo "$FILE does not exists"
+            fi
+      - restore_cache:
 
           keys:
             - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
@@ -488,11 +513,6 @@ jobs:
       - run:
           name: Install torchtext
           command: .circleci/unittest/windows/scripts/install.sh
-      - restore_cache:
-          keys:
-
-            - data-windows-v1-{{ checksum ".circleci-daily" }}
-
       - run:
           name: Generate daily data Cache
           no_output_timeout: 30m
