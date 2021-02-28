@@ -372,7 +372,7 @@ jobs:
           command: |
             FILE=.data/cache_status_file.json
             if test -f "$FILE"; then
-              echo "$FILE exists"
+              cat $FILE
               circleci step halt
             else
               echo "$FILE does not exists"
@@ -398,7 +398,9 @@ jobs:
       - run:
           name: Generate daily data Cache
           no_output_timeout: 30m
-          command: .circleci/unittest/linux/scripts/generate_cache.sh
+          command: |
+            .circleci/unittest/linux/scripts/generate_cache.sh
+            cat .data/cache_status_file.json
       - save_cache:
 
           key: data-linux-v1-{{ checksum ".circleci-daily" }}
@@ -490,7 +492,7 @@ jobs:
           command: |
             FILE=.data/cache_status_file.json
             if test -f "$FILE"; then
-              echo "$FILE exists"
+              cat $FILE
               circleci step halt
             else
               echo "$FILE does not exists"
@@ -516,7 +518,9 @@ jobs:
       - run:
           name: Generate daily data Cache
           no_output_timeout: 30m
-          command: .circleci/unittest/windows/scripts/generate_cache.sh
+          command: |
+            .circleci/unittest/windows/scripts/generate_cache.sh
+            cat .data/cache_status_file.json
       - save_cache:
 
           key: data-windows-v1-{{ checksum ".circleci-daily" }}
