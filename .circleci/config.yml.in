@@ -370,7 +370,7 @@ jobs:
       - run:
           name: Exit if cache exists
           command: |
-            FILE = .data/cache_status_file.json
+            FILE=.data/cache_status_file.json
             if test -f "$FILE"; then
               echo "$FILE exists"
               circleci step halt
@@ -488,7 +488,7 @@ jobs:
       - run:
           name: Exit if cache exists
           command: |
-            FILE = .data/cache_status_file.json
+            FILE=.data/cache_status_file.json
             if test -f "$FILE"; then
               echo "$FILE exists"
               circleci step halt
