@@ -2,6 +2,7 @@ import os
 import json
 import torchtext
 import functools
+import unittest
 from .parameterized_utils import load_params
 
 CACHE_STATUS_FILE = '.data/cache_status_file.json'
@@ -42,7 +43,7 @@ def check_cache_status(_func=None, *, input_dataset_name=None, input_split=None)
                     raise KeyError('{} split not found in cache status file for {}'.format(split, dataset_name))
 
                 if cache_status[dataset_name][split]['status'] == 'fail':
-                    raise FileNotFoundError('Data not cached due to "{}"'.format(cache_status[dataset_name][split]['reason']))
+                    raise unittest.SkipTest('Data not cached due to "{}"'.format(cache_status[dataset_name][split]['reason']))
 
             func(*args, **kwargs)
         return wrapper
