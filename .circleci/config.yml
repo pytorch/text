@@ -361,7 +361,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"%Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
       - restore_cache:
           keys:
 
@@ -426,7 +426,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"%Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -448,8 +448,12 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v1-{{ checksum ".circleci-weekly" }}
             - data-linux-v1-{{ checksum ".circleci-daily" }}
+
+      - restore_cache:
+          keys:
+
+            - data-vector-linux-v1-{{ checksum ".circleci-daily" }}
 
       - run:
           name: Run tests
@@ -458,10 +462,11 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
 
-          key: data-linux-v1-{{ checksum ".circleci-weekly" }}
+          key: data-vector-linux-v1-{{ checksum ".circleci-daily" }}
 
           paths:
             - .vector_cache
+            - .data
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
@@ -481,7 +486,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"%Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
       - restore_cache:
           keys:
 
@@ -545,7 +550,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"%Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -567,9 +572,14 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v1-{{ checksum ".circleci-weekly" }}
             - data-windows-v1-{{ checksum ".circleci-daily" }}
 
+      - restore_cache:
+          keys:
+
+            - data-vector-windows-v1-{{ checksum ".circleci-daily" }}
+
+ 
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
@@ -577,10 +587,11 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
 
-          key: data-windows-v1-{{ checksum ".circleci-weekly" }}
+          key: data-vector-windows-v1-{{ checksum ".circleci-weekly" }}
 
           paths:
             - .vector_cache
+            - .data
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
