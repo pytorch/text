@@ -1,8 +1,8 @@
 import io
 import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data._datasets_utils import _RawTextIterableDataset
+from torchtext.data._datasets_utils import _wrap_split_argument
 
 SUPPORTED_DATASETS = {
     'task1': {

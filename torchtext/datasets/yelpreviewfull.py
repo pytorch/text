@@ -1,8 +1,8 @@
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _find_match
+from torchtext.data._datasets_utils import _RawTextIterableDataset
+from torchtext.data._datasets_utils import _wrap_split_argument
+from torchtext.data._datasets_utils import _add_docstring_header
+from torchtext.data._datasets_utils import _find_match
 import os
 import io
 
