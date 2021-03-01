@@ -1,15 +1,43 @@
 import functools
 import inspect
 import os
+import io
 import torch
 from torchtext.utils import validate_file
 from torchtext.utils import download_from_url
 from torchtext.utils import extract_archive
-
+import codecs
+import xml.etree.ElementTree as ET
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
 for public consumption yet.
 """
+
+
+def _clean_xml_file(f_xml):
+    f_txt = os.path.splitext(f_xml)[0]
+    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+        root = ET.parse(f_xml).getroot()[0]
+        for doc in root.findall('doc'):
+            for e in doc.findall('seg'):
+                fd_txt.write(e.text.strip() + '\n')
+
+
+def _clean_tags_file(f_orig):
+    xml_tags = [
+        '<url', '<keywords', '<talkid', '<description', '<reviewer',
+        '<translator', '<title', '<speaker', '<doc', '</doc'
+    ]
+    f_txt = f_orig.replace('.tags', '')
+    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
+            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
+        for line in fd_orig:
+            if not any(tag in line for tag in xml_tags):
+                # TODO: Fix utf-8 next line mark
+                #                fd_txt.write(l.strip() + '\n')
+                #                fd_txt.write(l.strip() + u"\u0085")
+                #                fd_txt.write(l.lstrip())
+                fd_txt.write(line.strip() + '\n')
 
 
 def check_default_set(split, target_select, dataset_name):

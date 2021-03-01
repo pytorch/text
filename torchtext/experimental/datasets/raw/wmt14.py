@@ -1,10 +1,12 @@
 import os
 import io
-import codecs
-import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import (
+    RawTextIterableDataset,
+    wrap_split_argument,
+    _clean_xml_file,
+    _clean_tags_file,
+)
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 
@@ -45,32 +47,6 @@ def _read_text_iterator(path):
     with io.open(path, encoding="utf8") as f:
         for row in f:
             yield row
-
-
-def _clean_xml_file(f_xml):
-    f_txt = os.path.splitext(f_xml)[0]
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
-        root = ET.parse(f_xml).getroot()[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
-
-
-def _clean_tags_file(f_orig):
-    xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker', '<doc', '</doc'
-    ]
-    f_txt = f_orig.replace('.tags', '')
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
-            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for line in fd_orig:
-            if not any(tag in line for tag in xml_tags):
-                # TODO: Fix utf-8 next line mark
-                #                fd_txt.write(l.strip() + '\n')
-                #                fd_txt.write(l.strip() + u"\u0085")
-                #                fd_txt.write(l.lstrip())
-                fd_txt.write(line.strip() + '\n')
 
 
 def _construct_filenames(filename, languages):
