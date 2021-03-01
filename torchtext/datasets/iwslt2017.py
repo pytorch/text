@@ -2,7 +2,7 @@ import os
 import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
-    RawTextIterableDataset,
+    _RawTextIterableDataset,
     wrap_split_argument,
     _clean_xml_file,
     _clean_tags_file,
@@ -231,4 +231,4 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("IWSLT2017", NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset("IWSLT2017", NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))

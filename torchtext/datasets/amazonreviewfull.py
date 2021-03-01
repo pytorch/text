@@ -1,5 +1,5 @@
 from torchtext.utils import unicode_csv_reader
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import download_extract_validate
@@ -41,5 +41,5 @@ def AmazonReviewFull(root, split):
     path = download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
-                                  _create_data_from_csv(path))
+    return _RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
+                                   _create_data_from_csv(path))

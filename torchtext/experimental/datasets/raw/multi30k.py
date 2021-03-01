@@ -1,7 +1,7 @@
 import io
 import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 
 SUPPORTED_DATASETS = {
@@ -537,6 +537,6 @@ def Multi30k(root, split,
         'test': test_set,
     }
 
-    return RawTextIterableDataset("Multi30k",
-                                  SUPPORTED_DATASETS[task][language_pair[0]][set_identifier[split]]['NUM_LINES'],
-                                  _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset("Multi30k",
+                                   SUPPORTED_DATASETS[task][language_pair[0]][set_identifier[split]]['NUM_LINES'],
+                                   _iter(src_data_iter, tgt_data_iter))

@@ -1,4 +1,4 @@
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import download_extract_validate
@@ -51,5 +51,5 @@ def WMTNewsCrawl(root, split, year=2010, language='en'):
     path = download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[language],
                                      _EXTRACTED_FILES_MD5[language], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset("WMTNewsCrawl",
-                                  NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+    return _RawTextIterableDataset("WMTNewsCrawl",
+                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))

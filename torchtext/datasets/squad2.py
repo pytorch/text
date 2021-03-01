@@ -1,6 +1,6 @@
 from torchtext.utils import download_from_url
 import json
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 
@@ -40,5 +40,5 @@ def _create_data_from_json(data_path):
 @wrap_split_argument(('train', 'dev'))
 def SQuAD2(root, split):
     extracted_files = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
-    return RawTextIterableDataset('SQuAD2', NUM_LINES[split],
-                                  _create_data_from_json(extracted_files))
+    return _RawTextIterableDataset('SQuAD2', NUM_LINES[split],
+                                   _create_data_from_json(extracted_files))

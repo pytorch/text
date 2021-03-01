@@ -1,4 +1,4 @@
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import download_extract_validate
@@ -58,5 +58,5 @@ def CoNLL2000Chunking(root, split):
     data_filename = download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
                                               _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],
-                                  _create_data_from_iob(data_filename, " "))
+    return _RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],
+                                   _create_data_from_iob(data_filename, " "))

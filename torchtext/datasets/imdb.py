@@ -1,5 +1,5 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 import io
@@ -31,4 +31,4 @@ def IMDB(root, split):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     iterator = generate_imdb_data(split, extracted_files)
-    return RawTextIterableDataset("IMDB", NUM_LINES[split], iterator)
+    return _RawTextIterableDataset("IMDB", NUM_LINES[split], iterator)

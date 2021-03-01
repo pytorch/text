@@ -1,5 +1,5 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import find_match
@@ -42,5 +42,5 @@ def UDPOS(root, split):
         path = find_match("dev.txt", extracted_files)
     else:
         path = find_match(split + ".txt", extracted_files)
-    return RawTextIterableDataset("UDPOS", NUM_LINES[split],
-                                  _create_data_from_iob(path))
+    return _RawTextIterableDataset("UDPOS", NUM_LINES[split],
+                                   _create_data_from_iob(path))

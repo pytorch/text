@@ -1,6 +1,6 @@
 import logging
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 import io
@@ -21,5 +21,5 @@ def EnWik9(root, split):
     extracted_files = extract_archive(dataset_tar)
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset('EnWik9',
-                                  NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+    return _RawTextIterableDataset('EnWik9',
+                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))

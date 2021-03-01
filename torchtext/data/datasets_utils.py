@@ -197,14 +197,14 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
     return extracted_file
 
 
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
+class _RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
 
     def __init__(self, description, full_num_lines, iterator):
-        """Initiate text-classification dataset.
+        """Initiate the dataset abstraction.
         """
-        super(RawTextIterableDataset, self).__init__()
+        super(_RawTextIterableDataset, self).__init__()
         self.description = description
         self.full_num_lines = full_num_lines
         self._iterator = iterator

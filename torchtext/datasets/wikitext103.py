@@ -1,6 +1,6 @@
 import logging
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import find_match
@@ -25,5 +25,5 @@ def WikiText103(root, split):
 
     path = find_match(split, extracted_files)
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset('WikiText103',
-                                  NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+    return _RawTextIterableDataset('WikiText103',
+                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))

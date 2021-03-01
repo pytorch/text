@@ -1,5 +1,5 @@
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
-from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
 from torchtext.data.datasets_utils import find_match
@@ -32,5 +32,5 @@ def YahooAnswers(root, split):
     extracted_files = extract_archive(dataset_tar)
 
     path = find_match(split + '.csv', extracted_files)
-    return RawTextIterableDataset("YahooAnswers", NUM_LINES[split],
-                                  _create_data_from_csv(path))
+    return _RawTextIterableDataset("YahooAnswers", NUM_LINES[split],
+                                   _create_data_from_csv(path))

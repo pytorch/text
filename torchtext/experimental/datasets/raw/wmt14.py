@@ -2,7 +2,7 @@ import os
 import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
-    RawTextIterableDataset,
+    _RawTextIterableDataset,
     wrap_split_argument,
 )
 
@@ -158,4 +158,4 @@ def WMT14(root, split,
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("WMT14", NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset("WMT14", NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))
