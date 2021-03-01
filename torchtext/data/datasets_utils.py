@@ -40,7 +40,7 @@ def _clean_tags_file(f_orig):
                 fd_txt.write(line.strip() + '\n')
 
 
-def check_default_set(split, target_select, dataset_name):
+def _check_default_set(split, target_select, dataset_name):
     # Check whether given object split is either a tuple of strings or string
     # and represents a valid selection of options given by the tuple of strings
     # target_select.
@@ -56,7 +56,7 @@ def check_default_set(split, target_select, dataset_name):
     return split
 
 
-def wrap_datasets(datasets, split):
+def _wrap_datasets(datasets, split):
     # Wrap return value for _setup_datasets functions to support singular values instead
     # of tuples when split is a string.
     if isinstance(split, str):
@@ -66,7 +66,7 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
-def find_match(match, lst):
+def _find_match(match, lst):
     """
     Searches list of strings and returns first entry that partially or fully
     contains the given string match.
@@ -158,9 +158,9 @@ def _wrap_split_argument(fn, splits):
     @functools.wraps(fn)
     def new_fn(root='.data', split=splits, **kwargs):
         result = []
-        for item in check_default_set(split, splits, fn.__name__):
+        for item in _check_default_set(split, splits, fn.__name__):
             result.append(fn(root, item, **kwargs))
-        return wrap_datasets(tuple(result), split)
+        return _wrap_datasets(tuple(result), split)
 
     new_sig = inspect.signature(new_fn)
     new_sig_params = new_sig.parameters
@@ -193,7 +193,7 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
     dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
-    assert extracted_file == find_match(extracted_file, extracted_files)
+    assert extracted_file == _find_match(extracted_file, extracted_files)
     return extracted_file
 
 

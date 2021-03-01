@@ -2,7 +2,7 @@ from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import find_match
+from torchtext.data.datasets_utils import _find_match
 
 URL = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
 
@@ -39,8 +39,8 @@ def UDPOS(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     if split == 'valid':
-        path = find_match("dev.txt", extracted_files)
+        path = _find_match("dev.txt", extracted_files)
     else:
-        path = find_match(split + ".txt", extracted_files)
+        path = _find_match(split + ".txt", extracted_files)
     return _RawTextIterableDataset("UDPOS", NUM_LINES[split],
                                    _create_data_from_iob(path))

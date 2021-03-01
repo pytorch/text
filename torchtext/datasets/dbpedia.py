@@ -2,7 +2,7 @@ from torchtext.utils import download_from_url, extract_archive, unicode_csv_read
 from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import wrap_split_argument
 from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import find_match
+from torchtext.data.datasets_utils import _find_match
 import os
 import io
 
@@ -31,6 +31,6 @@ def DBpedia(root, split):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    path = find_match(split + '.csv', extracted_files)
+    path = _find_match(split + '.csv', extracted_files)
     return _RawTextIterableDataset("DBpedia", NUM_LINES[split],
                                    _create_data_from_csv(path))
