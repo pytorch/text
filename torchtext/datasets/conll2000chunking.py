@@ -1,7 +1,7 @@
 from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import download_extract_validate
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _download_extract_validate
 import os
 import logging
 
@@ -49,13 +49,13 @@ def _create_data_from_iob(data_path, separator):
             yield columns
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'test'))
+@_add_docstring_header(num_lines=NUM_LINES)
+@_wrap_split_argument(('train', 'test'))
 def CoNLL2000Chunking(root, split):
     # Create a dataset specific subfolder to deal with generic download filenames
     root = os.path.join(root, 'conll2000chunking')
     path = os.path.join(root, split + ".txt.gz")
-    data_filename = download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
+    data_filename = _download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
                                               _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],

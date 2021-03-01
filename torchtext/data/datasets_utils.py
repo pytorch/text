@@ -77,7 +77,7 @@ def _find_match(match, lst):
     return None
 
 
-def dataset_docstring_header(fn, num_lines=None):
+def _dataset_docstring_header(fn, num_lines=None):
     """
     Returns docstring for a dataset based on function arguments.
 
@@ -120,10 +120,10 @@ def dataset_docstring_header(fn, num_lines=None):
     return "\n".join([header_s, args_s]) + "\n"
 
 
-def add_docstring_header(docstring=None, num_lines=None):
+def _add_docstring_header(docstring=None, num_lines=None):
     def docstring_decorator(fn):
         old_doc = fn.__doc__
-        fn.__doc__ = dataset_docstring_header(fn, num_lines)
+        fn.__doc__ = _dataset_docstring_header(fn, num_lines)
         if docstring is not None:
             fn.__doc__ += docstring
         if old_doc is not None:
@@ -132,7 +132,7 @@ def add_docstring_header(docstring=None, num_lines=None):
     return docstring_decorator
 
 
-def _wrap_split_argument(fn, splits):
+def __wrap_split_argument(fn, splits):
     """
     Wraps given function of specific signature to extend behavior of split
     to support individual strings. The given function is expected to have a split
@@ -174,14 +174,14 @@ def _wrap_split_argument(fn, splits):
     return new_fn
 
 
-def wrap_split_argument(splits):
+def _wrap_split_argument(splits):
     def new_fn(fn):
-        return _wrap_split_argument(fn, splits)
+        return __wrap_split_argument(fn, splits)
     return new_fn
 
 
-def download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
-                              hash_type="sha256"):
+def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
+                               hash_type="sha256"):
     root = os.path.abspath(root)
     downloaded_file = os.path.abspath(downloaded_file)
     extracted_file = os.path.abspath(extracted_file)

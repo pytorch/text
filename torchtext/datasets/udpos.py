@@ -1,7 +1,7 @@
 from torchtext.utils import download_from_url, extract_archive
 from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _find_match
 
 URL = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
@@ -33,8 +33,8 @@ def _create_data_from_iob(data_path, separator="\t"):
             yield columns
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'valid', 'test'))
+@_add_docstring_header(num_lines=NUM_LINES)
+@_wrap_split_argument(('train', 'valid', 'test'))
 def UDPOS(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)

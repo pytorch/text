@@ -1,7 +1,7 @@
 from torchtext.utils import download_from_url, extract_archive, unicode_csv_reader
 from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _find_match
 import os
 import io
@@ -18,8 +18,8 @@ NUM_LINES = {
 _PATH = 'yelp_review_full_csv.tar.gz'
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'test'))
+@_add_docstring_header(num_lines=NUM_LINES)
+@_wrap_split_argument(('train', 'test'))
 def YelpReviewFull(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:

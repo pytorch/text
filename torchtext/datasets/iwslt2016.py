@@ -3,7 +3,7 @@ import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
-    wrap_split_argument,
+    _wrap_split_argument,
     _clean_xml_file,
     _clean_tags_file,
 )
@@ -147,7 +147,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument(('train', 'valid', 'test'))
+@_wrap_split_argument(('train', 'valid', 'test'))
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
     """IWSLT2016 dataset
 

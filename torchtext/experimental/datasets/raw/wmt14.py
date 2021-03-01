@@ -3,7 +3,7 @@ import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
-    wrap_split_argument,
+    _wrap_split_argument,
 )
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
@@ -63,7 +63,7 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument(('train', 'valid', 'test'))
+@_wrap_split_argument(('train', 'valid', 'test'))
 def WMT14(root, split,
           language_pair=('de', 'en'),
           train_set='train.tok.clean.bpe.32000',
