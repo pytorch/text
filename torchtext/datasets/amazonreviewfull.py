@@ -39,7 +39,7 @@ def AmazonReviewFull(root, split):
                 yield int(row[0]), ' '.join(row[1:])
 
     path = _download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
-                                     _EXTRACTED_FILES_MD5[split], hash_type="md5")
+                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset("AmazonReviewFull", NUM_LINES[split],
                                    _create_data_from_csv(path))

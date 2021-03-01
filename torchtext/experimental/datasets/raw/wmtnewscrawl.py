@@ -49,7 +49,7 @@ def WMTNewsCrawl(root, split, year=2010, language='en'):
     if language not in _AVAILABLE_LANGUAGES:
         raise ValueError("{} not available. Please choose from languages {}".format(language, _AVAILABLE_LANGUAGES))
     path = _download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[language],
-                                     _EXTRACTED_FILES_MD5[language], hash_type="md5")
+                                      _EXTRACTED_FILES_MD5[language], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset("WMTNewsCrawl",
                                    NUM_LINES[split], iter(io.open(path, encoding="utf8")))

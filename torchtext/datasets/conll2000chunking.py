@@ -56,7 +56,7 @@ def CoNLL2000Chunking(root, split):
     root = os.path.join(root, 'conll2000chunking')
     path = os.path.join(root, split + ".txt.gz")
     data_filename = _download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
-                                              _EXTRACTED_FILES_MD5[split], hash_type="md5")
+                                               _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],
                                    _create_data_from_iob(data_filename, " "))

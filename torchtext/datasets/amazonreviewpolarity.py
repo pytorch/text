@@ -38,7 +38,7 @@ def AmazonReviewPolarity(root, split):
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
     path = _download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
-                                     _EXTRACTED_FILES_MD5[split], hash_type="md5")
+                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset("AmazonReviewPolarity", NUM_LINES[split],
                                    _create_data_from_csv(path))
