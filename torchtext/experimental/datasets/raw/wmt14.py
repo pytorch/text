@@ -4,8 +4,6 @@ from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
     RawTextIterableDataset,
     wrap_split_argument,
-    _clean_xml_file,
-    _clean_tags_file,
 )
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
@@ -142,20 +140,8 @@ def WMT14(root, split,
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    # Clean the xml and tag file in the archives
-    file_archives = []
-    for fname in extracted_files:
-        if 'xml' in fname:
-            _clean_xml_file(fname)
-            file_archives.append(os.path.splitext(fname)[0])
-        elif "tags" in fname:
-            _clean_tags_file(fname)
-            file_archives.append(fname.replace('.tags', ''))
-        else:
-            file_archives.append(fname)
-
     data_filenames = {
-        split: _construct_filepaths(file_archives, src_file, tgt_file),
+        split: _construct_filepaths(extracted_files, src_file, tgt_file),
     }
 
     for key in data_filenames:
