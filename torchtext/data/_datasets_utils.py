@@ -132,7 +132,7 @@ def _add_docstring_header(docstring=None, num_lines=None):
     return docstring_decorator
 
 
-def __wrap_split_argument(fn, splits):
+def _wrap_split_argument_with_fn(fn, splits):
     """
     Wraps given function of specific signature to extend behavior of split
     to support individual strings. The given function is expected to have a split
@@ -176,7 +176,7 @@ def __wrap_split_argument(fn, splits):
 
 def _wrap_split_argument(splits):
     def new_fn(fn):
-        return __wrap_split_argument(fn, splits)
+        return _wrap_split_argument_with_fn(fn, splits)
     return new_fn
 
 
