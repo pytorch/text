@@ -1,7 +1,7 @@
 import torch
 from torchtext.nn import InProjContainer, MultiheadAttentionContainer, ScaledDotProduct
 from torch.testing import assert_allclose
-from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestJIT(TorchtextTestCase):

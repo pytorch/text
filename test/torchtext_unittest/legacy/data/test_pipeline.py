@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import torchtext.legacy.data as data
 
-from ...common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestPipeline(TorchtextTestCase):

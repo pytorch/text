@@ -1,5 +1,5 @@
 from torchtext.data.metrics import bleu_score
-from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestUtils(TorchtextTestCase):

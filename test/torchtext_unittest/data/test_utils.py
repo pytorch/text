@@ -2,8 +2,8 @@ import io
 from torchtext.data import get_tokenizer
 from torchtext.utils import unicode_csv_reader
 from torchtext.experimental.functional import ngrams_func
-from ..common.torchtext_test_case import TorchtextTestCase
-from ..common.assets import get_asset_path
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.assets import get_asset_path
 
 
 class TestUtils(TorchtextTestCase):

@@ -1,5 +1,5 @@
 import torch
-from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 from torchtext.legacy.datasets import SNLI, MultiNLI, XNLI
 from torchtext.legacy.datasets.nli import ParsedTextField, ShiftReduceField

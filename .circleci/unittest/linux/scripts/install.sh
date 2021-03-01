@@ -15,7 +15,7 @@ conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch c
 
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
-python setup.py develop
+python setup.py install
 
 printf "* Installing parameterized\n"
 pip install parameterized

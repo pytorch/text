@@ -5,10 +5,10 @@ import torch
 import torchtext
 from torchtext.legacy import data
 from parameterized import parameterized
-from ..common.torchtext_test_case import TorchtextTestCase
-from ..common.parameterized_utils import load_params
-from ..common.assets import conditional_remove
-from ..common.cache_utils import check_cache_status
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.parameterized_utils import load_params
+from torchtext_unittest.common.assets import conditional_remove
+from torchtext_unittest.common.cache_utils import check_cache_status
 
 
 def _raw_text_custom_name_func(testcase_func, param_num, param):

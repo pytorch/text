@@ -6,7 +6,7 @@ import torch
 import torchtext.legacy.data as data
 import pytest
 
-from ...common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase, verify_numericalized_example
 
 
 class TestField(TorchtextTestCase):

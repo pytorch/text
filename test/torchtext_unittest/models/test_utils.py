@@ -1,6 +1,6 @@
 import torch
 from torchtext.experimental.models.utils import count_model_param
-from ..common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestModelsUtils(TorchtextTestCase):

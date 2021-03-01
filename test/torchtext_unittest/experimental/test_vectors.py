@@ -3,7 +3,7 @@ import os
 import platform
 import torch
 import unittest
-from test.common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vectors import (
     build_vectors,
 )

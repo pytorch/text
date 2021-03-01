@@ -7,7 +7,7 @@ from collections import Counter
 import torch
 import torchtext.data
 
-from .common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestNestedField(TorchtextTestCase):

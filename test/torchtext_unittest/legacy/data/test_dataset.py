@@ -7,7 +7,7 @@ import unittest
 
 import pytest
 
-from ...common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDataset(TorchtextTestCase):

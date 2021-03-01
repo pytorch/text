@@ -20,8 +20,8 @@ from torchtext.experimental.transforms import (
     regex_tokenizer
 )
 
-from ..common.torchtext_test_case import TorchtextTestCase
-from ..common.assets import get_asset_path
+from torchtext_unittest.common.torchtext_test_case import TorchtextTestCase
+from torchtext_unittest.common.assets import get_asset_path
 
 
 class TestFunctional(TorchtextTestCase):
