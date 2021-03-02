@@ -107,7 +107,7 @@ setup_info = dict(
     # See here: https://github.com/pytorch/vision/issues/2134"
     ext_modules=setup_helpers.get_ext_modules(),
     cmdclass={
-        'build_ext': setup_helpers.BuildExtension.with_options(no_python_abi_suffix=True),
+        'build_ext': setup_helpers.CMakeBuild,
         'clean': clean,
     },
 )
