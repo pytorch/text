@@ -1,0 +1,36 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bc0502a..6f28b53 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -74,14 +74,14 @@ if (NOT DEFINED CMAKE_INSTALL_INCDIR)
+   set(CMAKE_INSTALL_INCDIR include)
+ endif()
+ 
+-configure_file("${PROJECT_SOURCE_DIR}/config.h.in" "config.h")
+-configure_file("${PROJECT_SOURCE_DIR}/sentencepiece.pc.in" "sentencepiece.pc" @ONLY)
++configure_file("${PROJECT_SOURCE_DIR}/config.h.in" "config/config.h")
++configure_file("${PROJECT_SOURCE_DIR}/sentencepiece.pc.in" "config/sentencepiece.pc" @ONLY)
+ 
+ if (NOT MSVC)
+-  install(FILES "${CMAKE_BINARY_DIR}/sentencepiece.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
++  install(FILES "${PROJECT_BINARY_DIR}/config/sentencepiece.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ endif()
+ 
+-include_directories(${CMAKE_SOURCE_DIR} ${PROJECT_BINARY_DIR})
++include_directories(${CMAKE_SOURCE_DIR} ${PROJECT_BINARY_DIR}/config)
+ 
+ if (SPM_BUILD_TEST)
+   enable_testing()
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index a2356d4..49f4d4e 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -58,7 +58,7 @@ else()
+   include_directories(${PROTOBUF_INCLUDE_DIR})
+ endif()
+ 
+-include_directories(${CMAKE_CURRENT_BINARY_DIR})
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../)
+ 
+ set(SPM_SRCS
+   ${PROTOBUF_LITE_SRCS}

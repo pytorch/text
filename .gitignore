@@ -1,4 +1,5 @@
 *.txt
+!CMakeLists.txt
 *.zip
 *~
 .vector_cache
