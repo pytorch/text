@@ -38,6 +38,21 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
+def find_match_path(match, lst):
+    """
+    Searches list of paths and returns first entry that matches the path.
+    The function raise exception if the paths are not valid entries.
+    """
+    try:
+        for element in lst:
+            if os.samefile(element, match):
+                return element
+    except Exception as e:
+        raise e
+
+    return None
+
+
 def find_match(match, lst):
     """
     Searches list of strings and returns first entry that partially or fully
@@ -165,8 +180,7 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
     dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
-    print("Extracted files from downloaded_file [{}] are [{}]. extracted_file [{}]".format(downloaded_file, extracted_files, extracted_file))
-    assert extracted_file.replace("\\", "/") == find_match(extracted_file, extracted_files), "extracted_file {} did not find any match".format(extracted_file)
+    assert extracted_file == find_match_path(extracted_file, extracted_files), "extracted_file {} did not find any match".format(extracted_file)
     return extracted_file
 
 
