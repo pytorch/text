@@ -361,7 +361,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
           keys:
 
@@ -426,7 +426,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -486,7 +486,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
           keys:
 
@@ -550,7 +550,7 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -587,7 +587,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
 
-          key: data-vector-windows-v1-{{ checksum ".circleci-weekly" }}
+          key: data-vector-windows-v1-{{ checksum ".circleci-daily" }}
 
           paths:
             - .vector_cache
