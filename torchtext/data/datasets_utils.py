@@ -165,6 +165,7 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
     dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
+    print("Extracted files from downloaded_file [{}] are [{}]. extracted_file [{}]".format(downloaded_file, extracted_files, extracted_file))
     assert extracted_file == find_match(extracted_file, extracted_files), "extracted_file {} did not find any match".format(extracted_file)
     return extracted_file
 
