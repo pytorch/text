@@ -1,9 +1,9 @@
 #include <ATen/Parallel.h> // @manual
-#include <common.h>
 #include <stdexcept>
 #include <string>
 #include <torch/torch.h>                        // @manual
-#include <vocab.h>                              // @manual
+#include <torchtext/csrc/common.h>
+#include <torchtext/csrc/vocab.h>
 
 namespace torchtext {
 

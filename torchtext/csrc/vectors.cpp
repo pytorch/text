@@ -1,6 +1,5 @@
 #include <ATen/Parallel.h> // @manual
 #include <atomic>
-#include <common.h>
 #include <condition_variable>
 #include <double-conversion/double-conversion.h>
 #include <double-conversion/ieee.h>
@@ -11,7 +10,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vectors.h> // @manual
+#include <torchtext/csrc/common.h>
+#include <torchtext/csrc/vectors.h>
 
 namespace torchtext {
 

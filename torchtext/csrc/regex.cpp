@@ -1,4 +1,4 @@
-#include <regex.h>
+#include <torchtext/csrc/regex.h>
 
 namespace torchtext {
 
