@@ -363,21 +363,6 @@ jobs:
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
             echo "$(date +"Year-Day %Y-%d")" > .circleci-daily
       - restore_cache:
-          keys:
-
-            - data-linux-v1-{{ checksum ".circleci-daily" }}
-
-      - run:
-          name: Exit if cache exists
-          command: |
-            FILE=.data/cache_status_file.json
-            if test -f "$FILE"; then
-              cat $FILE
-              circleci step halt
-            else
-              echo "$FILE does not exists"
-            fi
-      - restore_cache:
 
           keys:
             - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
