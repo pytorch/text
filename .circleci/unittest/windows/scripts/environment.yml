@@ -6,6 +6,8 @@ dependencies:
   - codecov
   - pip
   - pip:
+    - cmake
+    - ninja
     - dataclasses
     - nltk
     - requests
