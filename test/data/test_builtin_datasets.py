@@ -21,6 +21,10 @@ def _raw_text_custom_name_func(testcase_func, param_num, param):
 
 
 class TestDataset(TorchtextTestCase):
+    @classmethod
+    def setUpClass(cls):
+        check_cache_status()
+
     def _helper_test_func(self, length, target_length, results, target_results):
         self.assertEqual(length, target_length)
         if isinstance(target_results, list):
@@ -154,7 +158,6 @@ class TestDataset(TorchtextTestCase):
     @parameterized.expand(
         load_params('raw_datasets.json'),
         name_func=_raw_text_custom_name_func)
-    @check_cache_status
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
@@ -180,7 +183,6 @@ class TestDataset(TorchtextTestCase):
         del data_iter
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
-    @check_cache_status(input_split='train')
     def test_raw_datasets_split_argument(self, dataset_name):
         if 'statmt' in torchtext.datasets.URLS[dataset_name]:
             return
@@ -196,7 +198,6 @@ class TestDataset(TorchtextTestCase):
         _ = dataset()
 
     @parameterized.expand(["AG_NEWS", "WikiText2", "IMDB"])
-    @check_cache_status(input_split='train')
     def test_datasets_split_argument(self, dataset_name):
         dataset = torchtext.experimental.datasets.DATASETS[dataset_name]
         train1 = dataset(split='train')
@@ -246,9 +247,6 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
         del train_iter, test_iter
 
-    @check_cache_status(input_dataset_name='IWSLT2017', input_split='train')
-    @check_cache_status(input_dataset_name='IWSLT2017', input_split='valid')
-    @check_cache_status(input_dataset_name='IWSLT2017', input_split='test')
     def test_iwslt2017(self):
         from torchtext.experimental.datasets import IWSLT2017
 
@@ -275,9 +273,6 @@ class TestDataset(TorchtextTestCase):
                                        'Frau', 'Tipper', '.', '"', '\n'], ['And', 'she', 'said', '"', 'Yes', ',', 'that', "'s", 'former',
                                                                            'Vice', 'President', 'Al', 'Gore', 'and', 'his', 'wife', ',', 'Tipper', '.', '"', '\n']))
 
-    @check_cache_status(input_dataset_name='IWSLT2016', input_split='train')
-    @check_cache_status(input_dataset_name='IWSLT2016', input_split='valid')
-    @check_cache_status(input_dataset_name='IWSLT2016', input_split='test')
     def test_iwslt2016(self):
         from torchtext.experimental.datasets import IWSLT2016
 
