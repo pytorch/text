@@ -45,7 +45,7 @@ def find_match_path(match, lst):
     """
     try:
         for element in lst:
-            if os.samefile(element, match):
+            if os.path.samefile(element, match):
                 return element
     except Exception as e:
         raise e
