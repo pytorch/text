@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 from pathlib import Path
 import distutils.sysconfig
@@ -50,6 +51,12 @@ class CMakeBuild(build_ext):
             "-DSPM_ENABLE_NFKC_COMPILE=OFF",
             "-DRE2_BUILD_TESTING=OFF",
         ]
+
+        if platform.system() == 'Windows':
+            cmake_args.extend([
+                "-DCMAKE_C_COMPILER=cl",
+                "-DCMAKE_CXX_COMPILER=cl",
+            ])
         build_args = [
             '--target', 'install'
         ]
