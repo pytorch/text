@@ -1,7 +1,7 @@
 import os
 import io
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data._datasets_utils import (
+from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
     _wrap_split_argument,
     _clean_xml_file,

@@ -1,7 +1,7 @@
 from torchtext.utils import download_from_url, unicode_csv_reader
-from torchtext.data._datasets_utils import _RawTextIterableDataset
-from torchtext.data._datasets_utils import _wrap_split_argument
-from torchtext.data._datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
 import os
 import io
 

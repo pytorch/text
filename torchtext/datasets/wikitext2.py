@@ -1,9 +1,9 @@
 import logging
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data._datasets_utils import _RawTextIterableDataset
-from torchtext.data._datasets_utils import _wrap_split_argument
-from torchtext.data._datasets_utils import _add_docstring_header
-from torchtext.data._datasets_utils import _find_match
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _find_match
 import io
 
 URL = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip'

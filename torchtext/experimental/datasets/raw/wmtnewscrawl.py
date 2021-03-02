@@ -1,7 +1,7 @@
-from torchtext.data._datasets_utils import _RawTextIterableDataset
-from torchtext.data._datasets_utils import _wrap_split_argument
-from torchtext.data._datasets_utils import _add_docstring_header
-from torchtext.data._datasets_utils import _download_extract_validate
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _download_extract_validate
 import io
 import logging
 
