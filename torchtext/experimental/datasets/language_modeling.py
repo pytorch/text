@@ -4,8 +4,8 @@ from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext import datasets as raw
 from torchtext.experimental.datasets import raw as experimental_raw
-from torchtext.data._datasets_utils import _check_default_set
-from torchtext.data._datasets_utils import _wrap_datasets
+from torchtext.data.datasets_utils import _check_default_set
+from torchtext.data.datasets_utils import _wrap_datasets
 
 logger_ = logging.getLogger(__name__)
 
