@@ -27,8 +27,6 @@
 
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" /> -->
-  <link rel="stylesheet" href="../../../../_static/css/pytorch_theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
 
@@ -302,8 +300,8 @@
   <h1>Source code for torchtext.experimental.datasets.sequence_tagging</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">check_default_set</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_datasets</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_check_default_set</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_wrap_datasets</span>
 <span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">datasets</span> <span class="k">as</span> <span class="n">raw</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">build_vocab_from_iterator</span>
 <span class="kn">from</span> <span class="nn">torchtext.experimental.functional</span> <span class="kn">import</span> <span class="p">(</span>
@@ -330,7 +328,7 @@
 
 
 <span class="k">def</span> <span class="nf">_setup_datasets</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">split_</span><span class="p">):</span>
-    <span class="n">split</span> <span class="o">=</span> <span class="n">check_default_set</span><span class="p">(</span><span class="n">split_</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">dataset_name</span><span class="p">)</span>
+    <span class="n">split</span> <span class="o">=</span> <span class="n">_check_default_set</span><span class="p">(</span><span class="n">split_</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">dataset_name</span><span class="p">)</span>
     <span class="n">raw_iter_tuple</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">](</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">)</span>
     <span class="n">raw_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">raw_iter</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">raw_iter_tuple</span><span class="p">):</span>
@@ -362,7 +360,7 @@
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vocabs</span><span class="p">))</span>
     <span class="p">]</span>
     <span class="n">logger_</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building datasets for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">wrap_datasets</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">transformers</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">),</span> <span class="n">split_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_wrap_datasets</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">SequenceTaggingDataset</span><span class="p">(</span><span class="n">raw_data</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">vocabs</span><span class="p">,</span> <span class="n">transformers</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">split</span><span class="p">),</span> <span class="n">split_</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SequenceTaggingDataset"><a class="viewcode-back" href="../../../../experimental_datasets.html#torchtext.experimental.datasets.SequenceTaggingDataset">[docs]</a><span class="k">class</span> <span class="nc">SequenceTaggingDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>

@@ -27,8 +27,6 @@
 
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" /> -->
-  <link rel="stylesheet" href="../../../_static/css/pytorch_theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 
@@ -302,10 +300,10 @@
   <h1>Source code for torchtext.datasets.wikitext103</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">add_docstring_header</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">find_match</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_RawTextIterableDataset</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_add_docstring_header</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_find_match</span>
 <span class="kn">import</span> <span class="nn">io</span>
 
 <span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip&#39;</span>
@@ -319,16 +317,16 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="WikiText103"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.WikiText103">[docs]</a><span class="nd">@add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">)</span>
-<span class="nd">@wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<div class="viewcode-block" id="WikiText103"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.WikiText103">[docs]</a><span class="nd">@_add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">)</span>
+<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">WikiText103</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
     <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">,</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
     <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
 
-    <span class="n">path</span> <span class="o">=</span> <span class="n">find_match</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">_find_match</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s1">&#39;WikiText103&#39;</span><span class="p">,</span>
-                                  <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="nb">iter</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)))</span></div>
+    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="s1">&#39;WikiText103&#39;</span><span class="p">,</span>
+                                   <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="nb">iter</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)))</span></div>
 </pre></div>
 
              </article>

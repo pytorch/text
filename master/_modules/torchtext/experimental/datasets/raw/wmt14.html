@@ -27,8 +27,6 @@
 
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" /> -->
-  <link rel="stylesheet" href="../../../../../_static/css/pytorch_theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 
@@ -302,11 +300,11 @@
   <h1>Source code for torchtext.experimental.datasets.raw.wmt14</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">codecs</span>
-<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_RawTextIterableDataset</span><span class="p">,</span>
+    <span class="n">_wrap_split_argument</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0B_bZck-ksdkpM25jRUN2X2UxMm8&#39;</span>
 
@@ -349,32 +347,6 @@
             <span class="k">yield</span> <span class="n">row</span>
 
 
-<span class="k">def</span> <span class="nf">_clean_xml_file</span><span class="p">(</span><span class="n">f_xml</span><span class="p">):</span>
-    <span class="n">f_txt</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f_xml</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">f_txt</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd_txt</span><span class="p">:</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f_xml</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;doc&#39;</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;seg&#39;</span><span class="p">):</span>
-                <span class="n">fd_txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_clean_tags_file</span><span class="p">(</span><span class="n">f_orig</span><span class="p">):</span>
-    <span class="n">xml_tags</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s1">&#39;&lt;url&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;keywords&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;talkid&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;reviewer&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;&lt;translator&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;title&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;speaker&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;doc&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;/doc&#39;</span>
-    <span class="p">]</span>
-    <span class="n">f_txt</span> <span class="o">=</span> <span class="n">f_orig</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.tags&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">f_txt</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd_txt</span><span class="p">,</span> \
-            <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">f_orig</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd_orig</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd_orig</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">line</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">xml_tags</span><span class="p">):</span>
-                <span class="c1"># TODO: Fix utf-8 next line mark</span>
-                <span class="c1">#                fd_txt.write(l.strip() + &#39;\n&#39;)</span>
-                <span class="c1">#                fd_txt.write(l.strip() + u&quot;\u0085&quot;)</span>
-                <span class="c1">#                fd_txt.write(l.lstrip())</span>
-                <span class="n">fd_txt</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-
-
 <span class="k">def</span> <span class="nf">_construct_filenames</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
     <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
@@ -391,7 +363,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WMT14"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMT14">[docs]</a><span class="nd">@wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<div class="viewcode-block" id="WMT14"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMT14">[docs]</a><span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">WMT14</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span>
           <span class="n">language_pair</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">),</span>
           <span class="n">train_set</span><span class="o">=</span><span class="s1">&#39;train.tok.clean.bpe.32000&#39;</span><span class="p">,</span>
@@ -468,20 +440,8 @@
     <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
     <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
 
-    <span class="c1"># Clean the xml and tag file in the archives</span>
-    <span class="n">file_archives</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">extracted_files</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;xml&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-            <span class="n">_clean_xml_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="s2">&quot;tags&quot;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-            <span class="n">_clean_tags_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.tags&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-
     <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">split</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_file</span><span class="p">,</span> <span class="n">tgt_file</span><span class="p">),</span>
+        <span class="n">split</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">extracted_files</span><span class="p">,</span> <span class="n">src_file</span><span class="p">,</span> <span class="n">tgt_file</span><span class="p">),</span>
     <span class="p">}</span>
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_filenames</span><span class="p">:</span>
@@ -498,7 +458,7 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">item</span>
 
-    <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;WMT14&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">src_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;WMT14&quot;</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">src_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">))</span></div>
 </pre></div>
 
              </article>

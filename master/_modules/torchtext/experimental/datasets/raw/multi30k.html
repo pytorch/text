@@ -27,8 +27,6 @@
 
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!-- <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" /> -->
-  <link rel="stylesheet" href="../../../../../_static/css/pytorch_theme.css" type="text/css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css/family=Lato" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 
@@ -303,8 +301,8 @@
 <span></span><span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">RawTextIterableDataset</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">wrap_split_argument</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_RawTextIterableDataset</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_wrap_split_argument</span>
 
 <span class="n">SUPPORTED_DATASETS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;task1&#39;</span><span class="p">:</span> <span class="p">{</span>
@@ -702,7 +700,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Multi30k"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.Multi30k">[docs]</a><span class="nd">@wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<div class="viewcode-block" id="Multi30k"><a class="viewcode-back" href="../../../../../experimental_datasets_raw.html#torchtext.experimental.datasets.raw.Multi30k">[docs]</a><span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">Multi30k</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span>
              <span class="n">task</span><span class="o">=</span><span class="s1">&#39;task1&#39;</span><span class="p">,</span>
              <span class="n">language_pair</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">),</span>
@@ -839,9 +837,9 @@
         <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">test_set</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="k">return</span> <span class="n">RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;Multi30k&quot;</span><span class="p">,</span>
-                                  <span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="n">task</span><span class="p">][</span><span class="n">language_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">set_identifier</span><span class="p">[</span><span class="n">split</span><span class="p">]][</span><span class="s1">&#39;NUM_LINES&#39;</span><span class="p">],</span>
-                                  <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="s2">&quot;Multi30k&quot;</span><span class="p">,</span>
+                                   <span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="n">task</span><span class="p">][</span><span class="n">language_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">set_identifier</span><span class="p">[</span><span class="n">split</span><span class="p">]][</span><span class="s1">&#39;NUM_LINES&#39;</span><span class="p">],</span>
+                                   <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">))</span></div>
 </pre></div>
 
              </article>
