@@ -77,7 +77,7 @@ def _find_match(match, lst):
     return None
 
 
-def _dataset_docstring_header(fn, num_lines=None):
+def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
     """
     Returns docstring for a dataset based on function arguments.
 
@@ -105,6 +105,10 @@ def _dataset_docstring_header(fn, num_lines=None):
         for k, v in num_lines.items():
             header_s += "\n    {}: {}\n".format(k, v)
 
+    if num_classes is not None:
+        header_s += "\n\nNumber of classes"
+        header_s += "\n    {}\n".format(num_classes)
+
     args_s = "\nArgs:"
     args_s += "\n    root: Directory where the datasets are saved."
     args_s += "\n        Default: .data"
@@ -120,10 +124,10 @@ def _dataset_docstring_header(fn, num_lines=None):
     return "\n".join([header_s, args_s]) + "\n"
 
 
-def _add_docstring_header(docstring=None, num_lines=None):
+def _add_docstring_header(docstring=None, num_lines=None, num_classes=None):
     def docstring_decorator(fn):
         old_doc = fn.__doc__
-        fn.__doc__ = _dataset_docstring_header(fn, num_lines)
+        fn.__doc__ = _dataset_docstring_header(fn, num_lines, num_classes)
         if docstring is not None:
             fn.__doc__ += docstring
         if old_doc is not None:
@@ -193,7 +197,8 @@ def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_fi
     dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
-    assert extracted_file == _find_match(extracted_file, extracted_files)
+    assert os.path.exists(extracted_file), "extracted_file [{}] was not found in the archive [{}]".format(extracted_file, extracted_files)
+
     return extracted_file
 
 

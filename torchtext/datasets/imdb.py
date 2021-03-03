@@ -16,7 +16,7 @@ NUM_LINES = {
 _PATH = 'aclImdb_v1.tar.gz'
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
+@_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_wrap_split_argument(('train', 'test'))
 def IMDB(root, split):
     def generate_imdb_data(key, extracted_files):
