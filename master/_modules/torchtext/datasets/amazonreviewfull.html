@@ -319,8 +319,8 @@
 <span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;amazon_review_full_csv.tar.gz&#39;</span>
 
 <span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;amazon_review_full_csv/train.csv&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;amazon_review_full_csv/test.csv&#39;</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;amazon_review_full_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;amazon_review_full_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">]),</span>
 <span class="p">}</span>
 
 <span class="n">_EXTRACTED_FILES_MD5</span> <span class="o">=</span> <span class="p">{</span>
