@@ -1,7 +1,7 @@
 import torch
 import logging
-from torchtext.data.datasets_utils import check_default_set
-from torchtext.data.datasets_utils import wrap_datasets
+from torchtext.data.datasets_utils import _check_default_set
+from torchtext.data.datasets_utils import _wrap_datasets
 from torchtext import datasets as raw
 from torchtext.experimental.datasets import raw as experimental_raw
 from torchtext.vocab import Vocab, build_vocab_from_iterator
@@ -20,7 +20,7 @@ def build_vocab(data, transforms, index):
 
 def _setup_datasets(dataset_name,
                     split_, root, vocab, tokenizer, **kwargs):
-    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
+    split = _check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     src_vocab, tgt_vocab = vocab
     if tokenizer is None:
         src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
@@ -81,7 +81,7 @@ def _setup_datasets(dataset_name,
             TranslationDataset(raw_data[key], (src_vocab, tgt_vocab),
                                (src_text_transform, tgt_text_transform)))
 
-    return wrap_datasets(tuple(datasets), split_)
+    return _wrap_datasets(tuple(datasets), split_)
 
 
 class TranslationDataset(torch.utils.data.Dataset):

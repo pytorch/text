@@ -1,8 +1,8 @@
 import logging
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
 import io
 
 URL = 'http://mattmahoney.net/dc/enwik9.zip'
@@ -14,12 +14,12 @@ NUM_LINES = {
 }
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train',))
+@_add_docstring_header(num_lines=NUM_LINES)
+@_wrap_split_argument(('train',))
 def EnWik9(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset('EnWik9',
-                                  NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+    return _RawTextIterableDataset('EnWik9',
+                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))

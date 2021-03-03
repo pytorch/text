@@ -1,8 +1,8 @@
 from torchtext.utils import unicode_csv_reader
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import download_extract_validate
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _download_extract_validate
 import io
 import os
 import logging
@@ -19,8 +19,8 @@ NUM_LINES = {
 _PATH = 'sogou_news_csv.tar.gz'
 
 _EXTRACTED_FILES = {
-    'train': 'sogou_news_csv/train.csv',
-    'test': 'sogou_news_csv/test.csv'
+    'train': f'{os.sep}'.join(['sogou_news_csv', 'train.csv']),
+    'test': f'{os.sep}'.join(['sogou_news_csv', 'test.csv']),
 }
 
 _EXTRACTED_FILES_MD5 = {
@@ -29,16 +29,16 @@ _EXTRACTED_FILES_MD5 = {
 }
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'test'))
+@_add_docstring_header(num_lines=NUM_LINES, num_classes=5)
+@_wrap_split_argument(('train', 'test'))
 def SogouNews(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
-    path = download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
-                                     _EXTRACTED_FILES_MD5[split], hash_type="md5")
+    path = _download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
+                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset("SogouNews", NUM_LINES[split],
-                                  _create_data_from_csv(path))
+    return _RawTextIterableDataset("SogouNews", NUM_LINES[split],
+                                   _create_data_from_csv(path))

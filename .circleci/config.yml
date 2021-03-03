@@ -343,6 +343,71 @@ jobs:
             conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
 
+  cachesetup_linux:
+    <<: *binary_common
+    docker:
+      - image: "pytorch/manylinux-cuda102"
+    resource_class: 2xlarge+
+    steps:
+      - checkout
+      - designate_upload_channel
+      - load_conda_channel_flags
+      - run:
+          name: Generate cache key
+          # This will refresh cache on Sundays, nightly build should generate new cache.
+          command: |
+            echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
+      - restore_cache:
+          keys:
+
+            - data-linux-v1-{{ checksum ".circleci-daily" }}
+
+      - run:
+          name: Exit if cache exists
+          command: |
+            FILE=.data/cache_status_file.json
+            if test -f "$FILE"; then
+              cat $FILE
+              circleci step halt
+            else
+              echo "$FILE does not exists"
+            fi
+      - restore_cache:
+
+          keys:
+            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+
+      - run:
+          name: Setup
+          command: .circleci/unittest/linux/scripts/setup_env.sh
+      - save_cache:
+
+          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+
+          paths:
+            - conda
+            - env
+      - run:
+          name: Install torchtext
+          command: .circleci/unittest/linux/scripts/install.sh
+      - run:
+          name: Generate daily data Cache
+          no_output_timeout: 30m
+          command: |
+            .circleci/unittest/linux/scripts/generate_cache.sh
+            cat .data/cache_status_file.json
+      - save_cache:
+
+          key: data-linux-v1-{{ checksum ".circleci-daily" }}
+
+          paths:
+            - .data
+      - run:
+          name: Post process
+          command: .circleci/unittest/linux/scripts/post_process.sh
+
+
   unittest_linux:
     <<: *binary_common
     docker:
@@ -355,7 +420,9 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: |
+            echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -377,7 +444,12 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v1-{{ checksum ".circleci-weekly" }}
+            - data-linux-v1-{{ checksum ".circleci-daily" }}
+
+      - restore_cache:
+          keys:
+
+            - data-vector-linux-v1-{{ checksum ".circleci-daily" }}
 
       - run:
           name: Run tests
@@ -386,7 +458,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
 
-          key: data-linux-v1-{{ checksum ".circleci-weekly" }}
+          key: data-vector-linux-v1-{{ checksum ".circleci-daily" }}
 
           paths:
             - .vector_cache
@@ -396,6 +468,70 @@ jobs:
           command: .circleci/unittest/linux/scripts/post_process.sh
       - store_test_results:
           path: test-results
+
+  cachesetup_windows:
+    <<: *binary_common
+    executor:
+      name: windows-cpu
+    steps:
+      - checkout
+      - designate_upload_channel
+      - load_conda_channel_flags
+      - run:
+          name: Generate cache key
+          # This will refresh cache on Sundays, nightly build should generate new cache.
+          command: |
+            echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
+      - restore_cache:
+          keys:
+
+            - data-windows-v1-{{ checksum ".circleci-daily" }}
+
+      - run:
+          name: Exit if cache exists
+          command: |
+            FILE=.data/cache_status_file.json
+            if test -f "$FILE"; then
+              cat $FILE
+              circleci step halt
+            else
+              echo "$FILE does not exists"
+            fi
+      - restore_cache:
+
+          keys:
+            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+
+      - run:
+          name: Setup
+          command: .circleci/unittest/windows/scripts/setup_env.sh
+      - save_cache:
+
+          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
+
+          paths:
+            - conda
+            - env
+      - run:
+          name: Install torchtext
+          command: .circleci/unittest/windows/scripts/install.sh
+      - run:
+          name: Generate daily data Cache
+          no_output_timeout: 30m
+          command: |
+            .circleci/unittest/windows/scripts/generate_cache.sh
+            cat .data/cache_status_file.json
+      - save_cache:
+
+          key: data-windows-v1-{{ checksum ".circleci-daily" }}
+
+          paths:
+            - .data
+      - run:
+          name: Post process
+          command: .circleci/unittest/windows/scripts/post_process.sh
+
 
   unittest_windows:
     <<: *binary_common
@@ -408,7 +544,9 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: |
+            echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -430,8 +568,14 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v1-{{ checksum ".circleci-weekly" }}
+            - data-windows-v1-{{ checksum ".circleci-daily" }}
 
+      - restore_cache:
+          keys:
+
+            - data-vector-windows-v1-{{ checksum ".circleci-daily" }}
+
+ 
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
@@ -439,7 +583,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
 
-          key: data-windows-v1-{{ checksum ".circleci-weekly" }}
+          key: data-vector-windows-v1-{{ checksum ".circleci-daily" }}
 
           paths:
             - .vector_cache
@@ -461,7 +605,7 @@ jobs:
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: echo "$(date +"%Y-%U")" > .circleci-weekly
+          command: echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
       - restore_cache:
 
           keys:
@@ -654,33 +798,55 @@ workflows:
           - binary_linux_wheel_py3.8
   unittest:
     jobs:
+      - cachesetup_linux:
+          name: cachesetup_linux_py_any
+          python_version: '3.6'
       - unittest_linux:
           name: unittest_linux_py3.6
           python_version: '3.6'
+          requires:
+          - cachesetup_linux_py_any
       - stylecheck:
           name: stylecheck_py3.6
           python_version: '3.6'
       - unittest_linux:
           name: unittest_linux_py3.7
           python_version: '3.7'
+          requires:
+          - cachesetup_linux_py_any
       - unittest_linux:
           name: unittest_linux_py3.8
           python_version: '3.8'
+          requires:
+          - cachesetup_linux_py_any
       - unittest_linux:
           name: unittest_linux_py3.9
           python_version: '3.9'
+          requires:
+          - cachesetup_linux_py_any
+      - cachesetup_windows:
+          name: cachesetup_windows_py_any
+          python_version: '3.6'
       - unittest_windows:
           name: unittest_windows_py3.6
           python_version: '3.6'
+          requires:
+          - cachesetup_windows_py_any
       - unittest_windows:
           name: unittest_windows_py3.7
           python_version: '3.7'
+          requires:
+          - cachesetup_windows_py_any
       - unittest_windows:
           name: unittest_windows_py3.8
           python_version: '3.8'
+          requires:
+          - cachesetup_windows_py_any
       - unittest_windows:
           name: unittest_windows_py3.9
           python_version: '3.9'
+          requires:
+          - cachesetup_windows_py_any
   nightly:
     jobs:
       - circleci_consistency:
