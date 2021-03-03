@@ -1,9 +1,9 @@
 import os
-import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
     _wrap_split_argument,
+    _read_text_iterator,
 )
 from torchtext.data.datasets_utils import _create_dataset_directory
 
@@ -40,12 +40,6 @@ NUM_LINES = {
     'newstest2010': 2489,
     'train.tok.clean.bpe.32000': 4500966
 }
-
-
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
 
 
 def _construct_filenames(filename, languages):

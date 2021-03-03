@@ -6,7 +6,6 @@ from torchtext.data.datasets_utils import (
     _create_dataset_directory,
     _read_text_iterator,
 )
-import io
 import logging
 
 URL = 'http://www.statmt.org/wmt11/training-monolingual-news-2010.tgz'

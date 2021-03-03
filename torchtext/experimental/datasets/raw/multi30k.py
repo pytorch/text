@@ -1,9 +1,11 @@
-import io
 import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _create_dataset_directory
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
 
 SUPPORTED_DATASETS = {
     'task1': {
@@ -384,12 +386,6 @@ for task in SUPPORTED_DATASETS:
             URL[k].append(SUPPORTED_DATASETS[task][language][data]['URL'])
             MD5[k].append(SUPPORTED_DATASETS[task][language][data]['MD5'])
             NUM_LINES[k].append(SUPPORTED_DATASETS[task][language][data]['NUM_LINES'])
-
-
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
 
 
 def _construct_filepaths(paths, src_filename, tgt_filename):
