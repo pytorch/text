@@ -1,7 +1,7 @@
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import download_extract_validate
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _download_extract_validate
 import io
 import logging
 
@@ -41,15 +41,15 @@ _EXTRACTED_FILES_MD5 = {
 }
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument('train')
+@_add_docstring_header(num_lines=NUM_LINES)
+@_wrap_split_argument('train')
 def WMTNewsCrawl(root, split, year=2010, language='en'):
     if year not in _AVAILABLE_YEARS:
         raise ValueError("{} not available. Please choose from years {}".format(year, _AVAILABLE_YEARS))
     if language not in _AVAILABLE_LANGUAGES:
         raise ValueError("{} not available. Please choose from languages {}".format(language, _AVAILABLE_LANGUAGES))
-    path = download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[language],
-                                     _EXTRACTED_FILES_MD5[language], hash_type="md5")
+    path = _download_extract_validate(root, URL, MD5, _PATH, _EXTRACTED_FILES[language],
+                                      _EXTRACTED_FILES_MD5[language], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset("WMTNewsCrawl",
-                                  NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+    return _RawTextIterableDataset("WMTNewsCrawl",
+                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))

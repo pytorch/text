@@ -1,7 +1,7 @@
 import torch
 import logging
-from torchtext.data.datasets_utils import check_default_set
-from torchtext.data.datasets_utils import wrap_datasets
+from torchtext.data.datasets_utils import _check_default_set
+from torchtext.data.datasets_utils import _wrap_datasets
 from torchtext import datasets as raw
 from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
@@ -28,7 +28,7 @@ def build_vocab(data):
 
 
 def _setup_datasets(dataset_name, root, vocabs, split_):
-    split = check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
+    split = _check_default_set(split_, ('train', 'valid', 'test'), dataset_name)
     raw_iter_tuple = raw.DATASETS[dataset_name](root=root, split=split)
     raw_data = {}
     for name, raw_iter in zip(split, raw_iter_tuple):
@@ -60,7 +60,7 @@ def _setup_datasets(dataset_name, root, vocabs, split_):
         for idx in range(len(vocabs))
     ]
     logger_.info('Building datasets for {}'.format(split))
-    return wrap_datasets(tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in split), split_)
+    return _wrap_datasets(tuple(SequenceTaggingDataset(raw_data[item], vocabs, transformers) for item in split), split_)
 
 
 class SequenceTaggingDataset(torch.utils.data.Dataset):
