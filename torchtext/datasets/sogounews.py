@@ -19,8 +19,8 @@ NUM_LINES = {
 _PATH = 'sogou_news_csv.tar.gz'
 
 _EXTRACTED_FILES = {
-    'train': 'sogou_news_csv/train.csv',
-    'test': 'sogou_news_csv/test.csv'
+    'train': f'{os.sep}'.join(['sogou_news_csv', 'train.csv']),
+    'test': f'{os.sep}'.join(['sogou_news_csv', 'test.csv']),
 }
 
 _EXTRACTED_FILES_MD5 = {
@@ -29,7 +29,7 @@ _EXTRACTED_FILES_MD5 = {
 }
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
+@_add_docstring_header(num_lines=NUM_LINES, num_classes=5)
 @_wrap_split_argument(('train', 'test'))
 def SogouNews(root, split):
     def _create_data_from_csv(data_path):
