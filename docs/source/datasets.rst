@@ -15,8 +15,8 @@ General use cases are as follows: ::
         return line.split()
      
     tokens = []
-    for line in train_iter:
-        tokens += tokenize(line)
+    for label, line in train_iter:
+        tokens += tokenize(label, line)
 
 The following datasets are available:
 
