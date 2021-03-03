@@ -30,7 +30,7 @@ _EXTRACTED_FILES_MD5 = {
 }
 
 DATASET_NAME = "AmazonReviewPolarity"
-@_add_docstring_header(num_lines=NUM_LINES)
+@_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AmazonReviewPolarity(root, split):

@@ -19,7 +19,7 @@ NUM_LINES = {
 _PATH = 'yahoo_answers_csv.tar.gz'
 
 DATASET_NAME = "YahooAnswers"
-@_add_docstring_header(num_lines=NUM_LINES)
+@_add_docstring_header(num_lines=NUM_LINES, num_classes=10)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def YahooAnswers(root, split):
