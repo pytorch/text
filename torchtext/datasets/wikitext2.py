@@ -4,6 +4,7 @@ from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import _wrap_split_argument
 from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _find_match
+from torchtext.data.datasets_utils import _create_dataset_directory
 import io
 
 URL = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip'
@@ -16,13 +17,14 @@ NUM_LINES = {
     'test': 4358,
 }
 
-
+DATASET_NAME = "WikiText2"
 @_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def WikiText2(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     path = _find_match(split, extracted_files)
     logging.info('Creating {} data'.format(split))
-    return _RawTextIterableDataset('WikiText2',
+    return _RawTextIterableDataset(DATASET_NAME,
                                    NUM_LINES[split], iter(io.open(path, encoding="utf8")))

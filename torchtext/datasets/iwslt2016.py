@@ -7,6 +7,7 @@ from torchtext.data.datasets_utils import (
     _clean_xml_file,
     _clean_tags_file,
 )
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 
 SUPPORTED_DATASETS = {
@@ -147,6 +148,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
+DATASET_NAME = "IWSLT2016"
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
     """IWSLT2016 dataset
@@ -272,4 +275,4 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return _RawTextIterableDataset("IWSLT2016", NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))

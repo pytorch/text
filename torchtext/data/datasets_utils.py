@@ -144,7 +144,6 @@ def _wrap_split_argument_with_fn(fn, splits):
     train = AG_NEWS(split='train')
     train, valid = AG_NEWS(split=('train', 'valid'))
     """
-
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
@@ -178,6 +177,30 @@ def _wrap_split_argument(splits):
     def new_fn(fn):
         return _wrap_split_argument_with_fn(fn, splits)
     return new_fn
+
+
+def _create_dataset_directory(dataset_name):
+    def decorator(func):
+        argspec = inspect.getfullargspec(func)
+        if not (argspec.args[0] == "root" and
+                argspec.args[1] == "split" and
+                argspec.varargs is None and
+                argspec.varkw is None and
+                len(argspec.kwonlyargs) == 0 and
+                len(argspec.annotations) == 0
+                ):
+            raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
+
+        @functools.wraps(func)
+        def wrapper(root='.data', *args, **kwargs):
+            new_root = os.path.join(root, dataset_name)
+            if not os.path.exists(new_root):
+                os.makedirs(new_root)
+            return func(root=new_root, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,

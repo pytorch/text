@@ -3,6 +3,7 @@ from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import _wrap_split_argument
 from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _find_match
+from torchtext.data.datasets_utils import _create_dataset_directory
 import os
 import io
 
@@ -17,8 +18,9 @@ NUM_LINES = {
 
 _PATH = 'yahoo_answers_csv.tar.gz'
 
-
+DATASET_NAME = "YahooAnswers"
 @_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def YahooAnswers(root, split):
     def _create_data_from_csv(data_path):
@@ -32,5 +34,5 @@ def YahooAnswers(root, split):
     extracted_files = extract_archive(dataset_tar)
 
     path = _find_match(split + '.csv', extracted_files)
-    return _RawTextIterableDataset("YahooAnswers", NUM_LINES[split],
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
                                    _create_data_from_csv(path))

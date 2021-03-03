@@ -3,6 +3,7 @@ from torchtext.utils import download_from_url
 from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import _wrap_split_argument
 from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _create_dataset_directory
 import io
 
 URL = {
@@ -23,14 +24,15 @@ NUM_LINES = {
     'test': 3761,
 }
 
-
+DATASET_NAME = "PennTreebank"
 @_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def PennTreebank(root, split):
     path = download_from_url(URL[split],
                              root=root, hash_value=MD5[split],
                              hash_type='md5')
     logging.info('Creating {} data'.format(split))
-    return _RawTextIterableDataset('PennTreebank',
+    return _RawTextIterableDataset(DATASET_NAME,
                                    NUM_LINES[split],
                                    iter(io.open(path, encoding="utf8")))

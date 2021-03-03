@@ -3,6 +3,7 @@ import os
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import _RawTextIterableDataset
 from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 SUPPORTED_DATASETS = {
     'task1': {
@@ -400,6 +401,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
+DATASET_NAME = "Multi30k"
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def Multi30k(root, split,
              task='task1',
@@ -537,6 +540,6 @@ def Multi30k(root, split,
         'test': test_set,
     }
 
-    return _RawTextIterableDataset("Multi30k",
+    return _RawTextIterableDataset(DATASET_NAME,
                                    SUPPORTED_DATASETS[task][language_pair[0]][set_identifier[split]]['NUM_LINES'],
                                    _iter(src_data_iter, tgt_data_iter))

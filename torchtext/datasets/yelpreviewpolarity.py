@@ -5,6 +5,7 @@ from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _find_match
 import os
 import io
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg'
 
@@ -17,8 +18,9 @@ NUM_LINES = {
 
 _PATH = 'yelp_review_polarity_csv.tar.gz'
 
-
+DATASET_NAME = "YelpReviewPolarity"
 @_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def YelpReviewPolarity(root, split):
     def _create_data_from_csv(data_path):
@@ -32,5 +34,5 @@ def YelpReviewPolarity(root, split):
     extracted_files = extract_archive(dataset_tar)
 
     path = _find_match(split + '.csv', extracted_files)
-    return _RawTextIterableDataset("YelpReviewPolarity", NUM_LINES[split],
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
                                    _create_data_from_csv(path))
