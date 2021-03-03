@@ -18,7 +18,7 @@ NUM_LINES = {
 _PATH = 'yahoo_answers_csv.tar.gz'
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
+@_add_docstring_header(num_lines=NUM_LINES, num_classes=10)
 @_wrap_split_argument(('train', 'test'))
 def YahooAnswers(root, split):
     def _create_data_from_csv(data_path):
