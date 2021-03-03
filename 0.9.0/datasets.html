@@ -306,8 +306,8 @@
     <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
 <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">train_iter</span><span class="p">:</span>
-    <span class="n">tokens</span> <span class="o">+=</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">train_iter</span><span class="p">:</span>
+    <span class="n">tokens</span> <span class="o">+=</span> <span class="n">tokenize</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The following datasets are available:</p>
