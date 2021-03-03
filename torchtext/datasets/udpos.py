@@ -1,9 +1,12 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _find_match
-from torchtext.data.datasets_utils import _create_dataset_directory
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _find_match,
+    _create_dataset_directory,
+    _create_data_from_iob,
+)
 
 URL = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
 
@@ -14,24 +17,6 @@ NUM_LINES = {
     'valid': 2002,
     'test': 2077,
 }
-
-
-def _create_data_from_iob(data_path, separator="\t"):
-    with open(data_path, encoding="utf-8") as input_file:
-        columns = []
-        for line in input_file:
-            line = line.strip()
-            if line == "":
-                if columns:
-                    yield columns
-                columns = []
-            else:
-                for i, column in enumerate(line.split(separator)):
-                    if len(columns) < i + 1:
-                        columns.append([])
-                    columns[i].append(column)
-        if len(columns) > 0:
-            yield columns
 
 
 DATASET_NAME = "UDPOS"

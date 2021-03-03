@@ -1,11 +1,16 @@
 import logging
-from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _find_match
-from torchtext.data.datasets_utils import _create_dataset_directory
-import io
+from torchtext.utils import (
+    download_from_url,
+    extract_archive,
+)
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _find_match,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
 
 URL = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip'
 
@@ -28,4 +33,4 @@ def WikiText103(root, split):
     path = _find_match(split, extracted_files)
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset(DATASET_NAME,
-                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+                                   NUM_LINES[split], _read_text_iterator(path))

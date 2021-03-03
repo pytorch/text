@@ -1,8 +1,11 @@
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _download_extract_validate
-from torchtext.data.datasets_utils import _create_dataset_directory
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _download_extract_validate,
+    _create_dataset_directory,
+    _create_data_from_iob,
+)
 import os
 import logging
 
@@ -30,24 +33,6 @@ _EXTRACTED_FILES_MD5 = {
     'train': "2e2f24e90e20fcb910ab2251b5ed8cd0",
     'test': "56944df34be553b72a2a634e539a0951"
 }
-
-
-def _create_data_from_iob(data_path, separator):
-    with open(data_path, encoding="utf-8") as input_file:
-        columns = []
-        for line in input_file:
-            line = line.strip()
-            if line == "":
-                if columns:
-                    yield columns
-                columns = []
-            else:
-                for i, column in enumerate(line.split(separator)):
-                    if len(columns) < i + 1:
-                        columns.append([])
-                    columns[i].append(column)
-        if len(columns) > 0:
-            yield columns
 
 
 DATASET_NAME = "CoNLL2000Chunking"

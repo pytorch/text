@@ -4,6 +4,7 @@ from torchtext.data.datasets_utils import _wrap_split_argument
 from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _find_match
 from torchtext.data.datasets_utils import _create_dataset_directory
+from torchtext.data.datasets_utils import _create_data_from_csv
 import os
 import io
 
@@ -23,11 +24,6 @@ DATASET_NAME = "YahooAnswers"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def YahooAnswers(root, split):
-    def _create_data_from_csv(data_path):
-        with io.open(data_path, encoding="utf8") as f:
-            reader = unicode_csv_reader(f)
-            for row in reader:
-                yield int(row[0]), ' '.join(row[1:])
     dataset_tar = download_from_url(URL, root=root,
                                     path=os.path.join(root, _PATH),
                                     hash_value=MD5, hash_type='md5')

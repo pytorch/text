@@ -1,11 +1,11 @@
 import os
-import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
     _wrap_split_argument,
     _clean_xml_file,
     _clean_tags_file,
+    _read_text_iterator,
 )
 from torchtext.data.datasets_utils import _create_dataset_directory
 
@@ -96,12 +96,6 @@ NUM_LINES = {
         }
     }
 }
-
-
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
 
 
 def _construct_filenames(filename, languages):

@@ -1,10 +1,15 @@
 import logging
-from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _create_dataset_directory
-import io
+from torchtext.utils import (
+    download_from_url,
+    extract_archive,
+)
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
 
 URL = 'http://mattmahoney.net/dc/enwik9.zip'
 
@@ -24,4 +29,4 @@ def EnWik9(root, split):
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset(DATASET_NAME,
-                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+                                   NUM_LINES[split], _read_text_iterator(path))

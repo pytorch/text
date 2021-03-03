@@ -1,8 +1,11 @@
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _download_extract_validate
-from torchtext.data.datasets_utils import _create_dataset_directory
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _download_extract_validate,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
 import io
 import logging
 
@@ -54,4 +57,4 @@ def WMTNewsCrawl(root, split, year=2010, language='en'):
                                       _EXTRACTED_FILES_MD5[language], hash_type="md5")
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset(DATASET_NAME,
-                                   NUM_LINES[split], iter(io.open(path, encoding="utf8")))
+                                   NUM_LINES[split], _read_text_iterator(path))

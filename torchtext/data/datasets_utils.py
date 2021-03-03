@@ -2,10 +2,14 @@ import functools
 import inspect
 import os
 import io
+import json
 import torch
-from torchtext.utils import validate_file
-from torchtext.utils import download_from_url
-from torchtext.utils import extract_archive
+from torchtext.utils import (
+    validate_file,
+    download_from_url,
+    extract_archive,
+    unicode_csv_reader,
+)
 import codecs
 import xml.etree.ElementTree as ET
 """
@@ -38,6 +42,53 @@ def _clean_tags_file(f_orig):
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
                 fd_txt.write(line.strip() + '\n')
+
+
+def _create_data_from_json(data_path):
+    with open(data_path) as json_file:
+        raw_json_data = json.load(json_file)['data']
+        for layer1 in raw_json_data:
+            for layer2 in layer1['paragraphs']:
+                for layer3 in layer2['qas']:
+                    _context, _question = layer2['context'], layer3['question']
+                    _answers = [item['text'] for item in layer3['answers']]
+                    _answer_start = [item['answer_start'] for item in layer3['answers']]
+                    if len(_answers) == 0:
+                        _answers = [""]
+                        _answer_start = [-1]
+                    # yield the raw data in the order of context, question, answers, answer_start
+                    yield (_context, _question, _answers, _answer_start)
+
+
+def _create_data_from_iob(data_path, separator='\t'):
+    with open(data_path, encoding="utf-8") as input_file:
+        columns = []
+        for line in input_file:
+            line = line.strip()
+            if line == "":
+                if columns:
+                    yield columns
+                columns = []
+            else:
+                for i, column in enumerate(line.split(separator)):
+                    if len(columns) < i + 1:
+                        columns.append([])
+                    columns[i].append(column)
+        if len(columns) > 0:
+            yield columns
+
+
+def _read_text_iterator(path):
+    with io.open(path, encoding="utf8") as f:
+        for row in f:
+            yield row
+
+
+def _create_data_from_csv(data_path):
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            yield int(row[0]), ' '.join(row[1:])
 
 
 def _check_default_set(split, target_select, dataset_name):

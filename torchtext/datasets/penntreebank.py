@@ -1,10 +1,12 @@
 import logging
 from torchtext.utils import download_from_url
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _create_dataset_directory
-import io
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
 
 URL = {
     'train': "https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt",
@@ -35,4 +37,4 @@ def PennTreebank(root, split):
     logging.info('Creating {} data'.format(split))
     return _RawTextIterableDataset(DATASET_NAME,
                                    NUM_LINES[split],
-                                   iter(io.open(path, encoding="utf8")))
+                                   _read_text_iterator(path))
