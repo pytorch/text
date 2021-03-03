@@ -193,7 +193,8 @@ def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_fi
     dataset_tar = download_from_url(url, path=os.path.join(root, downloaded_file),
                                     hash_value=url_md5, hash_type=hash_type)
     extracted_files = extract_archive(dataset_tar)
-    assert extracted_file == _find_match(extracted_file, extracted_files)
+    assert os.path.exists(extracted_file), "extracted_file [{}] was not found in the archive [{}]".format(extracted_file, extracted_files)
+
     return extracted_file
 
 
