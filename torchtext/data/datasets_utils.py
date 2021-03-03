@@ -1,18 +1,46 @@
 import functools
 import inspect
 import os
+import io
 import torch
 from torchtext.utils import validate_file
 from torchtext.utils import download_from_url
 from torchtext.utils import extract_archive
-
+import codecs
+import xml.etree.ElementTree as ET
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
 for public consumption yet.
 """
 
 
-def check_default_set(split, target_select, dataset_name):
+def _clean_xml_file(f_xml):
+    f_txt = os.path.splitext(f_xml)[0]
+    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+        root = ET.parse(f_xml).getroot()[0]
+        for doc in root.findall('doc'):
+            for e in doc.findall('seg'):
+                fd_txt.write(e.text.strip() + '\n')
+
+
+def _clean_tags_file(f_orig):
+    xml_tags = [
+        '<url', '<keywords', '<talkid', '<description', '<reviewer',
+        '<translator', '<title', '<speaker', '<doc', '</doc'
+    ]
+    f_txt = f_orig.replace('.tags', '')
+    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
+            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
+        for line in fd_orig:
+            if not any(tag in line for tag in xml_tags):
+                # TODO: Fix utf-8 next line mark
+                #                fd_txt.write(l.strip() + '\n')
+                #                fd_txt.write(l.strip() + u"\u0085")
+                #                fd_txt.write(l.lstrip())
+                fd_txt.write(line.strip() + '\n')
+
+
+def _check_default_set(split, target_select, dataset_name):
     # Check whether given object split is either a tuple of strings or string
     # and represents a valid selection of options given by the tuple of strings
     # target_select.
@@ -28,7 +56,7 @@ def check_default_set(split, target_select, dataset_name):
     return split
 
 
-def wrap_datasets(datasets, split):
+def _wrap_datasets(datasets, split):
     # Wrap return value for _setup_datasets functions to support singular values instead
     # of tuples when split is a string.
     if isinstance(split, str):
@@ -38,7 +66,7 @@ def wrap_datasets(datasets, split):
     return datasets
 
 
-def find_match(match, lst):
+def _find_match(match, lst):
     """
     Searches list of strings and returns first entry that partially or fully
     contains the given string match.
@@ -49,7 +77,7 @@ def find_match(match, lst):
     return None
 
 
-def dataset_docstring_header(fn, num_lines=None):
+def _dataset_docstring_header(fn, num_lines=None):
     """
     Returns docstring for a dataset based on function arguments.
 
@@ -92,10 +120,10 @@ def dataset_docstring_header(fn, num_lines=None):
     return "\n".join([header_s, args_s]) + "\n"
 
 
-def add_docstring_header(docstring=None, num_lines=None):
+def _add_docstring_header(docstring=None, num_lines=None):
     def docstring_decorator(fn):
         old_doc = fn.__doc__
-        fn.__doc__ = dataset_docstring_header(fn, num_lines)
+        fn.__doc__ = _dataset_docstring_header(fn, num_lines)
         if docstring is not None:
             fn.__doc__ += docstring
         if old_doc is not None:
@@ -104,7 +132,7 @@ def add_docstring_header(docstring=None, num_lines=None):
     return docstring_decorator
 
 
-def _wrap_split_argument(fn, splits):
+def _wrap_split_argument_with_fn(fn, splits):
     """
     Wraps given function of specific signature to extend behavior of split
     to support individual strings. The given function is expected to have a split
@@ -130,9 +158,9 @@ def _wrap_split_argument(fn, splits):
     @functools.wraps(fn)
     def new_fn(root='.data', split=splits, **kwargs):
         result = []
-        for item in check_default_set(split, splits, fn.__name__):
+        for item in _check_default_set(split, splits, fn.__name__):
             result.append(fn(root, item, **kwargs))
-        return wrap_datasets(tuple(result), split)
+        return _wrap_datasets(tuple(result), split)
 
     new_sig = inspect.signature(new_fn)
     new_sig_params = new_sig.parameters
@@ -146,14 +174,14 @@ def _wrap_split_argument(fn, splits):
     return new_fn
 
 
-def wrap_split_argument(splits):
+def _wrap_split_argument(splits):
     def new_fn(fn):
-        return _wrap_split_argument(fn, splits)
+        return _wrap_split_argument_with_fn(fn, splits)
     return new_fn
 
 
-def download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
-                              hash_type="sha256"):
+def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
+                               hash_type="sha256"):
     root = os.path.abspath(root)
     downloaded_file = os.path.abspath(downloaded_file)
     extracted_file = os.path.abspath(extracted_file)
@@ -170,14 +198,14 @@ def download_extract_validate(root, url, url_md5, downloaded_file, extracted_fil
     return extracted_file
 
 
-class RawTextIterableDataset(torch.utils.data.IterableDataset):
+class _RawTextIterableDataset(torch.utils.data.IterableDataset):
     """Defines an abstraction for raw text iterable datasets.
     """
 
     def __init__(self, description, full_num_lines, iterator):
-        """Initiate text-classification dataset.
+        """Initiate the dataset abstraction.
         """
-        super(RawTextIterableDataset, self).__init__()
+        super(_RawTextIterableDataset, self).__init__()
         self.description = description
         self.full_num_lines = full_num_lines
         self._iterator = iterator

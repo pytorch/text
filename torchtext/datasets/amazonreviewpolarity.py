@@ -1,8 +1,8 @@
 from torchtext.utils import unicode_csv_reader
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import download_extract_validate
+from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import _add_docstring_header
+from torchtext.data.datasets_utils import _download_extract_validate
 import io
 import os
 import logging
@@ -29,16 +29,16 @@ _EXTRACTED_FILES_MD5 = {
 }
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'test'))
+@_add_docstring_header(num_lines=NUM_LINES)
+@_wrap_split_argument(('train', 'test'))
 def AmazonReviewPolarity(root, split):
     def _create_data_from_csv(data_path):
         with io.open(data_path, encoding="utf8") as f:
             reader = unicode_csv_reader(f)
             for row in reader:
                 yield int(row[0]), ' '.join(row[1:])
-    path = download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
-                                     _EXTRACTED_FILES_MD5[split], hash_type="md5")
+    path = _download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
+                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return RawTextIterableDataset("AmazonReviewPolarity", NUM_LINES[split],
-                                  _create_data_from_csv(path))
+    return _RawTextIterableDataset("AmazonReviewPolarity", NUM_LINES[split],
+                                   _create_data_from_csv(path))
