@@ -26,8 +26,8 @@ add_subdirectory(sentencepiece)
 set(TORCHTEXT_THIRDPARTY_LIBRARIES
   re2
   double-conversion
-  sentencepiece-static
-  sentencepiece_train-static
+  sentencepiece
+  sentencepiece_train
   )
 set(TORCHTEXT_THIRDPARTY_INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/re2

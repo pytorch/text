@@ -26,7 +26,6 @@ if (APPLE)
   set_target_properties(_torchtext PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif()
 
-
 target_compile_definitions(
   _torchtext PRIVATE TORCH_API_INCLUDE_EXTENSION_H
   )
@@ -34,6 +33,7 @@ target_compile_definitions(
 target_include_directories(
   _torchtext
   PRIVATE
+  ${TORCH_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}
   ${Python_INCLUDE_DIR}
   ${TORCHTEXT_THIRDPARTY_INCLUDE_DIRECTORIES}

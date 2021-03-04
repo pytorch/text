@@ -1,7 +1,28 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bc0502a..6f28b53 100644
+index bc0502a..95cff25 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -42,13 +42,13 @@ else()
+   set(libprotobuf_lite "-lprotobuf-lite")
+ endif()
+ 
+-if (MSVC)
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_DEBUG          ${CMAKE_CXX_FLAGS_DEBUG})
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_MINSIZEREL     ${CMAKE_CXX_FLAGS_MINSIZEREL})
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE        ${CMAKE_CXX_FLAGS_RELEASE})
+-  string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+-  add_definitions("/wd4267 /wd4244 /wd4305 /Zc:strictStrings /utf-8")
+-endif()
++# if (MSVC)
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_DEBUG          ${CMAKE_CXX_FLAGS_DEBUG})
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_MINSIZEREL     ${CMAKE_CXX_FLAGS_MINSIZEREL})
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE        ${CMAKE_CXX_FLAGS_RELEASE})
++#   string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
++#   add_definitions("/wd4267 /wd4244 /wd4305 /Zc:strictStrings /utf-8")
++# endif()
+ 
+ if (APPLE)
+   set(CMAKE_MACOSX_RPATH ON)
 @@ -74,14 +74,14 @@ if (NOT DEFINED CMAKE_INSTALL_INCDIR)
    set(CMAKE_INSTALL_INCDIR include)
  endif()

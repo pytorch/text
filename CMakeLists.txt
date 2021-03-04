@@ -44,6 +44,11 @@ if(APPLE)
   set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif()
 
+# Windows specific
+# if (MSVC)
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MT")
+# endif()
+
 
 find_package(Torch REQUIRED)
 
