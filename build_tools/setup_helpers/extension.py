@@ -50,6 +50,8 @@ class CMakeBuild(build_ext):
             "-DSPM_COVERAGE=OFF",
             "-DSPM_ENABLE_NFKC_COMPILE=OFF",
             "-DRE2_BUILD_TESTING=OFF",
+            "-DBUILD_TESTING=OFF",
+            '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
         ]
 
         if platform.system() == 'Windows':
