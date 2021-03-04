@@ -358,10 +358,7 @@ jobs:
       - load_conda_channel_flags
       - run:
           name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: |
-            echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-linux
+          command: echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-linux
       - persist_to_workspace:
           root: .
           paths:
@@ -369,51 +366,31 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v1-{{ checksum ".circleci-daily-linux" }}
+            - data-linux-v1-{{ checksum ".circleci-daily-linux" }}-index
 
       - run:
-          name: Exit if cache exists
-          command: |
-            FILE=.data/cache_status_file.json
-            if test -f "$FILE"; then
-              cat $FILE
-              circleci step halt
-            else
-              echo "$FILE does not exists"
-            fi
-      - restore_cache:
-
-          keys:
-            - env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
-
-      - run:
-          name: Setup
-          command: .circleci/unittest/linux/scripts/setup_env.sh
-      - save_cache:
-
-          key: env-v1-linux-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/linux/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
-
-          paths:
-            - conda
-            - env
-      - run:
-          name: Install torchtext
-          command: .circleci/unittest/linux/scripts/install.sh
-      - run:
-          name: Generate daily data Cache
+          name: Generate cache
           no_output_timeout: 30m
           command: |
-            .circleci/unittest/linux/scripts/generate_cache.sh
-            cat .data/cache_status_file.json
+            if [ ! -f cache_status_file.json ] ; then
+              .circleci/unittest/linux/scripts/setup_env.sh
+              .circleci/unittest/linux/scripts/install.sh
+              .circleci/unittest/linux/scripts/generate_cache.sh
+              cp .data/cache_status_file.json ./
+            fi
+            cat cache_status_file.json
       - save_cache:
 
           key: data-linux-v1-{{ checksum ".circleci-daily-linux" }}
 
           paths:
             - .data
-      - run:
-          name: Post process
-          command: .circleci/unittest/linux/scripts/post_process.sh
+      - save_cache:
+
+          key: data-linux-v1-{{ checksum ".circleci-daily-linux" }}-index
+
+          paths:
+            - cache_status_file.json
 
   unittest_linux:
     <<: *binary_common
@@ -487,10 +464,7 @@ jobs:
       - load_conda_channel_flags
       - run:
           name: Generate cache key
-          # This will refresh cache on Sundays, nightly build should generate new cache.
-          command: |
-            echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-win
+          command: echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-win
       - persist_to_workspace:
           root: .
           paths:
@@ -498,54 +472,31 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v1-{{ checksum ".circleci-daily-win" }}
+            - data-windows-v1-{{ checksum ".circleci-daily-win" }}-index
 
-      - run:
-          name: Exit if cache exists
-          command: |
-            FILE=.data/cache_status_file.json
-            if test -f "$FILE"; then
-              cat $FILE
-              circleci step halt
-            else
-              echo "$FILE does not exists"
-            fi
-      - restore_cache:
-
-          keys:
-            - env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
-
-      - run:
-          name: Setup
-          command: .circleci/unittest/windows/scripts/setup_env.sh
-      - save_cache:
-
-          key: env-v1-windows-{{ arch }}-py<< parameters.python_version >>-{{ checksum ".circleci/unittest/windows/scripts/environment.yml" }}-{{ checksum ".circleci-weekly" }}
-
-          paths:
-            - conda
-            - env
-      - run:
-          name: Install torchtext
-          command: .circleci/unittest/windows/scripts/install.sh
       - run:
           name: Generate daily data Cache
           no_output_timeout: 30m
           command: |
-            .circleci/unittest/windows/scripts/generate_cache.sh
-            cat .data/cache_status_file.json
+            if [ ! -f cache_status_file.json ] ; then
+              .circleci/unittest/windows/scripts/setup_env.sh
+              .circleci/unittest/windows/scripts/install.sh
+              .circleci/unittest/windows/scripts/generate_cache.sh
+              cp .data/cache_status_file.json ./
+            fi
+            cat cache_status_file.json
       - save_cache:
 
           key: data-windows-v1-{{ checksum ".circleci-daily-win" }}
 
           paths:
             - .data
-      - run:
-          name: Post process
-          command: .circleci/unittest/windows/scripts/post_process.sh
+      - save_cache:
 
+          key: data-windows-v1-{{ checksum ".circleci-daily-win" }}-index
 
-
+          paths:
+            - cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
