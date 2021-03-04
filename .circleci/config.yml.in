@@ -362,6 +362,10 @@ jobs:
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
             echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-linux
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .circleci-daily-linux
       - restore_cache:
           keys:
           {% raw %}
@@ -410,11 +414,6 @@ jobs:
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .circleci-daily-linux
-
 
   unittest_linux:
     <<: *binary_common
@@ -492,6 +491,10 @@ jobs:
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
             echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-win
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .circleci-daily-win
       - restore_cache:
           keys:
           {% raw %}
@@ -540,10 +543,7 @@ jobs:
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .circleci-daily-win
+
 
 
 
