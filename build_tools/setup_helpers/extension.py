@@ -81,6 +81,9 @@ class CMakeBuild(build_ext):
 
         subprocess.check_call(
             ["cmake", str(_ROOT_DIR)] + cmake_args, cwd=self.build_temp)
+        print('*** Command list Thirdparty ***')
+        with open(os.path.join(self.build_temp, 'compile_commands.json'), 'r') as fileobj:
+            print(fileobj.read())
         subprocess.check_call(
             ["cmake", "--build", "."] + build_args, cwd=self.build_temp)
 
