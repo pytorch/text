@@ -58,7 +58,7 @@ class CMakeBuild(build_ext):
                 "-DCMAKE_CXX_COMPILER=cl",
             ])
         build_args = [
-            '--target', 'install'
+            '--target', 'install', '--config', cfg
         ]
 
         # Default to Ninja
