@@ -177,13 +177,7 @@ jobs:
       - checkout
       - designate_upload_channel
       - run:
-          # Installing cmake with `brew install cmake` takes 30 mins, so we use binary distribution.
           command: |
-            curl -o cmake.tar.gz -L https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2-Darwin-x86_64.tar.gz
-            tar -xzf cmake.tar.gz
-            cp cmake-3.17.2-Darwin-x86_64/CMake.app/Contents/bin/* /usr/local/bin/
-            cp -r cmake-3.17.2-Darwin-x86_64/CMake.app/Contents/share/* /usr/local/share/
-            export PATH="${PATH}:/usr/local/bin"
             curl -o conda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
             sh conda.sh -b
             source $HOME/miniconda3/bin/activate
@@ -430,6 +424,89 @@ jobs:
       - save_cache:
 
           key: v1-linux-dataset-vector-{{ checksum ".cachekey" }}
+
+          paths:
+            - .vector_cache
+            - .data
+      - run:
+          name: Post process
+          command: .circleci/unittest/linux/scripts/post_process.sh
+      - store_test_results:
+          path: test-results
+
+  cachesetup_macos:
+    <<: *binary_common
+    macos:
+      xcode: "9.4.1"
+    resource_class: 2xlarge+
+    steps:
+      - checkout
+      - designate_upload_channel
+      - load_conda_channel_flags
+      - generate_cachekey
+      - restore_cache:
+          keys:
+
+            - v1-macos-cache-index-{{ checksum ".cachekey" }}
+
+      - run:
+          name: Generate daily data Cache
+          no_output_timeout: 30m
+          command: |
+            if [ ! -f .data/cache_status_file.json ]; then
+              # Disable brew auto update which is very slow
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
+              .circleci/unittest/linux/scripts/setup_env.sh
+              .circleci/unittest/linux/scripts/install.sh
+              .circleci/unittest/linux/scripts/generate_cache.sh
+            fi
+            cat .data/cache_status_file.json
+      - save_cache:
+
+          key: v1-macos-dataset-{{ checksum ".cachekey" }}
+
+          paths:
+            - .data
+      - save_cache:
+
+          key: v1-macos-cache-index-{{ checksum ".cachekey" }}
+
+          paths:
+            - .data/cache_status_file.json
+
+  unittest_macos:
+    <<: *binary_common
+    macos:
+      xcode: "9.4.1"
+    resource_class: large
+    steps:
+      - checkout
+      - designate_upload_channel
+      - load_conda_channel_flags
+      - fetch_cachekey
+      - run:
+          name: Setup
+          command: |
+            # Disable brew auto update which is very slow
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install wget
+            .circleci/unittest/linux/scripts/setup_env.sh
+      - run:
+          name: Install torchtext
+          command: .circleci/unittest/linux/scripts/install.sh
+      - restore_cache:
+          keys:
+
+            - v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+            - v1-macos-dataset-{{ checksum ".cachekey" }}
+
+      - run:
+          name: Run tests
+          # Downloading embedding vector takes long time.
+          no_output_timeout: 30m
+          command: .circleci/unittest/linux/scripts/run_test.sh
+      - save_cache:
+
+          key: v1-macos-dataset-vector-{{ checksum ".cachekey" }}
 
           paths:
             - .vector_cache
@@ -754,6 +831,29 @@ workflows:
           python_version: '3.9'
           requires:
           - cachesetup_windows_py_any
+      - cachesetup_macos:
+          name: cachesetup_macos_py_any
+          python_version: '3.6'
+      - unittest_macos:
+          name: unittest_macos_py3.6
+          python_version: '3.6'
+          requires:
+          - cachesetup_macos_py_any
+      - unittest_macos:
+          name: unittest_macos_py3.7
+          python_version: '3.7'
+          requires:
+          - cachesetup_macos_py_any
+      - unittest_macos:
+          name: unittest_macos_py3.8
+          python_version: '3.8'
+          requires:
+          - cachesetup_macos_py_any
+      - unittest_macos:
+          name: unittest_macos_py3.9
+          python_version: '3.9'
+          requires:
+          - cachesetup_macos_py_any
   nightly:
     jobs:
       - circleci_consistency:
