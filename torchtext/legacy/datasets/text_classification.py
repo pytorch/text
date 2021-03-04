@@ -144,11 +144,13 @@ def _setup_datasets(dataset_name, root='.data', ngrams=1, vocab=None, include_un
 
 def AG_NEWS(*args, **kwargs):
     """ Defines AG_NEWS datasets.
-        The labels includes:
-            - 0 : World
-            - 1 : Sports
-            - 2 : Business
-            - 3 : Sci/Tech
+
+    The labels include:
+
+        - 0 : World
+        - 1 : Sports
+        - 2 : Business
+        - 3 : Sci/Tech
 
     Create supervised learning dataset: AG_NEWS
 
@@ -172,12 +174,14 @@ def AG_NEWS(*args, **kwargs):
 
 def SogouNews(*args, **kwargs):
     """ Defines SogouNews datasets.
-        The labels includes:
-            - 0 : Sports
-            - 1 : Finance
-            - 2 : Entertainment
-            - 3 : Automobile
-            - 4 : Technology
+
+    The labels include:
+
+        - 0 : Sports
+        - 1 : Finance
+        - 2 : Entertainment
+        - 3 : Automobile
+        - 4 : Technology
 
     Create supervised learning dataset: SogouNews
 
@@ -201,21 +205,23 @@ def SogouNews(*args, **kwargs):
 
 def DBpedia(*args, **kwargs):
     """ Defines DBpedia datasets.
-        The labels includes:
-            - 0 : Company
-            - 1 : EducationalInstitution
-            - 2 : Artist
-            - 3 : Athlete
-            - 4 : OfficeHolder
-            - 5 : MeanOfTransportation
-            - 6 : Building
-            - 7 : NaturalPlace
-            - 8 : Village
-            - 9 : Animal
-            - 10 : Plant
-            - 11 : Album
-            - 12 : Film
-            - 13 : WrittenWork
+
+    The labels include:
+
+        - 0 : Company
+        - 1 : EducationalInstitution
+        - 2 : Artist
+        - 3 : Athlete
+        - 4 : OfficeHolder
+        - 5 : MeanOfTransportation
+        - 6 : Building
+        - 7 : NaturalPlace
+        - 8 : Village
+        - 9 : Animal
+        - 10 : Plant
+        - 11 : Album
+        - 12 : Film
+        - 13 : WrittenWork
 
     Create supervised learning dataset: DBpedia
 
@@ -239,9 +245,11 @@ def DBpedia(*args, **kwargs):
 
 def YelpReviewPolarity(*args, **kwargs):
     """ Defines YelpReviewPolarity datasets.
-        The labels includes:
-            - 0 : Negative polarity.
-            - 1 : Positive polarity.
+
+    The labels include:
+
+        - 0 : Negative polarity.
+        - 1 : Positive polarity.
 
     Create supervised learning dataset: YelpReviewPolarity
 
@@ -265,8 +273,10 @@ def YelpReviewPolarity(*args, **kwargs):
 
 def YelpReviewFull(*args, **kwargs):
     """ Defines YelpReviewFull datasets.
-        The labels includes:
-            0 - 4 : rating classes (4 is highly recommended).
+
+    The labels include:
+
+        0 - 4 : rating classes (4 is highly recommended).
 
     Create supervised learning dataset: YelpReviewFull
 
@@ -290,17 +300,19 @@ def YelpReviewFull(*args, **kwargs):
 
 def YahooAnswers(*args, **kwargs):
     """ Defines YahooAnswers datasets.
-        The labels includes:
-            - 0 : Society & Culture
-            - 1 : Science & Mathematics
-            - 2 : Health
-            - 3 : Education & Reference
-            - 4 : Computers & Internet
-            - 5 : Sports
-            - 6 : Business & Finance
-            - 7 : Entertainment & Music
-            - 8 : Family & Relationships
-            - 9 : Politics & Government
+
+    The labels include:
+
+        - 0 : Society & Culture
+        - 1 : Science & Mathematics
+        - 2 : Health
+        - 3 : Education & Reference
+        - 4 : Computers & Internet
+        - 5 : Sports
+        - 6 : Business & Finance
+        - 7 : Entertainment & Music
+        - 8 : Family & Relationships
+        - 9 : Politics & Government
 
     Create supervised learning dataset: YahooAnswers
 
@@ -324,9 +336,11 @@ def YahooAnswers(*args, **kwargs):
 
 def AmazonReviewPolarity(*args, **kwargs):
     """ Defines AmazonReviewPolarity datasets.
-        The labels includes:
-            - 0 : Negative polarity
-            - 1 : Positive polarity
+
+    The labels include:
+
+        - 0 : Negative polarity
+        - 1 : Positive polarity
 
     Create supervised learning dataset: AmazonReviewPolarity
 
@@ -350,8 +364,10 @@ def AmazonReviewPolarity(*args, **kwargs):
 
 def AmazonReviewFull(*args, **kwargs):
     """ Defines AmazonReviewFull datasets.
-        The labels includes:
-            0 - 4 : rating classes (4 is highly recommended)
+
+    The labels include:
+
+        0 - 4 : rating classes (4 is highly recommended)
 
     Create supervised learning dataset: AmazonReviewFull
 

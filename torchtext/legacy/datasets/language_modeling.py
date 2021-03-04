@@ -9,7 +9,7 @@ class LanguageModelingDataset(data.Dataset):
                  encoding='utf-8', **kwargs):
         """Create a LanguageModelingDataset given a path and a field.
 
-        Arguments:
+        Args:
             path: Path to the data file.
             text_field: The field that will be used for text data.
             newline_eos: Whether to add an <eos> token for every newline in the
@@ -44,7 +44,7 @@ class WikiText2(LanguageModelingDataset):
 
         This is the most flexible way to use the dataset.
 
-        Arguments:
+        Args:
             text_field: The field that will be used for text data.
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-2
@@ -67,7 +67,7 @@ class WikiText2(LanguageModelingDataset):
         This is the simplest way to use the dataset, and assumes common
         defaults for field, vocabulary, and iterator parameters.
 
-        Arguments:
+        Args:
             batch_size: Batch size.
             bptt_len: Length of sequences for backpropagation through time.
             device: Device to create batches on. Use -1 for CPU and None for
@@ -105,7 +105,7 @@ class WikiText103(LanguageModelingDataset):
 
         This is the most flexible way to use the dataset.
 
-        Arguments:
+        Args:
             text_field: The field that will be used for text data.
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-103
@@ -128,7 +128,7 @@ class WikiText103(LanguageModelingDataset):
         This is the simplest way to use the dataset, and assumes common
         defaults for field, vocabulary, and iterator parameters.
 
-        Arguments:
+        Args:
             batch_size: Batch size.
             bptt_len: Length of sequences for backpropagation through time.
             device: Device to create batches on. Use -1 for CPU and None for
@@ -156,8 +156,7 @@ class PennTreebank(LanguageModelingDataset):
     """The Penn Treebank dataset.
     A relatively small dataset originally created for POS tagging.
 
-    References
-    ----------
+    References:
     Marcus, Mitchell P., Marcinkiewicz, Mary Ann & Santorini, Beatrice (1993).
     Building a Large Annotated Corpus of English: The Penn Treebank
     """
@@ -174,7 +173,7 @@ class PennTreebank(LanguageModelingDataset):
                **kwargs):
         """Create dataset objects for splits of the Penn Treebank dataset.
 
-        Arguments:
+        Args:
             text_field: The field that will be used for text data.
             root: The root directory where the data files will be stored.
             train: The filename of the train data. Default: 'ptb.train.txt'.
@@ -195,7 +194,7 @@ class PennTreebank(LanguageModelingDataset):
         This is the simplest way to use the dataset, and assumes common
         defaults for field, vocabulary, and iterator parameters.
 
-        Arguments:
+        Args:
             batch_size: Batch size.
             bptt_len: Length of sequences for backpropagation through time.
             device: Device to create batches on. Use -1 for CPU and None for

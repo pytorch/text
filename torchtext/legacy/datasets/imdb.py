@@ -18,7 +18,7 @@ class IMDB(data.Dataset):
     def __init__(self, path, text_field, label_field, **kwargs):
         """Create an IMDB dataset instance given a path and fields.
 
-        Arguments:
+        Args:
             path: Path to the dataset's highest level directory
             text_field: The field that will be used for text data.
             label_field: The field that will be used for label data.
@@ -41,7 +41,7 @@ class IMDB(data.Dataset):
                train='train', test='test', **kwargs):
         """Create dataset objects for splits of the IMDB dataset.
 
-        Arguments:
+        Args:
             text_field: The field that will be used for the sentence.
             label_field: The field that will be used for label data.
             root: Root dataset storage directory. Default is '.data'.
@@ -58,7 +58,7 @@ class IMDB(data.Dataset):
     def iters(cls, batch_size=32, device=0, root='.data', vectors=None, **kwargs):
         """Create iterator objects for splits of the IMDB dataset.
 
-        Arguments:
+        Args:
             batch_size: Batch_size
             device: Device to create batches on. Use - 1 for CPU and None for
                 the currently active GPU device.
