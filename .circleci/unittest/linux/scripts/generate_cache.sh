@@ -5,4 +5,5 @@ set -e
 eval "$(./conda/bin/conda shell.bash hook)"
 conda activate ./env
 
-python -m test.common.cache_utils
+cd test
+python -m torchtext_unittest.common.cache_utils
