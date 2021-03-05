@@ -18,17 +18,17 @@ def benchmark_basic_english_normalize():
     experimental_jit_basic_english_normalize = torch.jit.script(experimental_basic_english_normalize)
 
     # existing eager lookup
-    train, _ = AG_NEWS()
+    train = AG_NEWS(split='train')
     print("BasicEnglishNormalize - Eager Mode")
     _run_benchmark_lookup(train, existing_basic_english_tokenizer)
 
     # experimental eager lookup
-    train, _ = AG_NEWS()
+    train = AG_NEWS(split='train')
     print("BasicEnglishNormalize Experimental - Eager Mode")
     _run_benchmark_lookup(train, experimental_basic_english_normalize)
 
     # experimental jit lookup
-    train, _ = AG_NEWS()
+    train = AG_NEWS(split='train')
     print("BasicEnglishNormalize Experimental - Jit Mode")
     _run_benchmark_lookup(train, experimental_jit_basic_english_normalize)
 

@@ -94,7 +94,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     tokens = []
     tokens_lists = []
 
-    train, = AG_NEWS(data_select='train')
+    train = AG_NEWS(split='train')
     vocab = train.get_vocab()
     for (_, text) in train:
         cur_tokens = []
