@@ -2,6 +2,7 @@ import functools
 import inspect
 import os
 import io
+import json
 import torch
 from torchtext.utils import validate_file
 from torchtext.utils import download_from_url
@@ -121,25 +122,25 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
         args_s += "\n     split: Only {default_split} is available."
         args_s += "\n         Default: {default_split}.format(default_split=default_split)"
 
-    example_item = {"dataset_name": "IMDB",
-                    "first_line": ["neg", "I rented I AM CURIOUS-YELLOW from my video store because of all the controversy that surrounded it when it was first released in 1967. I also heard that at first it"]}
-    args_s += "\nExamples:"
-    args_s += "\n    >>> train_iter = {}(split='train')".format(example_item["dataset_name"])
-    args_s += "\n    >>> next(train_iter)"
-    args_s += "\n    >>> ("
-    for item in example_item["first_line"]:
-        args_s += "\n    >>>        {}".format(_process_doc_example_items(item))
-    args_s += "\n    >>> )"
-    print("printout of path:", _generate_doc_example("example", "train"))
+    example_item = _find_doc_example(fn.__name__, "train")
+    if example_item is not None:
+        args_s += "\nExamples:"
+        args_s += "\n    >>> train_iter = {}(split='train')".format(example_item["dataset_name"])
+        args_s += "\n    >>> next(train_iter)"
+        args_s += "\n    >>> ("
+        for item in example_item["first_line"]:
+            args_s += "\n    >>>        {}".format(_process_doc_example_items(item))
+        args_s += "\n    >>> )"
     return "\n".join([header_s, args_s]) + "\n"
 
-def _generate_doc_example(dataset_name, split):
+def _find_doc_example(dataset_name, split):
     _PATH = download_from_url('https://raw.githubusercontent.com/pytorch/text/master/test/asset/raw_datasets.json')
-    return _PATH
-    with open(_ASSET_PATH, 'r') as file:
+    with open(_PATH, 'r') as file:
         for line in file:
-            print(dataset_name, split, line)
-            return
+            _parameter = json.loads(line)
+            if _parameter['dataset_name'] == dataset_name and _parameter["split"] == split:
+                return _parameter
+        return None
   
 def _process_doc_example_items(example_item):
     if type(example_item) == str:
