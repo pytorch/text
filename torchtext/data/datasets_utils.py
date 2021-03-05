@@ -130,12 +130,12 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
     for item in example_item["first_line"]:
         args_s += "\n    >>>        {}".format(_process_doc_example_items(item))
     args_s += "\n    >>> )"
-    # _generate_doc_example(fn.__name__, 'train')
+    print("printout of path:", _generate_doc_example("example", "train"))
     return "\n".join([header_s, args_s]) + "\n"
 
-_ASSET_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), 'raw_datasets.json'))
 def _generate_doc_example(dataset_name, split):
-    print(_ASSET_PATH)
+    _PATH = download_from_url('https://raw.githubusercontent.com/pytorch/text/master/test/asset/raw_datasets.json')
+    return _PATH
     with open(_ASSET_PATH, 'r') as file:
         for line in file:
             print(dataset_name, split, line)
