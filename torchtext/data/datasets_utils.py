@@ -121,8 +121,34 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
         args_s += "\n     split: Only {default_split} is available."
         args_s += "\n         Default: {default_split}.format(default_split=default_split)"
 
+    example_item = {"dataset_name": "IMDB",
+                    "first_line": ["neg", "I rented I AM CURIOUS-YELLOW from my video store because of all the controversy that surrounded it when it was first released in 1967. I also heard that at first it"]}
+    args_s += "\nExamples:"
+    args_s += "\n    >>> train_iter = {}(split='train')".format(example_item["dataset_name"])
+    args_s += "\n    >>> next(train_iter)"
+    args_s += "\n    >>> ("
+    for item in example_item["first_line"]:
+        args_s += "\n    >>>        {}".format(_process_doc_example_items(item))
+    args_s += "\n    >>> )"
+    # _generate_doc_example(fn.__name__, 'train')
     return "\n".join([header_s, args_s]) + "\n"
 
+_ASSET_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), 'raw_datasets.json'))
+def _generate_doc_example(dataset_name, split):
+    print(_ASSET_PATH)
+    with open(_ASSET_PATH, 'r') as file:
+        for line in file:
+            print(dataset_name, split, line)
+            return
+  
+def _process_doc_example_items(example_item):
+    if type(example_item) == str:
+        return "\'{}\'".format(example_item) if len(example_item) < 50 else "\'{}...\'".format(example_item[:50])
+    elif type(example_item) == int:
+        return str(example_item)
+    elif type(example_item) == list and type(example_item[0]) == str:
+        return ' '.join(example_item)
+    return " "
 
 def _add_docstring_header(docstring=None, num_lines=None, num_classes=None):
     def docstring_decorator(fn):
