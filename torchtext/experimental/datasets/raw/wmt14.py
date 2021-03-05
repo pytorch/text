@@ -1,10 +1,11 @@
 import os
-import io
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
     _wrap_split_argument,
+    _read_text_iterator,
 )
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 
@@ -41,12 +42,6 @@ NUM_LINES = {
 }
 
 
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
-
-
 def _construct_filenames(filename, languages):
     filenames = []
     for lang in languages:
@@ -63,6 +58,8 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
+DATASET_NAME = "WMT14"
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def WMT14(root, split,
           language_pair=('de', 'en'),
@@ -136,7 +133,6 @@ def WMT14(root, split,
     else:
         src_file, tgt_file = test_filenames
 
-    root = os.path.join(root, 'wmt14')
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
@@ -158,4 +154,4 @@ def WMT14(root, split,
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return _RawTextIterableDataset("WMT14", NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))

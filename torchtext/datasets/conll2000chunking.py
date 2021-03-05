@@ -1,7 +1,11 @@
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _download_extract_validate
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _download_extract_validate,
+    _create_dataset_directory,
+    _create_data_from_iob,
+)
 import os
 import logging
 
@@ -31,25 +35,9 @@ _EXTRACTED_FILES_MD5 = {
 }
 
 
-def _create_data_from_iob(data_path, separator):
-    with open(data_path, encoding="utf-8") as input_file:
-        columns = []
-        for line in input_file:
-            line = line.strip()
-            if line == "":
-                if columns:
-                    yield columns
-                columns = []
-            else:
-                for i, column in enumerate(line.split(separator)):
-                    if len(columns) < i + 1:
-                        columns.append([])
-                    columns[i].append(column)
-        if len(columns) > 0:
-            yield columns
-
-
+DATASET_NAME = "CoNLL2000Chunking"
 @_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def CoNLL2000Chunking(root, split):
     # Create a dataset specific subfolder to deal with generic download filenames
@@ -58,5 +46,5 @@ def CoNLL2000Chunking(root, split):
     data_filename = _download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
                                                _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
-    return _RawTextIterableDataset("CoNLL2000Chunking", NUM_LINES[split],
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
                                    _create_data_from_iob(data_filename, " "))
