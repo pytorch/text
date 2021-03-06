@@ -1,9 +1,11 @@
 from torchtext.utils import download_from_url
-import json
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
-
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _create_dataset_directory,
+    _create_data_from_json,
+)
 URL = {
     'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
     'dev': "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
@@ -20,25 +22,11 @@ NUM_LINES = {
 }
 
 
-def _create_data_from_json(data_path):
-    with open(data_path) as json_file:
-        raw_json_data = json.load(json_file)['data']
-        for layer1 in raw_json_data:
-            for layer2 in layer1['paragraphs']:
-                for layer3 in layer2['qas']:
-                    _context, _question = layer2['context'], layer3['question']
-                    _answers = [item['text'] for item in layer3['answers']]
-                    _answer_start = [item['answer_start'] for item in layer3['answers']]
-                    if len(_answers) == 0:
-                        _answers = [""]
-                        _answer_start = [-1]
-                    # yield the raw data in the order of context, question, answers, answer_start
-                    yield (_context, _question, _answers, _answer_start)
-
-
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'dev'))
+DATASET_NAME = "SQuAD2"
+@_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
+@_wrap_split_argument(('train', 'dev'))
 def SQuAD2(root, split):
     extracted_files = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
-    return RawTextIterableDataset('SQuAD2', NUM_LINES[split],
-                                  _create_data_from_json(extracted_files))
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
+                                   _create_data_from_json(extracted_files))

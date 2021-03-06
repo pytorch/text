@@ -15,8 +15,8 @@ General use cases are as follows: ::
         return line.split()
      
     tokens = []
-    for line in train_iter:
-        tokens += tokenize(line)
+    for label, line in train_iter:
+        tokens += tokenize(label, line)
 
 The following datasets are available:
 
@@ -98,31 +98,19 @@ PennTreebank
 .. autofunction:: PennTreebank
 
 
-WMTNewsCrawl
-~~~~~~~~~~~~
-
-.. autofunction:: WMTNewsCrawl
-
-
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Multi30k
-~~~~~~~~
 
-.. autofunction:: Multi30k
+IWSLT2016
+~~~~~~~~~
 
+.. autofunction:: IWSLT2016
 
-IWSLT
-~~~~~
+IWSLT2017
+~~~~~~~~~
 
-.. autofunction:: IWSLT
-
-
-WMT14
-~~~~~
-
-.. autofunction:: WMT14
+.. autofunction:: IWSLT2017
 
 
 Sequence Tagging

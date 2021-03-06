@@ -3,7 +3,7 @@ import argparse
 from torchtext.experimental.transforms import load_sp_model as load_pybind_sp_model
 from torchtext.data.functional import load_sp_model as load_torchbind_sp_model
 from torchtext.utils import download_from_url
-from torchtext.datasets import text_classification as raw
+from torchtext.datasets import DATASETS
 
 
 def benchmark_sentencepiece(args):
@@ -17,13 +17,13 @@ def benchmark_sentencepiece(args):
     sp_model_path = download_from_url('https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model')
 
     # existing sentencepiece model with torchbind
-    train, _ = raw.DATASETS[args.dataset]()
+    train = DATASETS[args.dataset](split='train')
     sp_model = load_torchbind_sp_model(sp_model_path)
     print("SentencePiece EncodeAsIds - torchbind")
     _run_benchmark(train, sp_model.EncodeAsIds)
 
     # experimental sentencepiece model with pybind
-    train, _ = raw.DATASETS[args.dataset]()
+    train = DATASETS[args.dataset](split='train')
     sp_model = load_pybind_sp_model(sp_model_path)
     print("SentencePiece EncodeAsIds - pybind")
     _run_benchmark(train, sp_model.EncodeAsIds)

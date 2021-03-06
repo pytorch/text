@@ -120,8 +120,8 @@ class TestDataset(TorchtextTestCase):
                 path=self.test_newline_dataset_path, format=format_, fields=fields)
             # if the newline is not parsed correctly, this should raise an error
             for example in dataset:
-                self.assert_(hasattr(example, "text"))
-                self.assert_(hasattr(example, "label"))
+                self.assertTrue(hasattr(example, "text"))
+                self.assertTrue(hasattr(example, "label"))
 
     def test_csv_file_with_header(self):
         example_with_header = [("text", "label"),
