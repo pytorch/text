@@ -14,4 +14,4 @@ def get_asset_path(*paths):
 
 def load_params(*paths):
     with open(get_asset_path(*paths), 'r') as file:
-        return [param(json.loads(line)) for line in file]
+        return [param(line) for line in json.load(file)['meta_data']]
