@@ -14,5 +14,5 @@ __all__ = ["bleu_score",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer",
            "custom_replace", "simple_space_split",
            "numericalize_tokens_from_iterator",
-           "Batch" #tmp compatability hack for old lightning
-]
+           "Batch"  # tmp compatability hack for old lightning
+           ]
