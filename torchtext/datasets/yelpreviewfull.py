@@ -24,6 +24,8 @@ NUM_LINES = {
 _PATH = 'yelp_review_full_csv.tar.gz'
 
 DATASET_NAME = "YelpReviewFull"
+
+
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=5)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))

@@ -26,6 +26,8 @@ NUM_LINES = {
 }
 
 DATASET_NAME = "AG_NEWS"
+
+
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=4)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
