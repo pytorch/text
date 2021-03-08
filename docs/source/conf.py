@@ -121,11 +121,6 @@ html_logo = '_static/img/pytorch-logo-dark.svg'
 html_static_path = ['_static']
 
 
-def setup(app):
-    app.add_stylesheet('css/pytorch_theme.css')
-    app.add_stylesheet('https://fonts.googleapis.com/css/family=Lato')
-
-
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'numpy': ('http://docs.scipy.org/doc/numpy/', None),

@@ -14,7 +14,8 @@ class LanguageModelingDataset(data.Dataset):
             text_field: The field that will be used for text data.
             newline_eos: Whether to add an <eos> token for every newline in the
                 data file. Default: True.
-            Remaining keyword arguments: Passed to the constructor of
+            encoding: The encoding of the file.
+            kwargs: Passed to the constructor of
                 data.Dataset.
         """
         fields = [('text', text_field)]
@@ -75,10 +76,10 @@ class WikiText2(LanguageModelingDataset):
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-2
                 subdirectory the data files will be stored.
-            wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
-                text field. The word vectors are accessible as
-                train.dataset.fields['text'].vocab.vectors.
-            Remaining keyword arguments: Passed to the splits method.
+            vectors: One of either the available pretrained vectors
+                or custom pretrained vectors (see Vocab.load_vectors);
+                or a list of aforementioned vectors
+            kwargs: Passed to the splits method.
         """
         TEXT = data.Field()
 
@@ -136,10 +137,10 @@ class WikiText103(LanguageModelingDataset):
             root: The root directory that the dataset's zip archive will be
                 expanded into; therefore the directory in whose wikitext-2
                 subdirectory the data files will be stored.
-            wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
-                text field. The word vectors are accessible as
-                train.dataset.fields['text'].vocab.vectors.
-            Remaining keyword arguments: Passed to the splits method.
+            vectors: One of either the available pretrained vectors
+                or custom pretrained vectors (see Vocab.load_vectors);
+                or a list of aforementioned vectors
+            kwargs: Passed to the splits method.
         """
         TEXT = data.Field()
 
@@ -200,10 +201,10 @@ class PennTreebank(LanguageModelingDataset):
             device: Device to create batches on. Use -1 for CPU and None for
                 the currently active GPU device.
             root: The root directory where the data files will be stored.
-            wv_dir, wv_type, wv_dim: Passed to the Vocab constructor for the
-                text field. The word vectors are accessible as
-                train.dataset.fields['text'].vocab.vectors.
-            Remaining keyword arguments: Passed to the splits method.
+            vectors: One of either the available pretrained vectors
+                or custom pretrained vectors (see Vocab.load_vectors);
+                or a list of aforementioned vectors
+            kwargs: Passed to the splits method.
         """
         TEXT = data.Field()
 
