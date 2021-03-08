@@ -53,6 +53,10 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         >>> '.data/validation.tar.gz'
 
     """
+    if path is not None:
+        path = os.path.abspath(path)
+    root = os.path.abspath(root)
+
     def _check_hash(path):
         if hash_value:
             logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))
@@ -219,6 +223,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                         if not overwrite:
                             continue
                 tar.extract(file_, to_path)
+            logging.info('Finished extracting tar file {}.'.format(from_path))
             return files
 
     elif from_path.endswith('.zip'):
@@ -235,9 +240,11 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                         continue
                 zfile.extract(file_, to_path)
         files = [f for f in files if os.path.isfile(f)]
+        logging.info('Finished extracting zip file {}.'.format(from_path))
         return files
 
     elif from_path.endswith('.gz'):
+        logging.info('Opening gz file {}.'.format(from_path))
         default_block_size = 65536
         filename = from_path[:-3]
         files = [filename]
@@ -250,6 +257,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
                 else:
                     d_file.write(block)
             d_file.write(block)
+        logging.info('Finished extracting gz file {}.'.format(from_path))
         return files
 
     else:

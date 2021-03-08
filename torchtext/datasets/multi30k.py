@@ -1,12 +1,13 @@
 import io
+import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.experimental.datasets.raw.common import RawTextIterableDataset
-from torchtext.experimental.datasets.raw.common import wrap_split_argument
-from torchtext.experimental.datasets.raw.common import add_docstring_header
+from torchtext.data.datasets_utils import RawTextIterableDataset
+from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import add_docstring_header
 
 _URL_BASE_ = 'https://raw.githubusercontent.com/multi30k/dataset/master/data/task'
 
-URL = [
+_URL1 = [
     '1/raw/test_2016_flickr.cs.gz',
     '1/raw/test_2016_flickr.de.gz',
     '1/raw/test_2016_flickr.en.gz',
@@ -25,39 +26,19 @@ URL = [
     '1/raw/val.cs.gz',
     '1/raw/val.de.gz',
     '1/raw/val.en.gz',
-    '1/raw/val.fr.gz',
-    '2/raw/test_2016.1.de.gz',
-    '2/raw/test_2016.1.en.gz',
-    '2/raw/test_2016.2.de.gz',
-    '2/raw/test_2016.2.en.gz',
-    '2/raw/test_2016.3.de.gz',
-    '2/raw/test_2016.3.en.gz',
-    '2/raw/test_2016.4.de.gz',
-    '2/raw/test_2016.4.en.gz',
-    '2/raw/test_2016.5.de.gz',
-    '2/raw/test_2016.5.en.gz',
-    '2/raw/train.1.de.gz',
-    '2/raw/train.1.en.gz',
-    '2/raw/train.2.de.gz',
-    '2/raw/train.2.en.gz',
-    '2/raw/train.3.de.gz',
-    '2/raw/train.3.en.gz',
-    '2/raw/train.4.de.gz',
-    '2/raw/train.4.en.gz',
-    '2/raw/train.5.de.gz',
-    '2/raw/train.5.en.gz',
-    '2/raw/val.1.de.gz',
-    '2/raw/val.1.en.gz',
-    '2/raw/val.2.de.gz',
-    '2/raw/val.2.en.gz',
-    '2/raw/val.3.de.gz',
-    '2/raw/val.3.en.gz',
-    '2/raw/val.4.de.gz',
-    '2/raw/val.4.en.gz',
-    '2/raw/val.5.de.gz',
-    '2/raw/val.5.en.gz'
+    '1/raw/val.fr.gz'
 ]
-URL = [_URL_BASE_ + u for u in URL]
+URL = [_URL_BASE_ + u for u in _URL1]
+
+_URL2 = [
+    '2/raw/test_2016',
+    '2/raw/train',
+    '2/raw/val',
+]
+for u in _URL2:
+    for i in range(1, 6):
+        for lang in ['de', 'en']:
+            URL.append(_URL_BASE_ + u + "." + str(i) + "." + lang + '.gz')
 
 MD5 = [
     '3104872229daa1bef3b401d44dd2220b',
@@ -133,74 +114,26 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument
-@add_docstring_header()
-def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
+_DOCSTRING = \
+    """    train_filenames: the source and target filenames for training.
+        Default: ('train.de', 'train.en')
+    valid_filenames: the source and target filenames for valid.
+        Default: ('val.de', 'val.en')
+    test_filenames: the source and target filenames for test.
+        Default: ('test2016.de', 'test2016.en')
+
+    The available dataset include:"""
+
+for u in URL:
+    _DOCSTRING += ("\n        " + os.path.basename(u)[:-3])
+
+
+@add_docstring_header(_DOCSTRING, NUM_LINES)
+@wrap_split_argument(('train', 'valid', 'test'))
+def Multi30k(root, split,
              train_filenames=("train.de", "train.en"),
              valid_filenames=("val.de", "val.en"),
              test_filenames=("test_2016_flickr.de", "test_2016_flickr.en")):
-    """    train_filenames: the source and target filenames for training.
-                Default: ('train.de', 'train.en')
-            valid_filenames: the source and target filenames for valid.
-                Default: ('val.de', 'val.en')
-            test_filenames: the source and target filenames for test.
-                Default: ('test2016.de', 'test2016.en')
-
-    Examples:
-        >>> from torchtext.experimental.datasets.raw import Multi30k
-        >>> train_dataset, valid_dataset, test_dataset = Multi30k()
-
-    The available dataset include:
-        test_2016_flickr.cs
-        test_2016_flickr.de
-        test_2016_flickr.en
-        test_2016_flickr.fr
-        test_2017_flickr.de
-        test_2017_flickr.en
-        test_2017_flickr.fr
-        test_2017_mscoco.de
-        test_2017_mscoco.en
-        test_2017_mscoco.fr
-        test_2018_flickr.en
-        train.cs
-        train.de
-        train.en
-        train.fr
-        val.cs
-        val.de
-        val.en
-        val.fr
-        test_2016.1.de
-        test_2016.1.en
-        test_2016.2.de
-        test_2016.2.en
-        test_2016.3.de
-        test_2016.3.en
-        test_2016.4.de
-        test_2016.4.en
-        test_2016.5.de
-        test_2016.5.en
-        train.1.de
-        train.1.en
-        train.2.de
-        train.2.en
-        train.3.de
-        train.3.en
-        train.4.de
-        train.4.en
-        train.5.de
-        train.5.en
-        val.1.de
-        val.1.en
-        val.2.de
-        val.2.en
-        val.3.de
-        val.3.en
-        val.4.de
-        val.4.en
-        val.5.de
-        val.5.en
-    """
     if not isinstance(train_filenames, tuple) and not isinstance(valid_filenames, tuple) \
             and not isinstance(test_filenames, tuple):
         raise ValueError("All filenames must be tuples")
@@ -228,16 +161,11 @@ def Multi30k(root='.data', split=('train', 'valid', 'test'), offset=0,
             raise FileNotFoundError(
                 "Files are not found for data type {}".format(key))
 
-    datasets = []
-    for key in split:
-        src_data_iter = _read_text_iterator(data_filenames[key][0])
-        tgt_data_iter = _read_text_iterator(data_filenames[key][1])
+    src_data_iter = _read_text_iterator(data_filenames[split][0])
+    tgt_data_iter = _read_text_iterator(data_filenames[split][1])
 
-        def _iter(src_data_iter, tgt_data_iter):
-            for item in zip(src_data_iter, tgt_data_iter):
-                yield item
+    def _iter(src_data_iter, tgt_data_iter):
+        for item in zip(src_data_iter, tgt_data_iter):
+            yield item
 
-        datasets.append(
-            RawTextIterableDataset("Multi30k", NUM_LINES[key], _iter(src_data_iter, tgt_data_iter), offset=offset))
-
-    return datasets
+    return RawTextIterableDataset("Multi30k", NUM_LINES[split], _iter(src_data_iter, tgt_data_iter))
