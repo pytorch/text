@@ -1,5 +1,5 @@
 #include <torch/script.h>
-
+#include <c10/util/string_view.h>
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
@@ -25,7 +25,7 @@ public:
 
                  const std::string &unk_token, const int64_t unk_index);
   int64_t __len__() const;
-  int64_t __getitem__(const std::string &token) const;
+  int64_t __getitem__(c10::string_view token) const;
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
   std::string lookup_token(const int64_t &index);

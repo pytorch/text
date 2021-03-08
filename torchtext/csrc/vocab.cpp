@@ -32,8 +32,8 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
-int64_t Vocab::__getitem__(const std::string &token) const {
-  const auto &item = stoi_.find(token);
+int64_t Vocab::__getitem__(c10::string_view token) const {
+  const auto &item = stoi_.find(std::string{token});
   if (item != stoi_.end()) {
     return item->second;
   }
