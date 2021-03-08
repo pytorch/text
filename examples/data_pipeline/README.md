@@ -1,6 +1,6 @@
 # Data processing pipelines with torchtext
 
-This example shows a few data processing pipelines with the building blocks (like tokenizer, vocab). The raw text data from `torchtext.experimental.datasets.raw.text_classification` are used as the inputs for performance benchmark. We also enable the JIT support if possible.
+This example shows a few data processing pipelines with the building blocks (like tokenizer, vocab). The raw text data from `torchtext.datasets` are used as the inputs for performance benchmark. We also enable the JIT support if possible.
 
 
 ## SentencePiece 
@@ -24,7 +24,7 @@ This pipeline example shows the application with the existing `Vocab` in torchte
 
 The command to run the pipeline:
 
-    python pipelines.py --pipeline torchtext
+    python pipelines.py --pipeline legacy_torchtext
 
 
 ## Experimental Torchtext
@@ -36,7 +36,7 @@ This pipeline example shows the application with the vocab text file from Huggin
 
 The command to run the pipeline:
 
-    python pipelines.py --pipeline text_vocab 
+    python pipelines.py --pipeline experimental_torchtext 
 
 
 ## Legacy PyText
@@ -80,7 +80,7 @@ And the text and label pipeline are passed to TextClassificationPipeline. Since 
 
 The command to run the pipeline:
 
-    python pipelines.py --pipeline batch_torchtext
+    python pipelines.py --pipeline legacy_batch_torchtext
 
 
 ## Legacy FastText pretrained word vectors 
@@ -92,7 +92,7 @@ This pipeline example shows the application with the pretained word vector from 
 
 The command to run the pipeline:
 
-    python pipelines.py --pipeline fasttext 
+    python pipelines.py --pipeline legacy_fasttext 
 
 
 ## Experimental FastText pretrained word vectors 
@@ -104,7 +104,7 @@ This pipeline example shows the application with the pretained word vector using
 
 The command to run the pipeline:
 
-    python pipelines.py --pipeline fasttext 
+    python pipelines.py --pipeline experimental_fasttext 
 
 Here are the time in seconds for the pipelines above:
 
