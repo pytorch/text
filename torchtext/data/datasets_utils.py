@@ -184,9 +184,8 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
     return "\n".join([header_s, args_s]) + "\n"
 
 def _find_doc_example(dataset_name, split):
-    from .asset.datasets_example_doc import META_EXAMPLE_DOC
-    for line in META_EXAMPLE_DOC:
-        _parameter = json.loads(line)
+    from .datasets_example_doc import META_EXAMPLE_DOC
+    for _parameter in META_EXAMPLE_DOC:
         if _parameter['dataset_name'] == dataset_name and _parameter["split"] == split:
             return _parameter
     return None
