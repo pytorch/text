@@ -361,11 +361,15 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-linux
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .circleci-daily-linux
       - restore_cache:
           keys:
 
-            - data-linux-v1-{{ checksum ".circleci-daily" }}
+            - data-linux-v1-{{ checksum ".circleci-daily-linux" }}
 
       - run:
           name: Exit if cache exists
@@ -403,14 +407,13 @@ jobs:
             cat .data/cache_status_file.json
       - save_cache:
 
-          key: data-linux-v1-{{ checksum ".circleci-daily" }}
+          key: data-linux-v1-{{ checksum ".circleci-daily-linux" }}
 
           paths:
             - .data
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
-
 
   unittest_linux:
     <<: *binary_common
@@ -421,12 +424,13 @@ jobs:
       - checkout
       - designate_upload_channel
       - load_conda_channel_flags
+      - attach_workspace:
+          at: .
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -448,12 +452,12 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v1-{{ checksum ".circleci-daily" }}
+            - data-linux-v1-{{ checksum ".circleci-daily-linux" }}
 
       - restore_cache:
           keys:
 
-            - data-vector-linux-v1-{{ checksum ".circleci-daily" }}
+            - data-vector-linux-v1-{{ checksum ".circleci-daily-linux" }}
 
       - run:
           name: Run tests
@@ -462,7 +466,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
 
-          key: data-vector-linux-v1-{{ checksum ".circleci-daily" }}
+          key: data-vector-linux-v1-{{ checksum ".circleci-daily-linux" }}
 
           paths:
             - .vector_cache
@@ -486,11 +490,15 @@ jobs:
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
+            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily-win
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .circleci-daily-win
       - restore_cache:
           keys:
 
-            - data-windows-v1-{{ checksum ".circleci-daily" }}
+            - data-windows-v1-{{ checksum ".circleci-daily-win" }}
 
       - run:
           name: Exit if cache exists
@@ -528,13 +536,15 @@ jobs:
             cat .data/cache_status_file.json
       - save_cache:
 
-          key: data-windows-v1-{{ checksum ".circleci-daily" }}
+          key: data-windows-v1-{{ checksum ".circleci-daily-win" }}
 
           paths:
             - .data
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
+
+
 
 
   unittest_windows:
@@ -545,12 +555,13 @@ jobs:
       - checkout
       - designate_upload_channel
       - load_conda_channel_flags
+      - attach_workspace:
+          at: .
       - run:
           name: Generate cache key
           # This will refresh cache on Sundays, nightly build should generate new cache.
           command: |
             echo "$(date +"Year-Week %Y-%U")" > .circleci-weekly
-            echo "$(date +"Year-Date %Y-%d")" > .circleci-daily
       - restore_cache:
 
           keys:
@@ -572,12 +583,12 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v1-{{ checksum ".circleci-daily" }}
+            - data-windows-v1-{{ checksum ".circleci-daily-win" }}
 
       - restore_cache:
           keys:
 
-            - data-vector-windows-v1-{{ checksum ".circleci-daily" }}
+            - data-vector-windows-v1-{{ checksum ".circleci-daily-win" }}
 
  
       - run:
@@ -587,7 +598,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
 
-          key: data-vector-windows-v1-{{ checksum ".circleci-daily" }}
+          key: data-vector-windows-v1-{{ checksum ".circleci-daily-win" }}
 
           paths:
             - .vector_cache

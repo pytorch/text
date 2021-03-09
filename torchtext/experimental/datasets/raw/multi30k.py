@@ -1,8 +1,11 @@
-import io
 import os
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import _RawTextIterableDataset
-from torchtext.data.datasets_utils import _wrap_split_argument
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _create_dataset_directory,
+    _read_text_iterator,
+)
 
 SUPPORTED_DATASETS = {
     'task1': {
@@ -385,12 +388,6 @@ for task in SUPPORTED_DATASETS:
             NUM_LINES[k].append(SUPPORTED_DATASETS[task][language][data]['NUM_LINES'])
 
 
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
-
-
 def _construct_filepaths(paths, src_filename, tgt_filename):
     src_path = None
     tgt_path = None
@@ -400,6 +397,10 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
+DATASET_NAME = "Multi30k"
+
+
+@_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def Multi30k(root, split,
              task='task1',
@@ -537,6 +538,6 @@ def Multi30k(root, split,
         'test': test_set,
     }
 
-    return _RawTextIterableDataset("Multi30k",
+    return _RawTextIterableDataset(DATASET_NAME,
                                    SUPPORTED_DATASETS[task][language_pair[0]][set_identifier[split]]['NUM_LINES'],
                                    _iter(src_data_iter, tgt_data_iter))

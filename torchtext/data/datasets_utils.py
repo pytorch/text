@@ -4,9 +4,12 @@ import os
 import io
 import json
 import torch
-from torchtext.utils import validate_file
-from torchtext.utils import download_from_url
-from torchtext.utils import extract_archive
+from torchtext.utils import (
+    validate_file,
+    download_from_url,
+    extract_archive,
+    unicode_csv_reader,
+)
 import codecs
 import xml.etree.ElementTree as ET
 """
@@ -39,6 +42,53 @@ def _clean_tags_file(f_orig):
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
                 fd_txt.write(line.strip() + '\n')
+
+
+def _create_data_from_json(data_path):
+    with open(data_path) as json_file:
+        raw_json_data = json.load(json_file)['data']
+        for layer1 in raw_json_data:
+            for layer2 in layer1['paragraphs']:
+                for layer3 in layer2['qas']:
+                    _context, _question = layer2['context'], layer3['question']
+                    _answers = [item['text'] for item in layer3['answers']]
+                    _answer_start = [item['answer_start'] for item in layer3['answers']]
+                    if len(_answers) == 0:
+                        _answers = [""]
+                        _answer_start = [-1]
+                    # yield the raw data in the order of context, question, answers, answer_start
+                    yield (_context, _question, _answers, _answer_start)
+
+
+def _create_data_from_iob(data_path, separator='\t'):
+    with open(data_path, encoding="utf-8") as input_file:
+        columns = []
+        for line in input_file:
+            line = line.strip()
+            if line == "":
+                if columns:
+                    yield columns
+                columns = []
+            else:
+                for i, column in enumerate(line.split(separator)):
+                    if len(columns) < i + 1:
+                        columns.append([])
+                    columns[i].append(column)
+        if len(columns) > 0:
+            yield columns
+
+
+def _read_text_iterator(path):
+    with io.open(path, encoding="utf8") as f:
+        for row in f:
+            yield row
+
+
+def _create_data_from_csv(data_path):
+    with io.open(data_path, encoding="utf8") as f:
+        reader = unicode_csv_reader(f)
+        for row in reader:
+            yield int(row[0]), ' '.join(row[1:])
 
 
 def _check_default_set(split, target_select, dataset_name):
@@ -175,7 +225,6 @@ def _wrap_split_argument_with_fn(fn, splits):
     train = AG_NEWS(split='train')
     train, valid = AG_NEWS(split=('train', 'valid'))
     """
-
     argspec = inspect.getfullargspec(fn)
     if not (argspec.args[0] == "root" and
             argspec.args[1] == "split" and
@@ -209,6 +258,30 @@ def _wrap_split_argument(splits):
     def new_fn(fn):
         return _wrap_split_argument_with_fn(fn, splits)
     return new_fn
+
+
+def _create_dataset_directory(dataset_name):
+    def decorator(func):
+        argspec = inspect.getfullargspec(func)
+        if not (argspec.args[0] == "root" and
+                argspec.args[1] == "split" and
+                argspec.varargs is None and
+                argspec.varkw is None and
+                len(argspec.kwonlyargs) == 0 and
+                len(argspec.annotations) == 0
+                ):
+            raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
+
+        @functools.wraps(func)
+        def wrapper(root='.data', *args, **kwargs):
+            new_root = os.path.join(root, dataset_name)
+            if not os.path.exists(new_root):
+                os.makedirs(new_root)
+            return func(root=new_root, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_file, extracted_file_md5,
