@@ -32,8 +32,12 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
-int64_t Vocab::__getitem__(c10::string_view token) const {
-  const auto &item = stoi_.find(std::string{token});
+int64_t Vocab::__getitem__(const py::str &token) const {
+  py::bytes temp = py::reinterpret_borrow<py::bytes>(PyUnicode_AsUTF8String(token.ptr()));
+  char *buffer;
+  ssize_t length;
+  PyBytes_AsStringAndSize(temp.ptr(),&buffer,&length);
+  const auto &item = stoi_.find(std::string{buffer, (size_t)length});
   if (item != stoi_.end()) {
     return item->second;
   }
@@ -118,7 +122,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
 std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
-    indices[i] = __getitem__(tokens[i]);
+    indices[i] = __getitem__(py::str{tokens[i]});
   }
   return indices;
 }

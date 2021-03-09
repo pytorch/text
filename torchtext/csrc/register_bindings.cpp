@@ -203,7 +203,8 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
 
   m.class_<Vocab>("Vocab")
     .def(torch::init<StringList, std::string>())
-    .def("__getitem__", &Vocab::__getitem__)
+    .def("__getitem__", [](const c10::intrusive_ptr<Vocab> &self, std::string item) -> int64_t {
+          return self->__getitem__(py::str{item});})
     .def("__len__", &Vocab::__len__)
     .def("insert_token", &Vocab::insert_token)
     .def("append_token", &Vocab::append_token)
