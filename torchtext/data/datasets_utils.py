@@ -184,13 +184,12 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
     return "\n".join([header_s, args_s]) + "\n"
 
 def _find_doc_example(dataset_name, split):
-    _PATH = download_from_url('https://raw.githubusercontent.com/pytorch/text/master/test/asset/raw_datasets.json')
-    with open(_PATH, 'r') as file:
-        for line in file:
-            _parameter = json.loads(line)
-            if _parameter['dataset_name'] == dataset_name and _parameter["split"] == split:
-                return _parameter
-        return None
+    from .asset.datasets_example_doc import META_EXAMPLE_DOC
+    for line in META_EXAMPLE_DOC:
+        _parameter = json.loads(line)
+        if _parameter['dataset_name'] == dataset_name and _parameter["split"] == split:
+            return _parameter
+    return None
   
 def _process_doc_example_items(example_item):
     if type(example_item) == str:
