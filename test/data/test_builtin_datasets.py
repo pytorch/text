@@ -156,7 +156,7 @@ class TestDataset(TorchtextTestCase):
         del train_iter, test_iter
 
     @parameterized.expand(
-        load_params('raw_datasets.json'),
+        load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
     def test_raw_text_name_property(self, info):
         dataset_name = info['dataset_name']
@@ -170,7 +170,7 @@ class TestDataset(TorchtextTestCase):
         self.assertEqual(str(data_iter), dataset_name)
 
     @parameterized.expand(
-        load_params('raw_datasets.json'),
+        load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
