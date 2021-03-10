@@ -201,7 +201,9 @@ def _process_doc_example_items(example_item):
     elif type(example_item) == int:
         return str(example_item)
     elif type(example_item) == list and type(example_item[0]) == str:
-        return ' '.join(example_item)
+        return _process_doc_example_items('[\'' + '\', \''.join(example_item) + '\']')
+    elif type(example_item) == list and type(example_item[0]) == int:
+        return _process_doc_example_items('[' + ', '.join([str(item) for item in example_item]) + ']')
     return " "
 
 def _add_docstring_header(docstring=None, num_lines=None, num_classes=None):
