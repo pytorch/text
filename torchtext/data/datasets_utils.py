@@ -12,6 +12,7 @@ from torchtext.utils import (
 )
 import codecs
 import xml.etree.ElementTree as ET
+from .datasets_example_doc import META_EXAMPLE_DOC
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
 for public consumption yet.
@@ -187,16 +188,18 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
         args_s += "\n        )"
     return "\n".join([header_s, args_s]) + "\n"
 
+
 def _find_doc_example(dataset_name, split):
-    from .datasets_example_doc import META_EXAMPLE_DOC
     for _parameter in META_EXAMPLE_DOC:
         if _parameter['dataset_name'] == dataset_name and _parameter["split"] == split:
             return _parameter
     return None
-  
+
+
 def _process_doc_example_items(example_item):
-    # print("type(example_item), example_item", type(example_item), example_item)
-    if type(example_item) == str:
+    if example_item == " \n":
+        return repr(example_item)
+    elif type(example_item) == str:
         return "\'{}\'".format(example_item) if len(example_item) < 50 else "\'{}...\'".format(example_item[:50])
     elif type(example_item) == int:
         return str(example_item)
@@ -205,6 +208,7 @@ def _process_doc_example_items(example_item):
     elif type(example_item) == list and type(example_item[0]) == int:
         return _process_doc_example_items('[' + ', '.join([str(item) for item in example_item]) + ']')
     return " "
+
 
 def _add_docstring_header(docstring=None, num_lines=None, num_classes=None):
     def docstring_decorator(fn):
