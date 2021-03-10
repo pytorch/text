@@ -44,7 +44,7 @@ commands:
     steps:
       - run:
           name: Generate CCI cache key
-          command: echo "$(date +%D)" > .cachekey
+          command: echo "$(date "+%D")" > .cachekey
       - persist_to_workspace:
           root: .
           paths:
@@ -375,31 +375,30 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - data-linux-v1-{{ checksum ".cachekey" }}-index
+            - data-linux-v2-{{ checksum ".cachekey" }}-index
           {% endraw %}
       - run:
           name: Generate cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f cache_status_file.json ] ; then
+            if [ ! -f .data/cache_status_file.json ] ; then
               .circleci/unittest/linux/scripts/setup_env.sh
               .circleci/unittest/linux/scripts/install.sh
               .circleci/unittest/linux/scripts/generate_cache.sh
-              cp .data/cache_status_file.json ./
             fi
-            cat cache_status_file.json
+            cat .data/cache_status_file.json
       - save_cache:
           {% raw %}
-          key: data-linux-v1-{{ checksum ".cachekey" }}
+          key: data-linux-v2-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
             - .data
       - save_cache:
           {% raw %}
-          key: data-linux-v1-{{ checksum ".cachekey" }}-index
+          key: data-linux-v2-{{ checksum ".cachekey" }}-index
           {% endraw %}
           paths:
-            - cache_status_file.json
+            - .data/cache_status_file.json
 
   unittest_linux:
     <<: *binary_common
@@ -420,12 +419,12 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - data-linux-v1-{{ checksum ".cachekey" }}
+            - data-linux-v2-{{ checksum ".cachekey" }}
           {% endraw %}
       - restore_cache:
           keys:
           {% raw %}
-            - data-vector-linux-v1-{{ checksum ".cachekey" }}
+            - data-vector-linux-v2-{{ checksum ".cachekey" }}
           {% endraw %}
       - run:
           name: Run tests
@@ -434,7 +433,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
           {% raw %}
-          key: data-vector-linux-v1-{{ checksum ".cachekey" }}
+          key: data-vector-linux-v2-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
             - .vector_cache
@@ -457,31 +456,30 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - data-windows-v1-{{ checksum ".cachekey" }}-index
+            - data-windows-v2-{{ checksum ".cachekey" }}-index
           {% endraw %}
       - run:
           name: Generate daily data Cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f cache_status_file.json ] ; then
+            if [ ! -f .data/cache_status_file.json ] ; then
               .circleci/unittest/windows/scripts/setup_env.sh
               .circleci/unittest/windows/scripts/install.sh
               .circleci/unittest/windows/scripts/generate_cache.sh
-              cp .data/cache_status_file.json ./
             fi
-            cat cache_status_file.json
+            cat .data/cache_status_file.json
       - save_cache:
           {% raw %}
-          key: data-windows-v1-{{ checksum ".cachekey" }}
+          key: data-windows-v2-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
             - .data
       - save_cache:
           {% raw %}
-          key: data-windows-v1-{{ checksum ".cachekey" }}-index
+          key: data-windows-v2-{{ checksum ".cachekey" }}-index
           {% endraw %}
           paths:
-            - cache_status_file.json
+            - .data/cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
@@ -501,12 +499,12 @@ jobs:
       - restore_cache:
           keys:
           {% raw %}
-            - data-windows-v1-{{ checksum ".cachekey" }}
+            - data-windows-v2-{{ checksum ".cachekey" }}
           {% endraw %}
       - restore_cache:
           keys:
           {% raw %}
-            - data-vector-windows-v1-{{ checksum ".cachekey" }}
+            - data-vector-windows-v2-{{ checksum ".cachekey" }}
           {% endraw %}
  
       - run:
@@ -516,7 +514,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
           {% raw %}
-          key: data-vector-windows-v1-{{ checksum ".cachekey" }}
+          key: data-vector-windows-v2-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
             - .vector_cache
