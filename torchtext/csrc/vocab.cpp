@@ -25,7 +25,7 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_[c10::string_view{tokens[i].data(),tokens[i].size()}] = i;
+    stoi_[c10::string_view{itos_[i].data(),itos_[i].size()}] = i;
   }
   unk_index_ = stoi_.find(unk_token)->second;
 }
@@ -33,10 +33,8 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
 int64_t Vocab::__getitem__(const py::str &token) const {
-  py::bytes temp = py::reinterpret_steal<py::bytes>(PyUnicode_AsUTF8String(token.ptr()));
-  char *buffer;
   ssize_t length;
-  PyBytes_AsStringAndSize(temp.ptr(),&buffer,&length);
+  const char *buffer = PyUnicode_AsUTF8AndSize(token.ptr(),&length);
   const auto &item = stoi_.find(c10::string_view{buffer, (size_t)length});
   if (item != stoi_.end()) {
     return item->second;
