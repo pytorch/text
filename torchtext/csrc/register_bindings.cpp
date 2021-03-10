@@ -103,13 +103,13 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(py::init<std::vector<std::string>, std::string>())
       .def_readonly("itos_", &Vocab::itos_)
       .def_readonly("unk_token_", &Vocab::unk_token_)
-      .def("__getitem__", &Vocab::__getitem__)
+      .def("__getitem__", py::overload_cast<const py::str &>(&Vocab::__getitem__, py::const_))
       .def("__len__", &Vocab::__len__)
       .def("insert_token", &Vocab::insert_token)
       .def("append_token", &Vocab::append_token)
       .def("lookup_token", &Vocab::lookup_token)
       .def("lookup_tokens", &Vocab::lookup_tokens)
-      .def("lookup_indices", &Vocab::lookup_indices)
+      .def("lookup_indices", py::overload_cast<const py::list &>(&Vocab::lookup_indices))
       .def("get_stoi", &Vocab::get_stoi)
       .def("get_itos", &Vocab::get_itos)
       .def(py::pickle(
@@ -203,19 +203,15 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
 
   m.class_<Vocab>("Vocab")
     .def(torch::init<StringList, std::string>())
-    .def("__getitem__", [](const c10::intrusive_ptr<Vocab> &self, std::string item) -> int64_t {
-          return self->__getitem__(py::str{item});})
+    .def("__getitem__", py::overload_cast<const std::string &>(&Vocab::__getitem__, py::const_))
+    // .def("__getitem__", [](const c10::intrusive_ptr<Vocab> &self, std::string item) -> int64_t {
+    //       return self->__getitem__(py::str{item});})
     .def("__len__", &Vocab::__len__)
     .def("insert_token", &Vocab::insert_token)
     .def("append_token", &Vocab::append_token)
     .def("lookup_token", &Vocab::lookup_token)
     .def("lookup_tokens", &Vocab::lookup_tokens)
-    .def("lookup_indices",[](const c10::intrusive_ptr<Vocab> &self,const std::vector<std::string> &item) -> std::vector<int64_t> {
-          std::vector<py::str> temp(item.size());
-          for(size_t i=0;i<item.size();i++){
-            temp[i] = py::str{item[i]};
-          }
-          return self->lookup_indices(temp);})
+    .def("lookup_indices", py::overload_cast<const std::vector<std::string> &>(&Vocab::lookup_indices))
     .def("get_stoi", &Vocab::get_stoi)
     .def("get_itos", &Vocab::get_itos)
     .def_pickle(

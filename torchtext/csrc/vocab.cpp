@@ -42,6 +42,15 @@ int64_t Vocab::__getitem__(const py::str &token) const {
   return unk_index_;
 }
 
+int64_t Vocab::__getitem__(const std::string &token) const {
+  const auto &item = stoi_.find(c10::string_view{token});
+  if (item != stoi_.end()) {
+    return item->second;
+  }
+  return unk_index_;
+}
+
+
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
     // Note: we can't do `stoi_[token] = stoi_.size()` because of a bug
@@ -117,13 +126,22 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
   return tokens;
 }
 
-std::vector<int64_t> Vocab::lookup_indices(const std::vector<py::str> &tokens) {
+std::vector<int64_t> Vocab::lookup_indices(const py::list &tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
     indices[i] = __getitem__(tokens[i]);
   }
   return indices;
 }
+
+std::vector<int64_t> Vocab::lookup_indices(const std::vector<std::string> &tokens) {
+  std::vector<int64_t> indices(tokens.size());
+  for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
+    indices[i] = __getitem__(tokens[i]);
+  }
+  return indices;
+}
+
 
 std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
   std::unordered_map<std::string, int64_t> stoi;
@@ -152,8 +170,11 @@ int64_t _infer_lines(const std::string &file_path) {
 void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
                             const int64_t start_line, const int64_t end_line,
                             std::shared_ptr<IndexDict> counter) {
-  std::ifstream fin;
-  fin.open(file_path, std::ios::in);
+  std::ifstream fin(file_path, std::ios::in);
+  if(!fin.is_open()){
+    throw std::runtime_error("Cannot open input file "+file_path+"\n");
+  }
+
   fin.seekg(offset);
 
   for (int64_t i = start_line; i < end_line; i++) {
