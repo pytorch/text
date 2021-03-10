@@ -51,8 +51,8 @@ void Vocab::append_token(const std::string &token) {
     // For example if the size of `stoi_` is 2, doing
     // `stoi_["test"] = stoi_.size()` will set `stoi_["test"]` to a
     // value of 3 instead of 2 on Windows stoi_[token] = itos_.size();
-    stoi_[token] = itos_.size();
     itos_.push_back(token);
+    stoi_[c10::string_view{itos_.back().data(),itos_.back().size()}] = itos_.size()-1;
   }
 }
 
