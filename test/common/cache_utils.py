@@ -21,7 +21,7 @@ def generate_data_cache():
     if os.path.exists(CACHE_STATUS_FILE):
         return
 
-    raw_data_info = load_params('raw_datasets.json')
+    raw_data_info = load_params('raw_datasets.jsonl')
     cache_status = {}
     for info in raw_data_info:
         info = info.args[0]
