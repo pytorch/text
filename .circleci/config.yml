@@ -375,7 +375,7 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v2-{{ checksum ".cachekey" }}-index
+            - v1-linux-cache-index-{{ checksum ".cachekey" }}
 
       - run:
           name: Generate cache
@@ -389,13 +389,13 @@ jobs:
             cat .data/cache_status_file.json
       - save_cache:
 
-          key: data-linux-v2-{{ checksum ".cachekey" }}
+          key: v1-linux-dataset-{{ checksum ".cachekey" }}
 
           paths:
             - .data
       - save_cache:
 
-          key: data-linux-v2-{{ checksum ".cachekey" }}-index
+          key: v1-linux-cache-index-{{ checksum ".cachekey" }}
 
           paths:
             - .data/cache_status_file.json
@@ -419,12 +419,8 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-linux-v2-{{ checksum ".cachekey" }}
-
-      - restore_cache:
-          keys:
-
-            - data-vector-linux-v2-{{ checksum ".cachekey" }}
+            - v1-linux-dataset-vector-{{ checksum ".cachekey" }}
+            - v1-linux-dataset-{{ checksum ".cachekey" }}
 
       - run:
           name: Run tests
@@ -433,7 +429,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
 
-          key: data-vector-linux-v2-{{ checksum ".cachekey" }}
+          key: v1-linux-dataset-vector-{{ checksum ".cachekey" }}
 
           paths:
             - .vector_cache
@@ -456,7 +452,7 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v2-{{ checksum ".cachekey" }}-index
+            - v1-windows-cache-index-{{ checksum ".cachekey" }}
 
       - run:
           name: Generate daily data Cache
@@ -470,13 +466,13 @@ jobs:
             cat .data/cache_status_file.json
       - save_cache:
 
-          key: data-windows-v2-{{ checksum ".cachekey" }}
+          key: v1-windows-dataset-{{ checksum ".cachekey" }}
 
           paths:
             - .data
       - save_cache:
 
-          key: data-windows-v2-{{ checksum ".cachekey" }}-index
+          key: v1-windows-cache-index-{{ checksum ".cachekey" }}
 
           paths:
             - .data/cache_status_file.json
@@ -499,12 +495,8 @@ jobs:
       - restore_cache:
           keys:
 
-            - data-windows-v2-{{ checksum ".cachekey" }}
-
-      - restore_cache:
-          keys:
-
-            - data-vector-windows-v2-{{ checksum ".cachekey" }}
+            - v1-windows-dataset-vector-{{ checksum ".cachekey" }}
+            - v1-windows-dataset-{{ checksum ".cachekey" }}
 
  
       - run:
@@ -514,7 +506,7 @@ jobs:
           command: .circleci/unittest/windows/scripts/run_test.sh
       - save_cache:
 
-          key: data-vector-windows-v2-{{ checksum ".cachekey" }}
+          key: v1-windows-dataset-vector-{{ checksum ".cachekey" }}
 
           paths:
             - .vector_cache
