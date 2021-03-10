@@ -25,7 +25,7 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
-    stoi_[std::move(tokens[i])] = i;
+    stoi_[c10::string_view{tokens[i].data(),tokens[i].size()}] = i;
   }
   unk_index_ = stoi_.find(unk_token)->second;
 }
@@ -37,7 +37,7 @@ int64_t Vocab::__getitem__(const py::str &token) const {
   char *buffer;
   ssize_t length;
   PyBytes_AsStringAndSize(temp.ptr(),&buffer,&length);
-  const auto &item = stoi_.find(std::string{buffer, (size_t)length});
+  const auto &item = stoi_.find(c10::string_view{buffer, (size_t)length});
   if (item != stoi_.end()) {
     return item->second;
   }
@@ -119,10 +119,10 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
   return tokens;
 }
 
-std::vector<int64_t> Vocab::lookup_indices(const StringList &tokens) {
+std::vector<int64_t> Vocab::lookup_indices(const std::vector<py::str> &tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
-    indices[i] = __getitem__(py::str{tokens[i]});
+    indices[i] = __getitem__(tokens[i]);
   }
   return indices;
 }
@@ -133,7 +133,7 @@ std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
 
   // construct tokens and index list
   for (const auto &item : stoi_) {
-    stoi[item.first] = item.second;
+    stoi[std::string{item.first}] = item.second;
   }
   return stoi;
 }
@@ -234,7 +234,7 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
       // add to tokens list only if we exceed min_freq for the first time
       if (tokens_freq[item.first] - cur_token_freq < min_freq &&
           tokens_freq[item.first] >= min_freq) {
-        unique_tokens.push_back(item.first);
+        unique_tokens.push_back(std::string{item.first});
       }
     }
   }

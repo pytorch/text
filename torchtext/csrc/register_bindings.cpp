@@ -8,7 +8,7 @@
 #include <torch/script.h>
 #include <vectors.h> // @manual
 #include <vocab.h>   // @manual
-
+#include <iostream>
 namespace torchtext {
 
 namespace py = pybind11;
@@ -210,7 +210,12 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
     .def("append_token", &Vocab::append_token)
     .def("lookup_token", &Vocab::lookup_token)
     .def("lookup_tokens", &Vocab::lookup_tokens)
-    .def("lookup_indices", &Vocab::lookup_indices)
+    .def("lookup_indices",[](const c10::intrusive_ptr<Vocab> &self,const std::vector<std::string> &item) -> std::vector<int64_t> {
+          std::vector<py::str> temp(item.size());
+          for(size_t i=0;i<item.size();i++){
+            temp[i] = py::str{item[i]};
+          }
+          return self->lookup_indices(temp);})
     .def("get_stoi", &Vocab::get_stoi)
     .def("get_itos", &Vocab::get_itos)
     .def_pickle(
