@@ -33,7 +33,7 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
 int64_t Vocab::__getitem__(const py::str &token) const {
-  py::bytes temp = py::reinterpret_borrow<py::bytes>(PyUnicode_AsUTF8String(token.ptr()));
+  py::bytes temp = py::reinterpret_steal<py::bytes>(PyUnicode_AsUTF8String(token.ptr()));
   char *buffer;
   ssize_t length;
   PyBytes_AsStringAndSize(temp.ptr(),&buffer,&length);
