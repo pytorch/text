@@ -6,9 +6,13 @@ from .functional import generate_sp_model, \
     sentencepiece_tokenizer, custom_replace, simple_space_split, \
     numericalize_tokens_from_iterator
 
+from ..legacy.data import Batch
+
 __all__ = ["bleu_score",
            "get_tokenizer", "interleave_keys",
            "generate_sp_model", "load_sp_model",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer",
            "custom_replace", "simple_space_split",
-           "numericalize_tokens_from_iterator"]
+           "numericalize_tokens_from_iterator",
+           "Batch"  # tmp compatability hack for old lightning
+           ]
