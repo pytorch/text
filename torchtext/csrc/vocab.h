@@ -3,7 +3,7 @@
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
-typedef ska_ordered::order_preserving_flat_hash_map<c10::string_view, int64_t>
+typedef ska_ordered::order_preserving_flat_hash_map<uint32_t, int64_t>
     IndexDict;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
@@ -31,6 +31,16 @@ public:
   lookup_indices(const std::vector<c10::string_view> &tokens);
   std::unordered_map<std::string, int64_t> get_stoi() const;
   std::vector<std::string> get_itos() const;
+
+protected:
+  uint32_t hash(const c10::string_view &str) const {
+    uint32_t h = 2166136261;
+    for (size_t i = 0; i < str.size(); i++) {
+      h = h ^ uint32_t(uint8_t(str[i]));
+      h = h * 16777619;
+    }
+    return h;
+  }
 };
 
 VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self);
