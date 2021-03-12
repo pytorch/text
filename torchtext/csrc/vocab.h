@@ -25,14 +25,12 @@ public:
 
                  const std::string &unk_token, const int64_t unk_index);
   int64_t __len__() const;
-  int64_t __getitem__(const py::str &token) const;
-  int64_t __getitem__(const std::string &token) const;
+  int64_t __getitem__(const c10::string_view &token) const;
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);
-  std::vector<int64_t> lookup_indices(const py::list &tokens);
-  std::vector<int64_t> lookup_indices(const std::vector<std::string> &tokens);
+  std::vector<int64_t> lookup_indices(const std::vector<c10::string_view> &tokens);
   std::unordered_map<std::string, int64_t> get_stoi() const;
   std::vector<std::string> get_itos() const;
 };

@@ -32,24 +32,13 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
 
-int64_t Vocab::__getitem__(const py::str &token) const {
-  ssize_t length;
-  const char *buffer = PyUnicode_AsUTF8AndSize(token.ptr(),&length);
-  const auto &item = stoi_.find(c10::string_view{buffer, (size_t)length});
+int64_t Vocab::__getitem__(const c10::string_view &token) const {
+ const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
     return item->second;
   }
   return unk_index_;
 }
-
-int64_t Vocab::__getitem__(const std::string &token) const {
-  const auto &item = stoi_.find(c10::string_view{token});
-  if (item != stoi_.end()) {
-    return item->second;
-  }
-  return unk_index_;
-}
-
 
 void Vocab::append_token(const std::string &token) {
   if (stoi_.find(token) == stoi_.end()) {
@@ -126,15 +115,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
   return tokens;
 }
 
-std::vector<int64_t> Vocab::lookup_indices(const py::list &tokens) {
-  std::vector<int64_t> indices(tokens.size());
-  for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
-    indices[i] = __getitem__(tokens[i]);
-  }
-  return indices;
-}
-
-std::vector<int64_t> Vocab::lookup_indices(const std::vector<std::string> &tokens) {
+std::vector<int64_t> Vocab::lookup_indices(const std::vector<c10::string_view> &tokens) {
   std::vector<int64_t> indices(tokens.size());
   for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
     indices[i] = __getitem__(tokens[i]);
