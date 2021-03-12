@@ -144,7 +144,9 @@ int64_t _infer_lines(const std::string &file_path) {
 void parse_vocab_file_chunk(
     const std::string &file_path, size_t offset, const int64_t start_line,
     const int64_t end_line,
-    std::shared_ptr<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>> counter) {
+    std::shared_ptr<
+        ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>
+        counter) {
   std::ifstream fin(file_path, std::ios::in);
   if (!fin.is_open()) {
     throw std::runtime_error("Cannot open input file " + file_path + "\n");
@@ -168,7 +170,9 @@ void parse_vocab_file_chunk(
 void parse_raw_text_file_chunk(
     const std::string &file_path, size_t offset, const int64_t start_line,
     const int64_t end_line,
-    std::shared_ptr<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>> counter,
+    std::shared_ptr<
+        ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>
+        counter,
     torch::jit::script::Module &module) {
   std::ifstream fin(file_path, std::ios::in);
   if (!fin.is_open()) {
@@ -208,7 +212,8 @@ struct CompareTokens {
 };
 
 StringList _concat_tokens(
-    std::vector<std::shared_ptr<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>>
+    std::vector<std::shared_ptr<
+        ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>>
         chunk_counters,
     const std::string &unk_token, const int64_t min_freq,
     const int64_t num_lines, const bool sort_tokens) {
@@ -285,7 +290,8 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   std::vector<size_t> offsets;
   impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
-  std::vector<std::shared_ptr<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>>
+  std::vector<std::shared_ptr<
+      ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>>
       chunk_counters;
 
   std::mutex m;
@@ -295,8 +301,8 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   // create threads
   int64_t j = 0;
   for (int64_t i = 0; i < num_lines; i += chunk_size) {
-    auto counter_ptr =
-        std::make_shared<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>();
+    auto counter_ptr = std::make_shared<
+        ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>();
 
     thread_count++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
@@ -334,7 +340,8 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
   std::vector<size_t> offsets;
   impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
-  std::vector<std::shared_ptr<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>>
+  std::vector<std::shared_ptr<
+      ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>>
       chunk_counters;
 
   std::mutex m;
@@ -344,8 +351,8 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
   // create threads
   int64_t j = 0;
   for (int64_t i = 0; i < num_lines; i += chunk_size) {
-    auto counter_ptr =
-        std::make_shared<ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>();
+    auto counter_ptr = std::make_shared<
+        ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>>();
     thread_count++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
       parse_raw_text_file_chunk(file_path, offsets[j], i,

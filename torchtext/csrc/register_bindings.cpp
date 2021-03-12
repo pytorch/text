@@ -243,8 +243,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
              std::vector<int64_t> indices(items.size());
              int64_t counter = 0;
              for (const auto &item : items) {
-               indices[counter++] =
-                   self->__getitem__(c10::string_view{item});
+               indices[counter++] = self->__getitem__(c10::string_view{item});
              }
              return indices;
            })
