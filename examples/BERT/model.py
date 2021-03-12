@@ -67,13 +67,14 @@ class XLMREmbedding(nn.Module):
 
 class TransformerEncoderLayer(nn.Module):
     def __init__(self, d_model, nhead, dim_feedforward=2048,
-                 dropout=0.1, activation="gelu"):
+                 dropout=0.1, activation="gelu", batch_first=False):
         super(TransformerEncoderLayer, self).__init__()
         in_proj_container = InProjContainer(Linear(d_model, d_model),
                                             Linear(d_model, d_model),
                                             Linear(d_model, d_model))
         self.mha = MultiheadAttentionContainer(nhead, in_proj_container,
-                                               ScaledDotProduct(), Linear(d_model, d_model))
+                                               ScaledDotProduct(), Linear(d_model, d_model),
+                                               batch_first=batch_first)
         self.linear1 = Linear(d_model, dim_feedforward)
         self.dropout = Dropout(dropout)
         self.linear2 = Linear(dim_feedforward, d_model)
@@ -136,7 +137,7 @@ class XLMRModel(nn.Module):
         super(XLMRModel, self).__init__()
         self.model_type = 'Transformer'
         self.xlmr_embed = XLMREmbedding(ntoken, ninp, dropout)
-        encoder_layers = TransformerEncoderLayer(ninp, nhead, nhid, dropout)
+        encoder_layers = TransformerEncoderLayer(ninp, nhead, nhid, dropout, batch_first=True)
         self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
         self.ninp = ninp
 
@@ -180,6 +181,7 @@ class CrossLingualMLMTask(nn.Module):
         self.mlm_head = Linear(ninp, ntoken)
 
     def forward(self, src):
+        # print("src.size(), src[2][:20]:", src.size(), src[2][:20])
         output = self.xlmr_model(src)
         output = self.mlm_span(output)
         output = self.activation(output)

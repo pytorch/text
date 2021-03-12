@@ -8,8 +8,28 @@ import math
 def setup(rank, world_size, seed):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
+
+    # Set up communication with multiple nodes
+#    try:
+#        port = os.environ['MASTER_PORT']
+#    except Exception as e:
+#        port = 12910
+#        os.environ['MASTER_PORT'] = f'{port}'
+#
+#    sleep(self.proc_rank*0.5)
+#
+#    root_node = os.environ['SLURM_NODELIST'].split(' ')[0]
+#    os.environ['MASTER_ADDR'] = root_node
+
+
+
     # initialize the process group
     dist.init_process_group("nccl", rank=rank, world_size=world_size)
+
+#    root_node = os.environ['SLURM_NODELIST'].split(' ')[0]
+#    rank = int(os.environ['SLURM_PROCID'])
+#    dist.init_process_group(backend='nccl', init_method='env://',
+#                            world_size=16, rank=rank)
 
     # Explicitly setting seed to make sure that models created in two processes
     # start from same random weights and biases.
