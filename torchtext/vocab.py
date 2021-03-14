@@ -103,6 +103,12 @@ class Vocab(object):
     def _default_unk_index(self):
         return self.unk_index
 
+    def get_token(self, index):
+        result = self.itos[index]
+        if result is None:
+            return Vocab.UNK
+        return result
+
     def __getitem__(self, token):
         return self.stoi.get(token, self.stoi.get(Vocab.UNK))
 
