@@ -108,7 +108,7 @@ PYBIND11_MODULE(_torchtext, m) {
       .def_readonly("itos_", &Vocab::itos_)
       .def_readonly("unk_token_", &Vocab::unk_token_)
       .def("__getitem__",
-           [](c10::intrusive_ptr<Vocab> &self, const py::str &item) {
+           [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> int64_t {
              ssize_t length;
              const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
              return self->__getitem__(c10::string_view{buffer, (size_t)length});

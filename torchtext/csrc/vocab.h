@@ -3,18 +3,14 @@
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
-typedef ska_ordered::order_preserving_flat_hash_map<uint32_t, int64_t>
-    IndexDict;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VocabStates;
 
 struct Vocab : torch::CustomClassHolder {
-private:
+  static const int32_t MAX_VOCAB_SIZE = 30000000;
   int64_t unk_index_;
-  IndexDict stoi_;
-
-public:
+  std::vector<int32_t> stoi_;
   const std::string version_str_ = "0.0.1";
   StringList itos_;
   std::string unk_token_;
@@ -33,13 +29,31 @@ public:
   std::vector<std::string> get_itos() const;
 
 protected:
-  uint32_t hash(const c10::string_view &str) const {
+  uint32_t _hash(const c10::string_view &str) const {
     uint32_t h = 2166136261;
     for (size_t i = 0; i < str.size(); i++) {
       h = h ^ uint32_t(uint8_t(str[i]));
       h = h * 16777619;
     }
     return h;
+  }
+
+  int32_t _find(const c10::string_view &w) const {
+    int32_t stoi_size = stoi_.size();
+    int32_t id = _hash(w) % stoi_size;
+    while (stoi_[id] != -1 && c10::string_view{itos_[stoi_[id]].data(),
+                                               itos_[stoi_[id]].size()} != w) {
+      id = (id + 1) % stoi_size;
+    }
+    return id;
+  }
+
+  void _add(const std::string &w) {
+    int32_t h = _find(c10::string_view{w.data(), w.size()});
+    if (stoi_[h] == -1) {
+      itos_.push_back(w);
+      stoi_[h] = itos_.size() - 1;
+    }
   }
 };
 
@@ -48,11 +62,11 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
 
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
-                            const int64_t min_freq, const int64_t num_cpus);
+                            const uint32_t min_freq, const uint32_t num_cpus);
 Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const std::string &unk_token,
-                                  const int64_t min_freq,
-                                  const int64_t num_cpus,
+                                  const uint32_t min_freq,
+                                  const uint32_t num_cpus,
                                   torch::jit::script::Module tokenizer);
 
 } // namespace torchtext
