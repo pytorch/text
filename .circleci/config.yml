@@ -447,7 +447,7 @@ jobs:
       - restore_cache:
           keys:
 
-            - v1-macos-cache-index-{{ checksum ".cachekey" }}
+            - v1-{{ arch }}-cache-index-{{ checksum ".cachekey" }}
 
       - run:
           name: Generate daily data Cache
@@ -463,13 +463,13 @@ jobs:
             cat .data/cache_status_file.json
       - save_cache:
 
-          key: v1-macos-dataset-{{ checksum ".cachekey" }}
+          key: v1-{{ arch }}-dataset-{{ checksum ".cachekey" }}
 
           paths:
             - .data
       - save_cache:
 
-          key: v1-macos-cache-index-{{ checksum ".cachekey" }}
+          key: v1-{{ arch }}-cache-index-{{ checksum ".cachekey" }}
 
           paths:
             - .data/cache_status_file.json
@@ -496,8 +496,8 @@ jobs:
       - restore_cache:
           keys:
 
-            - v1-macos-dataset-vector-{{ checksum ".cachekey" }}
-            - v1-macos-dataset-{{ checksum ".cachekey" }}
+            - v1-{{ arch }}-dataset-vector-{{ checksum ".cachekey" }}
+            - v1-{{ arch }}-dataset-{{ checksum ".cachekey" }}
 
       - run:
           name: Run tests
@@ -506,7 +506,7 @@ jobs:
           command: .circleci/unittest/linux/scripts/run_test.sh
       - save_cache:
 
-          key: v1-macos-dataset-vector-{{ checksum ".cachekey" }}
+          key: v1-{{ arch }}-dataset-vector-{{ checksum ".cachekey" }}
 
           paths:
             - .vector_cache
