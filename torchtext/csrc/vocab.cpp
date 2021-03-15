@@ -24,7 +24,7 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
     _add(tokens[i]);
   }
   
-  unk_index_ = stoi_[_find(c10::string_view{unk_token})];
+  unk_index_ = stoi_[_find(c10::string_view{unk_token.data(),unk_token.size()})];
 }
 
 int64_t Vocab::__len__() const { return itos_.size(); }
@@ -32,15 +32,15 @@ int64_t Vocab::__len__() const { return itos_.size(); }
 int64_t Vocab::__getitem__(const c10::string_view &token) const {
   uint32_t id = _find(token);
   if (stoi_[id] != -1) {
-    return (int64_t)stoi_[id];
+    return stoi_[id];
   }
-  return (int64_t)unk_index_;
+  return unk_index_;
 }
 
 void Vocab::append_token(const std::string &token) { _add(token); }
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
-  if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
+  if (index < 0 || index > itos_.size()) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Specified index " << index
               << " is out of bounds of the size of stoi dictionary: "
@@ -53,7 +53,7 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   }
 
   // if item already in stoi we throw an error
-  auto token_position = _find(c10::string_view{token});
+  auto token_position = _find(c10::string_view{token.data(),token.size()});
   if (stoi_[token_position] != -1) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Token " << token
@@ -67,15 +67,15 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < itos_.size(); i++) {
-    stoi_[_find(c10::string_view{itos_[i]})] = i + 1;
+    stoi_[_find(c10::string_view{itos_[i].data(),itos_[i].size()})] = i + 1;
   }
 
   itos_.insert(itos_.begin() + index, token);
-  stoi_[_find(c10::string_view{token})] = index;
+  stoi_[_find(c10::string_view{token.data(),token.size()})] = index;
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  unk_index_ = stoi_[_find(c10::string_view(unk_token_))];
+  unk_index_ = stoi_[_find(c10::string_view{unk_token_.data(),unk_token_.size()})];
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
