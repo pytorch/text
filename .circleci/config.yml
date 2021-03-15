@@ -485,6 +485,10 @@ jobs:
       - load_conda_channel_flags
       - fetch_cachekey
       - run:
+          # https://support.circleci.com/hc/en-us/articles/360037142773-Freeing-up-Disk-Space-on-macOS
+          name: Free up spaces
+          command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
+      - run:
           name: Setup
           command: |
             # Disable brew auto update which is very slow
