@@ -486,6 +486,7 @@ jobs:
       - fetch_cachekey
       - run:
           # https://support.circleci.com/hc/en-us/articles/360037142773-Freeing-up-Disk-Space-on-macOS
+          # Without this step, restore_cache fails, due to no disk space
           name: Free up spaces
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
       - run:
