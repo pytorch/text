@@ -44,7 +44,6 @@ def collate_batch(batch_data, args, mask_id, pad_id, text_transform):
     mask_tensor = pad_sequence(mask_tensor, batch_first=True, padding_value=0.0)
     batch_data = output_tensor.masked_fill(mask_tensor.bool(), mask_id).to(torch.long)
     targets = output_tensor.masked_fill(mask_tensor.bool() != True, pad_id).to(torch.long)
-    # print("batch_data.size(), targets.size(): ", batch_data.size(), targets.size())
     return batch_data, targets
 
 
@@ -68,7 +67,6 @@ def evaluate(data_source, model, mask_id, pad_id, ntokens, criterion, args, devi
 def local_step(model, data, targets, criterion, optimizer, ntokens, args):
     optimizer.zero_grad()
     output = model(data)
-    # print("data.size(), output.size():", data.size(), output.size())
     loss = criterion(output.view(-1, ntokens), targets.view(-1))
     loss.backward()
     res = loss.item()
