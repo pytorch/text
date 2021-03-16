@@ -181,7 +181,6 @@ class CrossLingualMLMTask(nn.Module):
         self.mlm_head = Linear(ninp, ntoken)
 
     def forward(self, src):
-        # print("src.size(), src[2][:20]:", src.size(), src[2][:20])
         output = self.xlmr_model(src)
         output = self.mlm_span(output)
         output = self.activation(output)
