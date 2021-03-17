@@ -5,6 +5,7 @@ import time
 from typing import List
 
 import torch
+import torch.distributed.algorithms.ddp_comm_hooks.powerSGD_hook as powerSGD
 import torch.distributed.autograd as dist_autograd
 import torch.distributed.rpc as rpc
 import torch.multiprocessing as mp
@@ -140,6 +141,21 @@ def run_main(args, rank=None):
         model = CrossLingualMLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers)
         model = model.to(devices[0])
         model = DDP(model, device_ids=devices)
+
+        # Register a PowerSGD comm hook.
+        # Hyperparameters `matrix_approximation_rank` and `start_powerSGD_iter` may need to be tuned.
+        state = powerSGD.PowerSGDState(
+            process_group=None,  # Use `torch.distributed.group.WORLD`.
+            # Approximate each gradient tensor (in the view of a matrix) as two smaller vector tensors.
+            matrix_approximation_rank=1,
+            # Defer the gradient compression until 5K steps.
+            start_powerSGD_iter=5000,
+        )
+        # Version I: Layer-wise PowerSGD.
+        self.register_comm_hook(state, powerSGD.powerSGD_hook)
+        # Version II: Batched PowersGD, faster when `matrix_approximation_rank=1`.
+        # self.model.register_comm_hook(state, powerSGD.batched_powerSGD_hook)
+
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
     else:
