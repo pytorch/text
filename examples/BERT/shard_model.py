@@ -6,7 +6,7 @@ class XLMRModelShards():
         self.ntoken = ntoken
         self.ninp = ninp
         self.dropout = dropout
-        self.encoder_layer = TransformerEncoderLayer(ninp, nhead, nhid, dropout)
+        self.encoder_layer = TransformerEncoderLayer(ninp, nhead, nhid, dropout, batch_first=True)
 
     def xlmr_embed(self):
         return XLMREmbedding(self.ntoken, self.ninp, self.dropout)

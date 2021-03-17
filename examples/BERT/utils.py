@@ -8,11 +8,10 @@ import math
 def setup(rank, world_size, seed):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
+
     # initialize the process group
     dist.init_process_group("nccl", rank=rank, world_size=world_size)
 
-    # Explicitly setting seed to make sure that models created in two processes
-    # start from same random weights and biases.
     torch.manual_seed(seed)
 
 

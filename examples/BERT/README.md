@@ -155,6 +155,10 @@ To run the distributed training use '--dist' flag, to specify world size use '--
 
     python cross_lingual_mlm_task.py --num_lines 3000 --dist
 
-To Run the reference XLM-R model from fairseq, download and unzip the pretrained model from [link](https://dl.fbaipublicfiles.com/fairseq/models/xlmr.large.tar.gz).
+To run the reference XLM-R model from fairseq, download and unzip the pretrained model from [link](https://dl.fbaipublicfiles.com/fairseq/models/xlmr.large.tar.gz).
 
     python cross_lingual_mlm_task.py --eval_ref ./xlmr.large 
+
+To run the reference XLM-R model with the DDP support on the SLURM cluster
+
+    srun --label --ntasks-per-node=1 --time=4000 --mem-per-cpu=5120 --gres=gpu:8 --cpus-per-task 80 --nodes=1 --pty python cross_lingual_mlm_task.py --num_lines 10000 --world_size 8 --pipeline_mode DDP --epochs 12 --lr 0.01 --bptt 96 --log-interval 50
