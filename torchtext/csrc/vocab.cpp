@@ -7,13 +7,10 @@
 
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens, const IndexDict &stoi,
-             const std::string &unk_token, const int64_t unk_index)
-    : unk_index_(std::move(unk_index)), stoi_(std::move(stoi)),
-      itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {}
+Vocab::Vocab(const StringList &tokens, const IndexDict &stoi)
+    : stoi_(std::move(stoi)), itos_(std::move(tokens)) {}
 
-Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
-    : itos_(std::move(tokens)), unk_token_(std::move(unk_token)) {
+Vocab::Vocab(const StringList &tokens) : itos_(std::move(tokens)) {
   stoi_.reserve(tokens.size());
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
@@ -27,7 +24,6 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
     }
     stoi_[std::move(tokens[i])] = i;
   }
-  unk_index_ = stoi_.find(unk_token)->second;
 }
 
 int64_t Vocab::__len__() const { return stoi_.size(); }
@@ -36,8 +32,12 @@ int64_t Vocab::__getitem__(const std::string &token) const {
   const auto &item = stoi_.find(token);
   if (item != stoi_.end()) {
     return item->second;
-  }
-  return unk_index_;
+  } else if (default_index_.has_value()) {
+    return default_index_.value();
+  } else
+    throw std::runtime_error("The default index has not been set up yet. Call "
+                             "set_default_index() function to "
+                             "set up the default index");
 }
 
 void Vocab::append_token(const std::string &token) {
@@ -88,8 +88,24 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  unk_index_ = stoi_.find(unk_token_)->second;
+  if (default_index_.has_value() && index <= *default_index_) {
+    default_index_ = default_index_.value() + 1;
+  }
 }
+
+void Vocab::set_default_index(const int64_t index) {
+  if (default_index_.has_value())
+    std::cerr
+        << "UNK index has been assigned. You are resetting the UNK index here."
+        << index << std::endl;
+  default_index_ = index;
+}
+
+bool Vocab::have_default_index() {
+    return default_index_.has_value();
+}
+
+int64_t Vocab::get_default_index() const { return default_index_.value(); }
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
@@ -207,8 +223,8 @@ struct CompareTokens {
 
 std::tuple<IndexDict, StringList>
 _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
-               const std::string &unk_token, const int64_t min_freq,
-               const int64_t num_lines, const bool sort_tokens) {
+               const int64_t min_freq, const int64_t num_lines,
+               const bool sort_tokens) {
   TORCH_CHECK(chunk_counters.size() > 0,
               "There must be at least 1 chunk to concatenate!");
 
@@ -254,16 +270,6 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
     unique_tokens.push_back(token_freq_pair.first);
   }
 
-  // insert unk_token if not present
-  if (tokens_freq.find(unk_token) == tokens_freq.end()) {
-    std::cerr << "The `unk_token` " << unk_token
-              << " wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                 "to the beginning of the Vocab."
-              << std::endl;
-
-    unique_tokens.insert(unique_tokens.begin(), unk_token);
-  }
-
   // create stoi
   IndexDict stoi;
   stoi.reserve(num_lines);
@@ -279,7 +285,6 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
 
 constexpr int64_t GRAIN_SIZE = 13107;
 Vocab _load_vocab_from_file(const std::string &file_path,
-                            const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
@@ -322,15 +327,12 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   IndexDict stoi;
   StringList tokens;
   std::tie(stoi, tokens) =
-      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines, false);
+      _concat_tokens(chunk_counters, min_freq, num_lines, false);
 
-  int64_t unk_index = stoi.find(unk_token)->second;
-
-  return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
+  return Vocab(std::move(tokens), std::move(stoi));
 }
 
 Vocab _build_vocab_from_text_file(const std::string &file_path,
-                                  const std::string &unk_token,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer) {
@@ -373,26 +375,29 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
   IndexDict stoi;
   StringList tokens;
   std::tie(stoi, tokens) =
-      _concat_tokens(chunk_counters, unk_token, min_freq, num_lines, true);
-  int64_t unk_index = stoi.find(unk_token)->second;
+      _concat_tokens(chunk_counters, min_freq, num_lines, true);
 
-  return Vocab(std::move(tokens), std::move(stoi), unk_token, unk_index);
+  return Vocab(std::move(tokens), std::move(stoi));
 }
 
 VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self) {
   std::vector<int64_t> integers;
   StringList strings = self->itos_;
-  strings.push_back(self->unk_token_);
   std::vector<torch::Tensor> tensors;
 
-  VocabStates states = std::make_tuple(self->version_str_, std::move(integers),
-                                       std::move(strings), std::move(tensors));
+  c10::optional<int64_t> default_index = {};
+  if (self->default_index_.has_value())
+    default_index = self->default_index_.value();
+
+  VocabStates states = std::make_tuple(
+      self->version_str_, std::move(integers), std::move(strings),
+      default_index, std::move(tensors));
   return states;
 }
 
 c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  if (state_size != 4) {
+  if (state_size != 5) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Expected deserialized Vocab to have 4 states "
                  "but found "
@@ -406,7 +411,8 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   auto &version_str = std::get<0>(states);
   auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
-  auto &tensors = std::get<3>(states);
+  auto &default_index = std::get<3>(states);
+  auto &tensors = std::get<4>(states);
 
   // check integers and tensors are empty
   if (integers.size() != 0 || tensors.size() != 0) {
@@ -420,10 +426,11 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   }
 
   if (version_str.compare("0.0.1") >= 0) {
-    std::string unk_token = strings.back();
-    strings.pop_back(); // remove last element which is unk_token
+    auto vocab_instance = c10::make_intrusive<Vocab>(std::move(strings));
+    if (default_index.has_value())
+        vocab_instance->set_default_index(default_index.value());
 
-    return c10::make_intrusive<Vocab>(std::move(strings), std::move(unk_token));
+    return vocab_instance;
   }
 #ifdef _MSC_VER
   std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "

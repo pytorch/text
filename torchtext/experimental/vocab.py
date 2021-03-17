@@ -1,6 +1,5 @@
 import logging
 from typing import Dict, List
-import warnings
 from collections import Counter, OrderedDict
 import torch
 import torch.nn as nn
@@ -19,7 +18,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -31,7 +30,6 @@ def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_tok
         jited_tokenizer (ScriptModule): a tokenizer that has been JITed using `torch.jit.script`
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
@@ -45,12 +43,15 @@ def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_tok
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer)
         >>> v = build_vocab_from_text_file(f, jit_tokenizer)
+        >>> v.insert_token('<unk>', 0)
+        >>> v.set_default_index(0)
+        >>> v.get_default_index()
     """
-    vocab_obj = _build_vocab_from_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_object.name, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
+def load_vocab_from_file(file_object, min_freq=1, num_cpus=4):
     r"""Create a `Vocab` object from a text file.
     The `file_object` should contain tokens separated by new lines. Note that the vocab
     will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
@@ -65,7 +66,6 @@ def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4)
         file_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
@@ -75,13 +75,15 @@ def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4)
         >>> from torchtext.experimental.vocab import load_vocab_from_file
         >>> f = open('vocab.txt', 'r')
         >>> v = load_vocab_from_file(f)
+        >>> v.insert_token('<unk>', 0)
+        >>> v.set_default_index(0)
+        >>> v.get_default_index()
     """
-
-    vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_object.name, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
-def build_vocab_from_iterator(iterator, min_freq=1, unk_token='<unk>'):
+def build_vocab_from_iterator(iterator, min_freq=1):
     """
     Build a Vocab from an iterator.
 
@@ -89,7 +91,16 @@ def build_vocab_from_iterator(iterator, min_freq=1, unk_token='<unk>'):
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
+
+    Examples:
+        >>> from torchtext.experimental.vocab import build_vocab_from_iterator
+        >>> tokens = [['this', 'is', 'an', 'example', 'for', 'vocab']]
+        >>> v = build_vocab_from_iterator(tokens)
+        >>> v.insert_token('<unk>', 0)
+        >>> v.set_default_index(0)
+        >>> v.get_default_index()
+        >>> tokens_iter = iter([['this', 'is', 'an'], ['example', 'for', 'vocab']])
+        >>> v1 = build_vocab_from_iterator(tokens_iter)
     """
 
     counter = Counter()
@@ -97,25 +108,20 @@ def build_vocab_from_iterator(iterator, min_freq=1, unk_token='<unk>'):
         counter.update(tokens)
     sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
-    word_vocab = vocab(ordered_dict, min_freq=min_freq, unk_token=unk_token)
+    word_vocab = vocab(ordered_dict, min_freq=min_freq)
     return word_vocab
 
 
-def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
+def vocab(ordered_dict, min_freq=1):
     r"""Factory method for creating a vocab object which maps tokens to indices.
 
     Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
     Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
-    Additionally, the if the `unk_token` isn't found inside of the `ordered_dict`, it will be added to the end of the vocab.
 
     Args:
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
-
-    Raises:
-        ValueError: if a default `unk_token` isn't provided.
 
     Examples:
         >>> from torchtext.experimental.vocab import vocab
@@ -124,23 +130,17 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
         >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
         >>> v1 = vocab(ordered_dict)
+        >>> v1.insert_token('<unk>', 0)
+        >>> v1.set_default_index(0)
+        >>> v1.get_default_index()
         >>> tokens = ['e', 'd', 'c', 'b', 'a']
         >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
     """
-
-    if not unk_token:
-        raise ValueError("A default unk token wasn't provided.")
-
     tokens = []
     for token, freq in ordered_dict.items():
         if freq >= min_freq:
             tokens.append(token)
-
-    if unk_token not in tokens:
-        tokens.insert(0, unk_token)
-        warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                      "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
-    return Vocab(VocabPybind(tokens, unk_token))
+    return Vocab(VocabPybind(tokens))
 
 
 class Vocab(nn.Module):
@@ -201,6 +201,31 @@ class Vocab(nn.Module):
             RuntimeError: if `index` not between [0, Vocab.size()] or if token already exists in the vocab.
         """
         self.vocab.insert_token(token, index)
+
+    @torch.jit.export
+    def set_default_index(self, index: int) -> None:
+        r"""
+        Args:
+            index (int): the unknown index.
+
+        """
+        self.vocab.set_default_index(index)
+
+    @torch.jit.export
+    def have_default_index(self) -> bool:
+        r"""
+        Check if the vocab has the default index
+        """
+        return self.vocab.have_default_index()
+
+    @torch.jit.export
+    def get_default_index(self) -> int:
+        r"""
+        return:
+            index (int): the unknown index.
+
+        """
+        return self.vocab.get_default_index()
 
     @torch.jit.export
     def append_token(self, token: str) -> None:
@@ -268,5 +293,7 @@ class Vocab(nn.Module):
     def __prepare_scriptable__(self):
         r"""Return a JITable Vocab.
         """
-        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
+        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_)
+        if self.vocab.have_default_index():
+            cpp_vocab.set_default_index(self.vocab.get_default_index())
         return Vocab(cpp_vocab)
