@@ -152,9 +152,9 @@ def run_main(args, rank=None):
             start_powerSGD_iter=5000,
         )
         # Version I: Layer-wise PowerSGD.
-        self.register_comm_hook(state, powerSGD.powerSGD_hook)
+        model.register_comm_hook(state, powerSGD.powerSGD_hook)
         # Version II: Batched PowersGD, faster when `matrix_approximation_rank=1`.
-        # self.model.register_comm_hook(state, powerSGD.batched_powerSGD_hook)
+        # model.register_comm_hook(state, powerSGD.batched_powerSGD_hook)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
