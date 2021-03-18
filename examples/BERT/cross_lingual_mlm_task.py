@@ -143,7 +143,7 @@ def run_main(args, rank=None):
         model = model.to(devices[0])
         model = DDP(model, device_ids=devices)
 
-        if args.comm_hook_type != `None`:
+        if args.comm_hook_type != 'None':
             # Register a PowerSGD communication hook.
             # Hyperparameters `matrix_approximation_rank`, `start_powerSGD_iter`, and `min_compression_rate` (only avaiable after PyTorch 1.8)
             # need to be tuned.
@@ -160,10 +160,10 @@ def run_main(args, rank=None):
             )
             
             hook = None
-            if args.comm_hook_type == `PowerSGD`:
+            if args.comm_hook_type == 'PowerSGD':
                 hook = powerSGD.powerSGD_hook
                 model.register_comm_hook(state, )
-            elif args.comm_hook_type == `BatchedPowerSGD`:
+            elif args.comm_hook_type == 'BatchedPowerSGD':
                 hook = powerSGD.batched_powerSGD_hook
             else:
                 raise ValueError("Unknown communication hook type: {}".format(args.comm_hook_type))
