@@ -15,8 +15,10 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 
 from data import CC100
-from model import CrossLingualMLMTask
+from model import CrossLingualMLMTask, XLMREmbedding
 from pipeline import SingleProcessPipeline, RPCPipeline, RemoteBaseCPURPC, RemoteBaseCUDARPC
+from pipeline import MyPipeline, MyPipelineWrapper, MyPipelineLocalMultiGPULayer
+from pipeline import MyRPCPipeline, MyRPCPipelineWrapper, MyRPCPipelineDistMultiGPULayer
 from shard_model import XLMRModelShards, MLMShards
 from torchtext.experimental.transforms import sentencepiece_tokenizer
 from transforms import PretrainedSPVocab
@@ -152,7 +154,7 @@ def run_main(args):
         # to the first and the last shard and split the encoders to equal
         # parts among the rest of the shards
         encoder_gpus = (args.gpus - 2)
-        assert args.nlayers % encoder_gpus == 0
+        # assert args.nlayers % encoder_gpus == 0
         encoders_per_gpu = args.nlayers // encoder_gpus
         shards = [
             xlmr.xlmr_embed(),
@@ -160,23 +162,66 @@ def run_main(args):
             mlm.mlm()
         ]
 
-    print('Shards parameters:')
-    total = 0
-    for i, shard in enumerate(shards):
-        params = count_model_param(shard)
-        total += params
-        print(f'shard{i} = {int(params)}M')
-    print(f'total = {int(total)}M')
+    # print('Shards parameters:')
+    # total = 0
+    # for i, shard in enumerate(shards):
+    #     params = count_model_param(shard)
+    #     total += params
+    #     print(f'shard{i} = {int(params)}M')
+    # print(f'total = {int(total)}M')
 
     print("Allocating memory")
     if args.pipeline_mode == 'sp':
-        model = SingleProcessPipeline(shards, devices)
+        # model = SingleProcessPipeline(shards, devices)
+
+        encoder_gpus = 4
+        assert args.nlayers % encoder_gpus == 0
+        encoders_per_gpu = args.nlayers // encoder_gpus
+
+        model = MyPipeline(
+            MyPipelineLocalMultiGPULayer(XLMREmbedding, ntokens, args.emsize, devices=["cuda:0", "cuda:1"], result_device="cuda:1"),
+            MyPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "cuda:2"),
+            MyPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "cuda:3"),
+            MyPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "cuda:4"),
+            MyPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "cuda:5"),
+            MyPipelineWrapper(nn.Sequential(
+                nn.Linear(args.emsize, args.emsize),
+                nn.GELU(),
+                nn.LayerNorm(args.emsize, eps=1e-12)), "cuda:6"),
+            MyPipelineLocalMultiGPULayer(nn.Linear, args.emsize, ntokens, devices=["cuda:6", "cuda:7"], result_device="cuda:7")
+        )
+
+        print('Shards parameters:')
+        total = 0
+        for i, shard in enumerate(model):
+            params = count_model_param(shard)
+            total += params
+            print(f'shard{i} = {int(params)}M')
+        print(f'total = {int(total)}M')
         
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
     else:
         workers = [f"worker{i+1}" for i in range(len(devices))]
-        model = RPCPipeline(shards, devices, workers, split_size=args.split_size, remote_base_class=(RemoteBaseCUDARPC if args.pipeline_mode == 'cuda' else RemoteBaseCPURPC))
+        # model = RPCPipeline(shards, devices, workers, split_size=args.split_size, remote_base_class=(RemoteBaseCUDARPC if args.pipeline_mode == 'cuda' else RemoteBaseCPURPC))
+
+        model = MyRPCPipeline(
+            MyRPCPipelineDistMultiGPULayer(XLMREmbedding, ntokens, args.emsize, remote_devices=["worker1:0", "worker2:1"], result_remote_device="worker2:1"),
+            MyRPCPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "worker3:2"),
+            MyRPCPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "worker4:3"),
+            MyRPCPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "worker5:4"),
+            MyRPCPipelineWrapper(xlmr.encoder_layers(encoders_per_gpu), "worker6:5"),
+            MyRPCPipelineWrapper(nn.Sequential(
+                nn.Linear(args.emsize, args.emsize),
+                nn.GELU(),
+                nn.LayerNorm(args.emsize, eps=1e-12)), "worker7:6"),
+            MyRPCPipelineDistMultiGPULayer(nn.Linear, args.emsize, ntokens, remote_devices=["worker7:6", "worker8:7"], result_remote_device="worker8:7")
+        )
+
+        model_parameters = model.parameter_rrefs()
+        params = sum([torch.prod(torch.tensor(p.rpc_sync().size())) for p in model_parameters])
+        print(f'total = {int(params.item() // 1e6)}M')
+
         optimizer = DistributedOptimizer(
             optim.Adam,
             model.parameter_rrefs(),
