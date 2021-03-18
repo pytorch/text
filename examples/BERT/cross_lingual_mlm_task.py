@@ -5,6 +5,8 @@ import time
 from typing import List
 
 import torch
+import torch.distributed.algorithms.ddp_comm_hooks.default_hooks as default_hooks
+import torch.distributed.algorithms.ddp_comm_hooks.powerSGD_hook as powerSGD
 import torch.distributed.autograd as dist_autograd
 import torch.distributed.rpc as rpc
 import torch.multiprocessing as mp
@@ -140,6 +142,40 @@ def run_main(args, rank=None):
         model = CrossLingualMLMTask(ntokens, args.emsize, args.nhead, args.nhid, args.nlayers)
         model = model.to(devices[0])
         model = DDP(model, device_ids=devices)
+
+        if args.comm_hook_type != 'None':
+            # Register a PowerSGD communication hook.
+            # Hyperparameters `matrix_approximation_rank`, `start_powerSGD_iter`, and `min_compression_rate` (only avaiable after PyTorch 1.8)
+            # need to be tuned.
+            state = powerSGD.PowerSGDState(
+                process_group=None,  # Use `torch.distributed.group.WORLD`.
+                # Approximate each gradient tensor (in the view of a matrix) as two smaller vector tensors.
+                matrix_approximation_rank=args.matrix_approximation_rank,
+                # Defer the gradient compression until `start_powerSGD_iter` step.
+                start_powerSGD_iter=args.start_powerSGD_iter,
+                # Only apply PowerSGD to a layer if `min_compression_rate` can be achieved.
+                # This is not used by `BatchedPowerSGD` hook.
+                # WARNING: This feature is only available after PyTorch 1.8.
+                # min_compression_rate=args.min_compression_rate,
+            )
+            
+            hook = None
+            if args.comm_hook_type == 'PowerSGD':
+                hook = powerSGD.powerSGD_hook
+                model.register_comm_hook(state, )
+            elif args.comm_hook_type == 'BatchedPowerSGD':
+                hook = powerSGD.batched_powerSGD_hook
+            else:
+                raise ValueError("Unknown communication hook type: {}".format(args.comm_hook_type))
+            
+            """
+            # WARNING: This feature is only available after PyTorch 1.8.
+            if args.use_fp16_compress_wrapper == 1:
+                hook = default_hooks.fp16_compress_wrapper(hook)
+            """
+
+            model.register_comm_hook(state, hook)
+
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.75)
     else:
@@ -356,6 +392,16 @@ if __name__ == "__main__":
                         help='pipeline mode, `cpu` for CPU RPC, `cuda` for CUDA RPC, `sp` for single process pipeline')
     parser.add_argument('--split_size', type=int, default=8,
                         help='split the input batch into micro-batches')
+    parser.add_argument('--comm_hook_type', type=str, default='None',
+                        help='DDP communication hook for gradient compression, can be either `PowerSGD` or `BatchedPowerSGD`')
+    parser.add_argument('--use_fp16_compress_wrapper', type=int, default=0,
+                        help='whether to enable `fp16_compress_wrapper_hook` to combine with PowerSGD, if the input data does not use FP16')
+    parser.add_argument('--matrix_approximation_rank', type=int, default=1,
+                        help='PowerSGD matrix approximation rank, the smaller the better')
+    parser.add_argument('--start_powerSGD_iter', type=int, default=5000,
+                        help='which step to start PowerSGD gradient compression, should be greater than 2')
+    parser.add_argument('--min_compression_rate', type=float, default=2.0,
+                        help='minimum compression rate required when a layer is compressed, should be greater than 1.0')
     args = parser.parse_args()
 
     if args.pipeline_mode == 'sp':
