@@ -155,7 +155,8 @@ def run_main(args, rank=None):
                 start_powerSGD_iter=args.start_powerSGD_iter,
                 # Only apply PowerSGD to a layer if `min_compression_rate` can be achieved.
                 # This is not used by `BatchedPowerSGD` hook.
-                min_compression_rate=args.min_compression_rate,
+                # WARNING: This feature is only available after PyTorch 1.8.
+                # min_compression_rate=args.min_compression_rate,
             )
             
             hook = None
@@ -167,8 +168,11 @@ def run_main(args, rank=None):
             else:
                 raise ValueError("Unknown communication hook type: {}".format(args.comm_hook_type))
             
+            """
+            # WARNING: This feature is only available after PyTorch 1.8.
             if args.use_fp16_compress_wrapper == 1:
                 hook = default_hooks.fp16_compress_wrapper(hook)
+            """
 
             model.register_comm_hook(state, hook)
 
