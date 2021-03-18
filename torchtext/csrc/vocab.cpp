@@ -23,14 +23,15 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
     }
     _add(tokens[i]);
   }
-  
-  unk_index_ = stoi_[_find(c10::string_view{unk_token.data(),unk_token.size()})];
+
+  unk_index_ =
+      stoi_[_find(c10::string_view{unk_token.data(), unk_token.size()})];
 }
 
 int64_t Vocab::__len__() const { return itos_.size(); }
 
 int64_t Vocab::__getitem__(const c10::string_view &token) const {
-  uint32_t id = _find(token);
+  int64_t id = _find(token);
   if (stoi_[id] != -1) {
     return stoi_[id];
   }
@@ -53,7 +54,7 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   }
 
   // if item already in stoi we throw an error
-  auto token_position = _find(c10::string_view{token.data(),token.size()});
+  auto token_position = _find(c10::string_view{token.data(), token.size()});
   if (stoi_[token_position] != -1) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Token " << token
@@ -67,15 +68,16 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < itos_.size(); i++) {
-    stoi_[_find(c10::string_view{itos_[i].data(),itos_[i].size()})] = i + 1;
+    stoi_[_find(c10::string_view{itos_[i].data(), itos_[i].size()})] = i + 1;
   }
 
   itos_.insert(itos_.begin() + index, token);
-  stoi_[_find(c10::string_view{token.data(),token.size()})] = index;
+  stoi_[_find(c10::string_view{token.data(), token.size()})] = index;
 
   // need to update unk_index in case token equals unk_token or token
   // inserted before unk_token
-  unk_index_ = stoi_[_find(c10::string_view{unk_token_.data(),unk_token_.size()})];
+  unk_index_ =
+      stoi_[_find(c10::string_view{unk_token_.data(), unk_token_.size()})];
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
@@ -96,7 +98,7 @@ std::string Vocab::lookup_token(const int64_t &index) {
 
 StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
   std::vector<std::string> tokens(indices.size());
-  for (uint32_t i = 0; i < static_cast<uint32_t>(indices.size()); i++) {
+  for (int64_t i = 0; i < static_cast<int64_t>(indices.size()); i++) {
     tokens[i] = lookup_token(indices[i]);
   }
   return tokens;
@@ -105,7 +107,7 @@ StringList Vocab::lookup_tokens(const std::vector<int64_t> &indices) {
 std::vector<int64_t>
 Vocab::lookup_indices(const std::vector<c10::string_view> &tokens) {
   std::vector<int64_t> indices(tokens.size());
-  for (uint32_t i = 0; i < static_cast<uint32_t>(tokens.size()); i++) {
+  for (int64_t i = 0; i < static_cast<int64_t>(tokens.size()); i++) {
     indices[i] = __getitem__(tokens[i]);
   }
   return indices;
@@ -122,8 +124,8 @@ std::unordered_map<std::string, int64_t> Vocab::get_stoi() const {
 
 StringList Vocab::get_itos() const { return itos_; }
 
-uint32_t _infer_lines(const std::string &file_path) {
-  uint32_t num_lines = 0;
+int64_t _infer_lines(const std::string &file_path) {
+  int64_t num_lines = 0;
   std::ifstream fin;
   fin.open(file_path, std::ios::in);
 
@@ -133,12 +135,9 @@ uint32_t _infer_lines(const std::string &file_path) {
   return num_lines;
 }
 
-void parse_vocab_file_chunk(
-    const std::string &file_path, size_t offset, const uint32_t start_line,
-    const uint32_t end_line,
-    std::shared_ptr<
-        ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>
-        counter) {
+void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
+                            const int64_t start_line, const int64_t end_line,
+                            std::shared_ptr<IndexDict> counter) {
   std::ifstream fin(file_path, std::ios::in);
   if (!fin.is_open()) {
     throw std::runtime_error("Cannot open input file " + file_path + "\n");
@@ -146,7 +145,7 @@ void parse_vocab_file_chunk(
 
   fin.seekg(offset);
 
-  for (uint32_t i = start_line; i < end_line; i++) {
+  for (int64_t i = start_line; i < end_line; i++) {
     std::string token;
     fin >> token;
     fin >> std::ws;
@@ -159,13 +158,10 @@ void parse_vocab_file_chunk(
   }
 }
 
-void parse_raw_text_file_chunk(
-    const std::string &file_path, size_t offset, const uint32_t start_line,
-    const uint32_t end_line,
-    std::shared_ptr<
-        ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>
-        counter,
-    torch::jit::script::Module &module) {
+void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
+                               const int64_t start_line, const int64_t end_line,
+                               std::shared_ptr<IndexDict> counter,
+                               torch::jit::script::Module &module) {
   std::ifstream fin(file_path, std::ios::in);
   if (!fin.is_open()) {
     throw std::runtime_error("Cannot open input file " + file_path + "\n");
@@ -174,7 +170,7 @@ void parse_raw_text_file_chunk(
   fin.seekg(offset);
 
   std::string line;
-  for (uint32_t i = start_line; i < end_line; i++) {
+  for (int64_t i = start_line; i < end_line; i++) {
     std::getline(fin, line);
     auto token_list =
         module.forward(std::vector<c10::IValue>({c10::IValue(line)})).toList();
@@ -194,8 +190,8 @@ void parse_raw_text_file_chunk(
 
 // sorting using a custom object
 struct CompareTokens {
-  bool operator()(const std::pair<std::string, uint32_t> &a,
-                  const std::pair<std::string, uint32_t> &b) {
+  bool operator()(const std::pair<std::string, int64_t> &a,
+                  const std::pair<std::string, int64_t> &b) {
     if (a.second == b.second) {
       return a.first < b.first;
     }
@@ -203,17 +199,14 @@ struct CompareTokens {
   }
 };
 
-StringList _concat_tokens(
-    std::vector<std::shared_ptr<
-        ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>>
-        chunk_counters,
-    const std::string &unk_token, const uint32_t min_freq,
-    const uint32_t num_lines, const bool sort_tokens) {
+StringList
+_concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
+               const std::string &unk_token, const int64_t min_freq,
+               const int64_t num_lines, const bool sort_tokens) {
   TORCH_CHECK(chunk_counters.size() > 0,
               "There must be at least 1 chunk to concatenate!");
 
-  ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>
-      tokens_freq;
+  IndexDict tokens_freq;
   StringList unique_tokens;
   unique_tokens.reserve(num_lines);
 
@@ -221,7 +214,7 @@ StringList _concat_tokens(
   for (size_t i = 0; i < chunk_counters.size(); i++) {
     auto &cur_counter = *chunk_counters[i];
     for (const auto &item : cur_counter) {
-      uint32_t cur_token_freq = item.second;
+      int64_t cur_token_freq = item.second;
       if (tokens_freq.find(item.first) != tokens_freq.end()) {
         tokens_freq[item.first] += cur_token_freq;
       } else {
@@ -231,13 +224,13 @@ StringList _concat_tokens(
       // add to tokens list only if we exceed min_freq for the first time
       if (tokens_freq[item.first] - cur_token_freq < min_freq &&
           tokens_freq[item.first] >= min_freq) {
-        unique_tokens.push_back(std::string{item.first});
+        unique_tokens.push_back(item.first);
       }
     }
   }
 
   // create token freq pairs
-  std::vector<std::pair<std::string, uint32_t>> token_freq_pairs;
+  std::vector<std::pair<std::string, int64_t>> token_freq_pairs;
 
   for (std::string token : unique_tokens) {
     token_freq_pairs.push_back(std::make_pair(token, tokens_freq[token]));
@@ -268,14 +261,14 @@ StringList _concat_tokens(
   return unique_tokens;
 }
 
-constexpr uint32_t GRAIN_SIZE = 13107;
+constexpr int64_t GRAIN_SIZE = 13107;
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
-                            const uint32_t min_freq, const uint32_t num_cpus) {
+                            const int64_t min_freq, const int64_t num_cpus) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
 
-  uint32_t num_lines = _infer_lines(file_path);
-  uint32_t chunk_size = impl::divup(num_lines, num_cpus);
+  int64_t num_lines = _infer_lines(file_path);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
   // TODO: Add explicit test beyond grain size to cover multithreading
   chunk_size = std::max(chunk_size, GRAIN_SIZE);
@@ -283,19 +276,16 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   std::vector<size_t> offsets;
   impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
-  std::vector<std::shared_ptr<
-      ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>>
-      chunk_counters;
+  std::vector<std::shared_ptr<IndexDict>> chunk_counters;
 
   std::mutex m;
   std::condition_variable cv;
   std::atomic<int> thread_count(0);
 
   // create threads
-  uint32_t j = 0;
-  for (uint32_t i = 0; i < num_lines; i += chunk_size) {
-    auto counter_ptr = std::make_shared<
-        ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>();
+  int64_t j = 0;
+  for (int64_t i = 0; i < num_lines; i += chunk_size) {
+    auto counter_ptr = std::make_shared<IndexDict>();
 
     thread_count++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
@@ -321,31 +311,28 @@ Vocab _load_vocab_from_file(const std::string &file_path,
 
 Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const std::string &unk_token,
-                                  const uint32_t min_freq,
-                                  const uint32_t num_cpus,
+                                  const int64_t min_freq,
+                                  const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer) {
   std::cerr << "[INFO] Reading file " << file_path << std::endl;
-  uint32_t num_lines = _infer_lines(file_path);
-  uint32_t chunk_size = impl::divup(num_lines, num_cpus);
+  int64_t num_lines = _infer_lines(file_path);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
   chunk_size = std::max(chunk_size, GRAIN_SIZE);
 
   std::vector<size_t> offsets;
   impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
 
-  std::vector<std::shared_ptr<
-      ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>>
-      chunk_counters;
+  std::vector<std::shared_ptr<IndexDict>> chunk_counters;
 
   std::mutex m;
   std::condition_variable cv;
   std::atomic<int> thread_count(0);
 
   // create threads
-  uint32_t j = 0;
-  for (uint32_t i = 0; i < num_lines; i += chunk_size) {
-    auto counter_ptr = std::make_shared<
-        ska_ordered::order_preserving_flat_hash_map<std::string, uint32_t>>();
+  int64_t j = 0;
+  for (int64_t i = 0; i < num_lines; i += chunk_size) {
+    auto counter_ptr = std::make_shared<IndexDict>();
     thread_count++;
     at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
       parse_raw_text_file_chunk(file_path, offsets[j], i,

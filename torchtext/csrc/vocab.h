@@ -3,6 +3,8 @@
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
+typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
+    IndexDict;
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VocabStates;
@@ -62,11 +64,11 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
 
 Vocab _load_vocab_from_file(const std::string &file_path,
                             const std::string &unk_token,
-                            const uint32_t min_freq, const uint32_t num_cpus);
+                            const int64_t min_freq, const int64_t num_cpus);
 Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const std::string &unk_token,
-                                  const uint32_t min_freq,
-                                  const uint32_t num_cpus,
+                                  const int64_t min_freq,
+                                  const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer);
 
 } // namespace torchtext
