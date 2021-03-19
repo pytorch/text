@@ -39,30 +39,6 @@ The command to run the pipeline:
     python pipelines.py --pipeline experimental_torchtext 
 
 
-## Legacy PyText
-
-This pipeline example shows the application with the existing `ScriptVocab` in pytext library. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
-
-* `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
-* `from pytext.torchscript.vocab.ScriptVocabulary`
-
-With the dependency of `pytext` library, the command to run the pipeline:
-
-    python pipelines.py --pipeline pytext
-
-
-## Experimental PyText
-
-This pipeline example shows the application with a `ScriptVocab` based on the torchtext vocab. The `ScriptVocab` instance is built from a text file where a column of vocab tokens are read in sequence.
-
-* `torchtext.experimental.transforms.BasicEnglishNormalize` backed by `re2` regular expression library
-* `from pytext.torchscript.vocab.ScriptVocabulary`
-
-With the dependency of `pytext` library, the command to run the pipeline:
-
-    python pipelines.py --pipeline pytext
-
-
 ## Legacy Torchtext with a batch of data
 
 This pipeline example shows the application with the data batch as input. For the real-world text classification task, two separate pipelines are created for text and label.
