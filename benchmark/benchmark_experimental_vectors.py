@@ -13,7 +13,7 @@ def benchmark_experimental_vectors():
             vector[token]
         print("Lookup time:", time.monotonic() - t0)
 
-    train, = AG_NEWS(data_select='train')
+    train = AG_NEWS(split='train')
     vocab = train.get_vocab()
     tokens = []
     for (label, text) in train:

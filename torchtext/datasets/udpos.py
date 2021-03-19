@@ -1,8 +1,12 @@
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
-from torchtext.data.datasets_utils import add_docstring_header
-from torchtext.data.datasets_utils import find_match
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _add_docstring_header,
+    _find_match,
+    _create_dataset_directory,
+    _create_data_from_iob,
+)
 
 URL = 'https://bitbucket.org/sivareddyg/public/downloads/en-ud-v2.zip'
 
@@ -15,32 +19,18 @@ NUM_LINES = {
 }
 
 
-def _create_data_from_iob(data_path, separator="\t"):
-    with open(data_path, encoding="utf-8") as input_file:
-        columns = []
-        for line in input_file:
-            line = line.strip()
-            if line == "":
-                if columns:
-                    yield columns
-                columns = []
-            else:
-                for i, column in enumerate(line.split(separator)):
-                    if len(columns) < i + 1:
-                        columns.append([])
-                    columns[i].append(column)
-        if len(columns) > 0:
-            yield columns
+DATASET_NAME = "UDPOS"
 
 
-@add_docstring_header(num_lines=NUM_LINES)
-@wrap_split_argument(('train', 'valid', 'test'))
+@_add_docstring_header(num_lines=NUM_LINES)
+@_create_dataset_directory(dataset_name=DATASET_NAME)
+@_wrap_split_argument(('train', 'valid', 'test'))
 def UDPOS(root, split):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     if split == 'valid':
-        path = find_match("dev.txt", extracted_files)
+        path = _find_match("dev.txt", extracted_files)
     else:
-        path = find_match(split + ".txt", extracted_files)
-    return RawTextIterableDataset("UDPOS", NUM_LINES[split],
-                                  _create_data_from_iob(path))
+        path = _find_match(split + ".txt", extracted_files)
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
+                                   _create_data_from_iob(path))

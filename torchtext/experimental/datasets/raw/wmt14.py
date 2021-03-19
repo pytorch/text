@@ -1,10 +1,11 @@
 import os
-import io
-import codecs
-import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _read_text_iterator,
+)
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 URL = 'https://drive.google.com/uc?export=download&id=0B_bZck-ksdkpM25jRUN2X2UxMm8'
 
@@ -41,38 +42,6 @@ NUM_LINES = {
 }
 
 
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
-
-
-def _clean_xml_file(f_xml):
-    f_txt = os.path.splitext(f_xml)[0]
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
-        root = ET.parse(f_xml).getroot()[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
-
-
-def _clean_tags_file(f_orig):
-    xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker', '<doc', '</doc'
-    ]
-    f_txt = f_orig.replace('.tags', '')
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
-            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for line in fd_orig:
-            if not any(tag in line for tag in xml_tags):
-                # TODO: Fix utf-8 next line mark
-                #                fd_txt.write(l.strip() + '\n')
-                #                fd_txt.write(l.strip() + u"\u0085")
-                #                fd_txt.write(l.lstrip())
-                fd_txt.write(line.strip() + '\n')
-
-
 def _construct_filenames(filename, languages):
     filenames = []
     for lang in languages:
@@ -89,7 +58,11 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument(('train', 'valid', 'test'))
+DATASET_NAME = "WMT14"
+
+
+@_create_dataset_directory(dataset_name=DATASET_NAME)
+@_wrap_split_argument(('train', 'valid', 'test'))
 def WMT14(root, split,
           language_pair=('de', 'en'),
           train_set='train.tok.clean.bpe.32000',
@@ -162,24 +135,11 @@ def WMT14(root, split,
     else:
         src_file, tgt_file = test_filenames
 
-    root = os.path.join(root, 'wmt14')
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, path=os.path.join(root, _PATH), hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
-    # Clean the xml and tag file in the archives
-    file_archives = []
-    for fname in extracted_files:
-        if 'xml' in fname:
-            _clean_xml_file(fname)
-            file_archives.append(os.path.splitext(fname)[0])
-        elif "tags" in fname:
-            _clean_tags_file(fname)
-            file_archives.append(fname.replace('.tags', ''))
-        else:
-            file_archives.append(fname)
-
     data_filenames = {
-        split: _construct_filepaths(file_archives, src_file, tgt_file),
+        split: _construct_filepaths(extracted_files, src_file, tgt_file),
     }
 
     for key in data_filenames:
@@ -196,4 +156,4 @@ def WMT14(root, split,
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("WMT14", NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))

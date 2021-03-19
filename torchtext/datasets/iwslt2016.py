@@ -1,10 +1,13 @@
 import os
-import io
-import codecs
-import xml.etree.ElementTree as ET
 from torchtext.utils import (download_from_url, extract_archive)
-from torchtext.data.datasets_utils import RawTextIterableDataset
-from torchtext.data.datasets_utils import wrap_split_argument
+from torchtext.data.datasets_utils import (
+    _RawTextIterableDataset,
+    _wrap_split_argument,
+    _clean_xml_file,
+    _clean_tags_file,
+    _read_text_iterator,
+)
+from torchtext.data.datasets_utils import _create_dataset_directory
 
 
 SUPPORTED_DATASETS = {
@@ -123,38 +126,6 @@ SET_NOT_EXISTS = {
 }
 
 
-def _read_text_iterator(path):
-    with io.open(path, encoding="utf8") as f:
-        for row in f:
-            yield row
-
-
-def _clean_xml_file(f_xml):
-    f_txt = os.path.splitext(f_xml)[0]
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
-        root = ET.parse(f_xml).getroot()[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
-
-
-def _clean_tags_file(f_orig):
-    xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker', '<doc', '</doc'
-    ]
-    f_txt = f_orig.replace('.tags', '')
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt,\
-            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for line in fd_orig:
-            if not any(tag in line for tag in xml_tags):
-                # TODO: Fix utf-8 next line mark
-                #                fd_txt.write(l.strip() + '\n')
-                #                fd_txt.write(l.strip() + u"\u0085")
-                #                fd_txt.write(l.lstrip())
-                fd_txt.write(line.strip() + '\n')
-
-
 def _construct_filenames(filename, languages):
     filenames = []
     for lang in languages:
@@ -171,7 +142,11 @@ def _construct_filepaths(paths, src_filename, tgt_filename):
     return (src_path, tgt_path)
 
 
-@wrap_split_argument(('train', 'valid', 'test'))
+DATASET_NAME = "IWSLT2016"
+
+
+@_create_dataset_directory(dataset_name=DATASET_NAME)
+@_wrap_split_argument(('train', 'valid', 'test'))
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
     """IWSLT2016 dataset
 
@@ -296,4 +271,4 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return RawTextIterableDataset("IWSLT2016", NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))
