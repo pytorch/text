@@ -15,16 +15,15 @@
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
-                 const torch::Tensor &unk_tensor)
-    : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
+Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors)
+    : stoi_(stoi), vectors_(vectors) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
                  const std::vector<std::int64_t> &indices,
-                 const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
-    : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
+                 const torch::Tensor &vectors)
+    : vectors_(std::move(vectors)) {
   // guarding against size mismatch of tokens and indices
-  if (static_cast<int>(tokens.size()) != indices.size()) {
+  if (static_cast<int64_t>(tokens.size()) != static_cast<int64_t>(indices.size())) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Mismatching sizes for tokens and indices. "
                  "Size of tokens: "
@@ -65,8 +64,12 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
     auto vector = vectors_[item_index->second];
     stovec_[token] = vector;
     return vector;
-  }
-  return unk_tensor_;
+  } else if (default_tensor_.has_value())
+    return default_tensor_.value();
+  else
+    throw std::runtime_error("The default tensor has not been set up yet. Call "
+                             "set_default_tensor() function to "
+                             "set up the default tensor");
 }
 
 torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
@@ -92,6 +95,21 @@ void Vectors::__setitem__(const std::string &token,
     vectors_ = at::cat({vectors_, vector.unsqueeze(0)});
   }
 }
+
+void Vectors::set_default_tensor(const torch::Tensor default_tensor) {
+  if (default_tensor_.has_value())
+    std::cerr << "UNK tensor has been assigned. You are resetting the UNK "
+                 "tensor here."
+              << std::endl;
+  if (default_tensor.size(0) != vectors_.size(1))
+    throw std::runtime_error(
+        "The default tensor's shape doesn't fit the vector tensor.");
+  default_tensor_ = default_tensor;
+}
+
+bool Vectors::have_default_tensor() const { return default_tensor_.has_value(); }
+
+torch::Tensor Vectors::get_default_tensor() const { return default_tensor_.value(); }
 
 int64_t Vectors::__len__() { return stovec_.size(); }
 
@@ -205,9 +223,10 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 }
 
 constexpr int64_t GRAIN_SIZE = 131072;
-std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
-    const std::string &file_path, const std::string delimiter_str,
-    int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor) {
+std::tuple<Vectors, std::vector<std::string>>
+_load_token_and_vectors_from_file(const std::string &file_path,
+                                  const std::string delimiter_str,
+                                  int64_t num_cpus) {
 
   TORCH_CHECK(delimiter_str.size() == 1,
               "Only string delimeters of size 1 are supported.");
@@ -263,15 +282,7 @@ std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
   std::tie(stoi, dup_tokens) =
       _concat_vectors(chunk_tokens, num_header_lines, num_lines);
 
-  torch::Tensor unk_tensor;
-  if (opt_unk_tensor) {
-    unk_tensor = *opt_unk_tensor;
-  } else {
-    unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
-  }
-
-  auto result =
-      std::make_tuple(Vectors(stoi, data_tensor, unk_tensor), dup_tokens);
+  auto result = std::make_tuple(Vectors(stoi, data_tensor), dup_tokens);
   return result;
 }
 
@@ -290,18 +301,23 @@ VectorsStates _serialize_vectors(const c10::intrusive_ptr<Vectors> &self) {
 
   std::vector<int64_t> integers = std::move(indices);
   std::vector<std::string> strings = std::move(tokens);
-  std::vector<torch::Tensor> tensors{self->vectors_, self->unk_tensor_};
+  //std::vector<torch::Tensor> tensors{self->vectors_,
+  //                                   self->get_default_tensor()};
+
+  c10::optional<torch::Tensor> default_tensor = {};
+  if (self->default_tensor_.has_value())
+    default_tensor = self->default_tensor_.value();
 
   VectorsStates states =
       std::make_tuple(self->version_str_, std::move(integers),
-                      std::move(strings), std::move(tensors));
+                      std::move(strings), self->vectors_, default_tensor);
 
   return states;
 }
 
 c10::intrusive_ptr<Vectors> _deserialize_vectors(VectorsStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  if (state_size != 4) {
+  if (state_size != 5) {
     throw std::runtime_error(
         "Expected deserialized Vectors to have 4 states but found only " +
         std::to_string(state_size) + " states.");
@@ -311,6 +327,7 @@ c10::intrusive_ptr<Vectors> _deserialize_vectors(VectorsStates states) {
   auto &integers = std::get<1>(states);
   auto &strings = std::get<2>(states);
   auto &tensors = std::get<3>(states);
+  auto &default_tensor = std::get<4>(states);
 
   if (version_str.compare("0.0.1") >= 0) {
     // check integers and tokens are same size
@@ -325,8 +342,11 @@ c10::intrusive_ptr<Vectors> _deserialize_vectors(VectorsStates states) {
       stoi[strings[i]] = integers[i];
     }
 
-    return c10::make_intrusive<Vectors>(std::move(stoi), std::move(tensors[0]),
-                                        std::move(tensors[1]));
+    auto vectors_instance = c10::make_intrusive<Vectors>(std::move(stoi),
+                                        std::move(tensors));
+    if (default_tensor.has_value())
+        vectors_instance->set_default_tensor(default_tensor.value());
+    return vectors_instance;
   }
 
   throw std::runtime_error(

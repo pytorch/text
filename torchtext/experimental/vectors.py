@@ -25,13 +25,12 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
+def FastText(language="en", root=".data", validate_file=True, num_cpus=32):
     r"""Create a FastText Vectors object.
 
     Args:
         language (str): the language to use for FastText. The list of supported languages options
                         can be found at https://fasttext.cc/docs/en/language-identification.html
-        unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token
         root (str): folder used to store downloaded files in. Default: '.data'.
         validate_file (bool): flag to determine whether to validate the downloaded files checksum.
                               Should be `False` when running tests with a local asset.
@@ -51,7 +50,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
         checksum = CHECKSUMS_FAST_TEXT.get(url, None)
 
     downloaded_file_path = download_from_url(url, root=root, hash_value=checksum)
-    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus, unk_tensor)
+    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(downloaded_file_path, ' ', num_cpus)
 
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
@@ -60,7 +59,7 @@ def FastText(language="en", unk_tensor=None, root=".data", validate_file=True, n
     return vectors_obj
 
 
-def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=True, num_cpus=32):
+def GloVe(name="840B", dim=300, root=".data", validate_file=True, num_cpus=32):
     r"""Create a GloVe Vectors object.
 
     Args:
@@ -93,7 +92,6 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
                 - 100
                 - 200
                 - 300
-        unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         root (str): folder used to store downloaded files in (.data)
         validate_file (bool): flag to determine whether to validate the downloaded files checksum.
                               Should be `False` when running tests with a local asset.
@@ -143,7 +141,7 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     extracted_file_paths = extract_archive(downloaded_file_path)
     # need to get the full path to the correct file in the case when multiple files are extracted with different dims
     extracted_file_path_with_correct_dim = [path for path in extracted_file_paths if file_name in path][0]
-    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ' ', num_cpus, unk_tensor)
+    cpp_vectors_obj, dup_tokens = _load_token_and_vectors_from_file(extracted_file_path_with_correct_dim, ' ', num_cpus)
 
     # Ensure there is only 1 expected duplicate token present for 840B dataset
     if dup_tokens and dup_tokens != dup_token_glove_840b:
@@ -153,8 +151,8 @@ def GloVe(name="840B", dim=300, unk_tensor=None, root=".data", validate_file=Tru
     return vectors_obj
 
 
-def load_vectors_from_file_path(filepath, delimiter=",", unk_tensor=None, num_cpus=10):
-    r"""Create a Vectors object from a csv file path.
+def load_vectors_from_file_path(filepath, delimiter=",", num_cpus=10):
+    r"""Create a Vectors object from a csv file like object.
 
     Note that the tensor corresponding to each vector is of type `torch.float`.
 
@@ -167,7 +165,6 @@ def load_vectors_from_file_path(filepath, delimiter=",", unk_tensor=None, num_cp
     Args:
         filepath: a file path to read data from.
         delimiter (char): a character to delimit between the token and the vector. Default value is ","
-        unk_tensor (Tensor): a 1d tensor representing the vector associated with an unknown token.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 10.
 
     Returns:
@@ -177,33 +174,46 @@ def load_vectors_from_file_path(filepath, delimiter=",", unk_tensor=None, num_cp
         ValueError: if duplicate tokens are found in FastText file.
 
     """
-    vectors_obj, dup_tokens = _load_token_and_vectors_from_file(filepath, delimiter, num_cpus, unk_tensor)
+    vectors_obj, dup_tokens = _load_token_and_vectors_from_file(filepath, delimiter, num_cpus)
     if dup_tokens:
         raise ValueError("Found duplicate tokens in file: {}".format(str(dup_tokens)))
     return Vectors(vectors_obj)
 
 
-def build_vectors(tokens, vectors, unk_tensor=None):
+def build_vectors(tokens, vectors):
     r"""Factory method for creating a vectors object which maps tokens to vectors.
 
     Args:
         tokens (List[str]): a list of tokens.
         vectors (torch.Tensor): a 2d tensor representing the vector associated with each token.
-        unk_tensor (torch.Tensor): a 1d tensors representing the vector associated with an unknown token.
+
     Raises:
-        ValueError: if `vectors` is empty and a default `unk_tensor` isn't provided.
+        ValueError: if `vectors` is empty.
         RuntimeError: if `tokens` and `vectors` have different sizes or `tokens` has duplicates.
         TypeError: if all tensors within`vectors` are not of data type `torch.float`.
+
+    Examples:
+        >>> tokens = ['a', 'b']
+        >>> vecs = torch.stack((torch.tensor([1, 0], dtype=torch.float),
+                                torch.tensor([0, 1], dtype=torch.float)), 0)
+        >>> vectors_obj = vectors(tokens, vecs)
+        >>> torch.save(vectors_obj.to_ivalue(), 'vector.pt')
+        >>> vectors_f = torch.load('vector.pt')
+        >>> vectors_obj(['a', 'b'])
+        >>> vectors_obj.set_default_tensor(torch.tensor([0, 0], dtype=torch.float))
+        >>> vectors_obj(['a', 'b', 'es', 'b', 'be'])
+        >>> vectors_obj.get_default_tensor()
+        >>> jit_vectors = torch.jit.script(vectors_obj.to_ivalue())
+
     """
-    if unk_tensor is None and (vectors is None or not len(vectors)):
-        raise ValueError("The vectors list is empty and a default unk_tensor wasn't provided.")
+    if (vectors is None or not len(vectors)):
+        raise ValueError("The vectors list is empty.")
 
     if not vectors.dtype == torch.float:
         raise TypeError("`vectors` should be of data type `torch.float`.")
 
     indices = [i for i in range(len(tokens))]
-    unk_tensor = unk_tensor if unk_tensor is not None else torch.zeros(vectors[0].size(), dtype=torch.float)
-    return Vectors(VectorsPybind(tokens, indices, vectors, unk_tensor))
+    return Vectors(VectorsPybind(tokens, indices, vectors))
 
 
 class Vectors(nn.Module):
@@ -289,11 +299,35 @@ class Vectors(nn.Module):
 
         return self.vectors.lookup_vectors(tokens)
 
+    @torch.jit.export
+    def set_default_tensor(self, default_tensor: Tensor) -> None:
+        r"""
+        Args:
+            default_tensor (Tensor): the unknown token tensor.
+        """
+        self.vectors.set_default_tensor(default_tensor)
+
+    @torch.jit.export
+    def have_default_tensor(self) -> bool:
+        r"""Check if the vector has the default tensor
+        """
+        return self.vectors.have_default_tensor()
+
+    @torch.jit.export
+    def get_default_tensor(self) -> Tensor:
+        r"""
+        return:
+            default_tensor (Tensor): the unknown token tensor.
+        """
+        return self.vectors.get_default_tensor()
+
     def __prepare_scriptable__(self):
         r"""Return a JITable Vectors.
         """
         stoi = self.vectors.get_stoi()
-        cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_, self.vectors.unk_tensor_)
+        cpp_vectors = torch.classes.torchtext.Vectors(list(stoi.keys()), list(stoi.values()), self.vectors.vectors_)
+        if self.have_default_tensor():
+            cpp_vectors.set_default_tensor(self.vectors.get_default_tensor())
         return(Vectors(cpp_vectors))
 
 

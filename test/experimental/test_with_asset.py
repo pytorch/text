@@ -118,6 +118,9 @@ class TestTransformsWithAsset(TorchtextTestCase):
                 # incorrect dim
                 GloVe(name='6B', dim=500, root=dir_name, validate_file=False)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_glove(self):
         # copy the asset file into the expected download location
         # note that this is just a zip file with the first 100 entries of the GloVe 840B dataset
@@ -251,15 +254,19 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_name = 'vectors_test.csv'
         asset_path = get_asset_path(asset_name)
         vectors_obj = load_vectors_from_file_path(asset_path)
+        unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
+        vectors_obj.set_default_tensor(unk_tensor)
 
         expected_tensorA = torch.tensor([1, 0, 0], dtype=torch.float)
         expected_tensorB = torch.tensor([0, 1, 0], dtype=torch.float)
-        expected_unk_tensor = torch.tensor([0, 0, 0], dtype=torch.float)
 
         self.assertEqual(vectors_obj['a'], expected_tensorA)
         self.assertEqual(vectors_obj['b'], expected_tensorB)
-        self.assertEqual(vectors_obj['not_in_it'], expected_unk_tensor)
+        self.assertEqual(vectors_obj['not_in_it'], unk_tensor)
 
+    # we separate out these errors because Windows runs into seg faults when propagating
+    # exceptions from C++ using pybind11
+    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
     def test_fast_text(self):
         # copy the asset file into the expected download location
         # note that this is just a file with the first 100 entries of the FastText english dataset
