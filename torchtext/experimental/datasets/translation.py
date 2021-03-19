@@ -397,7 +397,7 @@ def WMT14(language_pair=('de', 'en'),
     Examples:
         >>> from torchtext.experimental.datasets import WMT14
         >>> from torchtext.data.utils import get_tokenizer
-        >>> src_tokenizer = get_tokenizer("spacy", language='de')
+        >>> src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
         >>> train_dataset, valid_dataset, test_dataset = WMT14(tokenizer=(src_tokenizer,
                                                                           tgt_tokenizer))
