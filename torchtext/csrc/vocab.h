@@ -12,7 +12,7 @@ typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
 struct Vocab : torch::CustomClassHolder {
   static const int32_t MAX_VOCAB_SIZE = 30000000;
   int64_t unk_index_;
-  std::vector<int32_t> stoi_;
+  std::array<uint32_t, MAX_VOCAB_SIZE> stoi_;
   const std::string version_str_ = "0.0.1";
   StringList itos_;
   std::string unk_token_;
@@ -43,7 +43,7 @@ protected:
   uint32_t _find(const c10::string_view &w) const {
     uint32_t stoi_size = stoi_.size();
     uint32_t id = _hash(w) % stoi_size;
-    while (stoi_[id] != -1 && itos_[stoi_[id]]!= w) {
+    while (stoi_[id] != -1 && itos_[stoi_[id]] != w) {
       id = (id + 1) % stoi_size;
     }
     return id;
