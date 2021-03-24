@@ -69,6 +69,37 @@ def build_experimental_torchtext_pipeline(args):
         return pipeline, pipeline, jit_pipeline
 
 
+def build_legacy_batch_torchtext_vocab_pipeline(args):
+    vocab_file = args.vocab_filename
+    tokenizer = get_tokenizer("basic_english")
+    from torchtext.vocab import build_vocab_from_iterator
+
+    def token_iterator(vocab_file):
+        f = open(vocab_file, 'r')
+        for line in f:
+            for token in line:
+                yield token
+
+    vocab = build_vocab_from_iterator(token_iterator(vocab_file))
+    text_pipeline = sequential_transforms(tokenizer_func(tokenizer), vocab_func(vocab))
+    return text_pipeline, None, None
+
+
+def build_legacy_pytext_vocab_pipeline(args):
+    vocab_file = args.vocab_filename
+    from pytext.data.utils import Vocabulary
+
+    tokenizer = get_tokenizer("basic_english")
+    with open(vocab_file, 'r') as f:
+        vocab_counter = Counter([token for line in f for token in line.rstrip()])
+        sorted_by_freq_tuples = sorted(vocab_counter.items(), key=lambda x: x[1], reverse=True)
+        vocab_list = [pair[0] for pair in sorted_by_freq_tuples]
+        vocab_list.insert(0, "<unk>")
+        pipeline = sequential_transforms(tokenizer_func(tokenizer),
+                                         PyTextVocabTransform(Vocabulary(vocab_list, unk_token="<unk>")))
+        return pipeline, None, None
+
+
 def build_legacy_pytext_script_vocab_pipeline(args):
     vocab_file = args.vocab_filename
     from pytext.torchscript.vocab import ScriptVocabulary
@@ -156,6 +187,8 @@ PIPELINES = {
     'experimental_fasttext': build_experimental_fasttext_vector_pipeline,
     'legacy_fasttext': build_legacy_fasttext_vector_pipeline,
     'experimental_pytext_script_vocab': build_experimental_pytext_script_pipeline,
+    'legacy_pytext_vocab': build_legacy_pytext_vocab_pipeline,
+    'legacy_pytext_script_vocab': build_legacy_pytext_script_vocab_pipeline,
     'legacy_batch_torchtext': build_legacy_batch_torchtext_vocab_pipeline,
 }
 
