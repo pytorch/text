@@ -3,7 +3,7 @@ from collections import (Counter, OrderedDict)
 import time
 
 import torch
-from torchtext.experimental.datasets import AG_NEWS
+from torchtext.experimental.datasets import DATASETS
 from torchtext.experimental.vocab import (
     vocab as VocabExperimental,
     load_vocab_from_file,
@@ -76,7 +76,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
         print("Construction time:", time.monotonic() - t0)
 
 
-def benchmark_experimental_vocab_lookup(vocab_file_path=None):
+def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset = 'AG_NEWS'):
     def _run_benchmark_lookup(tokens, vocab):
         t0 = time.monotonic()
         # list lookup
@@ -94,7 +94,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
     tokens = []
     tokens_lists = []
 
-    train = AG_NEWS(split='train')
+    train = DATASETS[dataset](split='train')
     vocab = train.get_vocab()
     for (_, text) in train:
         cur_tokens = []
@@ -124,7 +124,7 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None):
         v_experimental = load_vocab_from_file(f)
         print("Construction time:", time.monotonic() - t0)
     else:
-        print("Loading Vocab from AG News")
+        print("Loading Vocab from {}".format(dataset))
         counter = Counter(tokens)
         sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
         ordered_dict = OrderedDict(sorted_by_freq_tuples)
@@ -174,6 +174,8 @@ if __name__ == "__main__":
                         help='The name of vocab file used for construction')
     parser.add_argument('--vocab-filename-lookup', type=str, default=None,
                         help='The name of vocab file used for lookup')
+    parser.add_argument('--dataset', type=str, default='AG_NEWS',
+                        help='The name of vocab file used for lookup')
     args = parser.parse_args()
 
     if args.run_construction_benchmark:
@@ -181,4 +183,4 @@ if __name__ == "__main__":
         benchmark_experimental_vocab_construction(args.vocab_filename_construction,
                                                   is_raw_text=args.is_raw_text, is_legacy=args.is_legacy)
     else:
-        benchmark_experimental_vocab_lookup(args.vocab_filename_lookup)
+        benchmark_experimental_vocab_lookup(args.vocab_filename_lookup, args.dataset)
