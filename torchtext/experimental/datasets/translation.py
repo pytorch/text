@@ -261,11 +261,11 @@ def IWSLT2017(language_pair=('de', 'en'),
             get_tokenizer("spacy", language='en_core_web_sm'))
 
     Examples:
-        >>> from torchtext.experimental.datasets import IWSLT
+        >>> from torchtext.experimental.datasets import IWSLT2017
         >>> from torchtext.data.utils import get_tokenizer
-        >>> src_tokenizer = get_tokenizer("spacy", language='de')
+        >>> src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
-        >>> train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer,
+        >>> train_dataset, valid_dataset, test_dataset = IWSLT2017(tokenizer=(src_tokenizer,
                                                                           tgt_tokenizer))
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
@@ -332,11 +332,11 @@ def IWSLT2016(language_pair=('de', 'en'),
 
 
     Examples:
-        >>> from torchtext.experimental.datasets import IWSLT
+        >>> from torchtext.experimental.datasets import IWSLT2016
         >>> from torchtext.data.utils import get_tokenizer
-        >>> src_tokenizer = get_tokenizer("spacy", language='de')
+        >>> src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
-        >>> train_dataset, valid_dataset, test_dataset = IWSLT(tokenizer=(src_tokenizer,
+        >>> train_dataset, valid_dataset, test_dataset = IWSLT2016(tokenizer=(src_tokenizer,
                                                                           tgt_tokenizer))
         >>> src_vocab, tgt_vocab = train_dataset.get_vocab()
         >>> src_data, tgt_data = train_dataset[10]
@@ -397,7 +397,7 @@ def WMT14(language_pair=('de', 'en'),
     Examples:
         >>> from torchtext.experimental.datasets import WMT14
         >>> from torchtext.data.utils import get_tokenizer
-        >>> src_tokenizer = get_tokenizer("spacy", language='de')
+        >>> src_tokenizer = get_tokenizer("spacy", language='de_core_news_sm')
         >>> tgt_tokenizer = get_tokenizer("basic_english")
         >>> train_dataset, valid_dataset, test_dataset = WMT14(tokenizer=(src_tokenizer,
                                                                           tgt_tokenizer))
