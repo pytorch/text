@@ -11,7 +11,7 @@ from torchtext.utils import (
     unicode_csv_reader,
 )
 import codecs
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 """
 These functions and classes are meant solely for use in torchtext.datasets and not
 for public consumption yet.
