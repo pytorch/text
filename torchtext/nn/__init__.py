@@ -1,1 +1,6 @@
-from .modules import *  # noqa: F401,F403
+from .multiheadattention import InProjContainer, \
+    MultiheadAttentionContainer, ScaledDotProduct
+
+__all__ = ['InProjContainer',
+           'MultiheadAttentionContainer',
+           'ScaledDotProduct']
