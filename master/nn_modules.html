@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.nn.modules.multiheadattention &mdash; torchtext 0.10.0.dev20210401 documentation</title>
+  <title>torchtext.nn &mdash; torchtext 0.10.0.dev20210402 documentation</title>
   
 
   
@@ -179,7 +179,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210401 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210402 &#x25BC</a>
     </div>
     
 
@@ -206,7 +206,7 @@
               <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.nn.modules.multiheadattention</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.nn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
@@ -269,7 +269,7 @@
       </li>
 
         
-      <li>torchtext.nn.modules.multiheadattention</li>
+      <li>torchtext.nn</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -301,16 +301,16 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="module-torchtext.nn.modules.multiheadattention">
-<span id="torchtext-nn-modules-multiheadattention"></span><h1>torchtext.nn.modules.multiheadattention<a class="headerlink" href="#module-torchtext.nn.modules.multiheadattention" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-torchtext.nn">
+<span id="torchtext-nn"></span><h1>torchtext.nn<a class="headerlink" href="#module-torchtext.nn" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="multiheadattentioncontainer">
 <h2><span class="hidden-section">MultiheadAttentionContainer</span><a class="headerlink" href="#multiheadattentioncontainer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.modules.multiheadattention.</code><code class="sig-name descname">MultiheadAttentionContainer</code><span class="sig-paren">(</span><em class="sig-param">nhead</em>, <em class="sig-param">in_proj_container</em>, <em class="sig-param">attention_layer</em>, <em class="sig-param">out_proj</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.MultiheadAttentionContainer">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.</code><code class="sig-name descname">MultiheadAttentionContainer</code><span class="sig-paren">(</span><em class="sig-param">nhead</em>, <em class="sig-param">in_proj_container</em>, <em class="sig-param">attention_layer</em>, <em class="sig-param">out_proj</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.MultiheadAttentionContainer" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">nhead</em>, <em class="sig-param">in_proj_container</em>, <em class="sig-param">attention_layer</em>, <em class="sig-param">out_proj</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.MultiheadAttentionContainer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">nhead</em>, <em class="sig-param">in_proj_container</em>, <em class="sig-param">attention_layer</em>, <em class="sig-param">out_proj</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.MultiheadAttentionContainer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>A multi-head attention container</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -330,6 +330,7 @@ as <cite>(…, N, L, E)</cite>. Default: <code class="docutils literal notransla
 </dl>
 <dl>
 <dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.nn</span> <span class="kn">import</span> <span class="n">MultiheadAttentionContainer</span><span class="p">,</span> <span class="n">InProjContainer</span><span class="p">,</span> <span class="n">ScaledDotProduct</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">bsz</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">64</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">in_proj_container</span> <span class="o">=</span> <span class="n">InProjContainer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">),</span>
 <span class="go">                                        torch.nn.Linear(embed_dim, embed_dim),</span>
@@ -350,8 +351,8 @@ as <cite>(…, N, L, E)</cite>. Default: <code class="docutils literal notransla
 </dd></dl>
 
 <dl class="method">
-<dt id="torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em>, <em class="sig-param">attn_mask: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_k: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_v: Optional[torch.Tensor] = None</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.MultiheadAttentionContainer.forward" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.MultiheadAttentionContainer.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em>, <em class="sig-param">attn_mask: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_k: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_v: Optional[torch.Tensor] = None</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#MultiheadAttentionContainer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.MultiheadAttentionContainer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -406,11 +407,11 @@ N is the batch size, and E is the embedding dimension.</p>
 <div class="section" id="inprojcontainer">
 <h2><span class="hidden-section">InProjContainer</span><a class="headerlink" href="#inprojcontainer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="torchtext.nn.modules.multiheadattention.InProjContainer">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.modules.multiheadattention.</code><code class="sig-name descname">InProjContainer</code><span class="sig-paren">(</span><em class="sig-param">query_proj</em>, <em class="sig-param">key_proj</em>, <em class="sig-param">value_proj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.InProjContainer" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.InProjContainer">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.</code><code class="sig-name descname">InProjContainer</code><span class="sig-paren">(</span><em class="sig-param">query_proj</em>, <em class="sig-param">key_proj</em>, <em class="sig-param">value_proj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.InProjContainer" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="torchtext.nn.modules.multiheadattention.InProjContainer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">query_proj</em>, <em class="sig-param">key_proj</em>, <em class="sig-param">value_proj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.InProjContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.InProjContainer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">query_proj</em>, <em class="sig-param">key_proj</em>, <em class="sig-param">value_proj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.InProjContainer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>A in-proj container to project query/key/value in MultiheadAttention. This module happens before reshaping
 the projected query/key/value into multiple heads. See the linear layers (bottom) of Multi-head Attention in
 Fig 2 of Attention Is All You Need paper. Also check the usage example
@@ -427,8 +428,8 @@ in torchtext.nn.MultiheadAttentionContainer.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="torchtext.nn.modules.multiheadattention.InProjContainer.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.InProjContainer.forward" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.InProjContainer.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#InProjContainer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.InProjContainer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Projects the input sequences using in-proj layers. query/key/value are simply passed to
 the forward func of query/key/value_proj, respectively.</p>
 <dl class="field-list simple">
@@ -441,7 +442,8 @@ the forward func of query/key/value_proj, respectively.</p>
 </dd>
 </dl>
 <dl>
-<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.nn</span> <span class="kn">import</span> <span class="n">InProjContainer</span>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.nn</span> <span class="kn">import</span> <span class="n">InProjContainer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">bsz</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">64</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">in_proj_container</span> <span class="o">=</span> <span class="n">InProjContainer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">),</span>
 <span class="go">                                        torch.nn.Linear(embed_dim, embed_dim),</span>
@@ -461,11 +463,11 @@ the forward func of query/key/value_proj, respectively.</p>
 <div class="section" id="scaleddotproduct">
 <h2><span class="hidden-section">ScaledDotProduct</span><a class="headerlink" href="#scaleddotproduct" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="torchtext.nn.modules.multiheadattention.ScaledDotProduct">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.modules.multiheadattention.</code><code class="sig-name descname">ScaledDotProduct</code><span class="sig-paren">(</span><em class="sig-param">dropout=0.0</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.ScaledDotProduct" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.ScaledDotProduct">
+<em class="property">class </em><code class="sig-prename descclassname">torchtext.nn.</code><code class="sig-name descname">ScaledDotProduct</code><span class="sig-paren">(</span><em class="sig-param">dropout=0.0</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.ScaledDotProduct" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="torchtext.nn.modules.multiheadattention.ScaledDotProduct.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dropout=0.0</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.ScaledDotProduct.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.ScaledDotProduct.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">dropout=0.0</em>, <em class="sig-param">batch_first=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.ScaledDotProduct.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Processes a projected query and key-value pair to apply
 scaled dot product attention.</p>
 <dl class="field-list simple">
@@ -478,7 +480,8 @@ as <cite>(batch, seq, feature)</cite>. Default: <code class="docutils literal no
 </dd>
 </dl>
 <dl>
-<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SDP</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ScaledDotProduct</span><span class="p">(</span><span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span><span class="o">,</span> <span class="nn">torchtext</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SDP</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ScaledDotProduct</span><span class="p">(</span><span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">k</span> <span class="o">=</span> <span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">attn_output</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">SDP</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -491,8 +494,8 @@ as <cite>(batch, seq, feature)</cite>. Default: <code class="docutils literal no
 </dd></dl>
 
 <dl class="method">
-<dt id="torchtext.nn.modules.multiheadattention.ScaledDotProduct.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em>, <em class="sig-param">attn_mask: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_k: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_v: Optional[torch.Tensor] = None</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.modules.multiheadattention.ScaledDotProduct.forward" title="Permalink to this definition">¶</a></dt>
+<dt id="torchtext.nn.ScaledDotProduct.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">query: torch.Tensor</em>, <em class="sig-param">key: torch.Tensor</em>, <em class="sig-param">value: torch.Tensor</em>, <em class="sig-param">attn_mask: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_k: Optional[torch.Tensor] = None</em>, <em class="sig-param">bias_v: Optional[torch.Tensor] = None</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, torch.Tensor]<a class="reference internal" href="_modules/torchtext/nn/modules/multiheadattention.html#ScaledDotProduct.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.nn.ScaledDotProduct.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses a scaled dot product with the projected key-value pair to update
 the projected query.</p>
 <dl class="field-list simple">
@@ -583,7 +586,7 @@ of attention heads, N is the batch size, and E is the embedding dimension.</p>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext.nn.modules.multiheadattention</a><ul>
+<li><a class="reference internal" href="#">torchtext.nn</a><ul>
 <li><a class="reference internal" href="#multiheadattentioncontainer"><span class="hidden-section">MultiheadAttentionContainer</span></a></li>
 <li><a class="reference internal" href="#inprojcontainer"><span class="hidden-section">InProjContainer</span></a></li>
 <li><a class="reference internal" href="#scaleddotproduct"><span class="hidden-section">ScaledDotProduct</span></a></li>
