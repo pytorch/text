@@ -1,13 +1,16 @@
 import argparse
-import time
 import math
+import sys
+import time
+
 import torch
-import torch.nn as nn
-from model import MLMTask
-from utils import run_demo, run_ddp, wrap_up
 import torch.distributed as dist
+import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
+
+from model import MLMTask
+from utils import run_demo, run_ddp, wrap_up
 
 
 def collate_batch(batch_data, args, mask_id, cls_id):
@@ -112,8 +115,9 @@ def run_main(args, rank=None):
     elif args.dataset == 'WikiText2':
         from torchtext.experimental.datasets import WikiText2 as WLMDataset
     elif args.dataset == 'WMTNewsCrawl':
-        from data import WMTNewsCrawl as WLMDataset
+        from torchtext.experimental.datasets import WMTNewsCrawl as WLMDataset
     elif args.dataset == 'EnWik9':
+        sys.exit('EnWik9 is broken, delete this line after https://github.com/pytorch/text/issues/1272 fixed')
         from torchtext.datasets import EnWik9
     elif args.dataset == 'BookCorpus':
         from data import BookCorpus
@@ -137,10 +141,10 @@ def run_main(args, rank=None):
         test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
     elif args.dataset == 'WMTNewsCrawl':
         from torchtext.experimental.datasets import WikiText2
-        test_dataset, valid_dataset = WikiText2(vocab=vocab, data_select=('test', 'valid'))
+        test_dataset, valid_dataset = WikiText2(vocab=vocab, split=('test', 'valid'))
         valid_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, valid_dataset)))
         test_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, test_dataset)))
-        train_dataset, = WLMDataset(vocab=vocab, data_select='train')
+        train_dataset = WLMDataset(vocab=vocab, split='train')
         train_dataset.data = torch.cat(tuple(filter(lambda t: t.numel() > 0, train_dataset)))
     elif args.dataset == 'EnWik9':
         enwik9 = EnWik9()
@@ -152,9 +156,9 @@ def run_main(args, rank=None):
         test_data = torch.tensor([vocab.stoi[_id]
                                  for _id in enwik9[idx2:]]).long()
         from torchtext.experimental.datasets import LanguageModelingDataset
-        train_dataset = LanguageModelingDataset(train_data, vocab)
-        valid_dataset = LanguageModelingDataset(val_data, vocab)
-        test_dataset = LanguageModelingDataset(test_data, vocab)
+        train_dataset = LanguageModelingDataset(train_data, vocab, lambda x: x)
+        valid_dataset = LanguageModelingDataset(val_data, vocab, lambda x: x)
+        test_dataset = LanguageModelingDataset(test_data, vocab, lambda x: x)
     elif args.dataset == 'BookCorpus':
         train_dataset, valid_dataset, test_dataset = BookCorpus(vocab)
 
