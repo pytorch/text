@@ -20,6 +20,7 @@ class MultiheadAttentionContainer(torch.nn.Module):
 
         Examples::
             >>> import torch
+            >>> from torchtext.nn import MultiheadAttentionContainer, InProjContainer, ScaledDotProduct
             >>> embed_dim, num_heads, bsz = 10, 5, 64
             >>> in_proj_container = InProjContainer(torch.nn.Linear(embed_dim, embed_dim),
                                                     torch.nn.Linear(embed_dim, embed_dim),
@@ -122,6 +123,7 @@ class ScaledDotProduct(torch.nn.Module):
                 as `(batch, seq, feature)`. Default: ``False``
 
         Examples::
+            >>> import torch, torchtext
             >>> SDP = torchtext.nn.ScaledDotProduct(dropout=0.1)
             >>> q = torch.randn(21, 256, 3)
             >>> k = v = torch.randn(21, 256, 3)
@@ -245,6 +247,7 @@ class InProjContainer(torch.nn.Module):
             value (Tensor): The values to be projected.
 
         Examples::
+            >>> import torch
             >>> from torchtext.nn import InProjContainer
             >>> embed_dim, bsz = 10, 64
             >>> in_proj_container = InProjContainer(torch.nn.Linear(embed_dim, embed_dim),
