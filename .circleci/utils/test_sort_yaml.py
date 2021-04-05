@@ -11,4 +11,4 @@ To compare new version with previous:
 import sys
 import yaml
 
-sys.stdout.write(yaml.dump(yaml.safe_load(sys.stdin, Loader=yaml.FullLoader), sort_keys=True))
+sys.stdout.write(yaml.dump(yaml.load(sys.stdin, Loader=yaml.FullLoader), sort_keys=True))
