@@ -1,6 +1,5 @@
 import argparse
 import math
-import sys
 import time
 
 import torch
@@ -117,8 +116,7 @@ def run_main(args, rank=None):
     elif args.dataset == 'WMTNewsCrawl':
         from torchtext.experimental.datasets import WMTNewsCrawl as WLMDataset
     elif args.dataset == 'EnWik9':
-        sys.exit('EnWik9 is broken, delete this line after https://github.com/pytorch/text/issues/1272 fixed')
-        from torchtext.datasets import EnWik9
+        from torchtext.legacy.datasets import EnWik9
     elif args.dataset == 'BookCorpus':
         from data import BookCorpus
     else:
