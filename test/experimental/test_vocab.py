@@ -3,6 +3,7 @@ from collections import OrderedDict
 import os
 import platform
 import torch
+import pickle
 import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vocab import (
@@ -225,3 +226,16 @@ class TestVocab(TorchtextTestCase):
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
+
+
+    def test_vocab_pickle(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+        v_jit = torch.jit.script(v)
+        pickle_obj = pickle.dumps(v)
+        v = pickle.loads(pickle_obj)
+        tokens = ['b', 'a', 'c']
+        expected_indices = [2, 1, 3]
+        self.assertEqual(v(tokens), expected_indices)
