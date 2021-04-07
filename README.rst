@@ -75,6 +75,15 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
     # OSX
     MACOSX_DEPLOYMENT_TARGET=10.9 CC=clang CXX=clang++ python setup.py clean install
 
+    # Windows
+    # We need to use the MSVC x64 toolset for compilation, with Visual Studio's vcvarsall.bat or directly with vcvars64.bat.
+    # These batch files are under Visual Studio's installation folder, under 'VC\Auxiliary\Build\'.
+    # More information available at:
+    #   https://docs.microsoft.com/en-us/cpp/build/how-to-enable-a-64-bit-visual-cpp-toolset-on-the-command-line?view=msvc-160#use-vcvarsallbat-to-set-a-64-bit-hosted-build-architecture
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 && python setup.py clean install
+    # or
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat" && python setup.py clean install
+
     # or ``python setup.py develop`` if you are making modifications.
 
 **Note**
