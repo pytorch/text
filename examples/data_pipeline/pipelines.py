@@ -12,6 +12,7 @@ from torchtext.experimental.transforms import (
     TextSequentialTransforms,
     sentencepiece_tokenizer,
     load_sp_model,
+    PRETRAINED_SP_MODEL,
 )
 from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.functional import (
@@ -20,14 +21,17 @@ from torchtext.experimental.functional import (
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.experimental.vocab import load_vocab_from_file
 from torchtext.vocab import FastText
-
+from torchtext.utils import download_from_url
 import argparse
-from torchtext.datasets import text_classification as raw
+from torchtext.datasets import DATASETS
 import time
 from torch.utils.data import DataLoader
 
 
-def build_sp_pipeline(spm_file):
+def build_sp_pipeline(args):
+    spm_file = args.spm_filename
+    if spm_file in PRETRAINED_SP_MODEL:
+        spm_file = download_from_url(PRETRAINED_SP_MODEL[spm_file])
     tokenizer = sentencepiece_tokenizer(spm_file)
     vocab = PretrainedSPVocab(load_sp_model(spm_file))
 
@@ -38,7 +42,8 @@ def build_sp_pipeline(spm_file):
     return pipeline, pipeline, jit_pipeline
 
 
-def build_legacy_torchtext_vocab_pipeline(vocab_file):
+def build_legacy_torchtext_vocab_pipeline(args):
+    vocab_file = args.vocab_filename
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
 
@@ -53,9 +58,10 @@ def build_legacy_torchtext_vocab_pipeline(vocab_file):
     return pipeline, None, None
 
 
-def build_experimental_torchtext_pipeline(hf_vocab_file):
+def build_experimental_torchtext_pipeline(args):
+    vocab_file = args.vocab_filename
     tokenizer = basic_english_normalize()
-    with open(hf_vocab_file, 'r') as f:
+    with open(vocab_file, 'r') as f:
         vocab = load_vocab_from_file(f)
         pipeline = TextSequentialTransforms(tokenizer, vocab)
         jit_pipeline = torch.jit.script(pipeline)
@@ -63,7 +69,8 @@ def build_experimental_torchtext_pipeline(hf_vocab_file):
         return pipeline, pipeline, jit_pipeline
 
 
-def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
+def build_legacy_batch_torchtext_vocab_pipeline(args):
+    vocab_file = args.vocab_filename
     tokenizer = get_tokenizer("basic_english")
     from torchtext.vocab import build_vocab_from_iterator
 
@@ -78,7 +85,8 @@ def build_legacy_batch_torchtext_vocab_pipeline(vocab_file):
     return text_pipeline, None, None
 
 
-def build_legacy_pytext_vocab_pipeline(vocab_file):
+def build_legacy_pytext_vocab_pipeline(args):
+    vocab_file = args.vocab_filename
     from pytext.data.utils import Vocabulary
 
     tokenizer = get_tokenizer("basic_english")
@@ -92,7 +100,8 @@ def build_legacy_pytext_vocab_pipeline(vocab_file):
         return pipeline, None, None
 
 
-def build_legacy_pytext_script_vocab_pipeline(vocab_file):
+def build_legacy_pytext_script_vocab_pipeline(args):
+    vocab_file = args.vocab_filename
     from pytext.torchscript.vocab import ScriptVocabulary
 
     tokenizer = basic_english_normalize()
@@ -108,7 +117,8 @@ def build_legacy_pytext_script_vocab_pipeline(vocab_file):
         return pipeline, pipeline, jit_pipeline
 
 
-def build_experimental_pytext_script_pipeline(vocab_file):
+def build_experimental_pytext_script_pipeline(args):
+    vocab_file = args.vocab_filename
     import os
     import sys
     # this is needed because we want to add 'torchtext/examples/vocab' directory to the
@@ -129,7 +139,7 @@ def build_experimental_pytext_script_pipeline(vocab_file):
     return pipeline, pipeline, jit_pipeline
 
 
-def build_legacy_fasttext_vector_pipeline():
+def build_legacy_fasttext_vector_pipeline(args):
     tokenizer = get_tokenizer("basic_english")
     vector = FastText()
 
@@ -137,7 +147,7 @@ def build_legacy_fasttext_vector_pipeline():
     return pipeline, None, None
 
 
-def build_experimental_fasttext_vector_pipeline():
+def build_experimental_fasttext_vector_pipeline(args):
     tokenizer = basic_english_normalize()
     vector = FastTextExperimental()
 
@@ -166,9 +176,21 @@ def run_batch_benchmark_lookup(text_classification_dataset, pipeline):
 
 
 def generate_dataset(args):
-    train, test = raw.DATASETS[args.dataset]()
+    train, test = DATASETS[args.dataset]()
     return [_data for _data in train], [_data for _data in test]
 
+
+PIPELINES = {
+    'sentencepiece': build_sp_pipeline,
+    'experimental_torchtext': build_experimental_torchtext_pipeline,
+    'legacy_torchtext': build_legacy_torchtext_vocab_pipeline,
+    'experimental_fasttext': build_experimental_fasttext_vector_pipeline,
+    'legacy_fasttext': build_legacy_fasttext_vector_pipeline,
+    'experimental_pytext_script_vocab': build_experimental_pytext_script_pipeline,
+    'legacy_pytext_vocab': build_legacy_pytext_vocab_pipeline,
+    'legacy_pytext_script_vocab': build_legacy_pytext_script_vocab_pipeline,
+    'legacy_batch_torchtext': build_legacy_batch_torchtext_vocab_pipeline,
+}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Data procesing pipelines')
@@ -176,34 +198,16 @@ if __name__ == "__main__":
                         help='The name of pipeline')
     parser.add_argument('--dataset', type=str, default='AG_NEWS',
                         help='Dataset for performance benchmark')
-    parser.add_argument('--spm-filename', type=str, default='m_user.model',
+    parser.add_argument('--spm-filename', type=str, default='text_unigram_25000',
                         help='The filename of sentencepiece model')
     parser.add_argument('--vocab-filename', type=str, default='vocab.txt',
                         help='The name of vocab filename')
     args = parser.parse_args()
 
-    if args.pipeline == 'sentencepiece':
-        pipeline, torchbind_pipeline, jit_pipeline = build_sp_pipeline(args.spm_filename)
-    elif args.pipeline == 'experimental_torchtext':
-        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_torchtext_pipeline(args.vocab_filename)
-    elif args.pipeline == 'experimental_pytext_script_vocab':
-        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_pytext_script_pipeline(args.vocab_filename)
-    elif args.pipeline == 'experimental_fasttext':
-        pipeline, torchbind_pipeline, jit_pipeline = build_experimental_fasttext_vector_pipeline()
-    elif args.pipeline == 'legacy_torchtext':
-        pipeline, torchbind_pipeline, jit_pipeline = build_legacy_torchtext_vocab_pipeline(args.vocab_filename)
-    elif args.pipeline == 'legacy_pytext_vocab':
-        pipeline, torchbind_pipeline, jit_pipeline = build_legacy_pytext_vocab_pipeline(args.vocab_filename)
-    elif args.pipeline == 'legacy_pytext_script_vocab':
-        pipeline, torchbind_pipeline, jit_pipeline = build_legacy_pytext_script_vocab_pipeline(args.vocab_filename)
-    elif args.pipeline == 'legacy_fasttext':
-        pipeline, torchbind_pipeline, jit_pipeline = build_legacy_fasttext_vector_pipeline()
-    elif args.pipeline == 'legacy_batch_torchtext':
-        pipeline, torchbind_pipeline, jit_pipeline = build_legacy_batch_torchtext_vocab_pipeline(args.vocab_filename)
-    else:
-        print("pipeline is not supported. Current pipelines include sentencepiece, experimental_torchtext, " +
-              "experimental_fasttext, legacy_pytext, experimental_fasttext, legacy_torchtext, legacy_batch_torchtext")
+    if args.pipeline not in PIPELINES:
+        raise KeyError('Pipeline {} is not supported. Valid pipelines are {}'.format(args.pipeline, list(PIPELINES.keys())))
 
+    pipeline, torchbind_pipeline, jit_pipeline = PIPELINES[args.pipeline](args)
     if pipeline is not None:
         print("Test eager mode for pipeline with pybind", args.pipeline)
         train, test = generate_dataset(args)
