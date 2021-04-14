@@ -18,6 +18,12 @@ General use cases are as follows: ::
     for label, line in train_iter:
         tokens += tokenize(label, line)
 
+    # Starting iterator at some offset
+    train_iter = IMDB(split='train', offset={'train':1000})
+
+    # Converting iterator to map style dataset
+    train_map_style_dataset = train_iter.to_map_dataset()
+    
 The following datasets are available:
 
 .. contents:: Datasets
