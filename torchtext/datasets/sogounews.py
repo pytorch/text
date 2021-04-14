@@ -36,9 +36,14 @@ DATASET_NAME = "SogouNews"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=5)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
-def SogouNews(root, split):
+def SogouNews(root, split, offset=None):
     path = _download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
                                       _EXTRACTED_FILES_MD5[split], hash_type="md5")
     logging.info('Creating {} data'.format(split))
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
     return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_csv(path))
+                                   _create_data_from_csv(path), offset_split)

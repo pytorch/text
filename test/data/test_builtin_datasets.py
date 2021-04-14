@@ -177,13 +177,16 @@ class TestDataset(TorchtextTestCase):
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
-
+        offset = info['NUM_LINES'] - 1
         if dataset_name == "Multi30k" or dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+            data_iter_offset = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split, offset={split: offset})
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
+            data_iter_offset = torchtext.datasets.DATASETS[dataset_name](split=split, offset={split: offset})
         self.assertEqual(len(data_iter), info['NUM_LINES'])
         self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
+        self.assertEqual(hashlib.md5(json.dumps(next(data_iter_offset), sort_keys=True).encode('utf-8')).hexdigest(), info['last_line'])
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
@@ -196,6 +199,7 @@ class TestDataset(TorchtextTestCase):
         else:
             self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
+
         del data_iter
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))

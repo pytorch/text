@@ -22,7 +22,7 @@ DATASET_NAME = "IMDB"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
-def IMDB(root, split):
+def IMDB(root, split, offset=None):
     def generate_imdb_data(key, extracted_files):
         for fname in extracted_files:
             if 'urls' in fname:
@@ -35,4 +35,9 @@ def IMDB(root, split):
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     iterator = generate_imdb_data(split, extracted_files)
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split], iterator)
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split], iterator, offset_split)

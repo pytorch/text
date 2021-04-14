@@ -25,10 +25,15 @@ DATASET_NAME = "EnWik9"
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train',))
-def EnWik9(root, split):
+def EnWik9(root, split, offset=None):
     dataset_tar = download_from_url(URL, root=root, hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
     path = extracted_files[0]
     logging.info('Creating {} data'.format(split))
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
     return _RawTextIterableDataset(DATASET_NAME,
-                                   NUM_LINES[split], _read_text_iterator(path))
+                                   NUM_LINES[split], _read_text_iterator(path), offset_split)

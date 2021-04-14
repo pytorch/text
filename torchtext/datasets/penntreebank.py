@@ -32,11 +32,16 @@ DATASET_NAME = "PennTreebank"
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
-def PennTreebank(root, split):
+def PennTreebank(root, split, offset=None):
     path = download_from_url(URL[split],
                              root=root, hash_value=MD5[split],
                              hash_type='md5')
     logging.info('Creating {} data'.format(split))
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
     return _RawTextIterableDataset(DATASET_NAME,
                                    NUM_LINES[split],
-                                   _read_text_iterator(path))
+                                   _read_text_iterator(path), offset_split)

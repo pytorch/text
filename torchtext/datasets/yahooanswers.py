@@ -24,12 +24,18 @@ DATASET_NAME = "YahooAnswers"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=10)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
-def YahooAnswers(root, split):
+def YahooAnswers(root, split, offset=None):
     dataset_tar = download_from_url(URL, root=root,
                                     path=os.path.join(root, _PATH),
                                     hash_value=MD5, hash_type='md5')
     extracted_files = extract_archive(dataset_tar)
 
     path = _find_match(split + '.csv', extracted_files)
+
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
     return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_csv(path))
+                                   _create_data_from_csv(path), offset_split)

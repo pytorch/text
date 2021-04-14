@@ -28,7 +28,12 @@ DATASET_NAME = "SQuAD2"
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'dev'))
-def SQuAD2(root, split):
+def SQuAD2(root, split, offset=None):
     extracted_files = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
     return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_json(extracted_files))
+                                   _create_data_from_json(extracted_files), offset_split)

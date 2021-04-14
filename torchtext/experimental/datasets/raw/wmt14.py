@@ -64,6 +64,7 @@ DATASET_NAME = "WMT14"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def WMT14(root, split,
+          offset=None,
           language_pair=('de', 'en'),
           train_set='train.tok.clean.bpe.32000',
           valid_set='newstest2013.tok.bpe.32000',
@@ -156,4 +157,9 @@ def WMT14(root, split,
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter))
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[os.path.splitext(src_file)[0]], _iter(src_data_iter, tgt_data_iter), offset_split)

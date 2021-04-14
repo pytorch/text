@@ -403,6 +403,7 @@ DATASET_NAME = "Multi30k"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def Multi30k(root, split,
+             offset=None,
              task='task1',
              language_pair=('de', 'en'),
              train_set="train",
@@ -538,6 +539,11 @@ def Multi30k(root, split,
         'test': test_set,
     }
 
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
     return _RawTextIterableDataset(DATASET_NAME,
                                    SUPPORTED_DATASETS[task][language_pair[0]][set_identifier[split]]['NUM_LINES'],
-                                   _iter(src_data_iter, tgt_data_iter))
+                                   _iter(src_data_iter, tgt_data_iter), offset_split)

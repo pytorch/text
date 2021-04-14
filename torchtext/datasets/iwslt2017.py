@@ -119,7 +119,7 @@ DATASET_NAME = "IWSLT2017"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
-def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en')):
+def IWSLT2017(root, split, offset=None, language_pair=('de', 'en')):
     """IWSLT2017 dataset
 
     The available datasets include following:
@@ -231,4 +231,9 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         for item in zip(src_data_iter, tgt_data_iter):
             yield item
 
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))
+    offset_split = 0
+    if offset is not None:
+        if split in offset:
+            offset_split = offset[split]
+
+    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter), offset_split)

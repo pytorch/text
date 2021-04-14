@@ -175,6 +175,7 @@ def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
         args_s += "\n     split: Only {default_split} is available."
         args_s += "\n         Default: {default_split}.format(default_split=default_split)"
 
+    args_s += "\n    offset: Optional dict argument specifying offset for each split"
     return "\n".join([header_s, args_s]) + "\n"
 
 
@@ -279,18 +280,39 @@ def _download_extract_validate(root, url, url_md5, downloaded_file, extracted_fi
     return extracted_file
 
 
-class _RawTextIterableDataset(torch.utils.data.IterableDataset):
-    """Defines an abstraction for raw text iterable datasets.
-    """
+class _RawTextMapDataset(torch.utils.data.Dataset):
+    """Helper class to convert IterableDatatset to Dataset"""
 
-    def __init__(self, description, full_num_lines, iterator):
-        """Initiate the dataset abstraction.
-        """
+    def __init__(self, raw_text_iter_data):
+        """Initialized with _RawTextIterableDataset"""
+        self.description = raw_text_iter_data.description
+        self._data = [d for d in raw_text_iter_data]
+
+    def __len__(self):
+        return len(self._data)
+
+    def __getitem__(self, idx):
+        return self._data[idx]
+
+
+class _RawTextIterableDataset(torch.utils.data.IterableDataset):
+    """Defines an abstraction for raw text iterable datasets."""
+
+    def __init__(self, description, full_num_lines, iterator, offset=0):
+        """Initiate the dataset abstraction."""
         super(_RawTextIterableDataset, self).__init__()
+        assert (
+            offset < full_num_lines
+        ), "offset {} should be less than the number of lines {} in dataset".format(
+            offset, full_num_lines
+        )
+        assert offset >= 0, "offset must be non-negative but {} is given".format(offset)
         self.description = description
         self.full_num_lines = full_num_lines
         self._iterator = iterator
-        self.num_lines = full_num_lines
+        self.num_lines = full_num_lines - offset
+        for _ in range(offset):
+            next(self._iterator)
         self.current_pos = None
 
     def __iter__(self):
@@ -308,6 +330,9 @@ class _RawTextIterableDataset(torch.utils.data.IterableDataset):
 
     def __len__(self):
         return self.num_lines
+
+    def to_map_dataset(self):
+        return _RawTextMapDataset(self)
 
     def pos(self):
         """
