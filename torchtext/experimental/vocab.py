@@ -19,12 +19,11 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
-    The `file_object` can contain any raw text. This function applies a generic JITed tokenizer in
-    parallel to the text. Note that the vocab will be created in the order that the tokens first appear
-    in the file (and not by the frequency of tokens).
+    The `file_path` can contain any raw text. This function applies a generic JITed tokenizer in
+    parallel to the text.
 
     Args:
         file_object (FileObject): a file object to read data from.
@@ -40,20 +39,18 @@ def build_vocab_from_text_file(file_object, jited_tokenizer, min_freq=1, unk_tok
     Examples:
         >>> from torchtext.experimental.vocab import build_vocab_from_text_file
         >>> from torchtext.experimental.transforms import basic_english_normalize
-        >>> f = open('vocab.txt', 'r')
-        >>>     tokenizer = basic_english_normalize()
+        >>> tokenizer = basic_english_normalize()
         >>> tokenizer = basic_english_normalize()
         >>> jit_tokenizer = torch.jit.script(tokenizer)
-        >>> v = build_vocab_from_text_file(f, jit_tokenizer)
+        >>> v = build_vocab_from_text_file('vocab.txt', jit_tokenizer)
     """
-    vocab_obj = _build_vocab_from_text_file(file_object.name, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_path, unk_token, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4):
+def load_vocab_from_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
-    The `file_object` should contain tokens separated by new lines. Note that the vocab
-    will be created in the order that the tokens first appear in the file (and not by the frequency of tokens).
+    The `file_path` should contain tokens separated by new lines.
     Format for txt file:
 
         token1
@@ -73,11 +70,10 @@ def load_vocab_from_file(file_object, min_freq=1, unk_token='<unk>', num_cpus=4)
 
     Examples:
         >>> from torchtext.experimental.vocab import load_vocab_from_file
-        >>> f = open('vocab.txt', 'r')
-        >>> v = load_vocab_from_file(f)
+        >>> v = load_vocab_from_file('vocab.txt')
     """
 
-    vocab_obj = _load_vocab_from_file(file_object.name, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_path, unk_token, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
