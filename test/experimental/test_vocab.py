@@ -5,12 +5,9 @@ import platform
 import torch
 import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.transforms import basic_english_normalize
 from torchtext.experimental.vocab import (
     vocab,
     build_vocab_from_iterator,
-    build_vocab_from_text_file,
-    load_vocab_from_file,
 )
 
 
@@ -220,36 +217,9 @@ class TestVocab(TorchtextTestCase):
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
 
-    def test_build_vocab_from_vocab_file(self):
-        iterator = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', 'freq_low']
-        with self.subTest('buildfromvocabfile'):
-            vocab_path = os.path.join(self.test_dir, 'vocab.txt')
-            with open(vocab_path, 'w') as f:
-                f.write('\n'.join(iterator))
-            v = load_vocab_from_file(vocab_path)
-            expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', 'freq_low']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
-
-    def test_build_vocab_from_text_file(self):
-        iterator = ['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
-                    'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'freq_low', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T']
-        with self.subTest('buildfromtextfile'):
-            vocab_path = os.path.join(self.test_dir, 'vocab.txt')
-            with open(vocab_path, 'w') as f:
-                f.write(' '.join(iterator))
-                f.write('\n')
-            tokenizer = torch.jit.script(basic_english_normalize())
-            v = build_vocab_from_text_file(vocab_path, tokenizer)
-            expected_itos = ['<unk>', 'ᑌᑎiᑕoᗪᕮ_tᕮ᙭t', 'hello', 'world', 'freq_low']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
-
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
-                     'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'freq_low', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T']]
+                    'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'freq_low', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T']]
         v = build_vocab_from_iterator(iterator)
         expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', 'freq_low']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
