@@ -9,7 +9,7 @@ from torchtext.experimental.vocab import (
     load_vocab_from_file,
     build_vocab_from_text_file
 )
-from torchtext.vocab import (
+from torchtext.legacy.vocab import (
     Vocab,
     build_vocab_from_iterator
 )

@@ -1,6 +1,6 @@
 from torchtext.legacy import data
 from torchtext.legacy import datasets
-from torchtext.vocab import GloVe
+from torchtext.legacy.vocab import GloVe
 
 # Define the fields associated with the sequences.
 WORD = data.Field(init_token="<bos>", eos_token="<eos>")

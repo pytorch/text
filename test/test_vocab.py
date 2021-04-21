@@ -6,7 +6,7 @@ import pickle
 
 import numpy as np
 import torch
-from torchtext import vocab
+from torchtext.legacy import vocab
 
 from .common.torchtext_test_case import TorchtextTestCase
 

@@ -1,6 +1,6 @@
 from torchtext.legacy import data
 from torchtext.legacy import datasets
-from torchtext.vocab import GloVe
+from torchtext.legacy.vocab import GloVe
 
 
 # Approach 1:

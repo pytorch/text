@@ -241,7 +241,7 @@ class TestDataset(TorchtextTestCase):
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
-        from torchtext.vocab import Vocab
+        from torchtext.legacy.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, test_dataset = IMDB()
         self._helper_test_func(len(train_dataset), 25000, train_dataset[0][1][:10],
@@ -496,7 +496,7 @@ class TestDataset(TorchtextTestCase):
 
     def test_squad1(self):
         from torchtext.experimental.datasets import SQuAD1
-        from torchtext.vocab import Vocab
+        from torchtext.legacy.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, dev_dataset = SQuAD1()
         context, question, answers, ans_pos = train_dataset[100]
@@ -525,7 +525,7 @@ class TestDataset(TorchtextTestCase):
 
     def test_squad2(self):
         from torchtext.experimental.datasets import SQuAD2
-        from torchtext.vocab import Vocab
+        from torchtext.legacy.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, dev_dataset = SQuAD2()
         context, question, answers, ans_pos = train_dataset[200]

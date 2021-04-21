@@ -10,7 +10,7 @@ import torch
 from tqdm import tqdm
 import tarfile
 
-from .utils import reporthook
+from ..utils import reporthook
 
 from collections import Counter
 

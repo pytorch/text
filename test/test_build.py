@@ -126,7 +126,7 @@ class TestDataUtils(TorchtextTestCase):
 
 class TestVocab(TorchtextTestCase):
     def test_vectors_get_vecs(self):
-        vec = torchtext.vocab.GloVe(name='twitter.27B', dim='25')
+        vec = torchtext.legacy.vocab.GloVe(name='twitter.27B', dim='25')
         self.assertEqual(vec.vectors.shape[0], len(vec))
 
         tokens = ['chip', 'baby', 'Beautiful']
@@ -149,8 +149,8 @@ class TestVocab(TorchtextTestCase):
             if i == 2:
                 vectors = "charngram.100d"
             else:
-                vectors = torchtext.vocab.CharNGram()
-            v = torchtext.vocab.Vocab(
+                vectors = torchtext.legacy.vocab.CharNGram()
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
             expected_itos = ['<unk>', '<pad>', '<bos>',
                              'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
@@ -177,11 +177,11 @@ class TestVocab(TorchtextTestCase):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                vectors=torchtext.vocab.Vectors(
+                vectors=torchtext.legacy.vocab.Vectors(
                     'wiki.simple.vec',
-                    url=torchtext.vocab.FastText.url_base.format('simple')
+                    url=torchtext.legacy.vocab.FastText.url_base.format('simple')
                 )
             )
 
@@ -209,9 +209,9 @@ class TestVocab(TorchtextTestCase):
             if i == 2:
                 vectors = "fasttext.simple.300d"
             else:
-                vectors = torchtext.vocab.FastText(language='simple')
+                vectors = torchtext.legacy.vocab.FastText(language='simple')
 
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
@@ -243,8 +243,8 @@ class TestVocab(TorchtextTestCase):
             if i == 2:
                 vectors = "glove.twitter.27B.25d"
             else:
-                vectors = torchtext.vocab.GloVe(name='twitter.27B', dim='25')
-            v = torchtext.vocab.Vocab(
+                vectors = torchtext.legacy.vocab.GloVe(name='twitter.27B', dim='25')
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
@@ -272,8 +272,8 @@ class TestVocab(TorchtextTestCase):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
-            f = torchtext.vocab.FastText(language='simple')
-            v = torchtext.vocab.Vocab(
+            f = torchtext.legacy.vocab.FastText(language='simple')
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=f)
             n_vocab = len(v)
             v.extend(f)  # extend the vocab with the words contained in f.itos
@@ -304,11 +304,11 @@ class TestVocab(TorchtextTestCase):
             if i == 1:
                 self.assertTrue(os.path.exists(vector_cache))
 
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                vectors=torchtext.vocab.Vectors(
+                vectors=torchtext.legacy.vocab.Vectors(
                     'wiki.simple.vec', cache=vector_cache,
-                    url=torchtext.vocab.FastText.url_base.format('simple'))
+                    url=torchtext.legacy.vocab.FastText.url_base.format('simple'))
             )
 
             self.assertEqual(v.itos, ['<unk>', '<pad>', '<bos>',
