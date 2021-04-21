@@ -1,7 +1,10 @@
 import argparse
 from collections import (Counter, OrderedDict)
 import time
-
+from timeit import default_timer as timer
+import random
+import string
+from matplotlib import pyplot as plt
 import torch
 from torchtext.experimental.datasets import DATASETS
 from torchtext.experimental.vocab import (
@@ -14,6 +17,42 @@ from torchtext.vocab import (
     build_vocab_from_iterator
 )
 from torchtext.experimental.transforms import basic_english_normalize
+
+
+def compare_legacy_and_experimental_batch_lookup():
+    num_tokens = 1000
+    num_letters = 6
+    num_lines = 100000
+    vocab = [''.join(random.sample(string.ascii_letters * num_letters, num_letters)) for _ in range(num_tokens)]
+    counter = Counter()
+    counter.update(vocab)
+    legacy_vocab = Vocab(counter)
+    experimental_vocab = VocabExperimental(counter)
+    speed_ups = []
+    token_lengths = [i for i in range(2, 100)]
+    for i in token_lengths:
+        lines = [random.sample(vocab, i) for _ in range(num_lines)]
+        start_time = timer()
+        for l in lines:
+            legacy_vocab.lookup_indices(l)
+        legacy_time = timer() - start_time
+
+        start_time = timer()
+        for l in lines:
+            experimental_vocab.lookup_indices(l)
+
+        experimental_time = timer() - start_time
+
+        speed_ups.append(legacy_time / experimental_time)
+        print("speed-up={} for average length={}".format(legacy_time / experimental_time, i))
+        del lines
+
+    plt.close()
+    fig, ax = plt.subplots(1,1)
+    ax.plot(token_lengths, speed_ups)
+    ax.set_xlabel('Average Tokens per line')
+    ax.set_ylabel('Speed-up')
+    plt.savefig("speedup.jpg")
 
 
 def legacy_vocab_from_file_object(file_like_object, **kwargs):
@@ -76,7 +115,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
         print("Construction time:", time.monotonic() - t0)
 
 
-def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset = 'AG_NEWS'):
+def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS'):
     def _run_benchmark_lookup(tokens, vocab):
         t0 = time.monotonic()
         # list lookup
