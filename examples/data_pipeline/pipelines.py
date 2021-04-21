@@ -42,7 +42,7 @@ def build_sp_pipeline(args):
     return pipeline, pipeline, jit_pipeline
 
 
-def build_legacy_torchtext.legacy.vocab_pipeline(args):
+def build_legacy_torchtext_vocab_pipeline(args):
     vocab_file = args.vocab_filename
     tokenizer = get_tokenizer("basic_english")
     from torchtext.legacy.vocab import build_vocab_from_iterator
@@ -69,7 +69,7 @@ def build_experimental_torchtext_pipeline(args):
         return pipeline, pipeline, jit_pipeline
 
 
-def build_legacy_batch_torchtext.legacy.vocab_pipeline(args):
+def build_legacy_batch_torchtext_vocab_pipeline(args):
     vocab_file = args.vocab_filename
     tokenizer = get_tokenizer("basic_english")
     from torchtext.legacy.vocab import build_vocab_from_iterator
@@ -183,13 +183,13 @@ def generate_dataset(args):
 PIPELINES = {
     'sentencepiece': build_sp_pipeline,
     'experimental_torchtext': build_experimental_torchtext_pipeline,
-    'legacy_torchtext': build_legacy_torchtext.legacy.vocab_pipeline,
+    'legacy_torchtext': build_legacy_torchtext_vocab_pipeline,
     'experimental_fasttext': build_experimental_fasttext_vector_pipeline,
     'legacy_fasttext': build_legacy_fasttext_vector_pipeline,
     'experimental_pytext_script_vocab': build_experimental_pytext_script_pipeline,
     'legacy_pytext_vocab': build_legacy_pytext_vocab_pipeline,
     'legacy_pytext_script_vocab': build_legacy_pytext_script_vocab_pipeline,
-    'legacy_batch_torchtext': build_legacy_batch_torchtext.legacy.vocab_pipeline,
+    'legacy_batch_torchtext': build_legacy_batch_torchtext_vocab_pipeline,
 }
 
 if __name__ == "__main__":
