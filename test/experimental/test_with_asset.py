@@ -78,13 +78,12 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_transform(self):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            vocab_transform = VocabTransform(load_vocab_from_file(f))
-            self.assertEqual(vocab_transform(['of', 'that', 'new']),
-                             [7, 18, 24])
-            jit_vocab_transform = torch.jit.script(vocab_transform)
-            self.assertEqual(jit_vocab_transform(['of', 'that', 'new', 'that']),
-                             [7, 18, 24, 18])
+        vocab_transform = VocabTransform(load_vocab_from_file(asset_path))
+        self.assertEqual(vocab_transform(['of', 'that', 'new']),
+                         [7, 18, 24])
+        jit_vocab_transform = torch.jit.script(vocab_transform)
+        self.assertEqual(jit_vocab_transform(['of', 'that', 'new', 'that']),
+                         [7, 18, 24, 18])
 
     def test_errors_vectors_python(self):
         tokens = []
@@ -179,27 +178,25 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_from_file(self):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            v = load_vocab_from_file(f, unk_token='<new_unk>')
-            expected_itos = ['<new_unk>', 'b', 'a', 'c']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        v = load_vocab_from_file(asset_path, unk_token='<new_unk>')
+        expected_itos = ['<new_unk>', 'b', 'a', 'c']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_vocab_from_raw_text_file(self):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            tokenizer = basic_english_normalize()
-            jit_tokenizer = torch.jit.script(tokenizer)
-            v = build_vocab_from_text_file(f, jit_tokenizer, unk_token='<new_unk>')
-            expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
-                             'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
-                             'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
-                             'unions', 'with', 'workers']
-            expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-            self.assertEqual(v.get_itos(), expected_itos)
-            self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        tokenizer = basic_english_normalize()
+        jit_tokenizer = torch.jit.script(tokenizer)
+        v = build_vocab_from_text_file(asset_path, jit_tokenizer, unk_token='<new_unk>')
+        expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
+                         'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
+                         'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
+                         'unions', 'with', 'workers']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
     def test_builtin_pretrained_sentencepiece_processor(self):
         sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_unigram_25000'])
@@ -241,11 +238,10 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_text_sequential_transform(self):
         asset_name = 'vocab_test2.txt'
         asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'r') as f:
-            pipeline = TextSequentialTransforms(basic_english_normalize(), load_vocab_from_file(f))
-            jit_pipeline = torch.jit.script(pipeline)
-            self.assertEqual(pipeline('of that new'), [7, 18, 24])
-            self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
+        pipeline = TextSequentialTransforms(basic_english_normalize(), load_vocab_from_file(asset_path))
+        jit_pipeline = torch.jit.script(pipeline)
+        self.assertEqual(pipeline('of that new'), [7, 18, 24])
+        self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
 
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
