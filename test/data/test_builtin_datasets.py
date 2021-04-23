@@ -5,7 +5,6 @@ import torch
 import torchtext
 import json
 import hashlib
-from torchtext.legacy import data
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
@@ -34,23 +33,6 @@ class TestDataset(TorchtextTestCase):
         if isinstance(target_results, tuple):
             target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
         self.assertEqual(results, target_results)
-
-    def test_wikitext2_legacy(self):
-        from torchtext.legacy.datasets import WikiText2
-        cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
-        conditional_remove(cachedir)
-
-        ds = WikiText2
-        TEXT = data.Field(lower=True, batch_first=True)
-        train, valid, test = ds.splits(TEXT)
-        TEXT.build_vocab(train)
-        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-            (train, valid, test), batch_size=3, bptt_len=30)
-
-        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-                                                     bptt_len=30)
-
-        conditional_remove(cachedir)
 
     def test_wikitext2(self):
         from torchtext.experimental.datasets import WikiText2
@@ -90,19 +72,6 @@ class TestDataset(TorchtextTestCase):
 
         conditional_remove(cachedir)
         conditional_remove(cachefile)
-
-    def test_penntreebank_legacy(self):
-        from torchtext.legacy.datasets import PennTreebank
-        # smoke test to ensure penn treebank works properly
-        TEXT = data.Field(lower=True, batch_first=True)
-        ds = PennTreebank
-        train, valid, test = ds.splits(TEXT)
-        TEXT.build_vocab(train)
-        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-            (train, valid, test), batch_size=3, bptt_len=30)
-
-        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-                                                     bptt_len=30)
 
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
