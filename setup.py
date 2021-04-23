@@ -25,7 +25,7 @@ def _get_version():
         sha = None
 
     if 'BUILD_VERSION' in os.environ:
-        version = os.environ('BUILD_VERSION')
+        version = os.environ['BUILD_VERSION']
     else:
         with open(os.path.join(ROOT_DIR, 'version.txt'), 'r') as f:
             version = f.readline().strip()
