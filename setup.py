@@ -18,7 +18,8 @@ def read(*names, **kwargs):
 
 
 def _get_version():
-    version = '0.10.0a0'
+    with open(os.path.join(ROOT_DIR, 'version.txt'), 'r') as f:
+        version = f.readline().strip()
     sha = None
 
     try:
