@@ -63,7 +63,7 @@ _patterns = [(r'<.*>', ''),
 def _clean_wikipedia_xml_dumps(input_filename, output_filename):
     # Clean wikipedia xml dumps according to https://github.com/facebookresearch/fastText/blob/master/wikifil.pl
     norm_transform = custom_replace(_patterns)
-    with open(input_filename, 'r') as f1:
+    with open(input_filename, 'r', encoding='utf-8') as f1:
         with open(output_filename, 'w') as f2:
             while True:
                 line = f1.readline()
