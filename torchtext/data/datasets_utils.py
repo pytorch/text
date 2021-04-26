@@ -10,6 +10,7 @@ from torchtext.utils import (
     extract_archive,
     unicode_csv_reader,
 )
+from torchtext.data.functional import custom_replace
 import codecs
 try:
     import defusedxml.ElementTree as ET
@@ -19,6 +20,62 @@ except ImportError:
 These functions and classes are meant solely for use in torchtext.datasets and not
 for public consumption yet.
 """
+_patterns = [(r'<.*>', ''),
+             (r'&amp;', '&'),
+             (r'&lt;', '<'),
+             (r'&gt;', '>'),
+             (r'<ref[^<]*<\/ref>', ''),
+             (r'<[^>]*>', ''),
+             (r'\[http:[^] ]*', '['),
+             (r'\|thumb', ''),
+             (r'\|left', ''),
+             (r'\|right', ''),
+             (r'\|\d+px', ''),
+             (r'\[\[image:[^\[\]]*\|', ''),
+             (r'\[\[category:([^|\]]*)[^]]*\]\]', '[[$1]]'),
+             (r'\[\[[a-z\-]*:[^\]]*\]\]', ''),
+             (r'\[\[[^\|\]]*\|', '[['),
+             (r'\{\{[^\}]*\}\}', ''),
+             (r'\{[^\}]*\}', ''),
+             (r'\[', ''),
+             (r'\]', ''),
+             (r'&[^;]*;', ' '),
+             (r'A', 'a'), (r'B', 'b'), (r'C', 'c'),
+             (r'D', 'd'), (r'E', 'e'), (r'F', 'f'),
+             (r'G', 'g'), (r'H', 'h'), (r'I', 'i'),
+             (r'J', 'j'), (r'K', 'k'), (r'L', 'l'),
+             (r'M', 'm'), (r'N', 'n'), (r'O', 'o'),
+             (r'P', 'p'), (r'Q', 'q'), (r'R', 'r'),
+             (r'S', 's'), (r'T', 't'), (r'U', 'u'),
+             (r'V', 'v'), (r'W', 'w'), (r'X', 'x'),
+             (r'Y', 'y'), (r'Z', 'z'),
+             (r'0', ' zero '), (r'1', ' one '), (r'2', ' two '),
+             (r'3', ' three '), (r'4', ' four '), (r'5', ' five '),
+             (r'6', ' six '), (r'7', ' seven '), (r'8', ' eight '),
+             (r'9', ' nine '),
+             (r'[^a-z\n]+', ' '),
+             (r'\n ', ''),
+             (r'\s+', ' '),
+             (r'\n\s*\n', r'\n')
+             ]
+
+
+def _clean_wikipedia_xml_dumps(input_filename, output_filename):
+    # Clean wikipedia xml dumps according to https://github.com/facebookresearch/fastText/blob/master/wikifil.pl
+    norm_transform = custom_replace(_patterns)
+    with open(input_filename, 'r') as f1:
+        with open(output_filename, 'w') as f2:
+            while True:
+                line = f1.readline()
+                if not line:
+                    break
+                if '#redirect' in line or '#REDIRECT' in line:
+                    continue
+                line = list(norm_transform([line]))[0]
+                if line != ' ' and line != '':
+                    if line[0] == ' ':
+                        line = line[1:]
+                    f2.writelines(line + '\n')
 
 
 def _clean_xml_file(f_xml):
