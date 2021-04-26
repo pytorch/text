@@ -12,7 +12,6 @@ conda activate ./env
 
 printf "* Installing PyTorch\n"
 conda install -y -c "pytorch-${UPLOAD_CHANNEL}" ${CONDA_CHANNEL_FLAGS} pytorch cpuonly
-conda install mkl
 
 printf "* Installing torchtext\n"
 git submodule update --init --recursive
