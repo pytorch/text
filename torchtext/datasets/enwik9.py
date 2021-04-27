@@ -1,16 +1,13 @@
 import logging
-import os
 from torchtext.utils import (
     download_from_url,
     extract_archive,
-    validate_file,
 )
 from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
     _wrap_split_argument,
     _add_docstring_header,
     _create_dataset_directory,
-    _read_text_iterator,
     _create_data_from_wikipedia_xml_dumps,
 )
 
