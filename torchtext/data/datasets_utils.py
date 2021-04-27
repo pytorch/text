@@ -76,6 +76,7 @@ def _create_data_from_wikipedia_xml_dumps(input_filename):
                     line = line[1:]
                 yield line.strip()
 
+
 def _clean_xml_file(f_xml):
     f_txt = os.path.splitext(f_xml)[0]
     with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
