@@ -60,23 +60,21 @@ _patterns = [(r'<.*>', ''),
              ]
 
 
-def _clean_wikipedia_xml_dumps(input_filename, output_filename):
+def _create_data_from_wikipedia_xml_dumps(input_filename):
     # Clean wikipedia xml dumps according to https://github.com/facebookresearch/fastText/blob/master/wikifil.pl
     norm_transform = custom_replace(_patterns)
-    with open(input_filename, 'r', encoding='utf-8') as f1:
-        with open(output_filename, 'w') as f2:
-            while True:
-                line = f1.readline()
-                if not line:
-                    break
-                if '#redirect' in line or '#REDIRECT' in line:
-                    continue
-                line = list(norm_transform([line]))[0]
-                if line != ' ' and line != '':
-                    if line[0] == ' ':
-                        line = line[1:]
-                    f2.writelines(line + '\n')
-
+    with open(input_filename, 'r', encoding='utf-8') as f:
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            if '#redirect' in line or '#REDIRECT' in line:
+                continue
+            line = list(norm_transform([line]))[0]
+            if line != ' ' and line != '':
+                if line[0] == ' ':
+                    line = line[1:]
+                yield line.strip()
 
 def _clean_xml_file(f_xml):
     f_txt = os.path.splitext(f_xml)[0]
