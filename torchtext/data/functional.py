@@ -239,6 +239,6 @@ def filter_wikipedia_xml_from_iterator(raw_text_iterator):
     for line in raw_text_iterator:
         if '#redirect' in line or '#REDIRECT' in line:
             continue
-        line = list(norm_transform([line]))[0]
-        if line != ' ' and line != '':
-            yield line.strip()
+        line = list(norm_transform([line]))[0].strip()
+        if line:
+            yield line
