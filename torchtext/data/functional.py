@@ -228,6 +228,11 @@ def filter_wikipedia_xml_from_iterator(raw_text_iterator):
     args:
         raw_text_iterator: Raw dataset iterator
 
+    Examples:
+        >>> from torchtext.data.functional import filter_wikipedia_xml_from_iterator
+        >>> from torchtext.datasets import EnWik9
+        >>> data_iter = EnWik9(split='train')
+        >>> filter_data_iter =filter_wikipedia_xml_from_iterator(data_iter) 
     """
 
     norm_transform = custom_replace(_patterns)
