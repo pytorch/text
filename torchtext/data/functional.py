@@ -241,6 +241,4 @@ def filter_wikipedia_xml_from_iterator(raw_text_iterator):
             continue
         line = list(norm_transform([line]))[0]
         if line != ' ' and line != '':
-            if line[0] == ' ':
-                line = line[1:]
             yield line.strip()
