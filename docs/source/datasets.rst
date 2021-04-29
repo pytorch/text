@@ -27,9 +27,6 @@ The following datasets are available:
 Text Classification
 ^^^^^^^^^^^^^^^^^^^
 
-TextClassificationDataset
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
 AG_NEWS
 ~~~~~~~
 
@@ -126,6 +123,7 @@ CoNLL2000Chunking
 
 .. autofunction:: CoNLL2000Chunking
 
+
 Question Answer
 ^^^^^^^^^^^^^^^
 
@@ -139,3 +137,13 @@ SQuAD 2.0
 ~~~~~~~~~
 
 .. autofunction:: SQuAD2
+
+
+Unsupervised Learning
+^^^^^^^^^^^^^^^^^^^^^
+
+EnWik9
+~~~~~~
+
+.. autofunction:: EnWik9
+
