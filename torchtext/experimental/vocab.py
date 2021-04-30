@@ -176,6 +176,17 @@ class Vocab(nn.Module):
         return len(self.vocab)
 
     @torch.jit.export
+    def __contains__(self, token: str) -> bool:
+        r"""
+        Args:
+            token (str): the token for which to check the membership
+
+        Returns:
+            membership (bool): whether the token is member of vocab or not
+        """
+        return self.vocab.__contains__(token)
+
+    @torch.jit.export
     def __getitem__(self, token: str) -> int:
         r"""
         Args:
