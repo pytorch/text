@@ -33,6 +33,17 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['<new_unk>'], 0)
         self.assertEqual(v['not_in_it'], 0)
 
+    def test_vocab_membership(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+
+        self.assertTrue('<unk>' in v)
+        self.assertTrue('a' in v)
+        self.assertTrue('b' in v)
+        self.assertFalse('c' in v)
+
     def test_vocab_get_item(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
