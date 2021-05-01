@@ -222,21 +222,28 @@ _patterns = [(r'<.*>', ''),
              ]
 
 
-def filter_wikipedia_xml_from_iterator(raw_text_iterator):
+def filter_wikipedia_xml(text_iterator):
     r"""Filter wikipedia xml lines according to https://github.com/facebookresearch/fastText/blob/master/wikifil.pl
 
     args:
-        raw_text_iterator: Raw dataset iterator
+        text_iterator: An iterator type object that yields strings. Examples include string list, text io, generators etc.
 
     Examples:
-        >>> from torchtext.data.functional import filter_wikipedia_xml_from_iterator
+        >>> from torchtext.data.functional import filter_wikipedia_xml
         >>> from torchtext.datasets import EnWik9
         >>> data_iter = EnWik9(split='train')
-        >>> filter_data_iter =filter_wikipedia_xml_from_iterator(data_iter)
+        >>> filter_data_iter = filter_wikipedia_xml(data_iter)
+        >>> file_name = '.data/EnWik9/enwik9'
+        >>> filter_data_iter = filter_wikipedia_xml(open(file_name,'r'))
     """
 
+    try:
+        iter(text_iterator)
+    except:
+        raise TypeError("Input {} must support iterator semantics".format(text_iterator))
+
     norm_transform = custom_replace(_patterns)
-    for line in raw_text_iterator:
+    for line in text_iterator:
         if '#redirect' in line or '#REDIRECT' in line:
             continue
         line = list(norm_transform([line]))[0].strip()

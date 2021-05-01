@@ -43,7 +43,7 @@ torchtext.data.functional
 .. autofunction:: numericalize_tokens_from_iterator
 
 
-:hidden:`filter_wikipedia_xml_from_iterator`
+:hidden:`filter_wikipedia_xml`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: filter_wikipedia_xml_from_iterator
+.. autofunction:: filter_wikipedia_xml
