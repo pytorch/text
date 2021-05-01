@@ -3,7 +3,8 @@
 import os
 import torch
 import torchtext
-from torchtext.legacy import data
+import json
+import hashlib
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
@@ -32,23 +33,6 @@ class TestDataset(TorchtextTestCase):
         if isinstance(target_results, tuple):
             target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
         self.assertEqual(results, target_results)
-
-    def test_wikitext2_legacy(self):
-        from torchtext.legacy.datasets import WikiText2
-        cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
-        conditional_remove(cachedir)
-
-        ds = WikiText2
-        TEXT = data.Field(lower=True, batch_first=True)
-        train, valid, test = ds.splits(TEXT)
-        TEXT.build_vocab(train)
-        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-            (train, valid, test), batch_size=3, bptt_len=30)
-
-        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-                                                     bptt_len=30)
-
-        conditional_remove(cachedir)
 
     def test_wikitext2(self):
         from torchtext.experimental.datasets import WikiText2
@@ -88,19 +72,6 @@ class TestDataset(TorchtextTestCase):
 
         conditional_remove(cachedir)
         conditional_remove(cachefile)
-
-    def test_penntreebank_legacy(self):
-        from torchtext.legacy.datasets import PennTreebank
-        # smoke test to ensure penn treebank works properly
-        TEXT = data.Field(lower=True, batch_first=True)
-        ds = PennTreebank
-        train, valid, test = ds.splits(TEXT)
-        TEXT.build_vocab(train)
-        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
-            (train, valid, test), batch_size=3, bptt_len=30)
-
-        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
-                                                     bptt_len=30)
 
     def test_penntreebank(self):
         from torchtext.experimental.datasets import PennTreebank
@@ -181,7 +152,7 @@ class TestDataset(TorchtextTestCase):
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
-        self.assertEqual(next(data_iter), info['first_line'])
+        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])

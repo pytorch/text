@@ -28,3 +28,6 @@ pytest-pythonpath
 # Coverage statistics
 pytest-cov
 codecov
+
+# To parse untrusted XML data
+defusedxml

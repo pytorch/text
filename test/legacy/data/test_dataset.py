@@ -8,9 +8,41 @@ import unittest
 import pytest
 
 from ...common.torchtext_test_case import TorchtextTestCase
+from ...common.assets import conditional_remove
 
 
 class TestDataset(TorchtextTestCase):
+
+    def test_wikitext2_legacy(self):
+        from torchtext.legacy.datasets import WikiText2
+        cachedir = os.path.join(self.project_root, ".data", "wikitext-2")
+        conditional_remove(cachedir)
+
+        ds = WikiText2
+        TEXT = data.Field(lower=True, batch_first=True)
+        train, valid, test = ds.splits(TEXT)
+        TEXT.build_vocab(train)
+        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
+            (train, valid, test), batch_size=3, bptt_len=30)
+
+        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
+                                                     bptt_len=30)
+
+        conditional_remove(cachedir)
+
+    def test_penntreebank_legacy(self):
+        from torchtext.legacy.datasets import PennTreebank
+        # smoke test to ensure penn treebank works properly
+        TEXT = data.Field(lower=True, batch_first=True)
+        ds = PennTreebank
+        train, valid, test = ds.splits(TEXT)
+        TEXT.build_vocab(train)
+        train_iter, valid_iter, test_iter = data.BPTTIterator.splits(
+            (train, valid, test), batch_size=3, bptt_len=30)
+
+        train_iter, valid_iter, test_iter = ds.iters(batch_size=4,
+                                                     bptt_len=30)
+
     def test_tabular_simple_data(self):
         for data_format in ["csv", "tsv", "json"]:
             self.write_test_ppid_dataset(data_format=data_format)
