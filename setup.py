@@ -18,19 +18,19 @@ def read(*names, **kwargs):
 
 
 def _get_version():
-    version = '0.10.0a0'
-    sha = None
-
     try:
         cmd = ['git', 'rev-parse', 'HEAD']
         sha = subprocess.check_output(cmd, cwd=str(ROOT_DIR)).decode('ascii').strip()
     except Exception:
-        pass
+        sha = None
 
-    if os.getenv('BUILD_VERSION'):
-        version = os.getenv('BUILD_VERSION')
-    elif sha is not None:
-        version += '+' + sha[:7]
+    if 'BUILD_VERSION' in os.environ:
+        version = os.environ['BUILD_VERSION']
+    else:
+        with open(os.path.join(ROOT_DIR, 'version.txt'), 'r') as f:
+            version = f.readline().strip()
+        if sha is not None:
+            version += '+' + sha[:7]
 
     if sha is None:
         sha = 'Unknown'
