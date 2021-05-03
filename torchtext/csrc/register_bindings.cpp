@@ -107,6 +107,12 @@ PYBIND11_MODULE(_torchtext, m) {
       .def(py::init<std::vector<std::string>, std::string>())
       .def_readonly("itos_", &Vocab::itos_)
       .def_readonly("unk_token_", &Vocab::unk_token_)
+      .def("__contains__",
+           [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> bool {
+             ssize_t length;
+             const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
+             return self->__contains__(c10::string_view{buffer, (size_t)length});
+           })
       .def("__getitem__",
            [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> int64_t {
              ssize_t length;
@@ -229,6 +235,9 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
 
   m.class_<Vocab>("Vocab")
       .def(torch::init<StringList, std::string>())
+      .def("__contains__",
+           [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
+               -> bool { return self->__contains__(c10::string_view{item}); })
       .def("__getitem__",
            [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
                -> int64_t { return self->__getitem__(c10::string_view{item}); })
