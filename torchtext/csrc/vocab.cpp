@@ -30,6 +30,15 @@ Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
 
 int64_t Vocab::__len__() const { return itos_.size(); }
 
+bool Vocab::__contains__(const c10::string_view &token) const {
+  int64_t id = _find(token);
+  if (stoi_[id] != -1) {
+    return true;
+  }
+  return false;
+}
+
+
 int64_t Vocab::__getitem__(const c10::string_view &token) const {
   int64_t id = _find(token);
   if (stoi_[id] != -1) {
