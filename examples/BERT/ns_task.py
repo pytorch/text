@@ -150,7 +150,7 @@ def run_main(args, rank=None):
         model = torch.load(args.checkpoint)
     else:
         embed_layer = BertEmbedding(len(vocab), args.emsize)
-        pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, embed_layer, args.dropout)
+        pretrained_bert = BertModel(args.emsize, args.nhead, args.nhid, args.nlayers, embed_layer, args.dropout)
         pretrained_bert.load_state_dict(torch.load(args.bert_model))
         model = NextSentenceTask(pretrained_bert)
 

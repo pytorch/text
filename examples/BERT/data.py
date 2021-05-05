@@ -1,8 +1,10 @@
 import glob
-import torch
 import logging
-from torchtext.data.utils import get_tokenizer
 import random
+
+import torch
+
+from torchtext.data.utils import get_tokenizer
 from torchtext.experimental.datasets import LanguageModelingDataset
 
 
@@ -10,12 +12,10 @@ from torchtext.experimental.datasets import LanguageModelingDataset
 # Set up dataset for book corpus
 ###################################################################
 def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
-               data_select=('train', 'valid', 'test'), removed_tokens=[],
-               min_sentence_len=None):
-
+               data_select=('train', 'valid', 'test'), min_sentence_len=None):
     if isinstance(data_select, str):
         data_select = [data_select]
-    if not set(data_select).issubset(set(('train', 'test', 'valid'))):
+    if not set(data_select).issubset({'train', 'test', 'valid'}):
         raise TypeError('data_select is not supported!')
 
     extracted_files = glob.glob('/datasets01/bookcorpus/021819/*/*.txt')
@@ -44,11 +44,11 @@ def BookCorpus(vocab, tokenizer=get_tokenizer("basic_english"),
         data[item] = tokens
 
     for key in data_select:
-        if data[key] == []:
+        if not data[key]:
             raise TypeError('Dataset {} is empty!'.format(key))
     if min_sentence_len:
-        return tuple(LanguageModelingDataset(data[d], vocab, lambda x: x, False)
+        return tuple(LanguageModelingDataset(data[d], vocab, lambda x: x)
                      for d in data_select)
     else:
-        return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab, lambda x: x, False)
+        return tuple(LanguageModelingDataset(torch.tensor(data[d]).long(), vocab, lambda x: x)
                      for d in data_select)

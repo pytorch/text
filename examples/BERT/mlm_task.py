@@ -180,7 +180,7 @@ def run_main(args, rank=None):
         model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.1)
     best_val_loss = None
     train_loss_log, val_loss_log = [], []
 

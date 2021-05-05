@@ -100,7 +100,7 @@ class TransformerEncoderLayer(nn.Module):
 class BertModel(nn.Module):
     """Contain a transformer encoder."""
 
-    def __init__(self, ntoken, ninp, nhead, nhid, nlayers, embed_layer, dropout=0.5):
+    def __init__(self, ninp, nhead, nhid, nlayers, embed_layer, dropout=0.5):
         super(BertModel, self).__init__()
         self.model_type = 'Transformer'
         self.bert_embed = embed_layer
@@ -120,7 +120,7 @@ class MLMTask(nn.Module):
     def __init__(self, ntoken, ninp, nhead, nhid, nlayers, dropout=0.5):
         super(MLMTask, self).__init__()
         embed_layer = BertEmbedding(ntoken, ninp)
-        self.bert_model = BertModel(ntoken, ninp, nhead, nhid, nlayers, embed_layer, dropout=dropout)
+        self.bert_model = BertModel(ninp, nhead, nhid, nlayers, embed_layer, dropout=dropout)
         self.mlm_span = Linear(ninp, ninp)
         self.activation = F.gelu
         self.norm_layer = LayerNorm(ninp, eps=1e-12)

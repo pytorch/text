@@ -1,8 +1,9 @@
+import math
+import os
+
 import torch
 import torch.distributed as dist
-import os
 import torch.multiprocessing as mp
-import math
 
 
 def setup(rank, world_size, seed):

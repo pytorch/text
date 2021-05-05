@@ -4,7 +4,6 @@ import string
 
 
 def compute_qa_exact(ans_pred_tokens_samples):
-
     '''
         Input: ans_pred_tokens_samples: [([ans1_tokens_candidate1, ans1_tokens_candidate2], pred1_tokens),
                                          ([ans2_tokens_candidate1, ans2_tokens_candidate2], pred2_tokens),
@@ -41,7 +40,6 @@ def compute_qa_exact(ans_pred_tokens_samples):
 
 
 def compute_qa_f1(ans_pred_tokens_samples):
-
     '''
         Input: ans_pred_tokens_samples: [([ans1_tokens_candidate1, ans1_tokens_candidate2], pred1_tokens),
                                          ([ans2_tokens_candidate1, ans2_tokens_candidate2], pred2_tokens),
@@ -50,6 +48,7 @@ def compute_qa_f1(ans_pred_tokens_samples):
         ans1_tokens_candidate1 = ['this', 'is', 'an', 'sample', 'example']
         Output: f1 score of the samples
     '''
+
     def sample_f1(ans_tokens, pred_tokens):
         common = collections.Counter(ans_tokens) & collections.Counter(pred_tokens)
         num_same = sum(common.values())

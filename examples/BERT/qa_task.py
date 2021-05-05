@@ -1,15 +1,17 @@
 import argparse
-import time
 import math
+import time
+
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+
 import torchtext
-from torchtext.experimental.datasets import SQuAD1
-from model import QuestionAnswerTask
 from metrics import compute_qa_exact, compute_qa_f1
-from utils import print_loss_log
 from model import BertModel, BertEmbedding
+from model import QuestionAnswerTask
+from torchtext.experimental.datasets import SQuAD1
+from utils import print_loss_log
 
 
 def process_raw_data(data):
@@ -175,12 +177,12 @@ if __name__ == "__main__":
     dev_dataset = process_raw_data(dev_dataset)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     embed_layer = BertEmbedding(len(vocab), args.emsize)
-    pretrained_bert = BertModel(len(vocab), args.emsize, args.nhead, args.nhid, args.nlayers, embed_layer, args.dropout)
+    pretrained_bert = BertModel(args.emsize, args.nhead, args.nhid, args.nlayers, embed_layer, args.dropout)
     pretrained_bert.load_state_dict(torch.load(args.bert_model))
     model = QuestionAnswerTask(pretrained_bert).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, gamma=0.1)
     best_f1 = None
     train_loss_log, val_loss_log = [], []
 

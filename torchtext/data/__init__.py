@@ -1,10 +1,15 @@
 from .metrics import bleu_score
 from .utils import get_tokenizer, interleave_keys
-from .functional import generate_sp_model, \
-    load_sp_model, \
-    sentencepiece_numericalizer, \
-    sentencepiece_tokenizer, custom_replace, simple_space_split, \
-    numericalize_tokens_from_iterator
+from .functional import (
+    generate_sp_model,
+    load_sp_model,
+    sentencepiece_numericalizer,
+    sentencepiece_tokenizer,
+    custom_replace,
+    simple_space_split,
+    numericalize_tokens_from_iterator,
+    filter_wikipedia_xml,
+)
 
 from ..legacy.data import Batch
 
@@ -14,5 +19,6 @@ __all__ = ["bleu_score",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer",
            "custom_replace", "simple_space_split",
            "numericalize_tokens_from_iterator",
+           "filter_wikipedia_xml",
            "Batch"  # tmp compatibility hack for old lightning
            ]
