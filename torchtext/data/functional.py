@@ -7,6 +7,7 @@ __all__ = [
     "sentencepiece_numericalizer", "sentencepiece_tokenizer",
     "numericalize_tokens_from_iterator",
     "filter_wikipedia_xml",
+    "to_map_style_dataset",
 ]
 
 
@@ -249,3 +250,35 @@ def filter_wikipedia_xml(text_iterator):
         line = list(norm_transform([line]))[0].strip()
         if line:
             yield line
+
+
+def to_map_style_dataset(iter_data):
+    r"""Convert iterable-style dataset to map-style dataset.
+
+    args:
+        iter_data: An iterator type object. Examples include Iterable datasets, string list, text io, generators etc.
+
+
+    Examples:
+        >>> from torchtext.datasets import IMDB
+        >>> from torchtext.data import to_map_style_dataset
+        >>> train_iter = IMDB(split='train')
+        >>> train_dataset = to_map_style_dataset(train_iter)
+        >>> file_name = '.data/EnWik9/enwik9'
+        >>> data_iter = to_map_style_dataset(open(file_name,'r'))
+    """
+
+    # Inner class to convert iterable-style to map-style dataset
+    class map_style_dataset(torch.utils.data.Dataset):
+
+        def __init__(self, iter_data):
+            # TODO Avoid list issue #1296
+            self._data = list(iter_data)
+
+        def __len__(self):
+            return len(self._data)
+
+        def __getitem__(self, idx):
+            return self._data[idx]
+
+    return map_style_dataset(iter_data)
