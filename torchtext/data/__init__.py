@@ -9,6 +9,7 @@ from .functional import (
     simple_space_split,
     numericalize_tokens_from_iterator,
     filter_wikipedia_xml,
+    to_map_style_dataset,
 )
 
 from ..legacy.data import Batch
@@ -20,5 +21,6 @@ __all__ = ["bleu_score",
            "custom_replace", "simple_space_split",
            "numericalize_tokens_from_iterator",
            "filter_wikipedia_xml",
+           "to_map_style_dataset",
            "Batch"  # tmp compatibility hack for old lightning
            ]
