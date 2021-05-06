@@ -47,3 +47,8 @@ torchtext.data.functional
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: filter_wikipedia_xml
+
+:hidden:`to_map_style_dataset`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: to_map_style_dataset
