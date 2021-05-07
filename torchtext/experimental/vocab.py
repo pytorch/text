@@ -214,6 +214,9 @@ class Vocab(nn.Module):
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
+
+        Raises:
+            RuntimeError: if token already exists in the vocab
         """
         self.vocab.append_token(token)
 

@@ -38,7 +38,6 @@ bool Vocab::__contains__(const c10::string_view &token) const {
   return false;
 }
 
-
 int64_t Vocab::__getitem__(const c10::string_view &token) const {
   int64_t id = _find(token);
   if (stoi_[id] != -1) {
@@ -47,7 +46,22 @@ int64_t Vocab::__getitem__(const c10::string_view &token) const {
   return unk_index_;
 }
 
-void Vocab::append_token(const std::string &token) { _add(token); }
+void Vocab::append_token(const std::string &token) {
+  // if item already in stoi we throw an error
+  auto token_position = _find(c10::string_view{token.data(), token.size()});
+  if (stoi_[token_position] != -1) {
+#ifdef _MSC_VER
+    std::cerr << "[RuntimeError] Token " << token
+              << " already exists in the Vocab with index: "
+              << stoi_[token_position] << std::endl;
+#endif
+    throw std::runtime_error("Token " + token +
+                             " already exists in the Vocab with index: " +
+                             std::to_string(stoi_[token_position]) + ".");
+  }
+
+  _add(token);
+}
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
   if (index < 0 || index > itos_.size()) {
