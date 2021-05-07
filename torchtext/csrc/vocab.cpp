@@ -1,4 +1,5 @@
 #include <ATen/Parallel.h> // @manual
+#include <algorithm>
 #include <common.h>
 #include <iostream>
 #include <stdexcept>
@@ -8,7 +9,8 @@
 namespace torchtext {
 
 Vocab::Vocab(const StringList &tokens, const std::string &unk_token)
-    : stoi_(MAX_VOCAB_SIZE, -1), unk_token_(std::move(unk_token)) {
+    : unk_token_(std::move(unk_token)) {
+  std::fill(stoi_.begin(), stoi_.end(), -1);
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
     auto token_position =
