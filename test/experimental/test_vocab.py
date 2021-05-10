@@ -62,9 +62,11 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.get_itos(), ['<unk>', 'a', 'b'])
 
+        # token must exist for rassignment
         with self.assertRaises(RuntimeError):
             v.reassign_token('not in vocab', 0)
 
+        # index should be valid for reassignment
         with self.assertRaises(RuntimeError):
             v.reassign_token('<unk>', 3)
 
@@ -112,10 +114,9 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
-        with self.assertRaises(RuntimeError) as context:
+        # token must not exist to be inserted
+        with self.assertRaises(RuntimeError):
             v.insert_token('b', 0)
-
-        self.assertTrue("Token b already exists in the Vocab with index: 0" in str(context.exception))
 
     def test_vocab_append_token(self):
         c = OrderedDict({'a': 2})
@@ -128,10 +129,9 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-        with self.assertRaises(RuntimeError) as context:
+        # token must not exist to be appended
+        with self.assertRaises(RuntimeError):
             v.append_token('b')
-
-        self.assertTrue("Token b already exists in the Vocab with index: 2" in str(context.exception))
 
     def test_vocab_len(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
