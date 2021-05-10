@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <c10/util/string_view.h>
 #include <torch/script.h>
 namespace torchtext {
@@ -5,23 +6,28 @@ namespace torchtext {
 typedef std::vector<std::string> StringList;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexDict;
-typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
-                   std::vector<torch::Tensor>>
+typedef std::tuple<std::string, c10::optional<int64_t>, std::vector<int64_t>,
+                   std::vector<std::string>, std::vector<torch::Tensor>>
     VocabStates;
 
 struct Vocab : torch::CustomClassHolder {
   static const int32_t MAX_VOCAB_SIZE = 30000000;
   int64_t unk_index_;
   std::vector<int32_t> stoi_;
-  const std::string version_str_ = "0.0.1";
+  const std::string version_str_ = "0.0.2";
   StringList itos_;
-  std::string unk_token_;
+  c10::optional<int64_t> default_index_ = {};
 
-  explicit Vocab(const std::vector<std::string> &tokens,
-                 const std::string &unk_token);
+  // TODO: [can we remove this?] we need to keep this constructor, otherwise torch binding gets
+  // compilation error: no matching constructor for initialization of 'torchtext::Vocab'
+  explicit Vocab(const StringList &tokens);
+  explicit Vocab(const StringList &tokens, c10::optional<int64_t> default_index);
   int64_t __len__() const;
   int64_t __getitem__(const c10::string_view &token) const;
   bool __contains__(const c10::string_view &token) const;
+  void set_default_index(int64_t index);
+  c10::optional<int64_t> get_default_index() const;
+  void reassign_token(const std::string &token,const int64_t &index);
   void append_token(const std::string &token);
   void insert_token(const std::string &token, const int64_t &index);
   std::string lookup_token(const int64_t &index);
@@ -57,16 +63,22 @@ protected:
       stoi_[h] = itos_.size() - 1;
     }
   }
+
+  void _remove(const std::string &w) {
+    uint32_t h = _find(c10::string_view{w.data(), w.size()});
+    if (stoi_[h] != -1) {
+      stoi_[h] = -1;
+      itos_.erase(std::find(itos_.begin(), itos_.end(), w));
+    }
+  }
 };
 
 VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self);
 c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
 
 Vocab _load_vocab_from_file(const std::string &file_path,
-                            const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus);
 Vocab _build_vocab_from_text_file(const std::string &file_path,
-                                  const std::string &unk_token,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer);

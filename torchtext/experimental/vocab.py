@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
 import warnings
 from collections import Counter, OrderedDict
 import torch
@@ -136,7 +136,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         tokens.insert(0, unk_token)
         warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
                       "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
-    return Vocab(VocabPybind(tokens, unk_token))
+    return Vocab(VocabPybind(tokens, None))
 
 
 class Vocab(nn.Module):
@@ -196,6 +196,34 @@ class Vocab(nn.Module):
             index (int): the index corresponding to the associated token.
         """
         return self.vocab[token]
+
+    @torch.jit.export
+    def set_default_index(self, index: int) -> None:
+        r"""
+        Args:
+            index: Value of default index. This index will be returned when OOV token is queried
+        """
+        self.vocab.set_default_index(index)
+
+    @torch.jit.export
+    def get_default_index(self) -> Optional[int]:
+        r"""
+        Returns:
+            index (optional[int]): Value of default index if it is set.
+        """
+        return self.vocab.get_default_index()
+
+    @torch.jit.export
+    def reassign_token(self, token: str, index: int) -> None:
+        r"""
+        Args:
+            token (str): the token used to lookup the corresponding index.
+            index (int): the index corresponding to the associated token.
+
+        Raises:
+            RuntimeError: If token is not present in Vocab
+        """
+        self.vocab.reassign_token(token, index)
 
     @torch.jit.export
     def insert_token(self, token: str, index: int) -> None:
@@ -278,5 +306,7 @@ class Vocab(nn.Module):
     def __prepare_scriptable__(self):
         r"""Return a JITable Vocab.
         """
-        cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.unk_token_)
-        return Vocab(cpp_vocab)
+        if not self.is_jitable:
+            cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.default_index_)
+            return Vocab(cpp_vocab)
+        return self
