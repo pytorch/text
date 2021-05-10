@@ -13,27 +13,20 @@ Vocab::Vocab(const StringList &tokens) : stoi_(MAX_VOCAB_SIZE, -1) {
     auto token_position =
         _find(c10::string_view{tokens[i].data(), tokens[i].size()});
     if (stoi_[token_position] != -1) {
-#ifdef _MSC_VER
-      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
-                << tokens[i] << std::endl;
-#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
     _add(tokens[i]);
   }
 }
-Vocab::Vocab(const StringList &tokens,const c10::optional<int64_t> &default_index)
+Vocab::Vocab(const StringList &tokens,
+             const c10::optional<int64_t> &default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates
     auto token_position =
         _find(c10::string_view{tokens[i].data(), tokens[i].size()});
     if (stoi_[token_position] != -1) {
-#ifdef _MSC_VER
-      std::cerr << "[RuntimeError] Duplicate token found in tokens list: "
-                << tokens[i] << std::endl;
-#endif
       throw std::runtime_error("Duplicate token found in tokens list: " +
                                tokens[i]);
     }
@@ -60,10 +53,6 @@ int64_t Vocab::__getitem__(const c10::string_view &token) const {
   if (default_index_.has_value()) {
     return default_index_.value();
   }
-#ifdef _MSC_VER
-  std::cerr << "[RuntimeError] Token " << std::string(token)
-            << "not found and default index is not set." << std::endl;
-#endif
   throw std::runtime_error("[RuntimError] Token " + std::string(token) +
                            "not found and default index is not set.");
 }
@@ -77,24 +66,15 @@ c10::optional<int64_t> Vocab::get_default_index() const {
 void Vocab::reassign_token(const std::string &token, const int64_t &index) {
   // throw error if index is not valid
   if (index < 0 || index >= itos_.size()) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Specified index " << index
-              << " is out of bounds of the size of stoi dictionary: "
-              << stoi_.size() << std::endl;
-#endif
     throw std::runtime_error(
         "[RuntimeError] Specified index " + std::to_string(index) +
         " is out of bounds of the size of stoi dictionary: " +
         std::to_string(stoi_.size()) + ".");
   }
 
-
   // throw error if token not found
   auto id = _find(c10::string_view{token.data(), token.size()});
   if (stoi_[id] == -1) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeEror] Token " << token << " not found in Vocab.\n";
-#endif
     throw std::runtime_error("[RuntimeError] Token " + token +
                              " not found in Vocab.");
   }
@@ -107,11 +87,6 @@ void Vocab::append_token(const std::string &token) {
   // if item already in stoi we throw an error
   auto token_position = _find(c10::string_view{token.data(), token.size()});
   if (stoi_[token_position] != -1) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Token " << token
-              << " already exists in the Vocab with index: "
-              << stoi_[token_position] << std::endl;
-#endif
     throw std::runtime_error("Token " + token +
                              " already exists in the Vocab with index: " +
                              std::to_string(stoi_[token_position]) + ".");
@@ -122,11 +97,6 @@ void Vocab::append_token(const std::string &token) {
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
   if (index < 0 || index > itos_.size()) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Specified index " << index
-              << " is out of bounds of the size of stoi dictionary: "
-              << stoi_.size() << std::endl;
-#endif
     throw std::runtime_error(
         "[RuntimeError] Specified index " + std::to_string(index) +
         " is out of bounds of the size of stoi dictionary: " +
@@ -136,11 +106,6 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
   // if item already in stoi we throw an error
   auto token_position = _find(c10::string_view{token.data(), token.size()});
   if (stoi_[token_position] != -1) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Token " << token
-              << " already exists in the Vocab with index: "
-              << stoi_[token_position] << std::endl;
-#endif
     throw std::runtime_error("[RuntimeError] Token " + token +
                              " already exists in the Vocab with index: " +
                              std::to_string(stoi_[token_position]) + ".");
@@ -157,11 +122,6 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
 std::string Vocab::lookup_token(const int64_t &index) {
   if (index < 0 || index > static_cast<int64_t>(itos_.size())) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Specified index " << index
-              << " is out of bounds of the size of itos dictionary: "
-              << itos_.size() << std::endl;
-#endif
     throw std::runtime_error(
         "Specified index " + std::to_string(index) +
         " is out of bounds of the size of itos dictionary: " +
@@ -278,8 +238,11 @@ StringList
 _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
                const int64_t min_freq, const int64_t num_lines,
                const bool sort_tokens) {
-  TORCH_CHECK(chunk_counters.size() > 0,
-              "There must be at least 1 chunk to concatenate!");
+
+  if (chunk_counters.size() < 1) {
+    throw ::std::runtime_error(
+        "There must be at least 1 chunk to concatenate!");
+  }
 
   IndexDict tokens_freq;
   StringList unique_tokens;
@@ -376,7 +339,6 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer) {
-  std::cerr << "[INFO] Reading file " << file_path << std::endl;
   int64_t num_lines = _infer_lines(file_path);
   int64_t chunk_size = impl::divup(num_lines, num_cpus);
   // Launching a thread on less lines than this likely has too much overhead.
@@ -431,11 +393,6 @@ VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self) {
 c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   if (state_size != 5) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Expected deserialized Vocab to have 5 states "
-                 "but found "
-              << state_size << " states." << std::endl;
-#endif
     throw std::runtime_error(
         "Expected deserialized Vocab to have 5 states but found " +
         std::to_string(state_size) + " states.");
@@ -449,11 +406,6 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
 
   // check integers and tensors are empty
   if (integers.size() != 0 || tensors.size() != 0) {
-#ifdef _MSC_VER
-    std::cerr << "[RuntimeError] Expected `integers` and `tensors` states to "
-                 "be empty."
-              << std::endl;
-#endif
     throw std::runtime_error(
         "Expected `integers` and `tensors` states to be empty.");
   }
@@ -463,10 +415,6 @@ c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
     deserialized_vocab->default_index_ = default_index;
     return deserialized_vocab;
   }
-#ifdef _MSC_VER
-  std::cerr << "[RuntimeError] Found unexpected version for serialized Vocab: "
-            << version_str << std::endl;
-#endif
   throw std::runtime_error(
       "Found unexpected version for serialized Vocab: " + version_str + ".");
 }
