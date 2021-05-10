@@ -21,7 +21,7 @@ struct Vocab : torch::CustomClassHolder {
   // TODO: [can we remove this?] we need to keep this constructor, otherwise torch binding gets
   // compilation error: no matching constructor for initialization of 'torchtext::Vocab'
   explicit Vocab(const StringList &tokens);
-  explicit Vocab(const StringList &tokens, c10::optional<int64_t> default_index);
+  explicit Vocab(const StringList &tokens,const c10::optional<int64_t> &default_index);
   int64_t __len__() const;
   int64_t __getitem__(const c10::string_view &token) const;
   bool __contains__(const c10::string_view &token) const;

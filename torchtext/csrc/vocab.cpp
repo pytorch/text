@@ -23,7 +23,7 @@ Vocab::Vocab(const StringList &tokens) : stoi_(MAX_VOCAB_SIZE, -1) {
     _add(tokens[i]);
   }
 }
-Vocab::Vocab(const StringList &tokens, c10::optional<int64_t> default_index)
+Vocab::Vocab(const StringList &tokens,const c10::optional<int64_t> &default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
   for (std::size_t i = 0; i < tokens.size(); i++) {
     // tokens should not have any duplicates

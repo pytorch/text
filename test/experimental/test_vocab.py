@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
-import platform
 import torch
-import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vocab import (
     vocab,

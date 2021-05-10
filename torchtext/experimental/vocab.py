@@ -19,7 +19,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
+def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_path` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -44,11 +44,11 @@ def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token
         >>> jit_tokenizer = torch.jit.script(tokenizer)
         >>> v = build_vocab_from_text_file('vocab.txt', jit_tokenizer)
     """
-    vocab_obj = _build_vocab_from_text_file(file_path, unk_token, min_freq, num_cpus, jited_tokenizer)
+    vocab_obj = _build_vocab_from_text_file(file_path, min_freq, num_cpus, jited_tokenizer)
     return Vocab(vocab_obj)
 
 
-def load_vocab_from_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
+def load_vocab_from_file(file_path, min_freq=1, num_cpus=4):
     r"""Create a `Vocab` object from a text file.
     The `file_path` should contain tokens separated by new lines.
     Format for txt file:
@@ -73,7 +73,7 @@ def load_vocab_from_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
         >>> v = load_vocab_from_file('vocab.txt')
     """
 
-    vocab_obj = _load_vocab_from_file(file_path, unk_token, min_freq, num_cpus)
+    vocab_obj = _load_vocab_from_file(file_path, min_freq, num_cpus)
     return Vocab(vocab_obj)
 
 
