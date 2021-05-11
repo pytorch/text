@@ -6,8 +6,8 @@ namespace torchtext {
 typedef std::vector<std::string> StringList;
 typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
     IndexDict;
-typedef std::tuple<std::string, c10::optional<int64_t>, std::vector<int64_t>,
-                   std::vector<std::string>, std::vector<torch::Tensor>>
+typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
+                   std::vector<torch::Tensor>>
     VocabStates;
 
 struct Vocab : torch::CustomClassHolder {
@@ -18,18 +18,19 @@ struct Vocab : torch::CustomClassHolder {
   StringList itos_;
   c10::optional<int64_t> default_index_ = {};
 
-  // TODO: [can we remove this?] we need to keep this constructor, otherwise torch binding gets
-  // compilation error: no matching constructor for initialization of 'torchtext::Vocab'
+  // TODO: [can we remove this?] we need to keep this constructor, otherwise
+  // torch binding gets compilation error: no matching constructor for
+  // initialization of 'torchtext::Vocab'
   explicit Vocab(const StringList &tokens);
-  explicit Vocab(const StringList &tokens,const c10::optional<int64_t> &default_index);
+  explicit Vocab(const StringList &tokens,
+                 const c10::optional<int64_t> &default_index);
   int64_t __len__() const;
   int64_t __getitem__(const c10::string_view &token) const;
   bool __contains__(const c10::string_view &token) const;
   void set_default_index(int64_t index);
   c10::optional<int64_t> get_default_index() const;
-  void reassign_token(const std::string &token,const int64_t &index);
+  void __setitem__(const std::string &token, const int64_t &index);
   void append_token(const std::string &token);
-  void insert_token(const std::string &token, const int64_t &index);
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);
   std::vector<int64_t>

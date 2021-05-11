@@ -7,17 +7,6 @@
 #include <vocab.h>       // @manual
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens) : stoi_(MAX_VOCAB_SIZE, -1) {
-  for (size_t i = 0; i < tokens.size(); i++) {
-    // throw error if duplicate token is found
-    auto id = _find(c10::string_view{tokens[i].data(), tokens[i].size()});
-    TORCH_CHECK(stoi_[id] == -1,
-                "Duplicate token found in tokens list: " + tokens[i]);
-
-    _add(tokens[i]);
-  }
-}
-
 Vocab::Vocab(const StringList &tokens,
              const c10::optional<int64_t> &default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
@@ -30,6 +19,8 @@ Vocab::Vocab(const StringList &tokens,
     _add(tokens[i]);
   }
 }
+
+Vocab::Vocab(const StringList &tokens) : Vocab(tokens, {}) {}
 
 int64_t Vocab::__len__() const { return itos_.size(); }
 
@@ -61,19 +52,30 @@ c10::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
 }
 
-void Vocab::reassign_token(const std::string &token, const int64_t &index) {
+void Vocab::__setitem__(const std::string &token, const int64_t &index) {
+  // reassignment scenario
+  if (__contains__(c10::string_view{token.data(),token.size()})) {
+    // throw error if index is not valid
+    TORCH_CHECK(index >= 0 && index < __len__(),
+                "Specified index " + std::to_string(index) +
+                    " is out of bounds for vocab of size " +
+                    std::to_string(__len__()));
+
+    _remove(token);
+  }
   // throw error if index is not valid
-  TORCH_CHECK(index >= 0 && index < __len__(),
+  TORCH_CHECK(index >= 0 && index <= __len__(),
               "Specified index " + std::to_string(index) +
                   " is out of bounds for vocab of size " +
                   std::to_string(__len__()));
 
-  // throw error if token not found
-  auto id = _find(c10::string_view{token.data(), token.size()});
-  TORCH_CHECK(stoi_[id] != -1, "Token " + token + " not found in Vocab");
+  // need to offset all tokens greater than or equal index by 1
+  for (size_t i = index; i < __len__(); i++) {
+    stoi_[_find(c10::string_view{itos_[i].data(),itos_[i].size()})] = i + 1;
+  }
 
-  _remove(token);
-  insert_token(token, index);
+  itos_.insert(itos_.begin() + index, token);
+  stoi_[_find(c10::string_view{token.data(),token.size()})] = index;
 }
 
 void Vocab::append_token(const std::string &token) {
@@ -84,26 +86,6 @@ void Vocab::append_token(const std::string &token) {
                                    std::to_string(stoi_[id]));
 
   _add(token);
-}
-
-void Vocab::insert_token(const std::string &token, const int64_t &index) {
-  // throw error if index is not valid
-  TORCH_CHECK(index >= 0 && index <= __len__(),
-              "Specified index " + std::to_string(index) +
-                  " is out of bounds for vocab of size " +
-                  std::to_string(__len__()));
-
-  // throw error if token not found
-  auto id = _find(c10::string_view{token.data(), token.size()});
-  TORCH_CHECK(stoi_[id] == -1, "Token " + token + " not found in Vocab");
-
-  // need to offset all tokens greater than or equal index by 1
-  for (size_t i = index; i < __len__(); i++) {
-    stoi_[_find(c10::string_view{itos_[i].data(), itos_[i].size()})] = i + 1;
-  }
-
-  itos_.insert(itos_.begin() + index, token);
-  stoi_[_find(c10::string_view{token.data(), token.size()})] = index;
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
@@ -320,7 +302,7 @@ Vocab _load_vocab_from_file(const std::string &file_path,
   StringList tokens =
       _concat_tokens(chunk_counters, min_freq, num_lines, false);
 
-  return Vocab(std::move(tokens), {});
+  return Vocab(std::move(tokens));
 }
 
 Vocab _build_vocab_from_text_file(const std::string &file_path,
@@ -364,7 +346,7 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
 
   StringList tokens = _concat_tokens(chunk_counters, min_freq, num_lines, true);
 
-  return Vocab(std::move(tokens), {});
+  return Vocab(std::move(tokens));
 }
 
 VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self) {
@@ -372,35 +354,38 @@ VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self) {
   StringList strings = self->itos_;
   std::vector<torch::Tensor> tensors;
 
-  VocabStates states = std::make_tuple(self->version_str_, self->default_index_,
-                                       std::move(integers), std::move(strings),
-                                       std::move(tensors));
+  if (self->default_index_.has_value()) {
+    integers.push_back(self->default_index_.value());
+  }
+
+  VocabStates states = std::make_tuple(self->version_str_, std::move(integers),
+                                       std::move(strings), std::move(tensors));
   return states;
 }
 
 c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
-  TORCH_CHECK(state_size == 5,
-              "Expected deserialized Vocab to have 5 states but found " +
+  TORCH_CHECK(state_size == 4,
+              "Expected deserialized Vocab to have 4 states but found " +
                   std::to_string(state_size) + " states");
 
   auto &version_str = std::get<0>(states);
-  auto &default_index = std::get<1>(states);
-  auto &integers = std::get<2>(states);
-  auto &strings = std::get<3>(states);
-  auto &tensors = std::get<4>(states);
+  auto &integers = std::get<1>(states);
+  auto &strings = std::get<2>(states);
+  auto &tensors = std::get<3>(states);
 
-  // check integers and tensors are empty
-  TORCH_CHECK(integers.size() == 0 || tensors.size() == 0,
-              "Expected `integers` and `tensors` states to be empty");
+  // check tensors are empty
+  TORCH_CHECK(tensors.size() == 0, "Expected `tensors` states to be empty");
 
   // throw error if version is not compatible
   TORCH_CHECK(version_str.compare("0.0.2") >= 0,
               "Found unexpected version for serialized Vocab: " + version_str);
 
-  auto deserialized_vocab = c10::make_intrusive<Vocab>(std::move(strings));
-  deserialized_vocab->default_index_ = default_index;
-  return deserialized_vocab;
+  c10::optional<int64_t> default_index = {};
+  if (integers.size() > 0) {
+    default_index = integers[0];
+  }
+  return c10::make_intrusive<Vocab>(std::move(strings), default_index);
 }
 
 } // namespace torchtext

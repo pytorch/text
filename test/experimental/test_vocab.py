@@ -55,20 +55,16 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['<unk>'], 2)
         self.assertEqual(v['a'], 0)
         self.assertEqual(v['b'], 1)
-        v.reassign_token('<unk>', 0)
+        v['<unk>'] = 0
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
 
         self.assertEqual(v.get_itos(), ['<unk>', 'a', 'b'])
 
-        # token must exist for rassignment
-        with self.assertRaises(RuntimeError):
-            v.reassign_token('not in vocab', 0)
-
         # index should be valid for reassignment
         with self.assertRaises(RuntimeError):
-            v.reassign_token('<unk>', 3)
+            v['<unk>'] = 3
 
     def test_default_index(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
@@ -97,7 +93,7 @@ class TestVocab(TorchtextTestCase):
 
         # add item to end
         v = vocab(c)
-        v.insert_token('b', 2)
+        v['b'] = 2
 
         expected_itos = ['<unk>', 'a', 'b']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
@@ -107,16 +103,13 @@ class TestVocab(TorchtextTestCase):
 
         # add item to middle
         v = vocab(c)
-        v.insert_token('b', 0)
+        v['b'] = 0
 
         expected_itos = ['b', '<unk>', 'a']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
 
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
-        # token must not exist to be inserted
-        with self.assertRaises(RuntimeError):
-            v.insert_token('b', 0)
 
     def test_vocab_append_token(self):
         c = OrderedDict({'a': 2})
@@ -225,7 +218,7 @@ class TestVocab(TorchtextTestCase):
         with self.assertRaises(RuntimeError):
             # Test proper error raised when setting a token out of bounds
             v = vocab(c, min_freq=3)
-            v.insert_token('new_token', 100)
+            v['new_token'] = 100
 
         with self.assertRaises(RuntimeError):
             # Test proper error raised when looking up a token out of bounds
@@ -247,6 +240,7 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
+        v.set_default_index(0)
 
         expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
@@ -260,6 +254,7 @@ class TestVocab(TorchtextTestCase):
             loaded_v = torch.load(vocab_path)
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+            self.assertEqual(v['not in vocab'], 0)
 
         with self.subTest('torchscript'):
             vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
@@ -269,6 +264,7 @@ class TestVocab(TorchtextTestCase):
             loaded_v = torch.load(vocab_path)
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+            self.assertEqual(v['not in vocab'], 0)
 
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
