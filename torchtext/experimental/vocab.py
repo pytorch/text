@@ -19,7 +19,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
-def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, num_cpus=4):
+def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a raw text file.
 
     The `file_path` can contain any raw text. This function applies a generic JITed tokenizer in
@@ -30,7 +30,7 @@ def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, num_cpus=
         jited_tokenizer (ScriptModule): a tokenizer that has been JITed using `torch.jit.script`
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
+        unk_token: The default unknown token to use. Default: '<unk>'. If not found in text file, it will be inserted to index 0.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
@@ -45,10 +45,12 @@ def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, num_cpus=
         >>> v = build_vocab_from_text_file('vocab.txt', jit_tokenizer)
     """
     vocab_obj = _build_vocab_from_text_file(file_path, min_freq, num_cpus, jited_tokenizer)
+    if unk_token not in vocab_obj:
+        vocab_obj.insert_token(unk_token, 0)
     return Vocab(vocab_obj)
 
 
-def load_vocab_from_file(file_path, min_freq=1, num_cpus=4):
+def load_vocab_from_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
     r"""Create a `Vocab` object from a text file.
     The `file_path` should contain tokens separated by new lines.
     Format for txt file:
@@ -62,7 +64,7 @@ def load_vocab_from_file(file_path, min_freq=1, num_cpus=4):
         file_object (FileObject): a file like object to read data from.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
+        unk_token: The default unknown token to use. Default: '<unk>'. If not found in vocab file, it will be inserted to index 0.
         num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
 
     Returns:
@@ -74,6 +76,8 @@ def load_vocab_from_file(file_path, min_freq=1, num_cpus=4):
     """
 
     vocab_obj = _load_vocab_from_file(file_path, min_freq, num_cpus)
+    if unk_token not in vocab_obj:
+        vocab_obj.insert_token(unk_token, 0)
     return Vocab(vocab_obj)
 
 
@@ -108,7 +112,7 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
         ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
-        unk_token: The default unknown token to use. Default: '<unk>'.
+        unk_token: The default unknown token to use. Default: '<unk>'. If not found in ordered_dict, it will be inserted at index 0.
 
     Raises:
         ValueError: if a default `unk_token` isn't provided.
@@ -134,8 +138,6 @@ def vocab(ordered_dict, min_freq=1, unk_token='<unk>'):
 
     if unk_token not in tokens:
         tokens.insert(0, unk_token)
-        warnings.warn("The `unk_token` '{}' wasn't found in the `ordered_dict`. Adding the `unk_token` "
-                      "to the beginning of the Vocab.".format(unk_token), RuntimeWarning)
     return Vocab(VocabPybind(tokens, None))
 
 
