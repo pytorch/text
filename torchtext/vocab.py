@@ -39,8 +39,7 @@ def build_vocab_from_text_file(file_path: str, tokenizer: Optional[Callable] = N
         tokenizer: A python callable to split input sentence into tokens. By default,
             the function will do tokenization based on python split() function.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
-            Values less than 1 will be set to 1. Default: 1.
-        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.
+        num_cpus: the number of cpus to use when loading the vectors from file.
 
     Returns:
         torchtext.vocab.Vocab: a `Vocab` object.
@@ -111,7 +110,6 @@ def vocab(ordered_dict: Dict, min_freq: int = 1):
     Args:
         ordered_dict: Ordered Dictionary mapping tokens to their corresponding occurance frequencies.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
-            Values less than 1 will be set to 1. Default: 1.
 
     Examples:
         >>> from torchtext.vocab import vocab
