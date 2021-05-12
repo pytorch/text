@@ -4,7 +4,7 @@ from torchtext.data.datasets_utils import _check_default_set
 from torchtext.data.datasets_utils import _wrap_datasets
 from torchtext import datasets as raw
 from torchtext.experimental.datasets import raw as experimental_raw
-from torchtext.vocab import Vocab, build_vocab_from_iterator
+from torchtext.legacy.vocab import Vocab, build_vocab_from_iterator
 from torchtext.data.utils import get_tokenizer
 from ..functional import vocab_func, totensor, sequential_transforms
 
@@ -107,7 +107,7 @@ class TranslationDataset(torch.utils.data.Dataset):
             transforms: a tuple of source and target string transforms.
 
         Examples:
-            >>> from torchtext.vocab import build_vocab_from_iterator
+            >>> from torchtext.legacy.vocab import build_vocab_from_iterator
             >>> src_data = torch.Tensor([token_id_s1, token_id_s2,
                                          token_id_s3, token_id_s1]).long()
             >>> tgt_data = torch.Tensor([token_id_t1, token_id_t2,

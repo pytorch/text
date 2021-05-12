@@ -125,7 +125,7 @@ def run_main(args, rank=None):
     except:
         train_dataset, valid_dataset, test_dataset = WLMDataset()
         old_vocab = train_dataset.vocab
-        vocab = torchtext.vocab.Vocab(counter=old_vocab.freqs,
+        vocab = torchtext.legacy.vocab.Vocab(counter=old_vocab.freqs,
                                       specials=['<unk>', '<pad>', '<MASK>'])
         with open(args.save_vocab, 'wb') as f:
             torch.save(vocab, f)

@@ -7,13 +7,6 @@ torchtext.experimental.vocab
 .. automodule:: torchtext.experimental.vocab
 .. currentmodule:: torchtext.experimental.vocab
 
-:hidden:`Vocab`
-~~~~~~~~~~~~~~~
-
-.. autoclass:: Vocab
-    :members:
-    :special-members:
-
 :hidden:`vocab`
 ~~~~~~~~~~~~~~~
 
