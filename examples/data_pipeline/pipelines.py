@@ -20,7 +20,7 @@ from torchtext.experimental.functional import (
 )
 from torchtext.experimental.vectors import FastText as FastTextExperimental
 from torchtext.experimental.vocab import load_vocab_from_file
-from torchtext.legacy.vocab import FastText
+from torchtext.vocab import FastText
 from torchtext.utils import download_from_url
 import argparse
 from torchtext.datasets import DATASETS

@@ -3,7 +3,7 @@ import time
 import torch
 from torchtext.experimental.datasets import AG_NEWS
 from torchtext.experimental.vectors import FastText as FastTextExperimental
-from torchtext.legacy.vocab import FastText
+from torchtext.vocab import FastText
 
 
 def benchmark_experimental_vectors():
