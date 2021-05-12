@@ -179,7 +179,7 @@ class TestVocab(TorchtextTestCase):
         for _ in range(2):
             v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                vectors=torchtext.legacy.vocab.Vectors(
+                vectors=torchtext.vocab.Vectors(
                     'wiki.simple.vec',
                     url=torchtext.legacy.vocab.FastText.url_base.format('simple')
                 )
@@ -306,7 +306,7 @@ class TestVocab(TorchtextTestCase):
 
             v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                vectors=torchtext.legacy.vocab.Vectors(
+                vectors=torchtext.vocab.Vectors(
                     'wiki.simple.vec', cache=vector_cache,
                     url=torchtext.legacy.vocab.FastText.url_base.format('simple'))
             )

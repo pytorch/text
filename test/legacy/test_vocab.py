@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from torchtext.legacy import vocab
 
-from .common.torchtext_test_case import TorchtextTestCase
+from ..common.torchtext_test_case import TorchtextTestCase
 
 
 def conditional_remove(f):
