@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
-import platform
 import torch
-import unittest
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.experimental.vocab import (
     vocab,
@@ -20,18 +18,12 @@ class TestVocab(TorchtextTestCase):
     def test_has_unk(self):
         c = OrderedDict()
         v = vocab(c)
-
-        # check if unk is mapped to the first index
-        self.assertEqual(v['not_in_it'], 0)
         self.assertEqual(v['<unk>'], 0)
 
     def test_new_unk(self):
         c = OrderedDict()
         v = vocab(c, unk_token="<new_unk>")
-
-        # check if new_unk is mapped to the first index
         self.assertEqual(v['<new_unk>'], 0)
-        self.assertEqual(v['not_in_it'], 0)
 
     def test_vocab_membership(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
@@ -53,6 +45,50 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
+
+    def test_reassign_token(self):
+        token_to_freq = {'<unk>': 1, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=1)
+
+        self.assertEqual(v['<unk>'], 2)
+        self.assertEqual(v['a'], 0)
+        self.assertEqual(v['b'], 1)
+        v.reassign_token('<unk>', 0)
+        self.assertEqual(v['<unk>'], 0)
+        self.assertEqual(v['a'], 1)
+        self.assertEqual(v['b'], 2)
+
+        self.assertEqual(v.get_itos(), ['<unk>', 'a', 'b'])
+
+        with self.assertRaises(RuntimeError):
+            v.reassign_token('not in vocab', 0)
+
+        with self.assertRaises(RuntimeError):
+            v.reassign_token('<unk>', 3)
+
+    def test_default_index(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+
+        self.assertTrue(v.get_default_index() is None)
+        with self.assertRaises(RuntimeError):
+            v['not in vocab']
+
+        v.set_default_index(0)
+        self.assertEqual(v['not in vocab'], 0)
+
+    def test_default_index_jit(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+        v.set_default_index(0)
+        v_jit = torch.jit.script(v)
+        self.assertEqual(v_jit['not in vocab'], 0)
 
     def test_vocab_insert_token(self):
         c = OrderedDict({'<unk>': 2, 'a': 2})
@@ -87,6 +123,10 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
+
+        # token must not exist to be appended
+        with self.assertRaises(RuntimeError):
+            v.append_token('b')
 
     def test_vocab_len(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -149,6 +189,8 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
 
         self.assertEqual(v.lookup_token(1), 'a')
+        with self.assertRaises(RuntimeError):
+            v.lookup_token(100)
 
     def test_vocab_lookup_tokens(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -172,24 +214,6 @@ class TestVocab(TorchtextTestCase):
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
 
-    # we separate out these errors because Windows runs into seg faults when propagating
-    # exceptions from C++ using pybind11
-    @unittest.skipIf(platform.system() == "Windows", "Test is known to fail on Windows.")
-    def test_errors_vocab_cpp(self):
-        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
-        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-        c = OrderedDict(sorted_by_freq_tuples)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when setting a token out of bounds
-            v = vocab(c, min_freq=3)
-            v.insert_token('new_token', 100)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when looking up a token out of bounds
-            v = vocab(c)
-            v.lookup_token(100)
-
     def test_errors_vocab_python(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
@@ -205,6 +229,7 @@ class TestVocab(TorchtextTestCase):
 
         c = OrderedDict(sorted_by_freq_tuples)
         v = vocab(c, min_freq=3)
+        v.set_default_index(0)
 
         expected_itos = ['<unk>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
@@ -218,6 +243,7 @@ class TestVocab(TorchtextTestCase):
             loaded_v = torch.load(vocab_path)
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+            self.assertEqual(v['not in vocab'], 0)
 
         with self.subTest('torchscript'):
             vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
@@ -227,6 +253,7 @@ class TestVocab(TorchtextTestCase):
             loaded_v = torch.load(vocab_path)
             self.assertEqual(v.get_itos(), expected_itos)
             self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+            self.assertEqual(v['not in vocab'], 0)
 
     def test_build_vocab_iterator(self):
         iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
