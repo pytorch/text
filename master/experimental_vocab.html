@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.10.0.dev20210511 documentation</title>
+  <title>torchtext.experimental.vocab &mdash; torchtext 0.10.0.dev20210512 documentation</title>
   
 
   
@@ -193,7 +193,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210511 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210512 &#x25BC</a>
     </div>
     
 
@@ -386,6 +386,9 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding index.</p>
 </dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if token already exists in the vocab</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -402,6 +405,19 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>indices (List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.experimental.vocab.Vocab.get_default_index">
+<code class="sig-name descname">get_default_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[int]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.get_default_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.get_default_index" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Value of default index if it is set.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>index (optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
 </dd>
 </dl>
 </dd></dl>
@@ -502,6 +518,32 @@
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="torchtext.experimental.vocab.Vocab.reassign_token">
+<code class="sig-name descname">reassign_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.reassign_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.reassign_token" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding index.</p></li>
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the index corresponding to the associated token.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – If <cite>index</cite> is not range [0,Vocab.size()) or if token is not present in Vocab</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchtext.experimental.vocab.Vocab.set_default_index">
+<code class="sig-name descname">set_default_index</code><span class="sig-paren">(</span><em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.set_default_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.set_default_index" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> – Value of default index. This index will be returned when OOV token is queried</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -520,7 +562,7 @@ Additionally, the if the <cite>unk_token</cite> isn’t found inside of the <cit
 <li><p><strong>ordered_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="(in Python v3.9)"><em>collections.OrderedDict</em></a>) – object holding the frequencies of each token found in the data.</p></li>
 <li><p><strong>min_freq</strong> – The minimum frequency needed to include a token in the vocabulary.
 Values less than 1 will be set to 1. Default: 1.</p></li>
-<li><p><strong>unk_token</strong> – The default unknown token to use. Default: ‘&lt;unk&gt;’.</p></li>
+<li><p><strong>unk_token</strong> – The default unknown token to use. Default: ‘&lt;unk&gt;’. If not found in ordered_dict, it will be inserted at index 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -561,7 +603,7 @@ token_n</p>
 <li><p><strong>file_object</strong> (<em>FileObject</em>) – a file like object to read data from.</p></li>
 <li><p><strong>min_freq</strong> – The minimum frequency needed to include a token in the vocabulary.
 Values less than 1 will be set to 1. Default: 1.</p></li>
-<li><p><strong>unk_token</strong> – The default unknown token to use. Default: ‘&lt;unk&gt;’.</p></li>
+<li><p><strong>unk_token</strong> – The default unknown token to use. Default: ‘&lt;unk&gt;’. If not found in vocab file, it will be inserted to index 0.</p></li>
 <li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 4.</p></li>
 </ul>
 </dd>
@@ -595,7 +637,7 @@ parallel to the text.</p>
 <li><p><strong>jited_tokenizer</strong> (<em>ScriptModule</em>) – a tokenizer that has been JITed using <cite>torch.jit.script</cite></p></li>
 <li><p><strong>min_freq</strong> – The minimum frequency needed to include a token in the vocabulary.
 Values less than 1 will be set to 1. Default: 1.</p></li>
-<li><p><strong>unk_token</strong> – The default unknown token to use. Default: ‘&lt;unk&gt;’.</p></li>
+<li><p><strong>unk_token</strong> – The default unknown token to use. Default: ‘&lt;unk&gt;’. If not found in text file, it will be inserted to index 0.</p></li>
 <li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 4.</p></li>
 </ul>
 </dd>
