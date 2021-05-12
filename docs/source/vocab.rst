@@ -7,6 +7,14 @@ torchtext.vocab
 .. automodule:: torchtext.vocab
 .. currentmodule:: torchtext.vocab
 
+:hidden:`Vocab`
+~~~~~~~~~~~~~~~
+
+.. autoclass:: Vocab
+    :members:
+    :special-members:
+
+
 :hidden:`Vectors`
 ~~~~~~~~~~~~~~~~~
 
