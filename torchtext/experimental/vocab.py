@@ -45,7 +45,7 @@ def build_vocab_from_text_file(file_path, jited_tokenizer, min_freq=1, unk_token
     """
     vocab_obj = _build_vocab_from_text_file(file_path, min_freq, num_cpus, jited_tokenizer)
     if unk_token not in vocab_obj:
-        vocab_obj[unk_token] = 0
+        vocab_obj.insert_token(unk_token, 0)
     return Vocab(vocab_obj)
 
 
@@ -76,7 +76,7 @@ def load_vocab_from_file(file_path, min_freq=1, unk_token='<unk>', num_cpus=4):
 
     vocab_obj = _load_vocab_from_file(file_path, min_freq, num_cpus)
     if unk_token not in vocab_obj:
-        vocab_obj[unk_token] = 0
+        vocab_obj.insert_token(unk_token, 0)
     return Vocab(vocab_obj)
 
 
@@ -215,16 +215,26 @@ class Vocab(nn.Module):
         return self.vocab.get_default_index()
 
     @torch.jit.export
-    def __setitem__(self, token: str, index: int) -> None:
+    def reassign_token(self, token: str, index: int) -> None:
         r"""
         Args:
             token (str): the token used to lookup the corresponding index.
             index (int): the index corresponding to the associated token.
         Raises:
-            RuntimeError: If `index` is out or range [0,Vocab.size()) in
-            case token exsist or out of range [0,Vocab.size()] in case token does not exist in Vocab.
+            RuntimeError: If `index` is not range [0,Vocab.size()) or if token is not present in Vocab
         """
-        self.vocab.__setitem__(token, index)
+        self.vocab.reassign_token(token, index)
+
+    @torch.jit.export
+    def insert_token(self, token: str, index: int) -> None:
+        r"""
+        Args:
+            token (str): the token used to lookup the corresponding index.
+            index (int): the index corresponding to the associated token.
+        Raises:
+            RuntimeError: if `index` not between [0, Vocab.size()] or if token already exists in the vocab.
+        """
+        self.vocab.insert_token(token, index)
 
     @torch.jit.export
     def append_token(self, token: str) -> None:

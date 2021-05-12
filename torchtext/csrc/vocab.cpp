@@ -52,32 +52,6 @@ c10::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
 }
 
-void Vocab::__setitem__(const std::string &token, const int64_t &index) {
-  // reassignment scenario
-  if (__contains__(c10::string_view{token.data(),token.size()})) {
-    // throw error if index is not valid
-    TORCH_CHECK(index >= 0 && index < __len__(),
-                "Specified index " + std::to_string(index) +
-                    " is out of bounds for vocab of size " +
-                    std::to_string(__len__()));
-
-    _remove(token);
-  }
-  // throw error if index is not valid
-  TORCH_CHECK(index >= 0 && index <= __len__(),
-              "Specified index " + std::to_string(index) +
-                  " is out of bounds for vocab of size " +
-                  std::to_string(__len__()));
-
-  // need to offset all tokens greater than or equal index by 1
-  for (size_t i = index; i < __len__(); i++) {
-    stoi_[_find(c10::string_view{itos_[i].data(),itos_[i].size()})] = i + 1;
-  }
-
-  itos_.insert(itos_.begin() + index, token);
-  stoi_[_find(c10::string_view{token.data(),token.size()})] = index;
-}
-
 void Vocab::append_token(const std::string &token) {
   // throw error if token already exist in vocab
   auto id = _find(c10::string_view{token.data(), token.size()});
@@ -86,6 +60,39 @@ void Vocab::append_token(const std::string &token) {
                                    std::to_string(stoi_[id]));
 
   _add(token);
+}
+
+void Vocab::reassign_token(const std::string &token, const int64_t &index) {
+  // throw error if index is not valid
+  TORCH_CHECK(index >= 0 && index < __len__(),
+              "Specified index " + std::to_string(index) +
+                  " is out of bounds for vocab of size " +
+                  std::to_string(__len__()));
+
+  // throw error if token not found
+  TORCH_CHECK(__contains__(token), "Token " + token + " not found in Vocab");
+
+  _remove(token);
+  insert_token(token, index);
+}
+
+void Vocab::insert_token(const std::string &token, const int64_t &index) {
+  // throw error if index is not valid
+  TORCH_CHECK(index >= 0 && index <= __len__(),
+              "Specified index " + std::to_string(index) +
+                  " is out of bounds for vocab of size " +
+                  std::to_string(__len__()));
+
+  // throw error if token already present
+  TORCH_CHECK(!__contains__(token), "Token " + token + " not found in Vocab");
+
+  // need to offset all tokens greater than or equal index by 1
+  for (size_t i = index; i < __len__(); i++) {
+    stoi_[_find(c10::string_view{itos_[i].data(), itos_[i].size()})] = i + 1;
+  }
+
+  itos_.insert(itos_.begin() + index, token);
+  stoi_[_find(c10::string_view{token.data(), token.size()})] = index;
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {

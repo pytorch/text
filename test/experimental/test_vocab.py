@@ -55,16 +55,18 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['<unk>'], 2)
         self.assertEqual(v['a'], 0)
         self.assertEqual(v['b'], 1)
-        v['<unk>'] = 0
+        v.reassign_token('<unk>', 0)
         self.assertEqual(v['<unk>'], 0)
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
 
         self.assertEqual(v.get_itos(), ['<unk>', 'a', 'b'])
 
-        # index should be valid for reassignment
         with self.assertRaises(RuntimeError):
-            v['<unk>'] = 3
+            v.reassign_token('not in vocab', 0)
+
+        with self.assertRaises(RuntimeError):
+            v.reassign_token('<unk>', 3)
 
     def test_default_index(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
@@ -93,7 +95,7 @@ class TestVocab(TorchtextTestCase):
 
         # add item to end
         v = vocab(c)
-        v['b'] = 2
+        v.insert_token('b', 2)
 
         expected_itos = ['<unk>', 'a', 'b']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
@@ -103,7 +105,7 @@ class TestVocab(TorchtextTestCase):
 
         # add item to middle
         v = vocab(c)
-        v['b'] = 0
+        v.insert_token('b', 0)
 
         expected_itos = ['b', '<unk>', 'a']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
@@ -187,6 +189,8 @@ class TestVocab(TorchtextTestCase):
         v = vocab(c)
 
         self.assertEqual(v.lookup_token(1), 'a')
+        with self.assertRaises(RuntimeError):
+            v.lookup_token(100)
 
     def test_vocab_lookup_tokens(self):
         token_to_freq = {'a': 2, 'b': 2, 'c': 2}
@@ -209,21 +213,6 @@ class TestVocab(TorchtextTestCase):
         expected_indices = [2, 1, 3]
 
         self.assertEqual(v.lookup_indices(tokens), expected_indices)
-
-    def test_errors_vocab_cpp(self):
-        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
-        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-        c = OrderedDict(sorted_by_freq_tuples)
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when setting a token out of bounds
-            v = vocab(c, min_freq=3)
-            v['new_token'] = 100
-
-        with self.assertRaises(RuntimeError):
-            # Test proper error raised when looking up a token out of bounds
-            v = vocab(c)
-            v.lookup_token(100)
 
     def test_errors_vocab_python(self):
         token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}

@@ -29,7 +29,8 @@ struct Vocab : torch::CustomClassHolder {
   bool __contains__(const c10::string_view &token) const;
   void set_default_index(int64_t index);
   c10::optional<int64_t> get_default_index() const;
-  void __setitem__(const std::string &token, const int64_t &index);
+  void reassign_token(const std::string &token, const int64_t &index);
+  void insert_token(const std::string &token, const int64_t &index);
   void append_token(const std::string &token);
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);

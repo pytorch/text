@@ -112,13 +112,14 @@ PYBIND11_MODULE(_torchtext, m) {
             const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
             return self->__contains__(c10::string_view{buffer, (size_t)length});
           })
-      .def("__setitem__", &Vocab::__setitem__)
       .def("__getitem__",
            [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> int64_t {
              ssize_t length;
              const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
              return self->__getitem__(c10::string_view{buffer, (size_t)length});
            })
+      .def("reassign_token", &Vocab::reassign_token)
+      .def("insert_token", &Vocab::insert_token)
       .def("set_default_index", &Vocab::set_default_index)
       .def("get_default_index", &Vocab::get_default_index)
       .def("__len__", &Vocab::__len__)
@@ -239,10 +240,11 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
       .def("__contains__",
            [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
                -> bool { return self->__contains__(c10::string_view{item}); })
-      .def("__setitem__", &Vocab::__setitem__)
       .def("__getitem__",
            [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
                -> int64_t { return self->__getitem__(c10::string_view{item}); })
+      .def("reassign_token", &Vocab::reassign_token)
+      .def("insert_token", &Vocab::insert_token)
       .def("__len__", &Vocab::__len__)
       .def("set_default_index", &Vocab::set_default_index)
       .def("get_default_index", &Vocab::get_default_index)
