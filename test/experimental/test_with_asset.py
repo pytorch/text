@@ -189,8 +189,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
         v = build_vocab_from_text_file(asset_path)
         expected_itos = ['after', 'talks', "'disappointed'", 'Fears', 'Federal',
-                         'Mogul.', 'N', 'Newall', 'T', 'Turner', 'Unions', 'are', 
-                         'at', 'firm', 'for', 'parent', 'pension', 'representing', 
+                         'Mogul.', 'N', 'Newall', 'T', 'Turner', 'Unions', 'are',
+                         'at', 'firm', 'for', 'parent', 'pension', 'representing',
                          'say', 'stricken', 'they', 'with', 'workers']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         print(v.get_itos())

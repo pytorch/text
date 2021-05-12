@@ -36,7 +36,7 @@ def build_vocab_from_text_file(file_path: str, tokenizer: Optional[Callable] = N
 
     Args:
         file_object: A file object to read data from.
-        tokenizer: A python callable to split input sentence into tokens. By default, 
+        tokenizer: A python callable to split input sentence into tokens. By default,
             the function will do tokenization based on python split() function.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
             Values less than 1 will be set to 1. Default: 1.
