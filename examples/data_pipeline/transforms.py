@@ -1,5 +1,5 @@
 import torch.nn as nn
-from torchtext.experimental.vocab import vocab
+from torchtext.vocab import vocab
 from typing import List
 from collections import OrderedDict
 import torch

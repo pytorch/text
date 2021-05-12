@@ -3,7 +3,7 @@ from collections import OrderedDict
 import os
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
-from torchtext.experimental.vocab import (
+from torchtext.vocab import (
     vocab,
     build_vocab_from_iterator,
 )

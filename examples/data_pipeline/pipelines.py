@@ -19,7 +19,7 @@ from torchtext.experimental.functional import (
     sequential_transforms,
 )
 from torchtext.experimental.vectors import FastText as FastTextExperimental
-from torchtext.experimental.vocab import load_vocab_from_file
+from torchtext.vocab import load_vocab_from_file
 from torchtext.vocab import FastText
 from torchtext.utils import download_from_url
 import argparse
