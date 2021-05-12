@@ -178,8 +178,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_from_file(self):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
-        v = load_vocab_from_file(asset_path, unk_token='<new_unk>')
-        expected_itos = ['<new_unk>', 'b', 'a', 'c']
+        v = load_vocab_from_file(asset_path)
+        expected_itos = ['b', 'a', 'c']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
@@ -187,14 +187,13 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_from_raw_text_file(self):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
-        tokenizer = basic_english_normalize()
-        jit_tokenizer = torch.jit.script(tokenizer)
-        v = build_vocab_from_text_file(asset_path, jit_tokenizer, unk_token='<new_unk>')
-        expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
-                         'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
-                         'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
-                         'unions', 'with', 'workers']
+        v = build_vocab_from_text_file(asset_path)
+        expected_itos = ['after', 'talks', "'disappointed'", 'Fears', 'Federal',
+                         'Mogul.', 'N', 'Newall', 'T', 'Turner', 'Unions', 'are', 
+                         'at', 'firm', 'for', 'parent', 'pension', 'representing', 
+                         'say', 'stricken', 'they', 'with', 'workers']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        print(v.get_itos())
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
 

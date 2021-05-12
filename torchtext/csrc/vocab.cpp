@@ -202,6 +202,33 @@ void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
   }
 }
 
+void parse_raw_text_file_chunk_using_python_tokenizer(
+    const std::string &file_path, size_t offset, const int64_t start_line,
+    const int64_t end_line, std::shared_ptr<IndexDict> counter,
+    py::object &module) {
+  std::ifstream fin(file_path, std::ios::in);
+  TORCH_CHECK(fin.is_open(), "Cannot open input file " + file_path);
+
+  fin.seekg(offset);
+
+  std::string line;
+  for (int64_t i = start_line; i < end_line; i++) {
+    std::getline(fin, line);
+    std::vector<std::string> token_list =
+        module(line).cast<std::vector<std::string>>();
+
+    for (size_t i = 0; i < token_list.size(); i++) {
+      std::string token = token_list[i];
+
+      if ((*counter).find(token) == (*counter).end()) {
+        (*counter)[token] = 1;
+      } else {
+        (*counter)[token] += 1;
+      }
+    }
+  }
+}
+
 // sorting using a custom object
 struct CompareTokens {
   bool operator()(const std::pair<std::string, int64_t> &a,
@@ -339,6 +366,49 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
       parse_raw_text_file_chunk(file_path, offsets[j], i,
                                 std::min(num_lines, i + chunk_size),
                                 counter_ptr, tokenizer);
+      std::lock_guard<std::mutex> lk(m);
+      thread_count--;
+      cv.notify_all();
+    });
+    chunk_counters.push_back(counter_ptr);
+    j++;
+  }
+
+  // block until all threads finish execution
+  std::unique_lock<std::mutex> lock(m);
+  cv.wait(lock, [&thread_count] { return thread_count == 0; });
+
+  StringList tokens = _concat_tokens(chunk_counters, min_freq, num_lines, true);
+
+  return Vocab(std::move(tokens));
+}
+
+Vocab _build_vocab_from_text_file_using_python_tokenizer(
+    const std::string &file_path, const int64_t min_freq,
+    const int64_t num_cpus, py::object tokenizer) {
+  int64_t num_lines = _infer_lines(file_path);
+  int64_t chunk_size = impl::divup(num_lines, num_cpus);
+  // Launching a thread on less lines than this likely has too much overhead.
+  chunk_size = std::max(chunk_size, GRAIN_SIZE);
+
+  std::vector<size_t> offsets;
+  impl::infer_offsets(file_path, num_lines, chunk_size, offsets);
+
+  std::vector<std::shared_ptr<IndexDict>> chunk_counters;
+
+  std::mutex m;
+  std::condition_variable cv;
+  std::atomic<int> thread_count(0);
+
+  // create threads
+  int64_t j = 0;
+  for (int64_t i = 0; i < num_lines; i += chunk_size) {
+    auto counter_ptr = std::make_shared<IndexDict>();
+    thread_count++;
+    at::launch([&, file_path, num_lines, chunk_size, j, i, counter_ptr]() {
+      parse_raw_text_file_chunk_using_python_tokenizer(
+          file_path, offsets[j], i, std::min(num_lines, i + chunk_size),
+          counter_ptr, tokenizer);
       std::lock_guard<std::mutex> lk(m);
       thread_count--;
       cv.notify_all();

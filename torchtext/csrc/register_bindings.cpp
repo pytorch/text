@@ -156,6 +156,7 @@ PYBIND11_MODULE(_torchtext, m) {
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
   m.def("_build_vocab_from_text_file", &build_vocab_from_text_file);
+  m.def("_build_vocab_from_text_file_using_python_tokenizer", &_build_vocab_from_text_file_using_python_tokenizer);
 }
 
 TORCH_LIBRARY_FRAGMENT(torchtext, m) {
