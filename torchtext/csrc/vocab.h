@@ -85,7 +85,6 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer);
 Vocab _build_vocab_from_text_file_using_python_tokenizer(
-    const std::string &file_path, const int64_t min_freq,
-    const int64_t num_cpus, py::object tokenizer);
+    const std::string &file_path, const int64_t min_freq, py::object tokenizer);
 
 } // namespace torchtext

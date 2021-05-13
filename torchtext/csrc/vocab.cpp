@@ -359,7 +359,7 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
 
 Vocab _build_vocab_from_text_file_using_python_tokenizer(
     const std::string &file_path, const int64_t min_freq,
-    const int64_t num_cpus, py::object tokenizer) {
+    py::object tokenizer) {
   // find number of lines
   int64_t num_lines = _infer_lines(file_path);
   // Read text from file and add tokens
