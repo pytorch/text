@@ -206,7 +206,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
             norm_transform = custom_replace(patterns_list)
             return list(norm_transform([input.lower()]))[0].split()
 
-        # using python split tokenizer
+        # using python based basic_english_normalize tokenizer
+        # we can also use basic_english_normalize() here
         v1 = build_vocab_from_text_file(asset_path, tokenizer=python_basic_english_normalize)
         expected_itos = ["'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                          'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
@@ -215,7 +216,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         self.assertEqual(v1.get_itos(), expected_itos)
         self.assertEqual(dict(v1.get_stoi()), expected_stoi)
-        # using basic_english_normalize tokenizer
+
+        # using JIT'D basic_english_normalize tokenizer
         v2 = build_vocab_from_text_file(asset_path, tokenizer=torch.jit.script(basic_english_normalize()))
         self.assertEqual(v2.get_itos(), expected_itos)
         self.assertEqual(dict(v2.get_stoi()), expected_stoi)
