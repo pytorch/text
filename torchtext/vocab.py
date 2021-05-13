@@ -118,8 +118,20 @@ def vocab(ordered_dict: Dict, min_freq: int = 1):
         >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
         >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
         >>> v1 = vocab(ordered_dict)
+        >>> print(v1['a']) #prints 1
+        >>> print(v1['out of vocab']) #raise RuntimeError since default index is not set
         >>> tokens = ['e', 'd', 'c', 'b', 'a']
         >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
+        >>> #adding <unk> token and default index
+        >>> unk_token = '<unk>'
+        >>> default_index = -1
+        >>> if unk_token not in v2: v2.insert_token(unk_token, 0)
+        >>> v2.set_default_index(default_index)
+        >>> print(v2['<unk>']) #prints 0
+        >>> print(v2['out of vocab']) #prints -1
+        >>> #make default index same as index of unk_token
+        >>> v2.set_default_index(v2[unk_token])
+        >>> v2['out of vocab'] is v2[unk_token] #prints True
     """
 
     tokens = []
