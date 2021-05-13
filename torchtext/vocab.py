@@ -255,7 +255,7 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1) -> Vocab:
         >>> #generating vocab from text file
         >>> import io
         >>> from torchtext.vocab import build_vocab_from_iterator
-        >>> def yield_tokens_batch(file_path):
+        >>> def yield_tokens(file_path):
         >>>     with io.open(file_path, encoding = 'utf-8') as f:
         >>>         for line in f:
         >>>             yield line.strip().split()
