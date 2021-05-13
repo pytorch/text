@@ -7,11 +7,11 @@ from timeit import default_timer as timer
 from matplotlib import pyplot as plt
 import torch
 from torchtext.experimental.datasets import DATASETS
-from torchtext.vocab import (
-    vocab as VocabExperimental,
+from torchtext.experimental.vocab_factory import (
     load_vocab_from_file,
     build_vocab_from_text_file
 )
+from torchtext.vocab import vocab as VocabExperimental
 from torchtext.legacy.vocab import (
     Vocab,
     build_vocab_from_iterator
