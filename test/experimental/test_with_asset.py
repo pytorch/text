@@ -9,7 +9,6 @@ from torchtext.experimental.transforms import (
     PRETRAINED_SP_MODEL,
     sentencepiece_processor,
     TextSequentialTransforms,
-    basic_english_normalize,
 )
 from torch.utils.data import DataLoader
 from torchtext.experimental.vocab_factory import (
