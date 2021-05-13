@@ -11,7 +11,7 @@ from torchtext.experimental.transforms import (
     TextSequentialTransforms,
 )
 from torch.utils.data import DataLoader
-from torchtext.vocab import (
+from torchtext.experimental.vocab_factory import (
     load_vocab_from_file,
     build_vocab_from_text_file,
 )
