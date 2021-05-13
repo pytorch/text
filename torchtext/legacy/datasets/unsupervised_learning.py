@@ -1,7 +1,7 @@
 from torchtext.data.functional import custom_replace
 import torch
 from torchtext.utils import download_from_url, extract_archive
-from torchtext.vocab import build_vocab_from_iterator
+from torchtext.legacy.vocab import build_vocab_from_iterator
 from torchtext.data.functional import simple_space_split
 import os
 
