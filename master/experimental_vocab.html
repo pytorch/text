@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.10.0.dev20210512 documentation</title>
+  <title>torchtext.experimental.vocab &mdash; torchtext 0.10.0.dev20210513 documentation</title>
   
 
   
@@ -193,7 +193,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210512 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210513 &#x25BC</a>
     </div>
     
 
@@ -318,237 +318,7 @@
   <section id="module-torchtext.experimental.vocab">
 <span id="torchtext-experimental-vocab"></span><h1>torchtext.experimental.vocab<a class="headerlink" href="#module-torchtext.experimental.vocab" title="Permalink to this headline">¶</a></h1>
 <section id="vocab">
-<h2><span class="hidden-section">Vocab</span><a class="headerlink" href="#vocab" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="torchtext.experimental.vocab.Vocab">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.vocab.</code><code class="sig-name descname">Vocab</code><span class="sig-paren">(</span><em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.__contains__">
-<code class="sig-name descname">__contains__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.__contains__" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token for which to check the membership</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>whether the token is member of vocab or not</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>membership (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.__getitem__">
-<code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.__getitem__" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding index.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the index corresponding to the associated token.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>index (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.__len__">
-<code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.__len__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.__len__" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the length of the vocab</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>length (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.__prepare_scriptable__">
-<code class="sig-name descname">__prepare_scriptable__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.__prepare_scriptable__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a JITable Vocab.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.append_token">
-<code class="sig-name descname">append_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.append_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.append_token" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding index.</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if token already exists in the vocab</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls the <cite>lookup_indices</cite> method</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – a list of tokens used to lookup their corresponding <cite>indices</cite>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the ‘indices` associated with a list of tokens`.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>indices (List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.get_default_index">
-<code class="sig-name descname">get_default_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[int]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.get_default_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.get_default_index" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Value of default index if it is set.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>index (optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.get_itos">
-<code class="sig-name descname">get_itos</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.get_itos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.get_itos" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>dictionary mapping indices to tokens.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>itos (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.get_stoi">
-<code class="sig-name descname">get_stoi</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict[str, int]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.get_stoi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.get_stoi" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>dictionary mapping tokens to indices.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>stoi (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.insert_token">
-<code class="sig-name descname">insert_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.insert_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.insert_token" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding index.</p></li>
-<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the index corresponding to the associated token.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if <cite>index</cite> not between [0, Vocab.size()] or if token already exists in the vocab.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.lookup_indices">
-<code class="sig-name descname">lookup_indices</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.lookup_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.lookup_indices" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – the tokens used to lookup their corresponding <cite>indices</cite>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the ‘indices` associated with <cite>tokens</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>indices (List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>])</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.lookup_token">
-<code class="sig-name descname">lookup_token</code><span class="sig-paren">(</span><em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.lookup_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.lookup_token" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the index corresponding to the associated token.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the token used to lookup the corresponding index.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>token (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>)</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if <cite>index</cite> not between [0, itos.size()].</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.lookup_tokens">
-<code class="sig-name descname">lookup_tokens</code><span class="sig-paren">(</span><em class="sig-param">indices: List[int]</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.lookup_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.lookup_tokens" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>indices</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – the <cite>indices</cite> used to lookup their corresponding`tokens`.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the <cite>tokens</cite> associated with <cite>indices</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>tokens (List[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>])</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if an index within <cite>indices</cite> is not between [0, itos.size()].</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.reassign_token">
-<code class="sig-name descname">reassign_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.reassign_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.reassign_token" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding index.</p></li>
-<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the index corresponding to the associated token.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – If <cite>index</cite> is not range [0,Vocab.size()) or if token is not present in Vocab</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="torchtext.experimental.vocab.Vocab.set_default_index">
-<code class="sig-name descname">set_default_index</code><span class="sig-paren">(</span><em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vocab.html#Vocab.set_default_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.Vocab.set_default_index" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>index</strong> – Value of default index. This index will be returned when OOV token is queried</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="id1">
-<h2><span class="hidden-section">vocab</span><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2><span class="hidden-section">vocab</span><a class="headerlink" href="#vocab" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="torchtext.experimental.vocab.vocab">
 <code class="sig-prename descclassname">torchtext.experimental.vocab.</code><code class="sig-name descname">vocab</code><span class="sig-paren">(</span><em class="sig-param">ordered_dict</em>, <em class="sig-param">min_freq=1</em>, <em class="sig-param">unk_token='&lt;unk&gt;'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vocab.html#vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vocab.vocab" title="Permalink to this definition">¶</a></dt>
@@ -611,7 +381,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
 <dd class="field-even"><p>a <cite>Vocab</cite> object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vocab.Vocab" title="torchtext.experimental.vocab.Vocab">torchtext.experimental.vocab.Vocab</a></p>
+<dd class="field-odd"><p>torchtext.experimental.vocab.Vocab</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -645,7 +415,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
 <dd class="field-even"><p>a <cite>Vocab</cite> object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#torchtext.experimental.vocab.Vocab" title="torchtext.experimental.vocab.Vocab">torchtext.experimental.vocab.Vocab</a></p>
+<dd class="field-odd"><p>torchtext.experimental.vocab.Vocab</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -725,8 +495,7 @@ Values less than 1 will be set to 1. Default: 1.</p></li>
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
 <li><a class="reference internal" href="#">torchtext.experimental.vocab</a><ul>
-<li><a class="reference internal" href="#vocab"><span class="hidden-section">Vocab</span></a></li>
-<li><a class="reference internal" href="#id1"><span class="hidden-section">vocab</span></a></li>
+<li><a class="reference internal" href="#vocab"><span class="hidden-section">vocab</span></a></li>
 <li><a class="reference internal" href="#load-vocab-from-file"><span class="hidden-section">load_vocab_from_file</span></a></li>
 <li><a class="reference internal" href="#build-vocab-from-text-file"><span class="hidden-section">build_vocab_from_text_file</span></a></li>
 <li><a class="reference internal" href="#build-vocab-from-iterator"><span class="hidden-section">build_vocab_from_iterator</span></a></li>
