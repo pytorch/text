@@ -18,6 +18,7 @@ from .wikitext2 import WikiText2
 from .yahooanswers import YahooAnswers
 from .yelpreviewfull import YelpReviewFull
 from .yelpreviewpolarity import YelpReviewPolarity
+from .multi30k import Multi30k
 
 DATASETS = {
     'AG_NEWS': AG_NEWS,
@@ -38,7 +39,8 @@ DATASETS = {
     'WikiText2': WikiText2,
     'YahooAnswers': YahooAnswers,
     'YelpReviewFull': YelpReviewFull,
-    'YelpReviewPolarity': YelpReviewPolarity
+    'YelpReviewPolarity': YelpReviewPolarity,
+    'Multi30k': Multi30k
 }
 
 URLS = {}
