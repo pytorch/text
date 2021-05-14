@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.raw &mdash; torchtext 0.10.0.dev20210513 documentation</title>
+  <title>torchtext.experimental.datasets.raw &mdash; torchtext 0.10.0.dev20210514 documentation</title>
   
 
   
@@ -193,7 +193,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210513 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210514 &#x25BC</a>
     </div>
     
 
@@ -231,7 +231,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.datasets.raw</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
 </ul>
 <p><span class="caption-text">PyTorch Libraries</span></p>
@@ -341,115 +341,20 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#machine-translation" id="id1">Machine Translation</a></p>
 <ul>
-<li><p><a class="reference internal" href="#multi30k" id="id2">Multi30k</a></p></li>
-<li><p><a class="reference internal" href="#wmt14" id="id3">WMT14</a></p></li>
+<li><p><a class="reference internal" href="#wmt14" id="id2">WMT14</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#language-modeling" id="id4">Language Modeling</a></p>
+<li><p><a class="reference internal" href="#language-modeling" id="id3">Language Modeling</a></p>
 <ul>
-<li><p><a class="reference internal" href="#wmtnewscrawl" id="id5">WMTNewsCrawl</a></p></li>
+<li><p><a class="reference internal" href="#wmtnewscrawl" id="id4">WMTNewsCrawl</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <section id="machine-translation">
 <h2><a class="toc-backref" href="#id1">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
-<section id="multi30k">
-<h3><a class="toc-backref" href="#id2">Multi30k</a><a class="headerlink" href="#multi30k" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
-<dt id="torchtext.experimental.datasets.raw.Multi30k">
-<code class="sig-prename descclassname">torchtext.experimental.datasets.raw.</code><code class="sig-name descname">Multi30k</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">task='task1'</em>, <em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">train_set='train'</em>, <em class="sig-param">valid_set='val'</em>, <em class="sig-param">test_set='test_2016_flickr'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/multi30k.html#Multi30k"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.Multi30k" title="Permalink to this definition">¶</a></dt>
-<dd><p>Multi30k Dataset</p>
-<p>The available datasets include following:</p>
-<p><strong>Language pairs (task1)</strong>:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td></td>
-<td><p>‘en’</p></td>
-<td><p>‘cs’</p></td>
-<td><p>‘de’</p></td>
-<td><p>‘fr’</p></td>
-</tr>
-<tr class="row-even"><td><p>‘en’</p></td>
-<td></td>
-<td><p>x</p></td>
-<td><p>x</p></td>
-<td><p>x</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘cs’</p></td>
-<td><p>x</p></td>
-<td></td>
-<td><p>x</p></td>
-<td><p>x</p></td>
-</tr>
-<tr class="row-even"><td><p>‘de’</p></td>
-<td><p>x</p></td>
-<td><p>x</p></td>
-<td></td>
-<td><p>x</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘fr’</p></td>
-<td><p>x</p></td>
-<td><p>x</p></td>
-<td><p>x</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Language pairs (task2)</strong>:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td></td>
-<td><p>‘en’</p></td>
-<td><p>‘de’</p></td>
-</tr>
-<tr class="row-even"><td><p>‘en’</p></td>
-<td></td>
-<td><p>x</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘de’</p></td>
-<td><p>x</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>For additional details refer to source: <a class="reference external" href="https://github.com/multi30k/dataset">https://github.com/multi30k/dataset</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> – Directory where the datasets are saved. Default: “.data”</p></li>
-<li><p><strong>split</strong> – split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)</p></li>
-<li><p><strong>task</strong> – Indicate the task</p></li>
-<li><p><strong>language_pair</strong> – tuple or list containing src and tgt language</p></li>
-<li><p><strong>train_set</strong> – A string to identify train set.</p></li>
-<li><p><strong>valid_set</strong> – A string to identify validation set.</p></li>
-<li><p><strong>test_set</strong> – A string to identify test set.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.experimental.datasets.raw</span> <span class="kn">import</span> <span class="n">Multi30k</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train_iter</span><span class="p">,</span> <span class="n">valid_iter</span><span class="p">,</span> <span class="n">test_iter</span> <span class="o">=</span> <span class="n">Multi30k</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">src_sentence</span><span class="p">,</span> <span class="n">tgt_sentence</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">train_iter</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</section>
 <section id="wmt14">
-<h3><a class="toc-backref" href="#id3">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id2">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.raw.WMT14">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.raw.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">train_set='train.tok.clean.bpe.32000'</em>, <em class="sig-param">valid_set='newstest2013.tok.bpe.32000'</em>, <em class="sig-param">test_set='newstest2014.tok.bpe.32000'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/wmt14.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.WMT14" title="Permalink to this definition">¶</a></dt>
@@ -500,9 +405,9 @@
 </section>
 </section>
 <section id="language-modeling">
-<h2><a class="toc-backref" href="#id4">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
 <section id="wmtnewscrawl">
-<h3><a class="toc-backref" href="#id5">WMTNewsCrawl</a><a class="headerlink" href="#wmtnewscrawl" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id4">WMTNewsCrawl</a><a class="headerlink" href="#wmtnewscrawl" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="torchtext.experimental.datasets.raw.WMTNewsCrawl">
 <code class="sig-prename descclassname">torchtext.experimental.datasets.raw.</code><code class="sig-name descname">WMTNewsCrawl</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split='train'</em>, <em class="sig-param">year=2010</em>, <em class="sig-param">language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/wmtnewscrawl.html#WMTNewsCrawl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.WMTNewsCrawl" title="Permalink to this definition">¶</a></dt>
@@ -574,7 +479,6 @@
               <ul>
 <li><a class="reference internal" href="#">torchtext.experimental.datasets.raw</a><ul>
 <li><a class="reference internal" href="#machine-translation">Machine Translation</a><ul>
-<li><a class="reference internal" href="#multi30k">Multi30k</a></li>
 <li><a class="reference internal" href="#wmt14">WMT14</a></li>
 </ul>
 </li>

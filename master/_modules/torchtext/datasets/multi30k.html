@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.yelpreviewpolarity &mdash; torchtext 0.10.0.dev20210514 documentation</title>
+  <title>torchtext.datasets.multi30k &mdash; torchtext 0.10.0.dev20210514 documentation</title>
   
 
   
@@ -282,7 +282,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.yelpreviewpolarity</li>
+      <li>torchtext.datasets.multi30k</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -310,44 +310,92 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.yelpreviewpolarity</h1><div class="highlight"><pre>
+  <h1>Source code for torchtext.datasets.multi30k</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span>
 <span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_download_extract_validate</span><span class="p">,</span>
     <span class="n">_RawTextIterableDataset</span><span class="p">,</span>
     <span class="n">_wrap_split_argument</span><span class="p">,</span>
-    <span class="n">_add_docstring_header</span><span class="p">,</span>
-    <span class="n">_find_match</span><span class="p">,</span>
     <span class="n">_create_dataset_directory</span><span class="p">,</span>
-    <span class="n">_create_data_from_csv</span><span class="p">,</span>
+    <span class="n">_read_text_iterator</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg&#39;</span>
-
-<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;620c8ae4bd5a150b730f1ba9a7c6a4d3&#39;</span>
-
-<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">560000</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">38000</span><span class="p">,</span>
+<span class="n">URL</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/training.tar.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/mmt16_task1_test.tar.gz&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;yelp_review_polarity_csv.tar.gz&#39;</span>
+<span class="n">MD5</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;20140d013d05dd9a72dfde46478663ba05737ce983f478f960c1123c6671be5e&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="s1">&#39;a7aa20e9ebd5ba5adce7909498b94410996040857154dab029851af3a866da8c&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;0681be16a532912288a91ddd573594fbdd57c0fbb81486eff7c55247e35326c2&#39;</span><span class="p">,</span>
+<span class="p">}</span>
 
-<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;YelpReviewPolarity&quot;</span>
+<span class="n">_EXTRACTED_FILES_INFO</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;file_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;md5&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;de&#39;</span><span class="p">:</span> <span class="s1">&#39;695df46f6fd14567e69970408a2c129a50e778a910ecb1585a92eb25b2c7accc&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;en&#39;</span><span class="p">:</span> <span class="s1">&#39;4b4d37e774976ef44fecca1738cdeb3b3ba384851a59a755b9c5e6aa7d87b13c&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;file_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;md5&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;de&#39;</span><span class="p">:</span> <span class="s1">&#39;fd0fc009db2446cfc12d96a382aff0d3122cb47577b352d0f7e0bb3a38e2e552&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;en&#39;</span><span class="p">:</span> <span class="s1">&#39;40cd20974079d9afb0e3d27c659a8e059cc2fcf850b4bc23ede13fc36dd8a865&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;file_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;md5&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;de&#39;</span><span class="p">:</span> <span class="s1">&#39;c1d2f544471a7387e37d15f1adf075ff7d6fe57a30840bb969281ae102d24cb1&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;en&#39;</span><span class="p">:</span> <span class="s1">&#39;399a4382932c1aadd3ceb9bef1008d388a64c76d4ae4e9d4728c6f4301cac182&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">29000</span><span class="p">,</span>
+    <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="mi">1014</span><span class="p">,</span>
+    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;Multi30k&quot;</span>
 
 
-<div class="viewcode-block" id="YelpReviewPolarity"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.YelpReviewPolarity">[docs]</a><span class="nd">@_add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
-<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">YelpReviewPolarity</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
-    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
-                                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span>
-                                    <span class="n">hash_value</span><span class="o">=</span><span class="n">MD5</span><span class="p">,</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-    <span class="n">extracted_files</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
+<div class="viewcode-block" id="Multi30k"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.Multi30k">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
+<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">Multi30k</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">language_pair</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;Multi30k dataset</span>
 
-    <span class="n">path</span> <span class="o">=</span> <span class="n">_find_match</span><span class="p">(</span><span class="n">split</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span><span class="p">,</span> <span class="n">extracted_files</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="n">DATASET_NAME</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
-                                   <span class="n">_create_data_from_csv</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+<span class="sd">    Reference: http://www.statmt.org/wmt16/multimodal-task.html#task1</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root: Directory where the datasets are saved. Default: &quot;.data&quot;</span>
+<span class="sd">        split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)</span>
+<span class="sd">        language_pair: tuple or list containing src and tgt language. Available options are (&#39;de&#39;,&#39;en&#39;) and (&#39;en&#39;, &#39;de&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">language_pair</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;language_pair must contain only 2 elements: src and tgt language respectively&#39;</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">language_pair</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)),</span> <span class="s2">&quot;language_pair must be either (&#39;de&#39;,&#39;en&#39;) or (&#39;en&#39;, &#39;de&#39;)&quot;</span>
+
+    <span class="n">downloaded_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">URL</span><span class="p">[</span><span class="n">split</span><span class="p">])</span>
+
+    <span class="n">src_path</span> <span class="o">=</span> <span class="n">_download_extract_validate</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">URL</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
+                                          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">downloaded_file</span><span class="p">),</span>
+                                          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES_INFO</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="s1">&#39;file_prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">language_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                          <span class="n">_EXTRACTED_FILES_INFO</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="s1">&#39;md5&#39;</span><span class="p">][</span><span class="n">language_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="n">trg_path</span> <span class="o">=</span> <span class="n">_download_extract_validate</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">URL</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
+                                          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">downloaded_file</span><span class="p">),</span>
+                                          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES_INFO</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="s1">&#39;file_prefix&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">language_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                          <span class="n">_EXTRACTED_FILES_INFO</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="s1">&#39;md5&#39;</span><span class="p">][</span><span class="n">language_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">src_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">src_path</span><span class="p">)</span>
+    <span class="n">trg_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">trg_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="n">DATASET_NAME</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">trg_data_iter</span><span class="p">))</span></div>
 </pre></div>
 
              </article>

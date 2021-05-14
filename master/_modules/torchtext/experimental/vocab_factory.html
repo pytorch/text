@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vocab &mdash; torchtext 0.10.0.dev20210513 documentation</title>
+  <title>torchtext.experimental.vocab_factory &mdash; torchtext 0.10.0.dev20210514 documentation</title>
   
 
   
@@ -190,7 +190,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210513 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.10.0.dev20210514 &#x25BC</a>
     </div>
     
 
@@ -228,7 +228,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../models_utils.html">torchtext.experimental.models.utils</a></li>
 </ul>
 <p><span class="caption-text">PyTorch Libraries</span></p>
@@ -282,7 +282,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.experimental.vocab</li>
+      <li>torchtext.experimental.vocab_factory</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -310,56 +310,58 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.experimental.vocab</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">OrderedDict</span>
+  <h1>Source code for torchtext.experimental.vocab_factory</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
 <span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Vocab</span> <span class="k">as</span> <span class="n">VocabPybind</span><span class="p">,</span>
+    <span class="n">_build_vocab_from_text_file</span><span class="p">,</span>
     <span class="n">_load_vocab_from_file</span><span class="p">,</span>
-    <span class="n">_build_vocab_from_text_file</span>
+    <span class="n">_build_vocab_from_text_file_using_python_tokenizer</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;build_vocab_from_text_file&#39;</span><span class="p">,</span>
     <span class="s1">&#39;load_vocab_from_file&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;vocab&#39;</span><span class="p">,</span>
 <span class="p">]</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="build_vocab_from_text_file"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab.build_vocab_from_text_file">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_text_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">jited_tokenizer</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">,</span> <span class="n">num_cpus</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<div class="viewcode-block" id="build_vocab_from_text_file"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab_factory.build_vocab_from_text_file">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_text_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_cpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vocab</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a `Vocab` object from a raw text file.</span>
-
 <span class="sd">    The `file_path` can contain any raw text. This function applies a generic JITed tokenizer in</span>
 <span class="sd">    parallel to the text.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        file_object (FileObject): a file object to read data from.</span>
-<span class="sd">        jited_tokenizer (ScriptModule): a tokenizer that has been JITed using `torch.jit.script`</span>
+<span class="sd">        file_object: A file object to read data from.</span>
+<span class="sd">        tokenizer: A python callable to split input sentence into tokens. It can also be a Jited Module.</span>
+<span class="sd">            By default, the function will do tokenization based on python split() function.</span>
 <span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
-<span class="sd">            Values less than 1 will be set to 1. Default: 1.</span>
-<span class="sd">        unk_token: The default unknown token to use. Default: &#39;&lt;unk&gt;&#39;. If not found in text file, it will be inserted to index 0.</span>
-<span class="sd">        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.</span>
-
+<span class="sd">        num_cpus: the number of cpus to use when loading the vectors from file. It will be ignored when tokenizer is not torch scripted (JIT&#39;d)</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        torchtext.experimental.vocab.Vocab: a `Vocab` object.</span>
-
+<span class="sd">        torchtext.vocab.Vocab: a `Vocab` object.</span>
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vocab import build_vocab_from_text_file</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.vocab import build_vocab_from_text_file</span>
+<span class="sd">        &gt;&gt;&gt; v = build_vocab_from_text_file(&#39;vocab.txt&#39;) # using python split function as tokenizer</span>
+<span class="sd">        &gt;&gt;&gt; #using JIT&#39;d tokenizer</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.experimental.transforms import basic_english_normalize</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = basic_english_normalize()</span>
 <span class="sd">        &gt;&gt;&gt; tokenizer = basic_english_normalize()</span>
 <span class="sd">        &gt;&gt;&gt; jit_tokenizer = torch.jit.script(tokenizer)</span>
-<span class="sd">        &gt;&gt;&gt; v = build_vocab_from_text_file(&#39;vocab.txt&#39;, jit_tokenizer)</span>
+<span class="sd">        &gt;&gt;&gt; v = build_vocab_from_text_file(&#39;vocab.txt&#39;, jit_tokenizer, num_cpus = 4)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">vocab_obj</span> <span class="o">=</span> <span class="n">_build_vocab_from_text_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">,</span> <span class="n">num_cpus</span><span class="p">,</span> <span class="n">jited_tokenizer</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">unk_token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vocab_obj</span><span class="p">:</span>
-        <span class="n">vocab_obj</span><span class="o">.</span><span class="n">insert_token</span><span class="p">(</span><span class="n">unk_token</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tokenizer</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">tokenizer</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">ScriptModule</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">ScriptFunction</span><span class="p">):</span>
+        <span class="n">vocab_obj</span> <span class="o">=</span> <span class="n">_build_vocab_from_text_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">,</span> <span class="n">num_cpus</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vocab_obj</span> <span class="o">=</span> <span class="n">_build_vocab_from_text_file_using_python_tokenizer</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">vocab_obj</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_vocab_from_file"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab.load_vocab_from_file">[docs]</a><span class="k">def</span> <span class="nf">load_vocab_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">,</span> <span class="n">num_cpus</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<div class="viewcode-block" id="load_vocab_from_file"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab_factory.load_vocab_from_file">[docs]</a><span class="k">def</span> <span class="nf">load_vocab_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_cpus</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vocab</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a `Vocab` object from a text file.</span>
 <span class="sd">    The `file_path` should contain tokens separated by new lines.</span>
 <span class="sd">    Format for txt file:</span>
@@ -370,84 +372,20 @@
 <span class="sd">        token_n</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        file_object (FileObject): a file like object to read data from.</span>
+<span class="sd">        file_object: A file like object to read data from.</span>
 <span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
-<span class="sd">            Values less than 1 will be set to 1. Default: 1.</span>
-<span class="sd">        unk_token: The default unknown token to use. Default: &#39;&lt;unk&gt;&#39;. If not found in vocab file, it will be inserted to index 0.</span>
-<span class="sd">        num_cpus (int): the number of cpus to use when loading the vectors from file. Default: 4.</span>
+<span class="sd">        num_cpus: the number of cpus to use when loading the vectors from file.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        torchtext.experimental.vocab.Vocab: a `Vocab` object.</span>
+<span class="sd">        torchtext.vocab.Vocab: a `Vocab` object.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vocab import load_vocab_from_file</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.vocab import load_vocab_from_file</span>
 <span class="sd">        &gt;&gt;&gt; v = load_vocab_from_file(&#39;vocab.txt&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">vocab_obj</span> <span class="o">=</span> <span class="n">_load_vocab_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">,</span> <span class="n">num_cpus</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">unk_token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vocab_obj</span><span class="p">:</span>
-        <span class="n">vocab_obj</span><span class="o">.</span><span class="n">insert_token</span><span class="p">(</span><span class="n">unk_token</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">vocab_obj</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="build_vocab_from_iterator"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab.build_vocab_from_iterator">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build a Vocab from an iterator.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
-<span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
-<span class="sd">            Values less than 1 will be set to 1. Default: 1.</span>
-<span class="sd">        unk_token: The default unknown token to use. Default: &#39;&lt;unk&gt;&#39;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
-        <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
-    <span class="n">sorted_by_freq_tuples</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">sorted_by_freq_tuples</span><span class="p">)</span>
-    <span class="n">word_vocab</span> <span class="o">=</span> <span class="n">vocab</span><span class="p">(</span><span class="n">ordered_dict</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="n">min_freq</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="n">unk_token</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">word_vocab</span></div>
-
-
-<div class="viewcode-block" id="vocab"><a class="viewcode-back" href="../../../experimental_vocab.html#torchtext.experimental.vocab.vocab">[docs]</a><span class="k">def</span> <span class="nf">vocab</span><span class="p">(</span><span class="n">ordered_dict</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Factory method for creating a vocab object which maps tokens to indices.</span>
-
-<span class="sd">    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.</span>
-<span class="sd">    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.</span>
-<span class="sd">    Additionally, the if the `unk_token` isn&#39;t found inside of the `ordered_dict`, it will be added to the end of the vocab.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        ordered_dict (collections.OrderedDict): object holding the frequencies of each token found in the data.</span>
-<span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
-<span class="sd">            Values less than 1 will be set to 1. Default: 1.</span>
-<span class="sd">        unk_token: The default unknown token to use. Default: &#39;&lt;unk&gt;&#39;. If not found in ordered_dict, it will be inserted at index 0.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: if a default `unk_token` isn&#39;t provided.</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.vocab import vocab</span>
-<span class="sd">        &gt;&gt;&gt; from collections import Counter, OrderedDict</span>
-<span class="sd">        &gt;&gt;&gt; counter = Counter([&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;])</span>
-<span class="sd">        &gt;&gt;&gt; sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)</span>
-<span class="sd">        &gt;&gt;&gt; ordered_dict = OrderedDict(sorted_by_freq_tuples)</span>
-<span class="sd">        &gt;&gt;&gt; v1 = vocab(ordered_dict)</span>
-<span class="sd">        &gt;&gt;&gt; tokens = [&#39;e&#39;, &#39;d&#39;, &#39;c&#39;, &#39;b&#39;, &#39;a&#39;]</span>
-<span class="sd">        &gt;&gt;&gt; v2 = vocab(OrderedDict([(token, 1) for token in tokens]))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">unk_token</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A default unk token wasn&#39;t provided.&quot;</span><span class="p">)</span>
-
-    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">freq</span> <span class="ow">in</span> <span class="n">ordered_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">freq</span> <span class="o">&gt;=</span> <span class="n">min_freq</span><span class="p">:</span>
-            <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">unk_token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
-        <span class="n">tokens</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">unk_token</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">VocabPybind</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 </pre></div>
 
              </article>
