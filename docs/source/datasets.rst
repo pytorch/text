@@ -98,6 +98,12 @@ PennTreebank
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
+Multi30k
+~~~~~~~~
+
+.. autofunction:: Multi30k
+
+
 
 IWSLT2016
 ~~~~~~~~~

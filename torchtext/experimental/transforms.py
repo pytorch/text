@@ -361,11 +361,11 @@ class VocabTransform(nn.Module):
     r"""Vocab transform
 
     Args:
-        vocab: an instance of torchtext.experimental.vocab.Vocab class.
+        vocab: an instance of torchtext.vocab.Vocab class.
 
     Example:
         >>> import torch
-        >>> from torchtext.experimental.vocab import vocab_from_file_object
+        >>> from torchtext.vocab import vocab_from_file_object
         >>> f = open('vocab.txt', 'r')
         >>> vocab_transform = VocabTransform(vocab_from_file_object(f))
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)

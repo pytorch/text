@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from fairseq.data.dictionary import Dictionary
 import torch
-from torchtext.experimental.vocab import vocab
+from torchtext.vocab import vocab
 from torchtext.vocab import Vocab
 from typing import Dict, List, Optional
 

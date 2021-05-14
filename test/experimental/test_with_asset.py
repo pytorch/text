@@ -11,7 +11,7 @@ from torchtext.experimental.transforms import (
     TextSequentialTransforms,
 )
 from torch.utils.data import DataLoader
-from torchtext.experimental.vocab import (
+from torchtext.experimental.vocab_factory import (
     load_vocab_from_file,
     build_vocab_from_text_file,
 )
@@ -26,6 +26,7 @@ from torchtext.experimental.vectors import (
     FastText,
     load_vectors_from_file_path,
 )
+from torchtext.data.functional import custom_replace
 from torchtext.utils import download_from_url
 
 
@@ -178,8 +179,8 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_from_file(self):
         asset_name = 'vocab_test.txt'
         asset_path = get_asset_path(asset_name)
-        v = load_vocab_from_file(asset_path, unk_token='<new_unk>')
-        expected_itos = ['<new_unk>', 'b', 'a', 'c']
+        v = load_vocab_from_file(asset_path)
+        expected_itos = ['b', 'a', 'c']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         self.assertEqual(v.get_itos(), expected_itos)
         self.assertEqual(dict(v.get_stoi()), expected_stoi)
@@ -187,16 +188,39 @@ class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_from_raw_text_file(self):
         asset_name = 'vocab_raw_text_test.txt'
         asset_path = get_asset_path(asset_name)
-        tokenizer = basic_english_normalize()
-        jit_tokenizer = torch.jit.script(tokenizer)
-        v = build_vocab_from_text_file(asset_path, jit_tokenizer, unk_token='<new_unk>')
-        expected_itos = ['<new_unk>', "'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
+
+        def python_basic_english_normalize(input):
+            patterns_list = [
+                (r'\'', ' \'  '),
+                (r'\"', ''),
+                (r'\.', ' . '),
+                (r'<br \/>', ' '),
+                (r',', ' , '),
+                (r'\(', ' ( '),
+                (r'\)', ' ) '),
+                (r'\!', ' ! '),
+                (r'\?', ' ? '),
+                (r'\;', ' '),
+                (r'\:', ' '),
+                (r'\s+', ' ')]
+            norm_transform = custom_replace(patterns_list)
+            return list(norm_transform([input.lower()]))[0].split()
+
+        # using python based basic_english_normalize tokenizer
+        # we can also use basic_english_normalize() here
+        v1 = build_vocab_from_text_file(asset_path, tokenizer=python_basic_english_normalize)
+        expected_itos = ["'", 'after', 'talks', '.', 'are', 'at', 'disappointed',
                          'fears', 'federal', 'firm', 'for', 'mogul', 'n', 'newall', 'parent',
                          'pension', 'representing', 'say', 'stricken', 't', 'they', 'turner',
                          'unions', 'with', 'workers']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-        self.assertEqual(v.get_itos(), expected_itos)
-        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+        self.assertEqual(v1.get_itos(), expected_itos)
+        self.assertEqual(dict(v1.get_stoi()), expected_stoi)
+
+        # using JIT'D basic_english_normalize tokenizer
+        v2 = build_vocab_from_text_file(asset_path, tokenizer=torch.jit.script(basic_english_normalize()))
+        self.assertEqual(v2.get_itos(), expected_itos)
+        self.assertEqual(dict(v2.get_stoi()), expected_stoi)
 
     def test_builtin_pretrained_sentencepiece_processor(self):
         sp_model_path = download_from_url(PRETRAINED_SP_MODEL['text_unigram_25000'])
