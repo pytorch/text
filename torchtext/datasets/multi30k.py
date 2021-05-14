@@ -53,10 +53,22 @@ NUM_LINES = {
 DATASET_NAME = "Multi30k"
 
 
-@_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'valid', 'test'))
 def Multi30k(root, split, language_pair=('de', 'en')):
+    """Multi30k dataset
+
+    Reference: http://www.statmt.org/wmt16/multimodal-task.html#task1
+
+    Args:
+        root: Directory where the datasets are saved. Default: ".data"
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
+        language_pair: tuple or list containing src and tgt language. Available options are ('de','en') and ('en', 'de')
+    """
+
+    assert (len(language_pair) == 2), 'language_pair must contain only 2 elements: src and tgt language respectively'
+    assert (tuple(sorted(language_pair)) == ('de', 'en')), "language_pair must be either ('de','en') or ('en', 'de')"
+
     downloaded_file = os.path.basename(URL[split])
 
     src_path = _download_extract_validate(root, URL[split], MD5[split],
