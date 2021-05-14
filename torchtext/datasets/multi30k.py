@@ -4,7 +4,6 @@ from torchtext.data.datasets_utils import (
     _RawTextIterableDataset,
     _wrap_split_argument,
     _create_dataset_directory,
-    _add_docstring_header,
     _read_text_iterator,
 )
 
