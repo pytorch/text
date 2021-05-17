@@ -1,282 +1,274 @@
-from collections import defaultdict
 from functools import partial
 import logging
 import os
 import zipfile
 import gzip
-
-from urllib.request import urlretrieve
 import torch
+import torch.nn as nn
+from urllib.request import urlretrieve
 from tqdm import tqdm
 import tarfile
-
+from typing import Dict, List, Optional, Iterable
+from collections import Counter, OrderedDict
+from torchtext._torchtext import (
+    Vocab as VocabPybind,
+)
 from .utils import reporthook
 
-from collections import Counter
+logger = logging.getLogger(__name__)
+
+__all__ = [
+    'build_vocab_from_iterator',
+    'vocab',
+]
 
 logger = logging.getLogger(__name__)
 
 
-class Vocab(object):
-    """Defines a vocabulary object that will be used to numericalize a field.
+class Vocab(nn.Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    r"""Creates a vocab object which maps tokens to indices.
 
-    Attributes:
-        freqs: A collections.Counter object holding the frequencies of tokens
-            in the data used to build the Vocab.
-        stoi: A collections.defaultdict instance mapping token strings to
-            numerical identifiers.
-        itos: A list of token strings indexed by their numerical identifiers.
+    Args:
+        vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.
     """
 
-    # TODO (@mttk): Populate classs with default values of special symbols
-    UNK = '<unk>'
+    def __init__(self, vocab):
+        super(Vocab, self).__init__()
+        self.vocab = vocab
 
-    def __init__(self, counter, max_size=None, min_freq=1, specials=('<unk>', '<pad>'),
-                 vectors=None, unk_init=None, vectors_cache=None, specials_first=True):
-        """Create a Vocab object from a collections.Counter.
+    @property
+    def is_jitable(self):
+        return not isinstance(self.vocab, VocabPybind)
 
-        Args:
-            counter: collections.Counter object holding the frequencies of
-                each value found in the data.
-            max_size: The maximum size of the vocabulary, or None for no
-                maximum. Default: None.
-            min_freq: The minimum frequency needed to include a token in the
-                vocabulary. Values less than 1 will be set to 1. Default: 1.
-            specials: The list of special tokens (e.g., padding or eos) that
-                will be prepended to the vocabulary. Default: ['<unk'>, '<pad>']
-            vectors: One of either the available pretrained vectors
-                or custom pretrained vectors (see Vocab.load_vectors);
-                or a list of aforementioned vectors
-            unk_init (callback): by default, initialize out-of-vocabulary word vectors
-                to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: 'torch.zeros'
-            vectors_cache: directory for cached vectors. Default: '.vector_cache'
-            specials_first: Whether to add special tokens into the vocabulary at first.
-                If it is False, they are added into the vocabulary at last.
-                Default: True.
-        """
-        self.freqs = counter
-        counter = counter.copy()
-        min_freq = max(min_freq, 1)
-
-        self.itos = list()
-        self.unk_index = None
-        if specials_first:
-            self.itos = list(specials)
-            # only extend max size if specials are prepended
-            max_size = None if max_size is None else max_size + len(specials)
-
-        # frequencies of special tokens are not counted when building vocabulary
-        # in frequency order
-        for tok in specials:
-            del counter[tok]
-
-        # sort by frequency, then alphabetically
-        words_and_frequencies = sorted(counter.items(), key=lambda tup: tup[0])
-        words_and_frequencies.sort(key=lambda tup: tup[1], reverse=True)
-
-        for word, freq in words_and_frequencies:
-            if freq < min_freq or len(self.itos) == max_size:
-                break
-            self.itos.append(word)
-
-        if Vocab.UNK in specials:  # hard-coded for now
-            unk_index = specials.index(Vocab.UNK)  # position in list
-            # account for ordering of specials, set variable
-            self.unk_index = unk_index if specials_first else len(self.itos) + unk_index
-            self.stoi = defaultdict(self._default_unk_index)
-        else:
-            self.stoi = defaultdict()
-
-        if not specials_first:
-            self.itos.extend(list(specials))
-
-        # stoi is simply a reverse dict for itos
-        self.stoi.update({tok: i for i, tok in enumerate(self.itos)})
-
-        self.vectors = None
-        if vectors is not None:
-            self.load_vectors(vectors, unk_init=unk_init, cache=vectors_cache)
-        else:
-            assert unk_init is None and vectors_cache is None
-
-    def _default_unk_index(self):
-        return self.unk_index
-
-    def __getitem__(self, token):
-        return self.stoi.get(token, self.stoi.get(Vocab.UNK))
-
-    def __getstate__(self):
-        # avoid picking defaultdict
-        attrs = dict(self.__dict__)
-        # cast to regular dict
-        attrs['stoi'] = dict(self.stoi)
-        return attrs
-
-    def __setstate__(self, state):
-        if state.get("unk_index", None) is None:
-            stoi = defaultdict()
-        else:
-            stoi = defaultdict(self._default_unk_index)
-        stoi.update(state['stoi'])
-        state['stoi'] = stoi
-        self.__dict__.update(state)
-
-    def __eq__(self, other):
-        if self.freqs != other.freqs:
-            return False
-        if self.stoi != other.stoi:
-            return False
-        if self.itos != other.itos:
-            return False
-        if self.vectors != other.vectors:
-            return False
-        return True
-
-    def __len__(self):
-        return len(self.itos)
-
-    def lookup_indices(self, tokens):
-        indices = [self.__getitem__(token) for token in tokens]
-        return indices
-
-    def extend(self, v, sort=False):
-        words = sorted(v.itos) if sort else v.itos
-        for w in words:
-            if w not in self.stoi:
-                self.itos.append(w)
-                self.stoi[w] = len(self.itos) - 1
-
-    def load_vectors(self, vectors, **kwargs):
-        """
-        Args:
-            vectors: one of or a list containing instantiations of the
-                GloVe, CharNGram, or Vectors classes. Alternatively, one
-                of or a list of available pretrained vectors:
-
-                charngram.100d
-                fasttext.en.300d
-                fasttext.simple.300d
-                glove.42B.300d
-                glove.840B.300d
-                glove.twitter.27B.25d
-                glove.twitter.27B.50d
-                glove.twitter.27B.100d
-                glove.twitter.27B.200d
-                glove.6B.50d
-                glove.6B.100d
-                glove.6B.200d
-                glove.6B.300d
-
-            Remaining keyword arguments: Passed to the constructor of Vectors classes.
-        """
-        if not isinstance(vectors, list):
-            vectors = [vectors]
-        for idx, vector in enumerate(vectors):
-            if isinstance(vector, str):
-                # Convert the string pretrained vector identifier
-                # to a Vectors object
-                if vector not in pretrained_aliases:
-                    raise ValueError(
-                        "Got string input vector {}, but allowed pretrained "
-                        "vectors are {}".format(
-                            vector, list(pretrained_aliases.keys())))
-                vectors[idx] = pretrained_aliases[vector](**kwargs)
-            elif not isinstance(vector, Vectors):
-                raise ValueError(
-                    "Got input vectors of type {}, expected str or "
-                    "Vectors object".format(type(vector)))
-
-        tot_dim = sum(v.dim for v in vectors)
-        self.vectors = torch.Tensor(len(self), tot_dim)
-        for i, token in enumerate(self.itos):
-            start_dim = 0
-            for v in vectors:
-                end_dim = start_dim + v.dim
-                self.vectors[i][start_dim:end_dim] = v[token.strip()]
-                start_dim = end_dim
-            assert(start_dim == tot_dim)
-
-    def set_vectors(self, stoi, vectors, dim, unk_init=torch.Tensor.zero_):
-        """
-        Set the vectors for the Vocab instance from a collection of Tensors.
+    @torch.jit.export
+    def forward(self, tokens: List[str]) -> List[int]:
+        r"""Calls the `lookup_indices` method
 
         Args:
-            stoi: A dictionary of string to the index of the associated vector
-                in the `vectors` input argument.
-            vectors: An indexed iterable (or other structure supporting __getitem__) that
-                given an input index, returns a FloatTensor representing the vector
-                for the token associated with the index. For example,
-                vector[stoi["string"]] should return the vector for "string".
-            dim: The dimensionality of the vectors.
-            unk_init (callback): by default, initialize out-of-vocabulary word vectors
-                to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: 'torch.zeros'
+            tokens: a list of tokens used to lookup their corresponding `indices`.
+
+        Returns:
+            The indices associated with a list of `tokens`.
         """
-        self.vectors = torch.Tensor(len(self), dim)
-        for i, token in enumerate(self.itos):
-            wv_index = stoi.get(token, None)
-            if wv_index is not None:
-                self.vectors[i] = vectors[wv_index]
-            else:
-                self.vectors[i] = unk_init(self.vectors[i])
+        return self.vocab.lookup_indices(tokens)
 
+    @torch.jit.export
+    def __len__(self) -> int:
+        r"""
+        Returns:
+            The length of the vocab.
+        """
+        return len(self.vocab)
 
-class SubwordVocab(Vocab):
-
-    def __init__(self, counter, max_size=None, specials=('<pad>'),
-                 vectors=None, unk_init=torch.Tensor.zero_):
-        """Create a revtok subword vocabulary from a collections.Counter.
-
+    @torch.jit.export
+    def __contains__(self, token: str) -> bool:
+        r"""
         Args:
-            counter: collections.Counter object holding the frequencies of
-                each word found in the data.
-            max_size: The maximum size of the subword vocabulary, or None for no
-                maximum. Default: None.
-            specials: The list of special tokens (e.g., padding or eos) that
-                will be prepended to the vocabulary in addition to an <unk>
-                token.
-            vectors: One of either the available pretrained vectors
-                or custom pretrained vectors (see Vocab.load_vectors);
-                or a list of aforementioned vectors
-            unk_init (callback): by default, initialize out-of-vocabulary word vectors
-                to zero vectors; can be any function that takes in a Tensor and
-                returns a Tensor of the same size. Default: 'torch.zeros
+            token: The token for which to check the membership.
+
+        Returns:
+            Whether the token is member of vocab or not.
         """
-        try:
-            import revtok
-        except ImportError:
-            print("Please install revtok.")
-            raise
+        return self.vocab.__contains__(token)
 
-        # Hardcode unk_index as subword_vocab has no specials_first argument
-        self.unk_index = (specials.index(SubwordVocab.UNK)
-                          if SubwordVocab.UNK in specials else None)
+    @torch.jit.export
+    def __getitem__(self, token: str) -> int:
+        r"""
+        Args:
+            token: The token used to lookup the corresponding index.
 
-        if self.unk_index is None:
-            self.stoi = defaultdict()
-        else:
-            self.stoi = defaultdict(self._default_unk_index)
+        Returns:
+            The index corresponding to the associated token.
+        """
+        return self.vocab[token]
 
-        self.stoi.update({tok: i for i, tok in enumerate(specials)})
-        self.itos = specials.copy()
+    @torch.jit.export
+    def set_default_index(self, index: Optional[int]) -> None:
+        r"""
+        Args:
+            index: Value of default index. This index will be returned when OOV token is queried.
+        """
+        self.vocab.set_default_index(index)
 
-        self.segment = revtok.SubwordSegmenter(counter, max_size)
+    @torch.jit.export
+    def get_default_index(self) -> Optional[int]:
+        r"""
+        Returns:
+            Value of default index if it is set.
+        """
+        return self.vocab.get_default_index()
 
-        max_size = None if max_size is None else max_size + len(self.itos)
+    @torch.jit.export
+    def reassign_token(self, token: str, index: int) -> None:
+        r"""
+        Args:
+            token: the token used to lookup the corresponding index.
+            index: the index corresponding to the associated token.
+        Raises:
+            RuntimeError: If `index` is not in range [0,Vocab.size()) or if `token` is not present in Vocab
+        """
+        self.vocab.reassign_token(token, index)
 
-        # sort by frequency/entropy, then alphabetically
-        toks = sorted(self.segment.vocab.items(),
-                      key=lambda tup: (len(tup[0]) != 1, -tup[1], tup[0]))
+    @torch.jit.export
+    def insert_token(self, token: str, index: int) -> None:
+        r"""
+        Args:
+            token: The token used to lookup the corresponding index.
+            index: The index corresponding to the associated token.
+        Raises:
+            RuntimeError: If `index` is not in range [0, Vocab.size()] or if `token` already exists in the vocab.
+        """
+        self.vocab.insert_token(token, index)
 
-        for tok, _ in toks:
-            if len(self.itos) == max_size:
-                break
-            self.itos.append(tok)
-            self.stoi[tok] = len(self.itos) - 1
+    @torch.jit.export
+    def append_token(self, token: str) -> None:
+        r"""
+        Args:
+            token: The token used to lookup the corresponding index.
 
-        if vectors is not None:
-            self.load_vectors(vectors, unk_init=unk_init)
+        Raises:
+            RuntimeError: If `token` already exists in the vocab
+        """
+        self.vocab.append_token(token)
+
+    @torch.jit.export
+    def lookup_token(self, index: int) -> str:
+        r"""
+        Args:
+            index: The index corresponding to the associated token.
+
+        Returns:
+            token: The token used to lookup the corresponding index.
+
+        Raises:
+            RuntimeError: If `index` not in range [0, itos.size()).
+        """
+        return self.vocab.lookup_token(index)
+
+    @torch.jit.export
+    def lookup_tokens(self, indices: List[int]) -> List[str]:
+        r"""
+        Args:
+            indices: The `indices` used to lookup their corresponding`tokens`.
+
+        Returns:
+            The `tokens` associated with `indices`.
+
+        Raises:
+            RuntimeError: If an index within `indices` is not int range [0, itos.size()).
+        """
+        return self.vocab.lookup_tokens(indices)
+
+    @torch.jit.export
+    def lookup_indices(self, tokens: List[str]) -> List[int]:
+        r"""
+        Args:
+            tokens: the tokens used to lookup their corresponding `indices`.
+
+        Returns:
+            The 'indices` associated with `tokens`.
+        """
+        return self.vocab.lookup_indices(tokens)
+
+    @torch.jit.export
+    def get_stoi(self) -> Dict[str, int]:
+        r"""
+        Returns:
+            Dictionary mapping tokens to indices.
+        """
+        return self.vocab.get_stoi()
+
+    @torch.jit.export
+    def get_itos(self) -> List[str]:
+        r"""
+        Returns:
+            List mapping indices to tokens.
+        """
+        return self.vocab.get_itos()
+
+    def __prepare_scriptable__(self):
+        r"""Return a JITable Vocab.
+        """
+        if not self.is_jitable:
+            cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.default_index_)
+            return Vocab(cpp_vocab)
+        return self
+
+
+def vocab(ordered_dict: Dict, min_freq: int = 1) -> Vocab:
+    r"""Factory method for creating a vocab object which maps tokens to indices.
+
+    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
+    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
+
+    Args:
+        ordered_dict: Ordered Dictionary mapping tokens to their corresponding occurance frequencies.
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+
+    Returns:
+        torchtext.vocab.Vocab: A `Vocab` object
+
+    Examples:
+        >>> from torchtext.vocab import vocab
+        >>> from collections import Counter, OrderedDict
+        >>> counter = Counter(["a", "a", "b", "b", "b"])
+        >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+        >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
+        >>> v1 = vocab(ordered_dict)
+        >>> print(v1['a']) #prints 1
+        >>> print(v1['out of vocab']) #raise RuntimeError since default index is not set
+        >>> tokens = ['e', 'd', 'c', 'b', 'a']
+        >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
+        >>> #adding <unk> token and default index
+        >>> unk_token = '<unk>'
+        >>> default_index = -1
+        >>> if unk_token not in v2: v2.insert_token(unk_token, 0)
+        >>> v2.set_default_index(default_index)
+        >>> print(v2['<unk>']) #prints 0
+        >>> print(v2['out of vocab']) #prints -1
+        >>> #make default index same as index of unk_token
+        >>> v2.set_default_index(v2[unk_token])
+        >>> v2['out of vocab'] is v2[unk_token] #prints True
+    """
+
+    tokens = []
+    for token, freq in ordered_dict.items():
+        if freq >= min_freq:
+            tokens.append(token)
+
+    return Vocab(VocabPybind(tokens, None))
+
+
+def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1) -> Vocab:
+    """
+    Build a Vocab from an iterator.
+
+    Args:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+
+    Returns:
+        torchtext.vocab.Vocab: A `Vocab` object
+
+    Examples:
+        >>> #generating vocab from text file
+        >>> import io
+        >>> from torchtext.vocab import build_vocab_from_iterator
+        >>> def yield_tokens(file_path):
+        >>>     with io.open(file_path, encoding = 'utf-8') as f:
+        >>>         for line in f:
+        >>>             yield line.strip().split()
+        >>> vocab = build_vocab_from_iterator(yield_tokens_batch(file_path))
+    """
+
+    counter = Counter()
+    for tokens in iterator:
+        counter.update(tokens)
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+    ordered_dict = OrderedDict(sorted_by_freq_tuples)
+    word_vocab = vocab(ordered_dict, min_freq=min_freq)
+    return word_vocab
 
 
 def _infer_shape(f):
@@ -543,24 +535,3 @@ pretrained_aliases = {
     "glove.6B.300d": partial(GloVe, name="6B", dim="300")
 }
 """Mapping from string name to factory function"""
-
-
-def build_vocab_from_iterator(iterator, num_lines=None):
-    """
-    Build a Vocab from an iterator.
-
-    Args:
-        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
-        num_lines: The expected number of elements returned by the iterator.
-            (Default: None)
-            Optionally, if known, the expected number of elements can be passed to
-            this factory function for improved progress reporting.
-    """
-
-    counter = Counter()
-    with tqdm(unit_scale=0, unit='lines', total=num_lines) as t:
-        for tokens in iterator:
-            counter.update(tokens)
-            t.update(1)
-    word_vocab = Vocab(counter)
-    return word_vocab

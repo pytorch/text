@@ -45,7 +45,7 @@ def build_sp_pipeline(args):
 def build_legacy_torchtext_vocab_pipeline(args):
     vocab_file = args.vocab_filename
     tokenizer = get_tokenizer("basic_english")
-    from torchtext.vocab import build_vocab_from_iterator
+    from torchtext.legacy.vocab import build_vocab_from_iterator
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')
@@ -72,7 +72,7 @@ def build_experimental_torchtext_pipeline(args):
 def build_legacy_batch_torchtext_vocab_pipeline(args):
     vocab_file = args.vocab_filename
     tokenizer = get_tokenizer("basic_english")
-    from torchtext.vocab import build_vocab_from_iterator
+    from torchtext.legacy.vocab import build_vocab_from_iterator
 
     def token_iterator(vocab_file):
         f = open(vocab_file, 'r')

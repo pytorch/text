@@ -150,7 +150,7 @@ class TestVocab(TorchtextTestCase):
                 vectors = "charngram.100d"
             else:
                 vectors = torchtext.vocab.CharNGram()
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
             expected_itos = ['<unk>', '<pad>', '<bos>',
                              'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
@@ -177,7 +177,7 @@ class TestVocab(TorchtextTestCase):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                 vectors=torchtext.vocab.Vectors(
                     'wiki.simple.vec',
@@ -211,7 +211,7 @@ class TestVocab(TorchtextTestCase):
             else:
                 vectors = torchtext.vocab.FastText(language='simple')
 
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
@@ -244,7 +244,7 @@ class TestVocab(TorchtextTestCase):
                 vectors = "glove.twitter.27B.25d"
             else:
                 vectors = torchtext.vocab.GloVe(name='twitter.27B', dim='25')
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=vectors)
 
             expected_itos = ['<unk>', '<pad>', '<bos>',
@@ -273,7 +273,7 @@ class TestVocab(TorchtextTestCase):
         # Build a vocab and get vectors twice to test caching.
         for _ in range(2):
             f = torchtext.vocab.FastText(language='simple')
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'], vectors=f)
             n_vocab = len(v)
             v.extend(f)  # extend the vocab with the words contained in f.itos
@@ -304,7 +304,7 @@ class TestVocab(TorchtextTestCase):
             if i == 1:
                 self.assertTrue(os.path.exists(vector_cache))
 
-            v = torchtext.vocab.Vocab(
+            v = torchtext.legacy.vocab.Vocab(
                 c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
                 vectors=torchtext.vocab.Vectors(
                     'wiki.simple.vec', cache=vector_cache,

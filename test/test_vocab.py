@@ -1,131 +1,254 @@
 # -*- coding: utf-8 -*-
-from collections import Counter
+from collections import OrderedDict
 import os
-import pickle
-
-
-import numpy as np
 import torch
-from torchtext import vocab
-
-from .common.torchtext_test_case import TorchtextTestCase
-
-
-def conditional_remove(f):
-    if os.path.isfile(f):
-        os.remove(f)
+from test.common.torchtext_test_case import TorchtextTestCase
+from torchtext.vocab import (
+    vocab,
+    build_vocab_from_iterator,
+)
 
 
 class TestVocab(TorchtextTestCase):
+    def tearDown(self):
+        super().tearDown()
+        torch._C._jit_clear_class_registry()
+        torch.jit._recursive.concrete_type_store = torch.jit._recursive.ConcreteTypeStore()
+
+    def test_vocab_membership(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+
+        self.assertTrue('<unk>' in v)
+        self.assertTrue('a' in v)
+        self.assertTrue('b' in v)
+        self.assertFalse('c' in v)
+
+    def test_vocab_get_item(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+
+        self.assertEqual(v['<unk>'], 0)
+        self.assertEqual(v['a'], 1)
+        self.assertEqual(v['b'], 2)
+
+    def test_reassign_token(self):
+        token_to_freq = {'<unk>': 1, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=1)
+
+        self.assertEqual(v['<unk>'], 2)
+        self.assertEqual(v['a'], 0)
+        self.assertEqual(v['b'], 1)
+        v.reassign_token('<unk>', 0)
+        self.assertEqual(v['<unk>'], 0)
+        self.assertEqual(v['a'], 1)
+        self.assertEqual(v['b'], 2)
+
+        self.assertEqual(v.get_itos(), ['<unk>', 'a', 'b'])
+
+        with self.assertRaises(RuntimeError):
+            v.reassign_token('not in vocab', 0)
+
+        with self.assertRaises(RuntimeError):
+            v.reassign_token('<unk>', 3)
+
+    def test_default_index(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+
+        self.assertTrue(v.get_default_index() is None)
+        with self.assertRaises(RuntimeError):
+            v['not in vocab']
+
+        v.set_default_index(0)
+        self.assertEqual(v['not in vocab'], 0)
+
+        v.set_default_index(None)
+        with self.assertRaises(RuntimeError):
+            v['not in vocab']
+
+    def test_default_index_jit(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=2)
+        v.set_default_index(0)
+        v_jit = torch.jit.script(v)
+        self.assertEqual(v_jit['not in vocab'], 0)
+
+        v_jit.set_default_index(None)
+        with self.assertRaises(RuntimeError):
+            v_jit['not in vocab']
+
+    def test_vocab_insert_token(self):
+        c = OrderedDict({'<unk>': 2, 'a': 2})
+
+        # add item to end
+        v = vocab(c)
+        v.insert_token('b', 2)
+
+        expected_itos = ['<unk>', 'a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+
+        # add item to middle
+        v = vocab(c)
+        v.insert_token('b', 0)
+
+        expected_itos = ['b', '<unk>', 'a']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+
+    def test_vocab_append_token(self):
+        c = OrderedDict({'a': 2})
+        v = vocab(c)
+        v.append_token('b')
+
+        expected_itos = ['a', 'b']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
+
+        # token must not exist to be appended
+        with self.assertRaises(RuntimeError):
+            v.append_token('b')
+
+    def test_vocab_len(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        self.assertEqual(len(v), 3)
 
     def test_vocab_basic(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'])
+        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
 
-        expected_itos = ['<unk>', '<pad>', '<bos>',
-                         'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=3)
+
+        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-        self.assertEqual(v.itos, expected_itos)
-        self.assertEqual(dict(v.stoi), expected_stoi)
 
-    def test_vocab_specials_first(self):
-        c = Counter("a a b b c c".split())
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-        # add specials into vocabulary at first
-        v = vocab.Vocab(c, max_size=2, specials=['<pad>', '<eos>'])
-        expected_itos = ['<pad>', '<eos>', 'a', 'b']
+    def test_vocab_jit(self):
+        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=3)
+        jit_v = torch.jit.script(v)
+
+        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-        self.assertEqual(v.itos, expected_itos)
-        self.assertEqual(dict(v.stoi), expected_stoi)
 
-        # add specials into vocabulary at last
-        v = vocab.Vocab(c, max_size=2, specials=['<pad>', '<eos>'], specials_first=False)
-        expected_itos = ['a', 'b', '<pad>', '<eos>']
+        assert not v.is_jitable
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        assert v.__prepare_scriptable__().is_jitable
+
+        self.assertEqual(jit_v.get_itos(), expected_itos)
+        self.assertEqual(dict(jit_v.get_stoi()), expected_stoi)
+
+    def test_vocab_forward(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+        jit_v = torch.jit.script(v)
+
+        tokens = ['b', 'a', 'c']
+        expected_indices = [1, 0, 2]
+
+        self.assertEqual(v(tokens), expected_indices)
+        self.assertEqual(jit_v(tokens), expected_indices)
+
+    def test_vocab_lookup_token(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        self.assertEqual(v.lookup_token(1), 'b')
+        with self.assertRaises(RuntimeError):
+            v.lookup_token(100)
+
+    def test_vocab_lookup_tokens(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        indices = [1, 0, 2]
+        expected_tokens = ['b', 'a', 'c']
+
+        self.assertEqual(v.lookup_tokens(indices), expected_tokens)
+
+    def test_vocab_lookup_indices(self):
+        token_to_freq = {'a': 2, 'b': 2, 'c': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c)
+
+        tokens = ['b', 'a', 'c']
+        expected_indices = [1, 0, 2]
+
+        self.assertEqual(v.lookup_indices(tokens), expected_indices)
+
+    def test_vocab_load_and_save(self):
+        token_to_freq = {'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+
+        c = OrderedDict(sorted_by_freq_tuples)
+        v = vocab(c, min_freq=3)
+        v.set_default_index(0)
+
+        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
-        self.assertEqual(v.itos, expected_itos)
-        self.assertEqual(dict(v.stoi), expected_stoi)
 
-    def test_vocab_without_unk(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        oov_word = 'OOVWORD'
-        self.assertNotIn(oov_word, c)
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)
 
-        # tests for specials_first=True
-        v_first = vocab.Vocab(c, min_freq=3, specials=['<pad>'], specials_first=True)
-        expected_itos_first = ['<pad>', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world']
-        expected_stoi_first = {x: index for index, x in enumerate(expected_itos_first)}
-        self.assertEqual(v_first.itos, expected_itos_first)
-        self.assertEqual(dict(v_first.stoi), expected_stoi_first)
-        self.assertNotIn(oov_word, v_first.itos)
-        self.assertNotIn(oov_word, v_first.stoi)
+        with self.subTest('pybind'):
+            vocab_path = os.path.join(self.test_dir, 'vocab_pybind.pt')
+            torch.save(v, vocab_path)
+            loaded_v = torch.load(vocab_path)
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+            self.assertEqual(v['not in vocab'], 0)
 
-        # tests for specials_first=False
-        v_last = vocab.Vocab(c, min_freq=3, specials=['<pad>'], specials_first=False)
-        expected_itos_last = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', '<pad>']
-        expected_stoi_last = {x: index for index, x in enumerate(expected_itos_last)}
-        self.assertEqual(v_last.itos, expected_itos_last)
-        self.assertEqual(dict(v_last.stoi), expected_stoi_last)
-        self.assertNotIn(oov_word, v_last.itos)
-        self.assertNotIn(oov_word, v_last.stoi)
+        with self.subTest('torchscript'):
+            vocab_path = os.path.join(self.test_dir, 'vocab_torchscript.pt')
+            # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+            # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+            torch.save(v.__prepare_scriptable__(), vocab_path)
+            loaded_v = torch.load(vocab_path)
+            self.assertEqual(v.get_itos(), expected_itos)
+            self.assertEqual(dict(loaded_v.get_stoi()), expected_stoi)
+            self.assertEqual(v['not in vocab'], 0)
 
-        # check if pad is mapped to the first index
-        self.assertEqual(v_first.stoi['<pad>'], 0)
-        # check if pad is mapped to the last index
-        self.assertEqual(v_last.stoi['<pad>'], max(v_last.stoi.values()))
-
-        # check if an oovword is not in vocab and a default unk_id is not assigned to it
-        self.assertRaises(KeyError, v_first.stoi.__getitem__, oov_word)
-        self.assertRaises(KeyError, v_last.stoi.__getitem__, oov_word)
-
-    def test_vocab_set_vectors(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5,
-                     'ｔｅｓｔ': 4, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'])
-        stoi = {"hello": 0, "world": 1, "ｔｅｓｔ": 2}
-        vectors = torch.FloatTensor([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]])
-        dim = 2
-        v.set_vectors(stoi, vectors, dim)
-        expected_vectors = np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
-                                     [0.0, 0.0], [0.1, 0.2], [0.5, 0.6],
-                                     [0.3, 0.4]])
-        self.assertEqual(v.vectors, expected_vectors)
-
-    def test_errors(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        with self.assertRaises(ValueError):
-            # Test proper error raised when using unknown string alias
-            vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                        vectors=["fasttext.english.300d"])
-            vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                        vectors="fasttext.english.300d")
-        with self.assertRaises(ValueError):
-            # Test proper error is raised when vectors argument is
-            # non-string or non-Vectors
-            vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'],
-                        vectors={"word": [1, 2, 3]})
-
-    def test_serialization(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<unk>', '<pad>', '<bos>'])
-        pickle_path = os.path.join(self.test_dir, "vocab.pkl")
-        pickle.dump(v, open(pickle_path, "wb"))
-        v_loaded = pickle.load(open(pickle_path, "rb"))
-        assert v == v_loaded
-
-    def test_serialization_backcompat(self):
-        # Test whether loading works on models saved in which
-        #  the state was not required to have an "unk_index".
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c, min_freq=3, specials=['<pad>', '<bos>'])  # no unk special
-        # Mock old vocabulary
-        del v.__dict__["unk_index"]
-
-        pickle_path = os.path.join(self.test_dir, "vocab.pkl")
-        pickle.dump(v, open(pickle_path, "wb"))
-        v_loaded = pickle.load(open(pickle_path, "rb"))
-        assert v == v_loaded
-
-    def test_has_unk(self):
-        c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
-        v = vocab.Vocab(c)
-        self.assertEqual(v['not_in_it'], 0)
+    def test_build_vocab_iterator(self):
+        iterator = [['hello', 'hello', 'hello', 'freq_low', 'hello', 'world', 'world', 'world', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T',
+                     'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'freq_low', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T']]
+        v = build_vocab_from_iterator(iterator)
+        expected_itos = ['ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T', 'hello', 'world', 'freq_low']
+        expected_stoi = {x: index for index, x in enumerate(expected_itos)}
+        self.assertEqual(v.get_itos(), expected_itos)
+        self.assertEqual(dict(v.get_stoi()), expected_stoi)

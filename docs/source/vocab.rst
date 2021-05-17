@@ -12,14 +12,18 @@ torchtext.vocab
 
 .. autoclass:: Vocab
     :members:
-    :special-members: __init__
+    :special-members:
+    
+:hidden:`vocab`
+~~~~~~~~~~~~~~~
 
-:hidden:`SubwordVocab`
-~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: vocab
 
-.. autoclass:: SubwordVocab
-    :members:
-    :special-members: __init__
+:hidden:`build_vocab_from_iterator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: build_vocab_from_iterator
+
 
 :hidden:`Vectors`
 ~~~~~~~~~~~~~~~~~
@@ -48,12 +52,3 @@ Pretrained Word Embeddings
 
 .. autoclass:: CharNGram
     :members:
-
-Misc.
------
-
-:hidden:`build_vocab_from_iterator`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: build_vocab_from_iterator
-

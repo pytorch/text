@@ -6,7 +6,7 @@ from tqdm import tqdm
 from .dataset import Dataset
 from .pipeline import Pipeline
 from torchtext.data.utils import get_tokenizer, dtype_to_attr, is_tokenizer_serializable
-from torchtext.vocab import Vocab, SubwordVocab
+from torchtext.legacy.vocab import Vocab, SubwordVocab
 
 
 class RawField(object):
