@@ -71,6 +71,10 @@ class TestVocab(TorchtextTestCase):
         v.set_default_index(0)
         self.assertEqual(v['not in vocab'], 0)
 
+        v.set_default_index(None)
+        with self.assertRaises(RuntimeError):
+            v['not in vocab']
+
     def test_default_index_jit(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
@@ -79,6 +83,10 @@ class TestVocab(TorchtextTestCase):
         v.set_default_index(0)
         v_jit = torch.jit.script(v)
         self.assertEqual(v_jit['not in vocab'], 0)
+
+        v_jit.set_default_index(None)
+        with self.assertRaises(RuntimeError):
+            v_jit['not in vocab']
 
     def test_vocab_insert_token(self):
         c = OrderedDict({'<unk>': 2, 'a': 2})

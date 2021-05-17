@@ -84,7 +84,7 @@ class Vocab(nn.Module):
         return self.vocab[token]
 
     @torch.jit.export
-    def set_default_index(self, index: int) -> None:
+    def set_default_index(self, index: Optional[int]) -> None:
         r"""
         Args:
             index: Value of default index. This index will be returned when OOV token is queried.
