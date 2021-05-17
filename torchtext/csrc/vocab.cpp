@@ -46,7 +46,7 @@ int64_t Vocab::__getitem__(const c10::string_view &token) const {
   return default_index_.value();
 }
 
-void Vocab::set_default_index(int64_t index) { default_index_ = index; }
+void Vocab::set_default_index(c10::optional<int64_t> index) { default_index_ = index; }
 
 c10::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
