@@ -100,17 +100,6 @@ class Vocab(nn.Module):
         return self.vocab.get_default_index()
 
     @torch.jit.export
-    def reassign_token(self, token: str, index: int) -> None:
-        r"""
-        Args:
-            token: the token used to lookup the corresponding index.
-            index: the index corresponding to the associated token.
-        Raises:
-            RuntimeError: If `index` is not in range [0,Vocab.size()) or if `token` is not present in Vocab
-        """
-        self.vocab.reassign_token(token, index)
-
-    @torch.jit.export
     def insert_token(self, token: str, index: int) -> None:
         r"""
         Args:
