@@ -36,28 +36,6 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v['a'], 1)
         self.assertEqual(v['b'], 2)
 
-    def test_reassign_token(self):
-        token_to_freq = {'<unk>': 1, 'a': 2, 'b': 2}
-        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-        c = OrderedDict(sorted_by_freq_tuples)
-        v = vocab(c, min_freq=1)
-
-        self.assertEqual(v['<unk>'], 2)
-        self.assertEqual(v['a'], 0)
-        self.assertEqual(v['b'], 1)
-        v.reassign_token('<unk>', 0)
-        self.assertEqual(v['<unk>'], 0)
-        self.assertEqual(v['a'], 1)
-        self.assertEqual(v['b'], 2)
-
-        self.assertEqual(v.get_itos(), ['<unk>', 'a', 'b'])
-
-        with self.assertRaises(RuntimeError):
-            v.reassign_token('not in vocab', 0)
-
-        with self.assertRaises(RuntimeError):
-            v.reassign_token('<unk>', 3)
-
     def test_default_index(self):
         token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
         sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
