@@ -3,7 +3,7 @@ import logging
 from torchtext.data.datasets_utils import _check_default_set
 from torchtext.data.datasets_utils import _wrap_datasets
 from torchtext import datasets as raw
-from torchtext.vocab import build_vocab_from_iterator
+from torchtext.legacy.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
