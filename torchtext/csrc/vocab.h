@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <c10/util/string_view.h>
 #include <torch/script.h>
 namespace torchtext {
@@ -13,17 +14,23 @@ struct Vocab : torch::CustomClassHolder {
   static const int32_t MAX_VOCAB_SIZE = 30000000;
   int64_t unk_index_;
   std::vector<int32_t> stoi_;
-  const std::string version_str_ = "0.0.1";
+  const std::string version_str_ = "0.0.2";
   StringList itos_;
-  std::string unk_token_;
+  c10::optional<int64_t> default_index_ = {};
 
-  explicit Vocab(const std::vector<std::string> &tokens,
-                 const std::string &unk_token);
+  // TODO: [can we remove this?] we need to keep this constructor, otherwise
+  // torch binding gets compilation error: no matching constructor for
+  // initialization of 'torchtext::Vocab'
+  explicit Vocab(const StringList &tokens);
+  explicit Vocab(const StringList &tokens,
+                 const c10::optional<int64_t> &default_index);
   int64_t __len__() const;
   int64_t __getitem__(const c10::string_view &token) const;
   bool __contains__(const c10::string_view &token) const;
-  void append_token(const std::string &token);
+  void set_default_index(c10::optional<int64_t> index);
+  c10::optional<int64_t> get_default_index() const;
   void insert_token(const std::string &token, const int64_t &index);
+  void append_token(const std::string &token);
   std::string lookup_token(const int64_t &index);
   std::vector<std::string> lookup_tokens(const std::vector<int64_t> &indices);
   std::vector<int64_t>
@@ -44,7 +51,7 @@ protected:
   uint32_t _find(const c10::string_view &w) const {
     uint32_t stoi_size = stoi_.size();
     uint32_t id = _hash(w) % stoi_size;
-    while (stoi_[id] != -1 && itos_[stoi_[id]]!= w) {
+    while (stoi_[id] != -1 && itos_[stoi_[id]] != w) {
       id = (id + 1) % stoi_size;
     }
     return id;
@@ -63,12 +70,12 @@ VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self);
 c10::intrusive_ptr<Vocab> _deserialize_vocab(VocabStates states);
 
 Vocab _load_vocab_from_file(const std::string &file_path,
-                            const std::string &unk_token,
                             const int64_t min_freq, const int64_t num_cpus);
 Vocab _build_vocab_from_text_file(const std::string &file_path,
-                                  const std::string &unk_token,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer);
+Vocab _build_vocab_from_text_file_using_python_tokenizer(
+    const std::string &file_path, const int64_t min_freq, py::object tokenizer);
 
 } // namespace torchtext

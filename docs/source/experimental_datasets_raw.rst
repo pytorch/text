@@ -31,12 +31,6 @@ The following datasets are available:
 Machine Translation
 ^^^^^^^^^^^^^^^^^^^
 
-Multi30k
-~~~~~~~~
-
-.. autofunction:: Multi30k
-
-
 WMT14
 ~~~~~
 

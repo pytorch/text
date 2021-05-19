@@ -15,12 +15,10 @@ namespace py = pybind11;
 
 namespace {
 Vocab build_vocab_from_text_file(const std::string &file_path,
-                                 const std::string &unk_token,
                                  const int64_t min_freq, const int64_t num_cpus,
                                  py::object fn) {
   torch::jit::script::Module module(*torch::jit::as_module(fn));
-  return _build_vocab_from_text_file(file_path, unk_token, min_freq, num_cpus,
-                                     module);
+  return _build_vocab_from_text_file(file_path, min_freq, num_cpus, module);
 }
 } // namespace
 
@@ -104,23 +102,26 @@ PYBIND11_MODULE(_torchtext, m) {
           }));
 
   py::class_<Vocab, c10::intrusive_ptr<Vocab>>(m, "Vocab")
-      .def(py::init<std::vector<std::string>, std::string>())
+      .def(py::init<StringList, c10::optional<int64_t>>())
       .def_readonly("itos_", &Vocab::itos_)
-      .def_readonly("unk_token_", &Vocab::unk_token_)
-      .def("__contains__",
-           [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> bool {
-             ssize_t length;
-             const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
-             return self->__contains__(c10::string_view{buffer, (size_t)length});
-           })
+      .def_readonly("default_index_", &Vocab::default_index_)
+      .def(
+          "__contains__",
+          [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> bool {
+            ssize_t length;
+            const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
+            return self->__contains__(c10::string_view{buffer, (size_t)length});
+          })
       .def("__getitem__",
            [](c10::intrusive_ptr<Vocab> &self, const py::str &item) -> int64_t {
              ssize_t length;
              const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
              return self->__getitem__(c10::string_view{buffer, (size_t)length});
            })
-      .def("__len__", &Vocab::__len__)
       .def("insert_token", &Vocab::insert_token)
+      .def("set_default_index", &Vocab::set_default_index)
+      .def("get_default_index", &Vocab::get_default_index)
+      .def("__len__", &Vocab::__len__)
       .def("append_token", &Vocab::append_token)
       .def("lookup_token", &Vocab::lookup_token)
       .def("lookup_tokens", &Vocab::lookup_tokens)
@@ -154,6 +155,7 @@ PYBIND11_MODULE(_torchtext, m) {
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
   m.def("_build_vocab_from_text_file", &build_vocab_from_text_file);
+  m.def("_build_vocab_from_text_file_using_python_tokenizer", &_build_vocab_from_text_file_using_python_tokenizer);
 }
 
 TORCH_LIBRARY_FRAGMENT(torchtext, m) {
@@ -234,15 +236,17 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           });
 
   m.class_<Vocab>("Vocab")
-      .def(torch::init<StringList, std::string>())
+      .def(torch::init<StringList, c10::optional<int64_t>>())
       .def("__contains__",
            [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
                -> bool { return self->__contains__(c10::string_view{item}); })
       .def("__getitem__",
            [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
                -> int64_t { return self->__getitem__(c10::string_view{item}); })
-      .def("__len__", &Vocab::__len__)
       .def("insert_token", &Vocab::insert_token)
+      .def("__len__", &Vocab::__len__)
+      .def("set_default_index", &Vocab::set_default_index)
+      .def("get_default_index", &Vocab::get_default_index)
       .def("append_token", &Vocab::append_token)
       .def("lookup_token", &Vocab::lookup_token)
       .def("lookup_tokens", &Vocab::lookup_tokens)
