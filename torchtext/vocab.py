@@ -185,7 +185,7 @@ class Vocab(nn.Module):
         return self
 
 
-def vocab(ordered_dict: Dict, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True) -> Vocab:
+def vocab(ordered_dict: Dict, min_freq: int = 1) -> Vocab:
     r"""Factory method for creating a vocab object which maps tokens to indices.
 
     Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
@@ -194,8 +194,6 @@ def vocab(ordered_dict: Dict, min_freq: int = 1, specials: Optional[List[str]] =
     Args:
         ordered_dict: Ordered Dictionary mapping tokens to their corresponding occurance frequencies.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
-        specials: Special symbols to add. The order of supplied tokens will be preserved.
-        special_first: Indicates whether to insert symbols at the beginning or at the end.
 
     Returns:
         torchtext.vocab.Vocab: A `Vocab` object
@@ -206,8 +204,8 @@ def vocab(ordered_dict: Dict, min_freq: int = 1, specials: Optional[List[str]] =
         >>> counter = Counter(["a", "a", "b", "b", "b"])
         >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
         >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
-        >>> v1 = vocab(ordered_dict, specials=["<unk>"])
-        >>> print(v1['a']) #prints 2
+        >>> v1 = vocab(ordered_dict)
+        >>> print(v1['a']) #prints 1
         >>> print(v1['out of vocab']) #raise RuntimeError since default index is not set
         >>> tokens = ['e', 'd', 'c', 'b', 'a']
         >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
@@ -222,16 +220,6 @@ def vocab(ordered_dict: Dict, min_freq: int = 1, specials: Optional[List[str]] =
         >>> v2.set_default_index(v2[unk_token])
         >>> v2['out of vocab'] is v2[unk_token] #prints True
     """
-    if specials is not None:
-        for symbol in specials:
-            if symbol in ordered_dict:
-                del ordered_dict[symbol]
-
-        if special_first:
-            specials = specials[::-1]
-        for symbol in specials:
-            ordered_dict.update({symbol: min_freq})
-            ordered_dict.move_to_end(symbol, last=not special_first)
 
     tokens = []
     for token, freq in ordered_dict.items():
@@ -271,7 +259,19 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
         counter.update(tokens)
     sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
-    word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials, special_first=special_first)
+
+    if specials is not None:
+        for symbol in specials:
+            if symbol in ordered_dict:
+                del ordered_dict[symbol]
+
+        if special_first:
+            specials = specials[::-1]
+        for symbol in specials:
+            ordered_dict.update({symbol: min_freq})
+            ordered_dict.move_to_end(symbol, last=not special_first)
+
+    word_vocab = vocab(ordered_dict, min_freq=min_freq)
     return word_vocab
 
 
