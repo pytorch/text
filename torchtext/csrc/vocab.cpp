@@ -46,7 +46,9 @@ int64_t Vocab::__getitem__(const c10::string_view &token) const {
   return default_index_.value();
 }
 
-void Vocab::set_default_index(c10::optional<int64_t> index) { default_index_ = index; }
+void Vocab::set_default_index(c10::optional<int64_t> index) {
+  default_index_ = index;
+}
 
 c10::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
@@ -60,20 +62,6 @@ void Vocab::append_token(const std::string &token) {
                                    std::to_string(stoi_[id]));
 
   _add(token);
-}
-
-void Vocab::reassign_token(const std::string &token, const int64_t &index) {
-  // throw error if index is not valid
-  TORCH_CHECK(index >= 0 && index < __len__(),
-              "Specified index " + std::to_string(index) +
-                  " is out of bounds for vocab of size " +
-                  std::to_string(__len__()));
-
-  // throw error if token not found
-  TORCH_CHECK(__contains__(token), "Token " + token + " not found in Vocab");
-
-  _remove(token);
-  insert_token(token, index);
 }
 
 void Vocab::insert_token(const std::string &token, const int64_t &index) {
