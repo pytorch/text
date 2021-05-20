@@ -133,7 +133,7 @@ class TestDataset(TorchtextTestCase):
         dataset_name = info['dataset_name']
         split = info['split']
 
-        if dataset_name == "Multi30k" or dataset_name == 'WMT14':
+        if dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
@@ -147,7 +147,7 @@ class TestDataset(TorchtextTestCase):
         dataset_name = info['dataset_name']
         split = info['split']
 
-        if dataset_name == "Multi30k" or dataset_name == 'WMT14':
+        if dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
@@ -156,9 +156,6 @@ class TestDataset(TorchtextTestCase):
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
-        elif dataset_name == "Multi30k":
-            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name][split], info['URL'])
-            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name][split], info['MD5'])
         elif dataset_name == "WMT14":
             self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name], info['MD5'])
@@ -328,7 +325,7 @@ class TestDataset(TorchtextTestCase):
                          [18, 24, 1168, 807, 16, 56, 83, 335, 1338])
 
         # Add test for the subset of the standard datasets
-        train_iter, valid_iter = torchtext.experimental.datasets.raw.Multi30k(split=('train', 'valid'))
+        train_iter, valid_iter = torchtext.datasets.Multi30k(split=('train', 'valid'))
         self._helper_test_func(len(train_iter), 29000, ' '.join(next(train_iter)),
                                ' '.join(['Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.\n',
                                          'Two young, White males are outside near many bushes.\n']))

@@ -8,10 +8,19 @@ import torch.nn as nn
 from urllib.request import urlretrieve
 from tqdm import tqdm
 import tarfile
-from typing import Optional, List, Dict
-from torchtext._torchtext import Vocab as VocabPybind
-
+from typing import Dict, List, Optional, Iterable
+from collections import Counter, OrderedDict
+from torchtext._torchtext import (
+    Vocab as VocabPybind,
+)
 from .utils import reporthook
+
+logger = logging.getLogger(__name__)
+
+__all__ = [
+    'build_vocab_from_iterator',
+    'vocab',
+]
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +84,7 @@ class Vocab(nn.Module):
         return self.vocab[token]
 
     @torch.jit.export
-    def set_default_index(self, index: int) -> None:
+    def set_default_index(self, index: Optional[int]) -> None:
         r"""
         Args:
             index: Value of default index. This index will be returned when OOV token is queried.
@@ -89,17 +98,6 @@ class Vocab(nn.Module):
             Value of default index if it is set.
         """
         return self.vocab.get_default_index()
-
-    @torch.jit.export
-    def reassign_token(self, token: str, index: int) -> None:
-        r"""
-        Args:
-            token: the token used to lookup the corresponding index.
-            index: the index corresponding to the associated token.
-        Raises:
-            RuntimeError: If `index` is not in range [0,Vocab.size()) or if `token` is not present in Vocab
-        """
-        self.vocab.reassign_token(token, index)
 
     @torch.jit.export
     def insert_token(self, token: str, index: int) -> None:
@@ -185,6 +183,96 @@ class Vocab(nn.Module):
             cpp_vocab = torch.classes.torchtext.Vocab(self.vocab.itos_, self.vocab.default_index_)
             return Vocab(cpp_vocab)
         return self
+
+
+def vocab(ordered_dict: Dict, min_freq: int = 1) -> Vocab:
+    r"""Factory method for creating a vocab object which maps tokens to indices.
+
+    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
+    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.
+
+    Args:
+        ordered_dict: Ordered Dictionary mapping tokens to their corresponding occurance frequencies.
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+
+    Returns:
+        torchtext.vocab.Vocab: A `Vocab` object
+
+    Examples:
+        >>> from torchtext.vocab import vocab
+        >>> from collections import Counter, OrderedDict
+        >>> counter = Counter(["a", "a", "b", "b", "b"])
+        >>> sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+        >>> ordered_dict = OrderedDict(sorted_by_freq_tuples)
+        >>> v1 = vocab(ordered_dict)
+        >>> print(v1['a']) #prints 1
+        >>> print(v1['out of vocab']) #raise RuntimeError since default index is not set
+        >>> tokens = ['e', 'd', 'c', 'b', 'a']
+        >>> v2 = vocab(OrderedDict([(token, 1) for token in tokens]))
+        >>> #adding <unk> token and default index
+        >>> unk_token = '<unk>'
+        >>> default_index = -1
+        >>> if unk_token not in v2: v2.insert_token(unk_token, 0)
+        >>> v2.set_default_index(default_index)
+        >>> print(v2['<unk>']) #prints 0
+        >>> print(v2['out of vocab']) #prints -1
+        >>> #make default index same as index of unk_token
+        >>> v2.set_default_index(v2[unk_token])
+        >>> v2['out of vocab'] is v2[unk_token] #prints True
+    """
+
+    tokens = []
+    for token, freq in ordered_dict.items():
+        if freq >= min_freq:
+            tokens.append(token)
+
+    return Vocab(VocabPybind(tokens, None))
+
+
+def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True) -> Vocab:
+    """
+    Build a Vocab from an iterator.
+
+    Args:
+        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
+        min_freq: The minimum frequency needed to include a token in the vocabulary.
+        specials: Special symbols to add. The order of supplied tokens will be preserved.
+        special_first: Indicates whether to insert symbols at the beginning or at the end.
+
+
+    Returns:
+        torchtext.vocab.Vocab: A `Vocab` object
+
+    Examples:
+        >>> #generating vocab from text file
+        >>> import io
+        >>> from torchtext.vocab import build_vocab_from_iterator
+        >>> def yield_tokens(file_path):
+        >>>     with io.open(file_path, encoding = 'utf-8') as f:
+        >>>         for line in f:
+        >>>             yield line.strip().split()
+        >>> vocab = build_vocab_from_iterator(yield_tokens_batch(file_path), specials=["<unk>"])
+    """
+
+    counter = Counter()
+    for tokens in iterator:
+        counter.update(tokens)
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+    ordered_dict = OrderedDict(sorted_by_freq_tuples)
+
+    if specials is not None:
+        for symbol in specials:
+            if symbol in ordered_dict:
+                del ordered_dict[symbol]
+
+        if special_first:
+            specials = specials[::-1]
+        for symbol in specials:
+            ordered_dict.update({symbol: min_freq})
+            ordered_dict.move_to_end(symbol, last=not special_first)
+
+    word_vocab = vocab(ordered_dict, min_freq=min_freq)
+    return word_vocab
 
 
 def _infer_shape(f):

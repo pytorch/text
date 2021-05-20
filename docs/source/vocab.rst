@@ -13,6 +13,16 @@ torchtext.vocab
 .. autoclass:: Vocab
     :members:
     :special-members:
+    
+:hidden:`vocab`
+~~~~~~~~~~~~~~~
+
+.. autofunction:: vocab
+
+:hidden:`build_vocab_from_iterator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autofunction:: build_vocab_from_iterator
 
 
 :hidden:`Vectors`

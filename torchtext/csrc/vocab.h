@@ -1,6 +1,10 @@
 #include <algorithm>
 #include <c10/util/string_view.h>
+#include <pybind11/pybind11.h>
 #include <torch/script.h>
+
+namespace py = pybind11;
+
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
@@ -27,9 +31,8 @@ struct Vocab : torch::CustomClassHolder {
   int64_t __len__() const;
   int64_t __getitem__(const c10::string_view &token) const;
   bool __contains__(const c10::string_view &token) const;
-  void set_default_index(int64_t index);
+  void set_default_index(c10::optional<int64_t> index);
   c10::optional<int64_t> get_default_index() const;
-  void reassign_token(const std::string &token, const int64_t &index);
   void insert_token(const std::string &token, const int64_t &index);
   void append_token(const std::string &token);
   std::string lookup_token(const int64_t &index);
@@ -65,14 +68,6 @@ protected:
       stoi_[h] = itos_.size() - 1;
     }
   }
-
-  void _remove(const std::string &w) {
-    uint32_t h = _find(c10::string_view{w.data(), w.size()});
-    if (stoi_[h] != -1) {
-      stoi_[h] = -1;
-      itos_.erase(std::find(itos_.begin(), itos_.end(), w));
-    }
-  }
 };
 
 VocabStates _serialize_vocab(const c10::intrusive_ptr<Vocab> &self);
@@ -84,5 +79,7 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer);
+Vocab _build_vocab_from_text_file_using_python_tokenizer(
+    const std::string &file_path, const int64_t min_freq, py::object tokenizer);
 
 } // namespace torchtext

@@ -118,7 +118,6 @@ PYBIND11_MODULE(_torchtext, m) {
              const char *buffer = PyUnicode_AsUTF8AndSize(item.ptr(), &length);
              return self->__getitem__(c10::string_view{buffer, (size_t)length});
            })
-      .def("reassign_token", &Vocab::reassign_token)
       .def("insert_token", &Vocab::insert_token)
       .def("set_default_index", &Vocab::set_default_index)
       .def("get_default_index", &Vocab::get_default_index)
@@ -156,6 +155,7 @@ PYBIND11_MODULE(_torchtext, m) {
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
   m.def("_build_vocab_from_text_file", &build_vocab_from_text_file);
+  m.def("_build_vocab_from_text_file_using_python_tokenizer", &_build_vocab_from_text_file_using_python_tokenizer);
 }
 
 TORCH_LIBRARY_FRAGMENT(torchtext, m) {
@@ -243,7 +243,6 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
       .def("__getitem__",
            [](const c10::intrusive_ptr<Vocab> &self, const std::string &item)
                -> int64_t { return self->__getitem__(c10::string_view{item}); })
-      .def("reassign_token", &Vocab::reassign_token)
       .def("insert_token", &Vocab::insert_token)
       .def("__len__", &Vocab::__len__)
       .def("set_default_index", &Vocab::set_default_index)

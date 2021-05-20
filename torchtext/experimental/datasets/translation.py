@@ -36,7 +36,7 @@ def _setup_datasets(dataset_name,
             "tokenizer must be an instance of tuple with length two"
             "or None")
 
-    if dataset_name == 'Multi30k' or dataset_name == 'WMT14':
+    if dataset_name == 'WMT14':
         raw_datasets = experimental_raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
     else:
         raw_datasets = raw.DATASETS[dataset_name](split=split, root=root, **kwargs)
@@ -135,53 +135,17 @@ class TranslationDataset(torch.utils.data.Dataset):
         return self.vocab
 
 
-def Multi30k(task='task1',
-             language_pair=('de', 'en'),
-             train_set="train",
-             valid_set="val",
-             test_set="test_2016_flickr",
-             split=('train', 'valid', 'test'),
-             root='.data',
-             vocab=(None, None),
-             tokenizer=None):
+def Multi30k(
+        language_pair=('de', 'en'),
+        split=('train', 'valid', 'test'),
+        root='.data',
+        vocab=(None, None),
+        tokenizer=None):
     """ Define translation datasets: Multi30k
     Separately returns train/valid/test datasets as a tuple
 
-    The available datasets include following:
-
-    **Language pairs (task1)**:
-
-    +-----+-----+-----+-----+-----+
-    |     |'en' |'cs' |'de' |'fr' |
-    +-----+-----+-----+-----+-----+
-    |'en' |     |   x |  x  |  x  |
-    +-----+-----+-----+-----+-----+
-    |'cs' |  x  |     |  x  |  x  |
-    +-----+-----+-----+-----+-----+
-    |'de' |  x  |   x |     |  x  |
-    +-----+-----+-----+-----+-----+
-    |'fr' |  x  |   x |  x  |     |
-    +-----+-----+-----+-----+-----+
-
-    **Language pairs (task2)**:
-
-    +-----+-----+-----+
-    |     |'en' |'de' |
-    +-----+-----+-----+
-    |'en' |     |   x |
-    +-----+-----+-----+
-    |'de' |  x  |     |
-    +-----+-----+-----+
-
-    For additional details refer to source: https://github.com/multi30k/dataset
-
-
     Args:
-        task: Indicate the task
         language_pair: tuple or list containing src and tgt language
-        train_set: A string to identify train set.
-        valid_set: A string to identify validation set.
-        test_set: A string to identify test set.
         split: a string or tuple for the returned datasets, Default: ('train', 'valid', 'test')
             By default, all the three datasets (train, valid, test) are generated. Users
             could also choose any one or two of them, for example ('train', 'test') or
@@ -208,11 +172,7 @@ def Multi30k(task='task1',
         >>> src_data, tgt_data = train_dataset[10]
     """
     return _setup_datasets("Multi30k", split, root, vocab, tokenizer,
-                           task=task,
-                           language_pair=language_pair,
-                           train_set=train_set,
-                           valid_set=valid_set,
-                           test_set=test_set)
+                           language_pair=language_pair)
 
 
 def IWSLT2017(language_pair=('de', 'en'),
