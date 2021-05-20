@@ -46,7 +46,7 @@ commands:
           name: Generate CCI cache key
           command:
             echo "$(date "+%D")" > .cachekey
-            cat cached_datasets_list.txt >> .cachekey 
+            cat cached_datasets_list.txt >> .cachekey
       - persist_to_workspace:
           root: .
           paths:
@@ -94,6 +94,7 @@ jobs:
             pip install --user --progress-bar off jinja2 pyyaml
             python .circleci/regenerate.py
             git diff --exit-code || (echo ".circleci/config.yml not in sync with config.yml.in! Run .circleci/regenerate.py to update config"; exit 1)
+
   binary_linux_wheel:
     <<: *binary_common
     docker:
@@ -232,6 +233,7 @@ jobs:
             conda install -yq anaconda-client
             set -x
             anaconda -t "${CONDA_PYTORCHBOT_TOKEN}" upload ~/workspace/conda-bld/*/*.tar.bz2 -u "pytorch-${UPLOAD_CHANNEL}" --label main --no-progress --force
+
   # Requires org-member context
   binary_wheel_upload:
     docker:
@@ -253,6 +255,7 @@ jobs:
             for pkg in ~/workspace/*.whl; do
               aws s3 cp "$pkg" "s3://pytorch/whl/${UPLOAD_CHANNEL}/" --acl public-read
             done
+
   smoke_test_linux_conda:
     <<: *smoke_test_common
     steps:
@@ -272,6 +275,7 @@ jobs:
           command: |
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
+
   smoke_test_linux_pip:
     <<: *smoke_test_common
     steps:
@@ -289,6 +293,7 @@ jobs:
           command: |
             source /usr/local/etc/profile.d/conda.sh && conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
+
   smoke_test_docker_image_build:
     machine:
       image: ubuntu-1604:201903-01
@@ -308,6 +313,7 @@ jobs:
             docker tag ${image_name}:${CIRCLE_WORKFLOW_ID} ${image_name}:latest
             docker push ${image_name}:${CIRCLE_WORKFLOW_ID}
             docker push ${image_name}:latest
+
   smoke_test_windows_conda:
     <<: *binary_common
     executor:
@@ -333,6 +339,7 @@ jobs:
             eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
             conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
+
   smoke_test_windows_pip:
     <<: *binary_common
     executor:
@@ -356,6 +363,7 @@ jobs:
             eval "$('/C/tools/miniconda3/Scripts/conda.exe' 'shell.bash' 'hook')"
             conda activate python${PYTHON_VERSION}
             python -c "import torchtext"
+
   cachesetup_linux:
     <<: *binary_common
     docker:
@@ -584,6 +592,7 @@ jobs:
             tag=${CIRCLE_TAG:1:5}
             target=${tag:-master}
             ~/workspace/.circleci/build_docs/commit_docs.sh ~/workspace $target
+
   docstring_parameters_sync:
     <<: *binary_common
     docker:
@@ -600,6 +609,8 @@ jobs:
             pip install --user pydocstyle
             export PATH="$HOME/.local/bin:$PATH"
             pydocstyle torchtext
+
+
 workflows:
   build:
     jobs:
