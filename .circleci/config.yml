@@ -25,7 +25,6 @@ commands:
           command: |
             # Hardcoded for release branch
             echo "export UPLOAD_CHANNEL=test" >> ${BASH_ENV}
-
   load_conda_channel_flags:
     description: "Determines whether we need extra conda channels"
     steps:
