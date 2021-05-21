@@ -1,6 +1,10 @@
 #include <algorithm>
 #include <c10/util/string_view.h>
+#include <pybind11/pybind11.h>
 #include <torch/script.h>
+
+namespace py = pybind11;
+
 namespace torchtext {
 
 typedef std::vector<std::string> StringList;
