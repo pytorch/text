@@ -36,6 +36,7 @@ class Vocab(nn.Module):
     def __init__(self, vocab):
         super(Vocab, self).__init__()
         self.vocab = vocab
+        torch._C._log_api_usage_once(f"torchtext.{self.__class__.__name__}")
 
     @property
     def is_jitable(self):
