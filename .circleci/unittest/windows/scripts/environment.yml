@@ -9,6 +9,7 @@ dependencies:
     - dataclasses
     - nltk
     - requests
+    - iopath
     - revtok
     - pytest
     - pytest-cov
