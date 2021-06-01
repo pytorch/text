@@ -1,14 +1,13 @@
-import requests
 import csv
 import hashlib
-from tqdm import tqdm
 import os
 import tarfile
 import logging
-import re
 import sys
 import zipfile
 import gzip
+import shutil
+from ._download_hooks import _PATH_MANAGER
 
 
 def reporthook(t):
@@ -68,45 +67,6 @@ def _check_hash(path, hash_value, hash_type):
             raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
 
 
-def _stream_response(r, chunk_size=16 * 1024):
-    total_size = int(r.headers.get('Content-length', 0))
-    with tqdm(total=total_size, unit='B', unit_scale=1) as t:
-        for chunk in r.iter_content(chunk_size):
-            if chunk:
-                t.update(len(chunk))
-                yield chunk
-
-
-def _get_response_from_google_drive(url):
-    confirm_token = None
-    session = requests.Session()
-    response = session.get(url, stream=True)
-    for k, v in response.cookies.items():
-        if k.startswith("download_warning"):
-            confirm_token = v
-    if confirm_token is None:
-        if "Quota exceeded" in str(response.content):
-            raise RuntimeError(
-                "Google drive link {} is currently unavailable, because the quota was exceeded.".format(
-                    url
-                ))
-        else:
-            raise RuntimeError("Internal error: confirm_token was not found in Google drive link.")
-
-    url = url + "&confirm=" + confirm_token
-    response = session.get(url, stream=True)
-
-    if 'content-disposition' not in response.headers:
-        raise RuntimeError("Internal error: headers don't contain content-disposition.")
-
-    filename = re.findall("filename=\"(.+)\"", response.headers['content-disposition'])
-    if filename is None:
-        raise RuntimeError("Filename could not be autodetected")
-    filename = filename[0]
-
-    return response, filename
-
-
 def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=None,
                       hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
@@ -137,41 +97,23 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         path = os.path.abspath(path)
         root, filename = os.path.split(os.path.abspath(path))
 
-    # skip requests.get if path exists and not overwrite.
+    # skip download if path exists and overwrite is not True
     if os.path.exists(path):
         logging.info('File %s already exists.' % path)
         if not overwrite and hash_value:
             _check_hash(path, hash_value, hash_type)
             return path
 
-    # make root dir if not exist already
+    # make root dir if does not exist
     if not os.path.exists(root):
         try:
             os.makedirs(root)
         except OSError:
             raise OSError("Can't create the download directory {}.".format(root))
 
-    # get response with special handling of google drive
-    if 'drive.google.com' not in url:
-        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
-    else:
-        logging.info('Downloading from Google Drive; may take a few minutes')
-        response, filename = _get_response_from_google_drive(url)
-
-    # path where file will be saved
-    path = os.path.join(root, filename)
-    if os.path.exists(path):
-        logging.info('File %s already exists.' % path)
-        if not overwrite and hash_value:
-            _check_hash(path, hash_value, hash_type)
-            return path
-        logging.info('Overwriting file %s.' % path)
-    logging.info('Downloading file {} to {}.'.format(filename, path))
-
-    # download data to path from streamed response
-    with open(path, 'wb') as f:
-        for data in _stream_response(response):
-            f.write(data)
+    # download data to path
+    local_path = _PATH_MANAGER.get_local_path(url)
+    shutil.move(local_path, path)
 
     logging.info('File {} downloaded.'.format(path))
 
