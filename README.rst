@@ -117,7 +117,7 @@ For example, to access the raw text from the AG_NEWS dataset:
 Tutorials
 =========
 
-To get started with torchtext, users may refer to following tutorials available PyTorch website.
+To get started with torchtext, users may refer to following tutorials available on PyTorch website.
 
 * `Text classification with AG_NEWS dataset <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
 * `Translation trained with Multi30k dataset using transformers and torchtext <https://pytorch.org/tutorials/beginner/translation_transformer.html>`_
