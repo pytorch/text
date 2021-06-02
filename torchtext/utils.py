@@ -100,8 +100,9 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
     # skip download if path exists and overwrite is not True
     if os.path.exists(path):
         logging.info('File %s already exists.' % path)
-        if not overwrite and hash_value:
-            _check_hash(path, hash_value, hash_type)
+        if not overwrite:
+            if hash_value:
+                _check_hash(path, hash_value, hash_type)
             return path
 
     # make root dir if does not exist
