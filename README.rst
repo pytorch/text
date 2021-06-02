@@ -23,7 +23,7 @@ Note: The legacy code discussed in `torchtext v0.7.0 release note <https://githu
 Installation
 ============
 
-We recommend Anaconda as Python package management system. Please refer to `pytorch.org <https://pytorch.org/>`_ for the detail of PyTorch installation. The following is the corresponding ``torchtext`` versions and supported Python versions.
+We recommend Anaconda as a Python package management system. Please refer to `pytorch.org <https://pytorch.org/>`_ for the details of PyTorch installation. The following are the corresponding ``torchtext`` versions and supported Python versions.
 
 .. csv-table:: Version Compatibility
    :header: "PyTorch version", "torchtext version", "Supported Python version"
@@ -117,7 +117,7 @@ For example, to access the raw text from the AG_NEWS dataset:
 Tutorials
 =========
 
-To get started with torchtext, users may refer to following tutorials available on PyTorch website.
+To get started with torchtext, users may refer to the following tutorials available on PyTorch website.
 
 * `Text classification with AG_NEWS dataset <https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html>`_
 * `Translation trained with Multi30k dataset using transformers and torchtext <https://pytorch.org/tutorials/beginner/translation_transformer.html>`_
@@ -141,7 +141,7 @@ For more detailed instructions, please refer to `Install PyTorch <https://pytorc
 [BC Breaking] Legacy
 ====================
 
-In v0.9.0 release, we move the following legacy code to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
+In the v0.9.0 release, we moved the following legacy code to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
 
 * ``torchtext.legacy.data.field``
 * ``torchtext.legacy.data.batch``
@@ -152,7 +152,7 @@ In v0.9.0 release, we move the following legacy code to `torchtext.legacy <https
 
 We have a `migration tutorial <https://colab.research.google.com/github/pytorch/text/blob/master/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
 
-In v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by Vocab module that is backed by efficient C++ implementation and provide common functional APIs for NLP workflows. 
+In the v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by a Vocab module that is backed by efficient C++ implementation and provides common functional APIs for NLP workflows. 
 
 Disclaimer on Datasets
 ======================
