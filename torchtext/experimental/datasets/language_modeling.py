@@ -1,7 +1,7 @@
 import torch
 import logging
 from torchtext.data.utils import get_tokenizer
-from torchtext.legacy.vocab import build_vocab_from_iterator
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext import datasets as raw
 from torchtext.experimental.datasets import raw as experimental_raw
 from torchtext.data.datasets_utils import _check_default_set
@@ -15,7 +15,9 @@ def build_vocab(data, transforms):
         for line in data:
             tokens = transforms(line)
             yield tokens
-    return build_vocab_from_iterator(apply_transforms(data), len(data))
+    vocab = build_vocab_from_iterator(apply_transforms(data), specials=['<unk>', '<pad>'])
+    vocab.set_default_index(vocab['<unk>'])
+    return vocab
 
 
 class LanguageModelingDataset(torch.utils.data.Dataset):

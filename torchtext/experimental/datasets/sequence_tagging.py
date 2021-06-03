@@ -3,7 +3,7 @@ import logging
 from torchtext.data.datasets_utils import _check_default_set
 from torchtext.data.datasets_utils import _wrap_datasets
 from torchtext import datasets as raw
-from torchtext.legacy.vocab import build_vocab_from_iterator
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext.experimental.functional import (
     vocab_func,
     totensor,
@@ -22,7 +22,9 @@ def build_vocab(data):
         for idx, col in enumerate(line):
             data_list[idx].append(col)
     for it in data_list:
-        vocabs.append(build_vocab_from_iterator(it, len(it)))
+        vocab = build_vocab_from_iterator(it, specials=['<unk>', '<pad>'])
+        vocab.set_default_index(vocab['<unk>'])
+        vocabs.append(vocab)
 
     return vocabs
 
