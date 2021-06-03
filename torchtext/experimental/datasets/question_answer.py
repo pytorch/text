@@ -1,7 +1,7 @@
 import torch
 import logging
 from torchtext.data.utils import get_tokenizer
-from torchtext.legacy.vocab import build_vocab_from_iterator
+from torchtext.vocab import build_vocab_from_iterator
 from torchtext import datasets as raw
 from torchtext.data.datasets_utils import _check_default_set
 from torchtext.data.datasets_utils import _wrap_datasets
@@ -81,7 +81,8 @@ def _setup_datasets(dataset_name, root, vocab, tokenizer, split_):
                     tok_ans += text_transform(item)
                 yield text_transform(_context) + text_transform(_question) + tok_ans
         logger_.info('Building Vocab based on train data')
-        vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), len(raw_data['train']))
+        vocab = build_vocab_from_iterator(apply_transform(raw_data['train']), specials=['<unk>', '<pad>'])
+        vocab.set_default_index(vocab['<unk>'])
     logger_.info('Vocab has %d entries', len(vocab))
     text_transform = sequential_transforms(text_transform, vocab_func(vocab), totensor(dtype=torch.long))
     transforms = {'context': text_transform, 'question': text_transform,
