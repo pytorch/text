@@ -4,6 +4,7 @@ import os
 import logging
 import uuid
 import re
+import shutil
 from tqdm import tqdm
 from iopath.common.file_io import (
     PathHandler,
@@ -126,6 +127,45 @@ class GoogleDrivePathHandler(PathHandler):
         return open(local_path, mode)
 
 
+class CombinedInternalPathhandler(PathHandler):
+    def __init__(self):
+        path_manager = PathManager()
+        path_manager.register_handler(HTTPURLHandler())
+        path_manager.register_handler(GoogleDrivePathHandler())
+        self.path_manager = path_manager
+
+    def _get_supported_prefixes(self) -> List[str]:
+        return ["https://", "http://"]
+
+    def _get_local_path(
+        self,
+        path: str,
+        force: bool = False,
+        cache_dir: Optional[str] = None,
+        **kwargs: Any,
+    ) -> str:
+
+        destination = kwargs["destination"]
+
+        local_path = self.path_manager.get_local_path(path, force)
+
+        shutil.move(local_path, destination)
+
+        return destination
+
+    def _open(
+        self, path: str, mode: str = "r", buffering: int = -1, **kwargs: Any
+    ) -> Union[IO[str], IO[bytes]]:
+        self._check_kwargs(kwargs)
+        assert mode in ("r", "rb"), "{} does not support open with {} mode".format(
+            self.__class__.__name__, mode
+        )
+        assert (
+            buffering == -1
+        ), f"{self.__class__.__name__} does not support the `buffering` argument"
+        local_path = self._get_local_path(path, force=False)
+        return open(local_path, mode)
+
+
 _PATH_MANAGER = PathManager()
-_PATH_MANAGER.register_handler(HTTPURLHandler())
-_PATH_MANAGER.register_handler(GoogleDrivePathHandler())
+_PATH_MANAGER.register_handler(CombinedInternalPathhandler())

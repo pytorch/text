@@ -112,9 +112,8 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         except OSError:
             raise OSError("Can't create the download directory {}.".format(root))
 
-    # download data to path
-    local_path = _PATH_MANAGER.get_local_path(url)
-    shutil.move(local_path, path)
+    # download data and move to path
+    _PATH_MANAGER.get_local_path(url, destination=path)
 
     logging.info('File {} downloaded.'.format(path))
 
