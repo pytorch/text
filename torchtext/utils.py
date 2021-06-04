@@ -6,7 +6,6 @@ import logging
 import sys
 import zipfile
 import gzip
-import shutil
 from ._download_hooks import _PATH_MANAGER
 
 
