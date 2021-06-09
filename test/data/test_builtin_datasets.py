@@ -207,7 +207,6 @@ class TestDataset(TorchtextTestCase):
 
     def test_imdb(self):
         from torchtext.experimental.datasets import IMDB
-        from torchtext.legacy.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, test_dataset = IMDB()
         self._helper_test_func(len(train_dataset), 25000, train_dataset[0][1][:10],
@@ -215,15 +214,7 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(test_dataset), 25000, test_dataset[0][1][:10],
                                [13, 125, 1051, 5, 246, 1652, 8, 277, 66, 20])
 
-        # Test API with a vocab input object
-        old_vocab = train_dataset.get_vocab()
-        new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
-        new_train_data, new_test_data = IMDB(vocab=new_vocab)
-
         # Add test for the subset of the standard datasets
-        train_dataset = IMDB(split='train')
-        self._helper_test_func(len(train_dataset), 25000, train_dataset[0][1][:10],
-                               [13, 1568, 13, 246, 35468, 43, 64, 398, 1135, 92])
         train_iter, test_iter = torchtext.datasets.IMDB()
         self._helper_test_func(len(train_iter), 25000, next(train_iter)[1][:25], 'I rented I AM CURIOUS-YEL')
         self._helper_test_func(len(test_iter), 25000, next(test_iter)[1][:25], 'I love sci-fi and am will')
@@ -241,8 +232,8 @@ class TestDataset(TorchtextTestCase):
         de_vocab, en_vocab = train_dataset.get_vocab()
 
         def assert_nth_pair_is_equal(n, expected_sentence_pair):
-            de_sentence = [de_vocab.itos[index] for index in train_dataset[n][0]]
-            en_sentence = [en_vocab.itos[index] for index in train_dataset[n][1]]
+            de_sentence = [de_vocab.lookup_token(index) for index in train_dataset[n][0]]
+            en_sentence = [en_vocab.lookup_token(index) for index in train_dataset[n][1]]
 
             expected_de_sentence, expected_en_sentence = expected_sentence_pair
 
@@ -267,8 +258,8 @@ class TestDataset(TorchtextTestCase):
         de_vocab, en_vocab = train_dataset.get_vocab()
 
         def assert_nth_pair_is_equal(n, expected_sentence_pair):
-            de_sentence = [de_vocab.itos[index] for index in train_dataset[n][0]]
-            en_sentence = [en_vocab.itos[index] for index in train_dataset[n][1]]
+            de_sentence = [de_vocab.lookup_token(index) for index in train_dataset[n][0]]
+            en_sentence = [en_vocab.lookup_token(index) for index in train_dataset[n][1]]
             expected_de_sentence, expected_en_sentence = expected_sentence_pair
 
             self.assertEqual(de_sentence, expected_de_sentence)
@@ -462,7 +453,6 @@ class TestDataset(TorchtextTestCase):
 
     def test_squad1(self):
         from torchtext.experimental.datasets import SQuAD1
-        from torchtext.legacy.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, dev_dataset = SQuAD1()
         context, question, answers, ans_pos = train_dataset[100]
@@ -472,16 +462,8 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(dev_dataset), 10570, (question, ans_pos[0]),
                                ([42, 27, 669, 7438, 17, 2, 1950, 3273, 17252, 389, 16], [45, 48]))
 
-        # Test API with a vocab input object
-        old_vocab = train_dataset.get_vocab()
-        new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
-        new_train_data, new_test_data = SQuAD1(vocab=new_vocab)
-
         # Add test for the subset of the standard datasets
         train_dataset = SQuAD1(split='train')
-        context, question, answers, ans_pos = train_dataset[100]
-        self._helper_test_func(len(train_dataset), 87599, (question[:5], ans_pos[0]),
-                               ([7, 24, 86, 52, 2], [72, 72]))
         train_iter, dev_iter = torchtext.datasets.SQuAD1()
         self._helper_test_func(len(train_iter), 87599, next(train_iter)[0][:50],
                                'Architecturally, the school has a Catholic charact')
@@ -491,7 +473,6 @@ class TestDataset(TorchtextTestCase):
 
     def test_squad2(self):
         from torchtext.experimental.datasets import SQuAD2
-        from torchtext.legacy.vocab import Vocab
         # smoke test to ensure imdb works properly
         train_dataset, dev_dataset = SQuAD2()
         context, question, answers, ans_pos = train_dataset[200]
@@ -501,16 +482,8 @@ class TestDataset(TorchtextTestCase):
         self._helper_test_func(len(dev_dataset), 11873, (question, ans_pos[0]),
                                ([41, 29, 2, 66, 17016, 30, 0, 1955, 16], [40, 46]))
 
-        # Test API with a vocab input object
-        old_vocab = train_dataset.get_vocab()
-        new_vocab = Vocab(counter=old_vocab.freqs, max_size=2500)
-        new_train_data, new_test_data = SQuAD2(vocab=new_vocab)
-
         # Add test for the subset of the standard datasets
         train_dataset = SQuAD2(split='train')
-        context, question, answers, ans_pos = train_dataset[200]
-        self._helper_test_func(len(train_dataset), 130319, (question[:5], ans_pos[0]),
-                               ([84, 50, 1421, 12, 5439], [9, 9]))
         train_iter, dev_iter = torchtext.datasets.SQuAD2()
         self._helper_test_func(len(train_iter), 130319, next(train_iter)[0][:50],
                                'Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-Y')

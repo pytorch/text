@@ -258,14 +258,16 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
     counter = Counter()
     for tokens in iterator:
         counter.update(tokens)
-    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+
+    if specials is not None:
+        for tok in specials:
+            del counter[tok]
+
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[0])
+    sorted_by_freq_tuples.sort(key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
 
     if specials is not None:
-        for symbol in specials:
-            if symbol in ordered_dict:
-                del ordered_dict[symbol]
-
         if special_first:
             specials = specials[::-1]
         for symbol in specials:
