@@ -1,6 +1,5 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
-import os
 import torch
 import torchtext
 import json
@@ -8,7 +7,6 @@ import hashlib
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
-from ..common.assets import conditional_remove
 from ..common.cache_utils import check_cache_status
 
 
