@@ -27,7 +27,7 @@ int64_t _infer_lines(const std::string &file_path);
 
 struct Vocab : torch::CustomClassHolder {
   static const int32_t MAX_VOCAB_SIZE = 30000000;
-  int64_t unk_index_;
+  int64_t unk_index_{};
   std::vector<int32_t> stoi_;
   const std::string version_str_ = "0.0.2";
   StringList itos_;
