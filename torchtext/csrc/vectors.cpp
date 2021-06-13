@@ -15,7 +15,7 @@
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
+Vectors::Vectors(const IndexMap &stoi, const torch::Tensor &vectors,
                  const torch::Tensor &unk_tensor)
     : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
 
