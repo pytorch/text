@@ -225,9 +225,11 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   // create token freq pairs
   std::vector<std::pair<std::string, int64_t>> token_freq_pairs;
 
-  for (std::string token : unique_tokens) {
-    token_freq_pairs.push_back(std::make_pair(token, tokens_freq[token]));
+  for (std::string &token : unique_tokens) {
+    auto token_freq = tokens_freq[token];
+    token_freq_pairs.emplace_back(std::move(token), token_freq);
   }
+  unique_tokens.clear();
 
   // sort tokens by freq
   if (sort_tokens) {
@@ -236,9 +238,8 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   }
 
   // update unique tokens with correct order
-  unique_tokens.clear();
-  for (const auto &token_freq_pair : token_freq_pairs) {
-    unique_tokens.push_back(token_freq_pair.first);
+  for (auto &token_freq_pair : token_freq_pairs) {
+    unique_tokens.emplace_back(std::move(token_freq_pair.first));
   }
 
   return unique_tokens;
