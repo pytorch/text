@@ -30,51 +30,6 @@ from torchtext.data.functional import custom_replace
 from torchtext.utils import download_from_url
 
 
-class TestWithAsset(TorchtextTestCase):
-    def _helper_test_func(self, length, target_length, results, target_results):
-        self.assertEqual(length, target_length)
-        if isinstance(target_results, list):
-            target_results = torch.tensor(target_results, dtype=torch.int64)
-        if isinstance(target_results, tuple):
-            target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
-        self.assertEqual(results, target_results)
-
-    def test_wikitext103(self):
-        from torchtext.experimental.datasets import WikiText103
-        cachedir = os.path.join(self.project_root, ".data", "wikitext-103")
-        conditional_remove(cachedir)
-        cachefile = os.path.join(self.project_root, ".data", "wikitext-103-v1.zip")
-        conditional_remove(cachefile)
-
-        asset_name = 'wikitext103_vocab.pt'
-        asset_path = get_asset_path(asset_name)
-        with open(asset_path, 'rb') as f:
-            builtin_vocab = torch.load(f)
-        train_dataset, valid_dataset, test_dataset = WikiText103(vocab=builtin_vocab)
-        self._helper_test_func(len(train_dataset), 1801350, train_dataset[10][:5],
-                               [2, 69, 12, 14, 265])
-        self._helper_test_func(len(test_dataset), 4358, test_dataset[28][:5],
-                               [10, 10, 10, 1329, 10])
-        self._helper_test_func(len(valid_dataset), 3760, valid_dataset[11][:5],
-                               [2, 25864, 5, 361, 4])
-
-        vocab = train_dataset.get_vocab()
-        tokens_ids = [vocab[token] for token in 'the player characters rest'.split()]
-        self.assertEqual(tokens_ids, [2, 320, 437, 687])
-
-        # Add test for the subset of the standard datasets
-        train_dataset, test_dataset = torchtext.datasets.WikiText103(split=('train', 'test'))
-        self._helper_test_func(len(train_dataset), 1801350, next(iter(train_dataset)), ' \n')
-        self._helper_test_func(len(test_dataset), 4358, next(iter(test_dataset)), ' \n')
-        train_dataset, test_dataset = WikiText103(vocab=builtin_vocab, split=('train', 'test'))
-        self._helper_test_func(len(train_dataset), 1801350, train_dataset[10][:5],
-                               [2, 69, 12, 14, 265])
-        self._helper_test_func(len(test_dataset), 4358, test_dataset[28][:5],
-                               [10, 10, 10, 1329, 10])
-        conditional_remove(cachedir)
-        conditional_remove(cachefile)
-
-
 class TestTransformsWithAsset(TorchtextTestCase):
     def test_vocab_transform(self):
         asset_name = 'vocab_test2.txt'

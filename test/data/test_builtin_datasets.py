@@ -32,13 +32,23 @@ class TestDataset(TorchtextTestCase):
             target_results = tuple(torch.tensor(item, dtype=torch.int64) for item in target_results)
         self.assertEqual(results, target_results)
 
+    def test_raw_ag_news(self):
+        train_iter, test_iter = torchtext.datasets.AG_NEWS()
+        self._helper_test_func(len(train_iter), 120000, next(train_iter)[1][:25], 'Wall St. Bears Claw Back ')
+        self._helper_test_func(len(test_iter), 7600, next(test_iter)[1][:25], 'Fears for T N pension aft')
+        del train_iter, test_iter
+
     @parameterized.expand(
         load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
     def test_raw_text_name_property(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
-        data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
+
+        if dataset_name == 'WMT14':
+            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+        else:
+            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
 
         self.assertEqual(str(data_iter), dataset_name)
 
@@ -48,12 +58,19 @@ class TestDataset(TorchtextTestCase):
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
-        data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
+
+        if dataset_name == 'WMT14':
+            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+        else:
+            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
         self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
+        elif dataset_name == "WMT14":
+            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name], info['URL'])
+            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name], info['MD5'])
         else:
             self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
