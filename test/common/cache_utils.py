@@ -9,6 +9,7 @@ CACHE_STATUS_FILE = '.data/cache_status_file.json'
 def check_cache_status():
     assert os.path.exists(CACHE_STATUS_FILE), "Cache status file does not exists"
 
+
 def generate_data_cache():
     # cache already created, nothing to do
     if os.path.exists(CACHE_STATUS_FILE):
