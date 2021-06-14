@@ -1,7 +1,6 @@
 import torch
-import torchtext
 from test.common.torchtext_test_case import TorchtextTestCase
-from ..common.assets import get_asset_path, conditional_remove
+from ..common.assets import get_asset_path
 from torchtext.experimental.transforms import (
     sentencepiece_tokenizer,
     basic_english_normalize,
