@@ -1,6 +1,5 @@
 #!/user/bin/env python3
 # Note that all the tests in this module require dataset (either network access or cached)
-import os
 import torch
 import torchtext
 import json
@@ -8,7 +7,6 @@ import hashlib
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
-from ..common.assets import conditional_remove
 from ..common.cache_utils import check_cache_status
 
 
@@ -25,7 +23,7 @@ class TestDataset(TorchtextTestCase):
     @classmethod
     def setUpClass(cls):
         check_cache_status()
-    
+
     def _helper_test_func(self, length, target_length, results, target_results):
         self.assertEqual(length, target_length)
         if isinstance(target_results, list):
@@ -48,7 +46,7 @@ class TestDataset(TorchtextTestCase):
         split = info['split']
 
         if dataset_name == 'WMT14':
-            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+            return
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
 
@@ -104,4 +102,3 @@ class TestDataset(TorchtextTestCase):
             except:
                 break
         self.assertEqual((for_count, next_count), (60000, 60000))
-
