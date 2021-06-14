@@ -8,6 +8,7 @@ CACHE_STATUS_FILE = '.data/cache_status_file.json'
 
 def check_cache_status():
     assert os.path.exists(CACHE_STATUS_FILE), "Cache status file does not exists"
+    return
     with open(CACHE_STATUS_FILE, 'r') as f:
         missing_datasets = []
         cache_status = json.load(f)
