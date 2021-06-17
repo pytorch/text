@@ -12,7 +12,7 @@ Vocab::Vocab(StringList tokens,
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
   for (auto &token : tokens) {
     // throw error if duplicate token is found
-    auto id = _find(c10::string_view{token.data(), token.size()});
+    auto id = _find(c10::string_view{token});
     TORCH_CHECK(stoi_[id] == -1,
                 "Duplicate token found in tokens list: " + token);
 
@@ -56,7 +56,7 @@ c10::optional<int64_t> Vocab::get_default_index() const {
 
 void Vocab::append_token(std::string token) {
   // throw error if token already exist in vocab
-  auto id = _find(c10::string_view{token.data(), token.size()});
+  auto id = _find(c10::string_view{token});
   TORCH_CHECK(stoi_[id] == -1, "Token " + token +
                                    " already exists in the Vocab with index: " +
                                    std::to_string(stoi_[id]));
@@ -76,10 +76,10 @@ void Vocab::insert_token(std::string token, const int64_t &index) {
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < __len__(); i++) {
-    stoi_[_find(c10::string_view{itos_[i].data(), itos_[i].size()})] = i + 1;
+    stoi_[_find(c10::string_view{itos_[i]})] = i + 1;
   }
 
-  stoi_[_find(c10::string_view{token.data(), token.size()})] = index;
+  stoi_[_find(c10::string_view{token})] = index;
   itos_.insert(itos_.begin() + index, std::move(token));
 }
 
@@ -351,14 +351,8 @@ Vocab _build_vocab_from_text_file_using_python_tokenizer(
     std::vector<std::string> token_list =
         tokenizer(line).cast<std::vector<std::string>>();
 
-    for (size_t i = 0; i < token_list.size(); i++) {
-      std::string token = token_list[i];
-
-      if (counter.find(token) == counter.end()) {
-        counter[token] = 1;
-      } else {
-        counter[token] += 1;
-      }
+    for (auto &token : token_list) {
+      counter[std::move(token)] += 1;
     }
   }
 
