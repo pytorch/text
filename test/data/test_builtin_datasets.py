@@ -91,7 +91,7 @@ class TestDataset(TorchtextTestCase):
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split, offset=offset)
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split, offset=offset)
-        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['offset_line'])
+        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['offset_line'] + 'x')
 
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
