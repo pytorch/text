@@ -93,22 +93,16 @@ OFFSET_GAP = 10000
 def _get_offsets_from_file(data_path):
     with io.open(data_path, encoding="utf8") as f:
         next_line_empty = lambda: f.readline() == ''
-
         if next_line_empty():
             return
-
         yield 0
-
         while True:
             for _ in range(OFFSET_GAP - 1):
                 if next_line_empty():
                     return
-
             offset = f.tell()
-
             if next_line_empty():
                 return
-
             yield offset
 
 
