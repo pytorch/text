@@ -144,7 +144,7 @@ int64_t _infer_lines(const std::string &file_path) {
 
 void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
                             const int64_t start_line, const int64_t end_line,
-                            std::shared_ptr<IndexDict> counter) {
+                            const std::shared_ptr<IndexDict> &counter) {
   std::ifstream fin(file_path, std::ios::in);
   TORCH_CHECK(fin.is_open(), "Cannot open input file " + file_path);
 
@@ -165,7 +165,7 @@ void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
 
 void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
                                const int64_t start_line, const int64_t end_line,
-                               std::shared_ptr<IndexDict> counter,
+                               const std::shared_ptr<IndexDict> &counter,
                                torch::jit::script::Module &module) {
   std::ifstream fin(file_path, std::ios::in);
   TORCH_CHECK(fin.is_open(), "Cannot open input file " + file_path);

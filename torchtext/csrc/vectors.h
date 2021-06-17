@@ -36,7 +36,7 @@ VectorsStates _serialize_vectors(const c10::intrusive_ptr<Vectors> &self);
 c10::intrusive_ptr<Vectors> _deserialize_vectors(VectorsStates states);
 
 std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
-    const std::string &file_path, const std::string delimiter_str,
+    const std::string &file_path, const std::string &delimiter_str,
     const int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor);
 
 } // namespace torchtext

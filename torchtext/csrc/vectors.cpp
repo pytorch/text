@@ -206,7 +206,7 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
 constexpr int64_t GRAIN_SIZE = 131072;
 std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
-    const std::string &file_path, const std::string delimiter_str,
+    const std::string &file_path, const std::string &delimiter_str,
     int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor) {
 
   TORCH_CHECK(delimiter_str.size() == 1,
