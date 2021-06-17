@@ -87,8 +87,48 @@ def _read_text_iterator(path):
             yield row
 
 
-def _create_data_from_csv(data_path):
+OFFSET_GAP = 10000
+
+
+def _get_offsets_from_file(data_path):
     with io.open(data_path, encoding="utf8") as f:
+
+        if f.readline() == '':
+            raise StopIteration
+        f.seek(0)
+        yield 0
+
+        class offset_iterator():
+            def __iter__(self):
+                return self
+            def __next__(self):
+                for _ in range(OFFSET_GAP):
+                    if f.readline() == '':
+                        raise StopIteration
+                offset = f.tell()
+                if f.readline() == '':
+                    raise StopIteration
+                f.seek(offset)
+                return offset
+
+        for offset in offset_iterator():
+            yield offset
+
+
+def _create_data_from_csv(data_path, offset=0, offsets=None):
+    assert offset >= 0, "offset must be non-negative but {} is given".format(offset)
+
+    with io.open(data_path, encoding="utf8") as f:
+        if offsets is not None:
+            index = offset // OFFSET_GAP
+            if index >= len(offsets):
+                raise StopIteration
+            offset = offset % OFFSET_GAP
+            f.seek(offsets[index])
+
+        for _ in range(offset):
+            next(f)
+
         reader = unicode_csv_reader(f)
         for row in reader:
             yield int(row[0]), ' '.join(row[1:])
