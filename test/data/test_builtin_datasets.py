@@ -83,11 +83,7 @@ class TestDataset(TorchtextTestCase):
         dataset_name = info['dataset_name']
         split = info['split']
 
-        # TODO: Change to this
-        # if 'offset' not in info or 'offset_line' not in info:
-        #     return
-
-        if dataset_name != "AG_NEWS":
+        if 'offset' not in info or 'offset_line' not in info:
             return
 
         offset = info['offset']
@@ -96,7 +92,6 @@ class TestDataset(TorchtextTestCase):
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split, offset=offset)
         self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['offset_line'])
-
 
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
