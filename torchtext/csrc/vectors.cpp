@@ -24,7 +24,7 @@ Vectors::Vectors(const std::vector<std::string> &tokens,
                  torch::Tensor vectors, torch::Tensor unk_tensor)
     : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
   // guarding against size mismatch of tokens and indices
-  if (static_cast<int>(tokens.size()) != indices.size()) {
+  if (tokens.size() != indices.size()) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Mismatching sizes for tokens and indices. "
                  "Size of tokens: "
