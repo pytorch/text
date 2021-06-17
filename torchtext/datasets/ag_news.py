@@ -36,10 +36,10 @@ DATASET_NAME = "AG_NEWS"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=4)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
-def AG_NEWS(root, split):
+def AG_NEWS(root, split, offset=0):
     path = download_from_url(URL[split], root=root,
                              path=os.path.join(root, split + ".csv"),
                              hash_value=MD5[split],
                              hash_type='md5')
     return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_csv(path))
+                                   _create_data_from_csv(path, offset, OFFSETS[split]))

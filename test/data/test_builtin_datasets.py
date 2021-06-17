@@ -76,6 +76,29 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
         del data_iter
 
+    @parameterized.expand(
+        load_params('raw_datasets.jsonl'),
+        name_func=_raw_text_custom_name_func)
+    def test_dataset_iterator_offsets(self, info):
+        dataset_name = info['dataset_name']
+        split = info['split']
+
+        # TODO: Change to this
+        # if 'offset' not in info or 'offset_line' not in info:
+        #     return
+
+        if dataset_name != "AG_NEWS":
+            return
+
+        offset = info['offset']
+        if dataset_name == 'WMT14':
+            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split, offset=offset)
+        else:
+            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split, offset=offset)
+        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['offset_line'])
+
+
+
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
     def test_raw_datasets_split_argument(self, dataset_name):
         if 'statmt' in torchtext.datasets.URLS[dataset_name]:
