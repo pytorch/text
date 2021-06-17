@@ -15,13 +15,13 @@
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoi, const torch::Tensor &vectors,
-                 const torch::Tensor &unk_tensor)
-    : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
+Vectors::Vectors(const IndexMap &stoi, torch::Tensor vectors,
+                 torch::Tensor unk_tensor)
+    : stoi_(stoi), vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
                  const std::vector<std::int64_t> &indices,
-                 const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
+                 torch::Tensor vectors, torch::Tensor unk_tensor)
     : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
   // guarding against size mismatch of tokens and indices
   if (static_cast<int>(tokens.size()) != indices.size()) {
