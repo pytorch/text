@@ -72,7 +72,7 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
 torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
   std::vector<torch::Tensor> vectors;
   for (const std::string &token : tokens) {
-    vectors.push_back(__getitem__(token));
+    vectors.emplace_back(__getitem__(token));
   }
   return torch::stack(vectors, 0);
 }
