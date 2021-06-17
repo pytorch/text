@@ -7,20 +7,20 @@
 #include <vocab.h>       // @manual
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens,
+Vocab::Vocab(StringList tokens,
              const c10::optional<int64_t> &default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
-  for (size_t i = 0; i < tokens.size(); i++) {
+  for (auto &token : tokens) {
     // throw error if duplicate token is found
-    auto id = _find(c10::string_view{tokens[i].data(), tokens[i].size()});
+    auto id = _find(c10::string_view{token.data(), token.size()});
     TORCH_CHECK(stoi_[id] == -1,
-                "Duplicate token found in tokens list: " + tokens[i]);
+                "Duplicate token found in tokens list: " + token);
 
-    _add(tokens[i]);
+    _add(std::move(token));
   }
 }
 
-Vocab::Vocab(const StringList &tokens) : Vocab(tokens, {}) {}
+Vocab::Vocab(StringList tokens) : Vocab(std::move(tokens), {}) {}
 
 int64_t Vocab::__len__() const { return itos_.size(); }
 
@@ -54,17 +54,17 @@ c10::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
 }
 
-void Vocab::append_token(const std::string &token) {
+void Vocab::append_token(std::string token) {
   // throw error if token already exist in vocab
   auto id = _find(c10::string_view{token.data(), token.size()});
   TORCH_CHECK(stoi_[id] == -1, "Token " + token +
                                    " already exists in the Vocab with index: " +
                                    std::to_string(stoi_[id]));
 
-  _add(token);
+  _add(std::move(token));
 }
 
-void Vocab::insert_token(const std::string &token, const int64_t &index) {
+void Vocab::insert_token(std::string token, const int64_t &index) {
   // throw error if index is not valid
   TORCH_CHECK(index >= 0 && index <= __len__(),
               "Specified index " + std::to_string(index) +
@@ -79,8 +79,8 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
     stoi_[_find(c10::string_view{itos_[i].data(), itos_[i].size()})] = i + 1;
   }
 
-  itos_.insert(itos_.begin() + index, token);
   stoi_[_find(c10::string_view{token.data(), token.size()})] = index;
+  itos_.insert(itos_.begin() + index, std::move(token));
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
