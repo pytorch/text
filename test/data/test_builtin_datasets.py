@@ -80,13 +80,13 @@ class TestDataset(TorchtextTestCase):
         load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
     def test_dataset_iterator_offsets(self, info):
-        dataset_name = info['dataset_name']
-        split = info['split']
-
         if 'offset' not in info or 'offset_line' not in info:
             return
 
+        dataset_name = info['dataset_name']
+        split = info['split']
         offset = info['offset']
+
         if dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split, offset=offset)
         else:
