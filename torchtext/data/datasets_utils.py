@@ -92,26 +92,23 @@ OFFSET_GAP = 10000
 
 def _get_offsets_from_file(data_path):
     with io.open(data_path, encoding="utf8") as f:
+        next_line_empty = lambda: f.readline() == ''
 
-        if f.readline() == '':
-            raise StopIteration
-        f.seek(0)
+        if next_line_empty():
+            return
+
         yield 0
 
-        class offset_iterator():
-            def __iter__(self):
-                return self
-            def __next__(self):
-                for _ in range(OFFSET_GAP):
-                    if f.readline() == '':
-                        raise StopIteration
-                offset = f.tell()
-                if f.readline() == '':
-                    raise StopIteration
-                f.seek(offset)
-                return offset
+        while True:
+            for _ in range(OFFSET_GAP - 1):
+                if next_line_empty():
+                    return
 
-        for offset in offset_iterator():
+            offset = f.tell()
+
+            if next_line_empty():
+                return
+
             yield offset
 
 
