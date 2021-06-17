@@ -265,7 +265,7 @@ std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
 
   torch::Tensor unk_tensor;
   if (opt_unk_tensor) {
-    unk_tensor = *opt_unk_tensor;
+    unk_tensor = std::move(*opt_unk_tensor);
   } else {
     unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
   }
