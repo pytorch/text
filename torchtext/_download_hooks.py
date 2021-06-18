@@ -167,5 +167,5 @@ class CombinedInternalPathhandler(PathHandler):
         return open(local_path, mode)
 
 
-_PATH_MANAGER = PathManager()
-_PATH_MANAGER.register_handler(CombinedInternalPathhandler())
+_DATASET_DOWNLOAD_MANAGER = PathManager()
+_DATASET_DOWNLOAD_MANAGER.register_handler(CombinedInternalPathhandler())

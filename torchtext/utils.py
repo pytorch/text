@@ -6,7 +6,7 @@ import logging
 import sys
 import zipfile
 import gzip
-from ._download_hooks import _PATH_MANAGER
+from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 
 
 def reporthook(t):
@@ -112,7 +112,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
             raise OSError("Can't create the download directory {}.".format(root))
 
     # download data and move to path
-    _PATH_MANAGER.get_local_path(url, destination=path)
+    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
     logging.info('File {} downloaded.'.format(path))
 
