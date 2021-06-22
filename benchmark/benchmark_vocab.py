@@ -6,20 +6,32 @@ import string
 from timeit import default_timer as timer
 from matplotlib import pyplot as plt
 import torch
-from torchtext.experimental.datasets import DATASETS
+from torchtext.datasets import DATASETS
 from torchtext.experimental.vocab_factory import (
     load_vocab_from_file,
     build_vocab_from_text_file
 )
-from torchtext.vocab import vocab as VocabExperimental
+from torchtext.vocab import build_vocab_from_iterator
+from torchtext.vocab import vocab as VocabNew
 from torchtext.legacy.vocab import (
     Vocab,
-    build_vocab_from_iterator
+    build_vocab_from_iterator as build_vocab_from_iterator_legacy,
 )
-from torchtext.experimental.transforms import basic_english_normalize
+from torchtext.experimental.transforms import(
+    basic_english_normalize,
+)
+from torchtext.data.utils import get_tokenizer
+
+def build_vocab(data, transforms):
+    def apply_transforms(data):
+        for _, line in data:
+            yield transforms(line)
+    vocab = build_vocab_from_iterator(apply_transforms(data), specials=['<unk>', '<pad>'])
+    vocab.set_default_index(vocab['<unk>'])
+    return vocab
 
 
-def compare_legacy_and_experimental_batch_lookup():
+def compare_legacy_and_new_batch_lookup():
     num_tokens = 1000
     num_letters = 6
     num_lines = 100000
@@ -27,7 +39,7 @@ def compare_legacy_and_experimental_batch_lookup():
     counter = Counter()
     counter.update(vocab)
     legacy_vocab = Vocab(counter)
-    experimental_vocab = VocabExperimental(counter)
+    new_vocab = VocabNew(counter)
     speed_ups = []
     token_lengths = [i for i in range(2, 100)]
     for i in token_lengths:
@@ -39,12 +51,12 @@ def compare_legacy_and_experimental_batch_lookup():
 
         start_time = timer()
         for text in lines:
-            experimental_vocab.lookup_indices(text)
+            new_vocab.lookup_indices(text)
 
-        experimental_time = timer() - start_time
+        new_time = timer() - start_time
 
-        speed_ups.append(legacy_time / experimental_time)
-        print("speed-up={} for average length={}".format(legacy_time / experimental_time, i))
+        speed_ups.append(legacy_time / new_time)
+        print("speed-up={} for average length={}".format(legacy_time / new_time, i))
         del lines
 
     plt.close()
@@ -89,10 +101,10 @@ def legacy_vocab_from_file_object(file_like_object, **kwargs):
             for token in tokenize(line):
                 yield token
 
-    return build_vocab_from_iterator(token_iterator(file_like_object))
+    return build_vocab_from_iterator_legacy(token_iterator(file_like_object))
 
 
-def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True, is_legacy=True, num_iters=1):
+def benchmark_new_vocab_construction(vocab_file_path, is_raw_text=True, is_legacy=True, num_iters=1):
     f = open(vocab_file_path, 'r')
     t0 = time.monotonic()
     if is_raw_text:
@@ -107,7 +119,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
             for _ in range(num_iters):
                 tokenizer = basic_english_normalize()
                 jited_tokenizer = torch.jit.script(tokenizer)
-                build_vocab_from_text_file(f, jited_tokenizer, num_cpus=1)
+                build_vocab_from_text_file(vocab_file_path, jited_tokenizer, num_cpus=1)
             print("Construction time:", time.monotonic() - t0)
     else:
         for _ in range(num_iters):
@@ -115,7 +127,7 @@ def benchmark_experimental_vocab_construction(vocab_file_path, is_raw_text=True,
         print("Construction time:", time.monotonic() - t0)
 
 
-def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS'):
+def benchmark_new_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS'):
     def _run_benchmark_lookup(tokens, vocab):
         t0 = time.monotonic()
         # list lookup
@@ -132,15 +144,11 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS')
 
     tokens = []
     tokens_lists = []
-
-    train = DATASETS[dataset](split='train')
-    vocab = train.get_vocab()
-    for (_, text) in train:
-        cur_tokens = []
-        for id in text.tolist():
-            cur_tokens.append(vocab.itos[id])
-        tokens_lists.append(cur_tokens)
-        tokens += cur_tokens
+    tokenizer = get_tokenizer("basic_english")
+    for (_, text) in DATASETS[dataset](split='train'):
+       cur_tokens = tokenizer(text)
+       tokens_lists.append(cur_tokens)
+       tokens += cur_tokens
 
     if vocab_file_path:
         print("Loading Vocab from file {}".format(vocab_file_path))
@@ -153,14 +161,14 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS')
         # existing Vocab construction
         print("Vocab")
         t0 = time.monotonic()
-        v_existing = build_vocab_from_iterator(token_iterator(vocab_file_path))
+        v_existing = build_vocab_from_iterator_legacy(token_iterator(vocab_file_path))
         print("Construction time:", time.monotonic() - t0)
 
-        # experimental Vocab construction
-        print("Vocab Experimental")
+        # new Vocab construction
+        print("Vocab New")
         t0 = time.monotonic()
         f = open(vocab_file_path, 'r')
-        v_experimental = load_vocab_from_file(f)
+        v_new = load_vocab_from_file(f)
         print("Construction time:", time.monotonic() - t0)
     else:
         print("Loading Vocab from {}".format(dataset))
@@ -174,12 +182,12 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS')
         v_existing = Vocab(counter)
         print("Construction time:", time.monotonic() - t0)
 
-        # experimental Vocab construction
-        print("Vocab Experimental")
+        # new Vocab construction
+        print("Vocab New")
         t0 = time.monotonic()
-        v_experimental = VocabExperimental(ordered_dict)
+        v_new = VocabNew(ordered_dict)
         print("Construction time:", time.monotonic() - t0)
-    jit_v_experimental = torch.jit.script(v_experimental)
+    jit_v_new = torch.jit.script(v_new)
 
     # existing Vocab eager lookup
     print("Vocab - Eager Mode")
@@ -187,18 +195,18 @@ def benchmark_experimental_vocab_lookup(vocab_file_path=None, dataset='AG_NEWS')
     _run_benchmark_lookup([tokens], v_existing)
     _run_benchmark_lookup(tokens_lists, v_existing)
 
-    # experimental Vocab eager lookup
-    print("Vocab Experimental - Eager Mode")
-    _run_benchmark_lookup(tokens, v_experimental)
-    _run_benchmark_lookup([tokens], v_experimental)
-    _run_benchmark_lookup(tokens_lists, v_experimental)
+    # new Vocab eager lookup
+    print("Vocab New - Eager Mode")
+    _run_benchmark_lookup(tokens, v_new)
+    _run_benchmark_lookup([tokens], v_new)
+    _run_benchmark_lookup(tokens_lists, v_new)
 
-    jit_v_experimental = torch.jit.script(v_experimental)
-    # experimental Vocab jit lookup
-    print("Vocab Experimental - Jit Mode")
-    _run_benchmark_lookup(tokens, jit_v_experimental)
-    _run_benchmark_lookup([tokens], jit_v_experimental)
-    _run_benchmark_lookup(tokens_lists, jit_v_experimental)
+    jit_v_new = torch.jit.script(v_new)
+    # new Vocab jit lookup
+    print("Vocab New - Jit Mode")
+    _run_benchmark_lookup(tokens, jit_v_new)
+    _run_benchmark_lookup([tokens], jit_v_new)
+    _run_benchmark_lookup(tokens_lists, jit_v_new)
 
 
 if __name__ == "__main__":
@@ -219,7 +227,7 @@ if __name__ == "__main__":
 
     if args.run_construction_benchmark:
         print("is_legacy", args.is_legacy)
-        benchmark_experimental_vocab_construction(args.vocab_filename_construction,
+        benchmark_new_vocab_construction(args.vocab_filename_construction,
                                                   is_raw_text=args.is_raw_text, is_legacy=args.is_legacy)
     else:
-        benchmark_experimental_vocab_lookup(args.vocab_filename_lookup, args.dataset)
+        benchmark_new_vocab_lookup(args.vocab_filename_lookup, args.dataset)
