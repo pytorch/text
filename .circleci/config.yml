@@ -44,7 +44,9 @@ commands:
     steps:
       - run:
           name: Generate CCI cache key
-          command: echo "$(date "+%D")" > .cachekey
+          command:
+            echo "$(date "+%D")" > .cachekey
+            cat cached_datasets_list.txt >> .cachekey
       - persist_to_workspace:
           root: .
           paths:

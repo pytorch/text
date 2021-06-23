@@ -36,6 +36,7 @@ class Vocab(nn.Module):
     def __init__(self, vocab):
         super(Vocab, self).__init__()
         self.vocab = vocab
+        torch._C._log_api_usage_once(f"torchtext.{self.__class__.__name__}")
 
     @property
     def is_jitable(self):
@@ -98,17 +99,6 @@ class Vocab(nn.Module):
             Value of default index if it is set.
         """
         return self.vocab.get_default_index()
-
-    @torch.jit.export
-    def reassign_token(self, token: str, index: int) -> None:
-        r"""
-        Args:
-            token: the token used to lookup the corresponding index.
-            index: the index corresponding to the associated token.
-        Raises:
-            RuntimeError: If `index` is not in range [0,Vocab.size()) or if `token` is not present in Vocab
-        """
-        self.vocab.reassign_token(token, index)
 
     @torch.jit.export
     def insert_token(self, token: str, index: int) -> None:
@@ -240,13 +230,16 @@ def vocab(ordered_dict: Dict, min_freq: int = 1) -> Vocab:
     return Vocab(VocabPybind(tokens, None))
 
 
-def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1) -> Vocab:
+def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True) -> Vocab:
     """
     Build a Vocab from an iterator.
 
     Args:
         iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.
         min_freq: The minimum frequency needed to include a token in the vocabulary.
+        specials: Special symbols to add. The order of supplied tokens will be preserved.
+        special_first: Indicates whether to insert symbols at the beginning or at the end.
+
 
     Returns:
         torchtext.vocab.Vocab: A `Vocab` object
@@ -259,14 +252,28 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1) -> Vocab:
         >>>     with io.open(file_path, encoding = 'utf-8') as f:
         >>>         for line in f:
         >>>             yield line.strip().split()
-        >>> vocab = build_vocab_from_iterator(yield_tokens_batch(file_path))
+        >>> vocab = build_vocab_from_iterator(yield_tokens_batch(file_path), specials=["<unk>"])
     """
 
     counter = Counter()
     for tokens in iterator:
         counter.update(tokens)
-    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
+
+    if specials is not None:
+        for tok in specials:
+            del counter[tok]
+
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[0])
+    sorted_by_freq_tuples.sort(key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
+
+    if specials is not None:
+        if special_first:
+            specials = specials[::-1]
+        for symbol in specials:
+            ordered_dict.update({symbol: min_freq})
+            ordered_dict.move_to_end(symbol, last=not special_first)
+
     word_vocab = vocab(ordered_dict, min_freq=min_freq)
     return word_vocab
 
