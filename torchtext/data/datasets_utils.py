@@ -116,7 +116,7 @@ def _create_data_from_csv(data_path, offset=0, offsets=None):
             if index >= len(offsets):
                 return
             offset = offset % OFFSET_GAP
-            f.seek(offsets[index])
+            f.seek(offsets[index * OFFSET_GAP])
 
         for _ in range(offset):
             next(f)
