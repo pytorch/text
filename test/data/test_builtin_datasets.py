@@ -90,9 +90,9 @@ class TestDataset(TorchtextTestCase):
             get_data_iter = torchtext.datasets.DATASETS[dataset_name]
 
         if offset != 0:
-            data_iter = get_dataset(split=split, offset=offset)
+            data_iter = get_data_iter(split=split, offset=offset)
         else:
-            data_iter = get_dataset(split=split)
+            data_iter = get_data_iter(split=split)
 
         self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['offset_line'])
 
