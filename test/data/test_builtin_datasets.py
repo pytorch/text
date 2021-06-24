@@ -81,17 +81,19 @@ class TestDataset(TorchtextTestCase):
         name_func=_raw_text_custom_name_func)
     def test_dataset_iterator_offsets(self, info):
         dataset_name = info['dataset_name']
-
-        if dataset_name != "AG_NEWS":
-            return
-
         split = info['split']
         offset = info['offset']
 
         if dataset_name == 'WMT14':
-            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split, offset=offset)
+            get_data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name]
         else:
-            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split, offset=offset)
+            get_data_iter = torchtext.datasets.DATASETS[dataset_name]
+
+        if offset != 0:
+            data_iter = get_dataset(split=split, offset=offset)
+        else:
+            data_iter = get_dataset(split=split)
+
         self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['offset_line'])
 
     @parameterized.expand(list(sorted(torchtext.datasets.DATASETS.keys())))
