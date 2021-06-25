@@ -88,7 +88,7 @@ class TestVocab(TorchtextTestCase):
         expected_vectors = np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
                                      [0.0, 0.0], [0.1, 0.2], [0.5, 0.6],
                                      [0.3, 0.4]])
-        self.assertEqual(v.vectors, expected_vectors, exact_dtype=False)
+        self.assertEqual(v.vectors, expected_vectors)
 
     def test_errors(self):
         c = Counter({'hello': 4, 'world': 3, 'ᑌᑎIᑕOᗪᕮ_Tᕮ᙭T': 5, 'freq_too_low': 2})
