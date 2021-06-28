@@ -64,7 +64,6 @@ class TestDataset(TorchtextTestCase):
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
-        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
