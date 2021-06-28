@@ -20,6 +20,7 @@ requirements:
   run:
     - python
     - requests
+    - iopath
     - tqdm
     {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
 

@@ -4,11 +4,13 @@ channels:
 dependencies:
   - flake8>=3.7.9
   - codecov
+  - pywin32
   - pip
   - pip:
     - dataclasses
     - nltk
     - requests
+    - iopath
     - revtok
     - pytest
     - pytest-cov
