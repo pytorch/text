@@ -1,14 +1,12 @@
-import requests
 import csv
 import hashlib
-from tqdm import tqdm
 import os
 import tarfile
 import logging
-import re
 import sys
 import zipfile
 import gzip
+from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 
 
 def reporthook(t):
@@ -33,6 +31,41 @@ def reporthook(t):
     return inner
 
 
+def validate_file(file_obj, hash_value, hash_type="sha256"):
+    """Validate a given file object with its hash.
+
+    Args:
+        file_obj: File object to read from.
+        hash_value (str): Hash for url.
+        hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
+    Returns:
+        bool: return True if its a valid file, else False.
+
+    """
+
+    if hash_type == "sha256":
+        hash_func = hashlib.sha256()
+    elif hash_type == "md5":
+        hash_func = hashlib.md5()
+    else:
+        raise ValueError
+
+    while True:
+        # Read by chunk to avoid filling memory
+        chunk = file_obj.read(1024 ** 2)
+        if not chunk:
+            break
+        hash_func.update(chunk)
+    return hash_func.hexdigest() == hash_value
+
+
+def _check_hash(path, hash_value, hash_type):
+    logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))
+    with open(path, "rb") as file_obj:
+        if not validate_file(file_obj, hash_value, hash_type):
+            raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
+
+
 def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=None,
                       hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
@@ -40,6 +73,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
 
     Args:
         url: the url of the file from URL header. (None)
+        path: path where file will be saved
         root: download folder used to store the file in (.data)
         overwrite: overwrite existing files (False)
         hash_value (str, optional): hash for url (Default: ``None``).
@@ -53,97 +87,41 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         >>> '.data/validation.tar.gz'
 
     """
-    if path is not None:
-        path = os.path.abspath(path)
-    root = os.path.abspath(root)
-
-    def _check_hash(path):
-        if hash_value:
-            logging.info('Validating hash {} matches hash of {}'.format(hash_value, path))
-            with open(path, "rb") as file_obj:
-                if not validate_file(file_obj, hash_value, hash_type):
-                    raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
-
-    def _process_response(r, root, filename):
-        chunk_size = 16 * 1024
-        total_size = int(r.headers.get('Content-length', 0))
-        if filename is None:
-            if 'content-disposition' not in r.headers:
-                raise RuntimeError("Internal error: headers don't contain content-disposition.")
-            d = r.headers['content-disposition']
-            filename = re.findall("filename=\"(.+)\"", d)
-            if filename is None:
-                raise RuntimeError("Filename could not be autodetected")
-            filename = filename[0]
-        path = os.path.join(root, filename)
-        if os.path.exists(path):
-            logging.info('File %s already exists.' % path)
-            if not overwrite:
-                _check_hash(path)
-                return path
-            logging.info('Overwriting file %s.' % path)
-        logging.info('Downloading file {} to {}.'.format(filename, path))
-        with open(path, "wb") as file:
-            with tqdm(total=total_size, unit='B',
-                      unit_scale=1, desc=path.split('/')[-1]) as t:
-                for chunk in r.iter_content(chunk_size):
-                    if chunk:
-                        file.write(chunk)
-                        t.update(len(chunk))
-        logging.info('File {} downloaded.'.format(path))
-
-        _check_hash(path)
-        return path
-
+    # figure out filename and root
     if path is None:
         _, filename = os.path.split(url)
+        root = os.path.abspath(root)
+        path = os.path.join(root, filename)
     else:
+        path = os.path.abspath(path)
         root, filename = os.path.split(os.path.abspath(path))
 
+    # skip download if path exists and overwrite is not True
+    if os.path.exists(path):
+        logging.info('File %s already exists.' % path)
+        if not overwrite:
+            if hash_value:
+                _check_hash(path, hash_value, hash_type)
+            return path
+
+    # make root dir if does not exist
     if not os.path.exists(root):
         try:
             os.makedirs(root)
         except OSError:
-            print("Can't create the download directory {}.".format(root))
-            raise
+            raise OSError("Can't create the download directory {}.".format(root))
 
-    if filename is not None:
-        path = os.path.join(root, filename)
-    # skip requests.get if path exists and not overwrite.
-    if os.path.exists(path):
-        logging.info('File %s already exists.' % path)
-        if not overwrite:
-            _check_hash(path)
-            return path
+    # download data and move to path
+    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    if 'drive.google.com' not in url:
-        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
-        return _process_response(response, root, filename)
-    else:
-        # google drive links get filename from google drive
-        filename = None
+    logging.info('File {} downloaded.'.format(path))
 
-    logging.info('Downloading from Google Drive; may take a few minutes')
-    confirm_token = None
-    session = requests.Session()
-    response = session.get(url, stream=True)
-    for k, v in response.cookies.items():
-        if k.startswith("download_warning"):
-            confirm_token = v
-    if confirm_token is None:
-        if "Quota exceeded" in str(response.content):
-            raise RuntimeError(
-                "Google drive link {} is currently unavailable, because the quota was exceeded.".format(
-                    url
-                ))
-        else:
-            raise RuntimeError("Internal error: confirm_token was not found in Google drive link.")
+    # validate
+    if hash_value:
+        _check_hash(path, hash_value, hash_type)
 
-    if confirm_token:
-        url = url + "&confirm=" + confirm_token
-        response = session.get(url, stream=True)
-
-    return _process_response(response, root, filename)
+    # all good
+    return path
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
@@ -263,31 +241,3 @@ def extract_archive(from_path, to_path=None, overwrite=False):
     else:
         raise NotImplementedError(
             "We currently only support tar.gz, .tgz, .gz and zip achives.")
-
-
-def validate_file(file_obj, hash_value, hash_type="sha256"):
-    """Validate a given file object with its hash.
-
-    Args:
-        file_obj: File object to read from.
-        hash_value (str): Hash for url.
-        hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
-    Returns:
-        bool: return True if its a valid file, else False.
-
-    """
-
-    if hash_type == "sha256":
-        hash_func = hashlib.sha256()
-    elif hash_type == "md5":
-        hash_func = hashlib.md5()
-    else:
-        raise ValueError
-
-    while True:
-        # Read by chunk to avoid filling memory
-        chunk = file_obj.read(1024 ** 2)
-        if not chunk:
-            break
-        hash_func.update(chunk)
-    return hash_func.hexdigest() == hash_value
