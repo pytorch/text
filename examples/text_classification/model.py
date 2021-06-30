@@ -16,9 +16,10 @@ to process a sequence of tensors.
 """
 
 
-class TextSentiment(nn.Module):
+class TextClassificationModel(nn.Module):
+
     def __init__(self, vocab_size, embed_dim, num_class):
-        super().__init__()
+        super(TextClassificationModel, self).__init__()
         self.embedding = nn.EmbeddingBag(vocab_size, embed_dim, sparse=True)
         self.fc = nn.Linear(embed_dim, num_class)
         self.init_weights()
@@ -30,11 +31,5 @@ class TextSentiment(nn.Module):
         self.fc.bias.data.zero_()
 
     def forward(self, text, offsets):
-        r"""
-        Args:
-            text: 1-D tensor representing a bag of text tensors
-            offsets: a list of offsets to delimit the 1-D text tensor
-                into the individual sequences.
-
-        """
-        return self.fc(self.embedding(text, offsets))
+        embedded = self.embedding(text, offsets)
+        return self.fc(embedded)
