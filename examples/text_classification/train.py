@@ -156,15 +156,15 @@ if __name__ == "__main__":
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1.0, gamma=0.1)
 
-    train_iter, test_iter=DATASETS[args.dataset]()
-    train_dataset=to_map_style_dataset(train_iter)
-    test_dataset=to_map_style_dataset(test_iter)
-    num_train=int(len(train_dataset) * 0.95)
-    split_train_, split_valid_=random_split(train_dataset, [num_train, len(train_dataset) - num_train])
+    train_iter, test_iter = DATASETS[args.dataset]()
+    train_dataset = to_map_style_dataset(train_iter)
+    test_dataset = to_map_style_dataset(test_iter)
+    num_train = int(len(train_dataset) * 0.95)
+    split_train_, split_valid_ = random_split(train_dataset, [num_train, len(train_dataset) - num_train])
 
-    train_dataloader=DataLoader(split_train_, batch_size=batch_size, shuffle=True, collate_fn=collate_batch)
-    valid_dataloader=DataLoader(split_valid_, batch_size=batch_size, shuffle=True, collate_fn=collate_batch)
-    test_dataloader=DataLoader(test_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_batch)
+    train_dataloader = DataLoader(split_train_, batch_size=batch_size, shuffle=True, collate_fn=collate_batch)
+    valid_dataloader = DataLoader(split_valid_, batch_size=batch_size, shuffle=True, collate_fn=collate_batch)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_batch)
 
     for epoch in range(1, num_epochs + 1):
         epoch_start_time = time.time()
