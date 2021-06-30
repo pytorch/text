@@ -5,7 +5,6 @@ import uuid
 import unittest
 
 import torch
-import torchtext.data as data
 from torchtext.data.functional import (
     generate_sp_model,
     load_sp_model,
