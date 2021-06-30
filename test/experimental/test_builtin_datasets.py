@@ -45,11 +45,8 @@ class TestDataset(TorchtextTestCase):
 
         if dataset_name == 'WMT14':
             data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
-        else:
-            return
-        self.assertEqual(len(data_iter), info['NUM_LINES'])
-        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
-        if dataset_name == "WMT14":
+            self.assertEqual(len(data_iter), info['NUM_LINES'])
+            self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
             self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name], info['MD5'])
         else:
