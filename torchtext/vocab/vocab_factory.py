@@ -5,6 +5,7 @@ from torchtext._torchtext import (
     Vocab as VocabPybind,
 )
 
+
 def vocab(ordered_dict: Dict, min_freq: int = 1) -> Vocab:
     r"""Factory method for creating a vocab object which maps tokens to indices.
 
@@ -95,4 +96,3 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
 
     word_vocab = vocab(ordered_dict, min_freq=min_freq)
     return word_vocab
-
