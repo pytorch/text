@@ -61,7 +61,7 @@ def Multi30k(root, split, language_pair=('de', 'en')):
 
     Args:
         root: Directory where the datasets are saved. Default: ".data"
-        split: split or splits to be returned. Can be a string or tuple of strings. Default: (‘train’, ‘valid’, ‘test’)
+        split: split or splits to be returned. Can be a string or tuple of strings. Default: ('train', 'valid', 'test')
         language_pair: tuple or list containing src and tgt language. Available options are ('de','en') and ('en', 'de')
     """
 
