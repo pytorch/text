@@ -9,6 +9,8 @@
 #include <torch/script.h>
 #include <vectors.h> // @manual
 #include <vocab.h>   // @manual
+#include <vocab_factory.h>
+
 namespace torchtext {
 
 namespace py = pybind11;
