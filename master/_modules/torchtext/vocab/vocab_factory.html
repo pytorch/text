@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.amazonreviewfull &mdash; torchtext 0.11.0.dev20210703 documentation</title>
+  <title>torchtext.vocab.vocab_factory &mdash; torchtext 0.11.0.dev20210703 documentation</title>
   
 
   
@@ -281,7 +281,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.amazonreviewfull</li>
+      <li>torchtext.vocab.vocab_factory</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -309,51 +309,105 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.amazonreviewfull</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_RawTextIterableDataset</span><span class="p">,</span>
-    <span class="n">_wrap_split_argument</span><span class="p">,</span>
-    <span class="n">_add_docstring_header</span><span class="p">,</span>
-    <span class="n">_download_extract_validate</span><span class="p">,</span>
-    <span class="n">_create_dataset_directory</span><span class="p">,</span>
-    <span class="n">_create_data_from_csv</span><span class="p">,</span>
+  <h1>Source code for torchtext.vocab.vocab_factory</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Vocab</span> <span class="k">as</span> <span class="n">VocabPybind</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA&#39;</span>
-
-<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;57d28bd5d930e772930baddf36641c7c&#39;</span>
-
-<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">3000000</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">650000</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;amazon_review_full_csv.tar.gz&#39;</span>
-
-<span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;amazon_review_full_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">]),</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;amazon_review_full_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">]),</span>
-<span class="p">}</span>
-
-<span class="n">_EXTRACTED_FILES_MD5</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;31b268b09fd794e0ca5a1f59a0358677&quot;</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s2">&quot;0f1e78ab60f625f2a30eab6810ef987c&quot;</span>
-<span class="p">}</span>
-
-<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;AmazonReviewFull&quot;</span>
 
 
-<div class="viewcode-block" id="AmazonReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewFull">[docs]</a><span class="nd">@_add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
-<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">AmazonReviewFull</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">_download_extract_validate</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">URL</span><span class="p">,</span> <span class="n">MD5</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]),</span>
-                                      <span class="n">_EXTRACTED_FILES_MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="n">DATASET_NAME</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
-                                   <span class="n">_create_data_from_csv</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+<div class="viewcode-block" id="vocab"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.vocab">[docs]</a><span class="k">def</span> <span class="nf">vocab</span><span class="p">(</span><span class="n">ordered_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vocab</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Factory method for creating a vocab object which maps tokens to indices.</span>
+
+<span class="sd">    Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.</span>
+<span class="sd">    Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ordered_dict: Ordered Dictionary mapping tokens to their corresponding occurance frequencies.</span>
+<span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torchtext.vocab.Vocab: A `Vocab` object</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.vocab import vocab</span>
+<span class="sd">        &gt;&gt;&gt; from collections import Counter, OrderedDict</span>
+<span class="sd">        &gt;&gt;&gt; counter = Counter([&quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)</span>
+<span class="sd">        &gt;&gt;&gt; ordered_dict = OrderedDict(sorted_by_freq_tuples)</span>
+<span class="sd">        &gt;&gt;&gt; v1 = vocab(ordered_dict)</span>
+<span class="sd">        &gt;&gt;&gt; print(v1[&#39;a&#39;]) #prints 1</span>
+<span class="sd">        &gt;&gt;&gt; print(v1[&#39;out of vocab&#39;]) #raise RuntimeError since default index is not set</span>
+<span class="sd">        &gt;&gt;&gt; tokens = [&#39;e&#39;, &#39;d&#39;, &#39;c&#39;, &#39;b&#39;, &#39;a&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; v2 = vocab(OrderedDict([(token, 1) for token in tokens]))</span>
+<span class="sd">        &gt;&gt;&gt; #adding &lt;unk&gt; token and default index</span>
+<span class="sd">        &gt;&gt;&gt; unk_token = &#39;&lt;unk&gt;&#39;</span>
+<span class="sd">        &gt;&gt;&gt; default_index = -1</span>
+<span class="sd">        &gt;&gt;&gt; if unk_token not in v2: v2.insert_token(unk_token, 0)</span>
+<span class="sd">        &gt;&gt;&gt; v2.set_default_index(default_index)</span>
+<span class="sd">        &gt;&gt;&gt; print(v2[&#39;&lt;unk&gt;&#39;]) #prints 0</span>
+<span class="sd">        &gt;&gt;&gt; print(v2[&#39;out of vocab&#39;]) #prints -1</span>
+<span class="sd">        &gt;&gt;&gt; #make default index same as index of unk_token</span>
+<span class="sd">        &gt;&gt;&gt; v2.set_default_index(v2[unk_token])</span>
+<span class="sd">        &gt;&gt;&gt; v2[&#39;out of vocab&#39;] is v2[unk_token] #prints True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">freq</span> <span class="ow">in</span> <span class="n">ordered_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">freq</span> <span class="o">&gt;=</span> <span class="n">min_freq</span><span class="p">:</span>
+            <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">VocabPybind</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="build_vocab_from_iterator"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.build_vocab_from_iterator">[docs]</a><span class="k">def</span> <span class="nf">build_vocab_from_iterator</span><span class="p">(</span><span class="n">iterator</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">min_freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">specials</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">special_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vocab</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a Vocab from an iterator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        iterator: Iterator used to build Vocab. Must yield list or iterator of tokens.</span>
+<span class="sd">        min_freq: The minimum frequency needed to include a token in the vocabulary.</span>
+<span class="sd">        specials: Special symbols to add. The order of supplied tokens will be preserved.</span>
+<span class="sd">        special_first: Indicates whether to insert symbols at the beginning or at the end.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torchtext.vocab.Vocab: A `Vocab` object</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; #generating vocab from text file</span>
+<span class="sd">        &gt;&gt;&gt; import io</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.vocab import build_vocab_from_iterator</span>
+<span class="sd">        &gt;&gt;&gt; def yield_tokens(file_path):</span>
+<span class="sd">        &gt;&gt;&gt;     with io.open(file_path, encoding = &#39;utf-8&#39;) as f:</span>
+<span class="sd">        &gt;&gt;&gt;         for line in f:</span>
+<span class="sd">        &gt;&gt;&gt;             yield line.strip().split()</span>
+<span class="sd">        &gt;&gt;&gt; vocab = build_vocab_from_iterator(yield_tokens_batch(file_path), specials=[&quot;&lt;unk&gt;&quot;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+        <span class="n">counter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">specials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">tok</span> <span class="ow">in</span> <span class="n">specials</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">counter</span><span class="p">[</span><span class="n">tok</span><span class="p">]</span>
+
+    <span class="n">sorted_by_freq_tuples</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">sorted_by_freq_tuples</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">sorted_by_freq_tuples</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">specials</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">special_first</span><span class="p">:</span>
+            <span class="n">specials</span> <span class="o">=</span> <span class="n">specials</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">specials</span><span class="p">:</span>
+            <span class="n">ordered_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">symbol</span><span class="p">:</span> <span class="n">min_freq</span><span class="p">})</span>
+            <span class="n">ordered_dict</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="ow">not</span> <span class="n">special_first</span><span class="p">)</span>
+
+    <span class="n">word_vocab</span> <span class="o">=</span> <span class="n">vocab</span><span class="p">(</span><span class="n">ordered_dict</span><span class="p">,</span> <span class="n">min_freq</span><span class="o">=</span><span class="n">min_freq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">word_vocab</span></div>
 </pre></div>
 
              </article>

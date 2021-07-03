@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.amazonreviewfull &mdash; torchtext 0.11.0.dev20210703 documentation</title>
+  <title>torchtext.vocab.vocab &mdash; torchtext 0.11.0.dev20210703 documentation</title>
   
 
   
@@ -281,7 +281,7 @@
         
           <li><a href="../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.datasets.amazonreviewfull</li>
+      <li>torchtext.vocab.vocab</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -309,51 +309,171 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.datasets.amazonreviewfull</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_RawTextIterableDataset</span><span class="p">,</span>
-    <span class="n">_wrap_split_argument</span><span class="p">,</span>
-    <span class="n">_add_docstring_header</span><span class="p">,</span>
-    <span class="n">_download_extract_validate</span><span class="p">,</span>
-    <span class="n">_create_dataset_directory</span><span class="p">,</span>
-    <span class="n">_create_data_from_csv</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?export=download&amp;id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA&#39;</span>
-
-<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;57d28bd5d930e772930baddf36641c7c&#39;</span>
-
-<span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="mi">3000000</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="mi">650000</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;amazon_review_full_csv.tar.gz&#39;</span>
-
-<span class="n">_EXTRACTED_FILES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;amazon_review_full_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;train.csv&#39;</span><span class="p">]),</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;amazon_review_full_csv&#39;</span><span class="p">,</span> <span class="s1">&#39;test.csv&#39;</span><span class="p">]),</span>
-<span class="p">}</span>
-
-<span class="n">_EXTRACTED_FILES_MD5</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s2">&quot;31b268b09fd794e0ca5a1f59a0358677&quot;</span><span class="p">,</span>
-    <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s2">&quot;0f1e78ab60f625f2a30eab6810ef987c&quot;</span>
-<span class="p">}</span>
-
-<span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;AmazonReviewFull&quot;</span>
+  <h1>Source code for torchtext.vocab.vocab</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 
-<div class="viewcode-block" id="AmazonReviewFull"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.AmazonReviewFull">[docs]</a><span class="nd">@_add_docstring_header</span><span class="p">(</span><span class="n">num_lines</span><span class="o">=</span><span class="n">NUM_LINES</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
-<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">AmazonReviewFull</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">_download_extract_validate</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">URL</span><span class="p">,</span> <span class="n">MD5</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_EXTRACTED_FILES</span><span class="p">[</span><span class="n">split</span><span class="p">]),</span>
-                                      <span class="n">_EXTRACTED_FILES_MD5</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="n">DATASET_NAME</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
-                                   <span class="n">_create_data_from_csv</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+<div class="viewcode-block" id="Vocab"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab">[docs]</a><span class="k">class</span> <span class="nc">Vocab</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates a vocab object which maps tokens to indices.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vocab (torch.classes.torchtext.Vocab or torchtext._torchtext.Vocab): a cpp vocab object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Vocab.__init__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Vocab</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">_C</span><span class="o">.</span><span class="n">_log_api_usage_once</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;torchtext.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_jitable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_C</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Vocab.forward"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.forward">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calls the `lookup_indices` method</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tokens: a list of tokens used to lookup their corresponding `indices`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The indices associated with a list of `tokens`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.__len__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.__len__">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The length of the vocab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.__contains__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.__contains__">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token for which to check the membership.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Whether the token is member of vocab or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.__getitem__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.__getitem__">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token used to lookup the corresponding index.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The index corresponding to the associated token.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Vocab.set_default_index"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.set_default_index">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">set_default_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            index: Value of default index. This index will be returned when OOV token is queried.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">set_default_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.get_default_index"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.get_default_index">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">get_default_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Value of default index if it is set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">get_default_index</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vocab.insert_token"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.insert_token">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">insert_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token used to lookup the corresponding index.</span>
+<span class="sd">            index: The index corresponding to the associated token.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If `index` is not in range [0, Vocab.size()] or if `token` already exists in the vocab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">insert_token</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.append_token"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.append_token">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">append_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token used to lookup the corresponding index.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If `token` already exists in the vocab</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">append_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.lookup_token"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.lookup_token">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">lookup_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            index: The index corresponding to the associated token.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            token: The token used to lookup the corresponding index.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If `index` not in range [0, itos.size()).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_token</span><span class="p">(</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.lookup_tokens"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.lookup_tokens">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">lookup_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            indices: The `indices` used to lookup their corresponding`tokens`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The `tokens` associated with `indices`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If an index within `indices` is not int range [0, itos.size()).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_tokens</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.lookup_indices"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.lookup_indices">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">lookup_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            tokens: the tokens used to lookup their corresponding `indices`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The &#39;indices` associated with `tokens`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Vocab.get_stoi"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.get_stoi">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">get_stoi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary mapping tokens to indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">get_stoi</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vocab.get_itos"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.get_itos">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
+    <span class="k">def</span> <span class="nf">get_itos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List mapping indices to tokens.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">get_itos</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Vocab.__prepare_scriptable__"><a class="viewcode-back" href="../../../vocab.html#torchtext.vocab.Vocab.__prepare_scriptable__">[docs]</a>    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable Vocab.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
+            <span class="n">cpp_vocab</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">Vocab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">itos_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">default_index_</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">cpp_vocab</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
 
              </article>
