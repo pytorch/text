@@ -1,9 +1,7 @@
+#pragma once
 #include <algorithm>
 #include <c10/util/string_view.h>
-#include <pybind11/pybind11.h>
 #include <torch/script.h>
-
-namespace py = pybind11;
 
 namespace torchtext {
 
@@ -13,6 +11,19 @@ typedef ska_ordered::order_preserving_flat_hash_map<std::string, int64_t>
 typedef std::tuple<std::string, std::vector<int64_t>, std::vector<std::string>,
                    std::vector<torch::Tensor>>
     VocabStates;
+
+// sorting using a custom object
+struct CompareTokens {
+  bool operator()(const std::pair<std::string, int64_t> &a,
+                  const std::pair<std::string, int64_t> &b) {
+    if (a.second == b.second) {
+      return a.first < b.first;
+    }
+    return a.second > b.second;
+  }
+};
+
+int64_t _infer_lines(const std::string &file_path);
 
 struct Vocab : torch::CustomClassHolder {
   static const int32_t MAX_VOCAB_SIZE = 30000000;
@@ -79,7 +90,4 @@ Vocab _build_vocab_from_text_file(const std::string &file_path,
                                   const int64_t min_freq,
                                   const int64_t num_cpus,
                                   torch::jit::script::Module tokenizer);
-Vocab _build_vocab_from_text_file_using_python_tokenizer(
-    const std::string &file_path, const int64_t min_freq, py::object tokenizer);
-
 } // namespace torchtext
