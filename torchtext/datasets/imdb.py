@@ -4,6 +4,7 @@ from torchtext.data.datasets_utils import _wrap_split_argument
 from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _create_dataset_directory
 import io
+from pathlib import Path
 
 URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 
@@ -25,11 +26,10 @@ DATASET_NAME = "IMDB"
 def IMDB(root, split):
     def generate_imdb_data(key, extracted_files):
         for fname in extracted_files:
-            if 'urls' in fname:
-                continue
-            elif key in fname and ('pos' in fname or 'neg' in fname):
+            *_, split, label, file = Path(fname).parts
+
+            if key == split and (label in ['pos', 'neg']):
                 with io.open(fname, encoding="utf8") as f:
-                    label = 'pos' if 'pos' in fname else 'neg'
                     yield label, f.read()
     dataset_tar = download_from_url(URL, root=root,
                                     hash_value=MD5, hash_type='md5')

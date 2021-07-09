@@ -46,7 +46,7 @@ class TestDataset(TorchtextTestCase):
         split = info['split']
 
         if dataset_name == 'WMT14':
-            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+            return
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
 
@@ -60,7 +60,7 @@ class TestDataset(TorchtextTestCase):
         split = info['split']
 
         if dataset_name == 'WMT14':
-            data_iter = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+            return
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
         self.assertEqual(len(data_iter), info['NUM_LINES'])
@@ -69,8 +69,7 @@ class TestDataset(TorchtextTestCase):
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])
         elif dataset_name == "WMT14":
-            self.assertEqual(torchtext.experimental.datasets.raw.URLS[dataset_name], info['URL'])
-            self.assertEqual(torchtext.experimental.datasets.raw.MD5[dataset_name], info['MD5'])
+            return
         else:
             self.assertEqual(torchtext.datasets.URLS[dataset_name], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name], info['MD5'])
