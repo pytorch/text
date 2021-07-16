@@ -134,7 +134,7 @@ std::tuple<int64_t, int64_t, int64_t> _infer_shape(const std::string &file_path,
       // the header present in some(w2v) formats contains two elements
       if (vec_str.size() <= 2) {
         num_header_lines++;
-      } else if (vec_str.size() > 2) {
+      } else {
         vector_dim = vec_str.size();
         num_lines++; // first element read
       }
