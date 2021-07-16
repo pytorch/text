@@ -11,13 +11,14 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vectors.h> // @manual
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoi, torch::Tensor vectors,
+Vectors::Vectors(IndexMap stoi, torch::Tensor vectors,
                  torch::Tensor unk_tensor)
-    : stoi_(stoi), vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {}
+    : stoi_(std::move(stoi)), vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
                  const std::vector<std::int64_t> &indices,
@@ -154,7 +155,7 @@ void parse_vectors_chunk(const std::string &file_path, size_t offset,
 
   int converter_flags = double_conversion::StringToDoubleConverter::NO_FLAGS;
   double_conversion::StringToDoubleConverter converter(
-      converter_flags, 0.0f, double_conversion::Single::NaN(), NULL, NULL);
+      converter_flags, 0.0f, double_conversion::Single::NaN(), nullptr, nullptr);
 
   for (int64_t i = start_line; i < end_line; i++) {
     std::string token;
@@ -189,14 +190,14 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
   // concat all loaded tuples
   int64_t count = num_header_lines;
-  for (size_t i = 0; i < chunk_tokens.size(); i++) {
-    auto &subset_tokens = *chunk_tokens[i];
-    for (size_t j = 0; j < subset_tokens.size(); j++) {
-      const auto &token_index = tokens.find(subset_tokens[j]);
+  for (auto & chunk_token : chunk_tokens) {
+    auto &subset_tokens = *chunk_token;
+    for (auto & subset_token : subset_tokens) {
+      const auto &token_index = tokens.find(subset_token);
       if (token_index != tokens.end()) {
-        dup_tokens.emplace_back(std::move(subset_tokens[j]));
+        dup_tokens.emplace_back(std::move(subset_token));
       } else {
-        tokens[std::move(subset_tokens[j])] = count;
+        tokens[std::move(subset_token)] = count;
       }
       count++;
     }

@@ -204,8 +204,8 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   unique_tokens.reserve(num_lines);
 
   // concatenate all counters
-  for (size_t i = 0; i < chunk_counters.size(); i++) {
-    auto &cur_counter = *chunk_counters[i];
+  for (auto & chunk_counter : chunk_counters) {
+    auto &cur_counter = *chunk_counter;
     for (const auto &item : cur_counter) {
       int64_t cur_token_freq = item.second;
       if (tokens_freq.find(item.first) != tokens_freq.end()) {

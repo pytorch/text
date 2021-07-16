@@ -19,7 +19,7 @@ public:
   torch::Tensor vectors_;
   torch::Tensor unk_tensor_;
 
-  explicit Vectors(const IndexMap &stoi, torch::Tensor vectors,
+  explicit Vectors(IndexMap stoi, torch::Tensor vectors,
                    torch::Tensor unk_tensor);
   explicit Vectors(const std::vector<std::string> &tokens,
                    const std::vector<std::int64_t> &indices,
