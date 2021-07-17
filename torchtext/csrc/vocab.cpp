@@ -7,20 +7,20 @@
 #include <vocab.h>       // @manual
 namespace torchtext {
 
-Vocab::Vocab(const StringList &tokens,
+Vocab::Vocab(StringList tokens,
              const c10::optional<int64_t> &default_index)
     : stoi_(MAX_VOCAB_SIZE, -1), default_index_{default_index} {
-  for (size_t i = 0; i < tokens.size(); i++) {
+  for (auto &token : tokens) {
     // throw error if duplicate token is found
-    auto id = _find(c10::string_view{tokens[i].data(), tokens[i].size()});
+    auto id = _find(c10::string_view{token});
     TORCH_CHECK(stoi_[id] == -1,
-                "Duplicate token found in tokens list: " + tokens[i]);
+                "Duplicate token found in tokens list: " + token);
 
-    _add(tokens[i]);
+    _add(std::move(token));
   }
 }
 
-Vocab::Vocab(const StringList &tokens) : Vocab(tokens, {}) {}
+Vocab::Vocab(StringList tokens) : Vocab(std::move(tokens), {}) {}
 
 int64_t Vocab::__len__() const { return itos_.size(); }
 
@@ -54,17 +54,17 @@ c10::optional<int64_t> Vocab::get_default_index() const {
   return default_index_;
 }
 
-void Vocab::append_token(const std::string &token) {
+void Vocab::append_token(std::string token) {
   // throw error if token already exist in vocab
-  auto id = _find(c10::string_view{token.data(), token.size()});
+  auto id = _find(c10::string_view{token});
   TORCH_CHECK(stoi_[id] == -1, "Token " + token +
                                    " already exists in the Vocab with index: " +
                                    std::to_string(stoi_[id]));
 
-  _add(token);
+  _add(std::move(token));
 }
 
-void Vocab::insert_token(const std::string &token, const int64_t &index) {
+void Vocab::insert_token(std::string token, const int64_t &index) {
   // throw error if index is not valid
   TORCH_CHECK(index >= 0 && index <= __len__(),
               "Specified index " + std::to_string(index) +
@@ -76,11 +76,11 @@ void Vocab::insert_token(const std::string &token, const int64_t &index) {
 
   // need to offset all tokens greater than or equal index by 1
   for (size_t i = index; i < __len__(); i++) {
-    stoi_[_find(c10::string_view{itos_[i].data(), itos_[i].size()})] = i + 1;
+    stoi_[_find(c10::string_view{itos_[i]})] = i + 1;
   }
 
-  itos_.insert(itos_.begin() + index, token);
-  stoi_[_find(c10::string_view{token.data(), token.size()})] = index;
+  stoi_[_find(c10::string_view{token})] = index;
+  itos_.insert(itos_.begin() + index, std::move(token));
 }
 
 std::string Vocab::lookup_token(const int64_t &index) {
@@ -144,7 +144,7 @@ int64_t _infer_lines(const std::string &file_path) {
 
 void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
                             const int64_t start_line, const int64_t end_line,
-                            std::shared_ptr<IndexDict> counter) {
+                            const std::shared_ptr<IndexDict> &counter) {
   std::ifstream fin(file_path, std::ios::in);
   TORCH_CHECK(fin.is_open(), "Cannot open input file " + file_path);
 
@@ -165,7 +165,7 @@ void parse_vocab_file_chunk(const std::string &file_path, size_t offset,
 
 void parse_raw_text_file_chunk(const std::string &file_path, size_t offset,
                                const int64_t start_line, const int64_t end_line,
-                               std::shared_ptr<IndexDict> counter,
+                               const std::shared_ptr<IndexDict> &counter,
                                torch::jit::script::Module &module) {
   std::ifstream fin(file_path, std::ios::in);
   TORCH_CHECK(fin.is_open(), "Cannot open input file " + file_path);
@@ -225,9 +225,11 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   // create token freq pairs
   std::vector<std::pair<std::string, int64_t>> token_freq_pairs;
 
-  for (std::string token : unique_tokens) {
-    token_freq_pairs.push_back(std::make_pair(token, tokens_freq[token]));
+  for (std::string &token : unique_tokens) {
+    auto token_freq = tokens_freq[token];
+    token_freq_pairs.emplace_back(std::move(token), token_freq);
   }
+  unique_tokens.clear();
 
   // sort tokens by freq
   if (sort_tokens) {
@@ -236,9 +238,8 @@ _concat_tokens(std::vector<std::shared_ptr<IndexDict>> chunk_counters,
   }
 
   // update unique tokens with correct order
-  unique_tokens.clear();
-  for (const auto &token_freq_pair : token_freq_pairs) {
-    unique_tokens.push_back(token_freq_pair.first);
+  for (auto &token_freq_pair : token_freq_pairs) {
+    unique_tokens.emplace_back(std::move(token_freq_pair.first));
   }
 
   return unique_tokens;
