@@ -43,9 +43,7 @@ commands:
           name: Generate CCI cache key
           command: |
             echo "$(date "+%D")" > .cachekey
-            cat .cachekey
             cat .circleci/cached_datasets_list.txt >> .cachekey
-            cat .cachekey
       - persist_to_workspace:
           root: .
           paths:
@@ -511,7 +509,7 @@ jobs:
 
           paths:
             - .vector_cache
-            - C:/Users/.torchtext/cache
+            - C:/Users/circleci/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
