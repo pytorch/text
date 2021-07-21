@@ -3,7 +3,7 @@ import json
 import torchtext
 from .parameterized_utils import load_params
 
-CACHE_STATUS_FILE = os.path.join(os.path.expanduser('~/.torchtext/cache'),'cache_status_file.json')
+CACHE_STATUS_FILE = os.path.join(os.path.expanduser('~/.torchtext/cache'), 'cache_status_file.json')
 
 
 def check_cache_status():
