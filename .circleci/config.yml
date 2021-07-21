@@ -44,6 +44,7 @@ commands:
           command:
             echo "$(date "+%D")" > .cachekey
             cat .circleci/cached_datasets_list.txt >> .cachekey
+            cat .cachekey
       - persist_to_workspace:
           root: .
           paths:
@@ -457,12 +458,12 @@ jobs:
           name: Generate daily data Cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f C:/Users/.torchtext/cache/cache_status_file.json ] ; then
+            if [ ! -f C:/Users/circleci/.torchtext/cache/cache_status_file.json ] ; then
               .circleci/unittest/windows/scripts/setup_env.sh
               .circleci/unittest/windows/scripts/install.sh
               .circleci/unittest/windows/scripts/generate_cache.sh
             fi
-            cat C:/Users/.torchtext/cache/cache_status_file.json
+            cat C:/Users/circleci/.torchtext/cache/cache_status_file.json
       - save_cache:
 
           key: v1-windows-dataset-{{ checksum ".cachekey" }}
@@ -474,7 +475,7 @@ jobs:
           key: v1-windows-cache-index-{{ checksum ".cachekey" }}
 
           paths:
-            - C:/Users/.torchtext/cache/cache_status_file.json
+            - C:/Users/circleci/.torchtext/cache/cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
