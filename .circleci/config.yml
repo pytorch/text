@@ -380,12 +380,12 @@ jobs:
           name: Generate cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f .data/cache_status_file.json ] ; then
+            if [ ! -f /root/.torchtext/cache/cache_status_file.json ] ; then
               .circleci/unittest/linux/scripts/setup_env.sh
               .circleci/unittest/linux/scripts/install.sh
               .circleci/unittest/linux/scripts/generate_cache.sh
             fi
-            cat .data/cache_status_file.json
+            cat /root/.torchtext/cache/cache_status_file.json
       - save_cache:
 
           key: v1-linux-dataset-{{ checksum ".cachekey" }}
@@ -397,7 +397,7 @@ jobs:
           key: v1-linux-cache-index-{{ checksum ".cachekey" }}
 
           paths:
-            - .data/cache_status_file.json
+            - /root/.torchtext/cache/cache_status_file.json
 
   unittest_linux:
     <<: *binary_common
@@ -457,12 +457,12 @@ jobs:
           name: Generate daily data Cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f .data/cache_status_file.json ] ; then
+            if [ ! -f C:/Users/.torchtext/cache/cache_status_file.json ] ; then
               .circleci/unittest/windows/scripts/setup_env.sh
               .circleci/unittest/windows/scripts/install.sh
               .circleci/unittest/windows/scripts/generate_cache.sh
             fi
-            cat .data/cache_status_file.json
+            cat C:/Users/.torchtext/cache/cache_status_file.json
       - save_cache:
 
           key: v1-windows-dataset-{{ checksum ".cachekey" }}
@@ -474,7 +474,7 @@ jobs:
           key: v1-windows-cache-index-{{ checksum ".cachekey" }}
 
           paths:
-            - .data/cache_status_file.json
+            - C:/Users/.torchtext/cache/cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
