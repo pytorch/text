@@ -468,7 +468,7 @@ jobs:
           key: v1-windows-dataset-{{ checksum ".cachekey" }}
 
           paths:
-            - C:/Users/.torchtext/cache
+            - C:/Users/circleci/.torchtext/cache
       - save_cache:
 
           key: v1-windows-cache-index-{{ checksum ".cachekey" }}
