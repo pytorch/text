@@ -7,7 +7,7 @@ CACHE_STATUS_FILE = os.path.join(os.path.expanduser('~/.torchtext/cache'), 'cach
 
 
 def check_cache_status():
-    assert os.path.exists(CACHE_STATUS_FILE), "Cache status file does not exists"
+    assert os.path.exists(CACHE_STATUS_FILE), "Cache status file [{}] does not exists".format(CACHE_STATUS_FILE)
     with open(CACHE_STATUS_FILE, 'r') as f:
         missing_datasets = []
         cache_status = json.load(f)
