@@ -391,7 +391,7 @@ jobs:
           key: v1-linux-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
-            - .data
+            - /root/.torchtext/cache
       - save_cache:
           {% raw %}
           key: v1-linux-cache-index-{{ checksum ".cachekey" }}
@@ -432,7 +432,7 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
-            - .data
+            - /root/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
@@ -468,7 +468,7 @@ jobs:
           key: v1-windows-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
-            - .data
+            - C:/Users/.torchtext/cache
       - save_cache:
           {% raw %}
           key: v1-windows-cache-index-{{ checksum ".cachekey" }}
@@ -509,7 +509,7 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
-            - .data
+            - C:/Users/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh
