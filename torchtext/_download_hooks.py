@@ -37,11 +37,9 @@ def _get_response_from_google_drive(url):
                 "Google drive link {} is currently unavailable, because the quota was exceeded.".format(
                     url
                 ))
-        else:
-            raise RuntimeError("Internal error: confirm_token was not found in Google drive link.")
-
-    url = url + "&confirm=" + confirm_token
-    response = session.get(url, stream=True)
+    else:
+        url = url + "&confirm=" + confirm_token
+        response = session.get(url, stream=True)
 
     if 'content-disposition' not in response.headers:
         raise RuntimeError("Internal error: headers don't contain content-disposition.")
@@ -145,13 +143,16 @@ class CombinedInternalPathhandler(PathHandler):
         **kwargs: Any,
     ) -> str:
 
-        destination = kwargs["destination"]
+        assert "filename" in kwargs, "filename not found in keyword arguments"
+        filename = kwargs["filename"]
 
-        local_path = self.path_manager.get_local_path(path, force)
+        local_path = self.path_manager.get_local_path(path, force, cache_dir=cache_dir)
 
-        shutil.move(local_path, destination)
+        if filename is not None:
+            shutil.move(local_path, os.path.join(cache_dir, filename))
+            local_path = os.path.join(cache_dir, filename)
 
-        return destination
+        return local_path
 
     def _open(
         self, path: str, mode: str = "r", buffering: int = -1, **kwargs: Any
