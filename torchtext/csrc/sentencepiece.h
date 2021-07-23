@@ -33,6 +33,6 @@ void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
                        const std::string &model_prefix);
 c10::intrusive_ptr<SentencePiece> load_sp_model(const std::string &path);
 c10::intrusive_ptr<SentencePiece>
-load_sp_model_string(const std::string &content);
+load_sp_model_string(std::string content);
 
 } // namespace torchtext

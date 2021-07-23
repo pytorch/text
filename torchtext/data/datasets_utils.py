@@ -213,7 +213,7 @@ def _wrap_split_argument_with_fn(fn, splits):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
     @functools.wraps(fn)
-    def new_fn(root='.data', split=splits, **kwargs):
+    def new_fn(root=os.path.expanduser('~/.torchtext/cache'), split=splits, **kwargs):
         result = []
         for item in _check_default_set(split, splits, fn.__name__):
             result.append(fn(root, item, **kwargs))
@@ -250,7 +250,7 @@ def _create_dataset_directory(dataset_name):
             raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
         @functools.wraps(func)
-        def wrapper(root='.data', *args, **kwargs):
+        def wrapper(root=os.path.expanduser('~/.torchtext/cache'), *args, **kwargs):
             new_root = os.path.join(root, dataset_name)
             if not os.path.exists(new_root):
                 os.makedirs(new_root)
