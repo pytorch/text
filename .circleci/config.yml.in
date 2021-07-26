@@ -36,17 +36,14 @@ commands:
           name: Adding CONDA_CHANNEL_FLAGS to BASH_ENV
           command: |
               CONDA_CHANNEL_FLAGS=""
-              if [[ "${PYTHON_VERSION}" = *3.9* ]]; then
-                echo "export CONDA_CHANNEL_FLAGS=-c=conda-forge" >> ${BASH_ENV}
-              fi
   generate_cachekey:
     description: "Generate .cachekey file that changes on daily basis"
     steps:
       - run:
           name: Generate CCI cache key
-          command:
+          command: |
             echo "$(date "+%D")" > .cachekey
-            cat cached_datasets_list.txt >> .cachekey
+            cat .circleci/cached_datasets_list.txt >> .cachekey
       - persist_to_workspace:
           root: .
           paths:
@@ -174,7 +171,7 @@ jobs:
   binary_macos_wheel:
     <<: *binary_common
     macos:
-      xcode: "9.4.1"
+      xcode: "12.0"
     steps:
       - checkout
       - designate_upload_channel
@@ -200,7 +197,7 @@ jobs:
   binary_macos_conda:
     <<: *binary_common
     macos:
-      xcode: "9.4.1"
+      xcode: "12.0"
     steps:
       - checkout
       - designate_upload_channel
@@ -383,24 +380,24 @@ jobs:
           name: Generate cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f .data/cache_status_file.json ] ; then
+            if [ ! -f /root/.torchtext/cache/cache_status_file.json ] ; then
               .circleci/unittest/linux/scripts/setup_env.sh
               .circleci/unittest/linux/scripts/install.sh
               .circleci/unittest/linux/scripts/generate_cache.sh
             fi
-            cat .data/cache_status_file.json
+            cat /root/.torchtext/cache/cache_status_file.json
       - save_cache:
           {% raw %}
           key: v1-linux-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
-            - .data
+            - /root/.torchtext/cache
       - save_cache:
           {% raw %}
           key: v1-linux-cache-index-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
-            - .data/cache_status_file.json
+            - /root/.torchtext/cache/cache_status_file.json
 
   unittest_linux:
     <<: *binary_common
@@ -435,7 +432,7 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
-            - .data
+            - /root/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/linux/scripts/post_process.sh
@@ -460,24 +457,24 @@ jobs:
           name: Generate daily data Cache
           no_output_timeout: 30m
           command: |
-            if [ ! -f .data/cache_status_file.json ] ; then
+            if [ ! -f C:/Users/circleci/.torchtext/cache/cache_status_file.json ] ; then
               .circleci/unittest/windows/scripts/setup_env.sh
               .circleci/unittest/windows/scripts/install.sh
               .circleci/unittest/windows/scripts/generate_cache.sh
             fi
-            cat .data/cache_status_file.json
+            cat C:/Users/circleci/.torchtext/cache/cache_status_file.json
       - save_cache:
           {% raw %}
           key: v1-windows-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
-            - .data
+            - C:/Users/circleci/.torchtext/cache
       - save_cache:
           {% raw %}
           key: v1-windows-cache-index-{{ checksum ".cachekey" }}
           {% endraw %}
           paths:
-            - .data/cache_status_file.json
+            - C:/Users/circleci/.torchtext/cache/cache_status_file.json
 
   unittest_windows:
     <<: *binary_common
@@ -512,7 +509,7 @@ jobs:
           {% endraw %}
           paths:
             - .vector_cache
-            - .data
+            - C:/Users/circleci/.torchtext/cache
       - run:
           name: Post process
           command: .circleci/unittest/windows/scripts/post_process.sh

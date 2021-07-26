@@ -1,8 +1,7 @@
-# This is an example to create a text classification dataset and train a sentiment model. 
+# This is an example to train a text classification model 
 
 In the basic case, users can train the sentiment model in model.py with 
-AG_NEWS dataset in torchtext.datasets.text_classification. The dataset is
-default with the ngrams number of 2.
+AG_NEWS dataset in torchtext.datasets. 
 
 To try the example, run the following script:
 
@@ -10,9 +9,7 @@ To try the example, run the following script:
 ./run_script.sh
 ```
 
-In addition, the training data in the raw file can be used to train a
-sentencepiece model with the subword method. The pretrained tokenizer is
-used to process both training and testing data for the dataset. A text
+In addition, one can also use sentencepiece tokenizer as shown below. A text
 classification model is developed and applied to reproduce the YelpReviewFull
 results from fastText. 
 

@@ -3,11 +3,11 @@ import json
 import torchtext
 from .parameterized_utils import load_params
 
-CACHE_STATUS_FILE = '.data/cache_status_file.json'
+CACHE_STATUS_FILE = os.path.join(os.path.expanduser('~/.torchtext/cache'), 'cache_status_file.json')
 
 
 def check_cache_status():
-    assert os.path.exists(CACHE_STATUS_FILE), "Cache status file does not exists"
+    assert os.path.exists(CACHE_STATUS_FILE), "Cache status file [{}] does not exists".format(CACHE_STATUS_FILE)
     with open(CACHE_STATUS_FILE, 'r') as f:
         missing_datasets = []
         cache_status = json.load(f)

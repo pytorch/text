@@ -27,7 +27,7 @@ def build_vocab_from_text_file(file_path: str, tokenizer: Optional[Callable] = N
     Returns:
         torchtext.vocab.Vocab: a `Vocab` object.
     Examples:
-        >>> from torchtext.vocab import build_vocab_from_text_file
+        >>> from torchtext.experimental.vocab_factory import build_vocab_from_text_file
         >>> v = build_vocab_from_text_file('vocab.txt') # using python split function as tokenizer
         >>> #using JIT'd tokenizer
         >>> from torchtext.experimental.transforms import basic_english_normalize

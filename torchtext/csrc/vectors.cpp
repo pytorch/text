@@ -15,16 +15,16 @@
 
 namespace torchtext {
 
-Vectors::Vectors(const IndexMap &stoi, const torch::Tensor vectors,
-                 const torch::Tensor &unk_tensor)
-    : stoi_(stoi), vectors_(vectors), unk_tensor_(unk_tensor) {}
+Vectors::Vectors(const IndexMap &stoi, torch::Tensor vectors,
+                 torch::Tensor unk_tensor)
+    : stoi_(stoi), vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {}
 
 Vectors::Vectors(const std::vector<std::string> &tokens,
                  const std::vector<std::int64_t> &indices,
-                 const torch::Tensor &vectors, const torch::Tensor &unk_tensor)
+                 torch::Tensor vectors, torch::Tensor unk_tensor)
     : vectors_(std::move(vectors)), unk_tensor_(std::move(unk_tensor)) {
   // guarding against size mismatch of tokens and indices
-  if (static_cast<int>(tokens.size()) != indices.size()) {
+  if (tokens.size() != indices.size()) {
 #ifdef _MSC_VER
     std::cerr << "[RuntimeError] Mismatching sizes for tokens and indices. "
                  "Size of tokens: "
@@ -72,7 +72,7 @@ torch::Tensor Vectors::__getitem__(const std::string &token) {
 torch::Tensor Vectors::lookup_vectors(const std::vector<std::string> &tokens) {
   std::vector<torch::Tensor> vectors;
   for (const std::string &token : tokens) {
-    vectors.push_back(__getitem__(token));
+    vectors.emplace_back(__getitem__(token));
   }
   return torch::stack(vectors, 0);
 }
@@ -206,7 +206,7 @@ _concat_vectors(std::vector<std::shared_ptr<StringList>> chunk_tokens,
 
 constexpr int64_t GRAIN_SIZE = 131072;
 std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
-    const std::string &file_path, const std::string delimiter_str,
+    const std::string &file_path, const std::string &delimiter_str,
     int64_t num_cpus, c10::optional<torch::Tensor> opt_unk_tensor) {
 
   TORCH_CHECK(delimiter_str.size() == 1,
@@ -265,7 +265,7 @@ std::tuple<Vectors, std::vector<std::string>> _load_token_and_vectors_from_file(
 
   torch::Tensor unk_tensor;
   if (opt_unk_tensor) {
-    unk_tensor = *opt_unk_tensor;
+    unk_tensor = std::move(*opt_unk_tensor);
   } else {
     unk_tensor = torch::zeros({vector_dim}, torch::kFloat32);
   }
