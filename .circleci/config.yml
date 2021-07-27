@@ -544,7 +544,7 @@ jobs:
           name: install binaries
           command: |
             set -x
-            conda install make
+            conda install -y make python=${PYTHON_VERSION}
             pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: Build docs
@@ -619,6 +619,11 @@ workflows:
           name: binary_linux_wheel_py3.7
           python_version: '3.7'
       - binary_linux_wheel:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: binary_linux_wheel_py3.8
           python_version: '3.8'
       - binary_linux_wheel:
@@ -685,6 +690,11 @@ workflows:
           name: binary_windows_conda_py3.9
           python_version: '3.9'
       - build_docs:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*-rc[0-9]+/
           name: build_docs
           python_version: '3.8'
           requires:
