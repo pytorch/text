@@ -87,7 +87,7 @@ def get_tokenizer(tokenizer, language='en'):
 
     Examples:
         >>> import torchtext
-        >>> from torchtext.data import get_tokenizer
+        >>> from torchtext.data.utils import get_tokenizer
         >>> tokenizer = get_tokenizer("basic_english")
         >>> tokens = tokenizer("You can now install TorchText using pip!")
         >>> tokens
