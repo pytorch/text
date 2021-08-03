@@ -1,3 +1,4 @@
+import torch
 import csv
 import hashlib
 import os
@@ -238,3 +239,10 @@ def extract_archive(from_path, to_path=None, overwrite=False):
     else:
         raise NotImplementedError(
             "We currently only support tar.gz, .tgz, .gz and zip achives.")
+
+
+def _log_class_usage(klass):
+    identifier = "torchtext"
+    if klass and hasattr(klass, "__name__"):
+        identifier += f".{klass.__name__}"
+    torch._C._log_api_usage_once(identifier)

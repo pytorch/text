@@ -544,7 +544,7 @@ jobs:
           name: install binaries
           command: |
             set -x
-            conda install make
+            conda install -y make python=${PYTHON_VERSION}
             pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: Build docs
