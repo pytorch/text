@@ -111,7 +111,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         except OSError:
             raise OSError("Can't create the download directory {}.".format(root))
 
-    local_path = _DATASET_DOWNLOAD_MANAGER.get_local_path(url, cache_dir=root, filename=filename)
+    local_path = _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination_dir=root, filename=filename)
 
     logging.info('File {} downloaded.'.format(local_path))
 
