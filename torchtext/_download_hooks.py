@@ -146,11 +146,16 @@ class CombinedInternalPathhandler(PathHandler):
         assert "filename" in kwargs, "filename not found in keyword arguments"
         filename = kwargs["filename"]
 
-        local_path = self.path_manager.get_local_path(path, force, cache_dir=cache_dir)
+        assert "destination_dir" in kwargs, "destination_dir not found in keyword arguments"
+        destination_dir = kwargs["destination_dir"]
 
-        if filename is not None:
-            shutil.move(local_path, os.path.join(cache_dir, filename))
-            local_path = os.path.join(cache_dir, filename)
+        local_path = self.path_manager.get_local_path(path, force)
+
+        if filename is None:
+            filename = os.path.basename(local_path)
+
+        shutil.move(local_path, os.path.join(destination_dir, filename))
+        local_path = os.path.join(destination_dir, filename)
 
         return local_path
 

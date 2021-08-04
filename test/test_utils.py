@@ -115,7 +115,7 @@ class TestUtils(TorchtextTestCase):
             os.makedirs(root)
         data_path = os.path.abspath(os.path.join('.data', asset_name))
         shutil.copy(asset_path, data_path)
-        file_path = utils.download_from_url('fakedownload/glove.840B.300d.zip')
+        file_path = utils.download_from_url('fakedownload/glove.840B.300d.zip', path='.data/glove.840B.300d.zip')
         self.assertEqual(file_path, data_path)
         conditional_remove(data_path)
 
