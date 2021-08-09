@@ -1,15 +1,12 @@
-from torchtext.utils import (
-    download_from_url,
-)
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _add_docstring_header,
     _create_dataset_directory,
 )
 
-from torchtext.data.data_pipes import CSVParserIterDataPipe
+from datapipes.iter import CSVParser
 
-from torch.utils.data.datapipes.iter import HttpReader
+from datapipes.iter import HttpReader
 import os
 
 URL = {
