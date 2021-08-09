@@ -29,5 +29,5 @@ DATASET_NAME = "SQuAD2"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'dev'))
 def SQuAD2(root, split):
-    extracted_files = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
-    return JSONParserIterDataPipe([(extracted_files, open(extracted_files))])
+    path = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
+    return JSONParserIterDataPipe([(path, open(path))])
