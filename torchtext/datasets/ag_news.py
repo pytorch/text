@@ -2,12 +2,12 @@ from torchtext.utils import (
     download_from_url,
 )
 from torchtext.data.datasets_utils import (
-    _RawTextIterableDataset,
     _wrap_split_argument,
     _add_docstring_header,
     _create_dataset_directory,
-    _create_data_from_csv,
 )
+
+from torchtext.data.data_pipes import CSVParserIterDataPipe
 import os
 
 URL = {
@@ -36,5 +36,5 @@ def AG_NEWS(root, split):
                              path=os.path.join(root, split + ".csv"),
                              hash_value=MD5[split],
                              hash_type='md5')
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_csv(path))
+
+    return CSVParserIterDataPipe([(path, open(path,'rb'))]).map(lambda t: tuple(t[1:]))
