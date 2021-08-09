@@ -1,11 +1,11 @@
 from torchtext.utils import download_from_url
 from torchtext.data.datasets_utils import (
-    _RawTextIterableDataset,
     _wrap_split_argument,
     _add_docstring_header,
     _create_dataset_directory,
-    _create_data_from_json,
 )
+
+from torchtext.data.data_pipes import JSONParserIterDataPipe
 URL = {
     'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json",
     'dev': "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json",
@@ -30,5 +30,5 @@ DATASET_NAME = "SQuAD1"
 @_wrap_split_argument(('train', 'dev'))
 def SQuAD1(root, split):
     extracted_files = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_json(extracted_files))
+
+    return JSONParserIterDataPipe([(extracted_files, open(extracted_files))])
