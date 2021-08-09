@@ -37,4 +37,4 @@ def AG_NEWS(root, split):
                              hash_value=MD5[split],
                              hash_type='md5')
 
-    return CSVParserIterDataPipe([(path, open(path,'rb'))]).map(lambda t: tuple(t[1:]))
+    return CSVParserIterDataPipe([(path, open(path, 'rb'))]).map(lambda t: (int(t[1]), ' '.join(t[2:])))
