@@ -34,12 +34,14 @@ def reporthook(t):
 
 def validate_file(file_obj, hash_value, hash_type="sha256"):
     """Validate a given file object with its hash.
+
     Args:
         file_obj: File object to read from.
         hash_value (str): Hash for url.
         hash_type (str, optional): Hash type, among "sha256" and "md5" (Default: ``"sha256"``).
     Returns:
         bool: return True if its a valid file, else False.
+
     """
 
     if hash_type == "sha256":
@@ -69,6 +71,7 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
                       hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.
+
     Args:
         url: the url of the file from URL header. (None)
         path: path where file will be saved
@@ -76,24 +79,25 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         overwrite: overwrite existing files (False)
         hash_value (str, optional): hash for url (Default: ``None``).
         hash_type (str, optional): hash type, among "sha256" and "md5" (Default: ``"sha256"``).
+
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> torchtext.utils.download_from_url(url)
         >>> '.data/validation.tar.gz'
+
     """
-    # figure out filename and root
+
     if path is None:
-        _, filename = os.path.split(url)
+        filename = None
         root = os.path.abspath(root)
-        path = os.path.join(root, filename)
     else:
         path = os.path.abspath(path)
-        root, filename = os.path.split(os.path.abspath(path))
+        root, filename = os.path.split(path)
 
     # skip download if path exists and overwrite is not True
-    if os.path.exists(path):
+    if path is not None and os.path.exists(path):
         logging.info('File %s already exists.' % path)
         if not overwrite:
             if hash_value:
@@ -107,30 +111,31 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         except OSError:
             raise OSError("Can't create the download directory {}.".format(root))
 
-    # download data and move to path
-    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
+    local_path = _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination_dir=root, filename=filename)
 
-    logging.info('File {} downloaded.'.format(path))
+    logging.info('File {} downloaded.'.format(local_path))
 
     # validate
     if hash_value:
-        _check_hash(path, hash_value, hash_type)
+        _check_hash(local_path, hash_value, hash_type)
 
-    # all good
-    return path
+    return local_path
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
     r"""Since the standard csv library does not handle unicode in Python 2, we need a wrapper.
     Borrowed and slightly modified from the Python docs:
     https://docs.python.org/2/library/csv.html#csv-examples
+
     Args:
         unicode_csv_data: unicode csv data (see example below)
+
     Examples:
         >>> from torchtext.utils import unicode_csv_reader
         >>> import io
         >>> with io.open(data_path, encoding="utf8") as f:
         >>>     reader = unicode_csv_reader(f)
+
     """
 
     # Fix field larger than field limit error
@@ -156,12 +161,15 @@ def utf_8_encoder(unicode_csv_data):
 
 def extract_archive(from_path, to_path=None, overwrite=False):
     """Extract archive.
+
     Args:
         from_path: the path of the archive.
         to_path: the root path of the extracted files (directory of from_path)
         overwrite: overwrite existing files (False)
+
     Returns:
         List of paths to extracted files even if not overwritten.
+
     Examples:
         >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
         >>> from_path = './validation.tar.gz'
@@ -172,6 +180,7 @@ def extract_archive(from_path, to_path=None, overwrite=False):
         >>> torchtext.utils.download_from_url(url, from_path)
         >>> torchtext.utils.extract_archive(from_path, to_path)
         >>> ['.data/val.de', '.data/val.en']
+
     """
 
     if to_path is None:
