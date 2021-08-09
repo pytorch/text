@@ -9,7 +9,7 @@ from torchtext.data.datasets_utils import (
 
 from torchtext.data.data_pipes import CSVParserIterDataPipe
 
-from torch.utils.data.datapipes.iter import LoadFilesFromDisk
+from torch.utils.data.datapipes.iter import HttpReader
 import os
 
 URL = {
@@ -34,9 +34,5 @@ DATASET_NAME = "AG_NEWS"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AG_NEWS(root, split):
-    path = download_from_url(URL[split], root=root,
-                             path=os.path.join(root, split + ".csv"),
-                             hash_value=MD5[split],
-                             hash_type='md5')
-
-    return LoadFilesFromDisk([path]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
+    #TODO Caching mechanism
+    return HttpReader([URL[split]]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
