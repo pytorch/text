@@ -1,14 +1,14 @@
 .. role:: hidden
     :class: hidden-section
 
-torchtext.data.utils
+torchtext.legacy.data.utils
 ===========================
 
-.. automodule:: torchtext.data.utils
-.. currentmodule:: torchtext.data.utils
+.. automodule:: torchtext.legacy.data.utils
+.. currentmodule:: torchtext.legacy.data.utils
 
 :hidden:`get_tokenizer`
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: get_tokenizer 
 

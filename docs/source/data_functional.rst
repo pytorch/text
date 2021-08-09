@@ -1,11 +1,11 @@
 .. role:: hidden
     :class: hidden-section
 
-torchtext.data.functional
-===========================
+torchtext.legacy.data.functional
+================================
 
-.. automodule:: torchtext.data.functional
-.. currentmodule:: torchtext.data.functional
+.. automodule:: torchtext.legacy.data.functional
+.. currentmodule:: torchtext.legacy.data.functional
 
 :hidden:`generate_sp_model`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
