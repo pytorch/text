@@ -8,6 +8,8 @@ from torchtext.data.datasets_utils import (
 )
 
 from torchtext.data.data_pipes import CSVParserIterDataPipe
+
+from torch.utils.data.datapipes.iter import LoadFilesFromDisk
 import os
 
 URL = {
@@ -37,4 +39,4 @@ def AG_NEWS(root, split):
                              hash_value=MD5[split],
                              hash_type='md5')
 
-    return CSVParserIterDataPipe([(path, open(path, 'rb'))]).map(lambda t: (int(t[1]), ' '.join(t[2:])))
+    return LoadFilesFromDisk([path]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))

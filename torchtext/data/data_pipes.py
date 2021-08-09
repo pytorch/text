@@ -25,7 +25,7 @@ class JSONParserIterDataPipe(IterDataPipe):
         self.source_datapipe = source_datapipe
 
     def __iter__(self):
-        for file_name, stream in self.source_datapipe:
+        for _, stream in self.source_datapipe:
             raw_json_data = json.load(stream)['data']
             for layer1 in raw_json_data:
                 for layer2 in layer1['paragraphs']:
@@ -36,5 +36,4 @@ class JSONParserIterDataPipe(IterDataPipe):
                         if len(_answers) == 0:
                             _answers = [""]
                             _answer_start = [-1]
-                        # yield the raw data in the order of context, question, answers, answer_start
-                        yield (file_name, _context, _question, _answers, _answer_start)
+                        yield (_context, _question, _answers, _answer_start)

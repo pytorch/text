@@ -6,6 +6,8 @@ from torchtext.data.datasets_utils import (
 )
 
 from torchtext.data.data_pipes import JSONParserIterDataPipe
+
+from torch.utils.data.datapipes.iter import LoadFilesFromDisk
 URL = {
     'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
     'dev': "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v2.0.json",
@@ -30,4 +32,5 @@ DATASET_NAME = "SQuAD2"
 @_wrap_split_argument(('train', 'dev'))
 def SQuAD2(root, split):
     path = download_from_url(URL[split], root=root, hash_value=MD5[split], hash_type='md5')
-    return JSONParserIterDataPipe([(path, open(path))])
+
+    return LoadFilesFromDisk([path]).parse_json_files()
