@@ -1,7 +1,5 @@
 
 import csv
-import io
-import os
 
 from torch.utils.data import IterDataPipe, functional_datapipe
 
@@ -18,9 +16,3 @@ class CSVParserIterDataPipe(IterDataPipe):
             reader = csv.reader(lines)
             for row in reader:
                 yield tuple([file_name] + row)
-
-
-
-
-
-
