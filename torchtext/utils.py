@@ -88,16 +88,17 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         >>> '.data/validation.tar.gz'
 
     """
-
+    # figure out filename and root
     if path is None:
-        filename = None
+        _, filename = os.path.split(url)
         root = os.path.abspath(root)
+        path = os.path.join(root, filename)
     else:
         path = os.path.abspath(path)
-        root, filename = os.path.split(path)
+        root, filename = os.path.split(os.path.abspath(path))
 
     # skip download if path exists and overwrite is not True
-    if path is not None and os.path.exists(path):
+    if os.path.exists(path):
         logging.info('File %s already exists.' % path)
         if not overwrite:
             if hash_value:
@@ -111,15 +112,17 @@ def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=
         except OSError:
             raise OSError("Can't create the download directory {}.".format(root))
 
-    local_path = _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination_dir=root, filename=filename)
+    # download data and move to path
+    _DATASET_DOWNLOAD_MANAGER.get_local_path(url, destination=path)
 
-    logging.info('File {} downloaded.'.format(local_path))
+    logging.info('File {} downloaded.'.format(path))
 
     # validate
     if hash_value:
-        _check_hash(local_path, hash_value, hash_type)
+        _check_hash(path, hash_value, hash_type)
 
-    return local_path
+    # all good
+    return path
 
 
 def unicode_csv_reader(unicode_csv_data, **kwargs):
