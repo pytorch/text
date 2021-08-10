@@ -28,10 +28,11 @@ DATASET_NAME = "IMDB"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def IMDB(root, split):
-    dataset_tar = download_from_url(URL, root=root,
-                                    hash_value=MD5, hash_type='md5')
-
-    extracted_files = LoadFilesFromDisk([dataset_tar]).map(lambda x: (os.path.dirname(x[0]), x[1])).read_from_tar()
+    save_path = os.path.join(root, _PATH)
+    # TODO Use save datapipe once ready to save data to disk
+    http_list = [d for d in HttpReader([URL]).map(lambda x: x[1])]
+    with open(save_path,'wb') as f: f.write(http_list[0].read())
+    extracted_files = LoadFilesFromDisk([save_path]).map(lambda x: (os.path.dirname(x[0]), x[1])).read_from_tar()
     # TODO extracted_files = HttpReader([URL]).read_from_tar()
     return extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2]
                                   in ['pos', 'neg']).map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
