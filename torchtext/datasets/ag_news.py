@@ -4,9 +4,11 @@ from torchtext.data.datasets_utils import (
     _create_dataset_directory,
 )
 
-from datapipes.iter import CSVParser
+from datapipes.iter import (
+    CSVParser,
+    HttpReader
+)
 
-from datapipes.iter import HttpReader
 import os
 
 URL = {
@@ -31,5 +33,5 @@ DATASET_NAME = "AG_NEWS"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AG_NEWS(root, split):
-    #TODO Caching mechanism
+    # TODO Caching mechanism
     return HttpReader([URL[split]]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))

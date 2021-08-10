@@ -8,8 +8,8 @@ from datapipes.iter import(
     CSVParser,
     ReadFilesFromZip,
     HttpReader,
-    LoadFilesFromDisk,
 )
+
 
 NUM_LINES = {}
 MD5 = {}
@@ -27,4 +27,4 @@ def SST2(root, split):
     with open(save_path, 'wb') as f:
         f.write(http_list[0].read())
     extracted_files = ReadFilesFromZip([(os.path.dirname(save_path), open(save_path, 'rb'))])
-    return extracted_files.filter(lambda x: split in x[0]).parse_csv_files().map(lambda x: x[1])
+    return extracted_files.filter(lambda x: split in x[0]).parse_csv_files(delimiter='\t').map(lambda x: (x[1],x[2]))

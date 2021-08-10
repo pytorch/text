@@ -6,7 +6,6 @@ from torchtext.data.datasets_utils import (
 )
 
 from torchtext.data.data_pipes import JSONParserIterDataPipe
-
 from torch.utils.data.datapipes.iter import LoadFilesFromDisk
 URL = {
     'train': "https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v2.0.json",
