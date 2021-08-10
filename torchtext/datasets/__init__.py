@@ -19,6 +19,7 @@ from .yahooanswers import YahooAnswers
 from .yelpreviewfull import YelpReviewFull
 from .yelpreviewpolarity import YelpReviewPolarity
 from .multi30k import Multi30k
+from .sst2 import SST2
 
 DATASETS = {
     'AG_NEWS': AG_NEWS,
@@ -40,7 +41,8 @@ DATASETS = {
     'YahooAnswers': YahooAnswers,
     'YelpReviewFull': YelpReviewFull,
     'YelpReviewPolarity': YelpReviewPolarity,
-    'Multi30k': Multi30k
+    'Multi30k': Multi30k,
+    'SST2': SST2
 }
 
 URLS = {}
