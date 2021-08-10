@@ -5,7 +5,11 @@ from torchtext.data.datasets_utils import _create_dataset_directory
 import os
 from pathlib import Path
 
-from datapipes.iter import ReadFilesFromTar
+from datapipes.iter import (
+    ReadFilesFromTar,
+    HttpReader,
+    LoadFilesFromDisk,
+)
 URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 
 MD5 = '7c2ac02c03563afcf9b574c7e56c153a'
@@ -27,6 +31,7 @@ def IMDB(root, split):
     dataset_tar = download_from_url(URL, root=root,
                                     hash_value=MD5, hash_type='md5')
 
-    extracted_files = ReadFilesFromTar([(os.path.dirname(dataset_tar), open(dataset_tar, 'rb'))])
+    extracted_files = LoadFilesFromDisk([dataset_tar]).map(lambda x: (os.path.dirname(x[0]), x[1])).read_from_tar()
+    # TODO extracted_files = HttpReader([URL]).read_from_tar()
     return extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2]
                                   in ['pos', 'neg']).map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
