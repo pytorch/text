@@ -1,11 +1,11 @@
-from torchtext.utils import download_from_url, extract_archive
-from torchtext.data.datasets_utils import _RawTextIterableDataset
+from torchtext.utils import download_from_url
 from torchtext.data.datasets_utils import _wrap_split_argument
 from torchtext.data.datasets_utils import _add_docstring_header
 from torchtext.data.datasets_utils import _create_dataset_directory
-import io
+import os
 from pathlib import Path
 
+from datapipes.iter import ReadFilesFromTar
 URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 
 MD5 = '7c2ac02c03563afcf9b574c7e56c153a'
@@ -24,15 +24,9 @@ DATASET_NAME = "IMDB"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def IMDB(root, split):
-    def generate_imdb_data(key, extracted_files):
-        for fname in extracted_files:
-            *_, split, label, file = Path(fname).parts
-
-            if key == split and (label in ['pos', 'neg']):
-                with io.open(fname, encoding="utf8") as f:
-                    yield label, f.read()
     dataset_tar = download_from_url(URL, root=root,
                                     hash_value=MD5, hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
-    iterator = generate_imdb_data(split, extracted_files)
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split], iterator)
+
+    extracted_files = ReadFilesFromTar([(os.path.dirname(dataset_tar), open(dataset_tar, 'rb'))])
+    return extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2]
+                                  in ['pos', 'neg']).map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
