@@ -11,7 +11,7 @@ from datapipes.iter import(
     HttpReader,
 )
 
-from torchtext.data.data_pipes import GDriveReaderDataPipe as GDriveReader
+from datapipes.iter import GDriveReader
 
 from torch.utils.data.datapipes.iter import LoadFilesFromDisk
 

@@ -6,7 +6,7 @@ from torch.utils.data import IterDataPipe, functional_datapipe
 from torchtext._download_hooks import _get_response_from_google_drive, _stream_response
 
 
-@ functional_datapipe('parse_json_files')
+@ functional_datapipe('parse_json_files_torchtext')
 class JSONParserIterDataPipe(IterDataPipe):
     def __init__(self, source_datapipe):
         self.source_datapipe = source_datapipe

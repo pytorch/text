@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 
 from datapipes.iter import (
-    IterableAsDataPipe,
     ReadFilesFromTar,
     HttpReader,
     Saver,
@@ -31,7 +30,7 @@ DATASET_NAME = "IMDB"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def IMDB(root, split):
-    saver_dp = HttpReader([URL]).map(lambda x: (x[0],x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+    saver_dp = HttpReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
     extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
-    return extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2]
-                                  in ['pos', 'neg']).map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
+    filter_files = extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2] in ['pos', 'neg'])
+    return filter_files.map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
