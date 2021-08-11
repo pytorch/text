@@ -3,6 +3,7 @@ import csv
 import json
 
 from torch.utils.data import IterDataPipe, functional_datapipe
+from torchtext._download_hooks import _get_response_from_google_drive, _stream_response
 
 
 @ functional_datapipe('parse_json_files')
@@ -23,3 +24,13 @@ class JSONParserIterDataPipe(IterDataPipe):
                             _answers = [""]
                             _answer_start = [-1]
                         yield (_context, _question, _answers, _answer_start)
+
+
+class GDriveReaderDataPipe(IterDataPipe):
+    def __init__(self, source_datapipe):
+        self.source_datapipe = source_datapipe
+
+    def __iter__(self):
+        for url in self.source_datapipe:
+            response, filename = _get_response_from_google_drive(url)
+            yield (filename, response.raw)
