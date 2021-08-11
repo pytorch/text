@@ -4,7 +4,7 @@ from torchtext.data.datasets_utils import (
     _create_dataset_directory,
 )
 import os
-from torchtext.data.data_pipes import JSONParserIterDataPipe
+from torchtext.data.data_pipes import ParseSQuADQAData
 from datapipes.iter import (
     HttpReader,
 )
@@ -34,4 +34,4 @@ DATASET_NAME = "SQuAD1"
 @_wrap_split_argument(('train', 'dev'))
 def SQuAD1(root, split):
     saver_dp = HttpReader([URL[split]]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
-    return LoadFilesFromDisk(saver_dp).parse_json_files()
+    return ParseSQuADQAData(LoadFilesFromDisk(saver_dp).parse_json_files())
