@@ -8,7 +8,9 @@ from torchtext.data.datasets_utils import (
 )
 import os
 import logging
+from torchtext.data.data_pipes import GDriveReaderDataPipe as GDriveReader
 
+from torch.utils.data.datapipes.iter import LoadFilesFromDisk
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZVhsUnRWRDhETzA'
 
 MD5 = '57d28bd5d930e772930baddf36641c7c'
@@ -37,8 +39,6 @@ DATASET_NAME = "AmazonReviewFull"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AmazonReviewFull(root, split):
-    path = _download_extract_validate(root, URL, MD5, os.path.join(root, _PATH), os.path.join(root, _EXTRACTED_FILES[split]),
-                                      _EXTRACTED_FILES_MD5[split], hash_type="md5")
-    logging.info('Creating {} data'.format(split))
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_csv(path))
+    saver_dp = GDriveReader([URL]).map(lambda x: (x[0],x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, x))
+    extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
+    return extracted_files.filter(lambda x: split in x[0]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
