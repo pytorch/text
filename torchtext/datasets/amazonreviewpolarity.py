@@ -9,6 +9,7 @@ from datapipes.iter import(
     CSVParser,
     ReadFilesFromTar,
     HttpReader,
+    IterableAsDataPipe,
 )
 
 from datapipes.iter import GDriveReader
@@ -44,7 +45,11 @@ DATASET_NAME = "AmazonReviewPolarity"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AmazonReviewPolarity(root, split):
-    saver_dp = GDriveReader([URL]).map(lambda x: (x[0],x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, x))
-    extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
-    return extracted_files.filter(lambda x: split in x[0]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
+    save_dp = GDriveReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, x))
 
+    load_dp = LoadFilesFromDisk(save_dp).check_hash({os.path.join(root, _PATH): MD5}, 'md5')
+
+    hash_dict_extracted_files = dict((os.path.join(root, _EXTRACTED_FILES[s]), _EXTRACTED_FILES_MD5[s]) for s in ['train', 'test'])
+    extracted_files = load_dp.read_from_tar().check_hash(hash_dict_extracted_files, 'md5')
+
+    return extracted_files.filter(lambda x: split in x[0]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
