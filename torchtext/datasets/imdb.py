@@ -6,8 +6,10 @@ import os
 from pathlib import Path
 
 from datapipes.iter import (
+    IterableAsDataPipe,
     ReadFilesFromTar,
     HttpReader,
+    Saver,
 )
 
 from torch.utils.data.datapipes.iter import LoadFilesFromDisk
@@ -29,11 +31,7 @@ DATASET_NAME = "IMDB"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def IMDB(root, split):
-    save_path = os.path.join(root, _PATH)
-    # TODO Use save datapipe once ready to save data to disk
-    http_list = [d for d in HttpReader([URL]).map(lambda x: x[1])]
-    with open(save_path,'wb') as f: f.write(http_list[0].read())
-    extracted_files = LoadFilesFromDisk([save_path]).map(lambda x: (os.path.dirname(x[0]), x[1])).read_from_tar()
-    # TODO extracted_files = HttpReader([URL]).read_from_tar()
+    saver_dp = HttpReader([URL]).map(lambda x: (x[0],x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+    extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
     return extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2]
                                   in ['pos', 'neg']).map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
