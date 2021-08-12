@@ -36,5 +36,9 @@ def SQuAD2(root, split):
         Here we process dictionary returned by standard JSON reader
         Here we write custom datapipe to orchestrates data samples for Q&A use-case
     """
+
+    # stack saver data pipe on top of web stream
     saver_dp = HttpReader([URL[split]]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+
+    # stack custom data pipe on top of JSON reader to orchestrate data samples for Q&A dataset
     return ParseSQuADQAData(LoadFilesFromDisk(saver_dp).parse_json_files())

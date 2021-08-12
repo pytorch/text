@@ -44,14 +44,20 @@ def AmazonReviewPolarity(root, split):
         Limitation: Everytime we download the data even if it already exists. We need do to on-disk caching.
     """
 
+    # stack saver pipe on top of Google Drive reader to save the data to disk
     save_dp = GDriveReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, x))
 
+    # stack sanity checker on top of loader data-pipe
     load_dp = LoadFilesFromDisk(save_dp).check_hash({os.path.join(root, _PATH): MD5}, 'md5')
 
+    # stack TAR extractor on top of loader DP
     extracted_files = load_dp.read_from_tar()
 
+    # filter files as necessary
     filter_extracted_files = extracted_files.filter(lambda x: split in x[0])
 
+    # stack sanity checker on top of extracted files
     check_filter_extracted_files = filter_extracted_files.check_hash({os.path.join(root, _EXTRACTED_FILES[split]): _EXTRACTED_FILES_MD5[split]}, 'md5')
 
-    return check_filter_extracted_files.parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
+    # stack CSV reader and do some mapping t
+    return check_filter_extracted_files.parse_csv_files().map(lambda t: (int(t[1]), t[2]))

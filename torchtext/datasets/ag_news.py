@@ -37,4 +37,6 @@ def AG_NEWS(root, split):
         This might be useful when we do not want to cache or download the data.
         The limitation is that we do not have and checking mechanism or data sanity check.
     """
+
+    # Stack CSV Parser directly on top of web-stream
     return HttpReader([URL[split]]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))

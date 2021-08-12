@@ -36,10 +36,14 @@ def IMDB(root, split):
         Mapping is needed to yield proper data samples by extracting label from file name and reading data from file
     """
 
+    # stack saver data pipe on top of web stream to save data to disk
     saver_dp = HttpReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
 
+    # stack TAR extractor on top of load files data pipe
     extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
 
+    # filter the files as applicable to create dataset for given split (train or test)
     filter_files = extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2] in ['pos', 'neg'])
 
+    # map the file to yield proper data samples
     return filter_files.map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))
