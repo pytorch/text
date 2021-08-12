@@ -33,5 +33,8 @@ DATASET_NAME = "AG_NEWS"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AG_NEWS(root, split):
-    # TODO Caching mechanism
+    """Demonstrating streaming use case
+        This might be useful when we do not want to cache or download the data.
+        The limitation is that we do not have and checking mechanism or data sanity check.
+    """
     return HttpReader([URL[split]]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))

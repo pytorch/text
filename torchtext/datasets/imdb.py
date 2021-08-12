@@ -30,7 +30,16 @@ DATASET_NAME = "IMDB"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def IMDB(root, split):
+    """Demonstrates complex use case where each sample is stored in seperate file and compressed in tar file
+        Here we show some fancy filtering and mapping operations.
+        Filtering is needed to know which files belong to train/test and neg/pos label
+        Mapping is needed to yield proper data samples by extracting label from file name and reading data from file
+    """
+
     saver_dp = HttpReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+
     extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
+
     filter_files = extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2] in ['pos', 'neg'])
+
     return filter_files.map(lambda x: (Path(x[0]).parts[-2], x[1].read().decode('utf-8')))

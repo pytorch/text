@@ -4,13 +4,6 @@ from torchtext.data.datasets_utils import (
     _create_dataset_directory,
 )
 import os
-import logging
-from datapipes.iter import(
-    CSVParser,
-    ReadFilesFromTar,
-    HttpReader,
-    IterableAsDataPipe,
-)
 
 from datapipes.iter import GDriveReader
 
@@ -45,11 +38,20 @@ DATASET_NAME = "AmazonReviewPolarity"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AmazonReviewPolarity(root, split):
+    """Demonstrating Saving, loading, extraction and sanity check pipelines
+        Unlike AG_NEWS, we first save the data from web stream.
+        Here, we further do sanity check by using CheckHash datapipe (support both md5 and sha256 hashes)
+        Limitation: Everytime we download the data even if it already exists. We need do to on-disk caching.
+    """
+
     save_dp = GDriveReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, x))
 
     load_dp = LoadFilesFromDisk(save_dp).check_hash({os.path.join(root, _PATH): MD5}, 'md5')
 
-    hash_dict_extracted_files = dict((os.path.join(root, _EXTRACTED_FILES[s]), _EXTRACTED_FILES_MD5[s]) for s in ['train', 'test'])
-    extracted_files = load_dp.read_from_tar().check_hash(hash_dict_extracted_files, 'md5')
+    extracted_files = load_dp.read_from_tar()
 
-    return extracted_files.filter(lambda x: split in x[0]).parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
+    filter_extracted_files = extracted_files.filter(lambda x: split in x[0])
+
+    check_filter_extracted_files = filter_extracted_files.check_hash({os.path.join(root, _EXTRACTED_FILES[split]): _EXTRACTED_FILES_MD5[split]}, 'md5')
+
+    return check_filter_extracted_files.parse_csv_files().map(lambda t: (int(t[1]), ' '.join(t[2:])))
