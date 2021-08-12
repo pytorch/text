@@ -40,6 +40,7 @@ def IMDB(root, split):
     saver_dp = HttpReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
 
     # stack TAR extractor on top of load files data pipe
+    # TODO: Cache extraction using on_disk_cache datapipe
     extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
 
     # filter the files as applicable to create dataset for given split (train or test)
