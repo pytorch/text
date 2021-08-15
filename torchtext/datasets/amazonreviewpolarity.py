@@ -5,9 +5,10 @@ from torchtext.data.datasets_utils import (
 )
 import os
 
-from datapipes.iter import GDriveReader
-
-from torch.utils.data.datapipes.iter import LoadFilesFromDisk
+from datapipes.iter import (
+    GDriveReader,
+    IterableAsDataPipe,
+)
 
 
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbaW12WVVZS2drcnM'
@@ -38,20 +39,17 @@ DATASET_NAME = "AmazonReviewPolarity"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(('train', 'test'))
 def AmazonReviewPolarity(root, split):
-    """Demonstrating Saving, loading, extraction and sanity check pipelines
-        Unlike AG_NEWS, we first save the data from web stream.
-        Here, we further do sanity check by using CheckHash datapipe (support both md5 and sha256 hashes)
-        Limitation: Everytime we download the data even if it already exists. We need do to on-disk caching.
+    """Demonstrating caching, extraction and sanity check pipelines.
     """
 
-    # stack saver pipe on top of Google Drive reader to save the data to disk
-    save_dp = GDriveReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, x))
+    # cache data on-disk
+    cache_dp = IterableAsDataPipe([URL]).on_disk_cache(GDriveReader, op_map=lambda x: (x[0], x[1].read()), filepath_fn=lambda x: os.path.join(root, x))
 
-    # stack sanity checker on top of loader data-pipe
-    load_dp = LoadFilesFromDisk(save_dp).check_hash({os.path.join(root, _PATH): MD5}, 'md5')
+    # do sanity check
+    check_cache_dp = cache_dp.check_hash({os.path.join(root, _PATH): MD5}, 'md5')
 
     # stack TAR extractor on top of loader DP
-    extracted_files = load_dp.read_from_tar()
+    extracted_files = check_cache_dp.read_from_tar()
 
     # filter files as necessary
     filter_extracted_files = extracted_files.filter(lambda x: split in x[0])
@@ -59,5 +57,5 @@ def AmazonReviewPolarity(root, split):
     # stack sanity checker on top of extracted files
     check_filter_extracted_files = filter_extracted_files.check_hash({os.path.join(root, _EXTRACTED_FILES[split]): _EXTRACTED_FILES_MD5[split]}, 'md5')
 
-    # stack CSV reader and do some mapping t
+    # stack CSV reader and do some mapping
     return check_filter_extracted_files.parse_csv_files().map(lambda t: (int(t[1]), t[2]))

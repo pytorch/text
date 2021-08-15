@@ -1,17 +1,17 @@
-from torchtext.utils import download_from_url
-from torchtext.data.datasets_utils import _wrap_split_argument
-from torchtext.data.datasets_utils import _add_docstring_header
-from torchtext.data.datasets_utils import _create_dataset_directory
+from torchtext.data.datasets_utils import (
+    _wrap_split_argument,
+    _add_docstring_header,
+    _create_dataset_directory,
+)
+
 import os
 from pathlib import Path
 
 from datapipes.iter import (
-    ReadFilesFromTar,
     HttpReader,
-    Saver,
+    IterableAsDataPipe,
 )
 
-from torch.utils.data.datapipes.iter import LoadFilesFromDisk
 URL = 'http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
 
 MD5 = '7c2ac02c03563afcf9b574c7e56c153a'
@@ -36,12 +36,14 @@ def IMDB(root, split):
         Mapping is needed to yield proper data samples by extracting label from file name and reading data from file
     """
 
-    # stack saver data pipe on top of web stream to save data to disk
-    saver_dp = HttpReader([URL]).map(lambda x: (x[0], x[1].read())).save_to_disk(filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+    # cache data on-disk
+    cache_dp = IterableAsDataPipe([URL]).on_disk_cache(HttpReader, op_map=lambda x: (x[0], x[1].read()), filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+
+    # do sanity check
+    check_cache_dp = cache_dp.check_hash({os.path.join(root, os.path.basename(URL)): MD5}, 'md5')
 
     # stack TAR extractor on top of load files data pipe
-    # TODO: Cache extraction using on_disk_cache datapipe
-    extracted_files = LoadFilesFromDisk(saver_dp).read_from_tar()
+    extracted_files = check_cache_dp.read_from_tar()
 
     # filter the files as applicable to create dataset for given split (train or test)
     filter_files = extracted_files.filter(lambda x: Path(x[0]).parts[-3] == split and Path(x[0]).parts[-2] in ['pos', 'neg'])

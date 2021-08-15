@@ -5,11 +5,8 @@ from torchtext.data.datasets_utils import (
 )
 
 from datapipes.iter import (
-    CSVParser,
     HttpReader
 )
-
-import os
 
 URL = {
     'train': "https://raw.githubusercontent.com/mhjabreel/CharCnn_Keras/master/data/ag_news_csv/train.csv",
@@ -35,7 +32,7 @@ DATASET_NAME = "AG_NEWS"
 def AG_NEWS(root, split):
     """Demonstrating streaming use case
         This might be useful when we do not want to cache or download the data.
-        The limitation is that we do not have and checking mechanism or data sanity check.
+        The limitation is that we do not have any checking mechanism or data sanity check.
     """
 
     # Stack CSV Parser directly on top of web-stream
