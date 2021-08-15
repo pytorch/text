@@ -36,12 +36,12 @@ def SQuAD2(root, split):
     """Demonstrates use case when more complex processing is needed on data-stream
         Here we process dictionary returned by standard JSON reader and write custom datapipe to orchestrates data samples for Q&A use-case
     """
-    
+
     # cache data on-disk
-    cache_dp = IterableAsDataPipe([URL]).on_disk_cache(HttpReader, op_map=lambda x: (x[0], x[1].read()), filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
+    cache_dp = IterableAsDataPipe([URL[split]]).on_disk_cache(HttpReader, op_map=lambda x: (x[0], x[1].read()), filepath_fn=lambda x: os.path.join(root, os.path.basename(x)))
 
     # do sanity check
-    check_cache_dp = cache_dp.check_hash({os.path.join(root, os.path.basename(URL[split])): MD5}, 'md5')
+    check_cache_dp = cache_dp.check_hash({os.path.join(root, os.path.basename(URL[split])): MD5[split]}, 'md5')
 
     # stack custom data pipe on top of JSON reader to orchestrate data samples for Q&A dataset
     return ParseSQuADQAData(check_cache_dp.parse_json_files())
