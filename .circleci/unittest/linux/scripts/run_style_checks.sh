@@ -22,7 +22,7 @@ fi
 printf "\x1b[34mRunning clang-format: "
 ./clang-format --version
 printf "\x1b[0m\n"
-git-clang-format --binary ./clang-format origin/master
+git-clang-format --binary ./clang-format origin/main
 git diff --exit-code
 status=$?
 exit_status="$((exit_status+status))"
