@@ -11,6 +11,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
   m.class_<Regex>("Regex")
       .def(torch::init<std::string>())
       .def("Sub", &Regex::Sub)
+      .def("find_all", &Regex::find_all)
       .def_pickle(
           // __getstate__
           [](const c10::intrusive_ptr<Regex> &self) -> std::string {

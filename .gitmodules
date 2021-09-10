@@ -10,4 +10,9 @@
 	path = third_party/double-conversion
 	url = https://github.com/google/double-conversion
 	ignore = dirty
+[submodule "third_party/pcre"]
+	path = third_party/pcre
+	url = https://github.com/vmg/pcre
+	ignore = dirty
+
 

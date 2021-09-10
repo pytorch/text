@@ -81,6 +81,7 @@ def _get_libraries():
         'sentencepiece',
         're2',
         'double-conversion'
+        'pcre'
     ]
 
 
