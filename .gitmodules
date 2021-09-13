@@ -12,7 +12,7 @@
 	ignore = dirty
 [submodule "third_party/pcre"]
 	path = third_party/pcre
-	url = https://github.com/vmg/pcre
+	url = https://github.com/vmg/pcre.git
 	ignore = dirty
 
 
