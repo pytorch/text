@@ -2,11 +2,11 @@
 
 namespace torchtext {
 
-Regex::Regex(const std::string& re_str) : re_str_(re_str) {
+Regex::Regex(const std::string &re_str) : re_str_(re_str) {
   compiled_pattern_ = new pcrecpp::RE(re_str_, pcrecpp::UTF8());
 }
 
-std::string Regex::Sub(std::string str, const std::string& repl) const {
+std::string Regex::Sub(std::string str, const std::string &repl) const {
   (*compiled_pattern_).GlobalReplace(repl, &str);
   return str;
 }
@@ -23,11 +23,11 @@ std::vector<std::string> Regex::find_all(std::string input) {
   return tokens;
 }
 
-std::string _serialize_regex(const c10::intrusive_ptr<Regex>& self) {
+std::string _serialize_regex(const c10::intrusive_ptr<Regex> &self) {
   return self->re_str_;
 }
 
-c10::intrusive_ptr<Regex> _deserialize_regex(std::string&& state) {
+c10::intrusive_ptr<Regex> _deserialize_regex(std::string &&state) {
   return c10::make_intrusive<Regex>(std::move(state));
 }
 
