@@ -80,8 +80,8 @@ def _get_libraries():
         'sentencepiece_train',
         'sentencepiece',
         're2',
-        'double-conversion'
-        'pcre'
+        'pcre',
+        'double-conversion',
     ]
 
 
