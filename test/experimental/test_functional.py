@@ -130,27 +130,27 @@ class TestFunctional(TorchtextTestCase):
             results = loaded_tokenizer(test_sample)
             self.assertEqual(results, ref_results)
 
-    # def test_regex_find_all(self):
-    #     # Use in TorchScript
-    #     @torch.jit.script
-    #     def tokenize(text: str):
-    #         pattern = "(*UCP)(\\'s|\\'t|\\'re|\\'ve|\\'m|\\'ll|\\'d| ?\\pL+|" \
-    #                   " ?\\pN+| ?[^\\s\\pL\\pN]+|\\s+(?!\\S)|\\s+)"
-    #         regex_op = torch.classes.torchtext.Regex(pattern)
-    #         return regex_op.find_all(text)
+    def test_regex_find_all(self):
+        # Use in TorchScript
+        @torch.jit.script
+        def tokenize(text: str):
+            pattern = "(*UCP)(\\'s|\\'t|\\'re|\\'ve|\\'m|\\'ll|\\'d| ?\\pL+|" \
+                      " ?\\pN+| ?[^\\s\\pL\\pN]+|\\s+(?!\\S)|\\s+)"
+            regex_op = torch.classes.torchtext.Regex(pattern)
+            return regex_op.find_all(text)
 
-    #     def py_tokenize(text):
-    #         pat = regex.compile(
-    #             r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
-    #         )
-    #         return regex.findall(pat, text)
+        def py_tokenize(text):
+            pat = regex.compile(
+                r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+            )
+            return regex.findall(pat, text)
 
-    #     input_path = (
-    #         "pytorch/text/fb/transforms/tests/data/"
-    #         "test_gpt2_bpe_tokenizer_input.txt"
-    #     )
-    #     with open(input_path, "r") as f:
-    #         for line in f:
-    #             pcre_tokens = tokenize(line[:-1])
-    #             py_tokens = py_tokenize(line[:-1])
-    #             self.assertEqual(pcre_tokens, py_tokens)
+        input_path = (
+            "pytorch/text/fb/transforms/tests/data/"
+            "test_gpt2_bpe_tokenizer_input.txt"
+        )
+        with open(input_path, "r") as f:
+            for line in f:
+                pcre_tokens = tokenize(line[:-1])
+                py_tokens = py_tokenize(line[:-1])
+                self.assertEqual(pcre_tokens, py_tokens)
