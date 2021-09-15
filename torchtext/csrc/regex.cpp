@@ -3,6 +3,7 @@
 namespace torchtext {
 
 Regex::Regex(const std::string &re_str) : re_str_(re_str) {
+  std::cout << "[re_str] " << re_str << std::endl;
   compiled_pattern_ = new pcrecpp::RE(re_str_, pcrecpp::UTF8());
 }
 
@@ -16,7 +17,9 @@ std::vector<std::string> Regex::find_all(std::string input) {
   std::string token;
   std::vector<std::string> tokens;
 
+  std::cout << "[line] " << line << std::endl;
   while ((*compiled_pattern_).FindAndConsume(&line, &token)) {
+    std::cout << "[token] " << token << std::endl;
     tokens.push_back(token);
   }
 

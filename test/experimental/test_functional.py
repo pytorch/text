@@ -145,12 +145,12 @@ class TestFunctional(TorchtextTestCase):
             )
             return regex.findall(pat, text)
 
-        input_path = (
-            "pytorch/text/fb/transforms/tests/data/"
-            "test_gpt2_bpe_tokenizer_input.txt"
-        )
-        with open(input_path, "r") as f:
-            for line in f:
-                pcre_tokens = tokenize(line[:-1])
-                py_tokens = py_tokenize(line[:-1])
-                self.assertEqual(pcre_tokens, py_tokens)
+        # test_sample = '\'".<br />,()!?;:   Find all regex matches for a Line of Text   \'".<br />,()!?;:'
+        test_sample = 'We proclaimed sincerely to the public John to be a hero.'
+
+        pcre_tokens = tokenize(test_sample)
+        py_tokens = py_tokenize(test_sample)
+
+        print(pcre_tokens)
+        print(py_tokens)
+        self.assertEqual(pcre_tokens, py_tokens)
