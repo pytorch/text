@@ -1,7 +1,7 @@
 .. image:: https://circleci.com/gh/pytorch/text.svg?style=svg
     :target: https://circleci.com/gh/pytorch/text
 
-.. image:: https://codecov.io/gh/pytorch/text/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/pytorch/text/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/pytorch/text
 
 .. image:: https://img.shields.io/badge/dynamic/json.svg?label=docs&url=https%3A%2F%2Fpypi.org%2Fpypi%2Ftorchtext%2Fjson&query=%24.info.version&colorB=brightgreen&prefix=v
@@ -12,13 +12,13 @@ torchtext
 
 This repository consists of:
 
-* `torchtext.datasets <https://github.com/pytorch/text/tree/master/torchtext/datasets>`_: The raw text iterators for common NLP datasets
-* `torchtext.data <https://github.com/pytorch/text/tree/master/torchtext/data>`_: Some basic NLP building blocks (tokenizers, metrics, functionals etc.)
-* `torchtext.nn <https://github.com/pytorch/text/tree/master/torchtext/nn>`_: NLP related modules
-* `torchtext.vocab <https://github.com/pytorch/text/tree/master/torchtext/vocab.py>`_: Vocab and Vectors related classes and factory functions
-* `examples <https://github.com/pytorch/text/tree/master/examples>`_: Example NLP workflows with PyTorch and torchtext library.
+* `torchtext.datasets <https://github.com/pytorch/text/tree/main/torchtext/datasets>`_: The raw text iterators for common NLP datasets
+* `torchtext.data <https://github.com/pytorch/text/tree/main/torchtext/data>`_: Some basic NLP building blocks (tokenizers, metrics, functionals etc.)
+* `torchtext.nn <https://github.com/pytorch/text/tree/main/torchtext/nn>`_: NLP related modules
+* `torchtext.vocab <https://github.com/pytorch/text/tree/main/torchtext/vocab.py>`_: Vocab and Vectors related classes and factory functions
+* `examples <https://github.com/pytorch/text/tree/main/examples>`_: Example NLP workflows with PyTorch and torchtext library.
 
-Note: The legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_ folder for more details.
+Note: The legacy code discussed in `torchtext v0.7.0 release note <https://github.com/pytorch/text/releases/tag/v0.7.0-rc3>`_ has been retired to `torchtext.legacy <https://github.com/pytorch/text/tree/main/torchtext/legacy>`_ folder. Those legacy code will not be maintained by the development team, and we plan to fully remove them in the future release. See `torchtext.legacy <https://github.com/pytorch/text/tree/main/torchtext/legacy>`_ folder for more details.
 
 Installation
 ============
@@ -29,7 +29,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :header: "PyTorch version", "torchtext version", "Supported Python version"
    :widths: 10, 10, 10
 
-   nightly build, master, 3.6+
+   nightly build, main, 3.6+
    1.9, 0.10, 3.6+
    1.8, 0.9, 3.6+
    1.7, 0.8, 3.6+
@@ -82,7 +82,7 @@ To build torchtext from source, you need ``git``, ``CMake`` and C++11 compiler s
 **Note**
 
 When building from source, make sure that you have the same C++ compiler as the one used to build PyTorch. A simple way is to build PyTorch from source and use the same environment to build torchtext.
-If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/master/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/master/manywheel>`_.
+If you are using the nightly build of PyTorch, checkout the environment it was built with `conda (here) <https://github.com/pytorch/builder/tree/main/conda>`_ and `pip (here) <https://github.com/pytorch/builder/tree/main/manywheel>`_.
 
 Documentation
 =============
@@ -130,8 +130,8 @@ To get started with torchtext, users may refer to the following tutorials availa
 
 We have re-written several building blocks under ``torchtext.experimental``:
 
-* `Transforms <https://github.com/pytorch/text/blob/master/torchtext/experimental/transforms.py>`_: some basic data processing building blocks
-* `Vectors <https://github.com/pytorch/text/blob/master/torchtext/experimental/vectors.py>`_: the vectors to convert tokens into tensors.
+* `Transforms <https://github.com/pytorch/text/blob/main/torchtext/experimental/transforms.py>`_: some basic data processing building blocks
+* `Vectors <https://github.com/pytorch/text/blob/main/torchtext/experimental/vectors.py>`_: the vectors to convert tokens into tensors.
 
 These prototype building blocks in the experimental folder are available in the nightly release only. The nightly packages are accessible via Pip and Conda for Windows, Mac, and Linux. For example, Linux users can install the nightly wheels with the following command::
 
@@ -142,7 +142,7 @@ For more detailed instructions, please refer to `Install PyTorch <https://pytorc
 [BC Breaking] Legacy
 ====================
 
-In the v0.9.0 release, we moved the following legacy code to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
+In the v0.9.0 release, we moved the following legacy code to `torchtext.legacy <https://github.com/pytorch/text/tree/main/torchtext/legacy>`_. This is part of the work to revamp the torchtext library and the motivation has been discussed in `Issue #664 <https://github.com/pytorch/text/issues/664>`_:
 
 * ``torchtext.legacy.data.field``
 * ``torchtext.legacy.data.batch``
@@ -151,9 +151,9 @@ In the v0.9.0 release, we moved the following legacy code to `torchtext.legacy <
 * ``torchtext.legacy.data.pipeline``
 * ``torchtext.legacy.datasets``
 
-We have a `migration tutorial <https://colab.research.google.com/github/pytorch/text/blob/master/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
+We have a `migration tutorial <https://colab.research.google.com/github/pytorch/text/blob/main/examples/legacy_tutorial/migration_tutorial.ipynb>`_ to help users switch to the torchtext datasets in ``v0.9.0`` release. For the users who still want the legacy components, they can add ``legacy`` to the import path.  
 
-In the v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/master/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by a Vocab module that is backed by efficient C++ implementation and provides common functional APIs for NLP workflows. 
+In the v0.10.0 release, we retire the Vocab class to `torchtext.legacy <https://github.com/pytorch/text/tree/main/torchtext/legacy>`_. Users can still access the legacy Vocab via ``torchtext.legacy.vocab``. This class has been replaced by a Vocab module that is backed by efficient C++ implementation and provides common functional APIs for NLP workflows. 
 
 Disclaimer on Datasets
 ======================
