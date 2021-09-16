@@ -103,7 +103,7 @@ def _build_third_party(debug):
     if platform.system() == 'Windows':
         extra_args = [
             '-GNinja',
-            '-DCMAKE_C_FLAGS=-fPIC'
+            '-DCMAKE_C_FLAGS=-DPCRE_STATIC'
         ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')

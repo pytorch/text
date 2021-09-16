@@ -1,3 +1,5 @@
+#define PCRE_STATIC
+
 #include <pcrecpp.h>
 #include <string>
 #include <torch/script.h>
