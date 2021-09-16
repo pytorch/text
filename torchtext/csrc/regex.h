@@ -1,4 +1,4 @@
-#define PCRE_STATIC
+// #define PCRE_STATIC
 
 #include <pcrecpp.h>
 #include <string>
