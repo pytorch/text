@@ -103,11 +103,13 @@ def _build_third_party(debug):
     if platform.system() == 'Windows':
         extra_args = [
             '-GNinja',
+            '-DCMAKE_C_FLAGS=-fPIC'
         ]
         build_env.setdefault('CC', 'cl')
         build_env.setdefault('CXX', 'cl')
     else:
-        extra_args = ['-DCMAKE_CXX_FLAGS=-fPIC ' + _get_cxx11_abi(), "-DCMAKE_C_FLAGS=-fPIC"]
+        extra_args = ['-DCMAKE_CXX_FLAGS=-fPIC ' + _get_cxx11_abi(),
+                      '-DCMAKE_C_FLAGS=-fPIC']
     subprocess.run(
         args=[
             'cmake',
