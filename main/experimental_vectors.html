@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vectors &mdash; torchtext 0.11.0.dev20211005 documentation</title>
+  <title>torchtext.experimental.vectors &mdash; torchtext 0.11.0.dev20211006 documentation</title>
   
 
   
@@ -193,7 +193,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.11.0.dev20211005 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.11.0.dev20211006 &#x25BC</a>
     </div>
     
 
@@ -326,7 +326,7 @@
 <code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p>
+<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a tensor (the vector) corresponding to the associated token.</p>
@@ -352,7 +352,7 @@
 <dd class="field-odd"><p>the length of the vectors.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>length (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>)</p>
+<dd class="field-even"><p>length (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -369,12 +369,12 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p></li>
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p></li>
 <li><p><strong>vector</strong> (<em>Tensor</em>) – a 1d tensor representing a vector associated with the token.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if <cite>vector</cite> is not of data type <cite>torch.float</cite>.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.10)"><strong>TypeError</strong></a> – if <cite>vector</cite> is not of data type <cite>torch.float</cite>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -435,16 +435,16 @@ empty tensor if <cite>tokens</cite> is empty</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – a list of tokens.</p></li>
+<li><p><strong>tokens</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – a list of tokens.</p></li>
 <li><p><strong>vectors</strong> (<a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><em>torch.Tensor</em></a>) – a 2d tensor representing the vector associated with each token.</p></li>
 <li><p><strong>unk_tensor</strong> (<a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><em>torch.Tensor</em></a>) – a 1d tensors representing the vector associated with an unknown token.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if <cite>vectors</cite> is empty and a default <cite>unk_tensor</cite> isn’t provided.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if <cite>tokens</cite> and <cite>vectors</cite> have different sizes or <cite>tokens</cite> has duplicates.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – if all tensors within`vectors` are not of data type <cite>torch.float</cite>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.10)"><strong>ValueError</strong></a> – if <cite>vectors</cite> is empty and a default <cite>unk_tensor</cite> isn’t provided.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.10)"><strong>RuntimeError</strong></a> – if <cite>tokens</cite> and <cite>vectors</cite> have different sizes or <cite>tokens</cite> has duplicates.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.10)"><strong>TypeError</strong></a> – if all tensors within`vectors` are not of data type <cite>torch.float</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -471,7 +471,7 @@ token_n&lt;delimiter&gt;num_m num_j num_k</p>
 <li><p><strong>filepath</strong> – a file path to read data from.</p></li>
 <li><p><strong>delimiter</strong> (<em>char</em>) – a character to delimit between the token and the vector. Default value is “,”</p></li>
 <li><p><strong>unk_tensor</strong> (<em>Tensor</em>) – a 1d tensor representing the vector associated with an unknown token.</p></li>
-<li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 10.</p></li>
+<li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 10.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -498,13 +498,13 @@ token_n&lt;delimiter&gt;num_m num_j num_k</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>language</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the language to use for FastText. The list of supported languages options
+<li><p><strong>language</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – the language to use for FastText. The list of supported languages options
 can be found at <a class="reference external" href="https://fasttext.cc/docs/en/language-identification.html">https://fasttext.cc/docs/en/language-identification.html</a></p></li>
 <li><p><strong>unk_tensor</strong> (<em>Tensor</em>) – a 1d tensor representing the vector associated with an unknown token</p></li>
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – folder used to store downloaded files in. Default: ‘.data’.</p></li>
-<li><p><strong>validate_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – flag to determine whether to validate the downloaded files checksum.
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – folder used to store downloaded files in. Default: ‘.data’.</p></li>
+<li><p><strong>validate_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – flag to determine whether to validate the downloaded files checksum.
 Should be <cite>False</cite> when running tests with a local asset.</p></li>
-<li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 10.</p></li>
+<li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 10.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -514,7 +514,7 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 <dd class="field-odd"><p>torchtext.experimental.vectors.Vector</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if duplicate tokens are found in FastText file.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.10)"><strong>ValueError</strong></a> – if duplicate tokens are found in FastText file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -529,7 +529,7 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – <p>the name of the GloVe dataset to use. Options are:</p>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – <p>the name of the GloVe dataset to use. Options are:</p>
 <ul>
 <li><p>42B</p></li>
 <li><p>840B</p></li>
@@ -537,7 +537,7 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 <li><p>6B</p></li>
 </ul>
 </p></li>
-<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>the dimension for the GloVe dataset to load. Options are:</p>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – <p>the dimension for the GloVe dataset to load. Options are:</p>
 <p>42B:</p>
 <blockquote>
 <div><ul>
@@ -570,10 +570,10 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 </div></blockquote>
 </p></li>
 <li><p><strong>unk_tensor</strong> (<em>Tensor</em>) – a 1d tensor representing the vector associated with an unknown token.</p></li>
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – folder used to store downloaded files in (.data)</p></li>
-<li><p><strong>validate_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – flag to determine whether to validate the downloaded files checksum.
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – folder used to store downloaded files in (.data)</p></li>
+<li><p><strong>validate_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – flag to determine whether to validate the downloaded files checksum.
 Should be <cite>False</cite> when running tests with a local asset.</p></li>
-<li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 10.</p></li>
+<li><p><strong>num_cpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – the number of cpus to use when loading the vectors from file. Default: 10.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -583,7 +583,7 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 <dd class="field-odd"><p>torchtext.experimental.vectors.Vector</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if unexpected duplicate tokens are found in GloVe file.</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.10)"><strong>ValueError</strong></a> – if unexpected duplicate tokens are found in GloVe file.</p>
 </dd>
 </dl>
 </dd></dl>
