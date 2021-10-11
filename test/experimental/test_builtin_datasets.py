@@ -3,6 +3,7 @@
 import torchtext
 import json
 import hashlib
+import unittest
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
@@ -26,6 +27,7 @@ class TestDataset(TorchtextTestCase):
     @parameterized.expand(
         load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
+    @unittest.skip("Skipping test due to invalid URL. Enable it back once WMT14 is fixed")
     def test_raw_text_name_property(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
@@ -39,6 +41,7 @@ class TestDataset(TorchtextTestCase):
     @parameterized.expand(
         load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
+    @unittest.skip("Skipping test due to invalid URL. Enable it back once WMT14 is fixed")
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
