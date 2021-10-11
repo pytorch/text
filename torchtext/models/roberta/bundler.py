@@ -22,17 +22,7 @@ from torchtext import TEXT_BUCKET
 
 @dataclass
 class RobertaModelBundle:
-    """[summary]
-
-    [extended_summary]
-
-
-    Args:
-        _params: Encoder Parameters object
-        _path: URL or path to model state dict
-        _head: Module attached to the output of encoder
-        transform: Factory function to build model transform
-
+    """
     Example - Pretrained encoder
         >>> import torch, torchtext
         >>> xlmr_base = torchtext.models.XLMR_BASE_ENCODER

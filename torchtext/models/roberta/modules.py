@@ -56,8 +56,6 @@ class ResidualMLP(Module):
 
     def forward(self, input):
         bias = self.mlp(input)
-        # Using hasattr to make it backward compatible with models
-        # which were trained before attribute was added.
         if not hasattr(self, "add_residual"):
             self.add_residual = True
         if self.add_residual:
@@ -211,8 +209,6 @@ class TransformerEncoderLayer(Module):
         self.normalize_before = normalize_before
 
     def forward(self, input, key_padding_mask):
-        # Using hasattr to make it backward compatible with models
-        # which were trained before attribute was added.
         if not hasattr(self, "normalize_before"):
             self.normalize_before = False
         if self.normalize_before:
@@ -227,7 +223,6 @@ class TransformerEncoderLayer(Module):
             attention = self.dropout(attention)
             biased_input = input + attention
             biased_input = self.attention_layer_norm(biased_input)
-
             biased = self.residual_mlp(biased_input)
             return self.final_layer_norm(biased)
 
@@ -277,8 +272,6 @@ class TransformerEncoder(Module):
 
         embedded = token_embeddings + embedded_positions
 
-        # Using hasattr to make it backward compatible with models
-        # which were trained before attribute was added.
         if not hasattr(self, "normalize_before"):
             self.normalize_before = False
         if not self.normalize_before:
@@ -287,7 +280,6 @@ class TransformerEncoder(Module):
 
         padded_embedded = embedded * (1 - padding_mask.unsqueeze(-1).type_as(embedded))
 
-        # B x T x C -> T x B x C
         encoded = padded_embedded.transpose(0, 1)
 
         states = [encoded]

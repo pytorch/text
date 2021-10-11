@@ -53,7 +53,7 @@ class XLMRobertaModelTransform(Module):
         self.eos_idx = self.vocab[self.eos_token]
 
 
-def get_xlmr_transform(spm_model_url, vocab_url, **kwargs) -> XLMRobertaModelTransform:
+def get_xlmr_transform(spm_model_url, vocab_url, *, **kwargs) -> XLMRobertaModelTransform:
     transform = XLMRobertaModelTransform(spm_model_url, vocab_url, **kwargs)
     transform.load_state()
     return transform
