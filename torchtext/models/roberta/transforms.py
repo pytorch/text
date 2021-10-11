@@ -4,7 +4,7 @@ from torch.hub import load_state_dict_from_url
 
 
 class XLMRobertaModelTransform(Module):
-    padding_idx: int
+    pad_idx: int
     bos_idx: int
     eos_idx: int
     _vocab: Module
@@ -47,7 +47,7 @@ class XLMRobertaModelTransform(Module):
     def load_state(self):
         self.sp_model = load_state_dict_from_url(self.spm_model_url)
         self.vocab = load_state_dict_from_url(self.vocab_url)
-        self.padding_idx = self.vocab[self.pad_token]
+        self.pad_idx = self.vocab[self.pad_token]
         self.bos_idx = self.vocab[self.bos_token]
         self.eos_idx = self.vocab[self.eos_token]
 

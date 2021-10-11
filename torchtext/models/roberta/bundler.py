@@ -32,6 +32,12 @@ class RobertaModelBundle:
         >>> output = model(model_input)
         >>> output.shape
         torch.Size([1, 4, 768])
+        >>> input_batch = ["Hello world", "How are you!"]
+        >>> from torch.nn.utils.rnn import pad_sequence
+        >>> model_input = pad_sequence([torch.tensor(transform(d)) for d in input_batch], batch_first = True, padding_value=transform.pad_idx)
+        >>> output = model(model_input)
+        >>> output.shape
+        torch.Size([2, 6, 768])
 
     Example - Pretrained encoder attached to un-initialized classification head
         >>> import torch, torchtext
