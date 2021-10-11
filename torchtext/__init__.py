@@ -1,8 +1,11 @@
+TEXT_BUCKET = 'https://download.pytorch.org/models/text'
+
 from . import data
 from . import nn
 from . import datasets
 from . import utils
 from . import vocab
+from . import models
 from . import experimental
 from . import legacy
 from ._extension import _init_extension
@@ -18,6 +21,7 @@ __all__ = ['data',
            'datasets',
            'utils',
            'vocab',
+           'models',
            'experimental',
            'legacy']
 
