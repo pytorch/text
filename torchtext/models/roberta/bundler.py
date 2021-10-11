@@ -95,10 +95,6 @@ class RobertaModelBundle:
     def params(self) -> RobertaEncoderParams:
         return self._params
 
-    @params.setter
-    def params(self, params: RobertaEncoderParams):
-        self._params = params
-
 
 XLMR_BASE_ENCODER = RobertaModelBundle(
     _path=os.path.join(TEXT_BUCKET, "xlmr.base.encoder.pt"),
