@@ -1,4 +1,4 @@
-TEXT_BUCKET = 'https://download.pytorch.org/models/text'
+_TEXT_BUCKET = 'https://download.pytorch.org/models/text'
 
 from . import data
 from . import nn

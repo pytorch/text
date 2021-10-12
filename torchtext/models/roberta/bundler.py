@@ -9,6 +9,8 @@ from torch.hub import load_state_dict_from_url
 from torch.nn import Module
 import logging
 
+logger = logging.getLogger(__name__)
+
 from .model import (
     RobertaEncoderParams,
     RobertaModel,
@@ -17,7 +19,7 @@ from .model import (
 
 from .transforms import get_xlmr_transform
 
-from torchtext import TEXT_BUCKET
+from torchtext import _TEXT_BUCKET
 
 
 @dataclass
@@ -65,7 +67,7 @@ class RobertaModelBundle:
         if head is not None:
             input_head = head
             if self._head is not None:
-                logging.log("A custom head module was provided, discarding the default head module.")
+                logger.log("A custom head module was provided, discarding the default head module.")
         else:
             input_head = self._head
 
@@ -83,7 +85,7 @@ class RobertaModelBundle:
         if head is not None:
             input_head = head
             if self._head is not None:
-                logging.log("A custom head module was provided, discarding the default head module.")
+                logger.log("A custom head module was provided, discarding the default head module.")
         else:
             input_head = self._head
 
@@ -103,19 +105,19 @@ class RobertaModelBundle:
 
 
 XLMR_BASE_ENCODER = RobertaModelBundle(
-    _path=os.path.join(TEXT_BUCKET, "xlmr.base.encoder.pt"),
+    _path=os.path.join(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
     _params=RobertaEncoderParams(vocab_size=250002),
     transform=partial(get_xlmr_transform,
-                      spm_model_url=os.path.join(TEXT_BUCKET, "xlmr.sentencepiece.bpe.model.pt"),
-                      vocab_url=os.path.join(TEXT_BUCKET, "xlmr.vocab.pt"),
+                      spm_model_url=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model.pt"),
+                      vocab_url=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
                       )
 )
 
 XLMR_LARGE_ENCODER = RobertaModelBundle(
-    _path=os.path.join(TEXT_BUCKET, "xlmr.large.encoder.pt"),
+    _path=os.path.join(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
     _params=RobertaEncoderParams(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
     transform=partial(get_xlmr_transform,
-                      spm_model_url=os.path.join(TEXT_BUCKET, "xlmr.sentencepiece.bpe.model.pt"),
-                      vocab_url=os.path.join(TEXT_BUCKET, "xlmr.vocab.pt"),
+                      spm_model_url=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model.pt"),
+                      vocab_url=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
                       )
 )
