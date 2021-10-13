@@ -40,7 +40,7 @@ DATASET_NAME = "SST2"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
 def SST2(root, split):
-    return SST2Dataset(root, split).get_datapipes()
+    return SST2Dataset(root, split).get_datapipe()
 
 
 class SST2Dataset:
@@ -53,7 +53,7 @@ class SST2Dataset:
         self.root = root
         self.split = split
 
-    def get_datapipes(self):
+    def get_datapipe(self):
         # cache data on-disk
         cache_dp = IterableWrapper([URL]).on_disk_cache(
             HttpReader,
