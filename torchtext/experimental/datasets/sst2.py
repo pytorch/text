@@ -33,6 +33,12 @@ _EXTRACTED_FILES_MD5 = {
     "test": "3230e4efec76488b87877a56ae49675a",
 }
 
+_FIRST_LINE_MD5 = {
+    "train": "2552b8cecd57b2e022ef23411c688fa8",
+    "dev": "1b0ffd6aa5f2bf0fd9840a5f6f1a9f07",
+    "test": "f838c81fe40bfcd7e42e9ffc4dd004f7",
+}
+
 DATASET_NAME = "SST2"
 
 
