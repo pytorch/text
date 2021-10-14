@@ -545,7 +545,7 @@ jobs:
           command: |
             set -x
             conda install -y make python=${PYTHON_VERSION}
-            pip install git+https://github.com/pytorch/data#egg=torchdata
+            pip install git+https://github.com/pytorch/data.git@7772406#egg=torchdata
             pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: Build docs

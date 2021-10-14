@@ -1,10 +1,20 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
+import logging
 import os
 
-from torchdata.datapipes.iter import (
-    HttpReader,
-    IterableWrapper,
-)
+
+try:
+    from torchdata.datapipes.iter import (
+        HttpReader,
+        IterableWrapper,
+    )
+except ImportError:
+    logging.error(
+        "Package `torchdata` is required to be installed to use this dataset."
+        "Please use `pip install git+https://github.com/pytorch/data.git'"
+        "to install the package."
+    )
+
 from torchtext.data.datasets_utils import (
     _add_docstring_header,
     _create_dataset_directory,
