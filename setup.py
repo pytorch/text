@@ -86,12 +86,11 @@ setup_info = dict(
     description='Text utilities and datasets for PyTorch',
     long_description=read('README.rst'),
     license='BSD',
-
-    install_requires=[
-        'tqdm', 'requests', pytorch_package_dep, 'numpy', 'torchdata==0.1.0a0+7772406'
-    ],
     dependency_links=[
         "git+https://github.com/pytorch/data.git@7772406#egg=torchdata-0.1.0a0+7772406",
+    ],
+    install_requires=[
+        'tqdm', 'requests', pytorch_package_dep, 'numpy', 'torchdata==0.1.0a0+7772406'
     ],
     python_requires='>=3.5',
     classifiers=[

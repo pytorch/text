@@ -497,7 +497,7 @@ jobs:
             - v1-windows-dataset-vector-{{ checksum ".cachekey" }}
             - v1-windows-dataset-{{ checksum ".cachekey" }}
 
- 
+
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
@@ -545,6 +545,7 @@ jobs:
           command: |
             set -x
             conda install -y make python=${PYTHON_VERSION}
+            pip install git+https://github.com/pytorch/data#egg=torchdata
             pip install $(ls ~/workspace/torchtext*.whl) --pre -f "https://download.pytorch.org/whl/${UPLOAD_CHANNEL}/cpu/torch_${UPLOAD_CHANNEL}.html"
       - run:
           name: Build docs
