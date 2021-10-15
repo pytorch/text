@@ -4,9 +4,6 @@ tqdm
 # Downloading data and other files
 requests
 
-# Torchdata
-git+https://github.com/pytorch/data.git
-
 # Optional NLP tools
 nltk
 spacy

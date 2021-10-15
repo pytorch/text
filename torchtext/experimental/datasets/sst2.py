@@ -2,24 +2,24 @@
 import logging
 import os
 
-
-try:
-    from torchdata.datapipes.iter import (
-        HttpReader,
-        IterableWrapper,
-    )
-except ImportError:
-    logging.error(
-        "Package `torchdata` is required to be installed to use this dataset."
-        "Please use `pip install git+https://github.com/pytorch/data.git'"
-        "to install the package."
-    )
-
+from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _add_docstring_header,
     _create_dataset_directory,
     _wrap_split_argument,
 )
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import (
+        HttpReader,
+        IterableWrapper,
+    )
+else:
+    logging.error(
+        "Package `torchdata` is required to be installed to use this dataset."
+        "Please use `pip install git+https://github.com/pytorch/data.git'"
+        "to install the package."
+    )
 
 
 NUM_LINES = {
@@ -81,8 +81,8 @@ class SST2Dataset:
         extracted_files = cache_dp.read_from_zip()
 
         # Parse CSV file and yield data samples
-        return extracted_files.filter(
-            lambda x: self.split in x[0]
-        ).parse_csv(skip_lines=1, delimiter="\t").map(
-            lambda x: (x[0], x[1])
+        return (
+            extracted_files.filter(lambda x: self.split in x[0])
+            .parse_csv(skip_lines=1, delimiter="\t")
+            .map(lambda x: (x[0], x[1]))
         )

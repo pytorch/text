@@ -3,10 +3,12 @@ import json
 
 from torchtext.experimental.datasets import sst2
 
+from ..common.case_utils import skipIfNoModule
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
 class TestDataset(TorchtextTestCase):
+    @skipIfNoModule("torchdata")
     def test_sst2_dataset(self):
         split = ("train", "dev", "test")
         train_dp, dev_dp, test_dp = sst2.SST2(split=split)
