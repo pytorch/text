@@ -9,16 +9,18 @@ from torchtext.data.datasets_utils import (
     _wrap_split_argument,
 )
 
+logger = logging.getLogger(__name__)
+
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import (
         HttpReader,
         IterableWrapper,
     )
 else:
-    logging.error(
+    logger.warning(
         "Package `torchdata` is required to be installed to use this dataset."
-        "Please use `pip install git+https://github.com/pytorch/data.git'"
-        "to install the package."
+        "Please refer to https://github.com/pytorch/data for instructions on "
+        "how to install the package."
     )
 
 
