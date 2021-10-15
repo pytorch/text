@@ -77,27 +77,12 @@ class SST2Dataset:
             filepath_fn=lambda x: os.path.join(self.root, os.path.basename(x)),
         )
 
-        # do sanity check
-        check_cache_dp = cache_dp.check_hash(
-            {os.path.join(self.root, "SST-2.zip"): MD5}, "md5"
-        )
-
         # extract data from zip
-        extracted_files = check_cache_dp.read_from_zip()
-
-        # Filter extracted files and do sanity check
-        check_extracted_files = extracted_files.filter(
-            lambda x: self.split in x[0]
-        ).check_hash(
-            {
-                os.path.join(
-                    self.root, _EXTRACTED_FILES[self.split]
-                ): _EXTRACTED_FILES_MD5[self.split]
-            },
-            "md5",
-        )
+        extracted_files = cache_dp.read_from_zip()
 
         # Parse CSV file and yield data samples
-        return check_extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
+        return extracted_files.filter(
+            lambda x: self.split in x[0]
+        ).parse_csv(skip_lines=1, delimiter="\t").map(
             lambda x: (x[0], x[1])
         )
