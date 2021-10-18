@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from functools import partial
 
 from typing import Optional, Callable
-import torch
 from torch.hub import load_state_dict_from_url
 from torch.nn import Module
 import logging
@@ -51,11 +50,6 @@ class RobertaModelBundle:
         >>> output = classification_model(model_input)
         >>> output.shape
         torch.Size([1, 2])
-
-    Example - Working with locally saved model state dict
-        >>> import torch, torchtext
-        >>> xlmr_base = torchtext.models.XLMR_BASE_ENCODER
-        >>> model = xlmr_base.get_model_from_path(path="path/to/state_dict.pt")
     """
     _params: RobertaEncoderParams
     _path: Optional[str] = None
@@ -75,24 +69,6 @@ class RobertaModelBundle:
 
         dl_kwargs = {} if dl_kwargs is None else dl_kwargs
         state_dict = load_state_dict_from_url(self._path, **dl_kwargs)
-        if input_head is not None:
-            model.load_state_dict(state_dict, strict=False)
-        else:
-            model.load_state_dict(state_dict, strict=True)
-        return model
-
-    def get_model_from_path(self, path: str, head: Optional[Module] = None) -> RobertaModel:
-        if head is not None:
-            input_head = head
-            if self._head is not None:
-                logger.log("A custom head module was provided, discarding the default head module.")
-        else:
-            input_head = self._head
-
-        model = _get_model(self._params, input_head)
-
-        state_dict = torch.load(path)
-
         if input_head is not None:
             model.load_state_dict(state_dict, strict=False)
         else:
