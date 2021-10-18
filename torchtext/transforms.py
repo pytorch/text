@@ -41,9 +41,12 @@ class VocabTransform(Module):
 
     Example:
         >>> import torch
-        >>> from torchtext.vocab import vocab_from_file_object
-        >>> f = open('vocab.txt', 'r')
-        >>> vocab_transform = VocabTransform(vocab_from_file_object(f))
+        >>> from torchtext.vocab import vocab
+        >>> from torchtext.transforms import VocabTransform
+        >>> from collections import OrderedDict
+        >>> vocab_obj = vocab(OrderedDict([('a', 1), ('b', 1), ('c', 1)]))
+        >>> vocab_transform = VocabTransform(vocab_obj)
+        >>> output = vocab_transform([['a','b'],['a','b','c']])
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
