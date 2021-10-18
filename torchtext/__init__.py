@@ -1,10 +1,14 @@
+import os
 _TEXT_BUCKET = 'https://download.pytorch.org/models/text'
+_CACHE_DIR = os.path.expanduser('~/.torchtext/cache')
 
 from . import data
 from . import nn
 from . import datasets
 from . import utils
 from . import vocab
+from . import transforms
+from . import functional
 from . import models
 from . import experimental
 from . import legacy
@@ -21,6 +25,8 @@ __all__ = ['data',
            'datasets',
            'utils',
            'vocab',
+           'transforms',
+           'functional',
            'models',
            'experimental',
            'legacy']

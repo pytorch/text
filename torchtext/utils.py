@@ -8,7 +8,7 @@ import sys
 import zipfile
 import gzip
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
-
+from torchtext import _CACHE_DIR
 
 def reporthook(t):
     """
@@ -67,7 +67,7 @@ def _check_hash(path, hash_value, hash_type):
             raise RuntimeError("The hash of {} does not match. Delete the file manually and retry.".format(os.path.abspath(path)))
 
 
-def download_from_url(url, path=None, root='.data', overwrite=False, hash_value=None,
+def download_from_url(url, path=None, root=_CACHE_DIR, overwrite=False, hash_value=None,
                       hash_type="sha256"):
     """Download file, with logic (from tensor2tensor) for Google Drive. Returns
     the path to the downloaded file.

@@ -1,19 +1,18 @@
-from typing import List, Any
+import os
+import torch
 from torch.nn import Module
 from torch.hub import load_state_dict_from_url
+from torchtext import transforms
+from torchtext import functional
+
+from typing import List
 
 
 class XLMRobertaModelTransform(Module):
-    pad_idx: int
-    bos_idx: int
-    eos_idx: int
-    _vocab: Module
-    _sp_model: Any
-
     def __init__(
         self,
-        spm_model_url: str,
-        vocab_url: str,
+        vocab_path: str,
+        spm_model_path: str,
         bos_token: str = "<s>",
         cls_token: str = "<s>",
         pad_token: str = "<pad>",
@@ -22,7 +21,6 @@ class XLMRobertaModelTransform(Module):
         unk_token: str = "<unk>",
         mask_token: str = "<mask>",
         max_seq_len: int = 514,
-        truncate: bool = True,
     ):
         super().__init__()
         self.bos_token = bos_token
@@ -32,27 +30,38 @@ class XLMRobertaModelTransform(Module):
         self.mask_token = mask_token
         self.cls_token = cls_token
         self.sep_token = sep_token
-        self.truncate = truncate
         self.max_seq_len = max_seq_len
-        self.spm_model_url = spm_model_url
-        self.vocab_url = vocab_url
 
-    def forward(self, input: str) -> List[int]:
-        tokens: List[int] = [self.bos_idx] + self.vocab(self.sp_model.EncodeAsPieces(input))
-        if self.truncate:
-            tokens = tokens[: self.max_seq_len - 2]
-        tokens.append(self.eos_idx)
-        return tokens
+        self.token_transform = transforms.SpmTokenizerTransform(spm_model_path)
 
-    def load_state(self):
-        self.sp_model = load_state_dict_from_url(self.spm_model_url)
-        self.vocab = load_state_dict_from_url(self.vocab_url)
+        if os.path.exists(vocab_path):
+            self.vocab = torch.load(vocab_path)
+        else:
+            self.vocab = load_state_dict_from_url(vocab_path)
+
+        self.vocab_transform = transforms.VocabTransform(self.vocab)
         self.pad_idx = self.vocab[self.pad_token]
         self.bos_idx = self.vocab[self.bos_token]
         self.eos_idx = self.vocab[self.eos_token]
 
+    def forward(self, input: List[str],
+                add_bos: bool = True,
+                add_eos: bool = True,
+                truncate: bool = True) -> List[List[int]]:
+        tokens: List[List[int]] = self.vocab_transform(self.token_transform(input))
 
-def get_xlmr_transform(spm_model_url, vocab_url, **kwargs) -> XLMRobertaModelTransform:
-    transform = XLMRobertaModelTransform(spm_model_url, vocab_url, **kwargs)
-    transform.load_state()
+        if truncate:
+            tokens = functional.truncate(tokens, self.max_seq_len - 2)
+
+        if add_bos:
+            tokens = functional.add_token(tokens, self.bos_idx)
+
+        if add_eos:
+            tokens = functional.add_token(tokens, self.eos_idx, begin=False)
+
+        return tokens
+
+
+def get_xlmr_transform(vocab_path, spm_model_path, **kwargs) -> XLMRobertaModelTransform:
+    transform = XLMRobertaModelTransform(vocab_path, spm_model_path, **kwargs)
     return transform
