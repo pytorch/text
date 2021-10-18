@@ -29,6 +29,29 @@ class TestModels(TorchtextTestCase):
         expected = torch.load(asset_path)
         torch.testing.assert_close(actual, expected)
 
+    def test_xlmr_large_output(self):
+        asset_name = "xlmr.large.output.pt"
+        asset_path = get_asset_path(asset_name)
+        xlmr_base = torchtext.models.XLMR_LARGE_ENCODER
+        model = xlmr_base.get_model()
+        model = model.eval()
+        model_input = torch.tensor([[0, 43523, 52005, 3647, 13293, 113307, 40514, 2]])
+        actual = model(model_input)
+        expected = torch.load(asset_path)
+        torch.testing.assert_close(actual, expected)
+
+    def test_xlmr_large_jit_output(self):
+        asset_name = "xlmr.large.output.pt"
+        asset_path = get_asset_path(asset_name)
+        xlmr_base = torchtext.models.XLMR_LARGE_ENCODER
+        model = xlmr_base.get_model()
+        model = model.eval()
+        model_jit = torch.jit.script(model)
+        model_input = torch.tensor([[0, 43523, 52005, 3647, 13293, 113307, 40514, 2]])
+        actual = model_jit(model_input)
+        expected = torch.load(asset_path)
+        torch.testing.assert_close(actual, expected)
+
     def test_xlmr_transform(self):
         xlmr_base = torchtext.models.XLMR_BASE_ENCODER
         transform = xlmr_base.transform()
