@@ -59,11 +59,7 @@ class VocabTransform(Module):
         r"""
 
         Args:
-            input: list of tokens
-
-        Example:
-            >>> vocab_transform(['here', 'is', 'an', 'example'])
-
+            input: list of list tokens
         """
 
         output: List[List[int]] = []
