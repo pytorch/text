@@ -3,8 +3,9 @@ from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 import torchtext
 from typing import List
-
 import os
+
+from torchtext import _CACHE_DIR
 
 
 class SpmTokenizerTransform(Module):
@@ -23,7 +24,7 @@ class SpmTokenizerTransform(Module):
         if os.path.exists(sp_model_path):
             local_path = sp_model_path
         else:
-            local_path = download_from_url(sp_model_path)
+            local_path = download_from_url(url=sp_model_path, root=_CACHE_DIR)
         self.sp_model = load_sp_model(local_path)
 
     def forward(self, input: List[str]) -> List[List[str]]:
