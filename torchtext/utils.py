@@ -10,6 +10,7 @@ import gzip
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
 from torchtext import _CACHE_DIR
 
+
 def reporthook(t):
     """
     https://github.com/tqdm/tqdm.
