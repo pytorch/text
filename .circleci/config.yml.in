@@ -497,7 +497,7 @@ jobs:
             - v1-windows-dataset-vector-{{ checksum ".cachekey" }}
             - v1-windows-dataset-{{ checksum ".cachekey" }}
           {% endraw %}
- 
+
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.
