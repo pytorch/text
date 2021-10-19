@@ -3,6 +3,12 @@ from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence
 from typing import List, Optional
 
+__all__ = [
+    'to_tensor',
+    'truncate',
+    'add_token',
+]
+
 
 def to_tensor(input: List[List[int]], padding_value: Optional[int] = None) -> Tensor:
     if padding_value is None:

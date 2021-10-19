@@ -7,6 +7,11 @@ import os
 
 from torchtext import _CACHE_DIR
 
+__all__ = [
+    'SpmTokenizerTransform',
+    'VocabTransform',
+]
+
 
 class SpmTokenizerTransform(Module):
     """
