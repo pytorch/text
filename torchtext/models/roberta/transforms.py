@@ -63,5 +63,4 @@ class XLMRobertaModelTransform(Module):
 
 
 def get_xlmr_transform(vocab_path, spm_model_path, **kwargs) -> XLMRobertaModelTransform:
-    transform = XLMRobertaModelTransform(vocab_path, spm_model_path, **kwargs)
-    return transform
+    return XLMRobertaModelTransform(vocab_path, spm_model_path, **kwargs)
