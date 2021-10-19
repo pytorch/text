@@ -83,7 +83,7 @@ smoke_test_common: &smoke_test_common
 jobs:
   circleci_consistency:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -234,7 +234,7 @@ jobs:
   # Requires org-member context
   binary_wheel_upload:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
     steps:
       - attach_workspace:
           at: ~/workspace
@@ -497,7 +497,7 @@ jobs:
             - v1-windows-dataset-vector-{{ checksum ".cachekey" }}
             - v1-windows-dataset-{{ checksum ".cachekey" }}
 
- 
+
       - run:
           name: Run tests
           # Downloading embedding vector takes long time.

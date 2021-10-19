@@ -247,7 +247,7 @@ def _create_dataset_directory(dataset_name):
                 len(argspec.kwonlyargs) == 0 and
                 len(argspec.annotations) == 0
                 ):
-            raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(func))
+            raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
         @functools.wraps(func)
         def wrapper(root=os.path.expanduser('~/.torchtext/cache'), *args, **kwargs):
