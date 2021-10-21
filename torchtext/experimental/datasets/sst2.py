@@ -1,5 +1,4 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-import logging
 import os
 
 from torchtext._internal.module_utils import is_module_available
@@ -9,20 +8,11 @@ from torchtext.data.datasets_utils import (
     _wrap_split_argument,
 )
 
-logger = logging.getLogger(__name__)
-
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import (
         HttpReader,
         IterableWrapper,
     )
-else:
-    logger.warning(
-        "Package `torchdata` is required to be installed to use this dataset."
-        "Please refer to https://github.com/pytorch/data for instructions on "
-        "how to install the package."
-    )
-
 
 NUM_LINES = {
     "train": 67349,
@@ -68,6 +58,13 @@ class SST2Dataset:
     """
 
     def __init__(self, root, split):
+        if not is_module_available("torchdata"):
+            raise ModuleNotFoundError(
+                "Package `torchdata` is required to be installed to use this dataset."
+                "Please refer to https://github.com/pytorch/data for instructions on "
+                "how to install the package."
+            )
+
         self.root = root
         self.split = split
 
