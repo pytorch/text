@@ -83,7 +83,7 @@ class ToTensor(Module):
     r"""Convert input to torch tensor
 
     Args:
-        padding_value (int, optional): Pad value to make each input in the batch of equal length
+        padding_value (int, optional): Pad value to make each input in the batch of length equal to the longest sequence in the batch.
     """
 
     def __init__(self, padding_value: Optional[int] = None) -> None:
@@ -112,7 +112,7 @@ class LabelToIndex(Module):
     ):
 
         assert label_names or label_path, "label_names or label_path is required"
-        assert not (label_names and label_path), "label_names and label_path are mutual exclusive"
+        assert not (label_names and label_path), "label_names and label_path are mutually exclusive"
         super().__init__()
 
         if label_path:
