@@ -61,14 +61,16 @@ class TestTransforms(TorchtextTestCase):
         expected = [2, 1, 0]
         self.assertEqual(actual, expected)
 
+        asset_name = "label_names.txt"
+        asset_path = get_asset_path(asset_name)
+        transform = transforms.LabelToIndex(label_path=asset_path)
+        actual = transform(label_names)
+        expected = [0, 1, 2]
+        self.assertEqual(actual, expected)
+
     def test_labeltoindex_jit(self):
         label_names = ['test', 'label', 'indices']
         transform_jit = torch.jit.script(transforms.LabelToIndex(label_names=label_names))
         actual = transform_jit(label_names)
         expected = [0, 1, 2]
-        self.assertEqual(actual, expected)
-
-        transform_jit = torch.jit.script(transforms.LabelToIndex(label_names=label_names, sort_names=True))
-        actual = transform_jit(label_names)
-        expected = [2, 1, 0]
         self.assertEqual(actual, expected)

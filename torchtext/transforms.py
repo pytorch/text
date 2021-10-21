@@ -103,8 +103,8 @@ class LabelToIndex(Module):
     Transform labels from string names to ids.
 
     Args:
-        label_names (List[str], Optional): a list of label names
-        label_path (str, Optional): a path to file containing label names containing 1 label per line.
+        label_names (List[str], Optional): a list of unique label names
+        label_path (str, Optional): a path to file containing unique label names containing 1 label per line.
     """
 
     def __init__(
