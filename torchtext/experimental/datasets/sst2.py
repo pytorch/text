@@ -1,5 +1,4 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-import logging
 import os
 
 from torchtext._internal.module_utils import is_module_available
@@ -9,20 +8,11 @@ from torchtext.data.datasets_utils import (
     _wrap_split_argument,
 )
 
-logger = logging.getLogger(__name__)
-
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import (
         HttpReader,
         IterableWrapper,
     )
-else:
-    logger.warning(
-        "Package `torchdata` is required to be installed to use this dataset."
-        "Please refer to https://github.com/pytorch/data for instructions on "
-        "how to install the package."
-    )
-
 
 NUM_LINES = {
     "train": 67349,
@@ -33,10 +23,12 @@ NUM_LINES = {
 MD5 = "9f81648d4199384278b86e315dac217c"
 URL = "https://dl.fbaipublicfiles.com/glue/data/SST-2.zip"
 
+_PATH = "SST-2.zip"
+
 _EXTRACTED_FILES = {
-    "train": f"{os.sep}".join(["SST-2", "train.tsv"]),
-    "dev": f"{os.sep}".join(["SST-2", "dev.tsv"]),
-    "test": f"{os.sep}".join(["SST-2", "test.tsv"]),
+    "train": f"{os.sep}".join([_PATH, "SST-2", "train.tsv"]),
+    "dev": f"{os.sep}".join([_PATH, "SST-2", "dev.tsv"]),
+    "test": f"{os.sep}".join([_PATH, "SST-2", "test.tsv"]),
 }
 
 _EXTRACTED_FILES_MD5 = {
@@ -68,6 +60,13 @@ class SST2Dataset:
     """
 
     def __init__(self, root, split):
+        if not is_module_available("torchdata"):
+            raise ModuleNotFoundError(
+                "Package `torchdata` is required to be installed to use this dataset."
+                "Please refer to https://github.com/pytorch/data for instructions on "
+                "how to install the package."
+            )
+
         self.root = root
         self.split = split
 
@@ -79,12 +78,17 @@ class SST2Dataset:
             filepath_fn=lambda x: os.path.join(self.root, os.path.basename(x)),
         )
 
+        # do sanity check
+        check_cache_dp = cache_dp.check_hash(
+            {os.path.join(self.root, "SST-2.zip"): MD5}, "md5"
+        )
+
         # extract data from zip
-        extracted_files = cache_dp.read_from_zip()
+        extracted_files = check_cache_dp.read_from_zip().filter(
+            lambda x: self.split in x[0]
+        )
 
         # Parse CSV file and yield data samples
-        return (
-            extracted_files.filter(lambda x: self.split in x[0])
-            .parse_csv(skip_lines=1, delimiter="\t")
-            .map(lambda x: (x[0], x[1]))
+        return extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
+            lambda x: (x[0], x[1])
         )
