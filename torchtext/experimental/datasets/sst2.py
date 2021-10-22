@@ -68,31 +68,27 @@ class SST2Dataset(IterableDataset):
                 "how to install the package."
             )
 
-        self.root = root
-        self.split = split
-        self.dp = self.get_datapipe()
+        self._dp = self._get_datapipe(root, split)
 
     def __iter__(self):
-        for data in self.dp:
+        for data in self._dp:
             yield data
 
-    def get_datapipe(self):
+    def _get_datapipe(self, root, split):
         # cache data on-disk
         cache_dp = IterableWrapper([URL]).on_disk_cache(
             HttpReader,
             op_map=lambda x: (x[0], x[1].read()),
-            filepath_fn=lambda x: os.path.join(self.root, os.path.basename(x)),
+            filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
         )
 
         # do sanity check
         check_cache_dp = cache_dp.check_hash(
-            {os.path.join(self.root, "SST-2.zip"): MD5}, "md5"
+            {os.path.join(root, "SST-2.zip"): MD5}, "md5"
         )
 
         # extract data from zip
-        extracted_files = check_cache_dp.read_from_zip().filter(
-            lambda x: self.split in x[0]
-        )
+        extracted_files = check_cache_dp.read_from_zip().filter(lambda x: split in x[0])
 
         # Parse CSV file and yield data samples
         return extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
