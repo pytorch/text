@@ -32,7 +32,7 @@ class XLMRobertaModelTransform(Module):
         self.sep_token = sep_token
         self.max_seq_len = max_seq_len
 
-        self.token_transform = transforms.SpmTokenizerTransform(spm_model_path)
+        self.token_transform = transforms.SentencePieceTokenizer(spm_model_path)
 
         if os.path.exists(vocab_path):
             self.vocab = torch.load(vocab_path)
