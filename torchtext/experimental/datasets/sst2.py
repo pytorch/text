@@ -1,6 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 import os
 
+from torch.utils.data.dataset import IterableDataset
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _add_docstring_header,
@@ -50,10 +51,10 @@ DATASET_NAME = "SST2"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
 def SST2(root, split):
-    return SST2Dataset(root, split).get_datapipe()
+    return SST2Dataset(root, split)
 
 
-class SST2Dataset:
+class SST2Dataset(IterableDataset):
     """The SST2 dataset uses torchdata datapipes end-2-end.
     To avoid download at every epoch, we cache the data on-disk
     We do sanity check on dowloaded and extracted data
@@ -69,6 +70,11 @@ class SST2Dataset:
 
         self.root = root
         self.split = split
+        self.dp = self.get_datapipe()
+
+    def __iter__(self):
+        for data in self.dp:
+            yield data
 
     def get_datapipe(self):
         # cache data on-disk
