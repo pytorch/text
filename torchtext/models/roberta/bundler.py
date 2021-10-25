@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import partial
 
 from typing import Optional, Callable
-from torch.hub import load_state_dict_from_url
+from torchtext._download_hooks import load_state_dict_from_url
 from torch.nn import Module
 import logging
 
