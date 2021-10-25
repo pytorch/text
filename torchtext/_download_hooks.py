@@ -1,6 +1,8 @@
 import requests
 import re
 from tqdm import tqdm
+# This is to allow monkey-patching in fbcode
+from torch.hub import load_state_dict_from_url # noqa
 
 
 def _stream_response(r, chunk_size=16 * 1024):
