@@ -4,6 +4,9 @@ from tqdm import tqdm
 # This is to allow monkey-patching in fbcode
 from torch.hub import load_state_dict_from_url # noqa
 
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import HttpReader # noqa F401
+
 
 def _stream_response(r, chunk_size=16 * 1024):
     total_size = int(r.headers.get('Content-length', 0))
