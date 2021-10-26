@@ -56,10 +56,10 @@ class RobertaModelBundle:
     _head: Optional[Module] = None
     transform: Optional[Callable] = None
 
-    def get_model(self, load_weights=True, head: Optional[Module] = None, *, dl_kwargs=None) -> RobertaModel:
+    def get_model(self, head: Optional[Module] = None, load_weights=True, *, dl_kwargs=None) -> RobertaModel:
 
         if load_weights:
-            assert self._path is not None, "load_weights cannot be True when _path is not set"
+            assert self._path is not None, "load_weights cannot be True. The pre-trained model weights are not available for the current object"
 
         if head is not None:
             input_head = head
