@@ -56,7 +56,10 @@ class RobertaModelBundle:
     _head: Optional[Module] = None
     transform: Optional[Callable] = None
 
-    def get_model(self, head: Optional[Module] = None, *, dl_kwargs=None) -> RobertaModel:
+    def get_model(self, load_weigths=True, head: Optional[Module] = None, *, dl_kwargs=None) -> RobertaModel:
+
+        if load_weigths:
+            assert self._path is not None, "load_weights cannot be True when _path is not set"
 
         if head is not None:
             input_head = head
@@ -66,6 +69,9 @@ class RobertaModelBundle:
             input_head = self._head
 
         model = _get_model(self._params, input_head)
+
+        if not load_weigths:
+            return model
 
         dl_kwargs = {} if dl_kwargs is None else dl_kwargs
         state_dict = load_state_dict_from_url(self._path, **dl_kwargs)
