@@ -1,7 +1,7 @@
 import os
 import torch
 from torch.nn import Module
-from torch.hub import load_state_dict_from_url
+from torchtext._download_hooks import load_state_dict_from_url
 from torchtext import transforms
 from torchtext import functional
 
