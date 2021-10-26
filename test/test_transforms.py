@@ -15,6 +15,9 @@ class TestTransforms(TorchtextTestCase):
         actual = transform(["Hello World!, how are you?"])
         expected = [['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']]
         self.assertEqual(actual, expected)
+        actual = transform("Hello World!, how are you?")
+        expected = ['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']
+        self.assertEqual(actual, expected)
 
     def test_spmtokenizer_jit(self):
         asset_name = "spm_example.model"
@@ -24,11 +27,21 @@ class TestTransforms(TorchtextTestCase):
         actual = transform_jit(["Hello World!, how are you?"])
         expected = [['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']]
         self.assertEqual(actual, expected)
+        actual = transform_jit("Hello World!, how are you?")
+        expected = ['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']
+        self.assertEqual(actual, expected)
 
     def test_vocab_transform(self):
         vocab_obj = vocab(OrderedDict([('a', 1), ('b', 1), ('c', 1)]))
         transform = transforms.VocabTransform(vocab_obj)
         actual = transform([['a', 'b', 'c']])
+        expected = [[0, 1, 2]]
+        self.assertEqual(actual, expected)
+
+    def test_vocab_transform_jit(self):
+        vocab_obj = vocab(OrderedDict([('a', 1), ('b', 1), ('c', 1)]))
+        transform_jit = torch.jit.script(transforms.VocabTransform(vocab_obj))
+        actual = transform_jit([['a', 'b', 'c']])
         expected = [[0, 1, 2]]
         self.assertEqual(actual, expected)
 

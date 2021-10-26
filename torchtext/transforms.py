@@ -5,7 +5,7 @@ import torch
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 from torchtext.vocab import Vocab
-from typing import List, Optional
+from typing import List, Optional, Union
 import os
 
 from torchtext import _CACHE_DIR
@@ -36,11 +36,14 @@ class SentencePieceTokenizer(Module):
             local_path = download_from_url(url=sp_model_path, root=_CACHE_DIR)
         self.sp_model = load_sp_model(local_path)
 
-    def forward(self, input: List[str]) -> List[List[str]]:
-        tokens: List[List[str]] = []
-        for text in input:
-            tokens.append(self.sp_model.EncodeAsPieces(text))
-        return tokens
+    def forward(self, input: Union[str, List[str]]) -> Union[List[str], List[List[str]]]:
+        if isinstance(input, list):
+            tokens: List[List[str]] = []
+            for text in input:
+                tokens.append(self.sp_model.EncodeAsPieces(text))
+            return tokens
+        else:
+            return self.sp_model.EncodeAsPieces(input)
 
 
 class VocabTransform(Module):
@@ -65,18 +68,22 @@ class VocabTransform(Module):
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
 
-    def forward(self, input: List[List[str]]) -> List[List[int]]:
+    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[str], List[List[int]]]:
         r"""
 
         Args:
             input: list of list tokens
         """
 
-        output: List[List[int]] = []
-        for tokens in input:
-            output.append(self.vocab.lookup_indices(tokens))
+        if isinstance(input, list):
+            if isinstance(input[0], list):
+                output: List[List[int]] = []
+                for tokens in input:
+                    output.append(self.vocab.lookup_indices(tokens))
 
-        return output
+                return output
+            else:
+                return self.vocab.lookup_indices(input)
 
 
 class ToTensor(Module):
@@ -126,8 +133,11 @@ class LabelToIndex(Module):
         self._label_vocab = Vocab(torch.classes.torchtext.Vocab(label_names, 0))
         self._label_names = self._label_vocab.get_itos()
 
-    def forward(self, labels: List[str]) -> List[int]:
-        return self._label_vocab.lookup_indices(labels)
+    def forward(self, labels: Union[str, List[str]]) -> Union[int, List[int]]:
+        if isinstance(labels, list):
+            return self._label_vocab.lookup_indices(labels)
+        else:
+            return self._label_vocab.__getitem__(labels)
 
     @property
     def label_names(self) -> List[str]:
