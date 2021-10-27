@@ -47,14 +47,9 @@ class XLMRobertaModelTransform(Module):
     def forward(self, input: Union[str, List[str]],
                 add_bos: bool = True,
                 add_eos: bool = True,
-                truncate: bool = True) -> Union[List[str], List[List[int]]]:
+                truncate: bool = True) -> Union[List[int], List[List[int]]]:
 
-        if isinstance(input, list):
-            tokens_str: List[List[str]] = self.token_transform(input)
-            tokens: List[List[int]] = self.vocab_transform(tokens_str)
-        else:
-            tokens_str: List[str] = self.token_transform(input)
-            tokens: List[int] = self.vocab_transform(tokens_str)
+        tokens = self.vocab_transform(self.token_transform(input))
 
         if truncate:
             tokens = functional.truncate(tokens, self.max_seq_len - 2)

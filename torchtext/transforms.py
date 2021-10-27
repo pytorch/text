@@ -68,22 +68,21 @@ class VocabTransform(Module):
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
 
-    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[str], List[List[int]]]:
+    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[int], List[List[int]]]:
         r"""
 
         Args:
             input: list of list tokens
         """
 
-        if isinstance(input, list):
-            if isinstance(input[0], list):
-                output: List[List[int]] = []
-                for tokens in input:
-                    output.append(self.vocab.lookup_indices(tokens))
+        if torch.jit.isinstance(input, List[str]):
+            return self.vocab.lookup_indices(input)
+        else:
+            output: List[List[int]] = []
+            for tokens in input:
+                output.append(self.vocab.lookup_indices(tokens))
 
-                return output
-            else:
-                return self.vocab.lookup_indices(input)
+            return output
 
 
 class ToTensor(Module):

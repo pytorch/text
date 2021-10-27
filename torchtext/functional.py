@@ -12,7 +12,9 @@ __all__ = [
 
 def to_tensor(input: Union[List[int], List[List[int]]], padding_value: Optional[int] = None) -> Tensor:
 
-    if isinstance(input[0], list):
+    if torch.jit.isinstance(input, List[int]):
+        return torch.tensor(input, dtype=torch.long)
+    else:
         if padding_value is None:
             output = torch.tensor(input, dtype=torch.long)
             return output
@@ -23,24 +25,27 @@ def to_tensor(input: Union[List[int], List[List[int]]], padding_value: Optional[
                 padding_value=float(padding_value)
             )
             return output
+
+
+def truncate(input: Union[List[int], List[List[int]]], max_seq_len: int) -> Union[List[int], List[List[int]]]:
+    if torch.jit.isinstance(input, List[int]):
+        return input[:max_seq_len]
     else:
-        return torch.tensor(input, dtype=torch.long)
-
-
-def truncate(input: Union[List[str], List[List[int]]], max_seq_len: int) -> Union[List[int], List[List[int]]]:
-    if isinstance(input[0], list):
         output: List[List[int]] = []
 
         for ids in input:
             output.append(ids[:max_seq_len])
 
         return output
-    else:
-        return input[:max_seq_len]
 
 
 def add_token(input: Union[List[int], List[List[int]]], token_id: int, begin: bool = True) -> Union[List[int], List[List[int]]]:
-    if isinstance(input, list):
+    if torch.jit.isinstance(input, List[int]):
+        if begin:
+            return [token_id] + input
+        else:
+            return input + [token_id]
+    else:
         output: List[List[int]] = []
 
         if begin:
@@ -51,9 +56,3 @@ def add_token(input: Union[List[int], List[List[int]]], token_id: int, begin: bo
                 output.append(ids + [token_id])
 
         return output
-
-    else:
-        if begin:
-            return [token_id] + input
-        else:
-            return input + [token_id]
