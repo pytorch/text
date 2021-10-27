@@ -10,10 +10,11 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import (
-        HttpReader,
-        IterableWrapper,
-    )
+    from torchdata.datapipes.iter import IterableWrapper
+    # we import HttpReader from _download_hooks so we can swap out public URLs
+    # with interal URLs when the dataset is used within Facebook
+    from torchtext._download_hooks import HttpReader
+
 
 NUM_LINES = {
     "train": 67349,
