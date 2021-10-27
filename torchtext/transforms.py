@@ -96,7 +96,7 @@ class ToTensor(Module):
         super().__init__()
         self.padding_value = padding_value
 
-    def forward(self, input: List[List[int]]) -> Tensor:
+    def forward(self, input: Union[List[int], List[List[int]]]) -> Tensor:
         r"""
         Args:
 
