@@ -1,4 +1,3 @@
-import os
 import torch
 from torchtext import transforms
 from torchtext.vocab import vocab

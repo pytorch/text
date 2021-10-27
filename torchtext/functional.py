@@ -11,7 +11,6 @@ __all__ = [
 
 
 def to_tensor(input: Union[List[int], List[List[int]]], padding_value: Optional[int] = None) -> Tensor:
-
     if torch.jit.isinstance(input, List[int]):
         return torch.tensor(input, dtype=torch.long)
     else:
