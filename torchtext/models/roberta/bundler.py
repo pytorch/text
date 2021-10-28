@@ -61,6 +61,10 @@ class RobertaModelBundle:
         if load_weights:
             assert self._path is not None, "load_weights cannot be True. The pre-trained model weights are not available for the current object"
 
+        if freeze_encoder:
+            if not load_weights or not self._path:
+                logger.warn("The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights.")
+
         if head is not None:
             input_head = head
             if self._head is not None:
