@@ -11,6 +11,8 @@ import torch.nn as nn
 from .modules import (
     TransformerEncoder,
 )
+import logging
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -103,6 +105,12 @@ class RobertaModel(Module):
         return x
 
 
-def _get_model(params: RobertaEncoderParams, head: Module) -> RobertaModel:
+def _get_model(params: RobertaEncoderParams, head: Optional[Module] = None, freeze_encoder: bool = False) -> RobertaModel:
     encoder = RobertaEncoder(**asdict(params))
+    if freeze_encoder:
+        for param in encoder.parameters():
+            param.requires_grad = False
+
+        logger.info("Encoder weights are frozen")
+
     return RobertaModel(encoder, head)
