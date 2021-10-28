@@ -37,7 +37,7 @@ class SentencePieceTokenizer(Module):
         self.sp_model = load_sp_model(local_path)
 
     def forward(self, input: Union[str, List[str]]) -> Union[List[str], List[List[str]]]:
-        if isinstance(input, list):
+        if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
                 tokens.append(self.sp_model.EncodeAsPieces(text))
@@ -92,16 +92,17 @@ class ToTensor(Module):
         padding_value (int, optional): Pad value to make each input in the batch of length equal to the longest sequence in the batch.
     """
 
-    def __init__(self, padding_value: Optional[int] = None) -> None:
+    def __init__(self, padding_value: Optional[int] = None, dtype: Optional[torch.dtype] = torch.long) -> None:
         super().__init__()
         self.padding_value = padding_value
+        self.dtype = dtype
 
     def forward(self, input: Union[List[int], List[List[int]]]) -> Tensor:
         r"""
         Args:
 
         """
-        return F.to_tensor(input, padding_value=self.padding_value)
+        return F.to_tensor(input, padding_value=self.padding_value, dtype=self.dtype)
 
 
 class LabelToIndex(Module):
@@ -133,7 +134,7 @@ class LabelToIndex(Module):
         self._label_names = self._label_vocab.get_itos()
 
     def forward(self, labels: Union[str, List[str]]) -> Union[int, List[int]]:
-        if isinstance(labels, list):
+        if torch.jit.isinstance(labels, List[str]):
             return self._label_vocab.lookup_indices(labels)
         else:
             return self._label_vocab.__getitem__(labels)

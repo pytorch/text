@@ -10,16 +10,16 @@ __all__ = [
 ]
 
 
-def to_tensor(input: Union[List[int], List[List[int]]], padding_value: Optional[int] = None) -> Tensor:
+def to_tensor(input: Union[List[int], List[List[int]]], padding_value: Optional[int] = None, dtype: Optional[torch.dtype] = torch.long) -> Tensor:
     if torch.jit.isinstance(input, List[int]):
         return torch.tensor(input, dtype=torch.long)
     else:
         if padding_value is None:
-            output = torch.tensor(input, dtype=torch.long)
+            output = torch.tensor(input, dtype=dtype)
             return output
         else:
             output = pad_sequence(
-                [torch.tensor(ids, dtype=torch.long) for ids in input],
+                [torch.tensor(ids, dtype=dtype) for ids in input],
                 batch_first=True,
                 padding_value=float(padding_value)
             )
