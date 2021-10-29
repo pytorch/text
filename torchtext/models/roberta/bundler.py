@@ -56,10 +56,14 @@ class RobertaModelBundle:
     _head: Optional[Module] = None
     transform: Optional[Callable] = None
 
-    def get_model(self, head: Optional[Module] = None, load_weights=True, *, dl_kwargs=None) -> RobertaModel:
+    def get_model(self, head: Optional[Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> RobertaModel:
 
         if load_weights:
             assert self._path is not None, "load_weights cannot be True. The pre-trained model weights are not available for the current object"
+
+        if freeze_encoder:
+            if not load_weights or not self._path:
+                logger.warn("The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights.")
 
         if head is not None:
             input_head = head
@@ -68,7 +72,7 @@ class RobertaModelBundle:
         else:
             input_head = self._head
 
-        model = _get_model(self._params, input_head)
+        model = _get_model(self._params, input_head, freeze_encoder)
 
         if not load_weights:
             return model
