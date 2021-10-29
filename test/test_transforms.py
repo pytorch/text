@@ -12,8 +12,13 @@ class TestTransforms(TorchtextTestCase):
         asset_name = "spm_example.model"
         asset_path = get_asset_path(asset_name)
         transform = transforms.SentencePieceTokenizer(asset_path)
+
         actual = transform(["Hello World!, how are you?"])
         expected = [['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']]
+        self.assertEqual(actual, expected)
+
+        actual = transform("Hello World!, how are you?")
+        expected = ['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']
         self.assertEqual(actual, expected)
 
     def test_spmtokenizer_jit(self):
@@ -21,23 +26,51 @@ class TestTransforms(TorchtextTestCase):
         asset_path = get_asset_path(asset_name)
         transform = transforms.SentencePieceTokenizer(asset_path)
         transform_jit = torch.jit.script(transform)
+
         actual = transform_jit(["Hello World!, how are you?"])
         expected = [['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']]
+        self.assertEqual(actual, expected)
+
+        actual = transform_jit("Hello World!, how are you?")
+        expected = ['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']
         self.assertEqual(actual, expected)
 
     def test_vocab_transform(self):
         vocab_obj = vocab(OrderedDict([('a', 1), ('b', 1), ('c', 1)]))
         transform = transforms.VocabTransform(vocab_obj)
+
         actual = transform([['a', 'b', 'c']])
         expected = [[0, 1, 2]]
+        self.assertEqual(actual, expected)
+
+        actual = transform(['a', 'b', 'c'])
+        expected = [0, 1, 2]
+        self.assertEqual(actual, expected)
+
+    def test_vocab_transform_jit(self):
+        vocab_obj = vocab(OrderedDict([('a', 1), ('b', 1), ('c', 1)]))
+        transform_jit = torch.jit.script(transforms.VocabTransform(vocab_obj))
+
+        actual = transform_jit([['a', 'b', 'c']])
+        expected = [[0, 1, 2]]
+        self.assertEqual(actual, expected)
+
+        actual = transform_jit(['a', 'b', 'c'])
+        expected = [0, 1, 2]
         self.assertEqual(actual, expected)
 
     def test_totensor(self):
         input = [[1, 2], [1, 2, 3]]
         padding_value = 0
         transform = transforms.ToTensor(padding_value=padding_value)
+
         actual = transform(input)
         expected = torch.tensor([[1, 2, 0], [1, 2, 3]], dtype=torch.long)
+        torch.testing.assert_close(actual, expected)
+
+        input = [1, 2]
+        actual = transform(input)
+        expected = torch.tensor([1, 2], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
     def test_totensor_jit(self):
@@ -45,8 +78,14 @@ class TestTransforms(TorchtextTestCase):
         padding_value = 0
         transform = transforms.ToTensor(padding_value=padding_value)
         transform_jit = torch.jit.script(transform)
+
         actual = transform_jit(input)
         expected = torch.tensor([[1, 2, 0], [1, 2, 3]], dtype=torch.long)
+        torch.testing.assert_close(actual, expected)
+
+        input = [1, 2]
+        actual = transform_jit(input)
+        expected = torch.tensor([1, 2], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
     def test_labeltoindex(self):
@@ -61,6 +100,10 @@ class TestTransforms(TorchtextTestCase):
         expected = [2, 1, 0]
         self.assertEqual(actual, expected)
 
+        actual = transform("indices")
+        expected = 0
+        self.assertEqual(actual, expected)
+
         asset_name = "label_names.txt"
         asset_path = get_asset_path(asset_name)
         transform = transforms.LabelToIndex(label_path=asset_path)
@@ -73,4 +116,8 @@ class TestTransforms(TorchtextTestCase):
         transform_jit = torch.jit.script(transforms.LabelToIndex(label_names=label_names))
         actual = transform_jit(label_names)
         expected = [0, 1, 2]
+        self.assertEqual(actual, expected)
+
+        actual = transform_jit("test")
+        expected = 0
         self.assertEqual(actual, expected)

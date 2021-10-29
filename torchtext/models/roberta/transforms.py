@@ -5,7 +5,7 @@ from torchtext._download_hooks import load_state_dict_from_url
 from torchtext import transforms
 from torchtext import functional
 
-from typing import List
+from typing import List, Union
 
 
 class XLMRobertaModelTransform(Module):
@@ -44,11 +44,12 @@ class XLMRobertaModelTransform(Module):
         self.bos_idx = self.vocab[self.bos_token]
         self.eos_idx = self.vocab[self.eos_token]
 
-    def forward(self, input: List[str],
+    def forward(self, input: Union[str, List[str]],
                 add_bos: bool = True,
                 add_eos: bool = True,
-                truncate: bool = True) -> List[List[int]]:
-        tokens: List[List[int]] = self.vocab_transform(self.token_transform(input))
+                truncate: bool = True) -> Union[List[int], List[List[int]]]:
+
+        tokens = self.vocab_transform(self.token_transform(input))
 
         if truncate:
             tokens = functional.truncate(tokens, self.max_seq_len - 2)
