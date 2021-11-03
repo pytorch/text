@@ -99,6 +99,12 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
                       )
 )
 
+XLMR_BASE_ENCODER.__doc__ = (
+    '''
+    '''
+)
+
+
 XLMR_LARGE_ENCODER = RobertaModelBundle(
     _path=os.path.join(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
     _params=RobertaEncoderParams(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
@@ -106,4 +112,9 @@ XLMR_LARGE_ENCODER = RobertaModelBundle(
                       vocab_path=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
                       spm_model_path=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
                       )
+)
+
+XLMR_LARGE_ENCODER.__doc__ = (
+    '''
+    '''
 )
