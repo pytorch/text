@@ -7,7 +7,9 @@ from torchtext._torchtext import (
 
 
 def vocab(ordered_dict: Dict, min_freq: int = 1) -> Vocab:
-    r"""Factory method for creating a vocab object which maps tokens to indices.
+    r"""vocab(ordered_dict: Dict, min_freq: int = 1) -> torchtext.vocab.Vocab
+
+    Factory method for creating a vocab object which maps tokens to indices.
 
     Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
     Therefore if sorting by token frequency is important to the user, the `ordered_dict` should be created in a way to reflect this.

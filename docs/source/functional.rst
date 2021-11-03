@@ -7,19 +7,19 @@ torchtext.functional
 .. automodule:: torchtext.functional
 .. currentmodule:: torchtext.functional
 
-:hidden:`to_tensor`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+to_tensor
+---------
 
 .. autofunction:: to_tensor
 
 
-:hidden:`truncate`
-~~~~~~~~~~~~~~~~~~~~~~~~
+truncate
+--------
 
 .. autofunction:: truncate
 
 
-:hidden:`add_token`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+add_token
+---------
 
 .. autofunction:: add_token

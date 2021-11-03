@@ -23,7 +23,8 @@ from torchtext import _TEXT_BUCKET
 
 @dataclass
 class RobertaModelBundle:
-    """
+    """RobertaModelBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)
+
     Example - Pretrained encoder
         >>> import torch, torchtext
         >>> xlmr_base = torchtext.models.XLMR_BASE_ENCODER
@@ -57,6 +58,8 @@ class RobertaModelBundle:
     transform: Optional[Callable] = None
 
     def get_model(self, head: Optional[Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> RobertaModel:
+        r"""get_model(head: Optional[torch.nn.Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> torctext.models.RobertaModel
+        """
 
         if load_weights:
             assert self._path is not None, "load_weights cannot be True. The pre-trained model weights are not available for the current object"
@@ -101,6 +104,9 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
 
 XLMR_BASE_ENCODER.__doc__ = (
     '''
+    XLMR Encoder with base configuration
+
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
 )
 
@@ -116,5 +122,8 @@ XLMR_LARGE_ENCODER = RobertaModelBundle(
 
 XLMR_LARGE_ENCODER.__doc__ = (
     '''
+    XLMR Encoder with Large configuration
+
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage. 
     '''
 )

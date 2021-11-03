@@ -7,26 +7,33 @@ torchtext.transforms
 .. automodule:: torchtext.transforms
 .. currentmodule:: torchtext.transforms
 
-:hidden:`SentencePieceTokenizer`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Transforms are common text transforms. They can be chained together using :class:`torch.nn.Sequential`
 
-.. autofunction:: SentencePieceTokenizer
+SentencePieceTokenizer
+----------------------
 
+.. autoclass:: SentencePieceTokenizer
 
-:hidden:`VocabTransform`
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autofunction:: VocabTransform
+   .. automethod:: forward
 
 
-:hidden:`ToTensor`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+VocabTransform
+--------------
 
-.. autofunction:: ToTensor
+.. autoclass:: VocabTransform
 
+   .. automethod:: forward
 
-:hidden:`LabelToIndex`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ToTensor
+--------
 
-.. autofunction:: LabelToIndex
+.. autoclass:: ToTensor
 
+   .. automethod:: forward
+ 
+LabelToIndex
+------------
+
+.. autoclass:: LabelToIndex
+
+   .. automethod:: forward
