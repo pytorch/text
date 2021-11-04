@@ -52,7 +52,7 @@ class RobertaModelBundle:
         torch.Size([1, 2])
 
     Example - User-specified configuration and checkpoint
-        >>> from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead 
+        >>> from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead
         >>> model_weights_path = "https://download.pytorch.org/models/text/xlmr.base.encoder.pt"
         >>> roberta_encoder_conf = RobertaEncoderConf(vocab_size=250002)
         >>> roberta_bundle = RobertaModelBundle(_params=roberta_encoder_conf, _path=model_weights_path)
