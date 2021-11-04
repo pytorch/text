@@ -98,6 +98,15 @@ class RobertaClassificationHead(nn.Module):
 
 
 class RobertaModel(Module):
+    """
+
+    Example - Instantiate model with user-specified configuration
+        >>> from torchtext.models import RobertaEncoderConf, RobertaModel, RobertaClassificationHead
+        >>> roberta_encoder_conf = RobertaEncoderConf(vocab_size=250002)
+        >>> encoder = RobertaModel(config=roberta_encoder_conf)
+        >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
+        >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
+    """
     def __init__(self, config: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False):
         super().__init__()
         self.encoder = RobertaEncoder.from_config(config)
