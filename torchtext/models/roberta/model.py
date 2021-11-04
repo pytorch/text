@@ -1,7 +1,7 @@
 import math
 
 from dataclasses import dataclass, asdict
-from typing import Optional
+from typing import Optional, List
 
 from torch.nn import Module
 import torch
@@ -59,14 +59,17 @@ class RobertaEncoder(Module):
             dropout=dropout,
             normalize_before=normalize_before,
             scaling=scaling,
+            return_all_layers=False,
         )
 
     def forward(self, tokens: Tensor, mask: Optional[Tensor] = None) -> Tensor:
-        all_layers = self.transformer(tokens)
-        last_layer = all_layers[-1].transpose(1, 0)
+        output = self.transformer(tokens)
+        if torch.jit.isinstance(output, List[Tensor]):
+            output = output[-1]
+        output = output.transpose(1, 0)
         if mask is not None:
-            last_layer = last_layer[mask.to(torch.bool), :]
-        return last_layer
+            output = output[mask.to(torch.bool), :]
+        return output
 
 
 # TODO: Add Missing quant noise and spectral norm from latest Roberta head in fairseq repo

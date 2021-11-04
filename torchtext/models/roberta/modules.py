@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 import torch
 from torch import nn
@@ -240,6 +240,7 @@ class TransformerEncoder(Module):
         dropout: float = 0.1,
         normalize_before: bool = False,
         scaling: Optional[float] = None,
+        return_all_layers: bool = False,
     ):
         super().__init__()
         self.padding_idx = padding_idx
@@ -263,8 +264,9 @@ class TransformerEncoder(Module):
         self.embedding_layer_norm = nn.LayerNorm(embedding_dim)
         self.dropout = nn.Dropout(dropout)
         self.normalize_before = normalize_before
+        self.return_all_layers = return_all_layers
 
-    def forward(self, tokens: torch.Tensor) -> List[torch.Tensor]:
+    def forward(self, tokens: torch.Tensor) -> Union[torch.Tensor, List[torch.Tensor]]:
         padding_mask = tokens.eq(self.padding_idx)
 
         token_embeddings = self.token_embedding(tokens)
@@ -282,15 +284,25 @@ class TransformerEncoder(Module):
 
         encoded = padded_embedded.transpose(0, 1)
 
-        states = [encoded]
+        if self.return_all_layers:
+            states = [encoded]
 
-        for layer in self.layers:
-            encoded = layer(encoded, padding_mask)
-            states.append(encoded)
+            for layer in self.layers:
+                encoded = layer(encoded, padding_mask)
+                states.append(encoded)
 
-        if self.normalize_before:
-            for i, state in enumerate(states):
-                states[i] = self.embedding_layer_norm(state)
+            if self.normalize_before:
+                for i, state in enumerate(states):
+                    states[i] = self.embedding_layer_norm(state)
 
-        # states are returned as T x B x C
-        return states
+            # states are returned as T x B x C
+            return states
+        else:
+            for layer in self.layers:
+                encoded = layer(encoded, padding_mask)
+
+            if self.normalize_before:
+                encoded = self.embedding_layer_norm(encoded)
+
+            # states are returned as T x B x C
+            return encoded
