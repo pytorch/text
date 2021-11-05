@@ -124,6 +124,6 @@ XLMR_LARGE_ENCODER.__doc__ = (
     '''
     XLMR Encoder with Large configuration
 
-    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage. 
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
 )
