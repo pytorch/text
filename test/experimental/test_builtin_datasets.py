@@ -19,6 +19,7 @@ def _raw_text_custom_name_func(testcase_func, param_num, param):
     )
 
 
+@unittest.SkipTest
 class TestDataset(TorchtextTestCase):
     @classmethod
     def setUpClass(cls):

@@ -4,6 +4,7 @@ import torch
 import torchtext
 import json
 import hashlib
+import unittest
 from parameterized import parameterized
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.parameterized_utils import load_params
@@ -19,6 +20,7 @@ def _raw_text_custom_name_func(testcase_func, param_num, param):
     )
 
 
+@unittest.SkipTest
 class TestDataset(TorchtextTestCase):
     @classmethod
     def setUpClass(cls):

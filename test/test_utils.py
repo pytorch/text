@@ -184,7 +184,8 @@ class TestUtils(TorchtextTestCase):
         root = os.path.abspath('.data')
         target_path = os.path.join(root, 'text_bpe_15000.model')
         conditional_remove(target_path)
-        local_path = utils.download_from_url(url)
+        hash_value = "d3785a6e0811cf6f315f416d589c1d36"
+        local_path = utils.download_from_url(url, hash_value=hash_value, hash_type="md5")
 
         assert target_path == local_path
 
