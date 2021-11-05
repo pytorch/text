@@ -1,18 +1,17 @@
+import logging
+import math
 from typing import Optional, List, Union
 
 import torch
 from torch import nn
 from torch.nn import Module
-
-import math
-
 from torch.nn import functional as F
+
+logger = logging.getLogger(__name__)
 
 
 class PositionalEmbedding(Module):
-    def __init__(
-        self, num_embeddings: int, embedding_dim: int, pad_index: int
-    ):
+    def __init__(self, num_embeddings: int, embedding_dim: int, pad_index: int):
         super().__init__()
         self.embedding = nn.Embedding(num_embeddings, embedding_dim, pad_index)
         self.pad_index = pad_index
@@ -79,19 +78,21 @@ class MultiheadSelfAttention(Module):
 
         expected_scaling = float(1 / math.sqrt(self.head_dim))
 
-        if not scaling and self.head_dim == 64:
-            scaling = 0.125
+        assert (
+            embed_dim % num_heads == 0
+        ), f"embed_dim={embed_dim} should be a multiple of num_heads={num_heads}"
 
         if not scaling:
-            raise Exception(
+            logger.warn(
                 f"""
-                Scaling not set. Please manually set scaling for transformers with
-                head_dim != 64. The suggested value in this case is {expected_scaling},
+                Scaling not set. Please manually set scaling for transformers.
+                In this case the suggested value {expected_scaling} will be inferred,
                 or float(1 / math.sqrt(head_dim))
                 where head_dim = embed_dim // num_heads = {self.head_dim}
                 and embed_dim = {embed_dim} and num_heads = {num_heads}.
                 """
             )
+            scaling = expected_scaling
 
         self.scaling = scaling
         self.dropout = nn.Dropout(dropout)
