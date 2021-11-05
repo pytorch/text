@@ -107,8 +107,11 @@ class RobertaModel(Module):
         >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
         >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
     """
+
     def __init__(self, config: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False):
         super().__init__()
+        assert isinstance(config, RobertaEncoderConf)
+
         self.encoder = RobertaEncoder.from_config(config)
         if freeze_encoder:
             for param in self.encoder.parameters():
