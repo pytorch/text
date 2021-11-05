@@ -6,6 +6,7 @@ from torchtext import utils
 from .common.torchtext_test_case import TorchtextTestCase
 from test.common.assets import get_asset_path
 import shutil
+from torchtext import _TEXT_BUCKET
 
 
 def conditional_remove(f):
@@ -176,3 +177,17 @@ class TestUtils(TorchtextTestCase):
 
         # remove file
         conditional_remove(archive_path)
+
+    def test_aws_download(self):
+        asset_name = f"pretrained_spm{os.path.sep}text_bpe_15000.model"
+        url = os.path.join(_TEXT_BUCKET, asset_name)
+        root = os.path.abspath('.data')
+        target_path = os.path.join(root, 'text_bpe_15000.model')
+        conditional_remove(target_path)
+        local_path = utils.download_from_url(url)
+
+        assert target_path == local_path
+
+        assert os.path.exists(local_path)
+
+        conditional_remove(local_path)
