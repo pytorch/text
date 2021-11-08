@@ -125,6 +125,7 @@ class MultiheadSelfAttention(Module):
 
         attn_weights = torch.bmm(q, k.transpose(1, 2))
         if attn_mask is not None:
+            torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
             attn_mask = attn_mask.unsqueeze(0)
             attn_weights += attn_mask
 
@@ -214,6 +215,8 @@ class TransformerEncoderLayer(Module):
 
     def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
         if attn_mask is not None:
+            torch._assert(attn_mask.dtype == torch.bool, "Expected attn_mask dtype as `torch.bool` but got {}".format(attn_mask.dtype))
+            torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
             attn_mask = attn_mask.masked_fill(
                 attn_mask.to(torch.bool),
                 -1e8 if input.dtype == torch.float32 else -1e4
@@ -278,6 +281,10 @@ class TransformerEncoder(Module):
         self.return_all_layers = return_all_layers
 
     def forward(self, tokens: torch.Tensor, attn_mask: Optional[torch.Tensor] = None) -> Union[torch.Tensor, List[torch.Tensor]]:
+        if attn_mask is not None:
+            torch._assert(attn_mask.dtype == torch.bool, "Expected attn_mask dtype as `torch.bool` but got {}".format(attn_mask.dtype))
+            torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
+
         padding_mask = tokens.eq(self.padding_idx)
 
         token_embeddings = self.token_embedding(tokens)
