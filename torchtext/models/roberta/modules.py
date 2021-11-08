@@ -310,7 +310,7 @@ class TransformerEncoder(Module):
             return states
         else:
             for layer in self.layers:
-                encoded = layer(encoded, padding_mask)
+                encoded = layer(encoded, padding_mask, attn_mask)
 
             if self.normalize_before:
                 encoded = self.embedding_layer_norm(encoded)
