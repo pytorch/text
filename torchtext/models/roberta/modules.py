@@ -224,13 +224,13 @@ class TransformerEncoderLayer(Module):
 
         if self.normalize_before:
             x = self.attention_layer_norm(input)
-            attention = self.attention(x, key_padding_mask)
+            attention = self.attention(x, key_padding_mask, attn_mask)
             attention = self.dropout(attention)
             biased_input = input + attention
             x = self.final_layer_norm(biased_input)
             return self.residual_mlp(x) + biased_input
         else:
-            attention = self.attention(input, key_padding_mask)
+            attention = self.attention(input, key_padding_mask, attn_mask)
             attention = self.dropout(attention)
             biased_input = input + attention
             biased_input = self.attention_layer_norm(biased_input)
