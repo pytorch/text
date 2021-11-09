@@ -126,6 +126,8 @@ class MultiheadSelfAttention(Module):
         attn_weights = torch.bmm(q, k.transpose(1, 2))
         if attn_mask is not None:
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
+            torch._assert(attn_mask.size(0) == target_length, "attn_mask shape didn't match for target length {}".format(target_length))
+            torch._assert(attn_mask.size(1) == source_length, "attn_mask shape didn't match for source length {}".format(source_length))
             attn_mask = attn_mask.unsqueeze(0)
             attn_weights += attn_mask
 
@@ -215,7 +217,6 @@ class TransformerEncoderLayer(Module):
 
     def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
         if attn_mask is not None:
-            torch._assert(attn_mask.dtype == torch.bool, "Expected attn_mask dtype as `torch.bool` but got {}".format(attn_mask.dtype))
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
             attn_mask = attn_mask.masked_fill(
                 attn_mask.to(torch.bool),
