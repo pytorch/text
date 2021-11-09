@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class RobertaEncoderParams:
+class RobertaEncoderConf:
     vocab_size: int = 50265
     embedding_dim: int = 768
     ffn_dimension: int = 3072
@@ -62,6 +62,10 @@ class RobertaEncoder(Module):
             return_all_layers=False,
         )
 
+    @classmethod
+    def from_config(cls, config: RobertaEncoderConf):
+        return cls(**asdict(config))
+
     def forward(self, tokens: Tensor, mask: Optional[Tensor] = None) -> Tensor:
         output = self.transformer(tokens)
         if torch.jit.isinstance(output, List[Tensor]):
@@ -94,13 +98,31 @@ class RobertaClassificationHead(nn.Module):
 
 
 class RobertaModel(Module):
-    def __init__(self, encoder: Module, head: Optional[Module] = None):
+    """
+
+    Example - Instantiate model with user-specified configuration
+        >>> from torchtext.models import RobertaEncoderConf, RobertaModel, RobertaClassificationHead
+        >>> roberta_encoder_conf = RobertaEncoderConf(vocab_size=250002)
+        >>> encoder = RobertaModel(config=roberta_encoder_conf)
+        >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
+        >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
+    """
+
+    def __init__(self, config: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False):
         super().__init__()
-        self.encoder = encoder
+        assert isinstance(config, RobertaEncoderConf)
+
+        self.encoder = RobertaEncoder.from_config(config)
+        if freeze_encoder:
+            for param in self.encoder.parameters():
+                param.requires_grad = False
+
+            logger.info("Encoder weights are frozen")
+
         self.head = head
 
-    def forward(self, tokens: Tensor) -> Tensor:
-        features = self.encoder(tokens)
+    def forward(self, tokens: Tensor, mask: Optional[Tensor] = None) -> Tensor:
+        features = self.encoder(tokens, mask)
         if self.head is None:
             return features
 
@@ -108,12 +130,5 @@ class RobertaModel(Module):
         return x
 
 
-def _get_model(params: RobertaEncoderParams, head: Optional[Module] = None, freeze_encoder: bool = False) -> RobertaModel:
-    encoder = RobertaEncoder(**asdict(params))
-    if freeze_encoder:
-        for param in encoder.parameters():
-            param.requires_grad = False
-
-        logger.info("Encoder weights are frozen")
-
-    return RobertaModel(encoder, head)
+def _get_model(config: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False) -> RobertaModel:
+    return RobertaModel(config, head, freeze_encoder)
