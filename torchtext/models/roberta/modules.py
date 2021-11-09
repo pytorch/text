@@ -128,6 +128,12 @@ class MultiheadSelfAttention(Module):
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
             torch._assert(attn_mask.size(0) == target_length, "attn_mask shape didn't match for target length {}".format(target_length))
             torch._assert(attn_mask.size(1) == source_length, "attn_mask shape didn't match for source length {}".format(source_length))
+            torch._assert(attn_mask.is_floating_point() or attn_mask.dtype == torch.bool, f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}")
+            if attn_mask.dtype == torch.bool:
+                attn_mask = attn_mask.masked_fill(
+                    attn_mask,
+                    -1e8 if query.dtype == torch.float32 else -1e4
+                )
             attn_mask = attn_mask.unsqueeze(0)
             attn_weights += attn_mask
 
@@ -218,10 +224,12 @@ class TransformerEncoderLayer(Module):
     def forward(self, input: torch.Tensor, key_padding_mask: torch.Tensor, attn_mask: Optional[torch.Tensor] = None):
         if attn_mask is not None:
             torch._assert(attn_mask.dim() == 2, "Expected attn_mask of dim 2 but got {}".format(attn_mask.dim()))
-            attn_mask = attn_mask.masked_fill(
-                attn_mask.to(torch.bool),
-                -1e8 if input.dtype == torch.float32 else -1e4
-            )
+            torch._assert(attn_mask.is_floating_point() or attn_mask.dtype == torch.bool, f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}")
+            if attn_mask.dtype == torch.bool:
+                attn_mask = attn_mask.masked_fill(
+                    attn_mask,
+                    -1e8 if input.dtype == torch.float32 else -1e4
+                )
 
         if not hasattr(self, "normalize_before"):
             self.normalize_before = False
