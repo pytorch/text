@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Tests that requires external resources (Network access to fetch dataset)"""
 import os
-import unittest
-
 import torch
 import torchtext.data
 
