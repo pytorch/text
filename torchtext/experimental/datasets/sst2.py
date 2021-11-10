@@ -11,6 +11,7 @@ from torchtext.data.datasets_utils import (
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import IterableWrapper
+
     # we import HttpReader from _download_hooks so we can swap out public URLs
     # with interal URLs when the dataset is used within Facebook
     from torchtext._download_hooks import HttpReader
@@ -51,8 +52,8 @@ DATASET_NAME = "SST2"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "dev", "test"))
-def SST2(root, split):
-    return SST2Dataset(root, split)
+def SST2(root, split, validate_hash=True):
+    return SST2Dataset(root, split, validate_hash=validate_hash)
 
 
 class SST2Dataset(IterableDataset):
@@ -61,7 +62,7 @@ class SST2Dataset(IterableDataset):
     We do sanity check on dowloaded and extracted data
     """
 
-    def __init__(self, root, split):
+    def __init__(self, root, split, validate_hash=True):
         if not is_module_available("torchdata"):
             raise ModuleNotFoundError(
                 "Package `torchdata` is required to be installed to use this dataset."
@@ -69,13 +70,13 @@ class SST2Dataset(IterableDataset):
                 "how to install the package."
             )
 
-        self._dp = self._get_datapipe(root, split)
+        self._dp = self._get_datapipe(root, split, validate_hash)
 
     def __iter__(self):
         for data in self._dp:
             yield data
 
-    def _get_datapipe(self, root, split):
+    def _get_datapipe(self, root, split, validate_hash):
         # cache data on-disk
         cache_dp = IterableWrapper([URL]).on_disk_cache(
             HttpReader,
@@ -83,10 +84,12 @@ class SST2Dataset(IterableDataset):
             filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
         )
 
-        # do sanity check
-        check_cache_dp = cache_dp.check_hash(
-            {os.path.join(root, "SST-2.zip"): MD5}, "md5"
-        )
+        # validate integrity of dataset using md5 checksum
+        check_cache_dp = cache_dp
+        if validate_hash:
+            check_cache_dp = cache_dp.check_hash(
+                {os.path.join(root, "SST-2.zip"): MD5}, "md5"
+            )
 
         # extract data from zip
         extracted_files = check_cache_dp.read_from_zip().filter(lambda x: split in x[0])
