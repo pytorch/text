@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .model import (
-    RobertaEncoderParams,
+    RobertaEncoderConf,
     RobertaModel,
     _get_model,
 )
@@ -50,8 +50,17 @@ class RobertaModelBundle:
         >>> output = classification_model(model_input)
         >>> output.shape
         torch.Size([1, 2])
+
+    Example - User-specified configuration and checkpoint
+        >>> from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead
+        >>> model_weights_path = "https://download.pytorch.org/models/text/xlmr.base.encoder.pt"
+        >>> roberta_encoder_conf = RobertaEncoderConf(vocab_size=250002)
+        >>> roberta_bundle = RobertaModelBundle(_encoder_conf=roberta_encoder_conf, _path=model_weights_path)
+        >>> encoder = roberta_bundle.get_model()
+        >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
+        >>> classifier = roberta_bundle.get_model(head=classifier_head)
     """
-    _params: RobertaEncoderParams
+    _encoder_conf: RobertaEncoderConf
     _path: Optional[str] = None
     _head: Optional[Module] = None
     transform: Optional[Callable] = None
@@ -72,7 +81,7 @@ class RobertaModelBundle:
         else:
             input_head = self._head
 
-        model = _get_model(self._params, input_head, freeze_encoder)
+        model = _get_model(self._encoder_conf, input_head, freeze_encoder)
 
         if not load_weights:
             return model
@@ -86,13 +95,13 @@ class RobertaModelBundle:
         return model
 
     @property
-    def params(self) -> RobertaEncoderParams:
-        return self._params
+    def encoderConf(self) -> RobertaEncoderConf:
+        return self._encoder_conf
 
 
 XLMR_BASE_ENCODER = RobertaModelBundle(
     _path=os.path.join(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
-    _params=RobertaEncoderParams(vocab_size=250002),
+    _encoder_conf=RobertaEncoderConf(vocab_size=250002),
     transform=partial(get_xlmr_transform,
                       vocab_path=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
                       spm_model_path=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
@@ -101,7 +110,7 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
 
 XLMR_LARGE_ENCODER = RobertaModelBundle(
     _path=os.path.join(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
-    _params=RobertaEncoderParams(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
+    _encoder_conf=RobertaEncoderConf(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
     transform=partial(get_xlmr_transform,
                       vocab_path=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
                       spm_model_path=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
