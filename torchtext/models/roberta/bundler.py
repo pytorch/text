@@ -1,4 +1,3 @@
-
 import os
 from dataclasses import dataclass
 from functools import partial
@@ -65,7 +64,12 @@ class RobertaModelBundle:
     _head: Optional[Module] = None
     transform: Optional[Callable] = None
 
-    def get_model(self, head: Optional[Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> RobertaModel:
+    def get_model(self,
+                  head: Optional[Module] = None,
+                  load_weights: bool = True,
+                  freeze_encoder: bool = False,
+                  *,
+                  dl_kwargs=None) -> RobertaModel:
 
         if load_weights:
             assert self._path is not None, "load_weights cannot be True. The pre-trained model weights are not available for the current object"
@@ -93,6 +97,26 @@ class RobertaModelBundle:
         else:
             model.load_state_dict(state_dict, strict=True)
         return model
+
+    @classmethod
+    def from_config(
+        self,
+        config: RobertaEncoderConf,
+        head: Optional[Module] = None,
+        freeze_encoder: bool = False,
+        path: Optional[str] = None,
+        *,
+        dl_kwargs=None,
+    ) -> RobertaModel:
+        model = _get_model(config, head, freeze_encoder)
+        if path is not None:
+            dl_kwargs = {} if dl_kwargs is None else dl_kwargs
+            state_dict = load_state_dict_from_url(path, **dl_kwargs)
+            if head is not None:
+                model.load_state_dict(state_dict, strict=False)
+            else:
+                model.load_state_dict(state_dict, strict=True)
+            return model
 
     @property
     def encoderConf(self) -> RobertaEncoderConf:
