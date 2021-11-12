@@ -113,7 +113,7 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
 
 XLMR_BASE_ENCODER.__doc__ = (
     '''
-    XLMR Encoder with base configuration
+    XLM-R Encoder with base configuration
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
@@ -131,7 +131,7 @@ XLMR_LARGE_ENCODER = RobertaModelBundle(
 
 XLMR_LARGE_ENCODER.__doc__ = (
     '''
-    XLMR Encoder with Large configuration
+    XLM-R Encoder with Large configuration
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
