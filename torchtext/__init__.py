@@ -1,5 +1,5 @@
 import os
-_TEXT_BUCKET = 'https://download.pytorch.org/models/text'
+_TEXT_BUCKET = 'https://download.pytorch.org/models/text/'
 _CACHE_DIR = os.path.expanduser('~/.torchtext/cache')
 
 from . import data
