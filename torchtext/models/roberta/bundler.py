@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import partial
 from urllib.parse import urljoin
 
-from typing import Optional, Callable, Dict, Union
+from typing import Optional, Callable, Dict, Union, Any
 from torchtext._download_hooks import load_state_dict_from_url
 from torch.nn import Module
 import torch
@@ -113,15 +113,16 @@ class RobertaModelBundle:
         freeze_encoder: bool = False,
         checkpoint: Optional[Union[str, Dict[str, torch.Tensor]]] = None,
         *,
-        dl_kwargs=None,
+        dl_kwargs: Dict[str, Any] = None,
     ) -> RobertaModel:
         """Class method to intantiate model with user-defined encoder configuration and checkpoint
 
         Args:
-            config: An instance of class RobertaEncoderConf that defined the encoder configuration
-            head: A module to be attached to the encoder to perform specific task
-            freeze_encoder: Indicates whether to freeze the encoder weights
-            checkpoint: Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder.
+            config (RobertaEncoderConf): An instance of class RobertaEncoderConf that defined the encoder configuration
+            head (nn.Module, optional): A module to be attached to the encoder to perform specific task
+            freeze_encoder (bool): Indicates whether to freeze the encoder weights
+            checkpoint (str or Dict[str, torch.Tensor], optional): Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder.
+            dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`.
         """
         model = _get_model(config, head, freeze_encoder)
         if checkpoint is not None:
