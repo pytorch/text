@@ -1,7 +1,6 @@
 import torchtext
 import torch
-import os
-
+import urllib
 from torchtext import _TEXT_BUCKET
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
@@ -98,8 +97,8 @@ class TestModels(TorchtextTestCase):
         from torchtext.models import RobertaEncoderConf
         asset_name = "xlmr.base.output.pt"
         asset_path = get_asset_path(asset_name)
-        model_path = os.path.join(_TEXT_BUCKET, "xlmr.base.encoder.pt")
-        model = torchtext.models.RobertaModelBundle.from_config(config=RobertaEncoderConf(vocab_size=250002), path=model_path)
+        model_path = urllib.parse.urljoin(_TEXT_BUCKET, "xlmr.base.encoder.pt")
+        model = torchtext.models.RobertaModelBundle.from_config(config=RobertaEncoderConf(vocab_size=250002), checkpoint=model_path)
         model = model.eval()
         model_input = torch.tensor([[0, 43523, 52005, 3647, 13293, 113307, 40514, 2]])
         actual = model(model_input)
