@@ -2,9 +2,10 @@ from dataclasses import dataclass
 from functools import partial
 from urllib.parse import urljoin
 
-from typing import Optional, Callable
+from typing import Optional, Callable, Dict, Union
 from torchtext._download_hooks import load_state_dict_from_url
 from torch.nn import Module
+import torch
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ class RobertaModelBundle:
     Example - Pretrained encoder attached to un-initialized classification head
         >>> import torch, torchtext
         >>> xlmr_large = torchtext.models.XLMR_LARGE_ENCODER
-        >>> classifier_head = torchtext.models.RobertaClassificationHead(num_classes=2, input_dim = xlmr_large.params.embedding_dim)
+        >>> classifier_head = torchtext.models.RobertaClassificationHead(num_classes=2, input_dim = xlmr_large.encoderConf.embedding_dim)
         >>> classification_model = xlmr_large.get_model(head=classifier_head)
         >>> transform = xlmr_large.transform()
         >>> model_input = torch.tensor(transform(["Hello World"]))
@@ -58,6 +59,9 @@ class RobertaModelBundle:
         >>> encoder = roberta_bundle.get_model()
         >>> classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
         >>> classifier = roberta_bundle.get_model(head=classifier_head)
+        >>> # using from_config
+        >>> encoder = RobertaModelBundle.from_config(config=roberta_encoder_conf, checkpoint=model_weights_path)
+        >>> classifier = RobertaModelBundle.from_config(config=roberta_encoder_conf, head=classifier_head, checkpoint=model_weights_path)
     """
     _encoder_conf: RobertaEncoderConf
     _path: Optional[str] = None
@@ -104,14 +108,27 @@ class RobertaModelBundle:
         config: RobertaEncoderConf,
         head: Optional[Module] = None,
         freeze_encoder: bool = False,
-        path: Optional[str] = None,
+        checkpoint: Optional[Union[str, Dict[str, torch.Tensor]]] = None,
         *,
         dl_kwargs=None,
     ) -> RobertaModel:
+        """Class method to intantiate model with user-defined encoder configuration and checkpoint
+
+        Args:
+            config: An instance of class RobertaEncoderConf that defined the encoder configuration
+            head: A module to be attached to the encoder to perform specific task
+            freeze_encoder: Indicates whether to freeze the encoder weights
+            checkpoint: Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder.
+        """
         model = _get_model(config, head, freeze_encoder)
-        if path is not None:
-            dl_kwargs = {} if dl_kwargs is None else dl_kwargs
-            state_dict = load_state_dict_from_url(path, **dl_kwargs)
+        if checkpoint is not None:
+            if torch.jit.isinstance(checkpoint, Dict[str, torch.Tensor]):
+                state_dict = checkpoint
+            elif isinstance(checkpoint, str):
+                dl_kwargs = {} if dl_kwargs is None else dl_kwargs
+                state_dict = load_state_dict_from_url(checkpoint, **dl_kwargs)
+            else:
+                raise TypeError("checkpoint must be of type `str` or `Dict[str, torch.Tensor]` but got {}".format(type(checkpoint)))
             if head is not None:
                 model.load_state_dict(state_dict, strict=False)
             else:
