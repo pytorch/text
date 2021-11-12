@@ -1,7 +1,7 @@
 
-import os
 from dataclasses import dataclass
 from functools import partial
+from urllib.parse import urljoin
 
 from typing import Optional, Callable
 from torchtext._download_hooks import load_state_dict_from_url
@@ -100,19 +100,19 @@ class RobertaModelBundle:
 
 
 XLMR_BASE_ENCODER = RobertaModelBundle(
-    _path=os.path.join(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002),
     transform=partial(get_xlmr_transform,
-                      vocab_path=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
-                      spm_model_path=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
+                      vocab_path=urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"),
+                      spm_model_path=urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
                       )
 )
 
 XLMR_LARGE_ENCODER = RobertaModelBundle(
-    _path=os.path.join(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
+    _path=urljoin(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
     transform=partial(get_xlmr_transform,
-                      vocab_path=os.path.join(_TEXT_BUCKET, "xlmr.vocab.pt"),
-                      spm_model_path=os.path.join(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
+                      vocab_path=urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"),
+                      spm_model_path=urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
                       )
 )
