@@ -7,7 +7,7 @@ from torchtext._download_hooks import load_state_dict_from_url
 from torch.nn import Module
 import torch
 import logging
-
+import re
 logger = logging.getLogger(__name__)
 
 from .model import (
@@ -134,10 +134,15 @@ class RobertaModelBundle:
             else:
                 raise TypeError("checkpoint must be of type `str` or `Dict[str, torch.Tensor]` but got {}".format(type(checkpoint)))
             if head is not None:
-                model.load_state_dict(state_dict, strict=False)
-            else:
-                model.load_state_dict(state_dict, strict=True)
-            return model
+                regex = re.compile(r"^head\.")
+                head_state_dict = {k: v for k, v in model.state_dict().items() if regex.findall(k)}
+                # if not all the head keys are present in checkpoint then we shall update the state_dict with the provided head state_dict
+                if not all(key in state_dict.keys() for key in head_state_dict.keys()):
+                    state_dict.update(head_state_dict)
+
+            model.load_state_dict(state_dict, strict=True)
+
+        return model
 
     @property
     def encoderConf(self) -> RobertaEncoderConf:
