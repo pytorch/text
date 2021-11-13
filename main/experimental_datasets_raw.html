@@ -6,11 +6,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.datasets.raw &mdash; torchtext 0.12.0.dev20211026 documentation</title>
+  <title>torchtext.experimental.datasets.raw &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -193,7 +192,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211026 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211113 &#x25BC</a>
     </div>
     
 
@@ -217,7 +216,7 @@
               
             
             
-              <p><span class="caption-text">Package Reference</span></p>
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -232,8 +231,11 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -314,7 +316,7 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="torchtext-experimental-datasets-raw">
+  <div class="section" id="torchtext-experimental-datasets-raw">
 <h1>torchtext.experimental.datasets.raw<a class="headerlink" href="#torchtext-experimental-datasets-raw" title="Permalink to this headline">¶</a></h1>
 <p>General use cases are as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import datasets</span>
@@ -350,13 +352,13 @@
 </li>
 </ul>
 </div>
-<section id="machine-translation">
+<div class="section" id="machine-translation">
 <h2><a class="toc-backref" href="#id1">Machine Translation</a><a class="headerlink" href="#machine-translation" title="Permalink to this headline">¶</a></h2>
-<section id="wmt14">
+<div class="section" id="wmt14">
 <h3><a class="toc-backref" href="#id2">WMT14</a><a class="headerlink" href="#wmt14" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.datasets.raw.WMT14">
-<code class="sig-prename descclassname">torchtext.experimental.datasets.raw.</code><code class="sig-name descname">WMT14</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split=('train'</em>, <em class="sig-param">'valid'</em>, <em class="sig-param">'test')</em>, <em class="sig-param">language_pair=('de'</em>, <em class="sig-param">'en')</em>, <em class="sig-param">train_set='train.tok.clean.bpe.32000'</em>, <em class="sig-param">valid_set='newstest2013.tok.bpe.32000'</em>, <em class="sig-param">test_set='newstest2014.tok.bpe.32000'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/wmt14.html#WMT14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.WMT14" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.datasets.raw.</span></code><code class="sig-name descname"><span class="pre">WMT14</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('train',</span> <span class="pre">'valid',</span> <span class="pre">'test')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('de',</span> <span class="pre">'en')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train.tok.clean.bpe.32000'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'newstest2013.tok.bpe.32000'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'newstest2014.tok.bpe.32000'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/wmt14.html#WMT14"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.WMT14" title="Permalink to this definition">¶</a></dt>
 <dd><p>WMT14 Dataset</p>
 <p>The available datasets include following:</p>
 <p><strong>Language pairs</strong>:</p>
@@ -401,15 +403,15 @@
 </div>
 </dd></dl>
 
-</section>
-</section>
-<section id="language-modeling">
+</div>
+</div>
+<div class="section" id="language-modeling">
 <h2><a class="toc-backref" href="#id3">Language Modeling</a><a class="headerlink" href="#language-modeling" title="Permalink to this headline">¶</a></h2>
-<section id="wmtnewscrawl">
+<div class="section" id="wmtnewscrawl">
 <h3><a class="toc-backref" href="#id4">WMTNewsCrawl</a><a class="headerlink" href="#wmtnewscrawl" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.datasets.raw.WMTNewsCrawl">
-<code class="sig-prename descclassname">torchtext.experimental.datasets.raw.</code><code class="sig-name descname">WMTNewsCrawl</code><span class="sig-paren">(</span><em class="sig-param">root='.data'</em>, <em class="sig-param">split='train'</em>, <em class="sig-param">year=2010</em>, <em class="sig-param">language='en'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/wmtnewscrawl.html#WMTNewsCrawl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.WMTNewsCrawl" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.datasets.raw.</span></code><code class="sig-name descname"><span class="pre">WMTNewsCrawl</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2010</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/datasets/raw/wmtnewscrawl.html#WMTNewsCrawl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.datasets.raw.WMTNewsCrawl" title="Permalink to this definition">¶</a></dt>
 <dd><p>WMTNewsCrawl dataset</p>
 <p>Only returns the train split</p>
 <dl class="simple">
@@ -429,9 +431,9 @@
 </dl>
 </dd></dl>
 
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
              </article>
@@ -505,8 +507,6 @@
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

@@ -6,11 +6,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.metrics &mdash; torchtext 0.12.0.dev20211026 documentation</title>
+  <title>torchtext.data.metrics &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -193,7 +192,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211026 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211113 &#x25BC</a>
     </div>
     
 
@@ -217,7 +216,7 @@
               
             
             
-              <p><span class="caption-text">Package Reference</span></p>
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -232,8 +231,11 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -314,13 +316,13 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="module-torchtext.data.metrics">
+  <div class="section" id="module-torchtext.data.metrics">
 <span id="torchtext-data-metrics"></span><h1>torchtext.data.metrics<a class="headerlink" href="#module-torchtext.data.metrics" title="Permalink to this headline">¶</a></h1>
-<section id="bleu-score">
+<div class="section" id="bleu-score">
 <h2><span class="hidden-section">bleu_score</span><a class="headerlink" href="#bleu-score" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.data.metrics.bleu_score">
-<code class="sig-prename descclassname">torchtext.data.metrics.</code><code class="sig-name descname">bleu_score</code><span class="sig-paren">(</span><em class="sig-param">candidate_corpus, references_corpus, max_n=4, weights=[0.25, 0.25, 0.25, 0.25]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/metrics.html#bleu_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.data.metrics.bleu_score" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.data.metrics.</span></code><code class="sig-name descname"><span class="pre">bleu_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate_corpus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">references_corpus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/metrics.html#bleu_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.metrics.bleu_score" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the BLEU score between a candidate translation corpus and a references
 translation corpus. Based on <a class="reference external" href="https://www.aclweb.org/anthology/P02-1040.pdf">https://www.aclweb.org/anthology/P02-1040.pdf</a></p>
 <dl class="field-list simple">
@@ -346,8 +348,8 @@ bigrams and trigrams</p></li>
 </div>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
              </article>
@@ -414,8 +416,6 @@ bigrams and trigrams</p></li>
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

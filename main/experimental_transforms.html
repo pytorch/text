@@ -6,11 +6,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.transforms &mdash; torchtext 0.12.0.dev20211026 documentation</title>
+  <title>torchtext.experimental.transforms &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -193,7 +192,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211026 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211113 &#x25BC</a>
     </div>
     
 
@@ -217,7 +216,7 @@
               
             
             
-              <p><span class="caption-text">Package Reference</span></p>
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -232,8 +231,11 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -314,22 +316,22 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="module-torchtext.experimental.transforms">
+  <div class="section" id="module-torchtext.experimental.transforms">
 <span id="torchtext-experimental-transforms"></span><h1>torchtext.experimental.transforms<a class="headerlink" href="#module-torchtext.experimental.transforms" title="Permalink to this headline">¶</a></h1>
-<section id="basicenglishnormalize">
+<div class="section" id="basicenglishnormalize">
 <h2><span class="hidden-section">BasicEnglishNormalize</span><a class="headerlink" href="#basicenglishnormalize" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.BasicEnglishNormalize">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">BasicEnglishNormalize</code><span class="sig-paren">(</span><em class="sig-param">regex_tokenizer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">BasicEnglishNormalize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regex_tokenizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="torchtext.experimental.transforms.BasicEnglishNormalize.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">regex_tokenizer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regex_tokenizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.BasicEnglishNormalize.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">line: str</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#BasicEnglishNormalize.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.BasicEnglishNormalize.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>lines</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – a text string to tokenize.</p>
@@ -345,21 +347,21 @@
 
 </dd></dl>
 
-</section>
-<section id="regextokenizer">
+</div>
+<div class="section" id="regextokenizer">
 <h2><span class="hidden-section">RegexTokenizer</span><a class="headerlink" href="#regextokenizer" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.RegexTokenizer">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">RegexTokenizer</code><span class="sig-paren">(</span><em class="sig-param">regex_tokenzier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">RegexTokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regex_tokenzier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="torchtext.experimental.transforms.RegexTokenizer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">regex_tokenzier</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regex_tokenzier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.RegexTokenizer.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">line: str</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#RegexTokenizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.RegexTokenizer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>lines</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – a text string to tokenize.</p>
@@ -375,12 +377,14 @@
 
 </dd></dl>
 
-</section>
-<section id="textsequentialtransforms">
+</div>
+<div class="section" id="textsequentialtransforms">
 <h2><span class="hidden-section">TextSequentialTransforms</span><a class="headerlink" href="#textsequentialtransforms" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.TextSequentialTransforms">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">TextSequentialTransforms</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#TextSequentialTransforms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.TextSequentialTransforms" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">TextSequentialTransforms</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.nn.modules.module.Module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#TextSequentialTransforms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.TextSequentialTransforms" title="Permalink to this definition">¶</a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">TextSequentialTransforms</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">OrderedDict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Module</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>A container to host a sequential text transforms.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
@@ -392,9 +396,9 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jit_txt_pipeline</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">txt_pipeline</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.TextSequentialTransforms.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">input: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#TextSequentialTransforms.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.TextSequentialTransforms.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#TextSequentialTransforms.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.TextSequentialTransforms.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -408,12 +412,12 @@ registered hooks while the latter silently ignores them.</p>
 
 </dd></dl>
 
-</section>
-<section id="load-sp-model">
+</div>
+<div class="section" id="load-sp-model">
 <h2><span class="hidden-section">load_sp_model</span><a class="headerlink" href="#load-sp-model" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.transforms.load_sp_model">
-<code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">load_sp_model</code><span class="sig-paren">(</span><em class="sig-param">sp_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#load_sp_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.load_sp_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">load_sp_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sp_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#load_sp_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.load_sp_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a  sentencepiece model for file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -455,12 +459,12 @@ The following pretrained sentencepiece models are provided:</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="sentencepiece-tokenizer">
+</div>
+<div class="section" id="sentencepiece-tokenizer">
 <h2><span class="hidden-section">sentencepiece_tokenizer</span><a class="headerlink" href="#sentencepiece-tokenizer" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.transforms.sentencepiece_tokenizer">
-<code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">sentencepiece_tokenizer</code><span class="sig-paren">(</span><em class="sig-param">sp_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#sentencepiece_tokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.sentencepiece_tokenizer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">sentencepiece_tokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sp_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#sentencepiece_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.sentencepiece_tokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory function to generate SentencePieceTokenizer from a pretrained SentencePiece model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -476,27 +480,27 @@ The following pretrained sentencepiece models are provided:</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="sentencepiecetokenizer">
+</div>
+<div class="section" id="sentencepiecetokenizer">
 <h2><span class="hidden-section">SentencePieceTokenizer</span><a class="headerlink" href="#sentencepiecetokenizer" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.SentencePieceTokenizer">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">SentencePieceTokenizer</code><span class="sig-paren">(</span><em class="sig-param">spm_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">SentencePieceTokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spm_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tokenizer based on a pretained sentencepiece model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>spm_model</strong> – the sentencepiece model instance</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.SentencePieceTokenizer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">spm_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spm_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.SentencePieceTokenizer.decode">
-<code class="sig-name descname">decode</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer.decode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer.decode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">decode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer.decode" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>tokens</strong> – the tokens list for decoder</p>
@@ -509,9 +513,9 @@ The following pretrained sentencepiece models are provided:</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.SentencePieceTokenizer.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">line: str</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceTokenizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceTokenizer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>line</strong> – the input sentence string</p>
@@ -527,12 +531,12 @@ The following pretrained sentencepiece models are provided:</p>
 
 </dd></dl>
 
-</section>
-<section id="sentencepiece-processor">
+</div>
+<div class="section" id="sentencepiece-processor">
 <h2><span class="hidden-section">sentencepiece_processor</span><a class="headerlink" href="#sentencepiece-processor" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.transforms.sentencepiece_processor">
-<code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">sentencepiece_processor</code><span class="sig-paren">(</span><em class="sig-param">sp_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#sentencepiece_processor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.sentencepiece_processor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">sentencepiece_processor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sp_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#sentencepiece_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.sentencepiece_processor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory function to generate SentencePieceProcessor from a pretrained SentencePiece model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -548,27 +552,27 @@ The following pretrained sentencepiece models are provided:</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="sentencepieceprocessor">
+</div>
+<div class="section" id="sentencepieceprocessor">
 <h2><span class="hidden-section">SentencePieceProcessor</span><a class="headerlink" href="#sentencepieceprocessor" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.SentencePieceProcessor">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">SentencePieceProcessor</code><span class="sig-paren">(</span><em class="sig-param">spm_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">SentencePieceProcessor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spm_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>String to ids transform based on a pretained sentencepiece model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>spm_model</strong> – the sentencepiece model instance</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.SentencePieceProcessor.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">spm_model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spm_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.SentencePieceProcessor.decode">
-<code class="sig-name descname">decode</code><span class="sig-paren">(</span><em class="sig-param">ids: List[int]</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor.decode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor.decode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">decode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor.decode" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ids</strong> – the integers list for decoder</p>
@@ -581,9 +585,9 @@ The following pretrained sentencepiece models are provided:</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.SentencePieceProcessor.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">line: str</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#SentencePieceProcessor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.SentencePieceProcessor.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>line</strong> – the input sentence string</p>
@@ -598,12 +602,12 @@ The following pretrained sentencepiece models are provided:</p>
 
 </dd></dl>
 
-</section>
-<section id="vocabtransform">
+</div>
+<div class="section" id="vocabtransform">
 <h2><span class="hidden-section">VocabTransform</span><a class="headerlink" href="#vocabtransform" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.VocabTransform">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">VocabTransform</code><span class="sig-paren">(</span><em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VocabTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.VocabTransform" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">VocabTransform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VocabTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.VocabTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vocab transform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -618,15 +622,15 @@ The following pretrained sentencepiece models are provided:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vocab_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vocab_transform</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.VocabTransform.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VocabTransform.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.VocabTransform.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VocabTransform.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.VocabTransform.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.VocabTransform.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VocabTransform.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.VocabTransform.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VocabTransform.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.VocabTransform.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>tokens</strong> – a string token list</p>
@@ -640,12 +644,12 @@ The following pretrained sentencepiece models are provided:</p>
 
 </dd></dl>
 
-</section>
-<section id="vectortransform">
+</div>
+<div class="section" id="vectortransform">
 <h2><span class="hidden-section">VectorTransform</span><a class="headerlink" href="#vectortransform" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.transforms.VectorTransform">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.transforms.</code><code class="sig-name descname">VectorTransform</code><span class="sig-paren">(</span><em class="sig-param">vector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VectorTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.VectorTransform" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.transforms.</span></code><code class="sig-name descname"><span class="pre">VectorTransform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VectorTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.VectorTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector transform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -659,15 +663,15 @@ The following pretrained sentencepiece models are provided:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vector_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vector_transform</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.VectorTransform.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">vector</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VectorTransform.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.VectorTransform.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VectorTransform.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.VectorTransform.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.transforms.VectorTransform.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VectorTransform.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.transforms.VectorTransform.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/experimental/transforms.html#VectorTransform.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.transforms.VectorTransform.forward" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>tokens</strong> – a string token list</p>
@@ -681,8 +685,8 @@ The following pretrained sentencepiece models are provided:</p>
 
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
              </article>
@@ -758,8 +762,6 @@ The following pretrained sentencepiece models are provided:</p>
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

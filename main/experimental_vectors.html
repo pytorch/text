@@ -6,11 +6,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.vectors &mdash; torchtext 0.12.0.dev20211026 documentation</title>
+  <title>torchtext.experimental.vectors &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -193,7 +192,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211026 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211113 &#x25BC</a>
     </div>
     
 
@@ -217,7 +216,7 @@
               
             
             
-              <p><span class="caption-text">Package Reference</span></p>
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -232,8 +231,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -314,16 +316,16 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="module-torchtext.experimental.vectors">
+  <div class="section" id="module-torchtext.experimental.vectors">
 <span id="torchtext-experimental-vectors"></span><h1>torchtext.experimental.vectors<a class="headerlink" href="#module-torchtext.experimental.vectors" title="Permalink to this headline">¶</a></h1>
-<section id="vector">
+<div class="section" id="vector">
 <h2><span class="hidden-section">Vector</span><a class="headerlink" href="#vector" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.experimental.vectors.Vectors">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">Vectors</code><span class="sig-paren">(</span><em class="sig-param">vectors</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.experimental.vectors.</span></code><code class="sig-name descname"><span class="pre">Vectors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.__getitem__">
-<code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__getitem__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__getitem__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – the token used to lookup the corresponding vector.</p>
@@ -337,15 +339,15 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">vectors</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.__len__">
-<code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__len__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__len__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__len__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__len__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get length of vectors object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -357,15 +359,15 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.__prepare_scriptable__">
-<code class="sig-name descname">__prepare_scriptable__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__prepare_scriptable__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__prepare_scriptable__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__prepare_scriptable__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a JITable Vectors.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.__setitem__">
-<code class="sig-name descname">__setitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">vector: torch.Tensor</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__setitem__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__setitem__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.__setitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -379,9 +381,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls the <cite>lookup_vectors</cite> method</p>
 <blockquote>
 <div><dl class="simple">
@@ -400,9 +402,9 @@ empty tensor if <cite>tokens</cite> is empty</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.experimental.vectors.Vectors.lookup_vectors">
-<code class="sig-name descname">lookup_vectors</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.lookup_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.lookup_vectors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">lookup_vectors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#Vectors.lookup_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.Vectors.lookup_vectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Look up embedding vectors for a list of tokens.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -425,12 +427,12 @@ empty tensor if <cite>tokens</cite> is empty</p>
 
 </dd></dl>
 
-</section>
-<section id="build-vectors">
+</div>
+<div class="section" id="build-vectors">
 <h2><span class="hidden-section">build_vectors</span><a class="headerlink" href="#build-vectors" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.vectors.build_vectors">
-<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">build_vectors</code><span class="sig-paren">(</span><em class="sig-param">tokens</em>, <em class="sig-param">vectors</em>, <em class="sig-param">unk_tensor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#build_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.build_vectors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.vectors.</span></code><code class="sig-name descname"><span class="pre">build_vectors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unk_tensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#build_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.build_vectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory method for creating a vectors object which maps tokens to vectors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -450,12 +452,12 @@ empty tensor if <cite>tokens</cite> is empty</p>
 </dl>
 </dd></dl>
 
-</section>
-<section id="load-vectors-from-file-path">
+</div>
+<div class="section" id="load-vectors-from-file-path">
 <h2><span class="hidden-section">load_vectors_from_file_path</span><a class="headerlink" href="#load-vectors-from-file-path" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.vectors.load_vectors_from_file_path">
-<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">load_vectors_from_file_path</code><span class="sig-paren">(</span><em class="sig-param">filepath</em>, <em class="sig-param">delimiter='</em>, <em class="sig-param">'</em>, <em class="sig-param">unk_tensor=None</em>, <em class="sig-param">num_cpus=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#load_vectors_from_file_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.load_vectors_from_file_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.vectors.</span></code><code class="sig-name descname"><span class="pre">load_vectors_from_file_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unk_tensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#load_vectors_from_file_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.load_vectors_from_file_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Vectors object from a csv file path.</p>
 <p>Note that the tensor corresponding to each vector is of type <cite>torch.float</cite>.</p>
 <dl class="simple">
@@ -488,12 +490,12 @@ token_n&lt;delimiter&gt;num_m num_j num_k</p>
 </dl>
 </dd></dl>
 
-</section>
-<section id="fasttext">
+</div>
+<div class="section" id="fasttext">
 <h2><span class="hidden-section">FastText</span><a class="headerlink" href="#fasttext" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.vectors.FastText">
-<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">FastText</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">unk_tensor=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">validate_file=True</em>, <em class="sig-param">num_cpus=32</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#FastText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.FastText" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.vectors.</span></code><code class="sig-name descname"><span class="pre">FastText</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unk_tensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#FastText"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.FastText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a FastText Vectors object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -519,12 +521,12 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 </dl>
 </dd></dl>
 
-</section>
-<section id="glove">
+</div>
+<div class="section" id="glove">
 <h2><span class="hidden-section">GloVe</span><a class="headerlink" href="#glove" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.experimental.vectors.GloVe">
-<code class="sig-prename descclassname">torchtext.experimental.vectors.</code><code class="sig-name descname">GloVe</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">unk_tensor=None</em>, <em class="sig-param">root='.data'</em>, <em class="sig-param">validate_file=True</em>, <em class="sig-param">num_cpus=32</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#GloVe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.experimental.vectors.GloVe" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.experimental.vectors.</span></code><code class="sig-name descname"><span class="pre">GloVe</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unk_tensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/experimental/vectors.html#GloVe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.experimental.vectors.GloVe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a GloVe Vectors object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -588,8 +590,8 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
 </dl>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
              </article>
@@ -660,8 +662,6 @@ Should be <cite>False</cite> when running tests with a local asset.</p></li>
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.utils &mdash; torchtext 0.12.0.dev20211113 documentation</title>
+  <title>torchtext.models &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -29,8 +29,7 @@
   <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.datasets" href="datasets.html" />
-    <link rel="prev" title="torchtext.data.metrics" href="data_metrics.html" />
+    <link rel="prev" title="torchtext.functional" href="functional.html" />
   <!-- Google Analytics -->
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
@@ -222,7 +221,7 @@
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
@@ -233,7 +232,7 @@
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.models</a></li>
 </ul>
 <p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
@@ -284,13 +283,13 @@
       </li>
 
         
-      <li>torchtext.data.utils</li>
+      <li>torchtext.models</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/data_utils.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+            <a href="_sources/models.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -316,62 +315,85 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="module-torchtext.data.utils">
-<span id="torchtext-data-utils"></span><h1>torchtext.data.utils<a class="headerlink" href="#module-torchtext.data.utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="get-tokenizer">
-<h2><span class="hidden-section">get_tokenizer</span><a class="headerlink" href="#get-tokenizer" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="torchtext.data.utils.get_tokenizer">
-<code class="sig-prename descclassname"><span class="pre">torchtext.data.utils.</span></code><code class="sig-name descname"><span class="pre">get_tokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#get_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.utils.get_tokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate tokenizer function for a string sentence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tokenizer</strong> – the name of tokenizer function. If None, it returns split()
-function, which splits the string sentence by space.
-If basic_english, it returns _basic_english_normalize() function,
-which normalize the string first and split by space. If a callable
-function, it will return the function. If a tokenizer library
-(e.g. spacy, moses, toktok, revtok, subword), it returns the
-corresponding library.</p></li>
-<li><p><strong>language</strong> – Default en</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchtext</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;You can now install TorchText using pip!&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;you&#39;</span><span class="p">,</span> <span class="s1">&#39;can&#39;</span><span class="p">,</span> <span class="s1">&#39;now&#39;</span><span class="p">,</span> <span class="s1">&#39;install&#39;</span><span class="p">,</span> <span class="s1">&#39;torchtext&#39;</span><span class="p">,</span> <span class="s1">&#39;using&#39;</span><span class="p">,</span> <span class="s1">&#39;pip&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]</span>
+  <div class="section" id="module-torchtext.models">
+<span id="torchtext-models"></span><h1>torchtext.models<a class="headerlink" href="#module-torchtext.models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="robertamodelbundle">
+<h2>RobertaModelBundle<a class="headerlink" href="#robertamodelbundle" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.models.RobertaModelBundle">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">RobertaModelBundle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torchtext.models.RobertaEncoderParams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_head</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/0.3.0/nn.html#torch.nn.Module" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.nn.Module</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/models/roberta/bundler.html#RobertaModelBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.models.RobertaModelBundle" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Example - Pretrained encoder</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span><span class="o">,</span> <span class="nn">torchtext</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xlmr_base</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">XLMR_BASE_ENCODER</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">xlmr_base</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">xlmr_base</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">transform</span><span class="p">([</span><span class="s2">&quot;Hello World&quot;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">model_input</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([1, 4, 768])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_batch</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Hello world&quot;</span><span class="p">,</span> <span class="s2">&quot;How are you!&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.functional</span> <span class="kn">import</span> <span class="n">to_tensor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_input</span> <span class="o">=</span> <span class="n">to_tensor</span><span class="p">(</span><span class="n">transform</span><span class="p">(</span><span class="n">input_batch</span><span class="p">),</span> <span class="n">padding_value</span><span class="o">=</span><span class="n">transform</span><span class="o">.</span><span class="n">pad_idx</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">model_input</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([2, 6, 768])</span>
 </pre></div>
 </div>
+</dd>
+<dt>Example - Pretrained encoder attached to un-initialized classification head</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span><span class="o">,</span> <span class="nn">torchtext</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xlmr_large</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">XLMR_LARGE_ENCODER</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier_head</span> <span class="o">=</span> <span class="n">torchtext</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">RobertaClassificationHead</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_dim</span> <span class="o">=</span> <span class="n">xlmr_large</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">embedding_dim</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classification_model</span> <span class="o">=</span> <span class="n">xlmr_large</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">head</span><span class="o">=</span><span class="n">classifier_head</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">xlmr_large</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">transform</span><span class="p">([</span><span class="s2">&quot;Hello World&quot;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">classification_model</span><span class="p">(</span><span class="n">model_input</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([1, 2])</span>
+</pre></div>
+</div>
+</dd>
+<dt>Example - User-specified configuration and checkpoint</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.models</span> <span class="kn">import</span> <span class="n">RobertaEncoderConf</span><span class="p">,</span> <span class="n">RobertaModelBundle</span><span class="p">,</span> <span class="n">RobertaClassificationHead</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_weights_path</span> <span class="o">=</span> <span class="s2">&quot;https://download.pytorch.org/models/text/xlmr.base.encoder.pt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">roberta_encoder_conf</span> <span class="o">=</span> <span class="n">RobertaEncoderConf</span><span class="p">(</span><span class="n">vocab_size</span><span class="o">=</span><span class="mi">250002</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">roberta_bundle</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span><span class="n">_encoder_conf</span><span class="o">=</span><span class="n">roberta_encoder_conf</span><span class="p">,</span> <span class="n">_path</span><span class="o">=</span><span class="n">model_weights_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoder</span> <span class="o">=</span> <span class="n">roberta_bundle</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier_head</span> <span class="o">=</span> <span class="n">RobertaClassificationHead</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="mi">768</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">classifier</span> <span class="o">=</span> <span class="n">roberta_bundle</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="n">head</span><span class="o">=</span><span class="n">classifier_head</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="torchtext.models.RobertaModelBundle.get_model">
+<code class="sig-name descname"><span class="pre">get_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/0.3.0/nn.html#torch.nn.Module" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.nn.Module</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_weights</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze_encoder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dl_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torctext.models.RobertaModel</span><a class="reference internal" href="_modules/torchtext/models/roberta/bundler.html#RobertaModelBundle.get_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.models.RobertaModelBundle.get_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
-<div class="section" id="ngrams-iterator">
-<h2><span class="hidden-section">ngrams_iterator</span><a class="headerlink" href="#ngrams-iterator" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="torchtext.data.utils.ngrams_iterator">
-<code class="sig-prename descclassname"><span class="pre">torchtext.data.utils.</span></code><code class="sig-name descname"><span class="pre">ngrams_iterator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngrams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#ngrams_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.utils.ngrams_iterator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator that yields the given tokens and their ngrams.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token_list</strong> – A list of tokens</p></li>
-<li><p><strong>ngrams</strong> – the number of ngrams.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;here we&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;we are&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
+<div class="section" id="xlmr-base-encoder">
+<h2>XLMR_BASE_ENCODER<a class="headerlink" href="#xlmr-base-encoder" title="Permalink to this headline">¶</a></h2>
+<div class="py attribute docutils container">
+<dl class="py data">
+<dt id="torchtext.models.XLMR_BASE_ENCODER">
+<code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">XLMR_BASE_ENCODER</span></code><a class="headerlink" href="#torchtext.models.XLMR_BASE_ENCODER" title="Permalink to this definition">¶</a></dt>
+<dd><p>XLM-R Encoder with base configuration</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
+</div>
+</div>
+<div class="section" id="xlmr-large-encoder">
+<h2>XLMR_LARGE_ENCODER<a class="headerlink" href="#xlmr-large-encoder" title="Permalink to this headline">¶</a></h2>
+<div class="py attribute docutils container">
+<dl class="py data">
+<dt id="torchtext.models.XLMR_LARGE_ENCODER">
+<code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">XLMR_LARGE_ENCODER</span></code><a class="headerlink" href="#torchtext.models.XLMR_LARGE_ENCODER" title="Permalink to this definition">¶</a></dt>
+<dd><p>XLM-R Encoder with Large configuration</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -383,10 +405,8 @@ corresponding library.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="datasets.html" class="btn btn-neutral float-right" title="torchtext.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
-      
-        <a href="data_metrics.html" class="btn btn-neutral" title="torchtext.data.metrics" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="functional.html" class="btn btn-neutral" title="torchtext.functional" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -418,9 +438,10 @@ corresponding library.</p></li>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext.data.utils</a><ul>
-<li><a class="reference internal" href="#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li><a class="reference internal" href="#ngrams-iterator"><span class="hidden-section">ngrams_iterator</span></a></li>
+<li><a class="reference internal" href="#">torchtext.models</a><ul>
+<li><a class="reference internal" href="#robertamodelbundle">RobertaModelBundle</a></li>
+<li><a class="reference internal" href="#xlmr-base-encoder">XLMR_BASE_ENCODER</a></li>
+<li><a class="reference internal" href="#xlmr-large-encoder">XLMR_LARGE_ENCODER</a></li>
 </ul>
 </li>
 </ul>

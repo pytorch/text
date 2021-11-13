@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.data.utils &mdash; torchtext 0.12.0.dev20211113 documentation</title>
+  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <!-- <link rel="stylesheet" href="_static/pygments.css" type="text/css" /> -->
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torchtext.datasets" href="datasets.html" />
-    <link rel="prev" title="torchtext.data.metrics" href="data_metrics.html" />
+    <link rel="next" title="torchtext.functional" href="functional.html" />
+    <link rel="prev" title="torchtext.experimental.models.utils" href="models_utils.html" />
   <!-- Google Analytics -->
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117752657-2"></script>
@@ -222,7 +222,7 @@
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_functional.html">torchtext.data.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_metrics.html">torchtext.data.metrics</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.data.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">torchtext.data.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">torchtext.utils</a></li>
@@ -231,7 +231,7 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torchtext.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
@@ -284,13 +284,13 @@
       </li>
 
         
-      <li>torchtext.data.utils</li>
+      <li>torchtext.transforms</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
         
             
-            <a href="_sources/data_utils.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
+            <a href="_sources/transforms.rst.txt" rel="nofollow"><img src="_static/images/view-page-source-icon.svg"></a>
           
         
       </li>
@@ -316,60 +316,121 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <div class="section" id="module-torchtext.data.utils">
-<span id="torchtext-data-utils"></span><h1>torchtext.data.utils<a class="headerlink" href="#module-torchtext.data.utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="get-tokenizer">
-<h2><span class="hidden-section">get_tokenizer</span><a class="headerlink" href="#get-tokenizer" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="torchtext.data.utils.get_tokenizer">
-<code class="sig-prename descclassname"><span class="pre">torchtext.data.utils.</span></code><code class="sig-name descname"><span class="pre">get_tokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#get_tokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.utils.get_tokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate tokenizer function for a string sentence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tokenizer</strong> – the name of tokenizer function. If None, it returns split()
-function, which splits the string sentence by space.
-If basic_english, it returns _basic_english_normalize() function,
-which normalize the string first and split by space. If a callable
-function, it will return the function. If a tokenizer library
-(e.g. spacy, moses, toktok, revtok, subword), it returns the
-corresponding library.</p></li>
-<li><p><strong>language</strong> – Default en</p></li>
-</ul>
-</dd>
-</dl>
+  <div class="section" id="module-torchtext.transforms">
+<span id="torchtext-transforms"></span><h1>torchtext.transforms<a class="headerlink" href="#module-torchtext.transforms" title="Permalink to this headline">¶</a></h1>
+<p>Transforms are common text transforms. They can be chained together using <a class="reference external" href="https://pytorch.org/docs/0.3.0/nn.html#torch.nn.Sequential" title="(in PyTorch vmaster (0.3.0.post4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Sequential</span></code></a></p>
+<div class="section" id="sentencepiecetokenizer">
+<h2>SentencePieceTokenizer<a class="headerlink" href="#sentencepiecetokenizer" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.transforms.SentencePieceTokenizer">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">SentencePieceTokenizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sp_model_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#SentencePieceTokenizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.SentencePieceTokenizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform for Sentence Piece tokenizer from pre-trained SentencePiece model</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchtext</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.data</span> <span class="kn">import</span> <span class="n">get_tokenizer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">(</span><span class="s2">&quot;basic_english&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&quot;You can now install TorchText using pip!&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;you&#39;</span><span class="p">,</span> <span class="s1">&#39;can&#39;</span><span class="p">,</span> <span class="s1">&#39;now&#39;</span><span class="p">,</span> <span class="s1">&#39;install&#39;</span><span class="p">,</span> <span class="s1">&#39;torchtext&#39;</span><span class="p">,</span> <span class="s1">&#39;using&#39;</span><span class="p">,</span> <span class="s1">&#39;pip&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.transforms</span> <span class="kn">import</span> <span class="n">SpmTokenizerTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">SentencePieceTokenizer</span><span class="p">(</span><span class="s2">&quot;spm_model&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span><span class="p">([</span><span class="s2">&quot;hello world&quot;</span><span class="p">,</span> <span class="s2">&quot;attention is all you need!&quot;</span><span class="p">])</span>
 </pre></div>
+</div>
+<dl class="py method">
+<dt id="torchtext.transforms.SentencePieceTokenizer.forward">
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/transforms.html#SentencePieceTokenizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.SentencePieceTokenizer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
 </div>
 </dd></dl>
 
+</dd></dl>
+
 </div>
-<div class="section" id="ngrams-iterator">
-<h2><span class="hidden-section">ngrams_iterator</span><a class="headerlink" href="#ngrams-iterator" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="torchtext.data.utils.ngrams_iterator">
-<code class="sig-prename descclassname"><span class="pre">torchtext.data.utils.</span></code><code class="sig-name descname"><span class="pre">ngrams_iterator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngrams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/data/utils.html#ngrams_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.data.utils.ngrams_iterator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an iterator that yields the given tokens and their ngrams.</p>
+<div class="section" id="vocabtransform">
+<h2>VocabTransform<a class="headerlink" href="#vocabtransform" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.transforms.VocabTransform">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">VocabTransform</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torchtext.vocab.vocab.Vocab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#VocabTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.VocabTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vocab transform</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vocab</strong> – an instance of torchtext.vocab.Vocab class.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">vocab</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchtext.transforms</span> <span class="kn">import</span> <span class="n">VocabTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocab_obj</span> <span class="o">=</span> <span class="n">vocab</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocab_transform</span> <span class="o">=</span> <span class="n">VocabTransform</span><span class="p">(</span><span class="n">vocab_obj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">vocab_transform</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">],[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jit_vocab_transform</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="n">vocab_transform</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="torchtext.transforms.VocabTransform.forward">
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/transforms.html#VocabTransform.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.VocabTransform.forward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input</strong> – list of list tokens</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="totensor">
+<h2>ToTensor<a class="headerlink" href="#totensor" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.transforms.ToTensor">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">ToTensor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">padding_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.dtype</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">torch.int64</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#ToTensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.ToTensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert input to torch tensor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>padding_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Pad value to make each input in the batch of length equal to the longest sequence in the batch.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="torchtext.transforms.ToTensor.forward">
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://pytorch.org/docs/0.3.0/tensors.html#torch.Tensor" title="(in PyTorch vmaster (0.3.0.post4 ))"><span class="pre">torch.Tensor</span></a><a class="reference internal" href="_modules/torchtext/transforms.html#ToTensor.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.ToTensor.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="labeltoindex">
+<h2>LabelToIndex<a class="headerlink" href="#labeltoindex" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.transforms.LabelToIndex">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">LabelToIndex</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#LabelToIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.LabelToIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform labels from string names to ids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>token_list</strong> – A list of tokens</p></li>
-<li><p><strong>ngrams</strong> – the number of ngrams.</p></li>
+<li><p><strong>label_names</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em><em>, </em><em>Optional</em>) – a list of unique label names</p></li>
+<li><p><strong>label_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>Optional</em>) – a path to file containing unique label names containing 1 label per line.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">ngrams_iterator</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;here&#39;</span><span class="p">,</span> <span class="s1">&#39;here we&#39;</span><span class="p">,</span> <span class="s1">&#39;we&#39;</span><span class="p">,</span> <span class="s1">&#39;we are&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">]</span>
-</pre></div>
+<dl class="py method">
+<dt id="torchtext.transforms.LabelToIndex.forward">
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/transforms.html#LabelToIndex.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.LabelToIndex.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -383,10 +444,10 @@ corresponding library.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="datasets.html" class="btn btn-neutral float-right" title="torchtext.datasets" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
+        <a href="functional.html" class="btn btn-neutral float-right" title="torchtext.functional" accesskey="n" rel="next">Next <img src="_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
-        <a href="data_metrics.html" class="btn btn-neutral" title="torchtext.data.metrics" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
+        <a href="models_utils.html" class="btn btn-neutral" title="torchtext.experimental.models.utils" accesskey="p" rel="prev"><img src="_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
       
     </div>
   
@@ -418,9 +479,11 @@ corresponding library.</p></li>
           <div class="pytorch-right-menu" id="pytorch-right-menu">
             <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
               <ul>
-<li><a class="reference internal" href="#">torchtext.data.utils</a><ul>
-<li><a class="reference internal" href="#get-tokenizer"><span class="hidden-section">get_tokenizer</span></a></li>
-<li><a class="reference internal" href="#ngrams-iterator"><span class="hidden-section">ngrams_iterator</span></a></li>
+<li><a class="reference internal" href="#">torchtext.transforms</a><ul>
+<li><a class="reference internal" href="#sentencepiecetokenizer">SentencePieceTokenizer</a></li>
+<li><a class="reference internal" href="#vocabtransform">VocabTransform</a></li>
+<li><a class="reference internal" href="#totensor">ToTensor</a></li>
+<li><a class="reference internal" href="#labeltoindex">LabelToIndex</a></li>
 </ul>
 </li>
 </ul>

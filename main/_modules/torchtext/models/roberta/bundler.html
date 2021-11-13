@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.experimental.models.utils &mdash; torchtext 0.12.0.dev20211113 documentation</title>
+  <title>torchtext.models.roberta.bundler &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -284,7 +284,7 @@
         
           <li><a href="../../../index.html">Module code</a> &gt;</li>
         
-      <li>torchtext.experimental.models.utils</li>
+      <li>torchtext.models.roberta.bundler</li>
     
     
       <li class="pytorch-breadcrumbs-aside">
@@ -312,29 +312,145 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <h1>Source code for torchtext.experimental.models.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
+  <h1>Source code for torchtext.models.roberta.bundler</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">torchtext._download_hooks</span> <span class="kn">import</span> <span class="n">load_state_dict_from_url</span>
+<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Module</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RobertaEncoderConf</span><span class="p">,</span>
+    <span class="n">RobertaModel</span><span class="p">,</span>
+    <span class="n">_get_model</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.transforms</span> <span class="kn">import</span> <span class="n">get_xlmr_transform</span>
+
+<span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">_TEXT_BUCKET</span>
 
 
-<div class="viewcode-block" id="count_model_param"><a class="viewcode-back" href="../../../../models_utils.html#torchtext.experimental.models.utils.count_model_param">[docs]</a><span class="k">def</span> <span class="nf">count_model_param</span><span class="p">(</span><span class="n">nn_model</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Count the parameters in a model</span>
+<div class="viewcode-block" id="RobertaModelBundle"><a class="viewcode-back" href="../../../../models.html#torchtext.models.RobertaModelBundle">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RobertaModelBundle</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;RobertaModelBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        model: the model (torch.nn.Module)</span>
-<span class="sd">        unit: the unit of the returned value. Default: 10**6 or M.</span>
+<span class="sd">    Example - Pretrained encoder</span>
+<span class="sd">        &gt;&gt;&gt; import torch, torchtext</span>
+<span class="sd">        &gt;&gt;&gt; xlmr_base = torchtext.models.XLMR_BASE_ENCODER</span>
+<span class="sd">        &gt;&gt;&gt; model = xlmr_base.get_model()</span>
+<span class="sd">        &gt;&gt;&gt; transform = xlmr_base.transform()</span>
+<span class="sd">        &gt;&gt;&gt; model_input = torch.tensor(transform([&quot;Hello World&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; output = model(model_input)</span>
+<span class="sd">        &gt;&gt;&gt; output.shape</span>
+<span class="sd">        torch.Size([1, 4, 768])</span>
+<span class="sd">        &gt;&gt;&gt; input_batch = [&quot;Hello world&quot;, &quot;How are you!&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.functional import to_tensor</span>
+<span class="sd">        &gt;&gt;&gt; model_input = to_tensor(transform(input_batch), padding_value=transform.pad_idx)</span>
+<span class="sd">        &gt;&gt;&gt; output = model(model_input)</span>
+<span class="sd">        &gt;&gt;&gt; output.shape</span>
+<span class="sd">        torch.Size([2, 6, 768])</span>
 
-<span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; import torch</span>
-<span class="sd">        &gt;&gt;&gt; import torchtext</span>
-<span class="sd">        &gt;&gt;&gt; from torchtext.experimental.models.utils import count_model_param</span>
-<span class="sd">        &gt;&gt;&gt; model = torch.nn.Embedding(100, 200)</span>
-<span class="sd">        &gt;&gt;&gt; count_model_param(model, unit=10**3)</span>
-<span class="sd">        &gt;&gt;&gt; 20.</span>
+<span class="sd">    Example - Pretrained encoder attached to un-initialized classification head</span>
+<span class="sd">        &gt;&gt;&gt; import torch, torchtext</span>
+<span class="sd">        &gt;&gt;&gt; xlmr_large = torchtext.models.XLMR_LARGE_ENCODER</span>
+<span class="sd">        &gt;&gt;&gt; classifier_head = torchtext.models.RobertaClassificationHead(num_classes=2, input_dim = xlmr_large.params.embedding_dim)</span>
+<span class="sd">        &gt;&gt;&gt; classification_model = xlmr_large.get_model(head=classifier_head)</span>
+<span class="sd">        &gt;&gt;&gt; transform = xlmr_large.transform()</span>
+<span class="sd">        &gt;&gt;&gt; model_input = torch.tensor(transform([&quot;Hello World&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; output = classification_model(model_input)</span>
+<span class="sd">        &gt;&gt;&gt; output.shape</span>
+<span class="sd">        torch.Size([1, 2])</span>
+
+<span class="sd">    Example - User-specified configuration and checkpoint</span>
+<span class="sd">        &gt;&gt;&gt; from torchtext.models import RobertaEncoderConf, RobertaModelBundle, RobertaClassificationHead</span>
+<span class="sd">        &gt;&gt;&gt; model_weights_path = &quot;https://download.pytorch.org/models/text/xlmr.base.encoder.pt&quot;</span>
+<span class="sd">        &gt;&gt;&gt; roberta_encoder_conf = RobertaEncoderConf(vocab_size=250002)</span>
+<span class="sd">        &gt;&gt;&gt; roberta_bundle = RobertaModelBundle(_encoder_conf=roberta_encoder_conf, _path=model_weights_path)</span>
+<span class="sd">        &gt;&gt;&gt; encoder = roberta_bundle.get_model()</span>
+<span class="sd">        &gt;&gt;&gt; classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)</span>
+<span class="sd">        &gt;&gt;&gt; classifier = roberta_bundle.get_model(head=classifier_head)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">model_parameters</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">,</span> <span class="n">nn_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">size</span><span class="p">()))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model_parameters</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">params</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">/</span> <span class="n">unit</span></div>
+    <span class="n">_encoder_conf</span><span class="p">:</span> <span class="n">RobertaEncoderConf</span>
+    <span class="n">_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="RobertaModelBundle.get_model"><a class="viewcode-back" href="../../../../models.html#torchtext.models.RobertaModelBundle.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load_weights</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">freeze_encoder</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dl_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RobertaModel</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;get_model(head: Optional[torch.nn.Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -&gt; torctext.models.RobertaModel</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">load_weights</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;load_weights cannot be True. The pre-trained model weights are not available for the current object&quot;</span>
+
+        <span class="k">if</span> <span class="n">freeze_encoder</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">load_weights</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The encoder is not loaded with pre-trained weights. Setting freeze_encoder to True will hinder encoder from learning appropriate weights.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">input_head</span> <span class="o">=</span> <span class="n">head</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;A custom head module was provided, discarding the default head module.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">input_head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_head</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">_get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoder_conf</span><span class="p">,</span> <span class="n">input_head</span><span class="p">,</span> <span class="n">freeze_encoder</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">load_weights</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">model</span>
+
+        <span class="n">dl_kwargs</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">dl_kwargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dl_kwargs</span>
+        <span class="n">state_dict</span> <span class="o">=</span> <span class="n">load_state_dict_from_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="o">**</span><span class="n">dl_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">input_head</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">encoderConf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RobertaEncoderConf</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encoder_conf</span></div>
+
+
+<span class="n">XLMR_BASE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span>
+    <span class="n">_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.base.encoder.pt&quot;</span><span class="p">),</span>
+    <span class="n">_encoder_conf</span><span class="o">=</span><span class="n">RobertaEncoderConf</span><span class="p">(</span><span class="n">vocab_size</span><span class="o">=</span><span class="mi">250002</span><span class="p">),</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">get_xlmr_transform</span><span class="p">,</span>
+                      <span class="n">vocab_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.vocab.pt&quot;</span><span class="p">),</span>
+                      <span class="n">spm_model_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.sentencepiece.bpe.model&quot;</span><span class="p">),</span>
+                      <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">XLMR_BASE_ENCODER</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    XLM-R Encoder with base configuration</span>
+
+<span class="sd">    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="p">)</span>
+
+
+<span class="n">XLMR_LARGE_ENCODER</span> <span class="o">=</span> <span class="n">RobertaModelBundle</span><span class="p">(</span>
+    <span class="n">_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.large.encoder.pt&quot;</span><span class="p">),</span>
+    <span class="n">_encoder_conf</span><span class="o">=</span><span class="n">RobertaEncoderConf</span><span class="p">(</span><span class="n">vocab_size</span><span class="o">=</span><span class="mi">250002</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">ffn_dimension</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">num_attention_heads</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_encoder_layers</span><span class="o">=</span><span class="mi">24</span><span class="p">),</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">get_xlmr_transform</span><span class="p">,</span>
+                      <span class="n">vocab_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.vocab.pt&quot;</span><span class="p">),</span>
+                      <span class="n">spm_model_path</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">_TEXT_BUCKET</span><span class="p">,</span> <span class="s2">&quot;xlmr.sentencepiece.bpe.model&quot;</span><span class="p">),</span>
+                      <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">XLMR_LARGE_ENCODER</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    XLM-R Encoder with Large configuration</span>
+
+<span class="sd">    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="p">)</span>
 </pre></div>
 
              </article>

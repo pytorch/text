@@ -6,11 +6,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.vocab &mdash; torchtext 0.12.0.dev20211026 documentation</title>
+  <title>torchtext.vocab &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -193,7 +192,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211026 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211113 &#x25BC</a>
     </div>
     
 
@@ -217,7 +216,7 @@
               
             
             
-              <p><span class="caption-text">Package Reference</span></p>
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -232,8 +231,11 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -314,16 +316,16 @@
             <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
-  <section id="module-torchtext.vocab">
+  <div class="section" id="module-torchtext.vocab">
 <span id="torchtext-vocab"></span><h1>torchtext.vocab<a class="headerlink" href="#module-torchtext.vocab" title="Permalink to this headline">¶</a></h1>
-<section id="vocab">
+<div class="section" id="vocab">
 <h2><span class="hidden-section">Vocab</span><a class="headerlink" href="#vocab" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.vocab.Vocab">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">Vocab</code><span class="sig-paren">(</span><em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">Vocab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="torchtext.vocab.Vocab.__contains__">
-<code class="sig-name descname">__contains__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__contains__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__contains__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__contains__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>token</strong> – The token for which to check the membership.</p>
@@ -334,9 +336,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.__getitem__">
-<code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__getitem__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__getitem__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>token</strong> – The token used to lookup the corresponding index.</p>
@@ -347,15 +349,15 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.__len__">
-<code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__len__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__len__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__len__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__len__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The length of the vocab.</p>
@@ -363,15 +365,15 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.__prepare_scriptable__">
-<code class="sig-name descname">__prepare_scriptable__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__prepare_scriptable__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__prepare_scriptable__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.__prepare_scriptable__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.__prepare_scriptable__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a JITable Vocab.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.append_token">
-<code class="sig-name descname">append_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.append_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.append_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">append_token</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.append_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.append_token" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>token</strong> – The token used to lookup the corresponding index.</p>
@@ -382,9 +384,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.forward">
-<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls the <cite>lookup_indices</cite> method</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -396,9 +398,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.get_default_index">
-<code class="sig-name descname">get_default_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[int]<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.get_default_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.get_default_index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_default_index</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.get_default_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.get_default_index" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Value of default index if it is set.</p>
@@ -406,9 +408,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.get_itos">
-<code class="sig-name descname">get_itos</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.get_itos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.get_itos" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_itos</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.get_itos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.get_itos" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>List mapping indices to tokens.</p>
@@ -416,9 +418,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.get_stoi">
-<code class="sig-name descname">get_stoi</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict[str, int]<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.get_stoi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.get_stoi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_stoi</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.get_stoi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.get_stoi" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Dictionary mapping tokens to indices.</p>
@@ -426,9 +428,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.insert_token">
-<code class="sig-name descname">insert_token</code><span class="sig-paren">(</span><em class="sig-param">token: str</em>, <em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.insert_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.insert_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">insert_token</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.insert_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.insert_token" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -442,9 +444,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.lookup_indices">
-<code class="sig-name descname">lookup_indices</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[str]</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.lookup_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.lookup_indices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">lookup_indices</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.lookup_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.lookup_indices" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>tokens</strong> – the tokens used to lookup their corresponding <cite>indices</cite>.</p>
@@ -455,9 +457,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.lookup_token">
-<code class="sig-name descname">lookup_token</code><span class="sig-paren">(</span><em class="sig-param">index: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.lookup_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.lookup_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">lookup_token</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.lookup_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.lookup_token" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>index</strong> – The index corresponding to the associated token.</p>
@@ -474,9 +476,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.lookup_tokens">
-<code class="sig-name descname">lookup_tokens</code><span class="sig-paren">(</span><em class="sig-param">indices: List[int]</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.lookup_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.lookup_tokens" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">lookup_tokens</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.lookup_tokens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.lookup_tokens" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>indices</strong> – The <cite>indices</cite> used to lookup their corresponding`tokens`.</p>
@@ -490,9 +492,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vocab.set_default_index">
-<code class="sig-name descname">set_default_index</code><span class="sig-paren">(</span><em class="sig-param">index: Optional[int]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.set_default_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vocab.set_default_index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_default_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><span class="pre">None</span></a><a class="reference internal" href="_modules/torchtext/vocab/vocab.html#Vocab.set_default_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vocab.set_default_index" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>index</strong> – Value of default index. This index will be returned when OOV token is queried.</p>
@@ -502,12 +504,12 @@
 
 </dd></dl>
 
-</section>
-<section id="id1">
+</div>
+<div class="section" id="id1">
 <h2><span class="hidden-section">vocab</span><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.vocab.vocab">
-<code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">vocab</code><span class="sig-paren">(</span><em class="sig-param">ordered_dict: Dict</em>, <em class="sig-param">min_freq: int = 1</em><span class="sig-paren">)</span> &#x2192; torchtext.vocab.vocab.Vocab<a class="reference internal" href="_modules/torchtext/vocab/vocab_factory.html#vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.vocab" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">vocab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ordered_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_freq</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specials</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">special_first</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torchtext.vocab.vocab.Vocab</span><a class="reference internal" href="_modules/torchtext/vocab/vocab_factory.html#vocab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.vocab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory method for creating a vocab object which maps tokens to indices.</p>
 <p>Note that the ordering in which key value pairs were inserted in the <cite>ordered_dict</cite> will be respected when building the vocab.
 Therefore if sorting by token frequency is important to the user, the <cite>ordered_dict</cite> should be created in a way to reflect this.</p>
@@ -516,6 +518,8 @@ Therefore if sorting by token frequency is important to the user, the <cite>orde
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ordered_dict</strong> – Ordered Dictionary mapping tokens to their corresponding occurance frequencies.</p></li>
 <li><p><strong>min_freq</strong> – The minimum frequency needed to include a token in the vocabulary.</p></li>
+<li><p><strong>specials</strong> – Special symbols to add. The order of supplied tokens will be preserved.</p></li>
+<li><p><strong>special_first</strong> – Indicates whether to insert symbols at the beginning or at the end.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -535,11 +539,10 @@ Therefore if sorting by token frequency is important to the user, the <cite>orde
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">v1</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span> <span class="c1">#prints 1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">v1</span><span class="p">[</span><span class="s1">&#39;out of vocab&#39;</span><span class="p">])</span> <span class="c1">#raise RuntimeError since default index is not set</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">vocab</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="n">token</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#adding &lt;unk&gt; token and default index</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">unk_token</span> <span class="o">=</span> <span class="s1">&#39;&lt;unk&gt;&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">default_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">unk_token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v2</span><span class="p">:</span> <span class="n">v2</span><span class="o">.</span><span class="n">insert_token</span><span class="p">(</span><span class="n">unk_token</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">vocab</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="n">token</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]),</span> <span class="n">specials</span><span class="o">=</span><span class="p">[</span><span class="n">unk_token</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span><span class="o">.</span><span class="n">set_default_index</span><span class="p">(</span><span class="n">default_index</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">v2</span><span class="p">[</span><span class="s1">&#39;&lt;unk&gt;&#39;</span><span class="p">])</span> <span class="c1">#prints 0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">v2</span><span class="p">[</span><span class="s1">&#39;out of vocab&#39;</span><span class="p">])</span> <span class="c1">#prints -1</span>
@@ -550,12 +553,12 @@ Therefore if sorting by token frequency is important to the user, the <cite>orde
 </div>
 </dd></dl>
 
-</section>
-<section id="build-vocab-from-iterator">
+</div>
+<div class="section" id="build-vocab-from-iterator">
 <h2><span class="hidden-section">build_vocab_from_iterator</span><a class="headerlink" href="#build-vocab-from-iterator" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="torchtext.vocab.build_vocab_from_iterator">
-<code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">build_vocab_from_iterator</code><span class="sig-paren">(</span><em class="sig-param">iterator: Iterable</em>, <em class="sig-param">min_freq: int = 1</em>, <em class="sig-param">specials: Optional[List[str]] = None</em>, <em class="sig-param">special_first: bool = True</em><span class="sig-paren">)</span> &#x2192; torchtext.vocab.vocab.Vocab<a class="reference internal" href="_modules/torchtext/vocab/vocab_factory.html#build_vocab_from_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">build_vocab_from_iterator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_freq</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specials</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">special_first</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torchtext.vocab.vocab.Vocab</span><a class="reference internal" href="_modules/torchtext/vocab/vocab_factory.html#build_vocab_from_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.build_vocab_from_iterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a Vocab from an iterator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -586,15 +589,15 @@ Therefore if sorting by token frequency is important to the user, the <cite>orde
 </div>
 </dd></dl>
 
-</section>
-<section id="vectors">
+</div>
+<div class="section" id="vectors">
 <h2><span class="hidden-section">Vectors</span><a class="headerlink" href="#vectors" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.vocab.Vectors">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">Vectors</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">cache=None</em>, <em class="sig-param">url=None</em>, <em class="sig-param">unk_init=None</em>, <em class="sig-param">max_vectors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#Vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">Vectors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unk_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_vectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#Vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vectors" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="torchtext.vocab.Vectors.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">cache=None</em>, <em class="sig-param">url=None</em>, <em class="sig-param">unk_init=None</em>, <em class="sig-param">max_vectors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#Vectors.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unk_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_vectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#Vectors.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vectors.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -615,9 +618,9 @@ can limit the size of the loaded set.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="torchtext.vocab.Vectors.get_vecs_by_tokens">
-<code class="sig-name descname">get_vecs_by_tokens</code><span class="sig-paren">(</span><em class="sig-param">tokens</em>, <em class="sig-param">lower_case_backup=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#Vectors.get_vecs_by_tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.Vectors.get_vecs_by_tokens" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_vecs_by_tokens</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_case_backup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#Vectors.get_vecs_by_tokens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.Vectors.get_vecs_by_tokens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Look up embedding vectors of tokens.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -644,35 +647,35 @@ lower case will be looked up. Default: False.</p></li>
 
 </dd></dl>
 
-<section id="pretrained-word-embeddings">
+<div class="section" id="pretrained-word-embeddings">
 <h3>Pretrained Word Embeddings<a class="headerlink" href="#pretrained-word-embeddings" title="Permalink to this headline">¶</a></h3>
-</section>
-</section>
-<section id="glove">
+</div>
+</div>
+<div class="section" id="glove">
 <h2><span class="hidden-section">GloVe</span><a class="headerlink" href="#glove" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.vocab.GloVe">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">GloVe</code><span class="sig-paren">(</span><em class="sig-param">name='840B'</em>, <em class="sig-param">dim=300</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#GloVe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.GloVe" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">GloVe</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840B'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#GloVe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.GloVe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</section>
-<section id="fasttext">
+</div>
+<div class="section" id="fasttext">
 <h2><span class="hidden-section">FastText</span><a class="headerlink" href="#fasttext" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.vocab.FastText">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">FastText</code><span class="sig-paren">(</span><em class="sig-param">language='en'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#FastText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.FastText" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">FastText</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#FastText"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.FastText" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</section>
-<section id="charngram">
+</div>
+<div class="section" id="charngram">
 <h2><span class="hidden-section">CharNGram</span><a class="headerlink" href="#charngram" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="torchtext.vocab.CharNGram">
-<em class="property">class </em><code class="sig-prename descclassname">torchtext.vocab.</code><code class="sig-name descname">CharNGram</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#CharNGram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchtext.vocab.CharNGram" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.vocab.</span></code><code class="sig-name descname"><span class="pre">CharNGram</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/vocab/vectors.html#CharNGram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.vocab.CharNGram" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
              </article>
@@ -748,8 +751,6 @@ lower case will be looked up. Default: False.</p></li>
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   

@@ -1,7 +1,6 @@
 
 
 
-
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -10,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; torchtext 0.12.0.dev20211026 documentation</title>
+  <title>Index &mdash; torchtext 0.12.0.dev20211113 documentation</title>
   
 
   
@@ -191,7 +190,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211026 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211113 &#x25BC</a>
     </div>
     
 
@@ -215,7 +214,7 @@
               
             
             
-              <p><span class="caption-text">Package Reference</span></p>
+              <p class="caption"><span class="caption-text">Package Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">torchtext</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn_modules.html">torchtext.nn</a></li>
@@ -230,8 +229,11 @@
 <li class="toctree-l1"><a class="reference internal" href="experimental_vectors.html">torchtext.experimental.vectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models_utils.html">torchtext.experimental.models.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">torchtext.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">torchtext.functional</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">torchtext.models</a></li>
 </ul>
-<p><span class="caption-text">PyTorch Libraries</span></p>
+<p class="caption"><span class="caption-text">PyTorch Libraries</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/docs">PyTorch</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pytorch.org/audio">torchaudio</a></li>
@@ -333,6 +335,7 @@
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
  | <a href="#Y"><strong>Y</strong></a>
  
 </div>
@@ -395,12 +398,14 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="datasets.html#torchtext.datasets.AG_NEWS">AG_NEWS() (in module torchtext.datasets)</a>
+      <li><a href="functional.html#torchtext.functional.add_token">add_token() (in module torchtext.functional)</a>
 </li>
-      <li><a href="datasets.html#torchtext.datasets.AmazonReviewFull">AmazonReviewFull() (in module torchtext.datasets)</a>
+      <li><a href="datasets.html#torchtext.datasets.AG_NEWS">AG_NEWS() (in module torchtext.datasets)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.AmazonReviewFull">AmazonReviewFull() (in module torchtext.datasets)</a>
+</li>
       <li><a href="datasets.html#torchtext.datasets.AmazonReviewPolarity">AmazonReviewPolarity() (in module torchtext.datasets)</a>
 </li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.append_token">append_token() (torchtext.vocab.Vocab method)</a>
@@ -504,6 +509,14 @@
 </li>
         <li><a href="nn_modules.html#torchtext.nn.ScaledDotProduct.forward">(torchtext.nn.ScaledDotProduct method)</a>
 </li>
+        <li><a href="transforms.html#torchtext.transforms.LabelToIndex.forward">(torchtext.transforms.LabelToIndex method)</a>
+</li>
+        <li><a href="transforms.html#torchtext.transforms.SentencePieceTokenizer.forward">(torchtext.transforms.SentencePieceTokenizer method)</a>
+</li>
+        <li><a href="transforms.html#torchtext.transforms.ToTensor.forward">(torchtext.transforms.ToTensor method)</a>
+</li>
+        <li><a href="transforms.html#torchtext.transforms.VocabTransform.forward">(torchtext.transforms.VocabTransform method)</a>
+</li>
         <li><a href="vocab.html#torchtext.vocab.Vocab.forward">(torchtext.vocab.Vocab method)</a>
 </li>
       </ul></li>
@@ -519,10 +532,12 @@
 </li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.get_itos">get_itos() (torchtext.vocab.Vocab method)</a>
 </li>
-      <li><a href="vocab.html#torchtext.vocab.Vocab.get_stoi">get_stoi() (torchtext.vocab.Vocab method)</a>
+      <li><a href="models.html#torchtext.models.RobertaModelBundle.get_model">get_model() (torchtext.models.RobertaModelBundle method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="vocab.html#torchtext.vocab.Vocab.get_stoi">get_stoi() (torchtext.vocab.Vocab method)</a>
+</li>
       <li><a href="data_utils.html#torchtext.data.utils.get_tokenizer">get_tokenizer() (in module torchtext.data.utils)</a>
 </li>
       <li><a href="vocab.html#torchtext.vocab.Vectors.get_vecs_by_tokens">get_vecs_by_tokens() (torchtext.vocab.Vectors method)</a>
@@ -555,6 +570,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transforms.html#torchtext.transforms.LabelToIndex">LabelToIndex (class in torchtext.transforms)</a>
+</li>
       <li><a href="data_functional.html#torchtext.data.functional.load_sp_model">load_sp_model() (in module torchtext.data.functional)</a>
 
       <ul>
@@ -563,10 +580,10 @@
       </ul></li>
       <li><a href="experimental_vectors.html#torchtext.experimental.vectors.load_vectors_from_file_path">load_vectors_from_file_path() (in module torchtext.experimental.vectors)</a>
 </li>
-      <li><a href="experimental_vocab.html#torchtext.experimental.vocab_factory.load_vocab_from_file">load_vocab_from_file() (in module torchtext.experimental.vocab_factory)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="experimental_vocab.html#torchtext.experimental.vocab_factory.load_vocab_from_file">load_vocab_from_file() (in module torchtext.experimental.vocab_factory)</a>
+</li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.lookup_indices">lookup_indices() (torchtext.vocab.Vocab method)</a>
 </li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.lookup_token">lookup_token() (torchtext.vocab.Vocab method)</a>
@@ -581,10 +598,43 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="datasets.html#torchtext.datasets.Multi30k">Multi30k() (in module torchtext.datasets)</a>
+      <li>
+    module
+
+      <ul>
+        <li><a href="index.html#module-torchtext">torchtext</a>
 </li>
+        <li><a href="data_functional.html#module-torchtext.data.functional">torchtext.data.functional</a>
+</li>
+        <li><a href="data_metrics.html#module-torchtext.data.metrics">torchtext.data.metrics</a>
+</li>
+        <li><a href="data_utils.html#module-torchtext.data.utils">torchtext.data.utils</a>
+</li>
+        <li><a href="models_utils.html#module-torchtext.experimental.models.utils">torchtext.experimental.models.utils</a>
+</li>
+        <li><a href="experimental_transforms.html#module-torchtext.experimental.transforms">torchtext.experimental.transforms</a>
+</li>
+        <li><a href="experimental_vectors.html#module-torchtext.experimental.vectors">torchtext.experimental.vectors</a>
+</li>
+        <li><a href="experimental_vocab.html#module-torchtext.experimental.vocab_factory">torchtext.experimental.vocab_factory</a>
+</li>
+        <li><a href="functional.html#module-torchtext.functional">torchtext.functional</a>
+</li>
+        <li><a href="models.html#module-torchtext.models">torchtext.models</a>
+</li>
+        <li><a href="nn_modules.html#module-torchtext.nn">torchtext.nn</a>
+</li>
+        <li><a href="transforms.html#module-torchtext.transforms">torchtext.transforms</a>
+</li>
+        <li><a href="utils.html#module-torchtext.utils">torchtext.utils</a>
+</li>
+        <li><a href="vocab.html#module-torchtext.vocab">torchtext.vocab</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchtext.datasets.Multi30k">Multi30k() (in module torchtext.datasets)</a>
+</li>
       <li><a href="nn_modules.html#torchtext.nn.MultiheadAttentionContainer">MultiheadAttentionContainer (class in torchtext.nn)</a>
 </li>
   </ul></td>
@@ -619,6 +669,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#torchtext.utils.reporthook">reporthook() (in module torchtext.utils)</a>
 </li>
+      <li><a href="models.html#torchtext.models.RobertaModelBundle">RobertaModelBundle (class in torchtext.models)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -642,7 +694,11 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="experimental_transforms.html#torchtext.experimental.transforms.SentencePieceTokenizer">SentencePieceTokenizer (class in torchtext.experimental.transforms)</a>
+
+      <ul>
+        <li><a href="transforms.html#torchtext.transforms.SentencePieceTokenizer">(class in torchtext.transforms)</a>
 </li>
+      </ul></li>
       <li><a href="vocab.html#torchtext.vocab.Vocab.set_default_index">set_default_index() (torchtext.vocab.Vocab method)</a>
 </li>
       <li><a href="data_functional.html#torchtext.data.functional.simple_space_split">simple_space_split() (in module torchtext.data.functional)</a>
@@ -663,29 +719,111 @@
 </li>
       <li><a href="data_functional.html#torchtext.data.functional.to_map_style_dataset">to_map_style_dataset() (in module torchtext.data.functional)</a>
 </li>
-      <li><a href="index.html#module-torchtext">torchtext (module)</a>
+      <li><a href="functional.html#torchtext.functional.to_tensor">to_tensor() (in module torchtext.functional)</a>
 </li>
-      <li><a href="data_functional.html#module-torchtext.data.functional">torchtext.data.functional (module)</a>
+      <li>
+    torchtext
+
+      <ul>
+        <li><a href="index.html#module-torchtext">module</a>
 </li>
-      <li><a href="data_metrics.html#module-torchtext.data.metrics">torchtext.data.metrics (module)</a>
+      </ul></li>
+      <li>
+    torchtext.data.functional
+
+      <ul>
+        <li><a href="data_functional.html#module-torchtext.data.functional">module</a>
 </li>
-      <li><a href="data_utils.html#module-torchtext.data.utils">torchtext.data.utils (module)</a>
+      </ul></li>
+      <li>
+    torchtext.data.metrics
+
+      <ul>
+        <li><a href="data_metrics.html#module-torchtext.data.metrics">module</a>
 </li>
+      </ul></li>
+      <li>
+    torchtext.data.utils
+
+      <ul>
+        <li><a href="data_utils.html#module-torchtext.data.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchtext.experimental.models.utils
+
+      <ul>
+        <li><a href="models_utils.html#module-torchtext.experimental.models.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchtext.experimental.transforms
+
+      <ul>
+        <li><a href="experimental_transforms.html#module-torchtext.experimental.transforms">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchtext.experimental.vectors
+
+      <ul>
+        <li><a href="experimental_vectors.html#module-torchtext.experimental.vectors">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models_utils.html#module-torchtext.experimental.models.utils">torchtext.experimental.models.utils (module)</a>
+      <li>
+    torchtext.experimental.vocab_factory
+
+      <ul>
+        <li><a href="experimental_vocab.html#module-torchtext.experimental.vocab_factory">module</a>
 </li>
-      <li><a href="experimental_transforms.html#module-torchtext.experimental.transforms">torchtext.experimental.transforms (module)</a>
+      </ul></li>
+      <li>
+    torchtext.functional
+
+      <ul>
+        <li><a href="functional.html#module-torchtext.functional">module</a>
 </li>
-      <li><a href="experimental_vectors.html#module-torchtext.experimental.vectors">torchtext.experimental.vectors (module)</a>
+      </ul></li>
+      <li>
+    torchtext.models
+
+      <ul>
+        <li><a href="models.html#module-torchtext.models">module</a>
 </li>
-      <li><a href="experimental_vocab.html#module-torchtext.experimental.vocab_factory">torchtext.experimental.vocab_factory (module)</a>
+      </ul></li>
+      <li>
+    torchtext.nn
+
+      <ul>
+        <li><a href="nn_modules.html#module-torchtext.nn">module</a>
 </li>
-      <li><a href="nn_modules.html#module-torchtext.nn">torchtext.nn (module)</a>
+      </ul></li>
+      <li>
+    torchtext.transforms
+
+      <ul>
+        <li><a href="transforms.html#module-torchtext.transforms">module</a>
 </li>
-      <li><a href="utils.html#module-torchtext.utils">torchtext.utils (module)</a>
+      </ul></li>
+      <li>
+    torchtext.utils
+
+      <ul>
+        <li><a href="utils.html#module-torchtext.utils">module</a>
 </li>
-      <li><a href="vocab.html#module-torchtext.vocab">torchtext.vocab (module)</a>
+      </ul></li>
+      <li>
+    torchtext.vocab
+
+      <ul>
+        <li><a href="vocab.html#module-torchtext.vocab">module</a>
+</li>
+      </ul></li>
+      <li><a href="transforms.html#torchtext.transforms.ToTensor">ToTensor (class in torchtext.transforms)</a>
+</li>
+      <li><a href="functional.html#torchtext.functional.truncate">truncate() (in module torchtext.functional)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -720,7 +858,11 @@
       <li><a href="vocab.html#torchtext.vocab.vocab">vocab() (in module torchtext.vocab)</a>
 </li>
       <li><a href="experimental_transforms.html#torchtext.experimental.transforms.VocabTransform">VocabTransform (class in torchtext.experimental.transforms)</a>
+
+      <ul>
+        <li><a href="transforms.html#torchtext.transforms.VocabTransform">(class in torchtext.transforms)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -736,6 +878,18 @@
       <li><a href="experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMT14">WMT14() (in module torchtext.experimental.datasets.raw)</a>
 </li>
       <li><a href="experimental_datasets_raw.html#torchtext.experimental.datasets.raw.WMTNewsCrawl">WMTNewsCrawl() (in module torchtext.experimental.datasets.raw)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#torchtext.models.XLMR_BASE_ENCODER">XLMR_BASE_ENCODER (in module torchtext.models)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#torchtext.models.XLMR_LARGE_ENCODER">XLMR_LARGE_ENCODER (in module torchtext.models)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -805,8 +959,6 @@
          <script src="_static/jquery.js"></script>
          <script src="_static/underscore.js"></script>
          <script src="_static/doctools.js"></script>
-         <script src="_static/language_data.js"></script>
-         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
      
 
   
