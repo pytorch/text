@@ -63,7 +63,7 @@ class VocabTransform(Module):
         >>> jit_vocab_transform = torch.jit.script(vocab_transform)
     """
 
-    def __init__(self, vocab):
+    def __init__(self, vocab: Vocab):
         super().__init__()
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
