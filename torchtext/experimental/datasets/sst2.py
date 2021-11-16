@@ -92,7 +92,9 @@ class SST2Dataset(IterableDataset):
             )
 
         # extract data from zip
-        extracted_files = check_cache_dp.read_from_zip().filter(lambda x: split in x[0])
+        extracted_files = check_cache_dp.read_from_zip().filter(
+            lambda x: f"{split}.tsv" in x[0]
+        )
 
         # Parse CSV file and yield data samples
         return extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
