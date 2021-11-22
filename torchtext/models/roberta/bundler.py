@@ -84,7 +84,8 @@ class RobertaModelBundle:
 
         Args:
             head (nn.Module): A module to be attached to the encoder to perform specific task. If provided, it will replace the default member head (Default: ``None``)
-            freeze_encoder (bool): Indicates whether to freeze the encoder weights. (Default: ``False``)
+            load_weights (bool): Indicates whether or not to load weights if available. (Default: ``True``)
+            freeze_encoder (bool): Indicates whether or not to freeze the encoder weights. (Default: ``False``)
             dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: ``None``)
         """
 
