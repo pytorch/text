@@ -21,6 +21,11 @@ from .transforms import get_xlmr_transform
 from torchtext import _TEXT_BUCKET
 
 
+def _is_head_available_in_checkpoint(checkpoint, head_state_dict):
+    # ensure all keys are present
+    return all(key in checkpoint.keys() for key in head_state_dict.keys())
+
+
 @dataclass
 class RobertaModelBundle:
     """RobertaModelBundle(_params: torchtext.models.RobertaEncoderParams, _path: Optional[str] = None, _head: Optional[torch.nn.Module] = None, transform: Optional[Callable] = None)
@@ -76,6 +81,11 @@ class RobertaModelBundle:
                   *,
                   dl_kwargs=None) -> RobertaModel:
         r"""get_model(head: Optional[torch.nn.Module] = None, load_weights: bool = True, freeze_encoder: bool = False, *, dl_kwargs=None) -> torctext.models.RobertaModel
+
+        Args:
+            head (nn.Module): A module to be attached to the encoder to perform specific task. If provided, it will replace the default member head (Default: ``None``)
+            freeze_encoder (bool): Indicates whether to freeze the encoder weights. (Default: ``False``)
+            dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: ``None``)
         """
 
         if load_weights:
@@ -92,39 +102,35 @@ class RobertaModelBundle:
         else:
             input_head = self._head
 
-        model = _get_model(self._encoder_conf, input_head, freeze_encoder)
-
-        if not load_weights:
-            return model
-
-        dl_kwargs = {} if dl_kwargs is None else dl_kwargs
-        state_dict = load_state_dict_from_url(self._path, **dl_kwargs)
-        if input_head is not None:
-            model.load_state_dict(state_dict, strict=False)
-        else:
-            model.load_state_dict(state_dict, strict=True)
-        return model
+        return RobertaModelBundle.from_config(encoder_conf=self._encoder_conf,
+                                              head=input_head,
+                                              freeze_encoder=freeze_encoder,
+                                              checkpoint=self._path,
+                                              override_head=True,
+                                              dl_kwargs=dl_kwargs)
 
     @classmethod
     def from_config(
-        self,
-        config: RobertaEncoderConf,
+        cls,
+        encoder_conf: RobertaEncoderConf,
         head: Optional[Module] = None,
         freeze_encoder: bool = False,
         checkpoint: Optional[Union[str, Dict[str, torch.Tensor]]] = None,
         *,
+        override_head: bool = False,
         dl_kwargs: Dict[str, Any] = None,
     ) -> RobertaModel:
-        """Class method to intantiate model with user-defined encoder configuration and checkpoint
+        """Class method to create model with user-defined encoder configuration and checkpoint
 
         Args:
-            config (RobertaEncoderConf): An instance of class RobertaEncoderConf that defined the encoder configuration
-            head (nn.Module, optional): A module to be attached to the encoder to perform specific task
-            freeze_encoder (bool): Indicates whether to freeze the encoder weights
-            checkpoint (str or Dict[str, torch.Tensor], optional): Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder.
-            dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`.
+            encoder_conf (RobertaEncoderConf): An instance of class RobertaEncoderConf that defined the encoder configuration
+            head (nn.Module): A module to be attached to the encoder to perform specific task. (Default: ``None``)
+            freeze_encoder (bool): Indicates whether to freeze the encoder weights. (Default: ``False``)
+            checkpoint (str or Dict[str, torch.Tensor]): Path to or actual model state_dict. state_dict can have partial weights i.e only for encoder. (Default: ``None``)
+            override_head (bool): Override the checkpoint's head state dict (if present) with provided head state dict. (Default: ``False``)
+            dl_kwargs (dictionary of keyword arguments): Passed to :func:`torch.hub.load_state_dict_from_url`. (Default: ``None``)
         """
-        model = _get_model(config, head, freeze_encoder)
+        model = _get_model(encoder_conf, head, freeze_encoder)
         if checkpoint is not None:
             if torch.jit.isinstance(checkpoint, Dict[str, torch.Tensor]):
                 state_dict = checkpoint
@@ -133,11 +139,12 @@ class RobertaModelBundle:
                 state_dict = load_state_dict_from_url(checkpoint, **dl_kwargs)
             else:
                 raise TypeError("checkpoint must be of type `str` or `Dict[str, torch.Tensor]` but got {}".format(type(checkpoint)))
+
             if head is not None:
                 regex = re.compile(r"^head\.")
                 head_state_dict = {k: v for k, v in model.state_dict().items() if regex.findall(k)}
-                # if not all the head keys are present in checkpoint then we shall update the state_dict with the provided head state_dict
-                if not all(key in state_dict.keys() for key in head_state_dict.keys()):
+                # If checkpoint does not contains head_state_dict, then we augment the checkpoint with user-provided head state_dict
+                if not _is_head_available_in_checkpoint(state_dict, head_state_dict) or override_head:
                     state_dict.update(head_state_dict)
 
             model.load_state_dict(state_dict, strict=True)
