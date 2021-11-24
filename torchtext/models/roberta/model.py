@@ -67,7 +67,7 @@ class RobertaEncoder(Module):
             return_all_layers=False,
         )
 
-        self.project = None
+        self.project = nn.Identity()
         if projection_dim is not None:
             self.project = ProjectionLayer(embed_dim=embedding_dim, projection_dim=projection_dim, dropout=projection_dropout)
 
@@ -83,8 +83,7 @@ class RobertaEncoder(Module):
         if mask is not None:
             output = output[mask.to(torch.bool), :]
 
-        if self.project is not None:
-            output = self.project(output)
+        output = self.project(output)
 
         return output
 
