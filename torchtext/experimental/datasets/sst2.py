@@ -10,7 +10,7 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import IterableWrapper
+    from torchdata.datapipes.iter import IterableWrapper, FileLoader
 
     # we import HttpReader from _download_hooks so we can swap out public URLs
     # with interal URLs when the dataset is used within Facebook
@@ -77,22 +77,22 @@ class SST2Dataset(IterableDataset):
             yield data
 
     def _get_datapipe(self, root, split, validate_hash):
+        # Validate integrity of dataset using md5 checksum
+        hash_dict = {os.path.join(root, "SST-2.zip"): MD5} if validate_hash else None
+        hash_type = "md5" if validate_hash else None
+
         # cache data on-disk
         cache_dp = IterableWrapper([URL]).on_disk_cache(
-            HttpReader,
-            op_map=lambda x: (x[0], x[1].read()),
             filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
+            hash_dict=hash_dict,
+            hash_type=hash_type,
         )
+        cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-        # validate integrity of dataset using md5 checksum
-        check_cache_dp = cache_dp
-        if validate_hash:
-            check_cache_dp = cache_dp.check_hash(
-                {os.path.join(root, "SST-2.zip"): MD5}, "md5"
-            )
-
+        # Load from cached file
+        cache_dp = FileLoader(cache_dp, mode="rb")
         # extract data from zip
-        extracted_files = check_cache_dp.read_from_zip().filter(
+        extracted_files = cache_dp.read_from_zip().filter(
             lambda x: f"{split}.tsv" in x[0]
         )
 
