@@ -31,6 +31,27 @@ class PositionalEmbedding(Module):
         return torch.cumsum(masked, dim=1) * masked + pad_index
 
 
+class ProjectionLayer(Module):
+    def __init__(self,
+                 embed_dim: int,
+                 projection_dim: int,
+                 dropout: Optional[float] = None) -> None:
+        super().__init__()
+
+        self.projection_layer = nn.Linear(embed_dim, projection_dim)
+        self.norm_layer = nn.LayerNorm(projection_dim)
+        if dropout is not None:
+            self.dropout_layer = nn.Dropout(dropout)
+        else:
+            self.dropout_layer = nn.Identity()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.projection_layer(x)
+        x = self.norm_layer(x)
+        x = self.dropout_layer(x)
+        return x
+
+
 class ResidualMLP(Module):
     def __init__(
         self,

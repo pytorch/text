@@ -10,6 +10,7 @@ import torch.nn as nn
 
 from .modules import (
     TransformerEncoder,
+    ProjectionLayer,
 )
 import logging
 logger = logging.getLogger(__name__)
@@ -25,6 +26,8 @@ class RobertaEncoderConf:
     num_attention_heads: int = 12
     num_encoder_layers: int = 12
     dropout: float = 0.1
+    projection_dim: Optional[int] = None
+    projection_dropout: Optional[float] = None
     scaling: Optional[float] = None
     normalize_before: bool = False
 
@@ -40,6 +43,8 @@ class RobertaEncoder(Module):
         num_attention_heads: int,
         num_encoder_layers: int,
         dropout: float = 0.1,
+        projection_dim: Optional[int] = None,
+        projection_dropout: Optional[float] = None,
         scaling: Optional[float] = None,
         normalize_before: bool = False,
     ):
@@ -62,6 +67,10 @@ class RobertaEncoder(Module):
             return_all_layers=False,
         )
 
+        self.project = None
+        if projection_dim is not None:
+            self.project = ProjectionLayer(embed_dim=embedding_dim, projection_dim=projection_dim, dropout=projection_dropout)
+
     @classmethod
     def from_config(cls, config: RobertaEncoderConf):
         return cls(**asdict(config))
@@ -73,6 +82,10 @@ class RobertaEncoder(Module):
         output = output.transpose(1, 0)
         if mask is not None:
             output = output[mask.to(torch.bool), :]
+
+        if self.project is not None:
+            output = self.project(output)
+
         return output
 
 
