@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from functools import partial
 from urllib.parse import urljoin
 
