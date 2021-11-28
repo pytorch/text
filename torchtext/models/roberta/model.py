@@ -67,13 +67,13 @@ class RobertaEncoder(Module):
             for p in self.parameters():
                 p.requires_grad = False
 
-    def forward(self, tokens: Tensor, maked_tokens: Optional[Tensor] = None) -> Tensor:
+    def forward(self, tokens: Tensor, masked_tokens: Optional[Tensor] = None) -> Tensor:
         output = self.transformer(tokens)
         if torch.jit.isinstance(output, List[Tensor]):
             output = output[-1]
         output = output.transpose(1, 0)
-        if maked_tokens is not None:
-            output = output[maked_tokens.to(torch.bool), :]
+        if masked_tokens is not None:
+            output = output[masked_tokens.to(torch.bool), :]
         return output
 
 
@@ -119,8 +119,8 @@ class RobertaModel(Module):
         self.encoder = RobertaEncoder(**asdict(encoder_conf), freeze=freeze_encoder)
         self.head = head
 
-    def forward(self, tokens: Tensor, mask: Optional[Tensor] = None) -> Tensor:
-        features = self.encoder(tokens, mask)
+    def forward(self, tokens: Tensor, masked_tokens: Optional[Tensor] = None) -> Tensor:
+        features = self.encoder(tokens, masked_tokens)
         if self.head is None:
             return features
 
