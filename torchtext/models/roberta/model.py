@@ -42,6 +42,7 @@ class RobertaEncoder(Module):
         dropout: float = 0.1,
         scaling: Optional[float] = None,
         normalize_before: bool = False,
+        freeze: bool = False,
     ):
         super().__init__()
         if not scaling:
@@ -62,17 +63,17 @@ class RobertaEncoder(Module):
             return_all_layers=False,
         )
 
-    @classmethod
-    def from_config(cls, config: RobertaEncoderConf):
-        return cls(**asdict(config))
+        if freeze:
+            for p in self.parameters():
+                p.requires_grad = False
 
-    def forward(self, tokens: Tensor, mask: Optional[Tensor] = None) -> Tensor:
+    def forward(self, tokens: Tensor, maked_tokens: Optional[Tensor] = None) -> Tensor:
         output = self.transformer(tokens)
         if torch.jit.isinstance(output, List[Tensor]):
             output = output[-1]
         output = output.transpose(1, 0)
-        if mask is not None:
-            output = output[mask.to(torch.bool), :]
+        if maked_tokens is not None:
+            output = output[maked_tokens.to(torch.bool), :]
         return output
 
 
@@ -100,7 +101,7 @@ class RobertaClassificationHead(nn.Module):
 class RobertaModel(Module):
     """
 
-    Example - Instantiate model with user-specified configuration
+    Example - Instatiating model object
         >>> from torchtext.models import RobertaEncoderConf, RobertaModel, RobertaClassificationHead
         >>> roberta_encoder_conf = RobertaEncoderConf(vocab_size=250002)
         >>> encoder = RobertaModel(config=roberta_encoder_conf)
@@ -108,17 +109,14 @@ class RobertaModel(Module):
         >>> classifier = RobertaModel(config=roberta_encoder_conf, head=classifier_head)
     """
 
-    def __init__(self, config: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False):
+    def __init__(self,
+                 encoder_conf: RobertaEncoderConf,
+                 head: Optional[Module] = None,
+                 freeze_encoder: bool = False):
         super().__init__()
-        assert isinstance(config, RobertaEncoderConf)
+        assert isinstance(encoder_conf, RobertaEncoderConf)
 
-        self.encoder = RobertaEncoder.from_config(config)
-        if freeze_encoder:
-            for param in self.encoder.parameters():
-                param.requires_grad = False
-
-            logger.info("Encoder weights are frozen")
-
+        self.encoder = RobertaEncoder(**asdict(encoder_conf), freeze=freeze_encoder)
         self.head = head
 
     def forward(self, tokens: Tensor, mask: Optional[Tensor] = None) -> Tensor:
@@ -128,7 +126,3 @@ class RobertaModel(Module):
 
         x = self.head(features)
         return x
-
-
-def _get_model(config: RobertaEncoderConf, head: Optional[Module] = None, freeze_encoder: bool = False) -> RobertaModel:
-    return RobertaModel(config, head, freeze_encoder)
