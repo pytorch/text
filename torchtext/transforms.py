@@ -142,3 +142,12 @@ class LabelToIndex(Module):
     @property
     def label_names(self) -> List[str]:
         return self._label_names
+
+
+class Truncate(Module):
+    def __init__(self, max_seq_len) -> None:
+        super().__init__()
+        self.max_seq_len = max_seq_len
+
+    def forward(self, input: Union[List[int], List[List[int]]]) -> Union[List[int], List[List[int]]]:
+        return F.truncate(input, self.max_seq_len)

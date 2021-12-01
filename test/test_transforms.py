@@ -1,5 +1,6 @@
 import torch
 from torchtext import transforms
+from torchtext.functional import truncate
 from torchtext.vocab import vocab
 from collections import OrderedDict
 
@@ -120,4 +121,32 @@ class TestTransforms(TorchtextTestCase):
 
         actual = transform_jit("test")
         expected = 0
+        self.assertEqual(actual, expected)
+
+    def test_truncate(self):
+        input = [[1, 2], [1, 2, 3]]
+        max_seq_len = 2
+
+        transform = transforms.Truncate(max_seq_len)
+        actual = transform(input)
+        expected = [[1, 2], [1, 2]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2, 3]
+        actual = transform(input)
+        expected = [1, 2]
+        self.assertEqual(actual, expected)
+
+    def test_truncate_jit(self):
+        input = [[1, 2], [1, 2, 3]]
+        max_seq_len = 2
+        transform = transforms.Truncate(max_seq_len)
+        transform_jit = torch.jit.script(transform)
+        actual = transform_jit(input)
+        expected = [[1, 2], [1, 2]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2, 3]
+        actual = transform_jit(input)
+        expected = [1, 2]
         self.assertEqual(actual, expected)
