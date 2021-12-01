@@ -1,5 +1,7 @@
 import torchtext
 import torch
+from torch.nn import functional as torch_F
+import copy
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
 
@@ -91,13 +93,13 @@ class TestModels(TorchtextTestCase):
         expected = [[0, 43523, 52005, 3647, 13293, 113307, 40514, 2]]
         torch.testing.assert_close(actual, expected)
 
-    def test_roberta_bundler_from_config(self):
+    def test_roberta_bundler_build_model(self):
         from torchtext.models import RobertaEncoderConf, RobertaClassificationHead, RobertaModel, RobertaModelBundle
         dummy_encoder_conf = RobertaEncoderConf(vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2)
 
         # case: user provide encoder checkpoint state dict
         dummy_encoder = RobertaModel(dummy_encoder_conf)
-        model = RobertaModelBundle.from_config(encoder_conf=dummy_encoder_conf,
+        model = RobertaModelBundle.build_model(encoder_conf=dummy_encoder_conf,
                                                checkpoint=dummy_encoder.state_dict())
         self.assertEqual(model.state_dict(), dummy_encoder.state_dict())
 
@@ -105,17 +107,17 @@ class TestModels(TorchtextTestCase):
         dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
         another_dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
         dummy_classifier = RobertaModel(dummy_encoder_conf, dummy_classifier_head)
-        model = RobertaModelBundle.from_config(encoder_conf=dummy_encoder_conf,
+        model = RobertaModelBundle.build_model(encoder_conf=dummy_encoder_conf,
                                                head=another_dummy_classifier_head,
                                                checkpoint=dummy_classifier.state_dict())
         self.assertEqual(model.state_dict(), dummy_classifier.state_dict())
 
         # case: user provide classifier checkpoint state dict when head is given and override_head is set True
         another_dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
-        model = RobertaModelBundle.from_config(encoder_conf=dummy_encoder_conf,
+        model = RobertaModelBundle.build_model(encoder_conf=dummy_encoder_conf,
                                                head=another_dummy_classifier_head,
                                                checkpoint=dummy_classifier.state_dict(),
-                                               override_head=True)
+                                               override_checkpoint_head=True)
         self.assertEqual(model.head.state_dict(), another_dummy_classifier_head.state_dict())
 
         # case: user provide only encoder checkpoint state dict when head is given
@@ -124,5 +126,51 @@ class TestModels(TorchtextTestCase):
         encoder_state_dict = {}
         for k, v in dummy_classifier.encoder.state_dict().items():
             encoder_state_dict['encoder.' + k] = v
-        model = torchtext.models.RobertaModelBundle.from_config(encoder_conf=dummy_encoder_conf, head=dummy_classifier_head, checkpoint=encoder_state_dict)
+        model = torchtext.models.RobertaModelBundle.build_model(encoder_conf=dummy_encoder_conf, head=dummy_classifier_head, checkpoint=encoder_state_dict)
         self.assertEqual(model.state_dict(), dummy_classifier.state_dict())
+
+    def test_roberta_bundler_train(self):
+        from torchtext.models import RobertaEncoderConf, RobertaClassificationHead, RobertaModel, RobertaModelBundle
+        dummy_encoder_conf = RobertaEncoderConf(vocab_size=10, embedding_dim=16, ffn_dimension=64, num_attention_heads=2, num_encoder_layers=2)
+        from torch.optim import SGD
+
+        def _train(model):
+            optim = SGD(model.parameters(), lr=1)
+            model_input = torch.tensor([[0, 1, 2, 3, 4, 5]])
+            target = torch.tensor([0])
+            logits = model(model_input)
+            loss = torch_F.cross_entropy(logits, target)
+            loss.backward()
+            optim.step()
+
+        # does not freeze encoder
+        dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
+        dummy_classifier = RobertaModel(dummy_encoder_conf, dummy_classifier_head)
+        model = RobertaModelBundle.build_model(encoder_conf=dummy_encoder_conf,
+                                               head=dummy_classifier_head,
+                                               freeze_encoder=False,
+                                               checkpoint=dummy_classifier.state_dict())
+
+        encoder_current_state_dict = copy.deepcopy(model.encoder.state_dict())
+        head_current_state_dict = copy.deepcopy(model.head.state_dict())
+
+        _train(model)
+
+        self.assertNotEqual(model.encoder.state_dict(), encoder_current_state_dict)
+        self.assertNotEqual(model.head.state_dict(), head_current_state_dict)
+
+        # freeze encoder
+        dummy_classifier_head = RobertaClassificationHead(num_classes=2, input_dim=16)
+        dummy_classifier = RobertaModel(dummy_encoder_conf, dummy_classifier_head)
+        model = RobertaModelBundle.build_model(encoder_conf=dummy_encoder_conf,
+                                               head=dummy_classifier_head,
+                                               freeze_encoder=True,
+                                               checkpoint=dummy_classifier.state_dict())
+
+        encoder_current_state_dict = copy.deepcopy(model.encoder.state_dict())
+        head_current_state_dict = copy.deepcopy(model.head.state_dict())
+
+        _train(model)
+
+        self.assertEqual(model.encoder.state_dict(), encoder_current_state_dict)
+        self.assertNotEqual(model.head.state_dict(), head_current_state_dict)
