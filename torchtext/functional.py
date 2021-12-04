@@ -26,15 +26,22 @@ def to_tensor(input: Union[List[int], List[List[int]]], padding_value: Optional[
             return output
 
 
-def truncate(input: Union[List[int], List[List[int]]], max_seq_len: int) -> Union[List[int], List[List[int]]]:
+def truncate(input: Union[List[int], List[str], List[List[int]], List[List[str]]], max_seq_len: int) -> Union[List[int], List[str], List[List[int]], List[List[str]]]:
     if torch.jit.isinstance(input, List[int]):
         return input[:max_seq_len]
-    else:
+    elif torch.jit.isinstance(input, List[str]):
+        return input[:max_seq_len]
+    elif torch.jit.isinstance(input, List[str]):
+        return input[:max_seq_len]
+    elif torch.jit.isinstance(input, List[List[int]]):
         output: List[List[int]] = []
-
         for ids in input:
             output.append(ids[:max_seq_len])
-
+        return output
+    else:
+        output: List[List[str]] = []
+        for ids in input:
+            output.append(ids[:max_seq_len])
         return output
 
 

@@ -32,7 +32,7 @@ class XLMRobertaModelTransform(Module):
         self.sep_token = sep_token
         self.max_seq_len = max_seq_len
 
-        self.token_transform = transforms.SentencePieceTokenizer(spm_model_path)
+        self.tokenizer = transforms.SentencePieceTokenizer(spm_model_path)
 
         if os.path.exists(vocab_path):
             self.vocab = torch.load(vocab_path)
@@ -49,10 +49,12 @@ class XLMRobertaModelTransform(Module):
                 add_eos: bool = True,
                 truncate: bool = True) -> Union[List[int], List[List[int]]]:
 
-        tokens = self.vocab_transform(self.token_transform(input))
+        tokens = self.tokenizer(input)
 
         if truncate:
             tokens = functional.truncate(tokens, self.max_seq_len - 2)
+
+        tokens = self.vocab_transform((tokens))
 
         if add_bos:
             tokens = functional.add_token(tokens, self.bos_idx)

@@ -15,6 +15,7 @@ __all__ = [
     'VocabTransform',
     'ToTensor',
     'LabelToIndex',
+    'Truncate',
 ]
 
 
@@ -145,9 +146,15 @@ class LabelToIndex(Module):
 
 
 class Truncate(Module):
-    def __init__(self, max_seq_len) -> None:
+    r"""Truncate input sequence
+
+    Args:
+        max_seq_len (int): The maximum allowable length for input sequence
+    """
+
+    def __init__(self, max_seq_len: int) -> None:
         super().__init__()
         self.max_seq_len = max_seq_len
 
-    def forward(self, input: Union[List[int], List[List[int]]]) -> Union[List[int], List[List[int]]]:
+    def forward(self, input: Union[List[int], List[str], List[List[int]], List[List[str]]]) -> Union[List[int], List[str], List[List[int]], List[List[str]]]:
         return F.truncate(input, self.max_seq_len)
