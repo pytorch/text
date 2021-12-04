@@ -37,3 +37,10 @@ LabelToIndex
 .. autoclass:: LabelToIndex
 
    .. automethod:: forward
+
+Truncate
+------------
+
+.. autoclass:: Truncate
+
+   .. automethod:: forward

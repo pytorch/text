@@ -157,4 +157,8 @@ class Truncate(Module):
         self.max_seq_len = max_seq_len
 
     def forward(self, input: Union[List[int], List[str], List[List[int]], List[List[str]]]) -> Union[List[int], List[str], List[List[int]], List[List[str]]]:
+        """
+        Args:
+            input: Input sequence to truncate. The input can either be a ``List`` or ``List[List]`` for batched operation
+        """
         return F.truncate(input, self.max_seq_len)

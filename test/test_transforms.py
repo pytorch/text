@@ -1,6 +1,5 @@
 import torch
 from torchtext import transforms
-from torchtext.functional import truncate
 from torchtext.vocab import vocab
 from collections import OrderedDict
 
