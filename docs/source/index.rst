@@ -44,6 +44,9 @@ popular datasets for natural language.
    experimental_vectors
    experimental_vocab
    models_utils
+   transforms
+   functional
+   models
 
 .. automodule:: torchtext
    :members:
