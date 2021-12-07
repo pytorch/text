@@ -5,7 +5,7 @@ from torchtext._download_hooks import load_state_dict_from_url
 from torchtext import transforms
 from torchtext import functional
 
-from typing import List, Union
+from typing import Any
 
 
 class XLMRobertaModelTransform(Module):
@@ -44,10 +44,10 @@ class XLMRobertaModelTransform(Module):
         self.bos_idx = self.vocab[self.bos_token]
         self.eos_idx = self.vocab[self.eos_token]
 
-    def forward(self, input: Union[str, List[str]],
+    def forward(self, input: Any,
                 add_bos: bool = True,
                 add_eos: bool = True,
-                truncate: bool = True) -> Union[List[int], List[List[int]]]:
+                truncate: bool = True) -> Any:
 
         tokens = self.tokenizer(input)
 

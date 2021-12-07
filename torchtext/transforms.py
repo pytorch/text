@@ -5,7 +5,7 @@ import torch
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 from torchtext.vocab import Vocab
-from typing import List, Optional, Union
+from typing import List, Optional, Any
 import os
 
 from torchtext import _CACHE_DIR
@@ -37,14 +37,16 @@ class SentencePieceTokenizer(Module):
             local_path = download_from_url(url=sp_model_path, root=_CACHE_DIR)
         self.sp_model = load_sp_model(local_path)
 
-    def forward(self, input: Union[str, List[str]]) -> Union[List[str], List[List[str]]]:
+    def forward(self, input: Any) -> Any:
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
                 tokens.append(self.sp_model.EncodeAsPieces(text))
             return tokens
-        else:
+        elif torch.jit.isinstance(input, str):
             return self.sp_model.EncodeAsPieces(input)
+        else:
+            raise TypeError("Input type not supported")
 
 
 class VocabTransform(Module):
@@ -69,7 +71,7 @@ class VocabTransform(Module):
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
 
-    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[int], List[List[int]]]:
+    def forward(self, input: Any) -> Any:
         r"""
 
         Args:
@@ -78,12 +80,14 @@ class VocabTransform(Module):
 
         if torch.jit.isinstance(input, List[str]):
             return self.vocab.lookup_indices(input)
-        else:
+        elif torch.jit.isinstance(input, List[List[str]]):
             output: List[List[int]] = []
             for tokens in input:
                 output.append(self.vocab.lookup_indices(tokens))
 
             return output
+        else:
+            raise TypeError("Input type not supported")
 
 
 class ToTensor(Module):
@@ -98,7 +102,7 @@ class ToTensor(Module):
         self.padding_value = padding_value
         self.dtype = dtype
 
-    def forward(self, input: Union[List[int], List[List[int]]]) -> Tensor:
+    def forward(self, input: Any) -> Tensor:
         r"""
         Args:
 
@@ -134,11 +138,13 @@ class LabelToIndex(Module):
         self._label_vocab = Vocab(torch.classes.torchtext.Vocab(label_names, 0))
         self._label_names = self._label_vocab.get_itos()
 
-    def forward(self, labels: Union[str, List[str]]) -> Union[int, List[int]]:
-        if torch.jit.isinstance(labels, List[str]):
-            return self._label_vocab.lookup_indices(labels)
+    def forward(self, input: Any) -> Any:
+        if torch.jit.isinstance(input, List[str]):
+            return self._label_vocab.lookup_indices(input)
+        elif torch.jit.isinstance(input, str):
+            return self._label_vocab.__getitem__(input)
         else:
-            return self._label_vocab.__getitem__(labels)
+            raise TypeError("Input type not supported")
 
     @property
     def label_names(self) -> List[str]:
@@ -156,7 +162,7 @@ class Truncate(Module):
         super().__init__()
         self.max_seq_len = max_seq_len
 
-    def forward(self, input: Union[List[int], List[str], List[List[int]], List[List[str]]]) -> Union[List[int], List[str], List[List[int]], List[List[str]]]:
+    def forward(self, input: Any) -> Any:
         """
         Args:
             input: Input sequence to truncate. The input can either be a ``List`` or ``List[List]`` for batched operation
