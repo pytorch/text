@@ -130,7 +130,7 @@ class LabelToIndex(Module):
 
         if sort_names:
             label_names = sorted(label_names)
-        self._label_vocab = Vocab(torch.classes.torchtext.Vocab(label_names, 0))
+        self._label_vocab = Vocab(torch.classes.torchtext.Vocab(label_names, None))
         self._label_names = self._label_vocab.get_itos()
 
     def forward(self, labels: Union[str, List[str]]) -> Union[int, List[int]]:

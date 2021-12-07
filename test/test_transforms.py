@@ -95,6 +95,9 @@ class TestTransforms(TorchtextTestCase):
         expected = [0, 1, 2]
         self.assertEqual(actual, expected)
 
+        with self.assertRaises(RuntimeError):
+            transform(['OOV'])
+
         transform = transforms.LabelToIndex(label_names=label_names, sort_names=True)
         actual = transform(label_names)
         expected = [2, 1, 0]
