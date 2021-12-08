@@ -4,87 +4,71 @@ from .common.torchtext_test_case import TorchtextTestCase
 
 
 class TestFunctional(TorchtextTestCase):
-    def test_to_tensor(self):
+    def _to_tensor(self, test_scripting):
         input = [[1, 2], [1, 2, 3]]
         padding_value = 0
 
-        actual = functional.to_tensor(input, padding_value=padding_value)
+        func = functional.to_tensor
+        if test_scripting:
+            func = torch.jit.script(func)
+        actual = func(input, padding_value=padding_value)
         expected = torch.tensor([[1, 2, 0], [1, 2, 3]], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
 
         input = [1, 2]
-        actual = functional.to_tensor(input, padding_value=padding_value)
+        actual = func(input, padding_value=padding_value)
         expected = torch.tensor([1, 2], dtype=torch.long)
         torch.testing.assert_close(actual, expected)
+
+    def test_to_tensor(self):
+        self._to_tensor(test_scripting=False)
 
     def test_to_tensor_jit(self):
-        input = [[1, 2], [1, 2, 3]]
-        padding_value = 0
-        to_tensor_jit = torch.jit.script(functional.to_tensor)
-        actual = to_tensor_jit(input, padding_value=padding_value)
-        expected = torch.tensor([[1, 2, 0], [1, 2, 3]], dtype=torch.long)
-        torch.testing.assert_close(actual, expected)
+        self._to_tensor(test_scripting=True)
 
-        input = [1, 2]
-        actual = to_tensor_jit(input, padding_value=padding_value)
-        expected = torch.tensor([1, 2], dtype=torch.long)
-        torch.testing.assert_close(actual, expected)
+    def _truncate(self, test_scripting):
+        input = [[1, 2], [1, 2, 3]]
+        max_seq_len = 2
+
+        func = functional.truncate
+        if test_scripting:
+            func = torch.jit.script(func)
+        actual = func(input, max_seq_len=max_seq_len)
+        expected = [[1, 2], [1, 2]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2, 3]
+        actual = func(input, max_seq_len=max_seq_len)
+        expected = [1, 2]
+        self.assertEqual(actual, expected)
 
     def test_truncate(self):
-        input = [[1, 2], [1, 2, 3]]
-        max_seq_len = 2
-
-        actual = functional.truncate(input, max_seq_len=max_seq_len)
-        expected = [[1, 2], [1, 2]]
-        self.assertEqual(actual, expected)
-
-        input = [1, 2, 3]
-        actual = functional.truncate(input, max_seq_len=max_seq_len)
-        expected = [1, 2]
-        self.assertEqual(actual, expected)
+        self._truncate(test_scripting=False)
 
     def test_truncate_jit(self):
+        self._truncate(test_scripting=True)
+
+    def _add_token(self, test_scripting):
+        func = functional.add_token
+        if test_scripting:
+            func = torch.jit.script(func)
         input = [[1, 2], [1, 2, 3]]
-        max_seq_len = 2
-        truncate_jit = torch.jit.script(functional.truncate)
-        actual = truncate_jit(input, max_seq_len=max_seq_len)
-        expected = [[1, 2], [1, 2]]
+        token_id = 0
+        actual = func(input, token_id=token_id)
+        expected = [[0, 1, 2], [0, 1, 2, 3]]
         self.assertEqual(actual, expected)
 
-        input = [1, 2, 3]
-        actual = truncate_jit(input, max_seq_len=max_seq_len)
-        expected = [1, 2]
+        actual = func(input, token_id=token_id, begin=False)
+        expected = [[1, 2, 0], [1, 2, 3, 0]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2]
+        actual = func(input, token_id=token_id, begin=False)
+        expected = [1, 2, 0]
         self.assertEqual(actual, expected)
 
     def test_add_token(self):
-        input = [[1, 2], [1, 2, 3]]
-        token_id = 0
-        actual = functional.add_token(input, token_id=token_id)
-        expected = [[0, 1, 2], [0, 1, 2, 3]]
-        self.assertEqual(actual, expected)
-
-        actual = functional.add_token(input, token_id=token_id, begin=False)
-        expected = [[1, 2, 0], [1, 2, 3, 0]]
-        self.assertEqual(actual, expected)
-
-        input = [1, 2]
-        actual = functional.add_token(input, token_id=token_id, begin=False)
-        expected = [1, 2, 0]
-        self.assertEqual(actual, expected)
+        self._add_token(test_scripting=False)
 
     def test_add_token_jit(self):
-        input = [[1, 2], [1, 2, 3]]
-        token_id = 0
-        add_token_jit = torch.jit.script(functional.add_token)
-        actual = add_token_jit(input, token_id=token_id)
-        expected = [[0, 1, 2], [0, 1, 2, 3]]
-        self.assertEqual(actual, expected)
-
-        actual = add_token_jit(input, token_id=token_id, begin=False)
-        expected = [[1, 2, 0], [1, 2, 3, 0]]
-        self.assertEqual(actual, expected)
-
-        input = [1, 2]
-        actual = add_token_jit(input, token_id=token_id, begin=False)
-        expected = [1, 2, 0]
-        self.assertEqual(actual, expected)
+        self._add_token(test_scripting=True)
