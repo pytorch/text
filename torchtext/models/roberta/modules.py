@@ -286,7 +286,6 @@ class TransformerEncoder(Module):
     def forward(self, tokens: torch.Tensor, attn_mask: Optional[torch.Tensor] = None) -> Union[torch.Tensor, List[torch.Tensor]]:
         if attn_mask is not None:
             torch._assert(attn_mask.is_floating_point() or attn_mask.dtype == torch.bool, f"Only float or bool types are supported for attn_mask not {attn_mask.dtype}")
-
         padding_mask = tokens.eq(self.padding_idx)
 
         token_embeddings = self.token_embedding(tokens)
