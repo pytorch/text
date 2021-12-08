@@ -10,7 +10,7 @@ from ..common.torchtext_test_case import TorchtextTestCase
 
 class TestDataset(TorchtextTestCase):
     @skipIfNoModule("torchdata")
-    def test_sst2_dataset(self):
+    def test_sst2__dataset(self):
 
         split = ("train", "dev", "test")
         train_dataset, dev_dataset, test_dataset = sst2.SST2(

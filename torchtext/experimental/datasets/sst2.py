@@ -43,7 +43,7 @@ _EXTRACTED_FILES_MD5 = {
 _FIRST_LINE_MD5 = {
     "train": "2552b8cecd57b2e022ef23411c688fa8",
     "dev": "1b0ffd6aa5f2bf0fd9840a5f6f1a9f07",
-    "test": "3e7ff69ab3fc6d026e3c96cadd8b0b53",
+    "test": "f838c81fe40bfcd7e42e9ffc4dd004f7",
 }
 
 DATASET_NAME = "SST2"
@@ -97,13 +97,6 @@ class SST2Dataset(IterableDataset):
         )
 
         # Parse CSV file and yield data samples
-        if split == "test":
-            parsed_data = extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
-                lambda x: (x[1],)
-            )
-        else:
-            parsed_data = extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
-                lambda x: (x[0], x[1])
-            )
-
-        return parsed_data
+        return extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
+            lambda x: (x[0], x[1])
+        )

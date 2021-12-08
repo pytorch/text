@@ -11,7 +11,6 @@ from . import transforms
 from . import functional
 from . import models
 from . import experimental
-from . import legacy
 from ._extension import _init_extension
 
 
@@ -28,8 +27,7 @@ __all__ = ['data',
            'transforms',
            'functional',
            'models',
-           'experimental',
-           'legacy']
+           'experimental']
 
 
 _init_extension()
