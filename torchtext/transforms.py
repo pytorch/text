@@ -183,7 +183,7 @@ class Truncate(Module):
 
     def forward(self, input: Any) -> Any:
         """
-        :param input: Input sequence or batch to be truncated
+        :param input: Input sequence or batch of sequence to be truncated
         :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]
         :return: Truncated sequence
         :rtype: Union[List[Union[str, int]], List[List[Union[str, int]]]]
