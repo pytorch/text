@@ -14,6 +14,7 @@ class TestTransforms(TorchtextTestCase):
         transform = transforms.SentencePieceTokenizer(asset_path)
         if test_scripting:
             transform = torch.jit.script(transform)
+
         actual = transform(["Hello World!, how are you?"])
         expected = [['▁Hello', '▁World', '!', ',', '▁how', '▁are', '▁you', '?']]
         self.assertEqual(actual, expected)
@@ -23,10 +24,11 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(actual, expected)
 
     def test_spmtokenizer(self):
-
+        """test tokenization on single sentence input as well as batch on sentences"""
         self._spmtokenizer(test_scripting=False)
 
     def test_spmtokenizer_jit(self):
+        """test tokenization with scripting on single sentence input as well as batch on sentences"""
         self._spmtokenizer(test_scripting=True)
 
     def _vocab_transform(self, test_scripting):
@@ -43,9 +45,11 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(actual, expected)
 
     def test_vocab_transform(self):
+        """test token to indices on both sequence of input tokens as well as batch of sequence"""
         self._vocab_transform(test_scripting=False)
 
     def test_vocab_transform_jit(self):
+        """test token to indices with scripting on both sequence of input tokens as well as batch of sequence"""
         self._vocab_transform(test_scripting=True)
 
     def _totensor(self, test_scripting):
@@ -65,9 +69,11 @@ class TestTransforms(TorchtextTestCase):
         torch.testing.assert_close(actual, expected)
 
     def test_totensor(self):
+        """test tensorization on both single sequence and batch of sequence"""
         self._totensor(test_scripting=False)
 
     def test_totensor_jit(self):
+        """test tensorization with scripting on both single sequence and batch of sequence"""
         self._totensor(test_scripting=True)
 
     def _labeltoindex(self, test_scripting):
@@ -100,7 +106,9 @@ class TestTransforms(TorchtextTestCase):
         self.assertEqual(actual, expected)
 
     def test_labeltoindex(self):
+        """test labe to ids on single label input as well as batch of labels"""
         self._labeltoindex(test_scripting=False)
 
     def test_labeltoindex_jit(self):
+        """test labe to ids with scripting on single label input as well as batch of labels"""
         self._labeltoindex(test_scripting=True)
