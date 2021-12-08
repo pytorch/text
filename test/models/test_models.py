@@ -15,8 +15,8 @@ class TestModules(TorchtextTestCase):
         query[0, ...] = 0
         key_padding_mask = torch.zeros((batch_size, source_len))
         float_attn_mask = torch.zeros((source_len, source_len))
-        bool_attn_mask = float_attn_mask.to(dtype=bool)
         float_attn_mask[0][1] = -1e8
+        bool_attn_mask = float_attn_mask.to(dtype=bool)
         with torch.no_grad():
             mha.input_projection.weight.fill_(1. / embed_dim)
             mha.input_projection.bias.fill_(0.)
