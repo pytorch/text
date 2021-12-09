@@ -130,20 +130,6 @@ To get started with torchtext, users may refer to the following tutorials availa
 * `Language modeling using transforms and torchtext <https://pytorch.org/tutorials/beginner/transformer_tutorial.html>`_
 
 
-[Prototype] Experimental Code
-=============================
-
-We have re-written several building blocks under ``torchtext.experimental``:
-
-* `Transforms <https://github.com/pytorch/text/blob/main/torchtext/experimental/transforms.py>`_: some basic data processing building blocks
-* `Vectors <https://github.com/pytorch/text/blob/main/torchtext/experimental/vectors.py>`_: the vectors to convert tokens into tensors.
-
-These prototype building blocks in the experimental folder are available in the nightly release only. The nightly packages are accessible via Pip and Conda for Windows, Mac, and Linux. For example, Linux users can install the nightly wheels with the following command::
-
-    pip install --pre --upgrade torch torchtext -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html  
-
-For more detailed instructions, please refer to `Install PyTorch <https://pytorch.org/get-started/locally/>`_. It should be noted that the new building blocks are still under development, and the APIs have not been solidified.
-
 [BC Breaking] Legacy
 ====================
 
