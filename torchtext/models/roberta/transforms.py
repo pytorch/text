@@ -5,7 +5,7 @@ from torchtext._download_hooks import load_state_dict_from_url
 from torchtext import transforms
 from torchtext import functional
 
-from typing import List, Union
+from typing import List, Any
 
 
 class XLMRobertaModelTransform(Module):
@@ -44,23 +44,38 @@ class XLMRobertaModelTransform(Module):
         self.bos_idx = self.vocab[self.bos_token]
         self.eos_idx = self.vocab[self.eos_token]
 
-    def forward(self, input: Union[str, List[str]],
+    def forward(self, input: Any,
                 add_bos: bool = True,
                 add_eos: bool = True,
-                truncate: bool = True) -> Union[List[int], List[List[int]]]:
+                truncate: bool = True) -> Any:
+        if torch.jit.isinstance(input, str):
+            tokens = self.vocab_transform(self.token_transform(input))
 
-        tokens = self.vocab_transform(self.token_transform(input))
+            if truncate:
+                tokens = functional.truncate(tokens, self.max_seq_len - 2)
 
-        if truncate:
-            tokens = functional.truncate(tokens, self.max_seq_len - 2)
+            if add_bos:
+                tokens = functional.add_token(tokens, self.bos_idx)
 
-        if add_bos:
-            tokens = functional.add_token(tokens, self.bos_idx)
+            if add_eos:
+                tokens = functional.add_token(tokens, self.eos_idx, begin=False)
 
-        if add_eos:
-            tokens = functional.add_token(tokens, self.eos_idx, begin=False)
+            return tokens
+        elif torch.jit.isinstance(input, List[str]):
+            tokens = self.vocab_transform(self.token_transform(input))
 
-        return tokens
+            if truncate:
+                tokens = functional.truncate(tokens, self.max_seq_len - 2)
+
+            if add_bos:
+                tokens = functional.add_token(tokens, self.bos_idx)
+
+            if add_eos:
+                tokens = functional.add_token(tokens, self.eos_idx, begin=False)
+
+            return tokens
+        else:
+            raise TypeError("Input type not supported")
 
 
 def get_xlmr_transform(vocab_path, spm_model_path, **kwargs) -> XLMRobertaModelTransform:
