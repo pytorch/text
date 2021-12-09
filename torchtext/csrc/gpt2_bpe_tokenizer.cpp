@@ -17,7 +17,7 @@ namespace torchtext {
         return true;
     }
 
-    std::vector<std::string> gpt2_bpe_tokenizer(std::string input) {
+    std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
         std::string token;
         std::vector<std::string> tokens;
         re2::StringPiece inp(input);

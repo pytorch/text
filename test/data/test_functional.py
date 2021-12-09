@@ -13,7 +13,7 @@ from torchtext.data.functional import (
     sentencepiece_tokenizer,
     custom_replace,
     simple_space_split,
-    gpt2_bpe_tokenizer,
+    gpt2_bpe_pre_tokenizer,
 )
 
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -93,7 +93,7 @@ class TestFunctional(TorchtextTestCase):
         self.assertEqual(list(simple_space_split(test_sample))[0],
                          ref_results)
 
-    def test_gpt2_bpe_tokenizer(self):
+    def test_gpt2_bpe_pre_tokenizer(self):
         # Regex pattern for GPT-2 BPE which includes the negative lookahead
         # Reference: https://github.com/pytorch/fairseq/blob/main/fairseq/data/encoders/gpt2_bpe_utils.py#L69
         gpt2_bpe_pattern = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
@@ -139,7 +139,7 @@ class TestFunctional(TorchtextTestCase):
             "Lorem ipsum dolor sit\x0b\x0b amet.",
         ]
         for t in test_cases:
-            self.assertEqual(re.findall(gpt2_bpe_pattern, t), gpt2_bpe_tokenizer(t))
+            self.assertEqual(re.findall(gpt2_bpe_pattern, t), gpt2_bpe_pre_tokenizer(t))
 
 
 class ScriptableSP(torch.jit.ScriptModule):

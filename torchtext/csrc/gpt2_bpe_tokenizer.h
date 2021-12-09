@@ -2,5 +2,5 @@
 #include <vector>
 
 namespace torchtext {
-    std::vector<std::string> gpt2_bpe_tokenizer(std::string input);
+    std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input);
 }   // namespace torchtext

@@ -12,7 +12,6 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
   m.class_<Regex>("Regex")
       .def(torch::init<std::string>())
       .def("Sub", &Regex::Sub)
-      .def("FindAndConsume", &Regex::Sub)
       .def_pickle(
           // __getstate__
           [](const c10::intrusive_ptr<Regex> &self) -> std::string {
@@ -126,7 +125,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
   m.def("torchtext::generate_sp_model", &generate_sp_model);
   m.def("torchtext::load_sp_model", &load_sp_model);
   m.def("torchtext::load_sp_model_string", &load_sp_model_string);
-  m.def("torchtext::gpt2_bpe_tokenizer", &gpt2_bpe_tokenizer);
+  m.def("torchtext::gpt2_bpe_pre_tokenizer", &gpt2_bpe_pre_tokenizer);
 }
 
 } // namespace torchtext
