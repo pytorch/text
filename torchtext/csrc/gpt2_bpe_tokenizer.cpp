@@ -18,6 +18,25 @@ namespace torchtext {
     }
 
     std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
+        // Python implementation: https://github.com/pytorch/fairseq/blob/main/fairseq/data/encoders/gpt2_bpe_utils.py#L69
+        // Original regex contains a negative lookahead pattern, which is not 
+        // supported in re2. This implementation modifies the original regex in
+        // the following two ways:
+        // 1. Removes negative lookahead and adds a post-processing step instead.
+        // 2. Replace all [\s] occurences with [\s\v] because re2 does not include
+        //    vertical tab (\v) in whitespace. PCRE and Python re include \v in \s.
+        //
+        // Pseudocode of post-processing step:
+        // - Loop over all tokens
+        // - IF token is all whitespace:
+        //   - set append_space to False
+        //   - IF token is last token, add it to return vector
+        //   - ELSE
+        //     - If token length is >1, add token[0:len(token) - 1] to return list
+        //     - IF token[-1] is space (ascii 32), then carry it over for next token, set append_space = True
+        //     - ELSE make token[-1] its own token and add to return list
+        // - ELSE IF append_space == True, prepend a space to the token and add to return list
+        // - ELSE, add token to return list
         std::string token;
         std::vector<std::string> tokens;
         re2::StringPiece inp(input);
