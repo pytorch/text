@@ -11,6 +11,10 @@ std::string Regex::Sub(std::string str, const std::string &repl) const {
   return str;
 }
 
+bool Regex::FindAndConsume(re2::StringPiece* input, std::string* text) const {
+  return RE2::FindAndConsume(input, *compiled_pattern_, text);
+}
+
 std::string _serialize_regex(const c10::intrusive_ptr<Regex> &self) {
   return self->re_str_;
 }
