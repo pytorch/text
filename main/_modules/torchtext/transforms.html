@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20211208 documentation</title>
+  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20211209 documentation</title>
   
 
   
@@ -190,7 +190,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211208 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20211209 &#x25BC</a>
     </div>
     
 
@@ -224,11 +224,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">torchtext.datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../vocab.html">torchtext.vocab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">torchtext.utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_datasets_raw.html">torchtext.experimental.datasets.raw</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_transforms.html">torchtext.experimental.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_vectors.html">torchtext.experimental.vectors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../experimental_vocab.html">torchtext.experimental.vocab_factory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../models_utils.html">torchtext.experimental.models.utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../transforms.html">torchtext.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../functional.html">torchtext.functional</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../models.html">torchtext.models</a></li>
@@ -320,7 +315,7 @@
 <span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">load_sp_model</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">download_from_url</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">_CACHE_DIR</span>
@@ -335,9 +330,14 @@
 
 <div class="viewcode-block" id="SentencePieceTokenizer"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.SentencePieceTokenizer">[docs]</a><span class="k">class</span> <span class="nc">SentencePieceTokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Transform for Sentence Piece tokenizer from pre-trained SentencePiece model</span>
+<span class="sd">    Transform for Sentence Piece tokenizer from pre-trained sentencepiece model</span>
 
-<span class="sd">    Examples:</span>
+<span class="sd">    Additiona details: https://github.com/google/sentencepiece</span>
+
+<span class="sd">    :param sp_model_path: Path to pre-trained sentencepiece model</span>
+<span class="sd">    :type sp_model_path: str</span>
+
+<span class="sd">    Example</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.transforms import SpmTokenizerTransform</span>
 <span class="sd">        &gt;&gt;&gt; transform = SentencePieceTokenizer(&quot;spm_model&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; transform([&quot;hello world&quot;, &quot;attention is all you need!&quot;])</span>
@@ -351,21 +351,28 @@
             <span class="n">local_path</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">sp_model_path</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">_CACHE_DIR</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span> <span class="o">=</span> <span class="n">load_sp_model</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SentencePieceTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.SentencePieceTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+<div class="viewcode-block" id="SentencePieceTokenizer.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.SentencePieceTokenizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: Input sentence or list of sentences on which to apply tokenizer.</span>
+<span class="sd">        :type input: Union[str, List[str]]</span>
+<span class="sd">        :return: tokenized text</span>
+<span class="sd">        :rtype: Union[List[str], List[List(str)]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
             <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">:</span>
                 <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">EncodeAsPieces</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">tokens</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">EncodeAsPieces</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp_model</span><span class="o">.</span><span class="n">EncodeAsPieces</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="VocabTransform"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.VocabTransform">[docs]</a><span class="k">class</span> <span class="nc">VocabTransform</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Vocab transform</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Vocab transform to convert input batch of tokens into corresponding token ids</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        vocab: an instance of torchtext.vocab.Vocab class.</span>
+<span class="sd">    :param vocab: an instance of :class:`torchtext.vocab.Vocab` class.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; import torch</span>
@@ -383,28 +390,33 @@
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vocab</span><span class="p">,</span> <span class="n">Vocab</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
 
-<div class="viewcode-block" id="VocabTransform.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.VocabTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            input: list of list tokens</span>
+<div class="viewcode-block" id="VocabTransform.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.VocabTransform.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: Input batch of token to convert to correspnding token ids</span>
+<span class="sd">        :type input: Union[List[str], List[List[str]]]</span>
+<span class="sd">        :return: Converted input into corresponding token ids</span>
+<span class="sd">        :rtype: Union[List[int], List[List[int]]]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]):</span>
             <span class="n">output</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">:</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">tokens</span><span class="p">))</span>
 
-            <span class="k">return</span> <span class="n">output</span></div></div>
+            <span class="k">return</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ToTensor"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.ToTensor">[docs]</a><span class="k">class</span> <span class="nc">ToTensor</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert input to torch tensor</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        padding_value (int, optional): Pad value to make each input in the batch of length equal to the longest sequence in the batch.</span>
+<span class="sd">    :param padding_value: Pad value to make each input in the batch of length equal to the longest sequence in the batch.</span>
+<span class="sd">    :type padding_value: Optional[int]</span>
+<span class="sd">    :param dtype: :class:`torch.dtype` of output tensor</span>
+<span class="sd">    :type dtype: :class:`torch.dtype`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -412,10 +424,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span> <span class="o">=</span> <span class="n">padding_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
 
-<div class="viewcode-block" id="ToTensor.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.ToTensor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Args:</span>
-
+<div class="viewcode-block" id="ToTensor.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.ToTensor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: Sequence or batch of token ids</span>
+<span class="sd">        :type input: Union[List[int], List[List[int]]]</span>
+<span class="sd">        :rtype: Tensor</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div></div>
 
@@ -424,15 +437,16 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform labels from string names to ids.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        label_names (List[str], Optional): a list of unique label names</span>
-<span class="sd">        label_path (str, Optional): a path to file containing unique label names containing 1 label per line.</span>
+<span class="sd">    :param label_names: a list of unique label names</span>
+<span class="sd">    :type label_names: Optional[List[str]]</span>
+<span class="sd">    :param label_path: a path to file containing unique label names containing 1 label per line. Note that either label_names or label_path should be supplied</span>
+<span class="sd">                       but not both.</span>
+<span class="sd">    :type label_path: Optional[str]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">label_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">label_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sort_names</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="k">assert</span> <span class="n">label_names</span> <span class="ow">or</span> <span class="n">label_path</span><span class="p">,</span> <span class="s2">&quot;label_names or label_path is required&quot;</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">label_names</span> <span class="ow">and</span> <span class="n">label_path</span><span class="p">),</span> <span class="s2">&quot;label_names and label_path are mutually exclusive&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -445,18 +459,46 @@
 
         <span class="k">if</span> <span class="n">sort_names</span><span class="p">:</span>
             <span class="n">label_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">label_names</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span> <span class="o">=</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">Vocab</span><span class="p">(</span><span class="n">label_names</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span> <span class="o">=</span> <span class="n">Vocab</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">Vocab</span><span class="p">(</span><span class="n">label_names</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span><span class="o">.</span><span class="n">get_itos</span><span class="p">()</span>
 
-<div class="viewcode-block" id="LabelToIndex.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.LabelToIndex.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+<div class="viewcode-block" id="LabelToIndex.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.LabelToIndex.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: Input labels to convert to corresponding ids</span>
+<span class="sd">        :type input: Union[str, List[str]]</span>
+<span class="sd">        :rtype: Union[int, List[int]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span><span class="o">.</span><span class="n">lookup_indices</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_vocab</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">label_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_names</span></div>
+
+
+<div class="viewcode-block" id="Truncate"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.Truncate">[docs]</a><span class="k">class</span> <span class="nc">Truncate</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Truncate input sequence</span>
+
+<span class="sd">    :param max_seq_len: The maximum allowable length for input sequence</span>
+<span class="sd">    :type max_seq_len: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_seq_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_seq_len</span> <span class="o">=</span> <span class="n">max_seq_len</span>
+
+<div class="viewcode-block" id="Truncate.forward"><a class="viewcode-back" href="../../transforms.html#torchtext.transforms.Truncate.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input: Input sequence or batch of sequence to be truncated</span>
+<span class="sd">        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]</span>
+<span class="sd">        :return: Truncated sequence</span>
+<span class="sd">        :rtype: Union[List[Union[str, int]], List[List[Union[str, int]]]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_seq_len</span><span class="p">)</span></div></div>
 </pre></div>
 
              </article>
