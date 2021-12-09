@@ -1,7 +1,6 @@
 import re
 import io
 import torch
-from typing import List
 
 __all__ = [
     "generate_sp_model", "load_sp_model",
@@ -283,21 +282,3 @@ def to_map_style_dataset(iter_data):
             return self._data[idx]
 
     return _MapStyleDataset(iter_data)
-
-
-def gpt2_bpe_pre_tokenizer(input: str) -> List[str]:
-    r"""Regex pre-tokenization for GPT-2 before applying BPE.
-
-    Args:
-        input: the text that needs to be tokenized.
-
-    Outputs:
-        output: list of tokens after applying regex tokenization for GPT-2.
-
-    Examples:
-        >>> from torchtext.data.functional import gpt2_bpe_pre_tokenizer
-        >>> tokens = gpt2_bpe_pre_tokenizer('hello world')
-        >>> print(tokens)
-        >>> ['hello', ' world']
-    """
-    return torch.ops.torchtext.gpt2_bpe_pre_tokenizer(input)
