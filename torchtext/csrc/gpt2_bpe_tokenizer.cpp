@@ -29,38 +29,36 @@ namespace torchtext {
         // Pseudocode of post-processing step:
         // - Loop over all tokens
         // - IF token is all whitespace:
-        //   - set append_space to False
+        //   - set prepend_space to False
         //   - IF token is last token, add it to return vector
         //   - ELSE
         //     - If token length is >1, add token[0:len(token) - 1] to return list
         //     - IF token[-1] is space (ascii 32), then carry it over for next token, set append_space = True
         //     - ELSE make token[-1] its own token and add to return list
-        // - ELSE IF append_space == True, prepend a space to the token and add to return list
+        // - ELSE IF prepend_space == True, prepend a space to the token and add to return list
         // - ELSE, add token to return list
         std::string token;
         std::vector<std::string> tokens;
         re2::StringPiece inp(input);
-        bool append_space = false;
+        bool prepend_space = false;
         while (kGPT2Regex.FindAndConsume(&inp, &token)) {
-            // tokens.push_back(token);
-            // Check if whitespace
             if (is_whitespace(token)) {
-                append_space = false;
-                if (inp.empty()) {
+                prepend_space = false;
+                if (inp.empty()) { // token is last token
                     tokens.push_back(token);
                 } else {
                     if (token.length() > 1) {
                         tokens.push_back(token.substr(0, token.length() - 1));
                     }
-                    if (token[token.length() - 1] == ' ') {
-                        append_space = true;
-                    } else {
+                    if (token[token.length() - 1] == ' ') { // last char is space
+                        prepend_space = true;
+                    } else { // push last whitespace char as a token if it is not a space
                         tokens.push_back(token.substr(token.length() - 1));
                     }
                 }
-            } else if (append_space) {
+            } else if (prepend_space) {
                 tokens.push_back(" " + token);
-                append_space = false;
+                prepend_space = false;
             } else {
                 tokens.push_back(token);
             }
