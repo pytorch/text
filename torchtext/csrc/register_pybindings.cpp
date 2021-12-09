@@ -1,3 +1,4 @@
+#include <gpt2_bpe_tokenizer.h>                      // @manual
 #include <iostream>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -30,6 +31,7 @@ PYBIND11_MODULE(_torchtext, m) {
   py::class_<Regex, c10::intrusive_ptr<Regex>>(m, "Regex")
       .def(py::init<std::string>())
       .def("Sub", &Regex::Sub)
+      .def("FindAndConsume", &Regex::FindAndConsume)
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<Regex> &self) -> std::string {
