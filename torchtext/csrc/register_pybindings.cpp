@@ -1,4 +1,3 @@
-#include <gpt2_bpe_tokenizer.h>                      // @manual
 #include <iostream>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
