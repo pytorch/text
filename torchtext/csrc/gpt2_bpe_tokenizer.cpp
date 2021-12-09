@@ -9,8 +9,8 @@ namespace torchtext {
     );
 
     bool is_whitespace(const std::string &input) {
-        for (std::string::const_iterator it = input.begin(); it != input.end(); ++it) {
-            if (!isspace(*it)) {
+        for (const char& c : input) {
+            if (!isspace(c)) {
                 return false;
             }
         }
