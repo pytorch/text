@@ -168,3 +168,24 @@ class LabelToIndex(Module):
     @property
     def label_names(self) -> List[str]:
         return self._label_names
+
+
+class Truncate(Module):
+    r"""Truncate input sequence
+
+    :param max_seq_len: The maximum allowable length for input sequence
+    :type max_seq_len: int
+    """
+
+    def __init__(self, max_seq_len: int) -> None:
+        super().__init__()
+        self.max_seq_len = max_seq_len
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch of sequence to be truncated
+        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        :return: Truncated sequence
+        :rtype: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        """
+        return F.truncate(input, self.max_seq_len)

@@ -115,3 +115,37 @@ class TestTransforms(TorchtextTestCase):
     def test_labeltoindex_jit(self):
         """test labe to ids with scripting on single label input as well as batch of labels"""
         self._labeltoindex(test_scripting=True)
+
+    def _truncate(self, test_scripting):
+        max_seq_len = 2
+        transform = transforms.Truncate(max_seq_len=max_seq_len)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+
+        input = [[1, 2], [1, 2, 3]]
+        actual = transform(input)
+        expected = [[1, 2], [1, 2]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2, 3]
+        actual = transform(input)
+        expected = [1, 2]
+        self.assertEqual(actual, expected)
+
+        input = [["a", "b"], ["a", "b", "c"]]
+        actual = transform(input)
+        expected = [["a", "b"], ["a", "b"]]
+        self.assertEqual(actual, expected)
+
+        input = ["a", "b", "c"]
+        actual = transform(input)
+        expected = ["a", "b"]
+        self.assertEqual(actual, expected)
+
+    def test_truncate(self):
+        """test truncation on both sequence and batch of sequence with both str and int types"""
+        self._truncate(test_scripting=False)
+
+    def test_truncate_jit(self):
+        """test truncation with scripting on both sequence and batch of sequence with both str and int types"""
+        self._truncate(test_scripting=True)
