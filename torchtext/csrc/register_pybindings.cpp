@@ -30,6 +30,7 @@ PYBIND11_MODULE(_torchtext, m) {
   py::class_<Regex, c10::intrusive_ptr<Regex>>(m, "Regex")
       .def(py::init<std::string>())
       .def("Sub", &Regex::Sub)
+      .def("FindAndConsume", &Regex::FindAndConsume)
       .def(py::pickle(
           // __getstate__
           [](const c10::intrusive_ptr<Regex> &self) -> std::string {
