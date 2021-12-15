@@ -3,7 +3,7 @@ from torch.nn import Module
 from torch import Tensor
 import torch
 from torchtext.data.functional import load_sp_model
-from torchtext.utils import download_from_url
+from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
 from typing import List, Optional, Any, Dict, Tuple
 import os
@@ -39,11 +39,7 @@ class SentencePieceTokenizer(Module):
 
     def __init__(self, sp_model_path: str):
         super().__init__()
-        if os.path.exists(sp_model_path):
-            local_path = sp_model_path
-        else:
-            local_path = download_from_url(url=sp_model_path, root=_CACHE_DIR)
-        self.sp_model = load_sp_model(local_path)
+        self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
 
     def forward(self, input: Any) -> Any:
         """
@@ -233,19 +229,11 @@ class GPT2BPETokenizer(Module):
         self.inf = len(self.bpe_merge_ranks) + 1
 
     def _load_bpe_encoder(self, bpe_encoder_path: str) -> Dict[str, int]:
-        if os.path.exists(bpe_encoder_path):
-            local_path = bpe_encoder_path
-        else:
-            local_path = download_from_url(url=bpe_encoder_path, root=_CACHE_DIR)
-        with open(local_path, "r", encoding="utf-8") as f:
+        with open(get_asset_local_path(bpe_encoder_path), "r", encoding="utf-8") as f:
             return json.load(f)
 
     def _load_bpe_vocab(self, bpe_vocab_path: str) -> Dict[str, int]:
-        if os.path.exists(bpe_vocab_path):
-            local_path = bpe_vocab_path
-        else:
-            local_path = download_from_url(url=bpe_vocab_path, root=_CACHE_DIR)
-        with open(local_path, "r", encoding="utf-8") as f:
+        with open(get_asset_local_path(bpe_vocab_path), "r", encoding="utf-8") as f:
             bpe_vocab = f.read()
 
         return {
