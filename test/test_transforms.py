@@ -155,7 +155,7 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
     def _gpt2_bpe_tokenizer(self, test_scripting):
         encoder_json = "gpt2_bpe_encoder.json"
         bpe_vocab = "gpt2_bpe_vocab.bpe"
-        tokenizer = transforms.GPT2BPETokenizer.get_gpt2_bpe_tokenizer(
+        tokenizer = transforms.GPT2BPETokenizer(
             encoder_json_path=get_asset_path(encoder_json),
             vocab_bpe_path=get_asset_path(bpe_vocab),
         )

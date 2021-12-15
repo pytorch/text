@@ -218,54 +218,21 @@ class GPT2BPETokenizer(Module):
 
     def __init__(
         self,
-        bpe_encoder: Dict[str, int],
-        bpe_merge_ranks: Dict[str, int],
-        byte_encoder: Dict[int, str],
-    ):
-        super().__init__()
-
-        self.bpe_encoder = bpe_encoder
-        self.bpe_merge_ranks = bpe_merge_ranks
-        self.byte_encoder = byte_encoder
-
-        self.bpe_decoder = self.load_bpe_decoder(bpe_encoder)
-        self.byte_decoder = self.load_byte_decoder(byte_encoder)
-
-        self.merge_seperator = self.SEPERATOR
-        self.lstrip_pattern = self.LSTRIP_PATTERN
-        self.inf = len(self.bpe_merge_ranks) + 1
-
-    @classmethod
-    def get_gpt2_bpe_tokenizer(
-        self,
         encoder_json_path: str,
         vocab_bpe_path: str,
     ):
-        if os.path.exists(encoder_json_path):
-            encoder_json_local_path = encoder_json_path
-        else:
-            encoder_json_local_path = download_from_url(
-                url=encoder_json_path,
-                root=_CACHE_DIR
-            )
-        bpe_encoder = GPT2BPETokenizer.load_bpe_encoder(encoder_json_local_path)
+        super().__init__()
+        self.merge_seperator = self.SEPERATOR
+        self.lstrip_pattern = self.LSTRIP_PATTERN
+        self.bpe_encoder = self._load_bpe_encoder(encoder_json_path)
+        self.bpe_merge_ranks = self._load_bpe_vocab(vocab_bpe_path)
+        self.byte_encoder = bytes_to_unicode()
 
-        if os.path.exists(vocab_bpe_path):
-            vocab_bpe_local_path = vocab_bpe_path
-        else:
-            vocab_bpe_local_path = download_from_url(
-                url=vocab_bpe_path,
-                root=_CACHE_DIR
-            )
-        bpe_merge_ranks = GPT2BPETokenizer.load_bpe_vocab(vocab_bpe_local_path)
-        return GPT2BPETokenizer(
-            bpe_encoder,
-            bpe_merge_ranks,
-            GPT2BPETokenizer.load_byte_encoder()
-        )
+        self.bpe_decoder = self._load_bpe_decoder(self.bpe_encoder)
+        self.byte_decoder = self._load_byte_decoder(self.byte_encoder)
+        self.inf = len(self.bpe_merge_ranks) + 1
 
-    @classmethod
-    def load_bpe_encoder(cls, bpe_encoder_path: str) -> Dict[str, int]:
+    def _load_bpe_encoder(self, bpe_encoder_path: str) -> Dict[str, int]:
         if os.path.exists(bpe_encoder_path):
             local_path = bpe_encoder_path
         else:
@@ -273,8 +240,7 @@ class GPT2BPETokenizer(Module):
         with open(local_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    @classmethod
-    def load_bpe_vocab(cls, bpe_vocab_path: str) -> Dict[str, int]:
+    def _load_bpe_vocab(self, bpe_vocab_path: str) -> Dict[str, int]:
         if os.path.exists(bpe_vocab_path):
             local_path = bpe_vocab_path
         else:
@@ -283,67 +249,24 @@ class GPT2BPETokenizer(Module):
             bpe_vocab = f.read()
 
         return {
-            cls.SEPERATOR.join(merge_pair.split()): i
+            self.merge_seperator.join(merge_pair.split()): i
             for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
         }
 
-    @classmethod
-    def load_byte_encoder(cls) -> Dict[int, str]:
-
-        @lru_cache()
-        def bytes_to_unicode():
-            """
-            Original Source: https://github.com/openai/gpt-2/blob/master/src/encoder.py#L9
-
-            Returns list of utf-8 byte and a corresponding list of unicode strings.
-            The reversible bpe codes work on unicode strings.
-            This means you need a large # of unicode characters in your vocab if you want to avoid UNKs.
-            When you're at something like a 10B token dataset you end up needing around 5K for decent coverage.
-            This is a signficant percentage of your normal, say, 32K bpe vocab.
-            To avoid that, we want lookup tables between utf-8 bytes and unicode strings.
-            And avoids mapping to whitespace/control characters the bpe code barfs on.
-            """
-            bs = (
-                list(range(ord("!"), ord("~") + 1))
-                + list(range(ord("¡"), ord("¬") + 1))
-                + list(range(ord("®"), ord("ÿ") + 1))
-            )
-            cs = bs[:]
-            n = 0
-            for b in range(2 ** 8):
-                if b not in bs:
-                    bs.append(b)
-                    cs.append(2 ** 8 + n)
-                    n += 1
-            cs = [chr(n) for n in cs]
-            return dict(zip(bs, cs))
-
-        return bytes_to_unicode()
-
-    @classmethod
-    def load_bpe_decoder(cls, bpe_encoder: Dict[str, int]) -> Dict[int, str]:
+    def _load_bpe_decoder(self, bpe_encoder: Dict[str, int]) -> Dict[int, str]:
         bpe_decoder: Dict[int, str] = {}
         for sub_word, bpe_token_id in bpe_encoder.items():
             bpe_decoder[bpe_token_id] = sub_word
         return bpe_decoder
 
-    @classmethod
-    def load_byte_decoder(cls, byte_encoder: Dict[int, str]) -> Dict[str, int]:
+    def _load_byte_decoder(self, byte_encoder: Dict[int, str]) -> Dict[str, int]:
         byte_decoder: Dict[str, int] = {}
         for byte_t, unicode_t in byte_encoder.items():
             byte_decoder[unicode_t] = byte_t
         return byte_decoder
 
-    # @classmethod
-    # def build_bpe_merge_ranks(cls, bpe_merge_ranks) -> Dict[str, int]:
-    #     return {
-    #         cls.SEPERATOR.join(bpe_merge): rank
-    #         for bpe_merge, rank in bpe_merge_ranks.items()
-    #     }
-
-    @classmethod
     @torch.jit.export
-    def list_str_index(cls, list_: List[str], element: str, start: int) -> int:
+    def _list_str_index(self, list_: List[str], element: str, start: int) -> int:
         """
         Equivalent to: list.index(v, start)
         """
@@ -353,7 +276,7 @@ class GPT2BPETokenizer(Module):
         return -1
 
     @torch.jit.export
-    def get_pairs(self, token_list: List[str]) -> List[str]:
+    def _get_pairs(self, token_list: List[str]) -> List[str]:
         """Return set of token pairs in a word.
 
         :param token_list: a list of tokens, each represents a word or sub-word.
@@ -372,7 +295,7 @@ class GPT2BPETokenizer(Module):
         return list(pairs.keys())
 
     @torch.jit.export
-    def find_best_pair(self, pairs: List[str]) -> str:
+    def _find_best_pair(self, pairs: List[str]) -> str:
         """Return the token pair(e.g bpe merge) with lowest rank.
 
         Equivalent to:
@@ -389,7 +312,7 @@ class GPT2BPETokenizer(Module):
         return best_pair
 
     @torch.jit.export
-    def bpe(self, token_list: List[str]) -> List[str]:
+    def _bpe(self, token_list: List[str]) -> List[str]:
         """Return a list of bpe tokens.
 
         Given a list of input tokens, keep finding the best bpe merge and
@@ -404,13 +327,13 @@ class GPT2BPETokenizer(Module):
                 For example: ["aw", "esome"]
         :rtype: List[str]
         """
-        pairs: List[str] = self.get_pairs(token_list)
+        pairs: List[str] = self._get_pairs(token_list)
 
         if len(pairs) == 0:
             return token_list
 
         while True:
-            bigram: str = self.find_best_pair(pairs)
+            bigram: str = self._find_best_pair(pairs)
             if bigram not in self.bpe_merge_ranks:
                 break
 
@@ -427,7 +350,7 @@ class GPT2BPETokenizer(Module):
             new_token_list: List[str] = []
             i: int = 0
             while i < len(token_list):
-                j = self.list_str_index(token_list, first, i)
+                j = self._list_str_index(token_list, first, i)
                 if j != -1:
                     new_token_list.extend(token_list[i:j])
                     i = j
@@ -450,12 +373,12 @@ class GPT2BPETokenizer(Module):
             if len(token_list) == 1:
                 break
             else:
-                pairs = self.get_pairs(token_list)
+                pairs = self._get_pairs(token_list)
 
         return token_list
 
     @torch.jit.export
-    def byte_encode(self, token: str) -> List[str]:
+    def _byte_encode(self, token: str) -> List[str]:
         """Encode byte into an unicode character.
 
         Equivalent to: (self.byte_encoder[b] for b in token.encode('utf-8')
@@ -469,7 +392,7 @@ class GPT2BPETokenizer(Module):
         return encoded
 
     @torch.jit.export
-    def regex(self, text: str) -> List[str]:
+    def _regex(self, text: str) -> List[str]:
         r"""Return a list of tokens, split by regular expression(pcre).
 
         's|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+
@@ -477,7 +400,7 @@ class GPT2BPETokenizer(Module):
         return torch.ops.torchtext.gpt2_bpe_pre_tokenizer(text)
 
     @torch.jit.export
-    def encode(self, text: str) -> List[int]:
+    def _encode(self, text: str) -> List[int]:
         """Encode text into a list of bpe token ids.
 
         Split text into a list of token unit, and generate a list of bpe tokens
@@ -497,8 +420,8 @@ class GPT2BPETokenizer(Module):
         """
 
         bpe_token_ids: List[int] = []
-        for token in self.regex(text):
-            for bpe_token in self.bpe(self.byte_encode(token)):
+        for token in self._regex(text):
+            for bpe_token in self._bpe(self._byte_encode(token)):
                 bpe_token_ids.append(self.bpe_encoder[bpe_token])
         return bpe_token_ids
 
@@ -516,7 +439,7 @@ class GPT2BPETokenizer(Module):
             --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
             --> bpe encode --> bpe token ids: [707, 5927, 11, 707, 68]
         """
-        bpe_token_ids: List[int] = self.encode(text)
+        bpe_token_ids: List[int] = self._encode(text)
         bpe_tokens: List[str] = []
 
         for bpe_token_id in bpe_token_ids:
@@ -540,3 +463,32 @@ class GPT2BPETokenizer(Module):
             return self.tokenize(input)
         else:
             raise TypeError("Input type not supported")
+
+
+@lru_cache()
+def bytes_to_unicode():
+    """
+    Original Source: https://github.com/openai/gpt-2/blob/master/src/encoder.py#L9
+
+    Returns list of utf-8 byte and a corresponding list of unicode strings.
+    The reversible bpe codes work on unicode strings.
+    This means you need a large # of unicode characters in your vocab if you want to avoid UNKs.
+    When you're at something like a 10B token dataset you end up needing around 5K for decent coverage.
+    This is a signficant percentage of your normal, say, 32K bpe vocab.
+    To avoid that, we want lookup tables between utf-8 bytes and unicode strings.
+    And avoids mapping to whitespace/control characters the bpe code barfs on.
+    """
+    bs = (
+        list(range(ord("!"), ord("~") + 1))
+        + list(range(ord("¡"), ord("¬") + 1))
+        + list(range(ord("®"), ord("ÿ") + 1))
+    )
+    cs = bs[:]
+    n = 0
+    for b in range(2 ** 8):
+        if b not in bs:
+            bs.append(b)
+            cs.append(2 ** 8 + n)
+            n += 1
+    cs = [chr(n) for n in cs]
+    return dict(zip(bs, cs))
