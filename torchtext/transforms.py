@@ -5,13 +5,10 @@ import torch
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
-from typing import List, Optional, Any, Dict, Tuple
-import os
+from typing import List, Optional, Any, Dict
 import json
 from functools import lru_cache
 import torchtext    # noqa: F401
-
-from torchtext import _CACHE_DIR
 
 __all__ = [
     'SentencePieceTokenizer',
@@ -193,9 +190,9 @@ class Truncate(Module):
 
 class GPT2BPETokenizer(Module):
     """
-    Transform for GPT-2 BPE Tokenizer. 
+    Transform for GPT-2 BPE Tokenizer.
 
-    Reimplements openai GPT-2 BPE in TorchScript. Original openai implementation 
+    Reimplements openai GPT-2 BPE in TorchScript. Original openai implementation
     https://github.com/openai/gpt-2/blob/master/src/encoder.py
 
     :param bpe_encoder: A dict mapping from bpe tokens(e.g sub-words) to

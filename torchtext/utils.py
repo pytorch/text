@@ -251,6 +251,7 @@ def _log_class_usage(klass):
         identifier += f".{klass.__name__}"
     torch._C._log_api_usage_once(identifier)
 
+
 def get_asset_local_path(asset_path: str) -> str:
     """Get local path for assets. Download if path does not exost locally
 
@@ -258,7 +259,7 @@ def get_asset_local_path(asset_path: str) -> str:
         asset_path: Local path to asset or remote URL
     Returns:
         bool: local path of the asset after downloading or reading from cache
-    
+
     Examples:
         >>> url = 'http://<HOST>/file.txt'
         >>> torchtext.utils.get_asset_local_path(url)
