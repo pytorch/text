@@ -149,3 +149,46 @@ class TestTransforms(TorchtextTestCase):
     def test_truncate_jit(self):
         """test truncation with scripting on both sequence and batch of sequence with both str and int types"""
         self._truncate(test_scripting=True)
+
+
+class TestGPT2BPETokenizer(TorchtextTestCase):
+    def _gpt2_bpe_tokenizer(self, test_scripting):
+        encoder_json = "gpt2_bpe_encoder.json"
+        bpe_vocab = "gpt2_bpe_vocab.bpe"
+        tokenizer = transforms.GPT2BPETokenizer(
+            encoder_json_path=get_asset_path(encoder_json),
+            vocab_bpe_path=get_asset_path(bpe_vocab),
+        )
+        if test_scripting:
+            tokenizer = torch.jit.script(tokenizer)
+
+        sample_texts = [
+            "Hello World!, how are you?",
+            "Hélló  WoŕlḊ¿",
+            "Respublica superiorem",
+            "Avdija Vršajević în",
+
+        ]
+
+        expected_token_ids = [
+            ['15496', '2159', '28265', '703', '389', '345', '30'],
+            ['39', '2634', '297', '10205', '220', '22173', '129', '243', '75', '41585', '232', '126', '123'],
+            ['4965', '11377', '64', '2208', '72', '29625'],
+            ['7355', '67', '34655', '569', '81', '32790', '1228', '1990', '72', '38325', '6184', '106', '77'],
+
+        ]
+
+        # test batch of sentences
+        self.assertEqual(tokenizer(sample_texts), expected_token_ids)
+
+        # test individual sentences
+        for idx, txt in enumerate(sample_texts):
+            self.assertEqual(tokenizer(txt), expected_token_ids[idx])
+
+    def test_gpt2_bpe_tokenizer(self):
+        """test tokenization on single sentence input as well as batch on sentences"""
+        self._gpt2_bpe_tokenizer(test_scripting=False)
+
+    def test_gpt2_bpe_tokenizer_jit(self):
+        """test tokenization with scripting on single sentence input as well as batch on sentences"""
+        self._gpt2_bpe_tokenizer(test_scripting=True)
