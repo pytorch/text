@@ -8,6 +8,7 @@ import sys
 import zipfile
 import gzip
 from ._download_hooks import _DATASET_DOWNLOAD_MANAGER
+from torchtext import _CACHE_DIR
 
 
 def reporthook(t):
@@ -249,3 +250,25 @@ def _log_class_usage(klass):
     if klass and hasattr(klass, "__name__"):
         identifier += f".{klass.__name__}"
     torch._C._log_api_usage_once(identifier)
+
+
+def get_asset_local_path(asset_path: str) -> str:
+    """Get local path for assets. Download if path does not exost locally
+
+    Args:
+        asset_path: Local path to asset or remote URL
+    Returns:
+        bool: local path of the asset after downloading or reading from cache
+
+    Examples:
+        >>> url = 'http://<HOST>/file.txt'
+        >>> torchtext.utils.get_asset_local_path(url)
+        >>> '.data/file.txt'
+        >>> torchtext.utils.get_asset_local_path('/home/user/file.txt')
+        >>> '/home/user/file.txt'
+    """
+    if os.path.exists(asset_path):
+        local_path = asset_path
+    else:
+        local_path = download_from_url(url=asset_path, root=_CACHE_DIR)
+    return local_path
