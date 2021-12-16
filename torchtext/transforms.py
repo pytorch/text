@@ -15,6 +15,8 @@ __all__ = [
     'VocabTransform',
     'ToTensor',
     'LabelToIndex',
+    'Truncate',
+    'AddToken',
 ]
 
 
