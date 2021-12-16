@@ -5,7 +5,7 @@ import torch
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import download_from_url
 from torchtext.vocab import Vocab
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Union
 import os
 
 from torchtext import _CACHE_DIR
@@ -189,3 +189,26 @@ class Truncate(Module):
         :rtype: Union[List[Union[str, int]], List[List[Union[str, int]]]]
         """
         return F.truncate(input, self.max_seq_len)
+
+
+class AddToken(Module):
+    """Add token to beginning or end of sequence
+
+    :param token: The token to be added
+    :type token: Union[int, str]
+    :param begin: Whether to insert token at start or end or sequence, defaults to True
+    :type begin: bool, optional
+    """
+
+    def __init__(self, token: Union[int, str], begin: bool = True) -> None:
+        super().__init__()
+        self.token = token
+        self.begin = begin
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch
+        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        """
+
+        return F.add_token(input, self.token, self.begin)

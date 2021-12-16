@@ -149,3 +149,56 @@ class TestTransforms(TorchtextTestCase):
     def test_truncate_jit(self):
         """test truncation with scripting on both sequence and batch of sequence with both str and int types"""
         self._truncate(test_scripting=True)
+
+    def _add_token(self, test_scripting):
+        token_id = 0
+        transform = transforms.AddToken(token_id, begin=True)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+        input = [[1, 2], [1, 2, 3]]
+
+        actual = transform(input)
+        expected = [[0, 1, 2], [0, 1, 2, 3]]
+        self.assertEqual(actual, expected)
+
+        transform = transforms.AddToken(token_id, begin=False)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+
+        actual = transform(input)
+        expected = [[1, 2, 0], [1, 2, 3, 0]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2]
+        actual = transform(input)
+        expected = [1, 2, 0]
+        self.assertEqual(actual, expected)
+
+        token_id = '0'
+        transform = transforms.AddToken(token_id, begin=True)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+        input = [['1', '2'], ['1', '2', '3']]
+
+        actual = transform(input)
+        expected = [['0', '1', '2'], ['0', '1', '2', '3']]
+        self.assertEqual(actual, expected)
+
+        transform = transforms.AddToken(token_id, begin=False)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+
+        actual = transform(input)
+        expected = [['1', '2', '0'], ['1', '2', '3', '0']]
+        self.assertEqual(actual, expected)
+
+        input = ['1', '2']
+        actual = transform(input)
+        expected = ['1', '2', '0']
+        self.assertEqual(actual, expected)
+
+    def test_add_token(self):
+        self._add_token(test_scripting=False)
+
+    def test_add_token_jit(self):
+        self._add_token(test_scripting=True)
