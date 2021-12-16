@@ -1,54 +1,66 @@
+from typing import OrderedDict
 import torch
 from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
-from torchtext.functional import to_tensor
-from torchtext.transforms import LabelToIndex
+import torchtext.transforms as transforms
 from torchtext.experimental.datasets.sst2 import SST2
+from torch.hub import load_state_dict_from_url
 from torch.optim import Adam
 import torch.nn as nn
+from collections import OrderedDict
 device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
 
-def get_model():
-    xlmr_large = XLMR_BASE_ENCODER
-    classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
-    model = xlmr_large.get_model(head=classifier_head)
-    return model
-
-
+classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
+MODEL = XLMR_BASE_ENCODER.get_model(head=classifier_head)
+MODEL.to(device)
 batch_size = 64
-criteria = nn.CrossEntropyLoss()
-model = get_model()
-model.to(device)
-optim = Adam(model.parameters())
+CRITERIA = nn.CrossEntropyLoss()
+OPTIM = Adam(MODEL.parameters())
+PADDING_IDX = 1
+BOS_TOKEN = '<s>'
+EOS_TOKEN = '</s>'
+TEXT_TRANSFORM = XLMR_BASE_ENCODER.transform()
+LABEL_TRANSFORM = transforms.LabelToIndex(label_names=['0', '1'])
 
 
-def train_step(model, optim, input, target, criteria):
-    output = model(input)
-    loss = criteria(output, target)
-    optim.zero_grad()
+XLMR_VOCAB_PATH = "https://download.pytorch.org/models/text/xlmr.vocab.pt",
+XLMR_SPM_MODEL_PATH = "https://download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
+TEXT_TRANSFORM = nn.Sequential(OrderedDict([
+    ('tokenize', transforms.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH)),
+    ('add_bos', transforms.Add)
+    ('vocab', transforms.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH))),
+    ('')
+])
+)
+
+
+TRAIN_DATAPIPE = SST2(split='train')
+TRAIN_DATAPIPE.map(lambda x: (TEXT_TRANSFORM(x[0]), LABEL_TRANSFORM(x[1])))
+
+DEV_DATAPIPE = SST2(split='dev')
+DEV_DATAPIPE.map(lambda x: (TEXT_TRANSFORM(x[0]), LABEL_TRANSFORM(x[1])))
+
+# Alternately we can also use batch API
+# TRAIN_DATAPIPE = TRAIN_DATAPIPE.batch(batch_size).rows2columnar(["text", "label"])
+# TRAIN_DATAPIPE.map(lambda x:{"token_ds":TEXT_TRANSFORM(x["text"]), "target":LABEL_TRANSFORM(x["label"])})
+
+
+def train_step(input, target):
+    output = MODEL(input)
+    loss = CRITERIA(output, target)
+    OPTIM.zero_grad()
     loss.backward()
-    optim.step()
+    OPTIM.step()
 
 
-def eval_step(model, input, target, criteria):
-    output = model(input)
-    loss = criteria(output, target).item()
+def eval_step(input, target):
+    output = MODEL(input)
+    loss = CRITERIA(output, target).item()
     return float(loss), (output.argmax(1) == target).type(torch.float).sum().item()
 
 
-def get_processed_datapipe(batch_size, split='train'):
-    text_transform = XLMR_BASE_ENCODER.transform()
-    label_transform = LabelToIndex(label_names=['0', '1'])
-    dp = SST2(split=split).batch(batch_size).rows2columnar(["text", "label"])
-    dp = dp.map(lambda x: {'token_ids': to_tensor(text_transform(x['text']), padding_value=text_transform.pad_idx),
-                           'target': torch.tensor(label_transform(x["label"]))})
-
-    return dp
-
-
 def evaluate():
-    model.eval()
-    eval_dp = get_processed_datapipe(batch_size, split='dev')
+    MODEL.eval()
     total_loss = 0
     correct_predictions = 0
     total_predictions = 0
