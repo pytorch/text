@@ -195,19 +195,12 @@ class GPT2BPETokenizer(Module):
     Reimplements openai GPT-2 BPE in TorchScript. Original openai implementation
     https://github.com/openai/gpt-2/blob/master/src/encoder.py
 
-    :param bpe_encoder: A dict mapping from bpe tokens(e.g sub-words) to
-            bpe token ids. For example: {"ingly": 4420}
-    :type bpe_encoder: Dict[str, int]
-    :param bpe_merge_ranks: A dict mapping a pair of bpe tokens to rank.
-            Torchscript doesn't support tuple as dict key type, concat
-            a pair of string with SEPERATOR (e.g \u0001) as workaround.
-            For example: {"ing\u0001ly": 210}
-    :type bpe_merge_ranks: Dict[str, int]
-    :param byte_encoder: A dict mapping a byte to an unicode character.
-    :type byte_encoder: Dict[int, str]
+    :param encoder_json_path: Path to GPT-2 BPE encoder json file.
+    :type encoder_json_path: str
+    :param vocab_bpe_path: Path to bpe vocab file.
+    :type vocab_bpe_path: str
     """
-    SEPERATOR: str = "\u0001"
-    LSTRIP_PATTERN: str = "\u0120"
+    SEPERATOR: torch.jit.Final[str]
 
     def __init__(
         self,
@@ -215,42 +208,32 @@ class GPT2BPETokenizer(Module):
         vocab_bpe_path: str,
     ):
         super().__init__()
-        self.merge_seperator = self.SEPERATOR
-        self.lstrip_pattern = self.LSTRIP_PATTERN
-        self.bpe_encoder = self._load_bpe_encoder(encoder_json_path)
-        self.bpe_merge_ranks = self._load_bpe_vocab(vocab_bpe_path)
-        self.byte_encoder = bytes_to_unicode()
-
-        self.bpe_decoder = self._load_bpe_decoder(self.bpe_encoder)
-        self.byte_decoder = self._load_byte_decoder(self.byte_encoder)
-        self.inf = len(self.bpe_merge_ranks) + 1
-
-    def _load_bpe_encoder(self, bpe_encoder_path: str) -> Dict[str, int]:
-        with open(get_asset_local_path(bpe_encoder_path), "r", encoding="utf-8") as f:
-            return json.load(f)
-
-    def _load_bpe_vocab(self, bpe_vocab_path: str) -> Dict[str, int]:
-        with open(get_asset_local_path(bpe_vocab_path), "r", encoding="utf-8") as f:
-            bpe_vocab = f.read()
-
-        return {
-            self.merge_seperator.join(merge_pair.split()): i
-            for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+        self.SEPERATOR = "\u0001"
+        # load bpe encoder and bpe decoder
+        with open(get_asset_local_path(encoder_json_path), "r", encoding="utf-8") as f:
+            self.bpe_encoder = json.load(f)
+        self.bpe_decoder = {
+            bpe_token_id: sub_word
+            for sub_word, bpe_token_id in self.bpe_encoder.items()
         }
 
-    def _load_bpe_decoder(self, bpe_encoder: Dict[str, int]) -> Dict[int, str]:
-        bpe_decoder: Dict[int, str] = {}
-        for sub_word, bpe_token_id in bpe_encoder.items():
-            bpe_decoder[bpe_token_id] = sub_word
-        return bpe_decoder
+        # load bpe vocab
+        with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
+            bpe_vocab = f.read()
+        self.bpe_merge_ranks = {
+            self.SEPERATOR.join(merge_pair.split()): i
+            for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+        }
+        self.inf = len(self.bpe_merge_ranks) + 1
 
-    def _load_byte_decoder(self, byte_encoder: Dict[int, str]) -> Dict[str, int]:
-        byte_decoder: Dict[str, int] = {}
-        for byte_t, unicode_t in byte_encoder.items():
-            byte_decoder[unicode_t] = byte_t
-        return byte_decoder
+        # load byte encoder and decoder
+        self.byte_encoder = bytes_to_unicode()
+        self.byte_decoder = {
+            unicode_t: byte_t
+            for byte_t, unicode_t in self.byte_encoder.items()
+        }
 
-    @torch.jit.export
+    @ torch.jit.export
     def _list_str_index(self, list_: List[str], element: str, start: int) -> int:
         """
         Equivalent to: list.index(v, start)
@@ -260,7 +243,7 @@ class GPT2BPETokenizer(Module):
                 return start + i
         return -1
 
-    @torch.jit.export
+    @ torch.jit.export
     def _get_pairs(self, token_list: List[str]) -> List[str]:
         """Return set of token pairs in a word.
 
@@ -274,12 +257,12 @@ class GPT2BPETokenizer(Module):
         pairs: Dict[str, int] = {}
         prev_token: str = token_list[0]
         for token in token_list[1:]:
-            pair: str = prev_token + self.merge_seperator + token
+            pair: str = prev_token + self.SEPERATOR + token
             pairs[pair] = 0
             prev_token = token
         return list(pairs.keys())
 
-    @torch.jit.export
+    @ torch.jit.export
     def _find_best_pair(self, pairs: List[str]) -> str:
         """Return the token pair(e.g bpe merge) with lowest rank.
 
@@ -296,7 +279,7 @@ class GPT2BPETokenizer(Module):
                 best_rank = rank
         return best_pair
 
-    @torch.jit.export
+    @ torch.jit.export
     def _bpe(self, token_list: List[str]) -> List[str]:
         """Return a list of bpe tokens.
 
@@ -331,7 +314,7 @@ class GPT2BPETokenizer(Module):
             # For example: first="a" second="w" and token_list =
             # ["a", "w", "some", "a", "w", "e"]
             # Result: new_token_list = ["aw", "some", "aw", "e"]
-            first, second = bigram.split(self.merge_seperator)
+            first, second = bigram.split(self.SEPERATOR)
             new_token_list: List[str] = []
             i: int = 0
             while i < len(token_list):
