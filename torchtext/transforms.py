@@ -200,7 +200,7 @@ class GPT2BPETokenizer(Module):
     :param vocab_bpe_path: Path to bpe vocab file.
     :type vocab_bpe_path: str
     """
-    SEPERATOR: torch.jit.Final[str]
+    _seperator: torch.jit.Final[str]
 
     def __init__(
         self,
@@ -208,7 +208,7 @@ class GPT2BPETokenizer(Module):
         vocab_bpe_path: str,
     ):
         super().__init__()
-        self.SEPERATOR = "\u0001"
+        self._seperator = "\u0001"
         # load bpe encoder and bpe decoder
         with open(get_asset_local_path(encoder_json_path), "r", encoding="utf-8") as f:
             self.bpe_encoder = json.load(f)
@@ -221,7 +221,7 @@ class GPT2BPETokenizer(Module):
         with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
             bpe_vocab = f.read()
         self.bpe_merge_ranks = {
-            self.SEPERATOR.join(merge_pair.split()): i
+            self._seperator.join(merge_pair.split()): i
             for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
         }
         self.inf = len(self.bpe_merge_ranks) + 1
@@ -233,7 +233,7 @@ class GPT2BPETokenizer(Module):
             for byte_t, unicode_t in self.byte_encoder.items()
         }
 
-    @ torch.jit.export
+    @torch.jit.export
     def _list_str_index(self, list_: List[str], element: str, start: int) -> int:
         """
         Equivalent to: list.index(v, start)
@@ -243,7 +243,7 @@ class GPT2BPETokenizer(Module):
                 return start + i
         return -1
 
-    @ torch.jit.export
+    @torch.jit.export
     def _get_pairs(self, token_list: List[str]) -> List[str]:
         """Return set of token pairs in a word.
 
@@ -257,12 +257,12 @@ class GPT2BPETokenizer(Module):
         pairs: Dict[str, int] = {}
         prev_token: str = token_list[0]
         for token in token_list[1:]:
-            pair: str = prev_token + self.SEPERATOR + token
+            pair: str = prev_token + self._seperator + token
             pairs[pair] = 0
             prev_token = token
         return list(pairs.keys())
 
-    @ torch.jit.export
+    @torch.jit.export
     def _find_best_pair(self, pairs: List[str]) -> str:
         """Return the token pair(e.g bpe merge) with lowest rank.
 
@@ -279,7 +279,7 @@ class GPT2BPETokenizer(Module):
                 best_rank = rank
         return best_pair
 
-    @ torch.jit.export
+    @torch.jit.export
     def _bpe(self, token_list: List[str]) -> List[str]:
         """Return a list of bpe tokens.
 
@@ -314,7 +314,7 @@ class GPT2BPETokenizer(Module):
             # For example: first="a" second="w" and token_list =
             # ["a", "w", "some", "a", "w", "e"]
             # Result: new_token_list = ["aw", "some", "aw", "e"]
-            first, second = bigram.split(self.SEPERATOR)
+            first, second = bigram.split(self._seperator)
             new_token_list: List[str] = []
             i: int = 0
             while i < len(token_list):
