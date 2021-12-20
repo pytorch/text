@@ -29,7 +29,7 @@ def _get_eca(debug):
         if platform.system() == "Windows":
             eca += ['-O2']
         else:
-            eca += ["-O3"]
+            eca += ["-O3", "-fvisibility=hidden"]
     return eca
 
 
