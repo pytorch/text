@@ -16,6 +16,7 @@ MODEL.to(device)
 BATCH_SIZE = 16
 CRITERIA = nn.CrossEntropyLoss()
 OPTIM = Adam(MODEL.parameters())
+
 PADDING_IDX = 1
 BOS_TOKEN = '<s>'
 EOS_TOKEN = '</s>'
@@ -27,17 +28,17 @@ XLMR_SPM_MODEL_PATH = "https://download.pytorch.org/models/text/xlmr.sentencepie
 
 
 # Support both Non-Batched (single sentence) and Batched (List of sentences) as inputs
-TEXT_TRANSFORM = nn.Sequential(OrderedDict([
-    ('tokenize', T.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH)),  # tokenize using pre-trained SPM
-    ('truncate', T.Truncate(MAX_SEQ_LEN - 2)),  # Truncate sequence to max allowable length
-    ('add_bos', T.AddToken(BOS_TOKEN, begin=True)),  # Add BOS token at start of sequence
-    ('add_eos', T.AddToken(EOS_TOKEN, begin=False)),  # Add EOS token at end of sequence
-    ('vocab', T.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH))),  # Convert tokens into IDs
-])
-)
+# TEXT_TRANSFORM = nn.Sequential(OrderedDict([
+#     ('tokenize', T.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH)),  # tokenize using pre-trained SPM
+#     ('truncate', T.Truncate(MAX_SEQ_LEN - 2)),  # Truncate sequence to max allowable length
+#     ('add_bos', T.AddToken(BOS_TOKEN, begin=True)),  # Add BOS token at start of sequence
+#     ('add_eos', T.AddToken(EOS_TOKEN, begin=False)),  # Add EOS token at end of sequence
+#     ('vocab', T.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH))),  # Convert tokens into IDs
+# ])
+# )
 
 # Alternately we can also use transform shipped with pre-trained model
-# TEXT_TRANSFORM = XLMR_BASE_ENCODER.transform()
+TEXT_TRANSFORM = XLMR_BASE_ENCODER.transform()
 
 LABEL_TRANSFORM = T.LabelToIndex(label_names=['0', '1'])
 
@@ -80,7 +81,8 @@ def evaluate():
     total_predictions = 0
     counter = 0
     with torch.no_grad():
-        for i, batch in enumerate(DEV_DATAPIPE):
+        # we can directly iterate on DataPipe
+        for batch in DEV_DATAPIPE:
             input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(device)
             target = torch.tensor(batch['target'].to(device))
             loss, predictions = eval_step(input, target)
@@ -88,6 +90,7 @@ def evaluate():
             correct_predictions += predictions
             total_predictions += len(target)
             counter += 1
+            print(loss)
 
     return total_loss / counter, correct_predictions / total_predictions
 
@@ -97,9 +100,10 @@ def train():
         loss, accuracy = evaluate()
         print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
         MODEL.train()
-        for i, batch in enumerate(TRAIN_DATAPIPE):
-            input = batch['token_ids'].to(device)
-            target = batch['target'].to(device)
+        # we can directly iterate on DataPipe
+        for batch in TRAIN_DATAPIPE:
+            input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(device)
+            target = torch.tensor(batch['target'].to(device))
             train_step(input, target)
 
     loss, accuracy = evaluate()
