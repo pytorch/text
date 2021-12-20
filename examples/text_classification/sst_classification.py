@@ -27,9 +27,9 @@ XLMR_VOCAB_PATH = "https://download.pytorch.org/models/text/xlmr.vocab.pt",
 XLMR_SPM_MODEL_PATH = "https://download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
 TEXT_TRANSFORM = nn.Sequential(OrderedDict([
     ('tokenize', transforms.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH)),
-    ('add_bos', transforms.Add)
+    ('add_bos', transforms.AddToken(BOS_TOKEN, begin=True)),
+    ('add_eos', transforms.AddToken(EOS_TOKEN, begin=False)),
     ('vocab', transforms.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH))),
-    ('')
 ])
 )
 
