@@ -44,3 +44,10 @@ Truncate
 .. autoclass:: Truncate
 
    .. automethod:: forward
+
+AddToken
+--------
+
+.. autoclass:: AddToken
+
+   .. automethod:: forward
