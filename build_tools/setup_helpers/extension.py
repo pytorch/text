@@ -114,6 +114,7 @@ def _build_third_party(debug):
             '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
             f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
             f'-DCMAKE_BUILD_TYPE={config}',
+            '-DCMAKE_CXX_VISIBILITY_PRESET=hidden',
         ] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
@@ -144,6 +145,7 @@ def _build_sentence_piece(debug):
         extra_args = []
     subprocess.run(
         args=['cmake', '-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
+              '-DCMAKE_CXX_VISIBILITY_PRESET=hidden',
               '-DCMAKE_CXX_FLAGS=' + _get_cxx11_abi(),
               f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
         cwd=str(build_dir),
