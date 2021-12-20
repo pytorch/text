@@ -196,10 +196,9 @@ def interleave_keys(a, b):
 
 def get_torch_version():
     import torch
-    v = torch.__version__
-    version_substrings = v.split('.')
-    major, minor = version_substrings[0], version_substrings[1]
-    return int(major), int(minor)
+    from pkg_resources import parse_version
+    version = parse_version(torch.__version__)
+    return version.major, version.minor
 
 
 def dtype_to_attr(dtype):
