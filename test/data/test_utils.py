@@ -1,5 +1,6 @@
 import io
 from torchtext.data import get_tokenizer
+from torchtext.data.utils import get_torch_version
 from torchtext.utils import unicode_csv_reader
 from ..common.torchtext_test_case import TorchtextTestCase
 from ..common.assets import get_asset_path
@@ -48,3 +49,12 @@ class TestUtils(TorchtextTestCase):
                 ref_lines.append(line)
 
         self.assertEqual(ref_lines, test_lines)
+
+    def test_version_parsing(self):
+        import torch
+        # Assign a torch version arbitrarily
+        version = (1, 10, 1)
+        major, minor, patch = version
+        torch.__version__ = ".".join(map(str, version))
+        parsed_major, parsed_minor = get_torch_version()
+        self.assertEqual((parsed_major, parsed_minor), (major, minor))
