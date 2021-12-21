@@ -115,6 +115,7 @@ def _build_third_party(debug):
             f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
             f'-DCMAKE_BUILD_TYPE={config}',
             '-DCMAKE_CXX_VISIBILITY_PRESET=hidden',
+            '-DCMAKE_POLICY_DEFAULT_CMP0063=NEW',
         ] + extra_args + ['..'],
         cwd=str(build_dir),
         check=True,
@@ -147,7 +148,9 @@ def _build_sentence_piece(debug):
         args=['cmake', '-DSPM_ENABLE_SHARED=OFF', f'-DCMAKE_INSTALL_PREFIX={_TP_INSTALL_DIR}',
               '-DCMAKE_CXX_VISIBILITY_PRESET=hidden',
               '-DCMAKE_CXX_FLAGS=' + _get_cxx11_abi(),
+              '-DCMAKE_POLICY_DEFAULT_CMP0063=NEW',
               f'-DCMAKE_BUILD_TYPE={config}'] + extra_args + ['..'],
+
         cwd=str(build_dir),
         check=True,
         env=build_env,
