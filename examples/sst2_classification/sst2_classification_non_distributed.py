@@ -100,8 +100,8 @@ def evaluate():
 
 def train():
     for e in range(NUM_EPOCHS):
-        # loss, accuracy = evaluate()
-        # print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
+        loss, accuracy = evaluate()
+        print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
         MODEL.train()
         # we can directly iterate on DataPipe dataset or create DataLoader
         # for distributed and multi-processing we would need to use DataLoader
