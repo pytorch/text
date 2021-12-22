@@ -10,7 +10,6 @@ __all__ = [
     "to_map_style_dataset",
 ]
 
-
 """
 This file contains experimental functionality.
 All of these are experimental, unstable, and subject to change or deletion.
@@ -38,6 +37,29 @@ def generate_sp_model(filename, vocab_size=20000,
         >>> generate_sp_model('test.csv', vocab_size=23456, model_prefix='spm_user')
     """
     torch.ops.torchtext.generate_sp_model(filename, vocab_size, model_type, model_prefix)
+
+
+def generate_sp_model_from_iterator(lines, vocab_size=20000,
+                                    model_type="unigram",
+                                    model_prefix='m_user'):
+    r"""Train a SentencePiece tokenizer.
+
+    Args:
+        lines: an iterator containing data for training SentencePiece model.
+        vocab_size: the size of vocabulary (Default: 20,000).
+        model_type: the type of SentencePiece model, including unigram,
+            bpe, char, word.
+        model_prefix: the prefix of the files saving model and vocab.
+
+    Outputs:
+        The model and vocab are saved in two separate files with
+            model_prefix.
+
+    Examples:
+        >>> from torchtext.data.functional import generate_sp_model_from_iterator
+        >>> generate_sp_model_from_iterator(lines, vocab_size=23456, model_prefix='spm_user')
+    """
+    torch.ops.torchtext.generate_sp_model_from_iterator(lines, vocab_size, model_type, model_prefix)
 
 
 def load_sp_model(spm):
@@ -90,6 +112,7 @@ def sentencepiece_numericalizer(sp_model):
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsIds(line)
+
     return _internal_func
 
 
@@ -116,6 +139,7 @@ def sentencepiece_tokenizer(sp_model):
     def _internal_func(txt_iter):
         for line in txt_iter:
             yield sp_model.EncodeAsPieces(line)
+
     return _internal_func
 
 
@@ -138,6 +162,7 @@ def custom_replace(replace_pattern):
             for pattern_re, replaced_str in _patterns:
                 line = pattern_re.sub(replaced_str, line)
             yield line
+
     return _internal_func
 
 
@@ -180,7 +205,7 @@ def numericalize_tokens_from_iterator(vocab, iterator, removed_tokens=None):
             yield iter(vocab[token] for token in tokens)
         else:
             yield iter(map(lambda x: vocab[x],
-                       filter(lambda x: x not in removed_tokens, tokens)))
+                           filter(lambda x: x not in removed_tokens, tokens)))
 
 
 _patterns = [(r'<.*>', ''),

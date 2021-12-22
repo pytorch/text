@@ -7,6 +7,7 @@ import unittest
 import torch
 from torchtext.data.functional import (
     generate_sp_model,
+    generate_sp_model_from_iterator,
     load_sp_model,
     sentencepiece_numericalizer,
     sentencepiece_tokenizer,
@@ -39,6 +40,27 @@ class TestFunctional(TorchtextTestCase):
             model_prefix = os.path.join(dir_name, f'spm_user_{uuid.uuid4()}')
             model_file = f'{model_prefix}.model'
             generate_sp_model(data_path, vocab_size=23456, model_prefix=model_prefix)
+            sp_model = load_sp_model(model_file)
+            self.assertEqual(sp_model.GetPieceSize(), 23456)
+
+    def test_generate_sp_model_from_iterator(self):
+        """
+        Test the function to train a sentencepiece tokenizer.
+        """
+
+        asset_name = 'text_normalization_ag_news_test.csv'
+        asset_path = get_asset_path(asset_name)
+        # We use temporary directory for two reasons:
+        # 1. buck (fb internal) generates test environment which contains ',' in its path.
+        #    SentencePieceTrainer considers such path as comma-delimited file list.
+        #    So as workaround we copy the asset data to temporary directory and load it from there.
+        # 2. when fb infra performs stress tests, multiple instances of this test run.
+        #    The name of the generated models have to be unique and they need to be cleaned up.
+        it = (line.strip() for line in open(asset_path))
+        with tempfile.TemporaryDirectory() as dir_name:
+            model_prefix = os.path.join(dir_name, f'spm_user_{uuid.uuid4()}')
+            model_file = f'{model_prefix}.model'
+            generate_sp_model_from_iterator(it, vocab_size=23456, model_prefix=model_prefix)
             sp_model = load_sp_model(model_file)
             self.assertEqual(sp_model.GetPieceSize(), 23456)
 

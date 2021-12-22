@@ -1,4 +1,5 @@
 #include <sentencepiece.h> // @manual
+#include <Python.h> // @manual
 
 namespace torchtext {
 
@@ -58,6 +59,19 @@ void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
       "--input=" + filename + " --model_prefix=" + model_prefix +
       " --vocab_size=" + std::to_string(vocab_size) +
       " --model_type=" + model_type);
+  if (!status.ok()) {
+    throw std::runtime_error("Failed to train SentencePiece model. Error: " +
+                             status.ToString());
+  }
+}
+
+void generate_sp_model_from_iterator(PyObject *iter, const int64_t &vocab_size,
+                       const std::string &model_type,
+                       const std::string &model_prefix) {
+  const auto status = ::sentencepiece::SentencePieceTrainer::Train(
+      " --model_prefix=" + model_prefix +
+      " --vocab_size=" + std::to_string(vocab_size) +
+      " --model_type=" + model_type, new PySentenceIterator(iter));
   if (!status.ok()) {
     throw std::runtime_error("Failed to train SentencePiece model. Error: " +
                              status.ToString());
