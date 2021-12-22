@@ -6,7 +6,7 @@ __all__ = [
     "generate_sp_model", "load_sp_model",
     "sentencepiece_numericalizer", "sentencepiece_tokenizer",
     "numericalize_tokens_from_iterator",
-    "filter_wikipedia_xml",
+    "filter_wikipedia_xml", "generate_sp_model_from_iterator",
     "to_map_style_dataset",
 ]
 
