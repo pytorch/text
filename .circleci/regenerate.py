@@ -178,7 +178,7 @@ def unittest_workflows(indentation=6):
 
             if i == 0 and os_type == "linux":
                 w.append({
-                    f"stylecheck": {
+                    "stylecheck": {
                         "name": f"stylecheck_py{python_version}",
                         "python_version": python_version,
                     }
