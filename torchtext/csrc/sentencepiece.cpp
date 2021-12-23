@@ -64,19 +64,6 @@ void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
   }
 }
 
-void generate_sp_model_from_iterator(std::vector<std::string> &lines, const int64_t &vocab_size,
-                       const std::string &model_type,
-                       const std::string &model_prefix) {
-  const auto status = ::sentencepiece::SentencePieceTrainer::Train(
-      " --model_prefix=" + model_prefix +
-      " --vocab_size=" + std::to_string(vocab_size) +
-      " --model_type=" + model_type, new SentenceIterator(lines));
-  if (!status.ok()) {
-    throw std::runtime_error("Failed to train SentencePiece model. Error: " +
-                             status.ToString());
-  }
-}
-
 c10::intrusive_ptr<SentencePiece> load_sp_model(const std::string &path) {
   std::ifstream file(path, std::ios::binary | std::ios::in);
   if (!file) {

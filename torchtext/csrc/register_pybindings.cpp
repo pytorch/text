@@ -10,6 +10,7 @@
 #include <vectors.h> // @manual
 #include <vocab.h>   // @manual
 #include <vocab_factory.h> // @manual
+#include <sentencepiece_factory.h> // @manual
 
 namespace torchtext {
 
@@ -157,6 +158,7 @@ PYBIND11_MODULE(_torchtext, m) {
   m.def("_load_token_and_vectors_from_file",
         &_load_token_and_vectors_from_file);
   m.def("_load_vocab_from_file", &_load_vocab_from_file);
+  m.def("_generate_sp_model_from_iterator", &_generate_sp_model_from_iterator);
   m.def("_build_vocab_from_text_file", &build_vocab_from_text_file);
   m.def("_build_vocab_from_text_file_using_python_tokenizer",
         &_build_vocab_from_text_file_using_python_tokenizer);

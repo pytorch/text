@@ -2,6 +2,8 @@ import re
 import io
 import torch
 
+from torchtext._torchtext import _generate_sp_model_from_iterator
+
 __all__ = [
     "generate_sp_model", "load_sp_model",
     "sentencepiece_numericalizer", "sentencepiece_tokenizer",
@@ -59,7 +61,7 @@ def generate_sp_model_from_iterator(lines, vocab_size=20000,
         >>> from torchtext.data.functional import generate_sp_model_from_iterator
         >>> generate_sp_model_from_iterator(lines, vocab_size=23456, model_prefix='spm_user')
     """
-    torch.ops.torchtext.generate_sp_model_from_iterator(lines, vocab_size, model_type, model_prefix)
+    return _generate_sp_model_from_iterator(lines, vocab_size, model_type, model_prefix)
 
 
 def load_sp_model(spm):

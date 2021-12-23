@@ -6,6 +6,7 @@
 #include <torch/script.h>
 #include <vectors.h> // @manual
 #include <vocab.h>   // @manual
+
 namespace torchtext {
 
 TORCH_LIBRARY_FRAGMENT(torchtext, m) {
@@ -123,7 +124,6 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           });
 
   m.def("torchtext::generate_sp_model", &generate_sp_model);
-  m.def("torchtext::generate_sp_model_from_iterator", &generate_sp_model_from_iterator);
   m.def("torchtext::load_sp_model", &load_sp_model);
   m.def("torchtext::load_sp_model_string", &load_sp_model_string);
   m.def("torchtext::gpt2_bpe_pre_tokenizer", &gpt2_bpe_pre_tokenizer);

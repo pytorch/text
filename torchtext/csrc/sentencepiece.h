@@ -4,35 +4,6 @@
 
 namespace torchtext {
 
-  class SentenceIterator : public sentencepiece::SentenceIterator, torch::CustomClassHolder {
-  public:
-
-  SentenceIterator(std::vector<std::string> &v) : it(std::begin(v)), end(std::cend(v)) { }
-
-  ~SentenceIterator() { }
-
-  bool done() const override {
-    return it == end;
-  }
-
-  void Next() override {
-    ++it;
-  }
-
-  const std::string &value() const override {
-    return *it;
-  }
-
-  sentencepiece::util::Status status() const override {
-    return status_;
-  }
-
-  private:
-   std::vector<std::string>::iterator it;
-   const std::vector<std::string>::const_iterator end;
-   sentencepiece::util::Status status_;
-};
-
 struct SentencePiece : torch::CustomClassHolder {
 private:
   sentencepiece::SentencePieceProcessor processor_;
@@ -58,11 +29,6 @@ public:
 };
 
 void generate_sp_model(const std::string &filename, const int64_t &vocab_size,
-                       const std::string &model_type,
-                       const std::string &model_prefix);
-
-void generate_sp_model_from_iterator(std::vector<std::string> &lines,
-                       const int64_t &vocab_size,
                        const std::string &model_type,
                        const std::string &model_prefix);
 
