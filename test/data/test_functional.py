@@ -4,6 +4,8 @@ import tempfile
 import uuid
 import unittest
 
+import csv
+
 import torch
 from torchtext.data.functional import (
     generate_sp_model,
@@ -48,6 +50,12 @@ class TestFunctional(TorchtextTestCase):
         Test the function to train a sentencepiece tokenizer.
         """
 
+        def get_text_column(file):
+            with open(file, encoding='utf-8') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    yield row[1].strip()
+
         asset_name = 'text_normalization_ag_news_test.csv'
         asset_path = get_asset_path(asset_name)
         # We use temporary directory for two reasons:
@@ -56,7 +64,7 @@ class TestFunctional(TorchtextTestCase):
         #    So as workaround we copy the asset data to temporary directory and load it from there.
         # 2. when fb infra performs stress tests, multiple instances of this test run.
         #    The name of the generated models have to be unique and they need to be cleaned up.
-        it = (line.strip() for line in open(asset_path))
+        it = get_text_column(asset_path)
         with tempfile.TemporaryDirectory() as dir_name:
             model_prefix = os.path.join(dir_name, f'spm_user_{uuid.uuid4()}')
             model_file = f'{model_prefix}.model'
