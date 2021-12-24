@@ -32,14 +32,16 @@ namespace torchtext {
   }
 
   private:
-   int i;
    py::iterator it;
    sentencepiece::util::Status status_;
    std::string item_;
 
    void copy() {
-     if (it == nullptr) {
+     if (*it == nullptr) {
        return;
+     }
+     if (!py::isinstance<py::str>(*it)) {
+        throw std::runtime_error("Iterator contains non-strings.");
      }
      std::string s = it->cast<std::string>();
      const char *data = s.data();
@@ -62,7 +64,7 @@ void _generate_sp_model_from_iterator(py::iterator &lines, const int64_t &vocab_
   const auto status = ::sentencepiece::SentencePieceTrainer::Train(
       " --model_prefix=" + model_prefix +
       " --vocab_size=" + std::to_string(vocab_size) +
-      " --model_type=" + model_type, it, nullptr);
+      " --model_type=" + model_type, it);
   if (!status.ok()) {
     throw std::runtime_error("Failed to train SentencePiece model. Error: " +
                              status.ToString());
