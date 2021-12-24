@@ -60,14 +60,20 @@ namespace torchtext {
 void _generate_sp_model_from_iterator(py::iterator &lines, const int64_t &vocab_size,
                        const std::string &model_type,
                        const std::string &model_prefix) {
-  SentenceIterator *it = new SentenceIterator(lines);
+  SentenceIterator it = SentenceIterator(lines);
+  sentencepiece::util::bytes model_proto;
   const auto status = ::sentencepiece::SentencePieceTrainer::Train(
-      " --model_prefix=" + model_prefix +
       " --vocab_size=" + std::to_string(vocab_size) +
-      " --model_type=" + model_type, it);
+      " --model_type=" + model_type +
+      " --hard_vocab_limit=false", &it, &model_proto);
   if (!status.ok()) {
     throw std::runtime_error("Failed to train SentencePiece model. Error: " +
                              status.ToString());
   }
+  std::ofstream file;
+  file.open(model_prefix + ".model");
+  file << model_proto;
+  file.close();
+
 }
 }
