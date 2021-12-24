@@ -41,7 +41,9 @@ namespace torchtext {
        return;
      }
      if (!py::isinstance<py::str>(*it)) {
-        throw std::runtime_error("Iterator contains non-strings.");
+       status_ = sentencepiece::util::Status(sentencepiece::util::StatusCode::kInternal,
+                                             "Not a string.");
+       return;
      }
      std::string s = it->cast<std::string>();
      const char *data = s.data();
