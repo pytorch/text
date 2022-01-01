@@ -11,8 +11,9 @@ from .functional import (
     filter_wikipedia_xml,
     to_map_style_dataset,
 )
+from .bucket_sampler import BucketSampler
 
-__all__ = ["bleu_score",
+__all__ = ["bleu_score", "BucketSampler",
            "get_tokenizer", "interleave_keys",
            "generate_sp_model", "load_sp_model",
            "sentencepiece_numericalizer", "sentencepiece_tokenizer",
