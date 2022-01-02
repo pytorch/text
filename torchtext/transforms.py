@@ -17,6 +17,7 @@ __all__ = [
     'LabelToIndex',
     'Truncate',
     'AddToken',
+    'AddSpecialTokens',
     'GPT2BPETokenizer',
 ]
 
@@ -211,6 +212,29 @@ class AddToken(Module):
         """
 
         return F.add_token(input, self.token, self.begin)
+
+
+class AddSpecialTokens(Module):
+    """Add BOS and EOS to beginning and end of sequence respectively
+
+    :param bos_token: The BOS token to be prepended
+    :type bos_token: Union[int, str]
+    :param eos_token: The BOS token to be appended
+    :type bos_token: Union[int, str]
+    """
+
+    def __init__(self, bos_token: Union[int, str], eos_token: Union[int, str]) -> None:
+        super().__init__()
+        self.bos_token = bos_token
+        self.eos_token = eos_token
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch
+        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        """
+
+        return F.add_token(F.add_token(input, self.bos_token, begin=True), self.eos_token, begin=False)
 
 
 class GPT2BPETokenizer(Module):

@@ -203,6 +203,45 @@ class TestTransforms(TorchtextTestCase):
     def test_add_token_jit(self):
         self._add_token(test_scripting=True)
 
+    def _add_special_tokens(self, test_scripting):
+        bos_id = 0
+        eos_id = -1
+        transform = transforms.AddSpecialTokens(bos_id, eos_id)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+        input = [[1, 2], [1, 2, 3]]
+
+        actual = transform(input)
+        expected = [[0, 1, 2, -1], [0, 1, 2, 3, -1]]
+        self.assertEqual(actual, expected)
+
+        input = [1, 2]
+        actual = transform(input)
+        expected = [0, 1, 2, -1]
+        self.assertEqual(actual, expected)
+
+        bos_id = '0'
+        eos_id = '-1'
+        transform = transforms.AddSpecialTokens(bos_id, eos_id)
+        if test_scripting:
+            transform = torch.jit.script(transform)
+        input = [['1', '2'], ['1', '2', '3']]
+
+        actual = transform(input)
+        expected = [['0', '1', '2', '-1'], ['0', '1', '2', '3', '-1']]
+        self.assertEqual(actual, expected)
+
+        input = ['1', '2']
+        actual = transform(input)
+        expected = ['0', '1', '2', '-1']
+        self.assertEqual(actual, expected)
+
+    def test_add_special_tokens(self):
+        return self._add_special_tokens(test_scripting=False)
+
+    def test_add_special_tokens_jit(self):
+        return self._add_special_tokens(test_scripting=True)
+
 
 class TestGPT2BPETokenizer(TorchtextTestCase):
     def _gpt2_bpe_tokenizer(self, test_scripting):
