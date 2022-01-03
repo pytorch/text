@@ -1,3 +1,17 @@
+"""
+SST-2 Binary text classification with XLM-RoBERTa model
+=======================================================
+
+**Author**: `Parmeet Bhatia<parmeetbhatia@fb.com>`__
+
+This tutorial shows how to train a text classifier using pre-trained XLM-RoBERTa model. 
+"""
+
+######################################################################
+
+
+
+
 import torch
 from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
 import torchtext.transforms as T
@@ -6,6 +20,9 @@ from torchtext.experimental.datasets.sst2 import SST2
 from torch.hub import load_state_dict_from_url
 from torch.optim import AdamW
 import torch.nn as nn
+
+
+
 DEVICE = torch.DEVICE("cuda") if torch.cuda.is_available() else "cpu"
 
 
