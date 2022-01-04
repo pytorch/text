@@ -18,6 +18,7 @@ __all__ = [
     'Truncate',
     'AddToken',
     'GPT2BPETokenizer',
+    'Sequential',
 ]
 
 

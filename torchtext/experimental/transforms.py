@@ -12,7 +12,6 @@ __all__ = [
     'regex_tokenizer',
     'BasicEnglishNormalize',
     'RegexTokenizer',
-    'TextSequentialTransforms',
     'PRETRAINED_SP_MODEL',
     'load_sp_model',
     'sentencepiece_tokenizer',
@@ -162,7 +161,6 @@ class RegexTokenizer(nn.Module):
         """
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
         return RegexTokenizer(regex_tokenizer)
-
 
 
 PRETRAINED_SP_MODEL = {
