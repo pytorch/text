@@ -75,8 +75,8 @@ GPT2BPEEncoderStatesPybind _serialize_gpt2_bpe_encoder_pybind(
     const c10::intrusive_ptr<GPT2BPEEncoder> &self);
 GPT2BPEEncoderStatesTorchbind _serialize_gpt2_bpe_encoder_torchbind(
     const c10::intrusive_ptr<GPT2BPEEncoder> &self);
-c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder(
+c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
     GPT2BPEEncoderStatesPybind states);
-c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder(
+c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_torchbind(
     GPT2BPEEncoderStatesTorchbind states);
 }  // namespace torchtext

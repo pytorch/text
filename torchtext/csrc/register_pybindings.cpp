@@ -175,7 +175,7 @@ PYBIND11_MODULE(_torchtext, m) {
           // __setstate__
           [](GPT2BPEEncoderStatesPybind states)
               -> c10::intrusive_ptr<GPT2BPEEncoder> {
-            return _deserialize_gpt2_bpe_encoder(states);
+            return _deserialize_gpt2_bpe_encoder_pybind(states);
           }));
 
   // Functions

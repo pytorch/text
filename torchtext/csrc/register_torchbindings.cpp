@@ -137,7 +137,7 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
           // __setstate__
           [](GPT2BPEEncoderStatesTorchbind states)
               -> c10::intrusive_ptr<GPT2BPEEncoder> {
-            return _deserialize_gpt2_bpe_encoder(states);
+            return _deserialize_gpt2_bpe_encoder_torchbind(states);
           });
 
   m.def("torchtext::generate_sp_model", &generate_sp_model);

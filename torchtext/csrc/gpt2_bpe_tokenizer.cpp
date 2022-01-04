@@ -291,7 +291,7 @@ GPT2BPEEncoderStatesTorchbind _serialize_gpt2_bpe_encoder_torchbind(
                          self->caching_enabled_);
 }
 
-c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder(
+c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
     GPT2BPEEncoderStatesPybind states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   TORCH_CHECK(
@@ -303,7 +303,7 @@ c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder(
       std::get<2>(states), std::move(std::get<3>(states)), std::get<4>(states));
 }
 
-c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder(
+c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_torchbind(
     GPT2BPEEncoderStatesTorchbind states) {
   auto state_size = std::tuple_size<decltype(states)>::value;
   TORCH_CHECK(
