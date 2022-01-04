@@ -216,7 +216,7 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         if test_scripting:
             tokenizer = torch.jit.script(tokenizer)
         return tokenizer
-    
+
     def _gpt2_bpe_tokenizer(self, tokenizer):
         sample_texts = [
             "Hello World!, how are you?",
@@ -248,14 +248,14 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
     def test_gpt2_bpe_tokenizer_jit(self):
         """test tokenization with scripting on single sentence input as well as batch on sentences"""
         self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=True))
-    
+
     def test_gpt2_bpe_tokenizer_save_load_pybind(self):
         tokenizer = self._load_tokenizer(test_scripting=False)
         tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_pybind.pt')
         torch.save(tokenizer, tokenizer_path)
         loaded_tokenizer = torch.load(tokenizer_path)
         self._gpt2_bpe_tokenizer((loaded_tokenizer))
-    
+
     def test_gpt2_bpe_tokenizer_save_load_torchscript(self):
         tokenizer = self._load_tokenizer(test_scripting=False)
         tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_torchscript.pt')
