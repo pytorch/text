@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-def to_tensor(input: Any, padding_value: Optional[int] = None, dtype: Optional[torch.dtype] = torch.long) -> Tensor:
+def to_tensor(input: Any, padding_value: Optional[int] = None, dtype: torch.dtype = torch.long) -> Tensor:
     r"""Convert input to torch tensor
 
     :param padding_value: Pad value to make each input in the batch of length equal to the longest sequence in the batch.
