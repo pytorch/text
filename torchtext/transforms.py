@@ -485,3 +485,17 @@ def bytes_to_unicode():
             n += 1
     cs = [chr(n) for n in cs]
     return dict(zip(bs, cs))
+
+
+class Sequential(torch.nn.Sequential):
+    r"""A container to host a sequence of text transforms.
+    """
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch. The input type must be supported by the first transform in the sequence.
+        :type input: `Any`
+        """
+        for module in self:
+            input = module(input)
+        return input

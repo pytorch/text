@@ -164,24 +164,6 @@ class RegexTokenizer(nn.Module):
         return RegexTokenizer(regex_tokenizer)
 
 
-class TextSequentialTransforms(nn.Sequential):
-    r"""A container to host a sequential text transforms.
-
-        Example:
-            >>> import torch
-            >>> from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms
-            >>> tokenizer = basic_english_normalize()
-            >>> txt_pipeline = TextSequentialTransforms(tokenizer)
-            >>> txt_pipeline('here is an example')
-                ['here', 'is', 'an', 'example']
-            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
-    """
-
-    def forward(self, input: str):
-        for module in self:
-            input = module(input)
-        return input
-
 
 PRETRAINED_SP_MODEL = {
     'text_unigram_15000': 'https://pytorch.s3.amazonaws.com/models/text/pretrained_spm/text_unigram_15000.model',
