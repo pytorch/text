@@ -15,7 +15,7 @@ from .model import (
     RobertaModel,
 )
 
-from .transforms import get_xlmr_transform
+import torchtext.transforms as T
 
 from torchtext import _TEXT_BUCKET
 
@@ -156,10 +156,14 @@ class RobertaModelBundle:
 XLMR_BASE_ENCODER = RobertaModelBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002),
-    transform=partial(get_xlmr_transform,
-                      vocab_path=urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"),
-                      spm_model_path=urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
-                      )
+    transform=lambda: T.Sequential(
+        T.SentencePieceTokenizer(urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model")),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"))),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+        T.ToTensor(padding_value=1)
+    )
 )
 
 XLMR_BASE_ENCODER.__doc__ = (
@@ -174,10 +178,14 @@ XLMR_BASE_ENCODER.__doc__ = (
 XLMR_LARGE_ENCODER = RobertaModelBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
-    transform=partial(get_xlmr_transform,
-                      vocab_path=urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"),
-                      spm_model_path=urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
-                      )
+    transform=lambda: T.Sequential(
+        T.SentencePieceTokenizer(urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model")),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"))),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+        T.ToTensor(padding_value=1)
+    )
 )
 
 XLMR_LARGE_ENCODER.__doc__ = (

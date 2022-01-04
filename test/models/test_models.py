@@ -87,8 +87,8 @@ class TestModels(TorchtextTestCase):
         xlmr_base = torchtext.models.XLMR_BASE_ENCODER
         transform = xlmr_base.transform()
         test_text = "XLMR base Model Comparison"
-        actual = transform([test_text])
-        expected = [[0, 43523, 52005, 3647, 13293, 113307, 40514, 2]]
+        actual = transform(test_text)
+        expected = torch.tensor([0, 43523, 52005, 3647, 13293, 113307, 40514, 2])
         torch.testing.assert_close(actual, expected)
 
     def test_xlmr_transform_jit(self):
@@ -96,8 +96,8 @@ class TestModels(TorchtextTestCase):
         transform = xlmr_base.transform()
         transform_jit = torch.jit.script(transform)
         test_text = "XLMR base Model Comparison"
-        actual = transform_jit([test_text])
-        expected = [[0, 43523, 52005, 3647, 13293, 113307, 40514, 2]]
+        actual = transform_jit(test_text)
+        expected = torch.tensor([0, 43523, 52005, 3647, 13293, 113307, 40514, 2])
         torch.testing.assert_close(actual, expected)
 
     def test_roberta_bundler_build_model(self):
