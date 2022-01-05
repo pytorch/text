@@ -1,3 +1,4 @@
+import os
 import torch
 from torchtext import transforms
 from torchtext.vocab import vocab
@@ -229,8 +230,35 @@ class TestTransforms(TorchtextTestCase):
         self._sequential(test_scripting=True)
 
 
+class TestSequential(TorchtextTestCase):
+    def _sequential(self, test_scripting):
+        max_seq_len = 3
+        padding_val = 0
+        transform = transforms.Sequential(
+            transforms.Truncate(max_seq_len=max_seq_len),
+            transforms.ToTensor(padding_value=padding_val, dtype=torch.long)
+        )
+
+        if test_scripting:
+            transform = torch.jit.script(transform)
+
+        input = [[1, 2, 3], [1, 2, 3]]
+
+        actual = transform(input)
+        expected = torch.tensor(input)
+        torch.testing.assert_close(actual, expected)
+
+    def test_sequential(self):
+        """test pipelining transforms using Sequential transform"""
+        self._sequential(test_scripting=False)
+
+    def test_sequential_jit(self):
+        """test pipelining transforms using Sequential transform, ensuring the composite transform is scriptable"""
+        self._sequential(test_scripting=True)
+
+
 class TestGPT2BPETokenizer(TorchtextTestCase):
-    def _gpt2_bpe_tokenizer(self, test_scripting):
+    def _load_tokenizer(self, test_scripting):
         encoder_json = "gpt2_bpe_encoder.json"
         bpe_vocab = "gpt2_bpe_vocab.bpe"
         tokenizer = transforms.GPT2BPETokenizer(
@@ -239,7 +267,9 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
         )
         if test_scripting:
             tokenizer = torch.jit.script(tokenizer)
+        return tokenizer
 
+    def _gpt2_bpe_tokenizer(self, tokenizer):
         sample_texts = [
             "Hello World!, how are you?",
             "Hélló  WoŕlḊ¿",
@@ -265,8 +295,24 @@ class TestGPT2BPETokenizer(TorchtextTestCase):
 
     def test_gpt2_bpe_tokenizer(self):
         """test tokenization on single sentence input as well as batch on sentences"""
-        self._gpt2_bpe_tokenizer(test_scripting=False)
+        self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=False))
 
     def test_gpt2_bpe_tokenizer_jit(self):
         """test tokenization with scripting on single sentence input as well as batch on sentences"""
-        self._gpt2_bpe_tokenizer(test_scripting=True)
+        self._gpt2_bpe_tokenizer(self._load_tokenizer(test_scripting=True))
+
+    def test_gpt2_bpe_tokenizer_save_load_pybind(self):
+        tokenizer = self._load_tokenizer(test_scripting=False)
+        tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_pybind.pt')
+        torch.save(tokenizer, tokenizer_path)
+        loaded_tokenizer = torch.load(tokenizer_path)
+        self._gpt2_bpe_tokenizer((loaded_tokenizer))
+
+    def test_gpt2_bpe_tokenizer_save_load_torchscript(self):
+        tokenizer = self._load_tokenizer(test_scripting=False)
+        tokenizer_path = os.path.join(self.test_dir, 'gpt2_tokenizer_torchscript.pt')
+        # Call the __prepare_scriptable__() func and convert the building block to the torbhind version
+        # Not expect users to use the torchbind version on eager mode but still need a CI test here.
+        torch.save(tokenizer.__prepare_scriptable__(), tokenizer_path)
+        loaded_tokenizer = torch.load(tokenizer_path)
+        self._gpt2_bpe_tokenizer((loaded_tokenizer))

@@ -1,11 +1,12 @@
-#include <gpt2_bpe_tokenizer.h> // @manual
-#include <iostream>
+#include <gpt2_bpe_tokenizer.h>  // @manual
 #include <regex.h>
-#include <regex_tokenizer.h> // @manual
-#include <sentencepiece.h>   // @manual
+#include <regex_tokenizer.h>  // @manual
+#include <sentencepiece.h>    // @manual
 #include <torch/script.h>
-#include <vectors.h> // @manual
-#include <vocab.h>   // @manual
+#include <vectors.h>  // @manual
+#include <vocab.h>    // @manual
+
+#include <iostream>
 namespace torchtext {
 
 TORCH_LIBRARY_FRAGMENT(torchtext, m) {
@@ -122,10 +123,27 @@ TORCH_LIBRARY_FRAGMENT(torchtext, m) {
             return _deserialize_vocab(states);
           });
 
+  m.class_<GPT2BPEEncoder>("GPT2BPEEncoder")
+      .def(torch::init<c10::Dict<std::string, int64_t>,
+                       c10::Dict<std::string, int64_t>, std::string,
+                       c10::Dict<int64_t, std::string>, bool>())
+      .def("encode", &GPT2BPEEncoder::Encode)
+      .def_pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<GPT2BPEEncoder> &self)
+              -> GPT2BPEEncoderStatesTorchbind {
+            return _serialize_gpt2_bpe_encoder_torchbind(self);
+          },
+          // __setstate__
+          [](GPT2BPEEncoderStatesTorchbind states)
+              -> c10::intrusive_ptr<GPT2BPEEncoder> {
+            return _deserialize_gpt2_bpe_encoder_torchbind(states);
+          });
+
   m.def("torchtext::generate_sp_model", &generate_sp_model);
   m.def("torchtext::load_sp_model", &load_sp_model);
   m.def("torchtext::load_sp_model_string", &load_sp_model_string);
   m.def("torchtext::gpt2_bpe_pre_tokenizer", &gpt2_bpe_pre_tokenizer);
 }
 
-} // namespace torchtext
+}  // namespace torchtext
