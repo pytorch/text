@@ -1,11 +1,8 @@
-import os
 import logging
 import argparse
 import time
-from typing import Text
 
 import torch
-import sys
 
 from torchtext.utils import download_from_url
 from torchtext.datasets import DATASETS
@@ -16,18 +13,16 @@ from torch.utils.data import DataLoader
 
 from torchtext.data.functional import to_map_style_dataset
 
-from torchtext.data.utils import(
+from torchtext.data.utils import (
     get_tokenizer,
     ngrams_iterator,
 )
 from torchtext.vocab import build_vocab_from_iterator
-from torchtext.experimental.transforms import(
+from torchtext.experimental.transforms import (
     SentencePieceTokenizer,
     load_sp_model,
     PRETRAINED_SP_MODEL,
 )
-
-from torchtext.vocab import build_vocab_from_iterator
 
 r"""
 This file shows the training process of the text classification model.
@@ -56,7 +51,6 @@ def train(dataloader, model, optimizer, criterion, epoch):
     model.train()
     total_acc, total_count = 0, 0
     log_interval = 500
-    start_time = time.time()
 
     for idx, (label, text, offsets) in enumerate(dataloader):
         optimizer.zero_grad()
@@ -68,12 +62,10 @@ def train(dataloader, model, optimizer, criterion, epoch):
         total_acc += (predited_label.argmax(1) == label).sum().item()
         total_count += label.size(0)
         if idx % log_interval == 0 and idx > 0:
-            elapsed = time.time() - start_time
             print('| epoch {:3d} | {:5d}/{:5d} batches '
                   '| accuracy {:8.3f}'.format(epoch, idx, len(dataloader),
                                               total_acc / total_count))
             total_acc, total_count = 0, 0
-            start_time = time.time()
 
 
 def evaluate(dataloader, model):
@@ -145,8 +137,11 @@ if __name__ == "__main__":
     vocab = build_vocab_from_iterator(yield_tokens(train_iter, ngrams), specials=["<unk>"])
     vocab.set_default_index(vocab["<unk>"])
 
-    def text_pipeline(x): return vocab(list(ngrams_iterator(tokenizer(x), ngrams)))
-    def label_pipeline(x): return int(x) - 1
+    def text_pipeline(x):
+        return vocab(list(ngrams_iterator(tokenizer(x), ngrams)))
+
+    def label_pipeline(x):
+        return int(x) - 1
 
     train_iter = DATASETS[args.dataset](root=data_dir, split='train')
     num_class = len(set([label for (label, _) in train_iter]))

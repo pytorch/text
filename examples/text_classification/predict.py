@@ -4,7 +4,7 @@ import argparse
 from torchtext.data.utils import get_tokenizer
 from torchtext.data.utils import ngrams_iterator
 from torchtext.utils import download_from_url
-from torchtext.experimental.transforms import(
+from torchtext.experimental.transforms import (
     SentencePieceTokenizer,
     load_sp_model,
     PRETRAINED_SP_MODEL,
