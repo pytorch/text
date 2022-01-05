@@ -10,7 +10,7 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import IterableWrapper, FileLoader
+    from torchdata.datapipes.iter import IterableWrapper, FileOpener
 
     # we import HttpReader from _download_hooks so we can swap out public URLs
     # with interal URLs when the dataset is used within Facebook
@@ -90,7 +90,7 @@ class SST2Dataset(IterDataPipe):
         cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
 
         # Load from cached file
-        cache_dp = FileLoader(cache_dp, mode="rb")
+        cache_dp = FileOpener(cache_dp, mode="rb")
         # extract data from zip
         extracted_files = cache_dp.read_from_zip().filter(
             lambda x: f"{split}.tsv" in x[0]
