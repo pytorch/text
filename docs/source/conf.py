@@ -20,9 +20,10 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import torch
 import torchtext
 import pytorch_sphinx_theme
+import os
+import re
 
 # -- General configuration ------------------------------------------------
 
@@ -33,6 +34,7 @@ import pytorch_sphinx_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -43,7 +45,67 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'sphinx_gallery.gen_gallery',
 ]
+
+#  Implementation from https://github.com/pytorch/audio/blob/main/docs/source/conf.py
+
+
+def _get_var(var, default=False):
+    if var not in os.environ:
+        return default
+
+    val = os.environ.get(var, "0")
+    trues = ["1", "true", "TRUE", "on", "ON", "yes", "YES"]
+    falses = ["0", "false", "FALSE", "off", "OFF", "no", "NO"]
+    if val in trues:
+        return True
+    if val not in falses:
+        print(
+            f" --- WARNING: Unexpected environment variable value `{var}={val}`. " f"Expected one of {trues + falses}"
+        )
+    return False
+
+# Implementation from https://github.com/pytorch/audio/blob/main/docs/source/conf.py
+
+
+def _get_pattern():
+    pattern = os.getenv("GALLERY_PATTERN")
+    # If BUILD_GALLERY is falsy -> no build
+    # If BUILD_GALLERY is truey -> build
+    # If BUILD_GALLERY is undefined
+    #    If GALLERY_PATTERN is defined     -> build
+    #    If GALLERY_PATTERN is not defined -> not build
+    if not _get_var("BUILD_GALLERY", default=False if pattern is None else True):
+        if pattern is not None:
+            print(
+                ' --- WARNING: "GALLERY_PATTERN" is provided, but "BUILD_GALLERY" value is falsy. '
+                "Sphinx galleries are not built. To build galleries, set `BUILD_GALLERY=1`."
+            )
+        return {
+            "ignore_pattern": r"\.py",
+        }
+
+    ret = {"filename_pattern": "tutorial.py"}
+    if os.getenv("GALLERY_PATTERN"):
+        # See https://github.com/pytorch/tutorials/blob/cbf2238df0e78d84c15bd94288966d2f4b2e83ae/conf.py#L75-L83
+        ret["ignore_pattern"] = r"/(?!" + re.escape(os.getenv("GALLERY_PATTERN")) + r")[^/]+$"
+    return ret
+
+
+sphinx_gallery_conf = {
+    "examples_dirs": [
+        "../../examples/tutorials",
+    ],
+    "gallery_dirs": [
+        "tutorials",
+    ],
+    **_get_pattern(),
+    "backreferences_dir": "gen_modules/backreferences",
+    "first_notebook_cell": None,
+    "doc_module": ("torchtext",),
+}
+
 
 napoleon_use_ivar = True
 napoleon_numpy_docstring = False
@@ -107,7 +169,7 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 # documentation.
 #
 html_theme_options = {
-    'pytorch_project': 'docs',    
+    'pytorch_project': 'docs',
     'collapse_navigation': False,
     'display_version': True,
     'logo_only': True,

@@ -58,6 +58,17 @@ popular datasets for natural language.
    TorchServe <https://pytorch.org/serve>
    PyTorch on XLA Devices <http://pytorch.org/xla/>
 
+
+Getting Started
+---------------
+    
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting Started
+
+   tutorials/sst2_classification_non_distributed
+
+
 Indices and tables
 ==================
 
