@@ -29,7 +29,7 @@ We recommend Anaconda as a Python package management system. Please refer to `py
    :header: "PyTorch version", "torchtext version", "Supported Python version"
    :widths: 10, 10, 10
 
-   nightly build, main, ">=3.6, <=3.9"
+   nightly build, main, ">=3.7, <=3.9"
    1.10.0, 0.11.0, ">=3.6, <=3.9" 
    1.9.1, 0.10.1, ">=3.6, <=3.9" 
    1.9, 0.10, ">=3.6, <=3.9"
