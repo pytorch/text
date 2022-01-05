@@ -1,15 +1,17 @@
-#include <iostream>
+#include <gpt2_bpe_tokenizer.h>  // @manual
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <regex.h>
-#include <regex_tokenizer.h>                    // @manual
-#include <sentencepiece.h>                      // @manual
-#include <torch/csrc/jit/python/pybind_utils.h> // @manual
-#include <torch/csrc/utils/pybind.h>            // @manual
+#include <regex_tokenizer.h>                     // @manual
+#include <sentencepiece.h>                       // @manual
+#include <torch/csrc/jit/python/pybind_utils.h>  // @manual
+#include <torch/csrc/utils/pybind.h>             // @manual
 #include <torch/script.h>
-#include <vectors.h> // @manual
-#include <vocab.h>   // @manual
-#include <vocab_factory.h> // @manual
+#include <vectors.h>        // @manual
+#include <vocab.h>          // @manual
+#include <vocab_factory.h>  // @manual
+
+#include <iostream>
 
 namespace torchtext {
 
@@ -22,7 +24,7 @@ Vocab build_vocab_from_text_file(const std::string &file_path,
   torch::jit::script::Module module(*torch::jit::as_module(fn));
   return _build_vocab_from_text_file(file_path, min_freq, num_cpus, module);
 }
-} // namespace
+}  // namespace
 
 // Registers our custom classes with pybind11.
 PYBIND11_MODULE(_torchtext, m) {
@@ -153,6 +155,29 @@ PYBIND11_MODULE(_torchtext, m) {
             return _deserialize_vocab(states);
           }));
 
+  py::class_<GPT2BPEEncoder, c10::intrusive_ptr<GPT2BPEEncoder>>(
+      m, "GPT2BPEEncoder")
+      .def(py::init<std::unordered_map<std::string, int64_t>,
+                    std::unordered_map<std::string, int64_t>, std::string,
+                    std::unordered_map<int64_t, std::string>, bool>())
+      .def_property_readonly("bpe_encoder_", &GPT2BPEEncoder::GetBPEEncoder)
+      .def_property_readonly("bpe_merge_ranks_",
+                             &GPT2BPEEncoder::GetBPEMergeRanks)
+      .def_readonly("seperator_", &GPT2BPEEncoder::seperator_)
+      .def_property_readonly("byte_encoder_", &GPT2BPEEncoder::GetByteEncoder)
+      .def("encode", &GPT2BPEEncoder::Encode)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<GPT2BPEEncoder> &self)
+              -> GPT2BPEEncoderStatesPybind {
+            return _serialize_gpt2_bpe_encoder_pybind(self);
+          },
+          // __setstate__
+          [](GPT2BPEEncoderStatesPybind states)
+              -> c10::intrusive_ptr<GPT2BPEEncoder> {
+            return _deserialize_gpt2_bpe_encoder_pybind(states);
+          }));
+
   // Functions
   m.def("_load_token_and_vectors_from_file",
         &_load_token_and_vectors_from_file);
@@ -162,4 +187,4 @@ PYBIND11_MODULE(_torchtext, m) {
         &_build_vocab_from_text_file_using_python_tokenizer);
 }
 
-} // namespace torchtext
+}  // namespace torchtext
