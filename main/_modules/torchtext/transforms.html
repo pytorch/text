@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20220104 documentation</title>
+  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20220105 documentation</title>
   
 
   
@@ -190,7 +190,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220104 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220105 &#x25BC</a>
     </div>
     
 
@@ -315,9 +315,11 @@
 <span class="kn">from</span> <span class="nn">torchtext.data.functional</span> <span class="kn">import</span> <span class="n">load_sp_model</span>
 <span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="n">get_asset_local_path</span>
 <span class="kn">from</span> <span class="nn">torchtext.vocab</span> <span class="kn">import</span> <span class="n">Vocab</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">torchtext._torchtext</span> <span class="kn">import</span> <span class="n">GPT2BPEEncoder</span> <span class="k">as</span> <span class="n">GPT2BPEEncoderPyBind</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">torchtext</span>    <span class="c1"># noqa: F401</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -524,6 +526,7 @@
 
 
 <span class="k">class</span> <span class="nc">GPT2BPETokenizer</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">__jit_unused_properties__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_jitable&quot;</span><span class="p">]</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform for GPT-2 BPE Tokenizer.</span>
 
@@ -546,190 +549,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\u0001</span><span class="s2">&quot;</span>
         <span class="c1"># load bpe encoder and bpe decoder</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">encoder_json_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bpe_encoder</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bpe_decoder</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">bpe_token_id</span><span class="p">:</span> <span class="n">sub_word</span>
-            <span class="k">for</span> <span class="n">sub_word</span><span class="p">,</span> <span class="n">bpe_token_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe_encoder</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">}</span>
-
+            <span class="n">bpe_encoder</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="c1"># load bpe vocab</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">get_asset_local_path</span><span class="p">(</span><span class="n">vocab_bpe_path</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">bpe_vocab</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bpe_merge_ranks</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">bpe_merge_ranks</span> <span class="o">=</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">merge_pair</span><span class="o">.</span><span class="n">split</span><span class="p">()):</span> <span class="n">i</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">merge_pair</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bpe_vocab</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpe_merge_ranks</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="c1"># Caching is enabled in Eager mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span> <span class="o">=</span> <span class="n">GPT2BPEEncoderPyBind</span><span class="p">(</span><span class="n">bpe_encoder</span><span class="p">,</span> <span class="n">bpe_merge_ranks</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="p">,</span> <span class="n">bytes_to_unicode</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># load byte encoder and decoder</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">byte_encoder</span> <span class="o">=</span> <span class="n">bytes_to_unicode</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">byte_decoder</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">unicode_t</span><span class="p">:</span> <span class="n">byte_t</span>
-            <span class="k">for</span> <span class="n">byte_t</span><span class="p">,</span> <span class="n">unicode_t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">byte_encoder</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">}</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_list_str_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">element</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Equivalent to: list.index(v, start)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_</span><span class="p">[</span><span class="n">start</span><span class="p">:]):</span>
-            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">element</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">start</span> <span class="o">+</span> <span class="n">i</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_jitable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">_C</span><span class="o">.</span><span class="n">ScriptObject</span><span class="p">)</span>
 
     <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_get_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return set of token pairs in a word.</span>
-
-<span class="sd">        :param token_list: a list of tokens, each represents a word or sub-word.</span>
-<span class="sd">        :type input: List[str]</span>
-<span class="sd">        :rtype: List[str]</span>
-
-<span class="sd">        For example: [&quot;he&quot;, &quot;l&quot;, &quot;l&quot;, &quot;o&quot;]</span>
-<span class="sd">            ==&gt; [&quot;he\u0001l&quot;, &quot;l\u0001l&quot;, &quot;l\u0001o&quot;]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pairs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">prev_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">token_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">token_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">pair</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">prev_token</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span> <span class="o">+</span> <span class="n">token</span>
-            <span class="n">pairs</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">prev_token</span> <span class="o">=</span> <span class="n">token</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">pairs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_find_best_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the token pair(e.g bpe merge) with lowest rank.</span>
-
-<span class="sd">        Equivalent to:</span>
-<span class="sd">        min(pairs, key = lambda pair: self.bpe_merge_ranks.get(pair, float(&#39;inf&#39;)))</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">best_pair</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">best_rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe_merge_ranks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">best_pair</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe_merge_ranks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">rank</span> <span class="o">&lt;</span> <span class="n">best_rank</span><span class="p">:</span>
-                <span class="n">best_pair</span> <span class="o">=</span> <span class="n">pair</span>
-                <span class="n">best_rank</span> <span class="o">=</span> <span class="n">rank</span>
-        <span class="k">return</span> <span class="n">best_pair</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_bpe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return a list of bpe tokens.</span>
-
-<span class="sd">        Given a list of input tokens, keep finding the best bpe merge and</span>
-<span class="sd">        generate a new list of tokens until</span>
-<span class="sd">        1) token list size reduced to 1 or</span>
-<span class="sd">        2) can&#39;t find bpe merge</span>
-
-<span class="sd">        :param token_list: a list of encoded bytes, each represented by an unicode.</span>
-<span class="sd">                For example: [&#39;a&#39;, &#39;w&#39;, &#39;e&#39;, &#39;s&#39;, &#39;o&#39;, &#39;m&#39;, &#39;e&#39;]</span>
-<span class="sd">        :type input: List[str]</span>
-<span class="sd">        :return: A list of bpe tokens generated by greedy search.</span>
-<span class="sd">                For example: [&quot;aw&quot;, &quot;esome&quot;]</span>
-<span class="sd">        :rtype: List[str]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pairs</span><span class="p">(</span><span class="n">token_list</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">token_list</span>
-
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">bigram</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_best_pair</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">bigram</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe_merge_ranks</span><span class="p">:</span>
-                <span class="k">break</span>
-
-            <span class="c1"># Finding all indexes that token_list[i] == first and</span>
-            <span class="c1"># token_list[i+1] == second.</span>
-            <span class="c1"># After the loop, new token list will be</span>
-            <span class="c1"># 1) first + second pair</span>
-            <span class="c1"># 2) all the other tokens in the original token list</span>
-            <span class="c1">#</span>
-            <span class="c1"># For example: first=&quot;a&quot; second=&quot;w&quot; and token_list =</span>
-            <span class="c1"># [&quot;a&quot;, &quot;w&quot;, &quot;some&quot;, &quot;a&quot;, &quot;w&quot;, &quot;e&quot;]</span>
-            <span class="c1"># Result: new_token_list = [&quot;aw&quot;, &quot;some&quot;, &quot;aw&quot;, &quot;e&quot;]</span>
-            <span class="n">first</span><span class="p">,</span> <span class="n">second</span> <span class="o">=</span> <span class="n">bigram</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seperator</span><span class="p">)</span>
-            <span class="n">new_token_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">i</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_list</span><span class="p">):</span>
-                <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_str_index</span><span class="p">(</span><span class="n">token_list</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                    <span class="n">new_token_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">token_list</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">])</span>
-                    <span class="n">i</span> <span class="o">=</span> <span class="n">j</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">new_token_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">token_list</span><span class="p">[</span><span class="n">i</span><span class="p">:])</span>
-                    <span class="k">break</span>
-
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">token_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">first</span>
-                    <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-                    <span class="ow">and</span> <span class="n">token_list</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">second</span>
-                <span class="p">):</span>
-                    <span class="n">new_token_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">first</span> <span class="o">+</span> <span class="n">second</span><span class="p">)</span>
-                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">new_token_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-
-            <span class="n">token_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_token_list</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pairs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pairs</span><span class="p">(</span><span class="n">token_list</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">token_list</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_byte_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Encode byte into an unicode character.</span>
-
-<span class="sd">        Equivalent to: (self.byte_encoder[b] for b in token.encode(&#39;utf-8&#39;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">encoded</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">is_scripting</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">token</span><span class="p">:</span>
-                <span class="n">encoded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byte_encoder</span><span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">b</span><span class="p">)])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">encoded</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">byte_encoder</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)]</span>
-        <span class="k">return</span> <span class="n">encoded</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a list of tokens, split by regular expression(pcre).</span>
-
-<span class="sd">        &#39;s|&#39;t|&#39;re|&#39;ve|&#39;m|&#39;ll|&#39;d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">gpt2_bpe_pre_tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">_encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Encode text into a list of bpe token ids.</span>
-
-<span class="sd">        Split text into a list of token unit, and generate a list of bpe tokens</span>
-<span class="sd">        for each token unit. Lastly encode bpe tokens into bpe token ids.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            text: An input text string.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            A list of bpe token ids represents each bpe tokens.</span>
-
-<span class="sd">        For example: &quot;awesome,awe&quot;</span>
-<span class="sd">            --&gt; tokenize(regex) --&gt; tokens: [&quot;awesome&quot;, &quot;,&quot;, &quot;awe&quot;]</span>
-<span class="sd">            --&gt; bpe --&gt; bpe tokens: [&quot;aw&quot;, &quot;esome&quot;], [&quot;,&quot;], [&quot;aw&quot;, e]</span>
-<span class="sd">            --&gt; bpe encode --&gt; bpe token ids: [707, 5927], [11], [707, 68]</span>
-<span class="sd">            --&gt; result --&gt; [707, 5927, 11, 707, 68]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">bpe_token_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regex</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">bpe_token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bpe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_byte_encode</span><span class="p">(</span><span class="n">token</span><span class="p">)):</span>
-                <span class="n">bpe_token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpe_encoder</span><span class="p">[</span><span class="n">bpe_token</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">bpe_token_ids</span>
-
-    <span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">export</span>
-    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Encode text into a list of Token(token_id, start_idx, end_idx)</span>
 
 <span class="sd">        Args:</span>
@@ -742,7 +579,7 @@
 <span class="sd">            --&gt; bpe --&gt; bpe tokens: [&quot;aw&quot;, &quot;esome&quot;], [&quot;,&quot;], [&quot;aw&quot;, e]</span>
 <span class="sd">            --&gt; bpe encode --&gt; bpe token ids: [707, 5927, 11, 707, 68]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bpe_token_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">bpe_token_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="n">bpe_tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">bpe_token_id</span> <span class="ow">in</span> <span class="n">bpe_token_ids</span><span class="p">:</span>
@@ -760,12 +597,25 @@
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
             <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">:</span>
-                <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+                <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">tokens</span>
         <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenize</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input type not supported&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__prepare_scriptable__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a JITable tokenizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_jitable</span><span class="p">:</span>
+            <span class="n">tokenizer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="c1"># Disable caching in script mode</span>
+            <span class="n">tokenizer_copy</span><span class="o">.</span><span class="n">bpe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">torchtext</span><span class="o">.</span><span class="n">GPT2BPEEncoder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">bpe_encoder_</span><span class="p">,</span>
+                                                                        <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">bpe_merge_ranks_</span><span class="p">,</span>
+                                                                        <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">seperator_</span><span class="p">,</span>
+                                                                        <span class="bp">self</span><span class="o">.</span><span class="n">bpe</span><span class="o">.</span><span class="n">byte_encoder_</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tokenizer_copy</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
 
 <span class="nd">@lru_cache</span><span class="p">()</span>
