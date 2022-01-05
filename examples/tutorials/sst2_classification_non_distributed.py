@@ -2,53 +2,48 @@
 SST-2 Binary text classification with XLM-RoBERTa model
 =======================================================
 
-**Author**: `Parmeet Bhatia<parmeetbhatia@fb.com>`__
+**Author**: `Parmeet Bhatia <parmeetbhatia@fb.com>`__
 
-This tutorial shows how to train a text classifier using pre-trained XLM-RoBERTa model. 
 """
 
 ######################################################################
+# Overview
+# --------
+#
+# This tutorial shows how to train a text classifier using pre-trained XLM-RoBERTa model.
+# TODO
+
+
+######################################################################
+# Common imports
+# --------------
 
 import torch
-from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
-import torchtext.transforms as T
-import torchtext.functional as F
-from torchtext.experimental.datasets.sst2 import SST2
-from torch.hub import load_state_dict_from_url
-from torch.optim import AdamW
 import torch.nn as nn
-
-
 DEVICE = torch.DEVICE("cuda") if torch.cuda.is_available() else "cpu"
 
 
-classifier_head = RobertaClassificationHead(num_classes=2, input_dim=768)
-MODEL = XLMR_BASE_ENCODER.get_model(head=classifier_head)
-MODEL.to(DEVICE)
+#######################################################################
+# Data Transformation
+# -------------------
+# TODO
 
-# Model specific variables
-PADDING_IDX = 1  # padding index
-BOS_TOKEN = '<s>'  # begin of sentence token
-EOS_TOKEN = '</s>'  # end of sentence token
-MAX_SEQ_LEN = 512  # maximum length for the input sequence
-XLMR_VOCAB_PATH = r"https:/download.pytorch.org/models/text/xlmr.vocab.pt"  # pre-trained vocabulary correspond to sentencepiece model for XLM-Roberta model
-XLMR_SPM_MODEL_PATH = r"https:/download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"  # pre-trained sentencepeice model for XLM-Roberta model
+import torchtext.transforms as T
+from torch.hub import load_state_dict_from_url
 
-# Training specific variables
-NUM_EPOCHS = 1
-BATCH_SIZE = 16
-LEARNING_RATE = 1e-5
-CRITERIA = nn.CrossEntropyLoss()
-OPTIM = AdamW(MODEL.parameters(), lr=LEARNING_RATE)
+PADDING_IDX = 1
+BOS_IDX = 0
+EOS_IDX = 2
+MAX_SEQ_LEN = 512
+XLMR_VOCAB_PATH = r"https:/download.pytorch.org/models/text/xlmr.vocab.pt"
+XLMR_SPM_MODEL_PATH = r"https:/download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
 
-
-# Support both Non-Batched (single sentence) and Batched (List of sentences) as inputs
 TEXT_TRANSFORM = nn.Sequential(
-    T.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH),  # tokenize using pre-trained SPM
-    T.Truncate(MAX_SEQ_LEN - 2),  # Truncate sequence to max allowable length
-    T.AddToken(BOS_TOKEN, begin=True),  # Add BOS token at start of sequence
-    T.AddToken(EOS_TOKEN, begin=False),  # Add EOS token at end of sequence
-    T.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH)),  # Convert tokens into IDs
+    T.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH),
+    T.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH)),
+    T.Truncate(MAX_SEQ_LEN - 2),
+    T.AddToken(token=BOS_IDX, begin=True),
+    T.AddToken(token=EOS_IDX, begin=False),
 )
 
 # Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box
@@ -56,7 +51,14 @@ TEXT_TRANSFORM = nn.Sequential(
 
 LABEL_TRANSFORM = T.LabelToIndex(label_names=['0', '1'])
 
-# get the sst-2 dataset for 'train' and 'dev' split
+#######################################################################
+# Dataset
+# -------
+# TODO
+
+from torchtext.experimental.datasets.sst2 import SST2
+BATCH_SIZE = 16
+
 TRAIN_DATAPIPE = SST2(split='train')
 DEV_DATAPIPE = SST2(split='dev')
 
@@ -74,6 +76,31 @@ DEV_DATAPIPE = DEV_DATAPIPE.rows2columnar(["token_ids", "target"])
 # TRAIN_DATAPIPE = TRAIN_DATAPIPE.map(lambda x: {"token_ids": TEXT_TRANSFORM(x["text"]), "target": LABEL_TRANSFORM(x["label"])})
 # DEV_DATAPIPE = DEV_DATAPIPE.batch(BATCH_SIZE).rows2columnar(["text", "label"])
 # DEV_DATAPIPE = DEV_DATAPIPE.map(lambda x: {"token_ids": TEXT_TRANSFORM(x["text"]), "target": LABEL_TRANSFORM(x["label"])})
+
+######################################################################
+# Model Preparation
+# -----------------
+# TODO
+NUM_CLASSES = 2
+INPUT_DIM = 768
+
+from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
+classifier_head = RobertaClassificationHead(num_classes=NUM_CLASSES, input_dim=INPUT_DIM)
+MODEL = XLMR_BASE_ENCODER.get_model(head=classifier_head)
+MODEL.to(DEVICE)
+
+
+#######################################################################
+# Training methods
+# ----------------
+# TODO
+
+import torchtext.functional as F
+from torch.optim import AdamW
+
+LEARNING_RATE = 1e-5
+OPTIM = AdamW(MODEL.parameters(), lr=LEARNING_RATE)
+CRITERIA = nn.CrossEntropyLoss()
 
 
 def train_step(input, target):
@@ -97,8 +124,6 @@ def evaluate():
     total_predictions = 0
     counter = 0
     with torch.no_grad():
-        # we can directly iterate on DataPipe dataset or create DataLoader
-        # for distributed and multi-processing we would need to use DataLoader
         for batch in DEV_DATAPIPE:
             input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(DEVICE)
             target = torch.tensor(batch['target']).to(DEVICE)
@@ -111,21 +136,21 @@ def evaluate():
     return total_loss / counter, correct_predictions / total_predictions
 
 
-def train():
-    for e in range(NUM_EPOCHS):
-        loss, accuracy = evaluate()
-        print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
-        MODEL.train()
-        # we can directly iterate on DataPipe dataset or create DataLoader
-        # for distributed and multi-processing we would need to use DataLoader
-        for batch in TRAIN_DATAPIPE:
-            input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(DEVICE)
-            target = torch.tensor(batch['target']).to(DEVICE)
-            train_step(input, target)
+#######################################################################
+# Train
+# -----
+# TODO
 
+NUM_EPOCHS = 1
+
+for e in range(NUM_EPOCHS):
     loss, accuracy = evaluate()
-    print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(NUM_EPOCHS), loss, accuracy)
+    print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
+    MODEL.train()
+    for batch in TRAIN_DATAPIPE:
+        input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(DEVICE)
+        target = torch.tensor(batch['target']).to(DEVICE)
+        train_step(input, target)
 
-
-if __name__ == "__main__":
-    train()
+loss, accuracy = evaluate()
+print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(NUM_EPOCHS), loss, accuracy)
