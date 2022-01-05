@@ -204,6 +204,8 @@ class TestTransforms(TorchtextTestCase):
     def test_add_token_jit(self):
         self._add_token(test_scripting=True)
 
+
+class TestSequential(TorchtextTestCase):
     def _sequential(self, test_scripting):
         max_seq_len = 3
         padding_val = 0
