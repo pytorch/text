@@ -162,7 +162,6 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
         T.Truncate(510),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
-        T.ToTensor(padding_value=1)
     )
 )
 
@@ -184,7 +183,6 @@ XLMR_LARGE_ENCODER = RobertaModelBundle(
         T.Truncate(510),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
-        T.ToTensor(padding_value=1)
     )
 )
 
