@@ -195,7 +195,7 @@ class TestTransforms(TorchtextTestCase):
 
         input = ['1', '2']
         actual = transform(input)
-        expected = ['1', '2', '0']
+        expected = ['1', '2', '0']˝
         self.assertEqual(actual, expected)
 
     def test_add_token(self):
