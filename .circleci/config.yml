@@ -703,14 +703,14 @@ workflows:
       - cachesetup_linux:
           name: cachesetup_linux_py_any
           python_version: '3.7'
-      - stylecheck:
-          name: stylecheck_py_any
-          python_version: '3.7'
       - unittest_linux:
           name: unittest_linux_py3.7
           python_version: '3.7'
           requires:
           - cachesetup_linux_py_any
+      - stylecheck:
+          name: stylecheck_py3.7
+          python_version: '3.7'
       - unittest_linux:
           name: unittest_linux_py3.8
           python_version: '3.8'
