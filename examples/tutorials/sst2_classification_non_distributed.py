@@ -17,10 +17,9 @@ SST-2 Binary text classification with XLM-RoBERTa model
 ######################################################################
 # Common imports
 # --------------
-
 import torch
 import torch.nn as nn
-DEVICE = torch.DEVICE("cuda") if torch.cuda.is_available() else "cpu"
+DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 
 #######################################################################
@@ -31,25 +30,25 @@ DEVICE = torch.DEVICE("cuda") if torch.cuda.is_available() else "cpu"
 import torchtext.transforms as T
 from torch.hub import load_state_dict_from_url
 
-PADDING_IDX = 1
-BOS_IDX = 0
-EOS_IDX = 2
-MAX_SEQ_LEN = 512
-XLMR_VOCAB_PATH = r"https:/download.pytorch.org/models/text/xlmr.vocab.pt"
-XLMR_SPM_MODEL_PATH = r"https:/download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
+padding_idx = 1
+bos_idx = 0
+eos_idx = 2
+max_seq_len = 512
+xlmr_vocab_path = r"https:/download.pytorch.org/models/text/xlmr.vocab.pt"
+xlmr_spm_model_path = r"https:/download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
 
-TEXT_TRANSFORM = nn.Sequential(
-    T.SentencePieceTokenizer(XLMR_SPM_MODEL_PATH),
-    T.VocabTransform(load_state_dict_from_url(XLMR_VOCAB_PATH)),
-    T.Truncate(MAX_SEQ_LEN - 2),
-    T.AddToken(token=BOS_IDX, begin=True),
-    T.AddToken(token=EOS_IDX, begin=False),
+text_transform = nn.Sequential(
+    T.SentencePieceTokenizer(xlmr_spm_model_path),
+    T.VocabTransform(load_state_dict_from_url(xlmr_vocab_path)),
+    T.Truncate(max_seq_len - 2),
+    T.AddToken(token=bos_idx, begin=True),
+    T.AddToken(token=eos_idx, begin=False),
 )
 
 # Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box
-# TEXT_TRANSFORM = XLMR_BASE_ENCODER.transform()
+# text_transform = XLMR_BASE_ENCODER.transform()
 
-LABEL_TRANSFORM = T.LabelToIndex(label_names=['0', '1'])
+label_transform = T.LabelToIndex(label_names=['0', '1'])
 
 #######################################################################
 # Dataset
@@ -57,37 +56,37 @@ LABEL_TRANSFORM = T.LabelToIndex(label_names=['0', '1'])
 # TODO
 
 from torchtext.experimental.datasets.sst2 import SST2
-BATCH_SIZE = 16
+batch_size = 16
 
-TRAIN_DATAPIPE = SST2(split='train')
-DEV_DATAPIPE = SST2(split='dev')
+train_datapipe = SST2(split='train')
+dev_datapipe = SST2(split='dev')
 
 # Transform the raw dataset using non-batched API (i.e apply transformation line by line)
-TRAIN_DATAPIPE = TRAIN_DATAPIPE.map(lambda x: (TEXT_TRANSFORM(x[0]), LABEL_TRANSFORM(x[1])))
-TRAIN_DATAPIPE = TRAIN_DATAPIPE.batch(BATCH_SIZE)
-TRAIN_DATAPIPE = TRAIN_DATAPIPE.rows2columnar(["token_ids", "target"])
+train_datapipe = train_datapipe.map(lambda x: (text_transform(x[0]), label_transform(x[1])))
+train_datapipe = train_datapipe.batch(batch_size)
+train_datapipe = train_datapipe.rows2columnar(["token_ids", "target"])
 
-DEV_DATAPIPE = DEV_DATAPIPE.map(lambda x: (TEXT_TRANSFORM(x[0]), LABEL_TRANSFORM(x[1])))
-DEV_DATAPIPE = DEV_DATAPIPE.batch(BATCH_SIZE)
-DEV_DATAPIPE = DEV_DATAPIPE.rows2columnar(["token_ids", "target"])
+dev_datapipe = dev_datapipe.map(lambda x: (text_transform(x[0]), label_transform(x[1])))
+dev_datapipe = dev_datapipe.batch(batch_size)
+dev_datapipe = dev_datapipe.rows2columnar(["token_ids", "target"])
 
 # Alternately we can also use batched API (i.e apply transformation on the whole batch)
-# TRAIN_DATAPIPE = TRAIN_DATAPIPE.batch(BATCH_SIZE).rows2columnar(["text", "label"])
-# TRAIN_DATAPIPE = TRAIN_DATAPIPE.map(lambda x: {"token_ids": TEXT_TRANSFORM(x["text"]), "target": LABEL_TRANSFORM(x["label"])})
-# DEV_DATAPIPE = DEV_DATAPIPE.batch(BATCH_SIZE).rows2columnar(["text", "label"])
-# DEV_DATAPIPE = DEV_DATAPIPE.map(lambda x: {"token_ids": TEXT_TRANSFORM(x["text"]), "target": LABEL_TRANSFORM(x["label"])})
+# train_datapipe = train_datapipe.batch(batch_size).rows2columnar(["text", "label"])
+# train_datapipe = train_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
+# dev_datapipe = dev_datapipe.batch(batch_size).rows2columnar(["text", "label"])
+# dev_datapipe = dev_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
 
 ######################################################################
 # Model Preparation
 # -----------------
 # TODO
-NUM_CLASSES = 2
-INPUT_DIM = 768
+num_classes = 2
+input_dim = 768
 
 from torchtext.models import RobertaClassificationHead, XLMR_BASE_ENCODER
-classifier_head = RobertaClassificationHead(num_classes=NUM_CLASSES, input_dim=INPUT_DIM)
-MODEL = XLMR_BASE_ENCODER.get_model(head=classifier_head)
-MODEL.to(DEVICE)
+classifier_head = RobertaClassificationHead(num_classes=num_classes, input_dim=input_dim)
+model = XLMR_BASE_ENCODER.get_model(head=classifier_head)
+model.to(DEVICE)
 
 
 #######################################################################
@@ -98,34 +97,34 @@ MODEL.to(DEVICE)
 import torchtext.functional as F
 from torch.optim import AdamW
 
-LEARNING_RATE = 1e-5
-OPTIM = AdamW(MODEL.parameters(), lr=LEARNING_RATE)
-CRITERIA = nn.CrossEntropyLoss()
+learning_rate = 1e-5
+optim = AdamW(model.parameters(), lr=learning_rate)
+criteria = nn.CrossEntropyLoss()
 
 
 def train_step(input, target):
-    output = MODEL(input)
-    loss = CRITERIA(output, target)
-    OPTIM.zero_grad()
+    output = model(input)
+    loss = criteria(output, target)
+    optim.zero_grad()
     loss.backward()
-    OPTIM.step()
+    optim.step()
 
 
 def eval_step(input, target):
-    output = MODEL(input)
-    loss = CRITERIA(output, target).item()
+    output = model(input)
+    loss = criteria(output, target).item()
     return float(loss), (output.argmax(1) == target).type(torch.float).sum().item()
 
 
 def evaluate():
-    MODEL.eval()
+    model.eval()
     total_loss = 0
     correct_predictions = 0
     total_predictions = 0
     counter = 0
     with torch.no_grad():
-        for batch in DEV_DATAPIPE:
-            input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(DEVICE)
+        for batch in dev_datapipe:
+            input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
             target = torch.tensor(batch['target']).to(DEVICE)
             loss, predictions = eval_step(input, target)
             total_loss += loss
@@ -141,16 +140,16 @@ def evaluate():
 # -----
 # TODO
 
-NUM_EPOCHS = 1
+num_epochs = 1
 
-for e in range(NUM_EPOCHS):
+for e in range(num_epochs):
     loss, accuracy = evaluate()
     print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(e, loss, accuracy))
-    MODEL.train()
-    for batch in TRAIN_DATAPIPE:
-        input = F.to_tensor(batch['token_ids'], padding_value=PADDING_IDX).to(DEVICE)
+    model.train()
+    for batch in train_datapipe:
+        input = F.to_tensor(batch['token_ids'], padding_value=padding_idx).to(DEVICE)
         target = torch.tensor(batch['target']).to(DEVICE)
         train_step(input, target)
 
 loss, accuracy = evaluate()
-print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(NUM_EPOCHS), loss, accuracy)
+print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(num_epochs), loss, accuracy)
