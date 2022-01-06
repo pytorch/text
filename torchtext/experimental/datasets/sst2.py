@@ -1,7 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 import os
 
-from torch.utils.data.dataset import IterableDataset
+from torch.utils.data import IterDataPipe
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _add_docstring_header,
@@ -10,7 +10,7 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import IterableWrapper, FileLoader
+    from torchdata.datapipes.iter import IterableWrapper, FileOpener
 
     # we import HttpReader from _download_hooks so we can swap out public URLs
     # with interal URLs when the dataset is used within Facebook
@@ -56,7 +56,7 @@ def SST2(root, split, validate_hash=True):
     return SST2Dataset(root, split, validate_hash=validate_hash)
 
 
-class SST2Dataset(IterableDataset):
+class SST2Dataset(IterDataPipe):
     """The SST2 dataset uses torchdata datapipes end-2-end.
     To avoid download at every epoch, we cache the data on-disk
     We do sanity check on dowloaded and extracted data
@@ -90,7 +90,7 @@ class SST2Dataset(IterableDataset):
         cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
 
         # Load from cached file
-        cache_dp = FileLoader(cache_dp, mode="rb")
+        cache_dp = FileOpener(cache_dp, mode="rb")
         # extract data from zip
         extracted_files = cache_dp.read_from_zip().filter(
             lambda x: f"{split}.tsv" in x[0]

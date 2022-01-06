@@ -205,6 +205,33 @@ class TestTransforms(TorchtextTestCase):
         self._add_token(test_scripting=True)
 
 
+class TestSequential(TorchtextTestCase):
+    def _sequential(self, test_scripting):
+        max_seq_len = 3
+        padding_val = 0
+        transform = transforms.Sequential(
+            transforms.Truncate(max_seq_len=max_seq_len),
+            transforms.ToTensor(padding_value=padding_val, dtype=torch.long)
+        )
+
+        if test_scripting:
+            transform = torch.jit.script(transform)
+
+        input = [[1, 2, 3], [1, 2, 3]]
+
+        actual = transform(input)
+        expected = torch.tensor(input)
+        torch.testing.assert_close(actual, expected)
+
+    def test_sequential(self):
+        """test pipelining transforms using Sequential transform"""
+        self._sequential(test_scripting=False)
+
+    def test_sequential_jit(self):
+        """test pipelining transforms using Sequential transform, ensuring the composite transform is scriptable"""
+        self._sequential(test_scripting=True)
+
+
 class TestGPT2BPETokenizer(TorchtextTestCase):
     def _load_tokenizer(self, test_scripting):
         encoder_json = "gpt2_bpe_encoder.json"
