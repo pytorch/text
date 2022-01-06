@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20220105 documentation</title>
+  <title>torchtext.transforms &mdash; torchtext 0.12.0.dev20220106 documentation</title>
   
 
   
@@ -192,7 +192,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220105 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220106 &#x25BC</a>
     </div>
     
 
@@ -313,7 +313,7 @@
               
   <div class="section" id="module-torchtext.transforms">
 <span id="torchtext-transforms"></span><h1>torchtext.transforms<a class="headerlink" href="#module-torchtext.transforms" title="Permalink to this headline">¶</a></h1>
-<p>Transforms are common text transforms. They can be chained together using <a class="reference external" href="https://pytorch.org/docs/0.3.0/nn.html#torch.nn.Sequential" title="(in PyTorch vmaster (0.3.0.post4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Sequential</span></code></a></p>
+<p>Transforms are common text transforms. They can be chained together using <a class="reference external" href="https://pytorch.org/docs/0.3.0/nn.html#torch.nn.Sequential" title="(in PyTorch vmaster (0.3.0.post4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Sequential</span></code></a> or using <a class="reference internal" href="#torchtext.transforms.Sequential" title="torchtext.transforms.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchtext.transforms.Sequential</span></code></a> to support torch-scriptability.</p>
 <div class="section" id="sentencepiecetokenizer">
 <h2>SentencePieceTokenizer<a class="headerlink" href="#sentencepiecetokenizer" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -512,6 +512,27 @@ but not both.</p></li>
 </dd></dl>
 
 </div>
+<div class="section" id="sequential">
+<h2>Sequential<a class="headerlink" href="#sequential" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchtext.transforms.Sequential">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">Sequential</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.nn.modules.module.Module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchtext/transforms.html#Sequential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.Sequential" title="Permalink to this definition">¶</a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">torchtext.transforms.</span></code><code class="sig-name descname"><span class="pre">Sequential</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">OrderedDict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Module</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>A container to host a sequence of text transforms.</p>
+<dl class="py method">
+<dt id="torchtext.transforms.Sequential.forward">
+<code class="sig-name descname"><span class="pre">forward</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/torchtext/transforms.html#Sequential.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtext.transforms.Sequential.forward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input</strong> (<cite>Any</cite>) – Input sequence or batch. The input type must be supported by the first transform in the sequence.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -564,6 +585,7 @@ but not both.</p></li>
 <li><a class="reference internal" href="#labeltoindex">LabelToIndex</a></li>
 <li><a class="reference internal" href="#truncate">Truncate</a></li>
 <li><a class="reference internal" href="#addtoken">AddToken</a></li>
+<li><a class="reference internal" href="#sequential">Sequential</a></li>
 </ul>
 </li>
 </ul>
