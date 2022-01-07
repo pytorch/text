@@ -111,7 +111,7 @@ class ToTensor(Module):
     :type dtype: :class:`torch.dtype`
     """
 
-    def __init__(self, padding_value: Optional[int] = None, dtype: Optional[torch.dtype] = torch.long) -> None:
+    def __init__(self, padding_value: Optional[int] = None, dtype: torch.dtype = torch.long) -> None:
         super().__init__()
         self.padding_value = padding_value
         self.dtype = dtype
