@@ -158,7 +158,7 @@ XLMR_BASE_ENCODER = RobertaModelBundle(
     transform=lambda: T.Sequential(
         T.SentencePieceTokenizer(urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model")),
         T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"))),
-        T.Truncate(254),
+        T.Truncate(510),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
     )
