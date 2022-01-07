@@ -220,6 +220,10 @@ ROBERTA_BASE_ENCODER.__doc__ = (
     training on longer sequences; and dynamically changing the masking pattern applied
     to the training data.
 
+    The RoBERTa model was pretrained on the reunion of five datasets: BookCorpus,
+    English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
+    contain over a 160GB of text.
+
     Originally published by the authors of RoBERTa under MIT License
     and redistributed with the same license.
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
@@ -261,6 +265,11 @@ ROBERTA_LARGE_ENCODER.__doc__ = (
     with bigger batches over more data; removing the next sentence prediction objective;
     training on longer sequences; and dynamically changing the masking pattern applied
     to the training data.
+
+    The RoBERTa model was pretrained on the reunion of five datasets: BookCorpus,
+    English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
+    contain over a 160GB of text.
+
 
     Originally published by the authors of RoBERTa under MIT License
     and redistributed with the same license.
