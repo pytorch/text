@@ -270,7 +270,6 @@ ROBERTA_LARGE_ENCODER.__doc__ = (
     English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
     contain over a 160GB of text.
 
-
     Originally published by the authors of RoBERTa under MIT License
     and redistributed with the same license.
     [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
