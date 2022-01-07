@@ -15,6 +15,7 @@ from .model import (
     RobertaModel,
 )
 
+import torchtext.transforms as T
 from .transforms import get_xlmr_transform
 
 from torchtext import _TEXT_BUCKET
@@ -183,6 +184,64 @@ XLMR_LARGE_ENCODER = RobertaModelBundle(
 XLMR_LARGE_ENCODER.__doc__ = (
     '''
     XLM-R Encoder with Large configuration
+
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    '''
+)
+
+
+ROBERTA_BASE_ENCODER = RobertaModelBundle(
+    _path=urljoin(_TEXT_BUCKET, "roberta.base.encoder.pt"),
+    _encoder_conf=RobertaEncoderConf(vocab_size=50265),
+    transform=lambda: T.Sequential(
+        T.GPT2BPETokenizer(
+            encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
+            vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
+        ),
+        T.VocabTransform(
+            load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
+        ),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    ),
+)
+
+ROBERTA_BASE_ENCODER.__doc__ = (
+    '''
+    Roberta Encoder with Base configuration
+
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    '''
+)
+
+
+ROBERTA_LARGE_ENCODER = RobertaModelBundle(
+    _path=urljoin(_TEXT_BUCKET, "roberta.large.encoder.pt"),
+    _encoder_conf=RobertaEncoderConf(
+        vocab_size=50265,
+        embedding_dim=1024,
+        ffn_dimension=4096,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+    ),
+    transform=lambda: T.Sequential(
+        T.GPT2BPETokenizer(
+            encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
+            vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
+        ),
+        T.VocabTransform(
+            load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
+        ),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    ),
+)
+
+ROBERTA_LARGE_ENCODER.__doc__ = (
+    '''
+    Roberta Encoder with Large configuration
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
