@@ -1,4 +1,7 @@
-from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
+from torchtext._internal.module_utils import is_module_available
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
 
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
