@@ -205,7 +205,7 @@ ROBERTA_BASE_ENCODER = RobertaModelBundle(
         T.VocabTransform(
             load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
         ),
-        T.Truncate(510),
+        T.Truncate(254),
         T.AddToken(token=0, begin=True),
         T.AddToken(token=2, begin=False),
     ),
@@ -214,6 +214,16 @@ ROBERTA_BASE_ENCODER = RobertaModelBundle(
 ROBERTA_BASE_ENCODER.__doc__ = (
     '''
     Roberta Encoder with Base configuration
+
+    RoBERTa iterates on BERT's pretraining procedure, including training the model longer,
+    with bigger batches over more data; removing the next sentence prediction objective;
+    training on longer sequences; and dynamically changing the masking pattern applied
+    to the training data.
+
+    Originally published by the authors of RoBERTa under MIT License
+    and redistributed with the same license.
+    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
+    `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
@@ -246,6 +256,16 @@ ROBERTA_LARGE_ENCODER = RobertaModelBundle(
 ROBERTA_LARGE_ENCODER.__doc__ = (
     '''
     Roberta Encoder with Large configuration
+
+    RoBERTa iterates on BERT's pretraining procedure, including training the model longer,
+    with bigger batches over more data; removing the next sentence prediction objective;
+    training on longer sequences; and dynamically changing the masking pattern applied
+    to the training data.
+
+    Originally published by the authors of RoBERTa under MIT License
+    and redistributed with the same license.
+    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
+    `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
