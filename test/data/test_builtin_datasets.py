@@ -41,20 +41,6 @@ class TestDataset(TorchtextTestCase):
     @parameterized.expand(
         load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
-    def test_raw_text_name_property(self, info):
-        dataset_name = info['dataset_name']
-        split = info['split']
-
-        if dataset_name == 'WMT14':
-            return
-        else:
-            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
-
-        self.assertEqual(str(data_iter), dataset_name)
-
-    @parameterized.expand(
-        load_params('raw_datasets.jsonl'),
-        name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
