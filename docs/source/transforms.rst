@@ -7,7 +7,7 @@ torchtext.transforms
 .. automodule:: torchtext.transforms
 .. currentmodule:: torchtext.transforms
 
-Transforms are common text transforms. They can be chained together using :class:`torch.nn.Sequential`
+Transforms are common text transforms. They can be chained together using :class:`torch.nn.Sequential` or using :class:`torchtext.transforms.Sequential` to support torch-scriptability.
 
 SentencePieceTokenizer
 ----------------------
@@ -49,5 +49,12 @@ AddToken
 --------
 
 .. autoclass:: AddToken
+
+   .. automethod:: forward
+
+Sequential
+----------
+
+.. autoclass:: Sequential
 
    .. automethod:: forward

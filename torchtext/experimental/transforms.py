@@ -12,7 +12,6 @@ __all__ = [
     'regex_tokenizer',
     'BasicEnglishNormalize',
     'RegexTokenizer',
-    'TextSequentialTransforms',
     'PRETRAINED_SP_MODEL',
     'load_sp_model',
     'sentencepiece_tokenizer',
@@ -162,25 +161,6 @@ class RegexTokenizer(nn.Module):
         """
         regex_tokenizer = torch.classes.torchtext.RegexTokenizer(self.regex_tokenizer.patterns_, self.regex_tokenizer.replacements_, False)
         return RegexTokenizer(regex_tokenizer)
-
-
-class TextSequentialTransforms(nn.Sequential):
-    r"""A container to host a sequential text transforms.
-
-        Example:
-            >>> import torch
-            >>> from torchtext.experimental.transforms import basic_english_normalize, TextSequentialTransforms
-            >>> tokenizer = basic_english_normalize()
-            >>> txt_pipeline = TextSequentialTransforms(tokenizer)
-            >>> txt_pipeline('here is an example')
-                ['here', 'is', 'an', 'example']
-            >>> jit_txt_pipeline = torch.jit.script(txt_pipeline)
-    """
-
-    def forward(self, input: str):
-        for module in self:
-            input = module(input)
-        return input
 
 
 PRETRAINED_SP_MODEL = {
