@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.models &mdash; torchtext 0.12.0.dev20220107 documentation</title>
+  <title>torchtext.models &mdash; torchtext 0.12.0.dev20220108 documentation</title>
   
 
   
@@ -191,7 +191,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220107 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220108 &#x25BC</a>
     </div>
     
 
@@ -380,6 +380,13 @@
 <dt id="torchtext.models.XLMR_BASE_ENCODER">
 <code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">XLMR_BASE_ENCODER</span></code><a class="headerlink" href="#torchtext.models.XLMR_BASE_ENCODER" title="Permalink to this definition">¶</a></dt>
 <dd><p>XLM-R Encoder with Base configuration</p>
+<p>The XLM-RoBERTa model was proposed in <cite>Unsupervised Cross-lingual Representation Learning
+at Scale &lt;https://arxiv.org/abs/1911.02116&gt;</cite>. It is a large multi-lingual language model,
+trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model architecture.</p>
+<p>Originally published by the authors of XLM-RoBERTa under MIT License
+and redistributed with the same license.
+[<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
+<a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models">Source</a>]</p>
 <p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
@@ -392,6 +399,59 @@
 <dt id="torchtext.models.XLMR_LARGE_ENCODER">
 <code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">XLMR_LARGE_ENCODER</span></code><a class="headerlink" href="#torchtext.models.XLMR_LARGE_ENCODER" title="Permalink to this definition">¶</a></dt>
 <dd><p>XLM-R Encoder with Large configuration</p>
+<p>The XLM-RoBERTa model was proposed in <cite>Unsupervised Cross-lingual Representation Learning
+at Scale &lt;https://arxiv.org/abs/1911.02116&gt;</cite>. It is a large multi-lingual language model,
+trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model architecture.</p>
+<p>Originally published by the authors of XLM-RoBERTa under MIT License
+and redistributed with the same license.
+[<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
+<a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models">Source</a>]</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="roberta-base-encoder">
+<h2>ROBERTA_BASE_ENCODER<a class="headerlink" href="#roberta-base-encoder" title="Permalink to this headline">¶</a></h2>
+<div class="py attribute docutils container">
+<dl class="py data">
+<dt id="torchtext.models.ROBERTA_BASE_ENCODER">
+<code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">ROBERTA_BASE_ENCODER</span></code><a class="headerlink" href="#torchtext.models.ROBERTA_BASE_ENCODER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Roberta Encoder with Base configuration</p>
+<p>RoBERTa iterates on BERT’s pretraining procedure, including training the model longer,
+with bigger batches over more data; removing the next sentence prediction objective;
+training on longer sequences; and dynamically changing the masking pattern applied
+to the training data.</p>
+<p>The RoBERTa model was pretrained on the reunion of five datasets: BookCorpus,
+English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
+contain over a 160GB of text.</p>
+<p>Originally published by the authors of RoBERTa under MIT License
+and redistributed with the same license.
+[<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
+<a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models">Source</a>]</p>
+<p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="roberta-large-encoder">
+<h2>ROBERTA_LARGE_ENCODER<a class="headerlink" href="#roberta-large-encoder" title="Permalink to this headline">¶</a></h2>
+<div class="py attribute docutils container">
+<dl class="py data">
+<dt id="torchtext.models.ROBERTA_LARGE_ENCODER">
+<code class="sig-prename descclassname"><span class="pre">torchtext.models.</span></code><code class="sig-name descname"><span class="pre">ROBERTA_LARGE_ENCODER</span></code><a class="headerlink" href="#torchtext.models.ROBERTA_LARGE_ENCODER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Roberta Encoder with Large configuration</p>
+<p>RoBERTa iterates on BERT’s pretraining procedure, including training the model longer,
+with bigger batches over more data; removing the next sentence prediction objective;
+training on longer sequences; and dynamically changing the masking pattern applied
+to the training data.</p>
+<p>The RoBERTa model was pretrained on the reunion of five datasets: BookCorpus,
+English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
+contain over a 160GB of text.</p>
+<p>Originally published by the authors of RoBERTa under MIT License
+and redistributed with the same license.
+[<a class="reference external" href="https://github.com/pytorch/fairseq/blob/main/LICENSE">License</a>,
+<a class="reference external" href="https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models">Source</a>]</p>
 <p>Please refer to <a class="reference internal" href="#torchtext.models.RobertaModelBundle" title="torchtext.models.RobertaModelBundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchtext.models.RobertaModelBundle()</span></code></a> for the usage.</p>
 </dd></dl>
 
@@ -444,6 +504,8 @@
 <li><a class="reference internal" href="#robertamodelbundle">RobertaModelBundle</a></li>
 <li><a class="reference internal" href="#xlmr-base-encoder">XLMR_BASE_ENCODER</a></li>
 <li><a class="reference internal" href="#xlmr-large-encoder">XLMR_LARGE_ENCODER</a></li>
+<li><a class="reference internal" href="#roberta-base-encoder">ROBERTA_BASE_ENCODER</a></li>
+<li><a class="reference internal" href="#roberta-large-encoder">ROBERTA_LARGE_ENCODER</a></li>
 </ul>
 </li>
 </ul>

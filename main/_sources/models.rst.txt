@@ -32,3 +32,19 @@ XLMR_LARGE_ENCODER
    .. autodata:: XLMR_LARGE_ENCODER
       :no-value:
 
+ROBERTA_BASE_ENCODER
+--------------------
+
+.. container:: py attribute
+
+   .. autodata:: ROBERTA_BASE_ENCODER
+      :no-value:
+
+
+ROBERTA_LARGE_ENCODER
+---------------------
+
+.. container:: py attribute
+
+   .. autodata:: ROBERTA_LARGE_ENCODER
+      :no-value:
