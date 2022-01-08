@@ -168,15 +168,6 @@ XLMR_BASE_ENCODER.__doc__ = (
     '''
     XLM-R Encoder with Base configuration
 
-    The XLM-RoBERTa model was proposed in `Unsupervised Cross-lingual Representation Learning
-    at Scale <https://arxiv.org/abs/1911.02116>`. It is a large multi-lingual language model,
-    trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model architecture.
-
-    Originally published by the authors of XLM-RoBERTa under MIT License
-    and redistributed with the same license.
-    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
-    `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
-
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
 )
@@ -197,15 +188,6 @@ XLMR_LARGE_ENCODER = RobertaModelBundle(
 XLMR_LARGE_ENCODER.__doc__ = (
     '''
     XLM-R Encoder with Large configuration
-
-    The XLM-RoBERTa model was proposed in `Unsupervised Cross-lingual Representation Learning
-    at Scale <https://arxiv.org/abs/1911.02116>`. It is a large multi-lingual language model,
-    trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model architecture.
-
-    Originally published by the authors of XLM-RoBERTa under MIT License
-    and redistributed with the same license.
-    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
-    `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
