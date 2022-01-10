@@ -209,8 +209,7 @@ def _wrap_split_argument_with_fn(fn, splits):
             argspec.args[1] == "split" and
             argspec.varargs is None and
             argspec.varkw is None and
-            len(argspec.kwonlyargs) == 0 and
-            len(argspec.annotations) == 0
+            len(argspec.kwonlyargs) == 0
             ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
@@ -240,23 +239,22 @@ def _wrap_split_argument(splits):
 
 
 def _create_dataset_directory(dataset_name):
-    def decorator(func):
-        argspec = inspect.getfullargspec(func)
+    def decorator(fn):
+        argspec = inspect.getfullargspec(fn)
         if not (argspec.args[0] == "root" and
                 argspec.args[1] == "split" and
                 argspec.varargs is None and
                 argspec.varkw is None and
-                len(argspec.kwonlyargs) == 0 and
-                len(argspec.annotations) == 0
+                len(argspec.kwonlyargs) == 0
                 ):
             raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
-        @functools.wraps(func)
+        @functools.wraps(fn)
         def wrapper(root=_CACHE_DIR, *args, **kwargs):
             new_root = os.path.join(root, dataset_name)
             if not os.path.exists(new_root):
                 os.makedirs(new_root)
-            return func(root=new_root, *args, **kwargs)
+            return fn(root=new_root, *args, **kwargs)
 
         return wrapper
 
