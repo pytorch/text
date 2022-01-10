@@ -1,5 +1,5 @@
 from torchtext._internal.module_utils import is_module_available
-
+from typing import Union, Tuple
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
 
@@ -34,7 +34,7 @@ DATASET_NAME = "AmazonReviewPolarity"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
-def AmazonReviewPolarity(root, split):
+def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")

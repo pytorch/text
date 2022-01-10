@@ -209,8 +209,7 @@ def _wrap_split_argument_with_fn(fn, splits):
             argspec.args[1] == "split" and
             argspec.varargs is None and
             argspec.varkw is None and
-            len(argspec.kwonlyargs) == 0 and
-            len(argspec.annotations) == 0
+            len(argspec.kwonlyargs) == 0
             ):
         raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
 
@@ -246,10 +245,9 @@ def _create_dataset_directory(dataset_name):
                 argspec.args[1] == "split" and
                 argspec.varargs is None and
                 argspec.varkw is None and
-                len(argspec.kwonlyargs) == 0 and
-                len(argspec.annotations) == 0
+                len(argspec.kwonlyargs) == 0
                 ):
-            raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(fn))
+            raise ValueError("Internal Error: Given function {} did not adhere to standard signature.".format(func))
 
         @functools.wraps(func)
         def wrapper(root=_CACHE_DIR, *args, **kwargs):
