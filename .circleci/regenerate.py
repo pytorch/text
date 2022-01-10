@@ -20,7 +20,7 @@ import yaml
 import os.path
 
 
-PYTHON_VERSIONS = ["3.6", "3.7", "3.8", "3.9"]
+PYTHON_VERSIONS = ["3.7", "3.8", "3.9"]
 
 DOC_VERSION = ('linux', '3.8')
 
@@ -178,7 +178,7 @@ def unittest_workflows(indentation=6):
 
             if i == 0 and os_type == "linux":
                 w.append({
-                    f"stylecheck": {
+                    "stylecheck": {
                         "name": f"stylecheck_py{python_version}",
                         "python_version": python_version,
                     }

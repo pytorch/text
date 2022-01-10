@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from functools import partial
 from urllib.parse import urljoin
 
 from typing import Optional, Callable, Dict, Union, Any
@@ -15,7 +14,7 @@ from .model import (
     RobertaModel,
 )
 
-from .transforms import get_xlmr_transform
+import torchtext.transforms as T
 
 from torchtext import _TEXT_BUCKET
 
@@ -156,15 +155,27 @@ class RobertaModelBundle:
 XLMR_BASE_ENCODER = RobertaModelBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.base.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002),
-    transform=partial(get_xlmr_transform,
-                      vocab_path=urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"),
-                      spm_model_path=urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
-                      )
+    transform=lambda: T.Sequential(
+        T.SentencePieceTokenizer(urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model")),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"))),
+        T.Truncate(254),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    )
 )
 
 XLMR_BASE_ENCODER.__doc__ = (
     '''
     XLM-R Encoder with Base configuration
+
+    The XLM-RoBERTa model was proposed in `Unsupervised Cross-lingual Representation Learning
+    at Scale <https://arxiv.org/abs/1911.02116>`. It is a large multi-lingual language model,
+    trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model architecture.
+
+    Originally published by the authors of XLM-RoBERTa under MIT License
+    and redistributed with the same license.
+    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
+    `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''
@@ -174,15 +185,113 @@ XLMR_BASE_ENCODER.__doc__ = (
 XLMR_LARGE_ENCODER = RobertaModelBundle(
     _path=urljoin(_TEXT_BUCKET, "xlmr.large.encoder.pt"),
     _encoder_conf=RobertaEncoderConf(vocab_size=250002, embedding_dim=1024, ffn_dimension=4096, num_attention_heads=16, num_encoder_layers=24),
-    transform=partial(get_xlmr_transform,
-                      vocab_path=urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"),
-                      spm_model_path=urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model"),
-                      )
+    transform=lambda: T.Sequential(
+        T.SentencePieceTokenizer(urljoin(_TEXT_BUCKET, "xlmr.sentencepiece.bpe.model")),
+        T.VocabTransform(load_state_dict_from_url(urljoin(_TEXT_BUCKET, "xlmr.vocab.pt"))),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    )
 )
 
 XLMR_LARGE_ENCODER.__doc__ = (
     '''
     XLM-R Encoder with Large configuration
+
+    The XLM-RoBERTa model was proposed in `Unsupervised Cross-lingual Representation Learning
+    at Scale <https://arxiv.org/abs/1911.02116>`. It is a large multi-lingual language model,
+    trained on 2.5TB of filtered CommonCrawl data and based on the RoBERTa model architecture.
+
+    Originally published by the authors of XLM-RoBERTa under MIT License
+    and redistributed with the same license.
+    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
+    `Source <https://github.com/pytorch/fairseq/tree/main/examples/xlmr#pre-trained-models>`__]
+
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    '''
+)
+
+
+ROBERTA_BASE_ENCODER = RobertaModelBundle(
+    _path=urljoin(_TEXT_BUCKET, "roberta.base.encoder.pt"),
+    _encoder_conf=RobertaEncoderConf(vocab_size=50265),
+    transform=lambda: T.Sequential(
+        T.GPT2BPETokenizer(
+            encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
+            vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
+        ),
+        T.VocabTransform(
+            load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
+        ),
+        T.Truncate(254),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    ),
+)
+
+ROBERTA_BASE_ENCODER.__doc__ = (
+    '''
+    Roberta Encoder with Base configuration
+
+    RoBERTa iterates on BERT's pretraining procedure, including training the model longer,
+    with bigger batches over more data; removing the next sentence prediction objective;
+    training on longer sequences; and dynamically changing the masking pattern applied
+    to the training data.
+
+    The RoBERTa model was pretrained on the reunion of five datasets: BookCorpus,
+    English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
+    contain over a 160GB of text.
+
+    Originally published by the authors of RoBERTa under MIT License
+    and redistributed with the same license.
+    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
+    `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
+
+    Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
+    '''
+)
+
+
+ROBERTA_LARGE_ENCODER = RobertaModelBundle(
+    _path=urljoin(_TEXT_BUCKET, "roberta.large.encoder.pt"),
+    _encoder_conf=RobertaEncoderConf(
+        vocab_size=50265,
+        embedding_dim=1024,
+        ffn_dimension=4096,
+        num_attention_heads=16,
+        num_encoder_layers=24,
+    ),
+    transform=lambda: T.Sequential(
+        T.GPT2BPETokenizer(
+            encoder_json_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_encoder.json"),
+            vocab_bpe_path=urljoin(_TEXT_BUCKET, "gpt2_bpe_vocab.bpe"),
+        ),
+        T.VocabTransform(
+            load_state_dict_from_url(urljoin(_TEXT_BUCKET, "roberta.vocab.pt"))
+        ),
+        T.Truncate(510),
+        T.AddToken(token=0, begin=True),
+        T.AddToken(token=2, begin=False),
+    ),
+)
+
+ROBERTA_LARGE_ENCODER.__doc__ = (
+    '''
+    Roberta Encoder with Large configuration
+
+    RoBERTa iterates on BERT's pretraining procedure, including training the model longer,
+    with bigger batches over more data; removing the next sentence prediction objective;
+    training on longer sequences; and dynamically changing the masking pattern applied
+    to the training data.
+
+    The RoBERTa model was pretrained on the reunion of five datasets: BookCorpus,
+    English Wikipedia, CC-News, OpenWebText, and STORIES. Together theses datasets
+    contain over a 160GB of text.
+
+    Originally published by the authors of RoBERTa under MIT License
+    and redistributed with the same license.
+    [`License <https://github.com/pytorch/fairseq/blob/main/LICENSE>`__,
+    `Source <https://github.com/pytorch/fairseq/tree/main/examples/roberta#pre-trained-models>`__]
 
     Please refer to :func:`torchtext.models.RobertaModelBundle` for the usage.
     '''

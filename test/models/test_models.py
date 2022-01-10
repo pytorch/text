@@ -14,16 +14,23 @@ class TestModules(TorchtextTestCase):
         query = torch.ones((source_len, batch_size, embed_dim))
         query[0, ...] = 0
         key_padding_mask = torch.zeros((batch_size, source_len))
-        attn_mask = torch.zeros((source_len, source_len))
-        attn_mask[0][1] = -1e8
+        float_attn_mask = torch.zeros((source_len, source_len))
+        float_attn_mask[0][1] = -1e8
+        bool_attn_mask = float_attn_mask.to(dtype=bool)
         with torch.no_grad():
             mha.input_projection.weight.fill_(1. / embed_dim)
             mha.input_projection.bias.fill_(0.)
             mha.output_projection.weight.fill_(1. / embed_dim)
             mha.output_projection.bias.fill_(0.)
 
-            # with attention mask
-            output = mha(query, key_padding_mask, attn_mask)
+            # with float attention mask
+            output = mha(query, key_padding_mask, float_attn_mask)
+            actual = output[0].flatten()
+            expected = torch.tensor([0., 0., 0., 0])
+            torch.testing.assert_close(actual, expected, atol=1e-4, rtol=1e-4)
+
+            # with bool attention mask
+            output = mha(query, key_padding_mask, bool_attn_mask)
             actual = output[0].flatten()
             expected = torch.tensor([0., 0., 0., 0])
             torch.testing.assert_close(actual, expected, atol=1e-4, rtol=1e-4)

@@ -41,20 +41,6 @@ class TestDataset(TorchtextTestCase):
     @parameterized.expand(
         load_params('raw_datasets.jsonl'),
         name_func=_raw_text_custom_name_func)
-    def test_raw_text_name_property(self, info):
-        dataset_name = info['dataset_name']
-        split = info['split']
-
-        if dataset_name == 'WMT14':
-            return
-        else:
-            data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
-
-        self.assertEqual(str(data_iter), dataset_name)
-
-    @parameterized.expand(
-        load_params('raw_datasets.jsonl'),
-        name_func=_raw_text_custom_name_func)
     def test_raw_text_classification(self, info):
         dataset_name = info['dataset_name']
         split = info['split']
@@ -63,8 +49,7 @@ class TestDataset(TorchtextTestCase):
             return
         else:
             data_iter = torchtext.datasets.DATASETS[dataset_name](split=split)
-        self.assertEqual(len(data_iter), info['NUM_LINES'])
-        self.assertEqual(hashlib.md5(json.dumps(next(data_iter), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
+        self.assertEqual(hashlib.md5(json.dumps(next(iter(data_iter)), sort_keys=True).encode('utf-8')).hexdigest(), info['first_line'])
         if dataset_name == "AG_NEWS":
             self.assertEqual(torchtext.datasets.URLS[dataset_name][split], info['URL'])
             self.assertEqual(torchtext.datasets.MD5[dataset_name][split], info['MD5'])

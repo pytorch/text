@@ -3,26 +3,37 @@ from torch.nn import Module
 from torch import Tensor
 import torch
 from torchtext.data.functional import load_sp_model
-from torchtext.utils import download_from_url
+from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
-from typing import List, Optional, Union
-import os
-
-from torchtext import _CACHE_DIR
+from torchtext._torchtext import GPT2BPEEncoder as GPT2BPEEncoderPyBind
+from typing import List, Optional, Any, Union
+import json
+from functools import lru_cache
+from copy import deepcopy
+import torchtext    # noqa: F401
 
 __all__ = [
     'SentencePieceTokenizer',
     'VocabTransform',
     'ToTensor',
     'LabelToIndex',
+    'Truncate',
+    'AddToken',
+    'GPT2BPETokenizer',
+    'Sequential',
 ]
 
 
 class SentencePieceTokenizer(Module):
     """
-    Transform for Sentence Piece tokenizer from pre-trained SentencePiece model
+    Transform for Sentence Piece tokenizer from pre-trained sentencepiece model
 
-    Examples:
+    Additiona details: https://github.com/google/sentencepiece
+
+    :param sp_model_path: Path to pre-trained sentencepiece model
+    :type sp_model_path: str
+
+    Example
         >>> from torchtext.transforms import SpmTokenizerTransform
         >>> transform = SentencePieceTokenizer("spm_model")
         >>> transform(["hello world", "attention is all you need!"])
@@ -30,27 +41,30 @@ class SentencePieceTokenizer(Module):
 
     def __init__(self, sp_model_path: str):
         super().__init__()
-        if os.path.exists(sp_model_path):
-            local_path = sp_model_path
-        else:
-            local_path = download_from_url(url=sp_model_path, root=_CACHE_DIR)
-        self.sp_model = load_sp_model(local_path)
+        self.sp_model = load_sp_model(get_asset_local_path(sp_model_path))
 
-    def forward(self, input: Union[str, List[str]]) -> Union[List[str], List[List[str]]]:
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :type input: Union[str, List[str]]
+        :return: tokenized text
+        :rtype: Union[List[str], List[List(str)]]
+        """
         if torch.jit.isinstance(input, List[str]):
             tokens: List[List[str]] = []
             for text in input:
                 tokens.append(self.sp_model.EncodeAsPieces(text))
             return tokens
-        else:
+        elif torch.jit.isinstance(input, str):
             return self.sp_model.EncodeAsPieces(input)
+        else:
+            raise TypeError("Input type not supported")
 
 
 class VocabTransform(Module):
-    r"""Vocab transform
+    r"""Vocab transform to convert input batch of tokens into corresponding token ids
 
-    Args:
-        vocab: an instance of torchtext.vocab.Vocab class.
+    :param vocab: an instance of :class:`torchtext.vocab.Vocab` class.
 
     Example:
         >>> import torch
@@ -68,39 +82,45 @@ class VocabTransform(Module):
         assert isinstance(vocab, Vocab)
         self.vocab = vocab
 
-    def forward(self, input: Union[List[str], List[List[str]]]) -> Union[List[int], List[List[int]]]:
-        r"""
-
-        Args:
-            input: list of list tokens
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input batch of token to convert to correspnding token ids
+        :type input: Union[List[str], List[List[str]]]
+        :return: Converted input into corresponding token ids
+        :rtype: Union[List[int], List[List[int]]]
         """
 
         if torch.jit.isinstance(input, List[str]):
             return self.vocab.lookup_indices(input)
-        else:
+        elif torch.jit.isinstance(input, List[List[str]]):
             output: List[List[int]] = []
             for tokens in input:
                 output.append(self.vocab.lookup_indices(tokens))
 
             return output
+        else:
+            raise TypeError("Input type not supported")
 
 
 class ToTensor(Module):
     r"""Convert input to torch tensor
 
-    Args:
-        padding_value (int, optional): Pad value to make each input in the batch of length equal to the longest sequence in the batch.
+    :param padding_value: Pad value to make each input in the batch of length equal to the longest sequence in the batch.
+    :type padding_value: Optional[int]
+    :param dtype: :class:`torch.dtype` of output tensor
+    :type dtype: :class:`torch.dtype`
     """
 
-    def __init__(self, padding_value: Optional[int] = None, dtype: Optional[torch.dtype] = torch.long) -> None:
+    def __init__(self, padding_value: Optional[int] = None, dtype: torch.dtype = torch.long) -> None:
         super().__init__()
         self.padding_value = padding_value
         self.dtype = dtype
 
-    def forward(self, input: Union[List[int], List[List[int]]]) -> Tensor:
-        r"""
-        Args:
-
+    def forward(self, input: Any) -> Tensor:
+        """
+        :param input: Sequence or batch of token ids
+        :type input: Union[List[int], List[List[int]]]
+        :rtype: Tensor
         """
         return F.to_tensor(input, padding_value=self.padding_value, dtype=self.dtype)
 
@@ -109,15 +129,16 @@ class LabelToIndex(Module):
     r"""
     Transform labels from string names to ids.
 
-    Args:
-        label_names (List[str], Optional): a list of unique label names
-        label_path (str, Optional): a path to file containing unique label names containing 1 label per line.
+    :param label_names: a list of unique label names
+    :type label_names: Optional[List[str]]
+    :param label_path: a path to file containing unique label names containing 1 label per line. Note that either label_names or label_path should be supplied
+                       but not both.
+    :type label_path: Optional[str]
     """
 
     def __init__(
         self, label_names: Optional[List[str]] = None, label_path: Optional[str] = None, sort_names=False,
     ):
-
         assert label_names or label_path, "label_names or label_path is required"
         assert not (label_names and label_path), "label_names and label_path are mutually exclusive"
         super().__init__()
@@ -130,15 +151,202 @@ class LabelToIndex(Module):
 
         if sort_names:
             label_names = sorted(label_names)
-        self._label_vocab = Vocab(torch.classes.torchtext.Vocab(label_names, 0))
+        self._label_vocab = Vocab(torch.classes.torchtext.Vocab(label_names, None))
         self._label_names = self._label_vocab.get_itos()
 
-    def forward(self, labels: Union[str, List[str]]) -> Union[int, List[int]]:
-        if torch.jit.isinstance(labels, List[str]):
-            return self._label_vocab.lookup_indices(labels)
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input labels to convert to corresponding ids
+        :type input: Union[str, List[str]]
+        :rtype: Union[int, List[int]]
+        """
+        if torch.jit.isinstance(input, List[str]):
+            return self._label_vocab.lookup_indices(input)
+        elif torch.jit.isinstance(input, str):
+            return self._label_vocab.__getitem__(input)
         else:
-            return self._label_vocab.__getitem__(labels)
+            raise TypeError("Input type not supported")
 
     @property
     def label_names(self) -> List[str]:
         return self._label_names
+
+
+class Truncate(Module):
+    r"""Truncate input sequence
+
+    :param max_seq_len: The maximum allowable length for input sequence
+    :type max_seq_len: int
+    """
+
+    def __init__(self, max_seq_len: int) -> None:
+        super().__init__()
+        self.max_seq_len = max_seq_len
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch of sequence to be truncated
+        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        :return: Truncated sequence
+        :rtype: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        """
+        return F.truncate(input, self.max_seq_len)
+
+
+class AddToken(Module):
+    """Add token to beginning or end of sequence
+
+    :param token: The token to be added
+    :type token: Union[int, str]
+    :param begin: Whether to insert token at start or end or sequence, defaults to True
+    :type begin: bool, optional
+    """
+
+    def __init__(self, token: Union[int, str], begin: bool = True) -> None:
+        super().__init__()
+        self.token = token
+        self.begin = begin
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch
+        :type input: Union[List[Union[str, int]], List[List[Union[str, int]]]]
+        """
+
+        return F.add_token(input, self.token, self.begin)
+
+
+class GPT2BPETokenizer(Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    """
+    Transform for GPT-2 BPE Tokenizer.
+
+    Reimplements openai GPT-2 BPE in TorchScript. Original openai implementation
+    https://github.com/openai/gpt-2/blob/master/src/encoder.py
+
+    :param encoder_json_path: Path to GPT-2 BPE encoder json file.
+    :type encoder_json_path: str
+    :param vocab_bpe_path: Path to bpe vocab file.
+    :type vocab_bpe_path: str
+    """
+    _seperator: torch.jit.Final[str]
+
+    def __init__(
+        self,
+        encoder_json_path: str,
+        vocab_bpe_path: str,
+    ):
+        super().__init__()
+        self._seperator = "\u0001"
+        # load bpe encoder and bpe decoder
+        with open(get_asset_local_path(encoder_json_path), "r", encoding="utf-8") as f:
+            bpe_encoder = json.load(f)
+        # load bpe vocab
+        with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
+            bpe_vocab = f.read()
+        bpe_merge_ranks = {
+            self._seperator.join(merge_pair.split()): i
+            for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+        }
+        # Caching is enabled in Eager mode
+        self.bpe = GPT2BPEEncoderPyBind(bpe_encoder, bpe_merge_ranks,
+                                        self._seperator, bytes_to_unicode(), True)
+
+    @property
+    def is_jitable(self):
+        return isinstance(self.bpe, torch._C.ScriptObject)
+
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Encode text into a list of Token(token_id, start_idx, end_idx)
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe tokens
+
+        For example: "awesome,awe"
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
+            --> bpe encode --> bpe token ids: [707, 5927, 11, 707, 68]
+        """
+        bpe_token_ids: List[int] = self.bpe.encode(text)
+        bpe_tokens: List[str] = []
+
+        for bpe_token_id in bpe_token_ids:
+            bpe_tokens.append(str(bpe_token_id))
+
+        return bpe_tokens
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :type input: Union[str, List[str]]
+        :return: tokenized text
+        :rtype: Union[List[str], List[List(str)]]
+        """
+        if torch.jit.isinstance(input, List[str]):
+            tokens: List[List[str]] = []
+            for text in input:
+                tokens.append(self._tokenize(text))
+            return tokens
+        elif torch.jit.isinstance(input, str):
+            return self._tokenize(input)
+        else:
+            raise TypeError("Input type not supported")
+
+    def __prepare_scriptable__(self):
+        r"""Return a JITable tokenizer.
+        """
+        if not self.is_jitable:
+            tokenizer_copy = deepcopy(self)
+            # Disable caching in script mode
+            tokenizer_copy.bpe = torch.classes.torchtext.GPT2BPEEncoder(self.bpe.bpe_encoder_,
+                                                                        self.bpe.bpe_merge_ranks_,
+                                                                        self.bpe.seperator_,
+                                                                        self.bpe.byte_encoder_, False)
+            return tokenizer_copy
+        return self
+
+
+@lru_cache()
+def bytes_to_unicode():
+    """
+    Original Source: https://github.com/openai/gpt-2/blob/master/src/encoder.py#L9
+
+    Returns list of utf-8 byte and a corresponding list of unicode strings.
+    The reversible bpe codes work on unicode strings.
+    This means you need a large # of unicode characters in your vocab if you want to avoid UNKs.
+    When you're at something like a 10B token dataset you end up needing around 5K for decent coverage.
+    This is a signficant percentage of your normal, say, 32K bpe vocab.
+    To avoid that, we want lookup tables between utf-8 bytes and unicode strings.
+    And avoids mapping to whitespace/control characters the bpe code barfs on.
+    """
+    bs = (
+        list(range(ord("!"), ord("~") + 1))
+        + list(range(ord("¡"), ord("¬") + 1))
+        + list(range(ord("®"), ord("ÿ") + 1))
+    )
+    cs = bs[:]
+    n = 0
+    for b in range(2 ** 8):
+        if b not in bs:
+            bs.append(b)
+            cs.append(2 ** 8 + n)
+            n += 1
+    cs = [chr(n) for n in cs]
+    return dict(zip(bs, cs))
+
+
+class Sequential(torch.nn.Sequential):
+    r"""A container to host a sequence of text transforms.
+    """
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch. The input type must be supported by the first transform in the sequence.
+        :type input: `Any`
+        """
+        for module in self:
+            input = module(input)
+        return input

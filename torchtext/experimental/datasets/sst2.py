@@ -1,7 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 import os
 
-from torch.utils.data.dataset import IterableDataset
+from torch.utils.data import IterDataPipe
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
     _add_docstring_header,
@@ -10,7 +10,7 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import IterableWrapper, FileLoader
+    from torchdata.datapipes.iter import IterableWrapper, FileOpener
 
     # we import HttpReader from _download_hooks so we can swap out public URLs
     # with interal URLs when the dataset is used within Facebook
@@ -43,7 +43,7 @@ _EXTRACTED_FILES_MD5 = {
 _FIRST_LINE_MD5 = {
     "train": "2552b8cecd57b2e022ef23411c688fa8",
     "dev": "1b0ffd6aa5f2bf0fd9840a5f6f1a9f07",
-    "test": "f838c81fe40bfcd7e42e9ffc4dd004f7",
+    "test": "3e7ff69ab3fc6d026e3c96cadd8b0b53",
 }
 
 DATASET_NAME = "SST2"
@@ -56,7 +56,7 @@ def SST2(root, split, validate_hash=True):
     return SST2Dataset(root, split, validate_hash=validate_hash)
 
 
-class SST2Dataset(IterableDataset):
+class SST2Dataset(IterDataPipe):
     """The SST2 dataset uses torchdata datapipes end-2-end.
     To avoid download at every epoch, we cache the data on-disk
     We do sanity check on dowloaded and extracted data
@@ -90,13 +90,20 @@ class SST2Dataset(IterableDataset):
         cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
 
         # Load from cached file
-        cache_dp = FileLoader(cache_dp, mode="rb")
+        cache_dp = FileOpener(cache_dp, mode="rb")
         # extract data from zip
         extracted_files = cache_dp.read_from_zip().filter(
             lambda x: f"{split}.tsv" in x[0]
         )
 
         # Parse CSV file and yield data samples
-        return extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
-            lambda x: (x[0], x[1])
-        )
+        if split == "test":
+            parsed_data = extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
+                lambda x: (x[1],)
+            )
+        else:
+            parsed_data = extracted_files.parse_csv(skip_lines=1, delimiter="\t").map(
+                lambda x: (x[0], x[1])
+            )
+
+        return parsed_data
