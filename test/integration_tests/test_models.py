@@ -45,6 +45,9 @@ class TestModels(TorchtextTestCase):
         [True, False],
     )
     def test_model(self, model_args, is_jit):
+        """Verify pre-trained XLM-R and Roberta models in torchtext produce
+        the same output as the reference implementation within fairseq
+        """
         expected_asset_name, test_text, model_bundler = model_args
 
         expected_asset_path = get_asset_path(expected_asset_name)
