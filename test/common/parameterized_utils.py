@@ -1,16 +1,9 @@
 import json
-import os.path
 from itertools import product
 
 from parameterized import param, parameterized
 
-
-_TEST_DIR_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
-
-
-def get_asset_path(*paths):
-    """Return full path of a test asset"""
-    return os.path.join(_TEST_DIR_PATH, "asset", *paths)
+from .assets import get_asset_path
 
 
 def load_params(*paths):
