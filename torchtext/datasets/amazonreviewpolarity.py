@@ -35,6 +35,9 @@ DATASET_NAME = "AmazonReviewPolarity"
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
 def AmazonReviewPolarity(root, split):
+    # TODO Remove this after removing conditional dependency
+    if not is_module_available("torchdata"):
+        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
     url_dp = IterableWrapper([URL])
 
