@@ -10,6 +10,21 @@ from ..common.assets import get_asset_path
 from ..common.parameterized_utils import nested_params
 from ..common.torchtext_test_case import TorchtextTestCase
 
+TEST_MODELS_PARAMETERIZED_ARGS = [
+    ("xlmr.base.output.pt", "XLMR base Model Comparison", XLMR_BASE_ENCODER),
+    ("xlmr.large.output.pt", "XLMR base Model Comparison", XLMR_LARGE_ENCODER),
+    (
+        "roberta.base.output.pt",
+        "Roberta base Model Comparison",
+        ROBERTA_BASE_ENCODER,
+    ),
+    (
+        "roberta.large.output.pt",
+        "Roberta base Model Comparison",
+        ROBERTA_LARGE_ENCODER,
+    ),
+]
+
 
 class TestModels(TorchtextTestCase):
     @nested_params(
