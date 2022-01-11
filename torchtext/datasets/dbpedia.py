@@ -23,6 +23,11 @@ NUM_LINES = {
 
 _PATH = 'dbpedia_csv.tar.gz'
 
+_EXTRACTED_FILES = {
+    "train": os.path.join("dbpedia_csv", "train.csv"),
+    "test": os.path.join("dbpedia_csv", "test.csv")
+}
+
 DATASET_NAME = "DBpedia"
 
 
@@ -45,6 +50,6 @@ def DBpedia(root: str, split: Union[Tuple[str], str]):
 
     extracted_files = cache_dp.read_from_tar()
 
-    filter_extracted_files = extracted_files.filter(lambda x: split + ".csv" in x[0])
+    filter_extracted_files = extracted_files.filter(lambda x: _EXTRACTED_FILES[split] in x[0])
 
     return filter_extracted_files.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))
