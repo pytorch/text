@@ -24,8 +24,8 @@ NUM_LINES = {
 _PATH = 'amazon_review_full_csv.tar.gz'
 
 _EXTRACTED_FILES = {
-    'train': f'{os.sep}'.join(['amazon_review_full_csv', 'train.csv']),
-    'test': f'{os.sep}'.join(['amazon_review_full_csv', 'test.csv']),
+    'train': os.path.join('amazon_review_full_csv', 'train.csv'),
+    'test': os.path.join('amazon_review_full_csv', 'test.csv'),
 }
 
 _EXTRACTED_FILES_MD5 = {

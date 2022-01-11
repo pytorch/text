@@ -24,8 +24,8 @@ NUM_LINES = {
 _PATH = 'sogou_news_csv.tar.gz'
 
 _EXTRACTED_FILES = {
-    'train': f'{os.sep}'.join(['sogou_news_csv', 'train.csv']),
-    'test': f'{os.sep}'.join(['sogou_news_csv', 'test.csv']),
+    'train': os.path.join('sogou_news_csv', 'train.csv'),
+    'test': os.path.join('sogou_news_csv', 'test.csv'),
 }
 
 _EXTRACTED_FILES_MD5 = {

@@ -23,8 +23,8 @@ NUM_LINES = {
 _PATH = 'amazon_review_polarity_csv.tar.gz'
 
 _EXTRACTED_FILES = {
-    'train': f'{os.sep}'.join(['amazon_review_polarity_csv', 'train.csv']),
-    'test': f'{os.sep}'.join(['amazon_review_polarity_csv', 'test.csv']),
+    'train': os.path.join('amazon_review_polarity_csv', 'train.csv'),
+    'test': os.path.join('amazon_review_polarity_csv', 'test.csv'),
 }
 
 
