@@ -70,11 +70,17 @@ dev_datapipe = dev_datapipe.map(lambda x: (text_transform(x[0]), label_transform
 dev_datapipe = dev_datapipe.batch(batch_size)
 dev_datapipe = dev_datapipe.rows2columnar(["token_ids", "target"])
 
+
+#######################################################################
 # Alternately we can also use batched API (i.e apply transformation on the whole batch)
-# train_datapipe = train_datapipe.batch(batch_size).rows2columnar(["text", "label"])
-# train_datapipe = train_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
-# dev_datapipe = dev_datapipe.batch(batch_size).rows2columnar(["text", "label"])
-# dev_datapipe = dev_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
+#
+# ::
+#
+#   train_datapipe = train_datapipe.batch(batch_size).rows2columnar(["text", "label"])
+#   train_datapipe = train_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
+#   dev_datapipe = dev_datapipe.batch(batch_size).rows2columnar(["text", "label"])
+#   dev_datapipe = dev_datapipe.map(lambda x: {"token_ids": text_transform(x["text"]), "target": label_transform(x["label"])})
+#
 
 ######################################################################
 # Model Preparation
