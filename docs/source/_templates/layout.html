@@ -6,3 +6,69 @@
     </div>
     {% include "searchbox.html" %}
 {% endblock %}
+
+{#
+    ################################################################################
+    # Adding Colab / notebook header like tutorials repo
+    # Based off of
+    # https://github.com/pytorch/pytorch_sphinx_theme/blob/fe1f3d5b9233497d81d04f55f5750ccad92500be/pytorch_sphinx_theme/layout.html#L275-L319
+    ################################################################################
+#}
+
+{%- block content %}
+    {% if pagename.endswith('tutorial') %}
+
+    <div class="pytorch-call-to-action-links">
+      <div id="tutorial-type">{{ pagename }}</div>
+
+      <div id="google-colab-link">
+        <img class="call-to-action-img" src="{{ pathto('_static/images/pytorch-colab.svg', 1) }}"/>
+        <div class="call-to-action-desktop-view">Run in Google Colab</div>
+        <div class="call-to-action-mobile-view">Colab</div>
+      </div>
+      <div id="download-notebook-link">
+        <img class="call-to-action-notebook-img" src="{{ pathto('_static/images/pytorch-download.svg', 1) }}"/>
+        <div class="call-to-action-desktop-view">Download Notebook</div>
+        <div class="call-to-action-mobile-view">Notebook</div>
+      </div>
+      <div id="github-view-link">
+        <img class="call-to-action-img" src="{{ pathto('_static/images/pytorch-github.svg', 1) }}"/>
+        <div class="call-to-action-desktop-view">View on GitHub</div>
+        <div class="call-to-action-mobile-view">GitHub</div>
+      </div>
+    </div>
+
+    {% endif %}
+    {{ super() }}
+
+{% endblock %}
+
+{#
+    ################################################################################
+    # Because the repo URL is hardcoded to pytorch/tutorials,
+    # we need to modify the URL to pytorch/text.
+    # We insert the script in footer so that it is executed after the main `theme.js` is loaded
+    # Based off of
+    # https://github.com/pytorch/pytorch_sphinx_theme/blob/b4d00058a48604d8fb63771b513a50450f0ee188/js/theme.js#L245-L263
+    ################################################################################
+#}
+
+{%- block footer %}
+
+    {{ super() }}
+    <script type="text/javascript">
+      $(document).ready(function() {
+	  var downloadNote = $(".sphx-glr-download-link-note.admonition.note");
+	  if (downloadNote.length >= 1) {
+	      var tutorialUrl = $("#tutorial-type").text();
+	      var githubLink = "https://github.com/pytorch/text/blob/main/examples/"  + tutorialUrl + ".py",
+		  notebookLink = $(".reference.download")[1].href,
+		  notebookDownloadPath = notebookLink.split('_downloads')[1],
+		  colabLink = "https://colab.research.google.com/github/pytorch/text/blob/gh-pages/main/_downloads" + notebookDownloadPath;
+
+	      $(".pytorch-call-to-action-links a[data-response='Run in Google Colab']").attr("href", colabLink);
+	      $(".pytorch-call-to-action-links a[data-response='View on Github']").attr("href", githubLink);
+	  }
+      });
+    </script>
+{% endblock %}
