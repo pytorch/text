@@ -46,5 +46,5 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     cache_dp = GDriveReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, mode="b")
     extracted_files = cache_dp.read_from_tar()
-    filter_extracted_files = extracted_files.filter(lambda x: split in x[0])
+    filter_extracted_files = extracted_files.filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     return filter_extracted_files.parse_csv().map(fn=lambda t: (int(t[0]), ' '.join(t[1:])))
