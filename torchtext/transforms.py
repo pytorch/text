@@ -20,6 +20,7 @@ __all__ = [
     'Truncate',
     'AddToken',
     'GPT2BPETokenizer',
+    'Sequential',
 ]
 
 
@@ -110,7 +111,7 @@ class ToTensor(Module):
     :type dtype: :class:`torch.dtype`
     """
 
-    def __init__(self, padding_value: Optional[int] = None, dtype: Optional[torch.dtype] = torch.long) -> None:
+    def __init__(self, padding_value: Optional[int] = None, dtype: torch.dtype = torch.long) -> None:
         super().__init__()
         self.padding_value = padding_value
         self.dtype = dtype
@@ -335,3 +336,17 @@ def bytes_to_unicode():
             n += 1
     cs = [chr(n) for n in cs]
     return dict(zip(bs, cs))
+
+
+class Sequential(torch.nn.Sequential):
+    r"""A container to host a sequence of text transforms.
+    """
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sequence or batch. The input type must be supported by the first transform in the sequence.
+        :type input: `Any`
+        """
+        for module in self:
+            input = module(input)
+        return input

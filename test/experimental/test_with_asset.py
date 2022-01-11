@@ -7,7 +7,6 @@ from torchtext.experimental.transforms import (
     VocabTransform,
     PRETRAINED_SP_MODEL,
     sentencepiece_processor,
-    TextSequentialTransforms,
 )
 from torch.utils.data import DataLoader
 from torchtext.experimental.vocab_factory import (
@@ -212,14 +211,6 @@ class TestTransformsWithAsset(TorchtextTestCase):
                                 collate_fn=batch_func)
         for item in dataloader:
             self.assertEqual(item, ref_results)
-
-    def test_text_sequential_transform(self):
-        asset_name = 'vocab_test2.txt'
-        asset_path = get_asset_path(asset_name)
-        pipeline = TextSequentialTransforms(basic_english_normalize(), load_vocab_from_file(asset_path))
-        jit_pipeline = torch.jit.script(pipeline)
-        self.assertEqual(pipeline('of that new'), [7, 18, 24])
-        self.assertEqual(jit_pipeline('of that new'), [7, 18, 24])
 
     def test_vectors_from_file(self):
         asset_name = 'vectors_test.csv'
