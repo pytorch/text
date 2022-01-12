@@ -10,8 +10,21 @@ SST-2 Binary text classification with XLM-RoBERTa model
 # Overview
 # --------
 #
-# This tutorial shows how to train a text classifier using pre-trained XLM-RoBERTa model.
-# TODO
+# This tutorial demonstrates how to train a text classifier on SST-2 binary dataset using pre-trained XLM-RoBERTa (XLM-R) model.
+# We will show how to use torchtext libary to:
+#
+# 1. build text pre-processing pipeline for XLM-R model
+# 2. read SST-2 dataset and transform it using text and label transformation
+# 3. instantiate XLM-R classifier model using pre-train encoder
+#
+#
+# To run this tutorial, please install torchtext nightly and torchdata (following commands will do in google Colab)
+#
+# ::
+#
+#   !pip3 install --pre --upgrade torchtext -f https://download.pytorch.org/whl/nightly/cu113/torch_nightly.html
+#   !pip install --user "git+https://github.com/pytorch/data.git"
+#
 
 
 ######################################################################
@@ -25,7 +38,21 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 #######################################################################
 # Data Transformation
 # -------------------
-# TODO
+#
+# Models like XLM-R cannot work directly with raw text. The first step in training
+# these models is to transform input text into tensor (numerical) form such that it
+# can be then be processed by models to make predictions. A standard way to process text is:
+#
+# 1. Tokenize text
+# 2. Convert tokens into (integer) IDs
+# 3. Add any special tokens IDs
+#
+# XLM-R uses sentencepiece model for text tokenization. Below, we use pre-trained sentencepiepce
+# model along with corresponding vocabulary to build text pre-processing pipeline using torchtext's transforms.
+# The transforms are pipelined using :py:func:`torchtext.transforms.Sequential` which is similar to :py:func:`torch.nn.Sequential`
+# but is torchscriptable. Note that the transforms support both batched and non-batched text inputs i.e, one
+# can either pass single sentence or list of sentences.
+#
 
 import torchtext.transforms as T
 from torch.hub import load_state_dict_from_url
@@ -33,13 +60,13 @@ from torch.hub import load_state_dict_from_url
 padding_idx = 1
 bos_idx = 0
 eos_idx = 2
-max_seq_len = 512
-xlmr_vocab_path = r"https:/download.pytorch.org/models/text/xlmr.vocab.pt"
-xlmr_spm_model_path = r"https:/download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
+max_seq_len = 256
+xlmr_vocab_path = r"https://download.pytorch.org/models/text/xlmr.vocab.pt"
+xlmr_spm_model_path = r"https://download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
 
 label_transform = T.LabelToIndex(label_names=['0', '1'])
 
-text_transform = nn.Sequential(
+text_transform = T.Sequential(
     T.SentencePieceTokenizer(xlmr_spm_model_path),
     T.VocabTransform(load_state_dict_from_url(xlmr_vocab_path)),
     T.Truncate(max_seq_len - 2),
@@ -59,7 +86,13 @@ text_transform = nn.Sequential(
 #######################################################################
 # Dataset
 # -------
-# TODO
+# torchtext comes equipped with several standard NLP datasets. For complete list, refer to documentation
+# at https://pytorch.org/text/stable/datasets.html. These datasets are build using composable torchdata
+# datapipes and hence support standard flow-control and mapping/transformation using user defined functions
+# and transforms. Below, we demonstrate how to use text and label processing transforms to pre-process the
+# SST-2 dataset.
+#
+#
 
 from torchtext.experimental.datasets.sst2 import SST2
 batch_size = 16
@@ -91,7 +124,10 @@ dev_datapipe = dev_datapipe.rows2columnar(["token_ids", "target"])
 ######################################################################
 # Model Preparation
 # -----------------
-# TODO
+#
+#
+#
+
 num_classes = 2
 input_dim = 768
 
@@ -164,4 +200,4 @@ for e in range(num_epochs):
         train_step(input, target)
 
 loss, accuracy = evaluate()
-print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(num_epochs), loss, accuracy)
+print("Epoch = [{}], loss = [{}], accuracy = [{}]".format(num_epochs, loss, accuracy))
