@@ -29,9 +29,9 @@ URL = "https://dl.fbaipublicfiles.com/glue/data/SST-2.zip"
 _PATH = "SST-2.zip"
 
 _EXTRACTED_FILES = {
-    "train": f"{os.sep}".join([_PATH, "SST-2", "train.tsv"]),
-    "dev": f"{os.sep}".join([_PATH, "SST-2", "dev.tsv"]),
-    "test": f"{os.sep}".join([_PATH, "SST-2", "test.tsv"]),
+    "train": os.path.join(_PATH, "SST-2", "train.tsv"),
+    "dev": os.path.join(_PATH, "SST-2", "dev.tsv"),
+    "test": os.path.join(_PATH, "SST-2", "test.tsv"),
 }
 
 _EXTRACTED_FILES_MD5 = {
