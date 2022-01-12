@@ -37,6 +37,8 @@ max_seq_len = 512
 xlmr_vocab_path = r"https:/download.pytorch.org/models/text/xlmr.vocab.pt"
 xlmr_spm_model_path = r"https:/download.pytorch.org/models/text/xlmr.sentencepiece.bpe.model"
 
+label_transform = T.LabelToIndex(label_names=['0', '1'])
+
 text_transform = nn.Sequential(
     T.SentencePieceTokenizer(xlmr_spm_model_path),
     T.VocabTransform(load_state_dict_from_url(xlmr_vocab_path)),
@@ -45,10 +47,14 @@ text_transform = nn.Sequential(
     T.AddToken(token=eos_idx, begin=False),
 )
 
-# Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box
-# text_transform = XLMR_BASE_ENCODER.transform()
 
-label_transform = T.LabelToIndex(label_names=['0', '1'])
+#######################################################################
+# Alternately we can also use transform shipped with pre-trained model that does all of the above out-of-the-box
+#
+# ::
+#
+#   text_transform = XLMR_BASE_ENCODER.transform()
+#
 
 #######################################################################
 # Dataset
