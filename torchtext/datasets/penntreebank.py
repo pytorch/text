@@ -9,7 +9,7 @@ from torchtext.data.datasets_utils import (
 )
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileLoader, HttpReader, IterableWrapper
+    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
 URL = {
     "train": "https://raw.githubusercontent.com/wojzaremba/lstm/master/data/ptb.train.txt",
@@ -48,5 +48,5 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="w", same_filepath_fn=True)
-    cache_dp = FileLoader(cache_dp, mode="r")
+    cache_dp = FileOpener(cache_dp, mode="r")
     return cache_dp.readlines().map(lambda t: t[1][1:-1])
