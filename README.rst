@@ -111,8 +111,7 @@ For example, to access the raw text from the AG_NEWS dataset:
 
       >>> from torchtext.datasets import AG_NEWS
       >>> train_iter = AG_NEWS(split='train')
-      >>> next(train_iter)
-      >>> # Or iterate with for loop
+      >>> # Iterate with for loop
       >>> for (label, line) in train_iter:
       >>>     print(label, line)
       >>> # Or send to DataLoader
