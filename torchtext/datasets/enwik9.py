@@ -1,4 +1,5 @@
 import os
+from typing import Tuple, Union
 
 from torchtext._internal.module_utils import is_module_available
 from torchtext.data.datasets_utils import (
@@ -24,7 +25,7 @@ DATASET_NAME = "EnWik9"
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train",))
-def EnWik9(root, split):
+def EnWik9(root: str, split: Union[Tuple[str], str]):
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError(
             "Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`"
