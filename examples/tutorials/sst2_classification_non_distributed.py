@@ -10,15 +10,15 @@ SST-2 Binary text classification with XLM-RoBERTa model
 # Overview
 # --------
 #
-# This tutorial demonstrates how to train a text classifier on SST-2 binary dataset using pre-trained XLM-RoBERTa (XLM-R) model.
-# We will show how to use torchtext libary to:
+# This tutorial demonstrates how to train a text classifier on SST-2 binary dataset using a pre-trained XLM-RoBERTa (XLM-R) model.
+# We will show how to use torchtext library to:
 #
 # 1. build text pre-processing pipeline for XLM-R model
 # 2. read SST-2 dataset and transform it using text and label transformation
-# 3. instantiate XLM-R classifier model using pre-train encoder
+# 3. instantiate classification model using pre-trained XLM-R encoder
 #
 #
-# To run this tutorial, please install torchtext nightly and torchdata (following commands will do in google Colab)
+# To run this tutorial, please install torchtext nightly and TorchData (following commands will do in google Colab)
 #
 # ::
 #
@@ -41,7 +41,7 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 #
 # Models like XLM-R cannot work directly with raw text. The first step in training
 # these models is to transform input text into tensor (numerical) form such that it
-# can be then be processed by models to make predictions. A standard way to process text is:
+# can then be processed by models to make predictions. A standard way to process text is:
 #
 # 1. Tokenize text
 # 2. Convert tokens into (integer) IDs
@@ -51,7 +51,7 @@ DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 # model along with corresponding vocabulary to build text pre-processing pipeline using torchtext's transforms.
 # The transforms are pipelined using :py:func:`torchtext.transforms.Sequential` which is similar to :py:func:`torch.nn.Sequential`
 # but is torchscriptable. Note that the transforms support both batched and non-batched text inputs i.e, one
-# can either pass single sentence or list of sentences.
+# can either pass a single sentence or list of sentences.
 #
 
 import torchtext.transforms as T
@@ -86,7 +86,7 @@ text_transform = T.Sequential(
 #######################################################################
 # Dataset
 # -------
-# torchtext comes equipped with several standard NLP datasets. For complete list, refer to documentation
+# torchtext provides several standard NLP datasets. For complete list, refer to documentation
 # at https://pytorch.org/text/stable/datasets.html. These datasets are build using composable torchdata
 # datapipes and hence support standard flow-control and mapping/transformation using user defined functions
 # and transforms. Below, we demonstrate how to use text and label processing transforms to pre-process the
@@ -125,6 +125,11 @@ dev_datapipe = dev_datapipe.rows2columnar(["token_ids", "target"])
 # Model Preparation
 # -----------------
 #
+# torchtext provides SOTA pre-trained models that can be used to fine-tune on downstream NLP tasks.
+# Below we use pre-trained XLM-R encoder with standard base architecture and attach a classifier head to fine-tune it
+# on SST-2 binary classification task. We shall use standard Classifier head from the library, but users can define
+# their own appropriate task head and attach it to the pre-trained encoder. For additional details on available pre-trained models,
+# please refer to documentation at https://pytorch.org/text/main/models.html
 #
 #
 
@@ -140,7 +145,10 @@ model.to(DEVICE)
 #######################################################################
 # Training methods
 # ----------------
-# TODO
+#
+# Let's now define the standard optimizer and training criteria as well as some helper functions
+# for training and evaluation
+#
 
 import torchtext.functional as F
 from torch.optim import AdamW
@@ -186,9 +194,14 @@ def evaluate():
 #######################################################################
 # Train
 # -----
-# TODO
+#
+# Now we have all the ingredients to train our classification model. Note that we are able to directly iterate
+# on our dataset object without using DataLoader. Our pre-process dataset  shall yield batches of data already,
+# thanks to the batching datapipe we have applied. For distributed training, we would need to use DataLoader to
+# take care of data-sharding.
+#
 
-num_epochs = 1
+num_epochs = 3
 
 for e in range(num_epochs):
     loss, accuracy = evaluate()
