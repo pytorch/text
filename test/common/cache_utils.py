@@ -34,9 +34,11 @@ def generate_data_cache():
             cache_status[dataset_name] = {}
         try:
             if dataset_name == 'WMT14':
-                _ = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
+                dataset = torchtext.experimental.datasets.raw.DATASETS[dataset_name](split=split)
             else:
-                _ = torchtext.datasets.DATASETS[dataset_name](split=split)
+                dataset = torchtext.datasets.DATASETS[dataset_name](split=split)
+
+            next(iter(dataset))
             cache_status[dataset_name][split] = {'status': 'success', 'reason': 'No exception thrown'}
         except Exception as e:
             cache_status[dataset_name][split] = {'status': 'fail', 'reason': str(e)}
