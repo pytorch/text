@@ -8,7 +8,6 @@ from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _add_docstring_header,
     _create_dataset_directory,
-    _ParseSQuADQAData
 )
 
 import os
@@ -47,8 +46,5 @@ def SQuAD1(root: str, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-
     cache_dp = FileOpener(cache_dp, mode="b")
-
-    # stack custom data pipe on top of JSON reader to orchestrate data samples for Q&A dataset
-    return _ParseSQuADQAData(cache_dp.parse_json_files())
+    return cache_dp.parse_json_files().read_squad()

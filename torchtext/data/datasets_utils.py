@@ -10,7 +10,7 @@ from torchtext.utils import (
     extract_archive,
     unicode_csv_reader,
 )
-from torch.utils.data import IterDataPipe
+from torch.utils.data import IterDataPipe, functional_datapipe
 import codecs
 try:
     import defusedxml.ElementTree as ET
@@ -321,7 +321,11 @@ class _RawTextIterableDataset(torch.utils.data.IterableDataset):
         return self.description
 
 
+@functional_datapipe("read_squad")
 class _ParseSQuADQAData(IterDataPipe):
+    r"""Iterable DataPipe to parse the contents of a stream of JSON objects
+    as provided by SQuAD QA. Used in SQuAD1 and SQuAD2.
+    """
     def __init__(self, source_datapipe) -> None:
         self.source_datapipe = source_datapipe
 
