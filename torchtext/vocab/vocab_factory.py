@@ -102,7 +102,6 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
     sorted_by_freq_tuples.sort(key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
 
-
     word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials or [],
                        special_first=special_first, max_tokens=max_tokens)
     return word_vocab
