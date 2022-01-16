@@ -258,3 +258,20 @@ class TestVocab(TorchtextTestCase):
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         self.assertEqual(v2.get_itos(), expected_itos)
         self.assertEqual(dict(v2.get_stoi()), expected_stoi)
+
+    def test_vocab_max_tokens(self):
+        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
+        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
+        c = OrderedDict(sorted_by_freq_tuples)
+        max_tokens = 1
+        v = vocab(c, min_freq=2, max_tokens=max_tokens)
+
+        self.assertEqual(len(v), max_tokens)
+        self.assertEqual(v['<unk>'], 0)
+
+        max_tokens = 2
+        v = vocab(c, min_freq=2, max_tokens=max_tokens)
+
+        self.assertEqual(len(v), max_tokens)
+        self.assertEqual(v['<unk>'], 0)
+        self.assertEqual(v['a'], 1)

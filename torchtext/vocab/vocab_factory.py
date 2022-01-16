@@ -8,7 +8,8 @@ from torchtext._torchtext import (
 
 def vocab(ordered_dict: Dict, min_freq: int = 1,
           specials: Optional[List[str]] = None,
-          special_first: bool = True) -> Vocab:
+          special_first: bool = True,
+          max_tokens: Optional[int] = None) -> Vocab:
     r"""Factory method for creating a vocab object which maps tokens to indices.
 
     Note that the ordering in which key value pairs were inserted in the `ordered_dict` will be respected when building the vocab.
@@ -19,6 +20,7 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
         min_freq: The minimum frequency needed to include a token in the vocabulary.
         specials: Special symbols to add. The order of supplied tokens will be preserved.
         special_first: Indicates whether to insert symbols at the beginning or at the end.
+        max_tokens: If provided, creates the vocab from the `max_tokens` most frequent tokens.
 
     Returns:
         torchtext.vocab.Vocab: A `Vocab` object
@@ -49,7 +51,12 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
         ordered_dict.pop(token, None)
 
     tokens = []
-    for token, freq in ordered_dict.items():
+    # Save room for special tokens
+    max_tokens = (max_tokens or float('inf')) - len(specials)
+    for i, (token, freq) in enumerate(ordered_dict.items()):
+        # Save room
+        if i >= max_tokens:
+            break
         if freq >= min_freq:
             tokens.append(token)
 
@@ -61,7 +68,7 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
     return Vocab(VocabPybind(tokens, None))
 
 
-def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True) -> Vocab:
+def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True, max_tokens: Optional[int] = None) -> Vocab:
     """
     Build a Vocab from an iterator.
 
@@ -70,6 +77,7 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
         min_freq: The minimum frequency needed to include a token in the vocabulary.
         specials: Special symbols to add. The order of supplied tokens will be preserved.
         special_first: Indicates whether to insert symbols at the beginning or at the end.
+        max_tokens: If provided, creates the vocab from the `max_tokens` most frequent tokens.
 
 
     Returns:
@@ -94,6 +102,7 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
     sorted_by_freq_tuples.sort(key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
 
+
     word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials or [],
-                       special_first=special_first)
+                       special_first=special_first, max_tokens=max_tokens)
     return word_vocab
