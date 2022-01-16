@@ -20,7 +20,7 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
         min_freq: The minimum frequency needed to include a token in the vocabulary.
         specials: Special symbols to add. The order of supplied tokens will be preserved.
         special_first: Indicates whether to insert symbols at the beginning or at the end.
-        max_tokens: If provided, creates the vocab from the `max_tokens` most frequent tokens.
+        max_tokens: If provided, creates the vocab from the `max_tokens - len(specials)` most frequent tokens.
 
     Returns:
         torchtext.vocab.Vocab: A `Vocab` object
@@ -77,7 +77,7 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
         min_freq: The minimum frequency needed to include a token in the vocabulary.
         specials: Special symbols to add. The order of supplied tokens will be preserved.
         special_first: Indicates whether to insert symbols at the beginning or at the end.
-        max_tokens: If provided, creates the vocab from the `max_tokens` most frequent tokens.
+        max_tokens: If provided, creates the vocab from the `max_tokens - len(specials)` most frequent tokens.
 
 
     Returns:
