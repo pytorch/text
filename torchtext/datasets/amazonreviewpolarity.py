@@ -23,8 +23,8 @@ NUM_LINES = {
 _PATH = 'amazon_review_polarity_csv.tar.gz'
 
 _EXTRACTED_FILES = {
-    'train': os.path.join('amazon_review_polarity_csv', 'train.csv'),
-    'test': os.path.join('amazon_review_polarity_csv', 'test.csv'),
+    'train': os.path.join(_PATH, 'amazon_review_polarity_csv', 'train.csv'),
+    'test': os.path.join(_PATH, 'amazon_review_polarity_csv', 'test.csv'),
 }
 
 
@@ -40,11 +40,13 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
     url_dp = IterableWrapper([URL])
-    cache_dp = url_dp.on_disk_cache(
+    cache_compressed_dp = url_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _PATH), hash_dict={os.path.join(root, _PATH): MD5}, hash_type="md5"
     )
-    cache_dp = GDriveReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_dp = FileOpener(cache_dp, mode="b")
-    extracted_files = cache_dp.read_from_tar()
-    filter_extracted_files = extracted_files.filter(lambda x: _EXTRACTED_FILES[split] in x[0])
-    return filter_extracted_files.parse_csv().map(fn=lambda t: (int(t[0]), ' '.join(t[1:])))
+    cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, os.path.dirname(_EXTRACTED_FILES[split]), os.path.basename(x)))
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar()
+    cache_compressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    data_dp = FileOpener(cache_decompressed_dp.filter(lambda x: _EXTRACTED_FILES[split] in x[0]).map(lambda x: x[0]), mode='b')
+    return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), ' '.join(t[1:])))
