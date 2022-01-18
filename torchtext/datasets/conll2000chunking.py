@@ -49,6 +49,8 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
     url_dp = IterableWrapper([URL[split]])
+
+    # Cache and check HTTP response
     cache_dp = url_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, "conll2000chunking", os.path.basename(URL[split])),
         hash_dict={os.path.join(root, "conll2000chunking", os.path.basename(URL[split])): MD5[split]},
@@ -56,5 +58,15 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, mode="b")
-    cache_dp = cache_dp.extract(file_type="gzip").readlines(decode=True)
-    return cache_dp.read_iob(sep=" ")
+
+    # Cache and check the gzip extraction for relevant split
+    cache_dp = cache_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, "conll2000chunking", _EXTRACTED_FILES[split]),
+        hash_dict={os.path.join(root, "conll2000chunking", _EXTRACTED_FILES[split]): _EXTRACTED_FILES_MD5[split]},
+        hash_type="md5"
+    )
+    cache_dp = cache_dp.extract(file_type="gzip").filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+    cache_dp = cache_dp.end_caching(mode="wb")
+
+    cache_dp = FileOpener(cache_dp, mode="b")
+    return cache_dp.readlines(decode=True).read_iob(sep=" ")
