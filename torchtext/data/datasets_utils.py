@@ -10,7 +10,7 @@ from torchtext.utils import (
     extract_archive,
     unicode_csv_reader,
 )
-from torch.utils.data import IterDataPipe, functional_datapipe
+from torch.utils.data import functional_datapipe, IterDataPipe
 import codecs
 try:
     import defusedxml.ElementTree as ET
@@ -342,3 +342,29 @@ class _ParseSQuADQAData(IterDataPipe):
                             _answers = [""]
                             _answer_start = [-1]
                         yield _context, _question, _answers, _answer_start
+
+
+@functional_datapipe("read_iob")
+class _ParseIOBData(IterDataPipe):
+    """A datapipe responsible for reading sep-delimited IOB data from a stream.
+
+    Used for CONLL 2000 and UDPOS."""
+    def __init__(self, dp, sep: str = "\t") -> None:
+        self.dp = dp
+        self.sep = sep
+
+    def __iter__(self):
+        columns = []
+        for filename, line in self.dp:
+            line = line.strip()
+            if line == "":
+                if columns:
+                    yield columns
+                columns = []
+            else:
+                for i, column in enumerate(line.split(self.sep)):
+                    if len(columns) < i + 1:
+                        columns.append([])
+                    columns[i].append(column)
+        if len(columns) > 0:
+            yield columns
