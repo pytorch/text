@@ -47,7 +47,7 @@ class TestDatasetUtils(TorchtextTestCase):
         iterable = [("ignored.txt", e) for e in iob]
         iterable = IterableWrapper(iterable)
         iob_dp = list(_ParseIOBData(iterable, sep=" "))
-        # There's only one example in this dataset
+        # There are two examples in this dataset
         self.assertEqual(len(iob_dp), 2)
         # The length of the first list of surface forms is the length of everything before the empty line.
         # The length of the first labels is the length of everything before the empty line.
