@@ -32,18 +32,12 @@ _EXTRACTED_FILES = {
     'test': 'test.txt'
 }
 
-_EXTRACTED_FILES_MD5 = {
-    'train': "2e2f24e90e20fcb910ab2251b5ed8cd0",
-    'test': "56944df34be553b72a2a634e539a0951"
-}
-
-
 DATASET_NAME = "CoNLL2000Chunking"
 
 
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'test'))
+@_wrap_split_argument(("train", "test"))
 def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
@@ -61,9 +55,7 @@ def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
 
     # Cache and check the gzip extraction for relevant split
     cache_dp = cache_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, "conll2000chunking", _EXTRACTED_FILES[split]),
-        hash_dict={os.path.join(root, "conll2000chunking", _EXTRACTED_FILES[split]): _EXTRACTED_FILES_MD5[split]},
-        hash_type="md5"
+        filepath_fn=lambda x: os.path.join(root, "conll2000chunking", _EXTRACTED_FILES[split])
     )
     cache_dp = cache_dp.extract(file_type="gzip").filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     cache_dp = cache_dp.end_caching(mode="wb")
