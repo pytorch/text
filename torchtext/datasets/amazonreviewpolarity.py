@@ -61,8 +61,4 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
     data_dp = FileOpener(cache_decompressed_dp, mode='b')
 
-    # data_dp = FileOpener(cache_compressed_dp, mode='b')
-    # data_dp = data_dp.read_from_tar()
-    # data_dp = data_dp.filter(lambda x: _EXTRACTED_FILES[split] in x[0])
-
     return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), ' '.join(t[1:])))
