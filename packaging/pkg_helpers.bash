@@ -197,9 +197,10 @@ setup_conda_pytorch_constraint() {
 
 # Translate CUDA_VERSION into CUDA_CUDATOOLKIT_CONSTRAINT
 setup_conda_cudatoolkit_constraint() {
-  export CONDA_CPUONLY_FEATURE=""
+  export CONDA_BUILD_VARIANT="cuda"
   if [[ "$(uname)" == Darwin ]]; then
     export CONDA_CUDATOOLKIT_CONSTRAINT=""
+    export CONDA_BUILD_VARIANT="cpu"
   else
     case "$CU_VERSION" in
       cu100)
@@ -210,7 +211,7 @@ setup_conda_cudatoolkit_constraint() {
         ;;
       cpu)
         export CONDA_CUDATOOLKIT_CONSTRAINT=""
-        export CONDA_CPUONLY_FEATURE="- cpuonly"
+        export CONDA_BUILD_VARIANT="cpu"
         ;;
       *)
         echo "Unrecognized CU_VERSION=$CU_VERSION"

@@ -1,13 +1,16 @@
+from torchtext._internal.module_utils import is_module_available
+from typing import Union, Tuple
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
+
 from torchtext.data.datasets_utils import (
-    _RawTextIterableDataset,
     _wrap_split_argument,
     _add_docstring_header,
-    _download_extract_validate,
     _create_dataset_directory,
-    _create_data_from_iob,
 )
+
 import os
-import logging
 
 URL = {
     'train': "https://www.clips.uantwerpen.be/conll2000/chunking/train.txt.gz",
@@ -29,24 +32,33 @@ _EXTRACTED_FILES = {
     'test': 'test.txt'
 }
 
-_EXTRACTED_FILES_MD5 = {
-    'train': "2e2f24e90e20fcb910ab2251b5ed8cd0",
-    'test': "56944df34be553b72a2a634e539a0951"
-}
-
-
 DATASET_NAME = "CoNLL2000Chunking"
 
 
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'test'))
-def CoNLL2000Chunking(root, split):
-    # Create a dataset specific subfolder to deal with generic download filenames
-    root = os.path.join(root, 'conll2000chunking')
-    path = os.path.join(root, split + ".txt.gz")
-    data_filename = _download_extract_validate(root, URL[split], MD5[split], path, os.path.join(root, _EXTRACTED_FILES[split]),
-                                               _EXTRACTED_FILES_MD5[split], hash_type="md5")
-    logging.info('Creating {} data'.format(split))
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_iob(data_filename, " "))
+@_wrap_split_argument(("train", "test"))
+def CoNLL2000Chunking(root: str, split: Union[Tuple[str], str]):
+    if not is_module_available("torchdata"):
+        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
+
+    url_dp = IterableWrapper([URL[split]])
+
+    # Cache and check HTTP response
+    cache_dp = url_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, "conll2000chunking", os.path.basename(URL[split])),
+        hash_dict={os.path.join(root, "conll2000chunking", os.path.basename(URL[split])): MD5[split]},
+        hash_type="md5"
+    )
+    cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
+    cache_dp = FileOpener(cache_dp, mode="b")
+
+    # Cache and check the gzip extraction for relevant split
+    cache_dp = cache_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, "conll2000chunking", _EXTRACTED_FILES[split])
+    )
+    cache_dp = cache_dp.extract(file_type="gzip").filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+    cache_dp = cache_dp.end_caching(mode="wb")
+
+    cache_dp = FileOpener(cache_dp, mode="b")
+    return cache_dp.readlines(decode=True).read_iob(sep=" ")

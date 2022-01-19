@@ -1,3 +1,4 @@
+{% set build_variant = environ.get('CONDA_BUILD_VARIANT', 'cpu') %}
 package:
   name: torchtext
   version: "{{ environ.get('BUILD_VERSION') }}"
@@ -14,14 +15,22 @@ requirements:
   host:
     - python
     - setuptools
-    - cpuonly
     {{ environ.get('CONDA_PYTORCH_BUILD_CONSTRAINT') }}
 
   run:
     - python
     - requests
     - tqdm
+    - pytorch-mutex 1.0 {{ build_variant }}  # [not osx ]
     {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
+
+  {% if build_variant == 'cpu' %}
+  run_constrained:
+    - cpuonly
+  {% elif not osx %}
+  run_constrained:
+     - cpuonly <0
+  {% endif %}
 
 build:
   string: py{{py}}
@@ -40,7 +49,6 @@ test:
 
   requires:
     - pytest
-    - cpuonly
 
 about:
   home: https://github.com/pytorch/text
