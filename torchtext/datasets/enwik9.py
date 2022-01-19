@@ -38,6 +38,6 @@ def EnWik9(root: str, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_dp = FileOpener(cache_dp, mode="b")
-    extracted_files = cache_dp.read_from_zip()
-    return extracted_files.readlines().map(lambda t: t[1].decode())
+    data_dp = FileOpener(cache_dp, mode="b")
+    extracted_files = data_dp.read_from_zip()
+    return extracted_files.readlines(decode=True, return_path=False)
