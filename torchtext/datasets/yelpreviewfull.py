@@ -33,7 +33,7 @@ _EXTRACTED_FILES = {
 
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=5)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'test'))
+@_wrap_split_argument(("train", "test"))
 def YelpReviewFull(root: str, split: Union[Tuple[str], str]):
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
@@ -47,16 +47,7 @@ def YelpReviewFull(root: str, split: Union[Tuple[str], str]):
     cache_dp = GDriveReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, mode="b")
 
-    def extracted_filepath_fn(_):
-        file_path = os.path.join(root, _EXTRACTED_FILES[split])
-        dir_path = os.path.dirname(file_path)
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-        return file_path
-
-    cache_dp = cache_dp.on_disk_cache(
-        filepath_fn=extracted_filepath_fn
-    )
+    cache_dp = cache_dp.on_disk_cache(filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split]))
     cache_dp = cache_dp.read_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     cache_dp = cache_dp.end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, mode="b")
