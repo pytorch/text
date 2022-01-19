@@ -45,17 +45,9 @@ def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
-    def extracted_filepath_fn(x):
-        file_path = os.path.join(root, _EXTRACTED_FILES[split])
-        dir_path = os.path.dirname(file_path)
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-        return file_path
-
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        filepath_fn=extracted_filepath_fn)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split]))
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
-    data_dp = FileOpener(cache_decompressed_dp, mode="b")
 
+    data_dp = FileOpener(cache_decompressed_dp, mode='b')
     return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), ' '.join(t[1:])))
