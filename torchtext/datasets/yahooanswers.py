@@ -48,18 +48,8 @@ def YahooAnswers(root: str, split: Union[Tuple[str], str]):
     cache_dp = GDriveReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, mode="b")
 
-    def extracted_filepath_fn(_):
-        file_path = os.path.join(root, _EXTRACTED_FILES[split])
-        dir_path = os.path.dirname(file_path)
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-        return file_path
-
-    cache_dp = cache_dp.on_disk_cache(
-        filepath_fn=extracted_filepath_fn
-    )
+    cache_dp = cache_dp.on_disk_cache(filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split]))
     cache_dp = cache_dp.read_from_tar()
-
     cache_dp = cache_dp.filter(lambda x: _EXTRACTED_FILES[split] in x[0])
     cache_dp = cache_dp.end_caching(mode="wb", same_filepath_fn=True)
 
