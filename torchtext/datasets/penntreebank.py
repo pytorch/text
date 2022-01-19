@@ -48,5 +48,6 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
         hash_type="md5",
     )
     cache_dp = HttpReader(cache_dp).end_caching(mode="w", same_filepath_fn=True)
-    cache_dp = FileOpener(cache_dp, mode="r")
-    return cache_dp.readlines().map(lambda t: t[1][1:-1])
+    data_dp = FileOpener(cache_dp, mode="r")
+    # remove single leading and trailing space from the dataset
+    return data_dp.readlines(return_path=False).map(lambda t: t[1:-1])
