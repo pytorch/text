@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
+
+import pytest
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.vocab import (
@@ -259,19 +261,22 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v2.get_itos(), expected_itos)
         self.assertEqual(dict(v2.get_stoi()), expected_stoi)
 
-    def test_vocab_max_tokens(self):
-        token_to_freq = {'<unk>': 2, 'a': 2, 'b': 2}
-        sorted_by_freq_tuples = sorted(token_to_freq.items(), key=lambda x: x[1], reverse=True)
-        c = OrderedDict(sorted_by_freq_tuples)
+    def test_build_vocab_from_iterator_max_tokens(self):
+        it = [["hello", "world"], ["hello"]]
         max_tokens = 1
-        v = vocab(c, min_freq=2, max_tokens=max_tokens)
+        specials = ["<unk>", "<pad>"]
+        self.assertLess(max_tokens, len(specials))
+        with pytest.raises(AssertionError):
+            build_vocab_from_iterator(it, specials=specials, max_tokens=max_tokens)
 
-        self.assertEqual(len(v), max_tokens)
-        self.assertEqual(v['<unk>'], 0)
+        max_tokens = 3
+        vocab = build_vocab_from_iterator(it, specials=specials, special_first=True, max_tokens=max_tokens)
+        self.assertEqual(vocab["<unk>"], 0)
+        self.assertEqual(vocab["<pad>"], 1)
+        self.assertEqual(vocab["hello"], 2)
 
-        max_tokens = 2
-        v = vocab(c, min_freq=2, max_tokens=max_tokens)
-
-        self.assertEqual(len(v), max_tokens)
-        self.assertEqual(v['<unk>'], 0)
-        self.assertEqual(v['a'], 1)
+        max_tokens = 3
+        vocab = build_vocab_from_iterator(it, specials=specials, special_first=False, max_tokens=max_tokens)
+        self.assertEqual(vocab["hello"], 0)
+        self.assertEqual(vocab["<unk>"], 1)
+        self.assertEqual(vocab["<pad>"], 2)
