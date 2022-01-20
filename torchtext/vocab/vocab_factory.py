@@ -93,11 +93,15 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
         counter.update(tokens)
 
     specials = specials or []
+
+    # First sort by descending frequency, then lexicographically
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
+
     if max_tokens is None:
-        ordered_dict = OrderedDict(counter.most_common())
+        ordered_dict = OrderedDict(sorted_by_freq_tuples)
     else:
         assert len(specials) < max_tokens, "len(specials) >= max_tokens, so the vocab will be entirely special tokens."
-        ordered_dict = OrderedDict(counter.most_common(max_tokens - len(specials)))
+        ordered_dict = OrderedDict(sorted_by_freq_tuples[:max_tokens - len(specials)])
 
     word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials, special_first=special_first)
     return word_vocab

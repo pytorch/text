@@ -261,6 +261,17 @@ class TestVocab(TorchtextTestCase):
         self.assertEqual(v2.get_itos(), expected_itos)
         self.assertEqual(dict(v2.get_stoi()), expected_stoi)
 
+    def test_build_vocab_sorts_descending_frequency_then_lexigraphically(self):
+        it = [["a", "b"], ["a", "b"]]
+        vocab = build_vocab_from_iterator(it)
+        self.assertEqual(vocab["a"], 0)
+        self.assertEqual(vocab["b"], 1)
+
+        it = [["a", "b"], ["b"]]
+        vocab = build_vocab_from_iterator(it)
+        self.assertEqual(vocab["b"], 0)
+        self.assertEqual(vocab["a"], 1)
+
     def test_build_vocab_from_iterator_max_tokens(self):
         it = [["hello", "world"], ["hello"]]
         max_tokens = 1
