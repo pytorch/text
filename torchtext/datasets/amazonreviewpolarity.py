@@ -34,14 +34,18 @@ DATASET_NAME = "AmazonReviewPolarity"
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=2)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "test"))
-def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str]):
+def AmazonReviewPolarity(root: str, split: Union[Tuple[str], str], validate_hash: bool = True):
+    # Validate integrity of dataset using md5 checksum
+    hash_dict = {os.path.join(root, _PATH): MD5} if validate_hash else None
+    hash_type = "md5" if validate_hash else None
+
     # TODO Remove this after removing conditional dependency
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, _PATH), hash_dict={os.path.join(root, _PATH): MD5}, hash_type="md5"
+        filepath_fn=lambda x: os.path.join(root, _PATH), hash_dict=hash_dict, hash_type=hash_type
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
