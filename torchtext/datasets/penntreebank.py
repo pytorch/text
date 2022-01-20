@@ -50,4 +50,4 @@ def PennTreebank(root, split: Union[Tuple[str], str]):
     cache_dp = HttpReader(cache_dp).end_caching(mode="w", same_filepath_fn=True)
     data_dp = FileOpener(cache_dp, mode="r")
     # remove single leading and trailing space from the dataset
-    return data_dp.readlines(return_path=False).map(lambda t: t[1:-1])
+    return data_dp.readlines(return_path=False).map(lambda t: t.strip())
