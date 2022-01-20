@@ -41,7 +41,10 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
     cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
 
     labels = {"neg", "pos"}
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: [os.path.join(root, "aclImdb", split, label) for label in labels])
+    decompressed_folder = "aclImdb_v1"
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        filepath_fn=lambda x: [os.path.join(root, decompressed_folder, split, label) for label in labels]
+    )
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
     cache_decompressed_dp = cache_decompressed_dp.read_from_tar()
 
@@ -52,11 +55,14 @@ def IMDB(root: str, split: Union[Tuple[str], str]):
 
     cache_decompressed_dp = cache_decompressed_dp.filter(lambda t: filter_imdb_data(split, t[0]))
 
-    cache_decompressed_dp = cache_decompressed_dp.map(lambda t: (Path(t[0]).parts[-2], t[1]))  # eg. "aclImdb/train/neg/12416_3.txt" -> "neg"
+    # eg. "aclImdb/train/neg/12416_3.txt" -> "neg"
+    cache_decompressed_dp = cache_decompressed_dp.map(lambda t: (Path(t[0]).parts[-2], t[1]))
     cache_decompressed_dp = cache_decompressed_dp.readlines(decode=True)
     cache_decompressed_dp = cache_decompressed_dp.lines_to_paragraphs()  # group by label in cache file
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wt", filepath_fn=lambda x: os.path.join(root, "aclImdb", split, x))
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(
+        mode="wt", filepath_fn=lambda x: os.path.join(root, decompressed_folder, split, x)
+    )
 
     data_dp = FileOpener(cache_decompressed_dp, mode="t")
-    # get label from cache file, eg. "aclImdb/train/neg" -> "neg"
+    # get label from cache file, eg. "aclImdb_v1/train/neg" -> "neg"
     return data_dp.readlines().map(lambda t: (Path(t[0]).parts[-1], t[1]))
