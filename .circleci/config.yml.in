@@ -92,6 +92,25 @@ jobs:
             python .circleci/regenerate.py
             git diff --exit-code || (echo ".circleci/config.yml not in sync with config.yml.in! Run .circleci/regenerate.py to update config"; exit 1)
 
+  lint_python_and_config:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install pre-commit
+          command: pip install --user --progress-bar off pre-commit
+      - run:
+          name: Install pre-commit hooks
+          command: pre-commit install-hooks
+      - run:
+          name: Lint Python code and config files
+          command: pre-commit run --all-files
+      - run:
+          name: Required lint modifications
+          when: always
+          command: git --no-pager diff --color=always
+
   binary_linux_wheel:
     <<: *binary_common
     docker:
@@ -610,6 +629,9 @@ jobs:
 
 
 workflows:
+  lint:
+    jobs:
+      - lint_python_and_config
   build:
     jobs:
       - circleci_consistency
