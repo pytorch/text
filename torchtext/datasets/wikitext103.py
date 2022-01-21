@@ -4,14 +4,12 @@ if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, HttpReader, IterableWrapper
 
 import os
-import functools
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
     _add_docstring_header,
     _create_dataset_directory,
 )
 from typing import Union, Tuple
-from pathlib import Path
 
 URL = 'https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip'
 
@@ -25,6 +23,12 @@ NUM_LINES = {
 
 DATASET_NAME = "WikiText103"
 
+_EXTRACTED_FILES = {
+    'train': os.path.join('wikitext-103', 'wiki.train.tokens'),
+    'test': os.path.join('wikitext-103', 'wiki.test.tokens'),
+    'valid': os.path.join('wikitext-103', 'wiki.valid.tokens'),
+}
+
 
 @_add_docstring_header(num_lines=NUM_LINES)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
@@ -34,18 +38,15 @@ def WikiText103(root: str, split: Union[Tuple[str], str]):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
     url_dp = IterableWrapper([URL])
     # cache data on-disk
-    filepath_fn = functools.partial(lambda x: os.path.join(root, os.path.basename(x)))
-    cache_dp = url_dp.on_disk_cache(
-        filepath_fn=filepath_fn,
+    cache_compressed_dp = url_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, os.path.basename(x)),
         hash_dict={os.path.join(root, os.path.basename(URL)): MD5},
         hash_type="md5",
     )
-    cache_dp = HttpReader(cache_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_dp = FileOpener(cache_dp, mode="b")
-    # stack Zip extractor on top of load files data pipe
-    extracted_files = cache_dp.read_from_zip()
-    # filter the files as applicable to create dataset for given split (train or test)
-    filter_fn = functools.partial(lambda x: split in Path(x[0]).parts[-1])
-    filter_extracted_files = extracted_files.filter(filter_fn)
-    extract_text_fn = functools.partial(lambda t: t[1].decode())
-    return filter_extracted_files.readlines(strip_newline=False).map(extract_text_fn)
+    cache_compressed_dp = HttpReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split]))
+    # Extract zip and filter the appropriate split file
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_zip().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    data_dp = FileOpener(cache_decompressed_dp, mode='b')
+    return data_dp.readlines(strip_newline=False, decode=True, return_path=False)
