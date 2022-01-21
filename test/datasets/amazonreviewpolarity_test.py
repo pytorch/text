@@ -1,4 +1,5 @@
-import os.path
+# from pathlib import Path
+import os
 import random
 import string
 import tarfile
@@ -10,29 +11,21 @@ from torchtext.datasets.amazonreviewpolarity import AmazonReviewPolarity
 from ..common.case_utils import TempDirMixin
 from ..common.torchtext_test_case import TorchtextTestCase
 
+# def _create_tar_file(tar_path, data_dir):
+
 
 def get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
     """
     base_dir = os.path.join(root_dir, "AmazonReviewPolarity")
-    compressed_dataset_path = os.path.join(
-        base_dir, "amazon_review_polarity_csv.tar.gz"
-    )
-    uncompressed_dataset_dir = os.path.join(base_dir, "amazon_review_polarity_csv")
-    os.makedirs(uncompressed_dataset_dir, exist_ok=True)
-
-    # create empty tar file to skip dataset download
-    with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        dummy_file_path = os.path.join(base_dir, "dummy_file.txt")
-        with open(dummy_file_path, "w") as f:
-            pass
-        tar.add(dummy_file_path)
+    temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
+    os.makedirs(temp_dataset_dir, exist_ok=True)
 
     seed = 1
     mocked_data = defaultdict(list)
     for file_name in ("train.csv", "test.csv"):
-        txt_file = os.path.join(uncompressed_dataset_dir, file_name)
+        txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w") as f:
             for i in range(5):
                 label = seed % 2 + 1
@@ -44,6 +37,14 @@ def get_mock_dataset(root_dir):
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
                 f.write(f'"{label}","{rand_string}","{rand_string}"\n')
                 seed += 1
+
+    compressed_dataset_path = os.path.join(
+        base_dir, "amazon_review_polarity_csv.tar.gz"
+    )
+    # create tar file from dataset folder
+    with tarfile.open(compressed_dataset_path, "w:gz") as tar:
+        tar.add(temp_dataset_dir, arcname="amazon_review_polarity_csv")
+
     return mocked_data
 
 
