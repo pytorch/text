@@ -4,14 +4,13 @@ import random
 import string
 import tarfile
 from collections import defaultdict
+from unittest.mock import patch
 
 from parameterized import parameterized
 from torchtext.datasets.amazonreviewpolarity import AmazonReviewPolarity
 
 from ..common.case_utils import TempDirMixin
 from ..common.torchtext_test_case import TorchtextTestCase
-
-# def _create_tar_file(tar_path, data_dir):
 
 
 def get_mock_dataset(root_dir):
@@ -59,25 +58,25 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
 
     @parameterized.expand(["train", "test"])
     def test_amazon_review_polarity(self, split):
-        dataset = AmazonReviewPolarity(
-            root=self.root_dir, split=split, validate_hash=False
-        )
-        n_iter = 0
-        for i, (label, text) in enumerate(dataset):
-            expected_sample = self.samples[split][i]
-            assert label == expected_sample[0]
-            assert text == expected_sample[1]
-            n_iter += 1
-        assert n_iter == len(self.samples[split])
+        with patch(
+            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
+        ):
+            dataset = AmazonReviewPolarity(root=self.root_dir, split=split)
+            n_iter = 0
+            for i, (label, text) in enumerate(dataset):
+                expected_sample = self.samples[split][i]
+                assert label == expected_sample[0]
+                assert text == expected_sample[1]
+                n_iter += 1
+            assert n_iter == len(self.samples[split])
 
     @parameterized.expand([("train", ("train",)), ("test", ("test",))])
     def test_amazon_review_polarity_split_argument(self, split1, split2):
-        dataset1 = AmazonReviewPolarity(
-            root=self.root_dir, split=split1, validate_hash=False
-        )
-        (dataset2,) = AmazonReviewPolarity(
-            root=self.root_dir, split=split2, validate_hash=False
-        )
+        with patch(
+            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
+        ):
+            dataset1 = AmazonReviewPolarity(root=self.root_dir, split=split1)
+            (dataset2,) = AmazonReviewPolarity(root=self.root_dir, split=split2)
 
-        for d1, d2 in zip(dataset1, dataset2):
-            self.assertEqual(d1, d2)
+            for d1, d2 in zip(dataset1, dataset2):
+                self.assertEqual(d1, d2)
