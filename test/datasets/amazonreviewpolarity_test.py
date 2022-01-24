@@ -53,6 +53,7 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = get_mock_dataset(cls.root_dir)
 
