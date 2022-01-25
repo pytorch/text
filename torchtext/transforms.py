@@ -5,7 +5,7 @@ import torch
 from torchtext.data.functional import load_sp_model
 from torchtext.utils import get_asset_local_path
 from torchtext.vocab import Vocab
-from torchtext._torchtext import GPT2BPEEncoder as GPT2BPEEncoderPyBind
+from torchtext._torchtext import GPT2BPEEncoder as GPT2BPEEncoderPyBind, CLIPEncoder as CLIPEncoderPyBind
 from typing import List, Optional, Any, Union
 import json
 from functools import lru_cache
@@ -258,7 +258,7 @@ class GPT2BPETokenizer(Module):
 
     @torch.jit.export
     def _tokenize(self, text: str) -> List[str]:
-        """Encode text into a list of Token(token_id, start_idx, end_idx)
+        """Encode text into a list of tokens
 
         Args:
             text: An input text string.
@@ -305,6 +305,105 @@ class GPT2BPETokenizer(Module):
                                                                         self.bpe.bpe_merge_ranks_,
                                                                         self.bpe.seperator_,
                                                                         self.bpe.byte_encoder_, False)
+            return tokenizer_copy
+        return self
+
+
+class CLIPTokenizer(Module):
+    __jit_unused_properties__ = ["is_jitable"]
+    """
+    Transform for CLIP Tokenizer. Based on Byte-Level BPE.
+
+    Reimplements CLIP Tokenizer in TorchScript. Original implementation:
+    https://github.com/mlfoundations/open_clip/blob/main/src/clip/tokenizer.py
+
+    This tokenizer has been trained to treat spaces like parts of the tokens 
+    (a bit like sentencepiece) so a word will be encoded differently whether it 
+    is at the beginning of the sentence (without space) or not.
+
+    :param encoder_json_path: Path to BPE encoder json file.
+    :type encoder_json_path: str
+    :param vocab_bpe_path: Path to bpe vocab file.
+    :type vocab_bpe_path: str
+    """
+
+    _seperator: torch.jit.Final[str]
+
+    def __init__(
+        self,
+        encoder_json_path: str,
+        vocab_bpe_path: str,
+    ):
+        super().__init__()
+        self._seperator = "\u0001"
+        # load bpe encoder
+        with open(get_asset_local_path(encoder_json_path), "r", encoding="utf-8") as f:
+            bpe_encoder = json.load(f)
+        # load bpe vocab
+        with open(get_asset_local_path(vocab_bpe_path), "r", encoding="utf-8") as f:
+            bpe_vocab = f.read()
+        bpe_merge_ranks = {
+            self._seperator.join(merge_pair.split()): i
+            for i, merge_pair in enumerate(bpe_vocab.split("\n")[1:-1])
+        }
+        # Caching is enabled in Eager mode
+        self.bpe = CLIPEncoderPyBind(bpe_encoder, bpe_merge_ranks,
+                                     self._seperator, bytes_to_unicode(), True)
+
+    @property
+    def is_jitable(self):
+        return isinstance(self.bpe, torch._C.ScriptObject)
+
+    @torch.jit.export
+    def _tokenize(self, text: str) -> List[str]:
+        """Encode text into a list of tokens
+
+        Args:
+            text: An input text string.
+
+        Returns:
+            A list of bpe token ids represents each bpe tokens
+
+        For example: "awesome,awe"
+            --> bpe --> bpe tokens: ["aw", "esome"], [","], ["aw", e]
+            --> bpe encode --> bpe token ids: [707, 5927, 11, 707, 68]
+        """
+        text = text.lower().strip()
+        bpe_token_ids: List[int] = self.bpe.encode(text)
+        bpe_tokens: List[str] = []
+
+        for bpe_token_id in bpe_token_ids:
+            bpe_tokens.append(str(bpe_token_id))
+
+        return bpe_tokens
+
+    def forward(self, input: Any) -> Any:
+        """
+        :param input: Input sentence or list of sentences on which to apply tokenizer.
+        :type input: Union[str, List[str]]
+        :return: tokenized text
+        :rtype: Union[List[str], List[List(str)]]
+        """
+        if torch.jit.isinstance(input, List[str]):
+            tokens: List[List[str]] = []
+            for text in input:
+                tokens.append(self._tokenize(text))
+            return tokens
+        elif torch.jit.isinstance(input, str):
+            return self._tokenize(input)
+        else:
+            raise TypeError("Input type not supported")
+
+    def __prepare_scriptable__(self):
+        r"""Return a JITable tokenizer.
+        """
+        if not self.is_jitable:
+            tokenizer_copy = deepcopy(self)
+            # Disable caching in script mode
+            tokenizer_copy.bpe = torch.classes.torchtext.CLIPEncoder(self.bpe.bpe_encoder_,
+                                                                     self.bpe.bpe_merge_ranks_,
+                                                                     self.bpe.seperator_,
+                                                                     self.bpe.byte_encoder_, False)
             return tokenizer_copy
         return self
 

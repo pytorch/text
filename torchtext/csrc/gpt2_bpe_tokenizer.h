@@ -1,3 +1,6 @@
+#ifndef GPT2_BPE_TOKENIZER_H_
+#define GPT2_BPE_TOKENIZER_H_
+
 #include <torch/script.h>
 
 #include <cstdint>
@@ -21,17 +24,37 @@ typedef std::tuple<c10::Dict<std::string, int64_t>,
 // Applies regex based pre-tokenization step for GPT-2 BPE tokenizer
 // and returns a list of tokens.
 std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input);
+
+// Concatenate a vector of strings to a single string
+std::string concatenate_strings(const std::vector<std::string> &list);
+
+// Return set of token pairs in a word, seperated by the `seperator`.
+std::vector<std::string> get_pairs(std::vector<std::string> token_list,
+                                   const std::string &seperator);
+
+// Split a string into 2 parts seperated by a `seperator`.
+std::pair<std::string, std::string> split_tokens(std::string s,
+                                                 std::string delimiter);
+
+// Find index of `element` in a list of strings.
+int list_str_index(std::vector<std::string> list, std::string element,
+                   int start);
+
 struct GPT2BPEEncoder : torch::CustomClassHolder {
  private:
   const int64_t inf_;
-  c10::Dict<std::string, std::vector<std::string>> cache_;
   // Encode byte into an unicode character.
   std::vector<std::string> ByteEncode_(std::string token);
+  int64_t GetBPEMergeRank_(std::string pair);
+
+ protected:
+  c10::Dict<std::string, std::vector<std::string>> cache_;
+  virtual std::vector<std::string> PreTokenize_(std::string input);
   // Return a list of bpe tokens.
-  std::vector<std::string> BPE_(const std::vector<std::string> &token_list);
+  virtual std::vector<std::string> BPE_(
+      const std::vector<std::string> &token_list);
   // Return the token pair(e.g bpe merge) with lowest rank.
   std::string FindBestPair_(std::vector<std::string> pairs);
-  int64_t GetBPEMergeRank_(std::string pair);
 
  public:
   const c10::Dict<std::string, int64_t> bpe_encoder_;
@@ -80,3 +103,5 @@ c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_pybind(
 c10::intrusive_ptr<GPT2BPEEncoder> _deserialize_gpt2_bpe_encoder_torchbind(
     GPT2BPEEncoderStatesTorchbind states);
 }  // namespace torchtext
+
+#endif  // GPT2_BPE_TOKENIZER_H_
