@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
+
+import pytest
 import torch
 from test.common.torchtext_test_case import TorchtextTestCase
 from torchtext.vocab import (
@@ -258,3 +260,34 @@ class TestVocab(TorchtextTestCase):
         expected_stoi = {x: index for index, x in enumerate(expected_itos)}
         self.assertEqual(v2.get_itos(), expected_itos)
         self.assertEqual(dict(v2.get_stoi()), expected_stoi)
+
+    def test_build_vocab_sorts_descending_frequency_then_lexigraphically(self):
+        it = [["a", "b"], ["a", "b"]]
+        vocab = build_vocab_from_iterator(it)
+        self.assertEqual(vocab["a"], 0)
+        self.assertEqual(vocab["b"], 1)
+
+        it = [["a", "b"], ["b"]]
+        vocab = build_vocab_from_iterator(it)
+        self.assertEqual(vocab["b"], 0)
+        self.assertEqual(vocab["a"], 1)
+
+    def test_build_vocab_from_iterator_max_tokens(self):
+        it = [["hello", "world"], ["hello"]]
+        max_tokens = 1
+        specials = ["<unk>", "<pad>"]
+        self.assertLess(max_tokens, len(specials))
+        with pytest.raises(AssertionError):
+            build_vocab_from_iterator(it, specials=specials, max_tokens=max_tokens)
+
+        max_tokens = 3
+        vocab = build_vocab_from_iterator(it, specials=specials, special_first=True, max_tokens=max_tokens)
+        self.assertEqual(vocab["<unk>"], 0)
+        self.assertEqual(vocab["<pad>"], 1)
+        self.assertEqual(vocab["hello"], 2)
+
+        max_tokens = 3
+        vocab = build_vocab_from_iterator(it, specials=specials, special_first=False, max_tokens=max_tokens)
+        self.assertEqual(vocab["hello"], 0)
+        self.assertEqual(vocab["<unk>"], 1)
+        self.assertEqual(vocab["<pad>"], 2)

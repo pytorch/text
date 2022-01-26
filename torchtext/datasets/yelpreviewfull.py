@@ -1,15 +1,15 @@
-from torchtext.utils import (
-    download_from_url,
-    extract_archive,
-)
+from torchtext._internal.module_utils import is_module_available
+from typing import Union, Tuple
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
+
 from torchtext.data.datasets_utils import (
-    _RawTextIterableDataset,
     _wrap_split_argument,
     _add_docstring_header,
-    _find_match,
     _create_dataset_directory,
-    _create_data_from_csv,
 )
+
 import os
 
 URL = 'https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0'
@@ -25,16 +25,32 @@ _PATH = 'yelp_review_full_csv.tar.gz'
 
 DATASET_NAME = "YelpReviewFull"
 
+_EXTRACTED_FILES = {
+    'train': os.path.join('yelp_review_full_csv', 'train.csv'),
+    'test': os.path.join('yelp_review_full_csv', 'test.csv'),
+}
+
 
 @_add_docstring_header(num_lines=NUM_LINES, num_classes=5)
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'test'))
-def YelpReviewFull(root, split):
-    dataset_tar = download_from_url(URL, root=root,
-                                    path=os.path.join(root, _PATH),
-                                    hash_value=MD5, hash_type='md5')
-    extracted_files = extract_archive(dataset_tar)
+@_wrap_split_argument(("train", "test"))
+def YelpReviewFull(root: str, split: Union[Tuple[str], str]):
+    if not is_module_available("torchdata"):
+        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
-    path = _find_match(split + '.csv', extracted_files)
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split],
-                                   _create_data_from_csv(path))
+    url_dp = IterableWrapper([URL])
+
+    cache_compressed_dp = url_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, _PATH),
+        hash_dict={os.path.join(root, _PATH): MD5}, hash_type="md5"
+    )
+    cache_compressed_dp = GDriveReader(cache_compressed_dp)
+    cache_compressed_dp = cache_compressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split]))
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b")
+    cache_decompressed_dp = cache_decompressed_dp.read_from_tar().filter(lambda x: _EXTRACTED_FILES[split] in x[0])
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+
+    data_dp = FileOpener(cache_decompressed_dp, mode="b")
+    return data_dp.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))
