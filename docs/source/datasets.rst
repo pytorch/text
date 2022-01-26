@@ -13,7 +13,7 @@ General use cases are as follows: ::
 
     def tokenize(label, line):
         return line.split()
-     
+
     tokens = []
     for label, line in train_iter:
         tokens += tokenize(label, line)
@@ -72,6 +72,11 @@ IMDb
 ~~~~
 
 .. autofunction:: IMDB
+
+SST2
+~~~~
+
+.. autofunction:: SST2
 
 
 Language Modeling
@@ -152,4 +157,3 @@ EnWik9
 ~~~~~~
 
 .. autofunction:: EnWik9
-
