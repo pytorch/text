@@ -46,7 +46,7 @@ def _get_mock_dataset(root_dir):
                 seed += 1
 
     compressed_dataset_path = os.path.join(base_dir, "SST-2.zip")
-    # create tar file from dataset folder
+    # create zip file from dataset folder
     with zipfile.ZipFile(compressed_dataset_path, "w") as zip_file:
         for file_name in ("train.tsv", "test.tsv", "dev.tsv"):
             txt_file = os.path.join(temp_dataset_dir, file_name)
