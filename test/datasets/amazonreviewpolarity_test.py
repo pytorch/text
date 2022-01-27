@@ -12,7 +12,7 @@ from ..common.case_utils import TempDirMixin
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
-def get_mock_dataset(root_dir):
+def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
     """
@@ -54,7 +54,7 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
-        cls.samples = get_mock_dataset(cls.root_dir)
+        cls.samples = _get_mock_dataset(cls.root_dir)
 
     @parameterized.expand(["train", "test"])
     def test_amazon_review_polarity(self, split):
