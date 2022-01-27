@@ -20,7 +20,6 @@ def _get_mock_dataset(root_dir):
     temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
-    print(base_dir)
     seed = 1
     mocked_data = defaultdict(list)
     for file_name, (col1_name, col2_name) in zip(
