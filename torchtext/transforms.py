@@ -317,8 +317,8 @@ class CLIPTokenizer(Module):
     Reimplements CLIP Tokenizer in TorchScript. Original implementation:
     https://github.com/mlfoundations/open_clip/blob/main/src/clip/tokenizer.py
 
-    This tokenizer has been trained to treat spaces like parts of the tokens 
-    (a bit like sentencepiece) so a word will be encoded differently whether it 
+    This tokenizer has been trained to treat spaces like parts of the tokens
+    (a bit like sentencepiece) so a word will be encoded differently whether it
     is at the beginning of the sentence (without space) or not.
 
     :param encoder_json_path: Path to BPE encoder json file.
