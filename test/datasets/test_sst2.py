@@ -8,7 +8,7 @@ from unittest.mock import patch
 from parameterized import parameterized
 from torchtext.datasets.sst2 import SST2
 
-from ..common.case_utils import TempDirMixin
+from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
 
@@ -64,37 +64,31 @@ class TestSST2(TempDirMixin, TorchtextTestCase):
         super().setUpClass()
         cls.root_dir = cls.get_base_temp_dir()
         cls.samples = _get_mock_dataset(cls.root_dir)
+        cls.patcher = patch(
+            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
+        )
+        cls.patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls.patcher.stop()
 
     @parameterized.expand(["train", "test", "dev"])
     def test_sst2(self, split):
-        with patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        ):
-            dataset = SST2(root=self.root_dir, split=split)
-            n_iter = 0
+        dataset = SST2(root=self.root_dir, split=split)
+        n_iter = 0
 
-            if split == "test":
-                for i, (text,) in enumerate(dataset):
-                    expected_sample = self.samples[split][i]
-                    assert text == expected_sample[0]
-                    n_iter += 1
-            else:
-                for i, (text, label) in enumerate(dataset):
-                    expected_sample = self.samples[split][i]
-                    assert text == expected_sample[0]
-                    assert label == expected_sample[1]
-                    n_iter += 1
-            assert n_iter == len(self.samples[split])
+        for i, sample in enumerate(dataset):
+            expected_sample = self.samples[split][i]
+            assert sample == expected_sample
+            n_iter += 1
+        assert n_iter == len(self.samples[split])
 
-    @parameterized.expand(
-        [("train", ("train",)), ("dev", ("dev",)), ("test", ("test",))]
-    )
-    def test_sst2_split_argument(self, split1, split2):
-        with patch(
-            "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
-        ):
-            dataset1 = SST2(root=self.root_dir, split=split1)
-            (dataset2,) = SST2(root=self.root_dir, split=split2)
+    @parameterized.expand(["train", "dev", "test"])
+    def test_sst2_split_argument(self, split):
+        dataset1 = SST2(root=self.root_dir, split=split)
+        (dataset2,) = SST2(root=self.root_dir, split=(split,))
 
-            for d1, d2 in zip(dataset1, dataset2):
-                self.assertEqual(d1, d2)
+        for d1, d2 in zip_equal(dataset1, dataset2):
+            self.assertEqual(d1, d2)

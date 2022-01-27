@@ -1,6 +1,7 @@
 import os.path
 import tempfile
 import unittest
+from itertools import zip_longest
 
 from torchtext._internal.module_utils import is_module_available
 
@@ -37,4 +38,18 @@ class TempDirMixin:
 
 def skipIfNoModule(module, display_name=None):
     display_name = display_name or module
-    return unittest.skipIf(not is_module_available(module), f'"{display_name}" is not available')
+    return unittest.skipIf(
+        not is_module_available(module), f'"{display_name}" is not available'
+    )
+
+
+def zip_equal(*iterables):
+    """With the regular Python `zip` function, if one iterable is longer than the other,
+    the remainder portions are ignored.This is resolved in Python 3.10 where we can use
+    `strict=True` in the `zip` function
+    """
+    sentinel = object()
+    for combo in zip_longest(*iterables, fillvalue=sentinel):
+        if sentinel in combo:
+            raise ValueError("Iterables have different lengths")
+        yield combo
