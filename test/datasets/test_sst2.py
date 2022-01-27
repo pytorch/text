@@ -85,7 +85,7 @@ class TestSST2(TempDirMixin, TorchtextTestCase):
             n_iter += 1
         assert n_iter == len(self.samples[split])
 
-    @parameterized.expand(["train", "dev", "test"])
+    @parameterized.expand(["train", "test", "dev"])
     def test_sst2_split_argument(self, split):
         dataset1 = SST2(root=self.root_dir, split=split)
         (dataset2,) = SST2(root=self.root_dir, split=(split,))
