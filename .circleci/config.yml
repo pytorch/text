@@ -94,8 +94,8 @@ jobs:
           command: python .circleci/regenerate.py && git diff --quiet
       - run:
           when: on_fail
-          name: Required user action on workflow failure
-          command: echo ".circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this."
+          name: .circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this.
+          command: exit 1
 
   lint_python_and_config:
     docker:
@@ -113,10 +113,8 @@ jobs:
           command: pre-commit run --all-files
       - run:
           when: on_fail
-#          name: Required user action on workflow failure
-          command: |
-            echo "Code format not compliant with the rules! Run '$ pre-commit run --all-files' to fix this."
-            exit 1
+          name: Code format not compliant with the rules! Run '$ pre-commit run --all-files' to fix this.
+          command: exit 1
 
   lint_c:
     docker:
@@ -143,8 +141,8 @@ jobs:
             torchtext/csrc
       - run:
           when: on_fail
-#          name: Required user action on workflow failure
-          command: echo "Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this."
+          name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
+          command: exit 1
 
   binary_linux_wheel:
     <<: *binary_common
