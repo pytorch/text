@@ -18,7 +18,6 @@ _PATH = '2016-01.tgz'
 MD5 = 'c393ed3fc2a1b0f004b3331043f615ae'
 
 SUPPORTED_DATASETS = {
-
     'valid_test': ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014'],
     'language_pair': {
         'en': ['ar', 'de', 'fr', 'cs'],
@@ -28,7 +27,6 @@ SUPPORTED_DATASETS = {
         'cs': ['en'],
     },
     'year': 16,
-
 }
 
 NUM_LINES = {
@@ -127,30 +125,6 @@ SET_NOT_EXISTS = {
     ('cs', 'en'): ['tst2014']
 }
 
-
-def _construct_filenames(filename, languages):
-    filenames = []
-    for lang in languages:
-        filenames.append(filename + "." + lang)
-    return filenames
-
-
-def _construct_filepath(path, src_filename, tgt_filename):
-    src_path = None
-    tgt_path = None
-    src_path = path if src_filename in path else src_path
-    tgt_path = path if tgt_filename in path else tgt_path
-    return src_path, tgt_path
-
-
-def _construct_filepaths(paths, src_filename, tgt_filename):
-    src_path = None
-    tgt_path = None
-    for p in paths:
-        src_path, tgt_path = _construct_filepath(p, src_filename, tgt_filename)
-    return src_path, tgt_path
-
-
 DATASET_NAME = "IWSLT2016"
 
 
@@ -247,6 +221,7 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         "texts", src_language, tgt_language, languages
     )
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        # Convert /path/to/downloaded/foo.tgz to /path/to/downloaded/foo/rest/of/path
         filepath_fn=lambda x: os.path.join(os.path.splitext(x[0])[0], iwslt_tar)
     )
     cache_decompressed_dp = cache_decompressed_dp.read_from_tar()
@@ -263,27 +238,28 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
 
     cache_decompressed_dp = cache_decompressed_dp.flatmap(FileLister)
 
-    def get_filepath(f):
-        src_file, tgt_file = {
-            "train": _construct_filepath(f, src_train, tgt_train),
-            "valid": _construct_filepath(f, src_eval, tgt_eval),
-            "test": _construct_filepath(f, src_test, tgt_test)
-        }[split]
+    def get_filepath(split, lang):
+        return {
+            src_language: {
+                "train": src_train,
+                "valid": src_eval,
+                "test": src_test,
+            },
+            tgt_language: {
+                "train": tgt_train,
+                "valid": tgt_eval,
+                "test": tgt_test,
+            }
+        }[lang][split]
 
-        return src_file, tgt_file
+    cleaned_cache_decompressed_dp = cache_decompressed_dp.map(clean_files)
 
-    cleaned_cache_decompressed_dp = cache_decompressed_dp.map(clean_files).map(get_filepath)
+    # Filters out irrelevant file given the filename templates filled with split and src/tgt codes
+    src_data_dp = cleaned_cache_decompressed_dp.filter(lambda x: get_filepath(split, src_language) in x)
+    tgt_data_dp = cleaned_cache_decompressed_dp.filter(lambda x: get_filepath(split, tgt_language) in x)
 
-    # pairs of filenames are either both None or one of src/tgt is None.
-    # filter out both None since they're not relevant
-    cleaned_cache_decompressed_dp = cleaned_cache_decompressed_dp.filter(lambda x: x != (None, None))
-
-    # (None, tgt) => 1, (src, None) => 0
-    tgt_data_dp, src_data_dp = cleaned_cache_decompressed_dp.demux(2, lambda x: x.index(None))
-
-    # Pull out the non-None element (i.e., filename) from the tuple
-    tgt_data_dp = FileOpener(tgt_data_dp.map(lambda x: x[1]), mode="r")
-    src_data_dp = FileOpener(src_data_dp.map(lambda x: x[0]), mode="r")
+    tgt_data_dp = FileOpener(tgt_data_dp, mode="r")
+    src_data_dp = FileOpener(src_data_dp, mode="r")
 
     src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
     tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
