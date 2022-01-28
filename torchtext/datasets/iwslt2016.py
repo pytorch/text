@@ -6,10 +6,8 @@ if is_module_available("torchdata"):
 import os
 from torchtext.data.datasets_utils import (
     _wrap_split_argument,
-    _clean_inner_xml_file,
-    _clean_inner_tags_file,
+    _clean_files,
     _create_dataset_directory,
-    _rewrite_text_file,
 )
 
 URL = 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
@@ -227,42 +225,39 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(lambda x: iwslt_tar in x[0])
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    def clean_files(fname, base, stream):
-        if 'xml' in fname:
-            return _clean_inner_xml_file(fname, base, stream)
-        elif "tags" in fname:
-            return _clean_inner_tags_file(fname, base, stream)
-        return _rewrite_text_file(fname, base, stream)
+    file_path_by_lang_and_split = {
+        src_language: {
+            "train": src_train,
+            "valid": src_eval,
+            "test": src_test,
+        },
+        tgt_language: {
+            "train": tgt_train,
+            "valid": tgt_eval,
+            "test": tgt_test,
+        }
+    }
 
-    def get_filepath(split, lang):
-        return {
-            src_language: {
-                "train": src_train,
-                "valid": src_eval,
-                "test": src_test,
-            },
-            tgt_language: {
-                "train": tgt_train,
-                "valid": tgt_eval,
-                "test": tgt_test,
-            }
-        }[lang][split]
+    src_filepath = file_path_by_lang_and_split[src_language][split]
 
     cache_inner_src_decompressed_dp = cache_decompressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, get_filepath(split, src_language))
+        filepath_fn=lambda x: os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, src_filepath)
     )
     cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b").read_from_tar()
-    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.map(lambda x: clean_files(x[0], os.path.splitext(os.path.dirname(os.path.dirname(x[0])))[0], x[1]))
-    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.filter(lambda x: get_filepath(split, src_language) in x)
+    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.map(lambda x: _clean_files(x[0], os.path.splitext(os.path.dirname(os.path.dirname(x[0])))[0], x[1]))
+    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.filter(lambda x: src_filepath in x)
     cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b")
     cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
+    tgt_filepath = file_path_by_lang_and_split[tgt_language][split]
+
+
     cache_inner_tgt_decompressed_dp = cache_decompressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, get_filepath(split, tgt_language))
+        filepath_fn=lambda x: os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, tgt_filepath)
     )
     cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b").read_from_tar()
-    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.map(lambda x: clean_files(x[0], os.path.splitext(os.path.dirname(os.path.dirname(x[0])))[0], x[1]))
-    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.filter(lambda x: get_filepath(split, tgt_language) in x)
+    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.map(lambda x: _clean_files(x[0], os.path.splitext(os.path.dirname(os.path.dirname(x[0])))[0], x[1]))
+    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.filter(lambda x: tgt_filepath in x)
     cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 

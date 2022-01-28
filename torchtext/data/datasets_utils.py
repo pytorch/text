@@ -89,6 +89,12 @@ def _rewrite_text_file(file, base, stream):
             f.write(line.decode("utf-8"))
     return out_file
 
+def _clean_files(fname, base, stream):
+    if 'xml' in fname:
+        return _clean_inner_xml_file(fname, base, stream)
+    elif "tags" in fname:
+        return _clean_inner_tags_file(fname, base, stream)
+    return _rewrite_text_file(fname, base, stream)
 
 def _create_data_from_json(data_path):
     with open(data_path) as json_file:
