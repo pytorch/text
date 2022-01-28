@@ -33,6 +33,18 @@ def _clean_xml_file(f_xml):
                 fd_txt.write(e.text.strip() + '\n')
 
 
+def _clean_inner_xml_file(f_xml, base, stream):
+    f_txt = os.path.basename(os.path.splitext(f_xml)[0])
+    os.makedirs(base, exist_ok=True)
+    out_file = os.path.join(base, f_txt)
+    with codecs.open(out_file, mode='w', encoding='utf-8') as fd_txt:
+        root = ET.fromstring(stream.read().decode("utf-8"))[0]
+        for doc in root.findall('doc'):
+            for e in doc.findall('seg'):
+                fd_txt.write(e.text.strip() + '\n')
+    return os.path.join(base, f_txt)
+
+
 def _clean_tags_file(f_orig):
     xml_tags = [
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
@@ -48,6 +60,34 @@ def _clean_tags_file(f_orig):
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
                 fd_txt.write(line.strip() + '\n')
+
+
+def _clean_inner_tags_file(f_orig, base, stream):
+    xml_tags = [
+        '<url', '<keywords', '<talkid', '<description', '<reviewer',
+        '<translator', '<title', '<speaker', '<doc', '</doc'
+    ]
+    f_txt = os.path.basename(f_orig.replace('.tags', ''))
+    os.makedirs(base, exist_ok=True)
+    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+        for line in stream.readlines():
+            if not any(tag in line.decode("utf-8") for tag in xml_tags):
+                # TODO: Fix utf-8 next line mark
+                #                fd_txt.write(l.strip() + '\n')
+                #                fd_txt.write(l.strip() + u"\u0085")
+                #                fd_txt.write(l.lstrip())
+                fd_txt.write(line.decode("utf-8").strip() + '\n')
+    return f_txt
+
+
+def _rewrite_text_file(file, base, stream):
+    f_txt = os.path.basename(file)
+    os.makedirs(base, exist_ok=True)
+    out_file = os.path.join(base, f_txt)
+    with open(out_file, 'w', encoding='utf-8') as f:
+        for line in stream.readlines():
+            f.write(line.decode("utf-8"))
+    return out_file
 
 
 def _create_data_from_json(data_path):
