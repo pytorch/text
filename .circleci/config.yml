@@ -91,7 +91,7 @@ jobs:
           command: pip install --user --progress-bar=off jinja2 pyyaml
       - run:
           name: Check CircleCI config consistency
-          command: python .circleci/regenerate.py
+          command: python .circleci/regenerate.py && git diff --quiet
       - run:
           when: on_fail
           name: Required action
