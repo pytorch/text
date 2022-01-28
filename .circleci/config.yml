@@ -120,7 +120,7 @@ jobs:
     docker:
       - image: circleci/python:3.7
     steps:
-      - apt_install:
+      - run:
           name: Install additional system libraries
           command: |
             sudo apt update -qy
