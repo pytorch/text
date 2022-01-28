@@ -67,7 +67,7 @@ def _clean_inner_tags_file(f_orig, base, stream):
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
         '<translator', '<title', '<speaker', '<doc', '</doc'
     ]
-    f_txt = os.path.basename(f_orig.replace('.tags', ''))
+    f_txt = os.path.join(base, os.path.basename(f_orig.replace('.tags', '')))
     os.makedirs(base, exist_ok=True)
     with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
         for line in stream.readlines():
