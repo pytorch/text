@@ -656,8 +656,8 @@ workflows:
   lint:
     jobs:
       - circleci_consistency
-#      - lint_python_and_config
-#      - lint_c
+      - lint_python_and_config
+      - lint_c
 
   build:
     jobs:
