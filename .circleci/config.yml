@@ -120,6 +120,11 @@ jobs:
     docker:
       - image: circleci/python:3.7
     steps:
+      - apt_install:
+          name: Install additional system libraries
+          command: |
+            sudo apt update -qy
+            sudo apt install libtinfo5
       - checkout
       - run:
           name: Install lint utilities
