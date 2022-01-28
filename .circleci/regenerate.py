@@ -167,7 +167,7 @@ def unittest_workflows(indentation=6):
             }
         })
 
-        for i, python_version in enumerate(PYTHON_VERSIONS):
+        for python_version in PYTHON_VERSIONS:
             w.append({
                 f"unittest_{os_type}": {
                     "name": f"unittest_{os_type}_py{python_version}",
@@ -176,13 +176,6 @@ def unittest_workflows(indentation=6):
                 }
             })
 
-            if i == 0 and os_type == "linux":
-                w.append({
-                    "stylecheck": {
-                        "name": f"stylecheck_py{python_version}",
-                        "python_version": python_version,
-                    }
-                })
     return indent(indentation, w)
 
 

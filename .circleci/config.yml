@@ -667,7 +667,6 @@ workflows:
       - circleci_consistency
       - lint_python_and_config
       - lint_c
-
   build:
     jobs:
       - binary_linux_wheel:
@@ -795,6 +794,10 @@ workflows:
           - cachesetup_windows_py_any
   nightly:
     jobs:
+      - circleci_consistency:
+          filters:
+            branches:
+              only: nightly
       - binary_linux_wheel:
           filters:
             branches:
