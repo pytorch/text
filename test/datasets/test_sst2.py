@@ -71,19 +71,17 @@ class TestSST2(TempDirMixin, TorchtextTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        super().tearDownClass()
         cls.patcher.stop()
+        super().tearDownClass()
 
     @parameterized.expand(["train", "test", "dev"])
     def test_sst2(self, split):
         dataset = SST2(root=self.root_dir, split=split)
-        n_iter = 0
 
-        for i, sample in enumerate(dataset):
-            expected_sample = self.samples[split][i]
-            assert sample == expected_sample
-            n_iter += 1
-        assert n_iter == len(self.samples[split])
+        samples = list(dataset)
+        expected_samples = self.samples[split]
+        for sample, expected_sample in zip_equal(samples, expected_samples):
+            self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "test", "dev"])
     def test_sst2_split_argument(self, split):
