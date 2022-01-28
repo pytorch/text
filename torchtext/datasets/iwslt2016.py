@@ -1,3 +1,9 @@
+from torchtext._internal.module_utils import is_module_available
+from typing import Union, Tuple
+
+if is_module_available("torchdata"):
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper, FileLister
+
 import os
 from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
@@ -9,11 +15,14 @@ from torchtext.data.datasets_utils import (
 )
 from torchtext.data.datasets_utils import _create_dataset_directory
 
+URL = 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8'
+
+_PATH = '2016-01.tgz'
+
+MD5 = 'c393ed3fc2a1b0f004b3331043f615ae'
 
 SUPPORTED_DATASETS = {
-    'URL': 'https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8',
-    '_PATH': '2016-01.tgz',
-    'MD5': 'c393ed3fc2a1b0f004b3331043f615ae',
+
     'valid_test': ['dev2010', 'tst2010', 'tst2011', 'tst2012', 'tst2013', 'tst2014'],
     'language_pair': {
         'en': ['ar', 'de', 'fr', 'cs'],
@@ -25,9 +34,6 @@ SUPPORTED_DATASETS = {
     'year': 16,
 
 }
-
-URL = SUPPORTED_DATASETS['URL']
-MD5 = SUPPORTED_DATASETS['MD5']
 
 NUM_LINES = {
     'train': {
@@ -133,21 +139,28 @@ def _construct_filenames(filename, languages):
     return filenames
 
 
+def _construct_filepath(path, src_filename, tgt_filename):
+    src_path = None
+    tgt_path = None
+    src_path = path if src_filename in path else src_path
+    tgt_path = path if tgt_filename in path else tgt_path
+    return src_path, tgt_path
+
+
 def _construct_filepaths(paths, src_filename, tgt_filename):
     src_path = None
     tgt_path = None
     for p in paths:
-        src_path = p if src_filename in p else src_path
-        tgt_path = p if tgt_filename in p else tgt_path
-    return (src_path, tgt_path)
+        src_path, tgt_path = _construct_filepath(p, src_filename, tgt_filename)
+    return src_path, tgt_path
 
 
 DATASET_NAME = "IWSLT2016"
 
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
-@_wrap_split_argument(('train', 'valid', 'test'))
-def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
+@_wrap_split_argument(("train", "valid", "test"))
+def IWSLT2016(root = '.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
     """IWSLT2016 dataset
 
     The available datasets include following:
@@ -191,6 +204,9 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         'test': test_set
     }
 
+    if not is_module_available("torchdata"):
+        raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
+
     if not isinstance(language_pair, list) and not isinstance(language_pair, tuple):
         raise ValueError("language_pair must be list or tuple but got {} instead".format(type(language_pair)))
 
@@ -225,50 +241,60 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    extracted_files = []  # list of paths to the extracted files
-    dataset_tar = download_from_url(SUPPORTED_DATASETS['URL'], root=root, hash_value=SUPPORTED_DATASETS['MD5'],
-                                    path=os.path.join(root, SUPPORTED_DATASETS['_PATH']), hash_type='md5')
-    extracted_dataset_tar = extract_archive(dataset_tar)
-    # IWSLT dataset's url downloads a multilingual tgz.
-    # We need to take an extra step to pick out the specific language pair from it.
+    url_dp = IterableWrapper([URL])
+    cache_compressed_dp = url_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(root, _PATH),
+        hash_dict={os.path.join(root, _PATH): MD5},
+        hash_type="md5"
+    )
+    cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
+    cache_compressed_dp = FileOpener(cache_compressed_dp, mode="b")
     src_language = train_filenames[0].split(".")[-1]
     tgt_language = train_filenames[1].split(".")[-1]
     languages = "-".join([src_language, tgt_language])
 
-    iwslt_tar = '{}/{}/texts/{}/{}/{}.tgz'
-    iwslt_tar = iwslt_tar.format(
-        root, SUPPORTED_DATASETS['_PATH'].split(".")[0], src_language, tgt_language, languages)
-    extracted_dataset_tar = extract_archive(iwslt_tar)
-    extracted_files.extend(extracted_dataset_tar)
+    iwslt_tar = os.path.join(
+        "texts", src_language, tgt_language, languages
+    )
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
+        filepath_fn=lambda x: os.path.join(os.path.splitext(x[0])[0], iwslt_tar)
+    )
+    cache_decompressed_dp = cache_decompressed_dp.read_from_tar()
+    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb")
 
-    # Clean the xml and tag file in the archives
-    file_archives = []
-    for fname in extracted_files:
+    def clean_files(fname):
         if 'xml' in fname:
             _clean_xml_file(fname)
-            file_archives.append(os.path.splitext(fname)[0])
+            return os.path.splitext(fname)[0]
         elif "tags" in fname:
             _clean_tags_file(fname)
-            file_archives.append(fname.replace('.tags', ''))
-        else:
-            file_archives.append(fname)
+            return fname.replace('.tags', '')
+        return fname
 
-    data_filenames = {
-        "train": _construct_filepaths(file_archives, src_train, tgt_train),
-        "valid": _construct_filepaths(file_archives, src_eval, tgt_eval),
-        "test": _construct_filepaths(file_archives, src_test, tgt_test)
-    }
+    cache_decompressed_dp = cache_decompressed_dp.flatmap(FileLister)
 
-    for key in data_filenames.keys():
-        if len(data_filenames[key]) == 0 or data_filenames[key] is None:
-            raise FileNotFoundError(
-                "Files are not found for data type {}".format(key))
+    def get_filepath(f):
+        src_file, tgt_file = {
+            "train": _construct_filepath(f, src_train, tgt_train),
+            "valid": _construct_filepath(f, src_eval, tgt_eval),
+            "test": _construct_filepath(f, src_test, tgt_test)
+        }[split]
 
-    src_data_iter = _read_text_iterator(data_filenames[split][0])
-    tgt_data_iter = _read_text_iterator(data_filenames[split][1])
+        return src_file, tgt_file
 
-    def _iter(src_data_iter, tgt_data_iter):
-        for item in zip(src_data_iter, tgt_data_iter):
-            yield item
+    cleaned_cache_decompressed_dp = cache_decompressed_dp.map(clean_files).map(get_filepath)
 
-    return _RawTextIterableDataset(DATASET_NAME, NUM_LINES[split][num_lines_set_identifier[split]][tuple(sorted(language_pair))], _iter(src_data_iter, tgt_data_iter))
+    # pairs of filenames are either both None or one of src/tgt is None.
+    # filter out both None since they're not relevant
+    cleaned_cache_decompressed_dp = cleaned_cache_decompressed_dp.filter(lambda x: x != (None, None))
+
+    # (None, tgt) => 1, (src, None) => 0
+    tgt_data_dp, src_data_dp = cleaned_cache_decompressed_dp.demux(2, lambda x: x.index(None))
+
+    # Pull out the non-None element (i.e., filename) from the tuple
+    tgt_data_dp = FileOpener(tgt_data_dp.map(lambda x: x[1]), mode="r")
+    src_data_dp = FileOpener(src_data_dp.map(lambda x: x[0]), mode="r")
+
+    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
+    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
+    return src_lines.zip(tgt_lines)
