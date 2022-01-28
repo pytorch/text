@@ -37,11 +37,6 @@ conda activate "${env_dir}"
 # 3. Install Conda dependencies
 printf "* Installing dependencies (except PyTorch)\n"
 conda env update --file "${this_dir}/environment.yml" --prune
-if [ "${os}" == Linux ] ; then
-    clangformat_path="${root_dir}/clang-format"
-    curl https://oss-clang-format.s3.us-east-2.amazonaws.com/linux64/clang-format-linux64 -o "${clangformat_path}"
-    chmod +x "${clangformat_path}"
-fi
 
 # 4. Download
 printf "* Downloading SpaCy English models\n"
