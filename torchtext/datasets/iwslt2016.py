@@ -1,17 +1,13 @@
 from torchtext._internal.module_utils import is_module_available
-from typing import Union, Tuple
 
 if is_module_available("torchdata"):
     from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper, FileLister
 
 import os
-from torchtext.utils import (download_from_url, extract_archive)
 from torchtext.data.datasets_utils import (
-    _RawTextIterableDataset,
     _wrap_split_argument,
     _clean_xml_file,
     _clean_tags_file,
-    _read_text_iterator,
 )
 from torchtext.data.datasets_utils import _create_dataset_directory
 
@@ -160,7 +156,7 @@ DATASET_NAME = "IWSLT2016"
 
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
-def IWSLT2016(root = '.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
+def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
     """IWSLT2016 dataset
 
     The available datasets include following:
@@ -198,12 +194,6 @@ def IWSLT2016(root = '.data', split=('train', 'valid', 'test'), language_pair=('
         >>> src_sentence, tgt_sentence = next(train_iter)
 
     """
-    num_lines_set_identifier = {
-        'train': 'train',
-        'valid': valid_set,
-        'test': test_set
-    }
-
     if not is_module_available("torchdata"):
         raise ModuleNotFoundError("Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`")
 
