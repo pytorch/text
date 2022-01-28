@@ -87,19 +87,24 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            pip install --user --progress-bar off jinja2 pyyaml
-            python .circleci/regenerate.py
-            git diff --exit-code || (echo ".circleci/config.yml not in sync with config.yml.in! Run .circleci/regenerate.py to update config"; exit 1)
+          name: Install check utilities
+          command: pip install --user --progress-bar=off jinja2 pyyaml
+      - run:
+          name: Check CircleCI config consistency
+          command: python .circleci/regenerate.py
+      - run:
+          when: on_fail
+          name: Required action
+          command: git diff --exit-code || (echo ".circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this."; exit 1)
 
   lint_python_and_config:
     docker:
       - image: circleci/python:3.7
     steps:
       - checkout
-      - pip_install:
-          args: pre-commit
-          descr: Install lint utilities
+      - run:
+          name: Install lint utilities
+          command: pip install --user --progress-bar=off pre-commit
       - run:
           name: Install pre-commit hooks
           command: pre-commit install-hooks
@@ -107,9 +112,9 @@ jobs:
           name: Lint Python code and config files
           command: pre-commit run --all-files
       - run:
-          name: Required lint modifications
           when: on_fail
-          command: git --no-pager diff
+          name: Required action
+          command: git diff --exit-code || (echo "Code format not compliant with the rules! Run '$ pre-commit run --all-files' to fix this."; exit 1)
 
   lint_c:
     docker:
@@ -126,9 +131,9 @@ jobs:
           name: Lint C code
           command: git-clang-format --binary ./clang-format origin/main
       - run:
-          name: Required lint modifications
           when: on_fail
-          command: git --no-pager diff
+          name: Required action
+          command: git diff --exit-code || (echo "Code format not compliant with the rules! Run '$ git-clang-format' to fix this."; exit 1)
 
   binary_linux_wheel:
     <<: *binary_common
@@ -651,8 +656,8 @@ workflows:
   lint:
     jobs:
       - circleci_consistency
-      - lint_python_and_config
-      - lint_c
+#      - lint_python_and_config
+#      - lint_c
 
   build:
     jobs:
