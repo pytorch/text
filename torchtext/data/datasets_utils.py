@@ -11,6 +11,7 @@ from torchtext.utils import (
     unicode_csv_reader,
 )
 from torch.utils.data import functional_datapipe, IterDataPipe
+from torch.utils.data.datapipes.utils.common import StreamWrapper
 import codecs
 try:
     import defusedxml.ElementTree as ET
@@ -41,7 +42,7 @@ def _clean_inner_xml_file(outfile, stream):
         outfile: the path to which the modified stream should be written
         stream: the byte datapipe of the contents of the archived XML file
 
-    Returns: the path to the newly-written file
+    Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
     with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
@@ -49,7 +50,7 @@ def _clean_inner_xml_file(outfile, stream):
         for doc in root.findall('doc'):
             for e in doc.findall('seg'):
                 fd_txt.write(e.text.strip() + '\n')
-    return outfile
+    return outfile, StreamWrapper(open(outfile, "rb"))
 
 
 def _clean_tags_file(f_orig):
@@ -77,7 +78,7 @@ def _clean_inner_tags_file(outfile, stream):
         outfile: the path to which the modified stream should be written
         stream: the byte datapipe of the contents of the archived tags file
 
-    Returns: the path to the newly-written file
+    Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
     xml_tags = [
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
@@ -92,7 +93,7 @@ def _clean_inner_tags_file(outfile, stream):
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
                 fd_txt.write(line.decode("utf-8").strip() + '\n')
-    return outfile
+    return outfile, StreamWrapper(open(outfile, "rb"))
 
 
 def _rewrite_text_file(outfile, stream):
@@ -103,13 +104,13 @@ def _rewrite_text_file(outfile, stream):
         outfile: the path to which the modified stream should be written
         stream: the byte datapipe of the contents of the archived text file
 
-    Returns: the path to the newly-written file
+    Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
     with open(outfile, 'w', encoding='utf-8') as f:
         for line in stream.readlines():
             f.write(line.decode("utf-8") + "\n")
-    return outfile
+    return outfile, StreamWrapper(open(outfile, "rb"))
 
 
 def _clean_files(outfile, fname, stream):

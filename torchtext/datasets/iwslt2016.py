@@ -272,7 +272,6 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b").read_from_tar()
     cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.filter(lambda x: os.path.basename(uncleaned_src_filename) in x[0])
     cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.map(lambda x: _clean_files(full_src_filepath, x[0], x[1]))
-    cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b")
     cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     tgt_filename = file_path_by_lang_and_split[tgt_language][split]
@@ -286,7 +285,6 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b").read_from_tar()
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.filter(lambda x: os.path.basename(uncleaned_tgt_filename) in x[0])
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.map(lambda x: _clean_files(full_tgt_filepath, x[0], x[1]))
-    cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
