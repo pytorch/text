@@ -287,10 +287,10 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.map(lambda x: _clean_files(full_tgt_filepath, x[0], x[1]))
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
-    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b")
+    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="r")
+    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="r")
 
-    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False, decode=True)
-    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False, decode=True)
+    src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
+    tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
 
     return src_lines.zip(tgt_lines)
