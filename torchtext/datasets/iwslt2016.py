@@ -239,24 +239,22 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     }
 
     src_filename = file_path_by_lang_and_split[src_language][split]
+    full_src_filepath = os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, src_filename)
 
-    cache_inner_src_decompressed_dp = cache_decompressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, src_filename)
-    )
+    cache_inner_src_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_src_filepath)
     cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b").read_from_tar()
     cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.map(lambda x: _clean_files(x[0], os.path.splitext(os.path.dirname(os.path.dirname(x[0])))[0], x[1]))
-    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.filter(lambda x: src_filename in x)
+    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.filter(lambda x: full_src_filepath in x)
     cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b")
     cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
     tgt_filename = file_path_by_lang_and_split[tgt_language][split]
+    full_tgt_filepath = os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, tgt_filename)
 
-    cache_inner_tgt_decompressed_dp = cache_decompressed_dp.on_disk_cache(
-        filepath_fn=lambda x: os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, tgt_filename)
-    )
+    cache_inner_tgt_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_tgt_filepath)
     cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b").read_from_tar()
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.map(lambda x: _clean_files(x[0], os.path.splitext(os.path.dirname(os.path.dirname(x[0])))[0], x[1]))
-    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.filter(lambda x: tgt_filename in x)
+    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.filter(lambda x: full_tgt_filepath in x)
     cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b")
     cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
