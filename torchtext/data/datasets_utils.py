@@ -34,6 +34,17 @@ def _clean_xml_file(f_xml):
 
 
 def _clean_inner_xml_file(f_xml, base, stream):
+    """Accepts an XML filename within a tarball and a stream of the byte contents
+    within that file and writes the cleaned contents to a new, untarred file
+    found in the provided base directory.
+
+    Args:
+        f_orig: the full path of the XML file in the archive
+        base: the directory to which the new file should be written
+        stream: the byte datapipe of the contents of f_orig
+
+    Returns: the path to the newly-written file
+    """
     f_txt = os.path.basename(os.path.splitext(f_xml)[0])
     os.makedirs(base, exist_ok=True)
     out_file = os.path.join(base, f_txt)
@@ -63,6 +74,17 @@ def _clean_tags_file(f_orig):
 
 
 def _clean_inner_tags_file(f_orig, base, stream):
+    """Accepts a tags filename within a tarball and a stream of the byte contents
+    within that file and writes the cleaned contents to a new, untarred file
+    found in the provided base directory.
+
+    Args:
+        f_orig: the full path of the tags file in the archive
+        base: the directory to which the new file should be written
+        stream: the byte datapipe of the contents of f_orig
+
+    Returns: the path to the newly-written file
+    """
     xml_tags = [
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
         '<translator', '<title', '<speaker', '<doc', '</doc'
@@ -81,6 +103,17 @@ def _clean_inner_tags_file(f_orig, base, stream):
 
 
 def _rewrite_text_file(file, base, stream):
+    """Accepts a text filename within a tarball and a stream of the byte contents
+    within that file and writes the cleaned contents to a new, untarred file
+    found in the provided base directory.
+
+    Args:
+        f_orig: the full path of the text file in the archive
+        base: the directory to which the new file should be written
+        stream: the byte datapipe of the contents of f_orig
+
+    Returns: the path to the newly-written file
+    """
     f_txt = os.path.basename(file)
     os.makedirs(base, exist_ok=True)
     out_file = os.path.join(base, f_txt)
@@ -89,12 +122,14 @@ def _rewrite_text_file(file, base, stream):
             f.write(line.decode("utf-8"))
     return out_file
 
+
 def _clean_files(fname, base, stream):
     if 'xml' in fname:
         return _clean_inner_xml_file(fname, base, stream)
     elif "tags" in fname:
         return _clean_inner_tags_file(fname, base, stream)
     return _rewrite_text_file(fname, base, stream)
+
 
 def _create_data_from_json(data_path):
     with open(data_path) as json_file:
