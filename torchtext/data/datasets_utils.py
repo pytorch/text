@@ -33,27 +33,23 @@ def _clean_xml_file(f_xml):
                 fd_txt.write(e.text.strip() + '\n')
 
 
-def _clean_inner_xml_file(f_xml, base, stream):
-    """Accepts an XML filename within a tarball and a stream of the byte contents
-    within that file and writes the cleaned contents to a new, untarred file
-    found in the provided base directory.
+def _clean_inner_xml_file(outfile, stream):
+    """Accepts an output filename and a stream of the byte contents of an XML file
+    within a tarball and writes the cleaned contents to a new, untarred file.
 
     Args:
-        f_orig: the full path of the XML file in the archive
-        base: the directory to which the new file should be written
-        stream: the byte datapipe of the contents of f_orig
+        outfile: the path to which the modified stream should be written
+        stream: the byte datapipe of the contents of the archived XML file
 
     Returns: the path to the newly-written file
     """
-    f_txt = os.path.basename(os.path.splitext(f_xml)[0])
-    os.makedirs(base, exist_ok=True)
-    out_file = os.path.join(base, f_txt)
-    with codecs.open(out_file, mode='w', encoding='utf-8') as fd_txt:
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
+    with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
         root = ET.fromstring(stream.read().decode("utf-8"))[0]
         for doc in root.findall('doc'):
             for e in doc.findall('seg'):
                 fd_txt.write(e.text.strip() + '\n')
-    return os.path.join(base, f_txt)
+    return outfile
 
 
 def _clean_tags_file(f_orig):
@@ -73,15 +69,13 @@ def _clean_tags_file(f_orig):
                 fd_txt.write(line.strip() + '\n')
 
 
-def _clean_inner_tags_file(f_orig, base, stream):
-    """Accepts a tags filename within a tarball and a stream of the byte contents
-    within that file and writes the cleaned contents to a new, untarred file
-    found in the provided base directory.
+def _clean_inner_tags_file(outfile, stream):
+    """Accepts an output filename and a stream of the byte contents of a tags file
+    within a tarball and writes the cleaned contents to a new, untarred file.
 
     Args:
-        f_orig: the full path of the tags file in the archive
-        base: the directory to which the new file should be written
-        stream: the byte datapipe of the contents of f_orig
+        outfile: the path to which the modified stream should be written
+        stream: the byte datapipe of the contents of the archived tags file
 
     Returns: the path to the newly-written file
     """
@@ -89,9 +83,8 @@ def _clean_inner_tags_file(f_orig, base, stream):
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
         '<translator', '<title', '<speaker', '<doc', '</doc'
     ]
-    f_txt = os.path.join(base, os.path.basename(f_orig.replace('.tags', '')))
-    os.makedirs(base, exist_ok=True)
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
+    with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
         for line in stream.readlines():
             if not any(tag in line.decode("utf-8") for tag in xml_tags):
                 # TODO: Fix utf-8 next line mark
@@ -99,36 +92,32 @@ def _clean_inner_tags_file(f_orig, base, stream):
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
                 fd_txt.write(line.decode("utf-8").strip() + '\n')
-    return f_txt
+    return outfile
 
 
-def _rewrite_text_file(file, base, stream):
-    """Accepts a text filename within a tarball and a stream of the byte contents
-    within that file and writes the cleaned contents to a new, untarred file
-    found in the provided base directory.
+def _rewrite_text_file(outfile, stream):
+    """Accepts an output filename and a stream of the byte contents of a text file
+    within a tarball and writes the cleaned contents to a new, untarred file.
 
     Args:
-        f_orig: the full path of the text file in the archive
-        base: the directory to which the new file should be written
-        stream: the byte datapipe of the contents of f_orig
+        outfile: the path to which the modified stream should be written
+        stream: the byte datapipe of the contents of the archived text file
 
     Returns: the path to the newly-written file
     """
-    f_txt = os.path.basename(file)
-    os.makedirs(base, exist_ok=True)
-    out_file = os.path.join(base, f_txt)
-    with open(out_file, 'w', encoding='utf-8') as f:
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
+    with open(outfile, 'w', encoding='utf-8') as f:
         for line in stream.readlines():
-            f.write(line.decode("utf-8"))
-    return out_file
+            f.write(line.decode("utf-8") + "\n")
+    return outfile
 
 
-def _clean_files(fname, base, stream):
+def _clean_files(outfile, fname, stream):
     if 'xml' in fname:
-        return _clean_inner_xml_file(fname, base, stream)
+        return _clean_inner_xml_file(outfile, stream)
     elif "tags" in fname:
-        return _clean_inner_tags_file(fname, base, stream)
-    return _rewrite_text_file(fname, base, stream)
+        return _clean_inner_tags_file(outfile, stream)
+    return _rewrite_text_file(outfile, stream)
 
 
 def _create_data_from_json(data_path):
