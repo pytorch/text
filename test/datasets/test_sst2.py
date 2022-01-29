@@ -1,12 +1,12 @@
 import os
 import random
 import string
-import tarfile
+import zipfile
 from collections import defaultdict
 from unittest.mock import patch
 
 from parameterized import parameterized
-from torchtext.datasets.amazonreviewpolarity import AmazonReviewPolarity
+from torchtext.datasets.sst2 import SST2
 
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -16,37 +16,46 @@ def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
     """
-    base_dir = os.path.join(root_dir, "AmazonReviewPolarity")
+    base_dir = os.path.join(root_dir, "SST2")
     temp_dataset_dir = os.path.join(base_dir, "temp_dataset_dir")
     os.makedirs(temp_dataset_dir, exist_ok=True)
 
     seed = 1
     mocked_data = defaultdict(list)
-    for file_name in ("train.csv", "test.csv"):
+    for file_name, (col1_name, col2_name) in zip(
+        ("train.tsv", "test.tsv", "dev.tsv"),
+        ((("sentence", "label"), ("sentence", "label"), ("index", "sentence"))),
+    ):
         txt_file = os.path.join(temp_dataset_dir, file_name)
         with open(txt_file, "w") as f:
+            f.write(f"{col1_name}\t{col2_name}\n")
             for i in range(5):
-                label = seed % 2 + 1
+                label = seed % 2
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
-                dataset_line = (label, f"{rand_string} {rand_string}")
+                if file_name == "test.tsv":
+                    dataset_line = (f"{rand_string} .",)
+                    f.write(f"{i}\t{rand_string} .\n")
+                else:
+                    dataset_line = (f"{rand_string} .", label)
+                    f.write(f"{rand_string} .\t{label}\n")
+
                 # append line to correct dataset split
                 mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
-                f.write(f'"{label}","{rand_string}","{rand_string}"\n')
                 seed += 1
 
-    compressed_dataset_path = os.path.join(
-        base_dir, "amazon_review_polarity_csv.tar.gz"
-    )
-    # create tar file from dataset folder
-    with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        tar.add(temp_dataset_dir, arcname="amazon_review_polarity_csv")
+    compressed_dataset_path = os.path.join(base_dir, "SST-2.zip")
+    # create zip file from dataset folder
+    with zipfile.ZipFile(compressed_dataset_path, "w") as zip_file:
+        for file_name in ("train.tsv", "test.tsv", "dev.tsv"):
+            txt_file = os.path.join(temp_dataset_dir, file_name)
+            zip_file.write(txt_file, arcname=os.path.join("SST-2", file_name))
 
     return mocked_data
 
 
-class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
+class TestSST2(TempDirMixin, TorchtextTestCase):
     root_dir = None
     samples = []
 
@@ -65,19 +74,19 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity(self, split):
-        dataset = AmazonReviewPolarity(root=self.root_dir, split=split)
+    @parameterized.expand(["train", "test", "dev"])
+    def test_sst2(self, split):
+        dataset = SST2(root=self.root_dir, split=split)
 
         samples = list(dataset)
         expected_samples = self.samples[split]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
-    @parameterized.expand(["train", "test"])
-    def test_amazon_review_polarity_split_argument(self, split):
-        dataset1 = AmazonReviewPolarity(root=self.root_dir, split=split)
-        (dataset2,) = AmazonReviewPolarity(root=self.root_dir, split=(split,))
+    @parameterized.expand(["train", "test", "dev"])
+    def test_sst2_split_argument(self, split):
+        dataset1 = SST2(root=self.root_dir, split=split)
+        (dataset2,) = SST2(root=self.root_dir, split=(split,))
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
