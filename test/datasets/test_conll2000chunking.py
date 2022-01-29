@@ -11,6 +11,7 @@ from torchtext.datasets.conll2000chunking import CoNLL2000Chunking
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
 
+
 def _get_mock_dataset(root_dir):
     """
     root_dir: directory to the mocked dataset
@@ -64,7 +65,6 @@ class TestCoNLL2000Chunking(TempDirMixin, TorchtextTestCase):
             "torchdata.datapipes.iter.util.cacheholder._hash_check", return_value=True
         )
         cls.patcher.start()
-        print(cls.root_dir)
 
     @classmethod
     def tearDownClass(cls):
