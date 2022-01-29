@@ -127,6 +127,17 @@ SET_NOT_EXISTS = {
 DATASET_NAME = "IWSLT2016"
 
 
+def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
+    cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_filepath)
+    cache_inner_decompressed_dp = FileOpener(cache_inner_decompressed_dp, mode="b").read_from_tar()
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(
+        lambda x: os.path.basename(uncleaned_filename) in x[0])
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.map(
+        lambda x: _clean_files(full_filepath, x[0], x[1]))
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    return cache_inner_decompressed_dp
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
 def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en'), valid_set='tst2013', test_set='tst2014'):
@@ -268,11 +279,7 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     # because we're lazily extracting from the outer tarfile.
     full_src_filepath = os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, src_filename)
 
-    cache_inner_src_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_src_filepath)
-    cache_inner_src_decompressed_dp = FileOpener(cache_inner_src_decompressed_dp, mode="b").read_from_tar()
-    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.filter(lambda x: os.path.basename(uncleaned_src_filename) in x[0])
-    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.map(lambda x: _clean_files(full_src_filepath, x[0], x[1]))
-    cache_inner_src_decompressed_dp = cache_inner_src_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    cache_inner_src_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_src_filepath, uncleaned_src_filename)
 
     tgt_filename = file_path_by_lang_and_split[tgt_language][split]
     uncleaned_tgt_filename = uncleaned_filenames[tgt_language][split]
@@ -281,11 +288,7 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     # because we're lazily extracting from the outer tarfile.
     full_tgt_filepath = os.path.join(root, "2016-01/texts/", src_language, tgt_language, languages, tgt_filename)
 
-    cache_inner_tgt_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_tgt_filepath)
-    cache_inner_tgt_decompressed_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="b").read_from_tar()
-    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.filter(lambda x: os.path.basename(uncleaned_tgt_filename) in x[0])
-    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.map(lambda x: _clean_files(full_tgt_filepath, x[0], x[1]))
-    cache_inner_tgt_decompressed_dp = cache_inner_tgt_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    cache_inner_tgt_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_tgt_filepath, uncleaned_tgt_filename)
 
     tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="r")
     src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="r")
