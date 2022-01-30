@@ -5,8 +5,8 @@ import tarfile
 from collections import defaultdict
 from unittest.mock import patch
 
-from parameterized import parameterized
-from torchtext.datasets.amazonreviewpolarity import Multi30k
+from ..common.parameterized_utils import nested_params
+from torchtext.datasets import Multi30k
 
 from ..common.case_utils import TempDirMixin, zip_equal
 from ..common.torchtext_test_case import TorchtextTestCase
@@ -29,26 +29,25 @@ def _get_mock_dataset(root_dir):
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
-                dataset_line = (label, f"{rand_string} {rand_string}")
-                # append line to correct dataset split
-                mocked_data[os.path.splitext(file_name)[0]].append(dataset_line)
-                f.write(f'"{label}","{rand_string}","{rand_string}"\n')
+                content = f'{rand_string}\n'
+                f.write(content)
+                mocked_data[file_name].append(content)
                 seed += 1
 
-    compressed_dataset_path = os.path.join(
-        base_dir, "amazon_review_polarity_csv.tar.gz"
-    )
+    archive = {}
+    archive["train"] = os.path.join(base_dir, "training.tar.gz")
+    archive["val"] = os.path.join(base_dir, "validation.tar.gz")
+    archive["test"] = os.path.join(base_dir, "mmt16_task1_test.tar.gz")
     # create tar file from dataset folder
-    with tarfile.open(compressed_dataset_path, "w:gz") as tar:
-        tar.add(temp_dataset_dir, arcname="amazon_review_polarity_csv")
+    for split in ("train", "val", "test"):
+        with tarfile.open(archive[split], "w:gz") as tar:
+            tar.add(os.path.join(temp_dataset_dir, f"{split}.de"))
+            tar.add(os.path.join(temp_dataset_dir, f"{split}.en"))
 
     return mocked_data
 
 
-class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
-    root_dir = None
-    samples = []
-
+class TestMulti30k(TempDirMixin, TorchtextTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -64,19 +63,20 @@ class TestAmazonReviewPolarity(TempDirMixin, TorchtextTestCase):
         cls.patcher.stop()
         super().tearDownClass()
 
-    @parameterized.expand(["train", "test"])
-    def test_multi30k(self, split):
-        dataset = AmazonReviewPolarity(root=self.root_dir, split=split)
-
+    @nested_params(["train", "valid", "test"], [("de", "en"), ("en", "de")])
+    def test_multi30k(self, split, language_pair):
+        dataset = Multi30k(root=self.root_dir, split=split, language_pair=language_pair)
+        if split == "valid":
+            split = "val"
         samples = list(dataset)
-        expected_samples = self.samples[split]
+        expected_samples = [(d1, d2) for d1, d2 in zip(self.samples[f'{split}.{language_pair[0]}'], self.samples[f'{split}.{language_pair[1]}'])]
         for sample, expected_sample in zip_equal(samples, expected_samples):
             self.assertEqual(sample, expected_sample)
 
-    @parameterized.expand(["train", "test"])
-    def test_multi30k_split_argument(self, split):
-        dataset1 = Multi30k(root=self.root_dir, split=split)
-        (dataset2,) = Multi30k(root=self.root_dir, split=(split,))
+    @nested_params(["train", "valid", "test"], [("de", "en"), ("en", "de")])
+    def test_multi30k_split_argument(self, split, language_pair):
+        dataset1 = Multi30k(root=self.root_dir, split=split, language_pair=language_pair)
+        (dataset2,) = Multi30k(root=self.root_dir, split=(split,), language_pair=language_pair)
 
         for d1, d2 in zip_equal(dataset1, dataset2):
             self.assertEqual(d1, d2)
