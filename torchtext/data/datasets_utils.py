@@ -36,11 +36,11 @@ def _clean_xml_file(f_xml):
 
 def _clean_inner_xml_file(outfile, stream):
     """Accepts an output filename and a stream of the byte contents of an XML file
-    within a tarball and writes the cleaned contents to a new, untarred file.
+    and writes the cleaned contents to a new file on disk.
 
     Args:
         outfile: the path to which the modified stream should be written
-        stream: the byte datapipe of the contents of the archived XML file
+        stream: the byte datapipe of the contents of the XML file
 
     Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
@@ -72,11 +72,11 @@ def _clean_tags_file(f_orig):
 
 def _clean_inner_tags_file(outfile, stream):
     """Accepts an output filename and a stream of the byte contents of a tags file
-    within a tarball and writes the cleaned contents to a new, untarred file.
+    and writes the cleaned contents to a new file on disk.
 
     Args:
         outfile: the path to which the modified stream should be written
-        stream: the byte datapipe of the contents of the archived tags file
+        stream: the byte datapipe of the contents of the tags file
 
     Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
@@ -98,11 +98,11 @@ def _clean_inner_tags_file(outfile, stream):
 
 def _rewrite_text_file(outfile, stream):
     """Accepts an output filename and a stream of the byte contents of a text file
-    within a tarball and writes the cleaned contents to a new, untarred file.
+    and writes the cleaned contents to a new file on disk.
 
     Args:
         outfile: the path to which the modified stream should be written
-        stream: the byte datapipe of the contents of the archived text file
+        stream: the byte datapipe of the contents of the text file
 
     Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
     """
