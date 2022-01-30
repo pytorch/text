@@ -206,8 +206,8 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
 
     # We create the whole filepath here, but only check for the literal filename in the filter
     # because we're lazily extracting from the outer tarfile. Thus,
-    # /root/2017-01-trnmted/texts/.../src-tgt.tgz will never be in
-    # /root/2017-01-trnmted.tgz/texts/.../src-tgt.tgz
+    # /root/2017-01-trnmted/texts/.../DeEnItNlRo-DeEnItNlRo.tgz will never be in
+    # /root/2017-01-trnmted.tgz/texts/.../DeEnItNlRo-DeEnItNlRo.tgz
     inner_iwslt_tar = os.path.join(
         root,
         os.path.splitext(_PATH)[0],
