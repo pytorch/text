@@ -38,7 +38,7 @@ def _get_mock_dataset(root_dir):
     archive["train"] = os.path.join(base_dir, "training.tar.gz")
     archive["val"] = os.path.join(base_dir, "validation.tar.gz")
     archive["test"] = os.path.join(base_dir, "mmt16_task1_test.tar.gz")
-    # create tar file from dataset folder
+
     for split in ("train", "val", "test"):
         with tarfile.open(archive[split], "w:gz") as tar:
             tar.add(os.path.join(temp_dataset_dir, f"{split}.de"))
