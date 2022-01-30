@@ -50,4 +50,4 @@ def EnWik9(root: str, split: Union[Tuple[str], str]):
     )
 
     data_dp = FileOpener(cache_decompressed_dp, mode="b")
-    return data_dp.readlines(decode=True, return_path=False)
+    return data_dp.readlines(decode=True, return_path=False, strip_newline=False)
