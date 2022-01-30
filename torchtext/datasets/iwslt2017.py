@@ -178,18 +178,18 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    uncleaned_train_filenames = ('train.tags.{}-{}.{}'.format(src_language, tgt_language, src_language),
-                                 'train.tags.{}-{}.{}'.format(src_language, tgt_language, tgt_language))
+    uncleaned_train_filenames = (
+        'train.tags.{}-{}.{}'.format(src_language, tgt_language, src_language),
+        'train.tags.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    )
     uncleaed_valid_filenames = (
-    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language,
-                                         src_language),
-    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language,
-                                         tgt_language))
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language)
+    )
     uncleaned_test_filenames = (
-    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language,
-                                         src_language),
-    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language,
-                                         tgt_language))
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language)
+    )
 
     uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
     uncleaned_src_eval, uncleaned_tgt_eval = uncleaed_valid_filenames
@@ -203,8 +203,6 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp)
     cache_compressed_dp = cache_compressed_dp.end_caching(mode="wb", same_filepath_fn=True)
-
-    languages = "-".join([src_language, tgt_language])
 
     # We create the whole filepath here, but only check for the literal filename in the filter
     # because we're lazily extracting from the outer tarfile. Thus,
