@@ -5,11 +5,10 @@ if is_module_available("torchdata"):
 
 import os
 from torchtext.data.datasets_utils import (
+    _clean_files,
+    _create_dataset_directory,
     _wrap_split_argument,
-    _clean_xml_file,
-    _clean_tags_file,
 )
-from torchtext.data.datasets_utils import _create_dataset_directory
 
 URL = 'https://drive.google.com/u/0/uc?id=12ycYSzLIG253AFN35Y6qoyf9wtkOjakp'
 _PATH = '2017-01-trnmted.tgz'
@@ -99,6 +98,17 @@ NUM_LINES = {
 DATASET_NAME = "IWSLT2017"
 
 
+def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
+    cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_filepath)
+    cache_inner_decompressed_dp = FileOpener(cache_inner_decompressed_dp, mode="b").read_from_tar()
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.filter(
+        lambda x: os.path.basename(uncleaned_filename) in x[0])
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.map(
+        lambda x: _clean_files(full_filepath, x[0], x[1]))
+    cache_inner_decompressed_dp = cache_inner_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
+    return cache_inner_decompressed_dp
+
+
 @_create_dataset_directory(dataset_name=DATASET_NAME)
 @_wrap_split_argument(("train", "valid", "test"))
 def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de', 'en')):
@@ -168,65 +178,99 @@ def IWSLT2017(root='.data', split=('train', 'valid', 'test'), language_pair=('de
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
+    uncleaned_train_filenames = ('train.tags.{}-{}.{}'.format(src_language, tgt_language, src_language),
+                                 'train.tags.{}-{}.{}'.format(src_language, tgt_language, tgt_language))
+    uncleaed_valid_filenames = (
+    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language,
+                                         src_language),
+    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language,
+                                         tgt_language))
+    uncleaned_test_filenames = (
+    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language,
+                                         src_language),
+    'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language,
+                                         tgt_language))
+
+    uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
+    uncleaned_src_eval, uncleaned_tgt_eval = uncleaed_valid_filenames
+    uncleaned_src_test, uncleaned_tgt_test = uncleaned_test_filenames
+
     url_dp = IterableWrapper([URL])
     cache_compressed_dp = url_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _PATH),
         hash_dict={os.path.join(root, _PATH): MD5},
         hash_type="md5"
     )
-    cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_compressed_dp = FileOpener(cache_compressed_dp, mode="b")
-    src_language = train_filenames[0].split(".")[-1]
-    tgt_language = train_filenames[1].split(".")[-1]
+    cache_compressed_dp = GDriveReader(cache_compressed_dp)
+    cache_compressed_dp = cache_compressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
-        # Convert /path/to/downloaded/foo.tgz to /path/to/downloaded/foo/rest/of/path
-        filepath_fn=lambda x: os.path.join(root, os.path.splitext(_PATH)[0], "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo.tgz")
+    languages = "-".join([src_language, tgt_language])
+
+    # We create the whole filepath here, but only check for the literal filename in the filter
+    # because we're lazily extracting from the outer tarfile. Thus,
+    # /root/2017-01-trnmted/texts/.../src-tgt.tgz will never be in
+    # /root/2017-01-trnmted.tgz/texts/.../src-tgt.tgz
+    inner_iwslt_tar = os.path.join(
+        root,
+        os.path.splitext(_PATH)[0],
+        "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo.tgz"
     )
-    cache_decompressed_dp = cache_decompressed_dp.read_from_tar()
+
+    cache_decompressed_dp = cache_compressed_dp.on_disk_cache(filepath_fn=lambda x: inner_iwslt_tar)
+    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar().filter(
+        lambda x: os.path.basename(inner_iwslt_tar) in x[0])
     cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=True)
 
-    def clean_files(fname):
-        if 'xml' in fname:
-            _clean_xml_file(fname)
-            return os.path.splitext(fname)[0]
-        elif "tags" in fname:
-            _clean_tags_file(fname)
-            return fname.replace('.tags', '')
-        return fname
+    file_path_by_lang_and_split = {
+        src_language: {
+            "train": src_train,
+            "valid": src_eval,
+            "test": src_test,
+        },
+        tgt_language: {
+            "train": tgt_train,
+            "valid": tgt_eval,
+            "test": tgt_test,
+        }
+    }
 
-    cache_decompressed_dp = cache_decompressed_dp.on_disk_cache(
-        # Convert /path/to/downloaded/foo.tgz to /path/to/downloaded/foo/rest/of/path
-        filepath_fn=lambda x: os.path.join(root, os.path.splitext(_PATH)[0], "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo/")
-    )
+    uncleaned_filenames = {
+        src_language: {
+            "train": uncleaned_src_train,
+            "valid": uncleaned_src_eval,
+            "test": uncleaned_src_test,
+        },
+        tgt_language: {
+            "train": uncleaned_tgt_train,
+            "valid": uncleaned_tgt_eval,
+            "test": uncleaned_tgt_test,
+        }
+    }
 
-    cache_decompressed_dp = FileOpener(cache_decompressed_dp, mode="b").read_from_tar()
-    cache_decompressed_dp = cache_decompressed_dp.end_caching(mode="wb", same_filepath_fn=False)
+    src_filename = file_path_by_lang_and_split[src_language][split]
+    uncleaned_src_filename = uncleaned_filenames[src_language][split]
 
-    def get_filepath(split, lang):
-        return {
-            src_language: {
-                "train": src_train,
-                "valid": src_eval,
-                "test": src_test,
-            },
-            tgt_language: {
-                "train": tgt_train,
-                "valid": tgt_eval,
-                "test": tgt_test,
-            }
-        }[lang][split]
+    # We create the whole filepath here, but only check for the literal filename in the filter
+    # because we're lazily extracting from the outer tarfile.
+    full_src_filepath = os.path.join(root, "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo", src_filename)
 
-    cache_decompressed_dp = cache_decompressed_dp.flatmap(FileLister)
-    cleaned_cache_decompressed_dp = cache_decompressed_dp.map(clean_files)
+    cache_inner_src_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_src_filepath,
+                                                          uncleaned_src_filename)
 
-    # Filters out irrelevant file given the filename templates filled with split and src/tgt codes
-    src_data_dp = cleaned_cache_decompressed_dp.filter(lambda x: get_filepath(split, src_language) in x)
-    tgt_data_dp = cleaned_cache_decompressed_dp.filter(lambda x: get_filepath(split, tgt_language) in x)
+    tgt_filename = file_path_by_lang_and_split[tgt_language][split]
+    uncleaned_tgt_filename = uncleaned_filenames[tgt_language][split]
 
-    tgt_data_dp = FileOpener(tgt_data_dp, mode="r")
-    src_data_dp = FileOpener(src_data_dp, mode="r")
+    # We create the whole filepath here, but only check for the literal filename in the filter
+    # because we're lazily extracting from the outer tarfile.
+    full_tgt_filepath = os.path.join(root, "texts/DeEnItNlRo/DeEnItNlRo/DeEnItNlRo-DeEnItNlRo", tgt_filename)
+
+    cache_inner_tgt_decompressed_dp = _filter_clean_cache(cache_decompressed_dp, full_tgt_filepath,
+                                                          uncleaned_tgt_filename)
+
+    tgt_data_dp = FileOpener(cache_inner_tgt_decompressed_dp, mode="r")
+    src_data_dp = FileOpener(cache_inner_src_decompressed_dp, mode="r")
 
     src_lines = src_data_dp.readlines(return_path=False, strip_newline=False)
     tgt_lines = tgt_data_dp.readlines(return_path=False, strip_newline=False)
+
     return src_lines.zip(tgt_lines)
