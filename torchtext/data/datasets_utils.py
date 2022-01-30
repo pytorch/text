@@ -11,6 +11,7 @@ from torchtext.utils import (
     unicode_csv_reader,
 )
 from torch.utils.data import functional_datapipe, IterDataPipe
+from torch.utils.data.datapipes.utils.common import StreamWrapper
 import codecs
 try:
     import defusedxml.ElementTree as ET
@@ -33,6 +34,25 @@ def _clean_xml_file(f_xml):
                 fd_txt.write(e.text.strip() + '\n')
 
 
+def _clean_inner_xml_file(outfile, stream):
+    """Accepts an output filename and a stream of the byte contents of an XML file
+    and writes the cleaned contents to a new file on disk.
+
+    Args:
+        outfile: the path to which the modified stream should be written
+        stream: the byte datapipe of the contents of the XML file
+
+    Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
+    """
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
+    with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
+        root = ET.fromstring(stream.read().decode("utf-8"))[0]
+        for doc in root.findall('doc'):
+            for e in doc.findall('seg'):
+                fd_txt.write(e.text.strip() + '\n')
+    return outfile, StreamWrapper(open(outfile, "rb"))
+
+
 def _clean_tags_file(f_orig):
     xml_tags = [
         '<url', '<keywords', '<talkid', '<description', '<reviewer',
@@ -48,6 +68,57 @@ def _clean_tags_file(f_orig):
                 #                fd_txt.write(l.strip() + u"\u0085")
                 #                fd_txt.write(l.lstrip())
                 fd_txt.write(line.strip() + '\n')
+
+
+def _clean_inner_tags_file(outfile, stream):
+    """Accepts an output filename and a stream of the byte contents of a tags file
+    and writes the cleaned contents to a new file on disk.
+
+    Args:
+        outfile: the path to which the modified stream should be written
+        stream: the byte datapipe of the contents of the tags file
+
+    Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
+    """
+    xml_tags = [
+        '<url', '<keywords', '<talkid', '<description', '<reviewer',
+        '<translator', '<title', '<speaker', '<doc', '</doc'
+    ]
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
+    with codecs.open(outfile, mode='w', encoding='utf-8') as fd_txt:
+        for line in stream.readlines():
+            if not any(tag in line.decode("utf-8") for tag in xml_tags):
+                # TODO: Fix utf-8 next line mark
+                #                fd_txt.write(l.strip() + '\n')
+                #                fd_txt.write(l.strip() + u"\u0085")
+                #                fd_txt.write(l.lstrip())
+                fd_txt.write(line.decode("utf-8").strip() + '\n')
+    return outfile, StreamWrapper(open(outfile, "rb"))
+
+
+def _rewrite_text_file(outfile, stream):
+    """Accepts an output filename and a stream of the byte contents of a text file
+    and writes the cleaned contents to a new file on disk.
+
+    Args:
+        outfile: the path to which the modified stream should be written
+        stream: the byte datapipe of the contents of the text file
+
+    Returns: the path to the newly-written file and the new StreamWrapper for appropriate caching
+    """
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
+    with open(outfile, 'w', encoding='utf-8') as f:
+        for line in stream.readlines():
+            f.write(line.decode("utf-8") + "\n")
+    return outfile, StreamWrapper(open(outfile, "rb"))
+
+
+def _clean_files(outfile, fname, stream):
+    if 'xml' in fname:
+        return _clean_inner_xml_file(outfile, stream)
+    elif "tags" in fname:
+        return _clean_inner_tags_file(outfile, stream)
+    return _rewrite_text_file(outfile, stream)
 
 
 def _create_data_from_json(data_path):
