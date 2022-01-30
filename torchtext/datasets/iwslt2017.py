@@ -1,7 +1,7 @@
 from torchtext._internal.module_utils import is_module_available
 
 if is_module_available("torchdata"):
-    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper, FileLister
+    from torchdata.datapipes.iter import FileOpener, GDriveReader, IterableWrapper
 
 import os
 from torchtext.data.datasets_utils import (
