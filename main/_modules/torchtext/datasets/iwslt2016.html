@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchtext.datasets.iwslt2016 &mdash; torchtext 0.12.0.dev20220129 documentation</title>
+  <title>torchtext.datasets.iwslt2016 &mdash; torchtext 0.12.0.dev20220130 documentation</title>
   
 
   
@@ -190,7 +190,7 @@
           <div class="pytorch-left-menu-search">
             
     <div class="version">
-      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220129 &#x25BC</a>
+      <a href='https://pytorch.org/text/versions.html'>0.12.0.dev20220130 &#x25BC</a>
     </div>
     
 
@@ -308,22 +308,25 @@
              <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
               
   <h1>Source code for torchtext.datasets.iwslt2016</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">torchtext.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">download_from_url</span><span class="p">,</span> <span class="n">extract_archive</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_RawTextIterableDataset</span><span class="p">,</span>
-    <span class="n">_wrap_split_argument</span><span class="p">,</span>
-    <span class="n">_clean_xml_file</span><span class="p">,</span>
-    <span class="n">_clean_tags_file</span><span class="p">,</span>
-    <span class="n">_read_text_iterator</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="n">_create_dataset_directory</span>
+<span></span><span class="kn">from</span> <span class="nn">torchtext._internal.module_utils</span> <span class="kn">import</span> <span class="n">is_module_available</span>
 
+<span class="k">if</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">torchdata.datapipes.iter</span> <span class="kn">import</span> <span class="n">FileOpener</span><span class="p">,</span> <span class="n">GDriveReader</span><span class="p">,</span> <span class="n">IterableWrapper</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">torchtext.data.datasets_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_wrap_split_argument</span><span class="p">,</span>
+    <span class="n">_clean_files</span><span class="p">,</span>
+    <span class="n">_create_dataset_directory</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">URL</span> <span class="o">=</span> <span class="s1">&#39;https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8&#39;</span>
+
+<span class="n">_PATH</span> <span class="o">=</span> <span class="s1">&#39;2016-01.tgz&#39;</span>
+
+<span class="n">MD5</span> <span class="o">=</span> <span class="s1">&#39;c393ed3fc2a1b0f004b3331043f615ae&#39;</span>
 
 <span class="n">SUPPORTED_DATASETS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;URL&#39;</span><span class="p">:</span> <span class="s1">&#39;https://drive.google.com/uc?id=1l5y6Giag9aRPwGtuZHswh3w5v3qEz8D8&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;_PATH&#39;</span><span class="p">:</span> <span class="s1">&#39;2016-01.tgz&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;MD5&#39;</span><span class="p">:</span> <span class="s1">&#39;c393ed3fc2a1b0f004b3331043f615ae&#39;</span><span class="p">,</span>
     <span class="s1">&#39;valid_test&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;dev2010&#39;</span><span class="p">,</span> <span class="s1">&#39;tst2010&#39;</span><span class="p">,</span> <span class="s1">&#39;tst2011&#39;</span><span class="p">,</span> <span class="s1">&#39;tst2012&#39;</span><span class="p">,</span> <span class="s1">&#39;tst2013&#39;</span><span class="p">,</span> <span class="s1">&#39;tst2014&#39;</span><span class="p">],</span>
     <span class="s1">&#39;language_pair&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">&#39;en&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;fr&#39;</span><span class="p">,</span> <span class="s1">&#39;cs&#39;</span><span class="p">],</span>
@@ -333,11 +336,7 @@
         <span class="s1">&#39;cs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;en&#39;</span><span class="p">],</span>
     <span class="p">},</span>
     <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
-
 <span class="p">}</span>
-
-<span class="n">URL</span> <span class="o">=</span> <span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;URL&#39;</span><span class="p">]</span>
-<span class="n">MD5</span> <span class="o">=</span> <span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;MD5&#39;</span><span class="p">]</span>
 
 <span class="n">NUM_LINES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">{</span>
@@ -435,28 +434,22 @@
     <span class="p">(</span><span class="s1">&#39;cs&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">):</span> <span class="p">[</span><span class="s1">&#39;tst2014&#39;</span><span class="p">]</span>
 <span class="p">}</span>
 
-
-<span class="k">def</span> <span class="nf">_construct_filenames</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
-    <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
-        <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">lang</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">filenames</span>
-
-
-<span class="k">def</span> <span class="nf">_construct_filepaths</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">src_filename</span><span class="p">,</span> <span class="n">tgt_filename</span><span class="p">):</span>
-    <span class="n">src_path</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">tgt_path</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
-        <span class="n">src_path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">src_filename</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="n">src_path</span>
-        <span class="n">tgt_path</span> <span class="o">=</span> <span class="n">p</span> <span class="k">if</span> <span class="n">tgt_filename</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="n">tgt_path</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">)</span>
-
-
 <span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;IWSLT2016&quot;</span>
 
 
+<span class="k">def</span> <span class="nf">_filter_clean_cache</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">full_filepath</span><span class="p">,</span> <span class="n">uncleaned_filename</span><span class="p">):</span>
+    <span class="n">cache_inner_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">full_filepath</span><span class="p">)</span>
+    <span class="n">cache_inner_decompressed_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_inner_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_from_tar</span><span class="p">()</span>
+    <span class="n">cache_inner_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_inner_decompressed_dp</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">uncleaned_filename</span><span class="p">)</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">cache_inner_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_inner_decompressed_dp</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_clean_files</span><span class="p">(</span><span class="n">full_filepath</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">cache_inner_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_inner_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cache_inner_decompressed_dp</span>
+
+
 <div class="viewcode-block" id="IWSLT2016"><a class="viewcode-back" href="../../../datasets.html#torchtext.datasets.IWSLT2016">[docs]</a><span class="nd">@_create_dataset_directory</span><span class="p">(</span><span class="n">dataset_name</span><span class="o">=</span><span class="n">DATASET_NAME</span><span class="p">)</span>
-<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<span class="nd">@_wrap_split_argument</span><span class="p">((</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">IWSLT2016</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;.data&#39;</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">language_pair</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">),</span> <span class="n">valid_set</span><span class="o">=</span><span class="s1">&#39;tst2013&#39;</span><span class="p">,</span> <span class="n">test_set</span><span class="o">=</span><span class="s1">&#39;tst2014&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;IWSLT2016 dataset</span>
 
@@ -492,14 +485,11 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from torchtext.datasets import IWSLT2016</span>
 <span class="sd">        &gt;&gt;&gt; train_iter, valid_iter, test_iter = IWSLT2016()</span>
-<span class="sd">        &gt;&gt;&gt; src_sentence, tgt_sentence = next(train_iter)</span>
+<span class="sd">        &gt;&gt;&gt; src_sentence, tgt_sentence = next(iter(train_iter))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">num_lines_set_identifier</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;valid&#39;</span><span class="p">:</span> <span class="n">valid_set</span><span class="p">,</span>
-        <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="n">test_set</span>
-    <span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">&quot;torchdata&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="s2">&quot;Package `torchdata` not found. Please install following instructions at `https://github.com/pytorch/data`&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">language_pair</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">language_pair</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;language_pair must be list or tuple but got </span><span class="si">{}</span><span class="s2"> instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">language_pair</span><span class="p">)))</span>
@@ -535,53 +525,88 @@
     <span class="n">src_eval</span><span class="p">,</span> <span class="n">tgt_eval</span> <span class="o">=</span> <span class="n">valid_filenames</span>
     <span class="n">src_test</span><span class="p">,</span> <span class="n">tgt_test</span> <span class="o">=</span> <span class="n">test_filenames</span>
 
-    <span class="n">extracted_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of paths to the extracted files</span>
-    <span class="n">dataset_tar</span> <span class="o">=</span> <span class="n">download_from_url</span><span class="p">(</span><span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;URL&#39;</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">hash_value</span><span class="o">=</span><span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;MD5&#39;</span><span class="p">],</span>
-                                    <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;_PATH&#39;</span><span class="p">]),</span> <span class="n">hash_type</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">)</span>
-    <span class="n">extracted_dataset_tar</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">dataset_tar</span><span class="p">)</span>
-    <span class="c1"># IWSLT dataset&#39;s url downloads a multilingual tgz.</span>
-    <span class="c1"># We need to take an extra step to pick out the specific language pair from it.</span>
-    <span class="n">src_language</span> <span class="o">=</span> <span class="n">train_filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">tgt_language</span> <span class="o">=</span> <span class="n">train_filenames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">uncleaned_train_filenames</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;train.tags.</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">src_language</span><span class="p">),</span>
+                       <span class="s1">&#39;train.tags.</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">))</span>
+    <span class="n">uncleaed_valid_filenames</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;IWSLT</span><span class="si">{}</span><span class="s1">.TED.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.xml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">valid_set</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">src_language</span><span class="p">),</span>
+                       <span class="s1">&#39;IWSLT</span><span class="si">{}</span><span class="s1">.TED.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.xml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">valid_set</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">))</span>
+    <span class="n">uncleaned_test_filenames</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;IWSLT</span><span class="si">{}</span><span class="s1">.TED.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.xml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">test_set</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">src_language</span><span class="p">),</span>
+                      <span class="s1">&#39;IWSLT</span><span class="si">{}</span><span class="s1">.TED.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.xml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">test_set</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">))</span>
+
+    <span class="n">uncleaned_src_train</span><span class="p">,</span> <span class="n">uncleaned_tgt_train</span> <span class="o">=</span> <span class="n">uncleaned_train_filenames</span>
+    <span class="n">uncleaned_src_eval</span><span class="p">,</span> <span class="n">uncleaned_tgt_eval</span> <span class="o">=</span> <span class="n">uncleaed_valid_filenames</span>
+    <span class="n">uncleaned_src_test</span><span class="p">,</span> <span class="n">uncleaned_tgt_test</span> <span class="o">=</span> <span class="n">uncleaned_test_filenames</span>
+
+    <span class="n">url_dp</span> <span class="o">=</span> <span class="n">IterableWrapper</span><span class="p">([</span><span class="n">URL</span><span class="p">])</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">url_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span>
+        <span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">),</span>
+        <span class="n">hash_dict</span><span class="o">=</span><span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">_PATH</span><span class="p">):</span> <span class="n">MD5</span><span class="p">},</span>
+        <span class="n">hash_type</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span>
+    <span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">GDriveReader</span><span class="p">(</span><span class="n">cache_compressed_dp</span><span class="p">)</span>
+    <span class="n">cache_compressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="n">languages</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">])</span>
 
-    <span class="n">iwslt_tar</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">/texts/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.tgz&#39;</span>
-    <span class="n">iwslt_tar</span> <span class="o">=</span> <span class="n">iwslt_tar</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">root</span><span class="p">,</span> <span class="n">SUPPORTED_DATASETS</span><span class="p">[</span><span class="s1">&#39;_PATH&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">languages</span><span class="p">)</span>
-    <span class="n">extracted_dataset_tar</span> <span class="o">=</span> <span class="n">extract_archive</span><span class="p">(</span><span class="n">iwslt_tar</span><span class="p">)</span>
-    <span class="n">extracted_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extracted_dataset_tar</span><span class="p">)</span>
+    <span class="c1"># We create the whole filepath here, but only check for the literal filename in the filter</span>
+    <span class="c1"># because we&#39;re lazily extracting from the outer tarfile. Thus,</span>
+    <span class="c1"># /root/2016-01/texts/.../src-tgt.tgz will never be in /root/2016-01.tgz/texts/.../src-tgt.tgz</span>
+    <span class="n">inner_iwslt_tar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">_PATH</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;texts&quot;</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">languages</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.tgz&quot;</span>
 
-    <span class="c1"># Clean the xml and tag file in the archives</span>
-    <span class="n">file_archives</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">extracted_files</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;xml&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-            <span class="n">_clean_xml_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="s2">&quot;tags&quot;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-            <span class="n">_clean_tags_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.tags&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_archives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_compressed_dp</span><span class="o">.</span><span class="n">on_disk_cache</span><span class="p">(</span><span class="n">filepath_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">inner_iwslt_tar</span><span class="p">)</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_from_tar</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inner_iwslt_tar</span><span class="p">)</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">cache_decompressed_dp</span> <span class="o">=</span> <span class="n">cache_decompressed_dp</span><span class="o">.</span><span class="n">end_caching</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">same_filepath_fn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">data_filenames</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_train</span><span class="p">,</span> <span class="n">tgt_train</span><span class="p">),</span>
-        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_eval</span><span class="p">,</span> <span class="n">tgt_eval</span><span class="p">),</span>
-        <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">_construct_filepaths</span><span class="p">(</span><span class="n">file_archives</span><span class="p">,</span> <span class="n">src_test</span><span class="p">,</span> <span class="n">tgt_test</span><span class="p">)</span>
+    <span class="n">file_path_by_lang_and_split</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">src_language</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">src_train</span><span class="p">,</span>
+            <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">src_eval</span><span class="p">,</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">src_test</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">tgt_language</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">tgt_train</span><span class="p">,</span>
+            <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">tgt_eval</span><span class="p">,</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">tgt_test</span><span class="p">,</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_filenames</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">data_filenames</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                <span class="s2">&quot;Files are not found for data type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+    <span class="n">uncleaned_filenames</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">src_language</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">uncleaned_src_train</span><span class="p">,</span>
+            <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">uncleaned_src_eval</span><span class="p">,</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">uncleaned_src_test</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">tgt_language</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">uncleaned_tgt_train</span><span class="p">,</span>
+            <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="n">uncleaned_tgt_eval</span><span class="p">,</span>
+            <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">uncleaned_tgt_test</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
-    <span class="n">src_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">tgt_data_iter</span> <span class="o">=</span> <span class="n">_read_text_iterator</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">src_filename</span> <span class="o">=</span> <span class="n">file_path_by_lang_and_split</span><span class="p">[</span><span class="n">src_language</span><span class="p">][</span><span class="n">split</span><span class="p">]</span>
+    <span class="n">uncleaned_src_filename</span> <span class="o">=</span> <span class="n">uncleaned_filenames</span><span class="p">[</span><span class="n">src_language</span><span class="p">][</span><span class="n">split</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">item</span>
+    <span class="c1"># We create the whole filepath here, but only check for the literal filename in the filter</span>
+    <span class="c1"># because we&#39;re lazily extracting from the outer tarfile.</span>
+    <span class="n">full_src_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;2016-01/texts/&quot;</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">languages</span><span class="p">,</span> <span class="n">src_filename</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">_RawTextIterableDataset</span><span class="p">(</span><span class="n">DATASET_NAME</span><span class="p">,</span> <span class="n">NUM_LINES</span><span class="p">[</span><span class="n">split</span><span class="p">][</span><span class="n">num_lines_set_identifier</span><span class="p">[</span><span class="n">split</span><span class="p">]][</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">language_pair</span><span class="p">))],</span> <span class="n">_iter</span><span class="p">(</span><span class="n">src_data_iter</span><span class="p">,</span> <span class="n">tgt_data_iter</span><span class="p">))</span></div>
+    <span class="n">cache_inner_src_decompressed_dp</span> <span class="o">=</span> <span class="n">_filter_clean_cache</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">full_src_filepath</span><span class="p">,</span> <span class="n">uncleaned_src_filename</span><span class="p">)</span>
+
+    <span class="n">tgt_filename</span> <span class="o">=</span> <span class="n">file_path_by_lang_and_split</span><span class="p">[</span><span class="n">tgt_language</span><span class="p">][</span><span class="n">split</span><span class="p">]</span>
+    <span class="n">uncleaned_tgt_filename</span> <span class="o">=</span> <span class="n">uncleaned_filenames</span><span class="p">[</span><span class="n">tgt_language</span><span class="p">][</span><span class="n">split</span><span class="p">]</span>
+
+    <span class="c1"># We create the whole filepath here, but only check for the literal filename in the filter</span>
+    <span class="c1"># because we&#39;re lazily extracting from the outer tarfile.</span>
+    <span class="n">full_tgt_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;2016-01/texts/&quot;</span><span class="p">,</span> <span class="n">src_language</span><span class="p">,</span> <span class="n">tgt_language</span><span class="p">,</span> <span class="n">languages</span><span class="p">,</span> <span class="n">tgt_filename</span><span class="p">)</span>
+
+    <span class="n">cache_inner_tgt_decompressed_dp</span> <span class="o">=</span> <span class="n">_filter_clean_cache</span><span class="p">(</span><span class="n">cache_decompressed_dp</span><span class="p">,</span> <span class="n">full_tgt_filepath</span><span class="p">,</span> <span class="n">uncleaned_tgt_filename</span><span class="p">)</span>
+
+    <span class="n">tgt_data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_inner_tgt_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">src_data_dp</span> <span class="o">=</span> <span class="n">FileOpener</span><span class="p">(</span><span class="n">cache_inner_src_decompressed_dp</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+    <span class="n">src_lines</span> <span class="o">=</span> <span class="n">src_data_dp</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="n">return_path</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strip_newline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tgt_lines</span> <span class="o">=</span> <span class="n">tgt_data_dp</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="n">return_path</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">strip_newline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">src_lines</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">tgt_lines</span><span class="p">)</span></div>
 </pre></div>
 
              </article>
