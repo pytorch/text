@@ -414,7 +414,7 @@ def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, v
         "train.tags.{}-{}.{}".format(src_language, tgt_language, src_language),
         "train.tags.{}-{}.{}".format(src_language, tgt_language, tgt_language)
     )
-    uncleaed_valid_filenames = (
+    uncleaned_valid_filenames = (
         "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, src_language),
         "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, tgt_language)
     )
@@ -424,7 +424,7 @@ def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, v
     )
 
     uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
-    uncleaned_src_eval, uncleaned_tgt_eval = uncleaed_valid_filenames
+    uncleaned_src_eval, uncleaned_tgt_eval = uncleaned_valid_filenames
     uncleaned_src_test, uncleaned_tgt_test = uncleaned_test_filenames
 
     file_path_by_lang_and_split = {
