@@ -109,7 +109,7 @@ jobs:
           name: Install pre-commit hooks
           command: pre-commit install-hooks
       - run:
-          name: Lint Python code and config files
+          name: Lint code format
           command: pre-commit run --all-files
       - run:
           when: on_fail
