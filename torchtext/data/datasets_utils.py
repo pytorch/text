@@ -392,6 +392,70 @@ class _RawTextIterableDataset(torch.utils.data.IterableDataset):
         return self.description
 
 
+def _generate_iwslt_files_for_lang_and_split(year, src_language, tgt_language, valid_set, test_set):
+    train_filenames = (
+        "train.{}-{}.{}".format(src_language, tgt_language, src_language),
+        "train.{}-{}.{}".format(src_language, tgt_language, tgt_language)
+    )
+    valid_filenames = (
+        "IWSLT{}.TED.{}.{}-{}.{}".format(year, valid_set, src_language, tgt_language, src_language),
+        "IWSLT{}.TED.{}.{}-{}.{}".format(year, valid_set, src_language, tgt_language, tgt_language)
+    )
+    test_filenames = (
+        "IWSLT{}.TED.{}.{}-{}.{}".format(year, test_set, src_language, tgt_language, src_language),
+        "IWSLT{}.TED.{}.{}-{}.{}".format(year, test_set, src_language, tgt_language, tgt_language)
+    )
+
+    src_train, tgt_train = train_filenames
+    src_eval, tgt_eval = valid_filenames
+    src_test, tgt_test = test_filenames
+
+    uncleaned_train_filenames = (
+        "train.tags.{}-{}.{}".format(src_language, tgt_language, src_language),
+        "train.tags.{}-{}.{}".format(src_language, tgt_language, tgt_language)
+    )
+    uncleaned_valid_filenames = (
+        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, src_language),
+        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, valid_set, src_language, tgt_language, tgt_language)
+    )
+    uncleaned_test_filenames = (
+        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, test_set, src_language, tgt_language, src_language),
+        "IWSLT{}.TED.{}.{}-{}.{}.xml".format(year, test_set, src_language, tgt_language, tgt_language)
+    )
+
+    uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
+    uncleaned_src_eval, uncleaned_tgt_eval = uncleaned_valid_filenames
+    uncleaned_src_test, uncleaned_tgt_test = uncleaned_test_filenames
+
+    file_path_by_lang_and_split = {
+        src_language: {
+            "train": src_train,
+            "valid": src_eval,
+            "test": src_test,
+        },
+        tgt_language: {
+            "train": tgt_train,
+            "valid": tgt_eval,
+            "test": tgt_test,
+        }
+    }
+
+    uncleaned_filenames_by_lang_and_split = {
+        src_language: {
+            "train": uncleaned_src_train,
+            "valid": uncleaned_src_eval,
+            "test": uncleaned_src_test,
+        },
+        tgt_language: {
+            "train": uncleaned_tgt_train,
+            "valid": uncleaned_tgt_eval,
+            "test": uncleaned_tgt_test,
+        }
+    }
+
+    return file_path_by_lang_and_split, uncleaned_filenames_by_lang_and_split
+
+
 @functional_datapipe("read_squad")
 class _ParseSQuADQAData(IterDataPipe):
     r"""Iterable DataPipe to parse the contents of a stream of JSON objects
