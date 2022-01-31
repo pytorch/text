@@ -97,7 +97,7 @@ jobs:
           name: .circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this.
           command: exit 1
 
-  lint:
+  format:
     docker:
       - image: circleci/python:3.7
     steps:
@@ -637,7 +637,7 @@ workflows:
   lint:
     jobs:
       - circleci_consistency
-      - lint
+      - format
   build:
     jobs:
       - binary_linux_wheel:
