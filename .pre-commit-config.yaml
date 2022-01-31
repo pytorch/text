@@ -18,7 +18,7 @@ repos:
           - yaml
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: 12.0.1
+    rev: v12.0.1
     hooks:
       - id: clang-format
 
