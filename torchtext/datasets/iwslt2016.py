@@ -127,6 +127,8 @@ SET_NOT_EXISTS = {
 DATASET_NAME = "IWSLT2016"
 
 
+# TODO: migrate this to dataset_utils.py once torchdata is a hard dependency to
+# avoid additional conditional imports.
 def _filter_clean_cache(cache_decompressed_dp, full_filepath, uncleaned_filename):
     cache_inner_decompressed_dp = cache_decompressed_dp.on_disk_cache(filepath_fn=lambda x: full_filepath)
     cache_inner_decompressed_dp = FileOpener(cache_inner_decompressed_dp, mode="b").read_from_tar()
