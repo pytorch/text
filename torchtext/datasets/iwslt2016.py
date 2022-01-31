@@ -204,23 +204,35 @@ def IWSLT2016(root='.data', split=('train', 'valid', 'test'), language_pair=('de
         raise ValueError("test_set '{}' is not valid for give language pair {}. Supported test sets are {}".
                          format(valid_set, language_pair, [s for s in SUPPORTED_DATASETS['valid_test'] if s not in SET_NOT_EXISTS[language_pair]]))
 
-    train_filenames = ('train.{}-{}.{}'.format(src_language, tgt_language, src_language),
-                       'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language))
-    valid_filenames = ('IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
-                       'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language))
-    test_filenames = ('IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
-                      'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language))
+    train_filenames = (
+        'train.{}-{}.{}'.format(src_language, tgt_language, src_language),
+        'train.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    )
+    valid_filenames = (
+        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
+        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language)
+    )
+    test_filenames = (
+        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
+        'IWSLT{}.TED.{}.{}-{}.{}'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language)
+    )
 
     src_train, tgt_train = train_filenames
     src_eval, tgt_eval = valid_filenames
     src_test, tgt_test = test_filenames
 
-    uncleaned_train_filenames = ('train.tags.{}-{}.{}'.format(src_language, tgt_language, src_language),
-                       'train.tags.{}-{}.{}'.format(src_language, tgt_language, tgt_language))
-    uncleaed_valid_filenames = ('IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
-                       'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language))
-    uncleaned_test_filenames = ('IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
-                      'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language))
+    uncleaned_train_filenames = (
+        'train.tags.{}-{}.{}'.format(src_language, tgt_language, src_language),
+        'train.tags.{}-{}.{}'.format(src_language, tgt_language, tgt_language)
+    )
+    uncleaed_valid_filenames = (
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, src_language),
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], valid_set, src_language, tgt_language, tgt_language)
+    )
+    uncleaned_test_filenames = (
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, src_language),
+        'IWSLT{}.TED.{}.{}-{}.{}.xml'.format(SUPPORTED_DATASETS['year'], test_set, src_language, tgt_language, tgt_language)
+    )
 
     uncleaned_src_train, uncleaned_tgt_train = uncleaned_train_filenames
     uncleaned_src_eval, uncleaned_tgt_eval = uncleaed_valid_filenames
