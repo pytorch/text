@@ -97,7 +97,7 @@ jobs:
           name: .circleci/config.yml not in sync with config.yml.in! Run '$ python .circleci/regenerate.py' to fix this.
           command: exit 1
 
-  lint_python_and_config:
+  lint:
     docker:
       - image: circleci/python:3.7
     steps:
@@ -114,34 +114,6 @@ jobs:
       - run:
           when: on_fail
           name: Code format not compliant with the rules! Run '$ pre-commit run --all-files' to fix this.
-          command: exit 1
-
-  lint_c:
-    docker:
-      - image: circleci/python:3.7
-    steps:
-      - run:
-          name: Install additional system libraries
-          command: |
-            sudo apt update -qy
-            sudo apt install libtinfo5
-      - checkout
-      - run:
-          name: Install lint utilities
-          command: |
-            curl https://oss-clang-format.s3.us-east-2.amazonaws.com/linux64/clang-format-linux64 -o clang-format
-            chmod +x clang-format
-            ./clang-format --version
-      - run:
-          name: Lint C code
-          command: >
-            python run-clang-format.py
-            --recursive
-            --clang-format-executable=./clang-format
-            torchtext/csrc
-      - run:
-          when: on_fail
-          name: Code format not compliant with the rules! Run '$ python run-clang-format.py' to fix this.
           command: exit 1
 
   binary_linux_wheel:
@@ -665,8 +637,7 @@ workflows:
   lint:
     jobs:
       - circleci_consistency
-      - lint_python_and_config
-      - lint_c
+      - lint
   build:
     jobs:
       - binary_linux_wheel:
