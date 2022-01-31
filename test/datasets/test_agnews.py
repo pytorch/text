@@ -64,7 +64,6 @@ class TestAGNews(TempDirMixin, TorchtextTestCase):
         samples = list(dataset)
         expected_samples = self.samples[split]
         for sample, expected_sample in zip_equal(samples, expected_samples):
-            print(sample, expected_sample)
             self.assertEqual(sample, expected_sample)
 
     @parameterized.expand(["train", "test"])
