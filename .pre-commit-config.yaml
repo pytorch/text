@@ -17,11 +17,6 @@ repos:
           - toml
           - yaml
 
-  - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v12.0.1
-    hooks:
-      - id: clang-format
-
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.0
     hooks:
@@ -41,5 +36,7 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
+        additional_dependencies:
+          - flake8-docstrings == 1.6.0
         args:
           - --config=.flake8
