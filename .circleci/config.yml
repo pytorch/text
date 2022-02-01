@@ -731,11 +731,6 @@ workflows:
           python_version: '3.8'
           requires:
           - build_docs
-      - docstring_parameters_sync:
-          name: docstring_parameters_sync
-          python_version: '3.8'
-          requires:
-          - binary_linux_wheel_py3.8
   unittest:
     jobs:
       - cachesetup_linux:
