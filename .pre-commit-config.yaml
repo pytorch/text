@@ -17,13 +17,6 @@ repos:
           - toml
           - yaml
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v2.31.0
-    hooks:
-      - id: pyupgrade
-        args:
-          - --py37-plus
-
   - repo: https://github.com/omnilib/ufmt
     rev: v1.3.1
     hooks:
