@@ -13,7 +13,7 @@ We actively welcome your pull requests.
 
 ### Code style
 
-`torchtext` enforces a fairly strict code format through [`pre-commit`](https://pre-commit.com). You can install it with
+`torchtext` enforces a fairly strict code format for Python, text, and configuration files through [`pre-commit`](https://pre-commit.com). You can install it with
 
 ```shell
 pip install pre-commit
@@ -27,6 +27,22 @@ conda install -c conda-forge pre-commit
 
 To check and in most cases fix the code format, stage all your changes (`git add`) and execute `pre-commit run`. To perform
 the checks automatically before every `git commit`, you can install the checks as hooks with `pre-commit install`.
+
+In addition, `torchtext` also enforces a fairly strict code format for C++ files through a custom version of [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html). You can download it from
+
+- https://oss-clang-format.s3.us-east-2.amazonaws.com/mac/clang-format-mojave
+- https://oss-clang-format.s3.us-east-2.amazonaws.com/linux64/clang-format-linux64
+
+depending on your platform. To run the formatter, make the binary executable (`chmod +x`) and execute
+
+```shell
+python run-clang-format.py \
+    --recursive \
+    --clang-format-executable=$CLANG_FORMAT \
+    torchtext/csrc
+```
+
+where `$CLANG_FORMAT` denotes the path to the downloaded binary. 
 
 ## Contributor License Agreement ("CLA")
 In order to accept your pull request, we need you to submit a CLA. You only need
