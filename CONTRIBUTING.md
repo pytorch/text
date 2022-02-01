@@ -9,8 +9,24 @@ We actively welcome your pull requests.
 2. If you've added code that should be tested, add tests.
 3. If you've changed APIs, update the documentation.
 4. Ensure the test suite passes.
-5. Make sure your code lints.
-6. If you haven't already, complete the Contributor License Agreement ("CLA").
+5. If you haven't already, complete the Contributor License Agreement ("CLA").
+
+### Code style
+
+`torchtext` enforces a fairly strict code format through [`pre-commit`](https://pre-commit.com). You can install it with
+
+```shell
+pip install pre-commit
+```
+
+or
+
+```shell
+conda install -c conda-forge pre-commit
+```
+
+To check and in most cases fix the code format, stage all your changes (`git add`) and execute `pre-commit run`. To perform
+the checks automatically before every `git commit`, you can install the checks as hooks with `pre-commit install`.
 
 ## Contributor License Agreement ("CLA")
 In order to accept your pull request, we need you to submit a CLA. You only need
