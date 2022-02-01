@@ -49,6 +49,7 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
         ordered_dict.pop(token, None)
 
     tokens = []
+    # Save room for special tokens
     for token, freq in ordered_dict.items():
         if freq >= min_freq:
             tokens.append(token)
@@ -61,7 +62,7 @@ def vocab(ordered_dict: Dict, min_freq: int = 1,
     return Vocab(VocabPybind(tokens, None))
 
 
-def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True) -> Vocab:
+def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: Optional[List[str]] = None, special_first: bool = True, max_tokens: Optional[int] = None) -> Vocab:
     """
     Build a Vocab from an iterator.
 
@@ -70,6 +71,7 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
         min_freq: The minimum frequency needed to include a token in the vocabulary.
         specials: Special symbols to add. The order of supplied tokens will be preserved.
         special_first: Indicates whether to insert symbols at the beginning or at the end.
+        max_tokens: If provided, creates the vocab from the `max_tokens - len(specials)` most frequent tokens.
 
 
     Returns:
@@ -90,10 +92,16 @@ def build_vocab_from_iterator(iterator: Iterable, min_freq: int = 1, specials: O
     for tokens in iterator:
         counter.update(tokens)
 
-    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: x[0])
-    sorted_by_freq_tuples.sort(key=lambda x: x[1], reverse=True)
-    ordered_dict = OrderedDict(sorted_by_freq_tuples)
+    specials = specials or []
 
-    word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials or [],
-                       special_first=special_first)
+    # First sort by descending frequency, then lexicographically
+    sorted_by_freq_tuples = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
+
+    if max_tokens is None:
+        ordered_dict = OrderedDict(sorted_by_freq_tuples)
+    else:
+        assert len(specials) < max_tokens, "len(specials) >= max_tokens, so the vocab will be entirely special tokens."
+        ordered_dict = OrderedDict(sorted_by_freq_tuples[:max_tokens - len(specials)])
+
+    word_vocab = vocab(ordered_dict, min_freq=min_freq, specials=specials, special_first=special_first)
     return word_vocab

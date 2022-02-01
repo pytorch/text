@@ -43,6 +43,6 @@ def AG_NEWS(root: str, split: Union[Tuple[str], str]):
         hash_type="md5"
     )
     cache_dp = HttpReader(cache_dp)
-    cache_dp = cache_dp.end_caching(mode="w", same_filepath_fn=True)
+    cache_dp = cache_dp.end_caching(mode="wb", same_filepath_fn=True)
     cache_dp = FileOpener(cache_dp, mode="r")
     return cache_dp.parse_csv().map(fn=lambda t: (int(t[0]), " ".join(t[1:])))
