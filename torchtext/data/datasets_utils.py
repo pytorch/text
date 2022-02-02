@@ -2,13 +2,11 @@ import functools
 import inspect
 import os
 import io
-import json
 import torch
 from torchtext.utils import (
     validate_file,
     download_from_url,
     extract_archive,
-    unicode_csv_reader,
 )
 from torch.utils.data import functional_datapipe, IterDataPipe
 from torch.utils.data.datapipes.utils.common import StreamWrapper
