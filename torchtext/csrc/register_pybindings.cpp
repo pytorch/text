@@ -1,3 +1,4 @@
+#include <clip_tokenizer.h>      // @manual
 #include <gpt2_bpe_tokenizer.h>  // @manual
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -176,6 +177,27 @@ PYBIND11_MODULE(_torchtext, m) {
           [](GPT2BPEEncoderStatesPybind states)
               -> c10::intrusive_ptr<GPT2BPEEncoder> {
             return _deserialize_gpt2_bpe_encoder_pybind(states);
+          }));
+
+  py::class_<CLIPEncoder, c10::intrusive_ptr<CLIPEncoder>>(m, "CLIPEncoder")
+      .def(py::init<std::unordered_map<std::string, int64_t>,
+                    std::unordered_map<std::string, int64_t>, std::string,
+                    std::unordered_map<int64_t, std::string>, bool>())
+      .def_property_readonly("bpe_encoder_", &CLIPEncoder::GetBPEEncoder)
+      .def_property_readonly("bpe_merge_ranks_", &CLIPEncoder::GetBPEMergeRanks)
+      .def_readonly("seperator_", &CLIPEncoder::seperator_)
+      .def_property_readonly("byte_encoder_", &CLIPEncoder::GetByteEncoder)
+      .def("encode", &CLIPEncoder::Encode)
+      .def(py::pickle(
+          // __getstate__
+          [](const c10::intrusive_ptr<CLIPEncoder> &self)
+              -> CLIPEncoderStatesPybind {
+            return _serialize_clip_encoder_pybind(self);
+          },
+          // __setstate__
+          [](CLIPEncoderStatesPybind states)
+              -> c10::intrusive_ptr<CLIPEncoder> {
+            return _deserialize_clip_encoder_pybind(states);
           }));
 
   // Functions
