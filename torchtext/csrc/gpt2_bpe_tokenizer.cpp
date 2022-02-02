@@ -86,15 +86,15 @@ std::vector<std::string> gpt2_bpe_pre_tokenizer(std::string input) {
   return tokens;
 }
 
-std::pair<std::string, std::string> _split_tokens(std::string s,
-                                                  std::string delimiter) {
+std::pair<std::string, std::string> split_tokens(std::string s,
+                                                 std::string delimiter) {
   auto pos = s.find(delimiter);
   TORCH_CHECK(pos != std::string::npos, "Expected `s`to contain `delimiter`");
   return std::make_pair(s.substr(0, pos), s.substr(pos + delimiter.length()));
 }
 
-int _list_str_index(std::vector<std::string> list, std::string element,
-                    int start) {
+int list_str_index(std::vector<std::string> list, std::string element,
+                   int start) {
   // Equivalent to: list.index(element, start)
   for (std::size_t i = start; i < list.size(); ++i) {
     if (list[i] == element) {
@@ -104,15 +104,14 @@ int _list_str_index(std::vector<std::string> list, std::string element,
   return -1;
 }
 
-std::string _concatenate_strings(const std::vector<std::string> &list) {
+std::string concatenate_strings(const std::vector<std::string> &list) {
   std::string ret = "";
   for (auto s : list) ret += s;
   return ret;
 }
 
-// Return set of token pairs in a word, seperated by the `seperator`.
-std::vector<std::string> _get_pairs(std::vector<std::string> token_list,
-                                    const std::string &seperator) {
+std::vector<std::string> get_pairs(std::vector<std::string> token_list,
+                                   const std::string &seperator) {
   // For example: ["he", "l", "l", "o"]
   //    ==> ["he\u0001l", "l\u0001l", "l\u0001o"]
   std::unordered_set<std::string> pairs;
@@ -193,15 +192,15 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
   //  1) token list size reduced to 1
   //      OR
   //  2) can't find bpe merge
-  auto concatenated = _concatenate_strings(token_list);
+  auto concatenated = concatenate_strings(token_list);
   if (caching_enabled_ && cache_.contains(concatenated)) {
     return cache_.at(concatenated);
   }
 
   std::vector<std::string> tok_list = token_list;
-  auto pairs = _get_pairs(tok_list, seperator_);
+  auto pairs = get_pairs(tok_list, seperator_);
   if (pairs.empty()) {
-    return tok_list;
+    return {concatenated};
   }
   while (true) {
     auto bigram = FindBestPair_(pairs);
@@ -216,11 +215,11 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
     // ["a", "w", "some", "a", "w", "e"]
     // Result: new_token_list = ["aw", "some", "aw", "e"]
 
-    auto parts = _split_tokens(bigram, seperator_);
+    auto parts = split_tokens(bigram, seperator_);
     std::vector<std::string> new_token_list;
     std::size_t i = 0;
     while (i < tok_list.size()) {
-      auto j = _list_str_index(tok_list, parts.first, i);
+      auto j = list_str_index(tok_list, parts.first, i);
       if (j != -1) {
         for (int k = i; k < j; k++) new_token_list.push_back(tok_list[k]);
         i = j;
@@ -244,7 +243,7 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
     if (tok_list.size() == 1) {
       break;
     } else {
-      pairs = _get_pairs(tok_list, seperator_);
+      pairs = get_pairs(tok_list, seperator_);
     }
   }
 
@@ -252,9 +251,13 @@ std::vector<std::string> GPT2BPEEncoder::BPE_(
   return tok_list;
 }
 
+std::vector<std::string> GPT2BPEEncoder::PreTokenize_(std::string input) {
+  return gpt2_bpe_pre_tokenizer(input);
+}
+
 std::vector<int64_t> GPT2BPEEncoder::Encode(const std::string &text) {
   std::vector<int64_t> bpe_token_ids;
-  for (const auto &token : gpt2_bpe_pre_tokenizer(text)) {
+  for (const auto &token : PreTokenize_(text)) {
     auto byte_encoded_token = ByteEncode_(token);
     for (const auto &bpe_token : BPE_(byte_encoded_token)) {
       bpe_token_ids.push_back(bpe_encoder_.at(bpe_token));
