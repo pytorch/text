@@ -29,7 +29,7 @@ def _get_mock_dataset(root_dir):
                 rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
-                content = f'{rand_string}\n'
+                content = f"{rand_string}\n"
                 f.write(content)
                 mocked_data[file_name].append(content)
                 seed += 1
