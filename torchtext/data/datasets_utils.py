@@ -25,15 +25,6 @@ for public consumption yet.
 """
 
 
-def _clean_xml_file(f_xml):
-    f_txt = os.path.splitext(f_xml)[0]
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt:
-        root = ET.parse(f_xml).getroot()[0]
-        for doc in root.findall('doc'):
-            for e in doc.findall('seg'):
-                fd_txt.write(e.text.strip() + '\n')
-
-
 def _clean_inner_xml_file(outfile, stream):
     """Accepts an output filename and a stream of the byte contents of an XML file
     and writes the cleaned contents to a new file on disk.
@@ -51,23 +42,6 @@ def _clean_inner_xml_file(outfile, stream):
             for e in doc.findall('seg'):
                 fd_txt.write(e.text.strip() + '\n')
     return outfile, StreamWrapper(open(outfile, "rb"))
-
-
-def _clean_tags_file(f_orig):
-    xml_tags = [
-        '<url', '<keywords', '<talkid', '<description', '<reviewer',
-        '<translator', '<title', '<speaker', '<doc', '</doc'
-    ]
-    f_txt = f_orig.replace('.tags', '')
-    with codecs.open(f_txt, mode='w', encoding='utf-8') as fd_txt, \
-            io.open(f_orig, mode='r', encoding='utf-8') as fd_orig:
-        for line in fd_orig:
-            if not any(tag in line for tag in xml_tags):
-                # TODO: Fix utf-8 next line mark
-                #                fd_txt.write(l.strip() + '\n')
-                #                fd_txt.write(l.strip() + u"\u0085")
-                #                fd_txt.write(l.lstrip())
-                fd_txt.write(line.strip() + '\n')
 
 
 def _clean_inner_tags_file(outfile, stream):
@@ -121,51 +95,10 @@ def _clean_files(outfile, fname, stream):
     return _rewrite_text_file(outfile, stream)
 
 
-def _create_data_from_json(data_path):
-    with open(data_path) as json_file:
-        raw_json_data = json.load(json_file)['data']
-        for layer1 in raw_json_data:
-            for layer2 in layer1['paragraphs']:
-                for layer3 in layer2['qas']:
-                    _context, _question = layer2['context'], layer3['question']
-                    _answers = [item['text'] for item in layer3['answers']]
-                    _answer_start = [item['answer_start'] for item in layer3['answers']]
-                    if len(_answers) == 0:
-                        _answers = [""]
-                        _answer_start = [-1]
-                    # yield the raw data in the order of context, question, answers, answer_start
-                    yield (_context, _question, _answers, _answer_start)
-
-
-def _create_data_from_iob(data_path, separator='\t'):
-    with open(data_path, encoding="utf-8") as input_file:
-        columns = []
-        for line in input_file:
-            line = line.strip()
-            if line == "":
-                if columns:
-                    yield columns
-                columns = []
-            else:
-                for i, column in enumerate(line.split(separator)):
-                    if len(columns) < i + 1:
-                        columns.append([])
-                    columns[i].append(column)
-        if len(columns) > 0:
-            yield columns
-
-
 def _read_text_iterator(path):
     with io.open(path, encoding="utf8") as f:
         for row in f:
             yield row
-
-
-def _create_data_from_csv(data_path):
-    with io.open(data_path, encoding="utf8") as f:
-        reader = unicode_csv_reader(f)
-        for row in reader:
-            yield int(row[0]), ' '.join(row[1:])
 
 
 def _check_default_set(split, target_select, dataset_name):
@@ -192,17 +125,6 @@ def _wrap_datasets(datasets, split):
             raise ValueError("Internal error: Expected number of datasets is not 1.")
         return datasets[0]
     return datasets
-
-
-def _find_match(match, lst):
-    """
-    Searches list of strings and returns first entry that partially or fully
-    contains the given string match.
-    """
-    for element in lst:
-        if match in element:
-            return element
-    return None
 
 
 def _dataset_docstring_header(fn, num_lines=None, num_classes=None):
