@@ -33,13 +33,13 @@ def _get_mock_dataset(root_dir, split, src, tgt):
             # Get file extension (i.e., the language) without the . prefix (.en -> en)
             lang = os.path.splitext(file_name)[1][1:]
             for i in range(5):
-                rand_line = " ".join(
+                rand_string = " ".join(
                     random.choice(string.ascii_letters) for i in range(seed)
                 )
-                dataset_line = f"{rand_line} {rand_line}\n"
+                dataset_line = f"{rand_string} {rand_string}\n"
                 # append line to correct dataset split
                 mocked_data[split][lang].append(dataset_line)
-                f.write(f'{rand_line} {rand_line}\n')
+                f.write(f'{rand_string} {rand_string}\n')
                 seed += 1
 
     return list(zip(mocked_data[split][src], mocked_data[split][tgt]))
