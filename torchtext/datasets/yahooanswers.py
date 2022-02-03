@@ -46,7 +46,6 @@ def YahooAnswers(root: str, split: Union[Tuple[str], str]):
         hash_type="md5"
     )
     cache_compressed_dp = GDriveReader(cache_compressed_dp).end_caching(mode="wb", same_filepath_fn=True)
-    cache_compressed_dp = FileOpener(cache_compressed_dp, mode="b")
 
     cache_decompressed_dp = cache_compressed_dp.on_disk_cache(
         filepath_fn=lambda x: os.path.join(root, _EXTRACTED_FILES[split])
